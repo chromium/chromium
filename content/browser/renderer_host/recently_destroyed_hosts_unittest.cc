@@ -63,7 +63,7 @@ TEST_F(RecentlyDestroyedHostsTest, RecordSubframeMetric) {
 
   constexpr char kTimingHistogram[] =
       "SiteIsolation.ReusePendingOrCommittedSite."
-      "TimeSinceReusableProcessDestroyed.Subframe";
+      "TimeSinceReusableProcessDestroyed.Subframe2";
   constexpr char kFoundHistogram[] =
       "SiteIsolation.MissedReuseOpportunity.Found.Subframe";
 
@@ -187,7 +187,7 @@ TEST_F(RecentlyDestroyedHostsTest, RecordMainFrameMetric) {
       "SiteIsolation.MissedReuseOpportunity.Found.MainFrame";
   constexpr char kTimingHistogram[] =
       "SiteIsolation.ReusePendingOrCommittedSite."
-      "TimeSinceReusableProcessDestroyed.MainFrame";
+      "TimeSinceReusableProcessDestroyed.MainFrame2";
 
   base::HistogramTester histogram_tester;
   RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(

@@ -54,9 +54,10 @@ void RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
             reusable_host_lookup_time - iter->second;
         base::UmaHistogramCustomTimes(
             "SiteIsolation.ReusePendingOrCommittedSite."
-            "TimeSinceReusableProcessDestroyed.MainFrame",
+            "TimeSinceReusableProcessDestroyed.MainFrame2",
             reuse_interval, base::Milliseconds(1), kMainFrameStorageTimeout,
             50);
+        instance->recently_destroyed_hosts_for_main_frame_reuse_.erase(iter);
       }
       break;
     }
@@ -76,8 +77,9 @@ void RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
             reusable_host_lookup_time - iter->second;
         base::UmaHistogramCustomTimes(
             "SiteIsolation.ReusePendingOrCommittedSite."
-            "TimeSinceReusableProcessDestroyed.Subframe",
+            "TimeSinceReusableProcessDestroyed.Subframe2",
             reuse_interval, base::Milliseconds(1), kSubframeStorageTimeout, 50);
+        instance->recently_destroyed_hosts_for_subframe_reuse_.erase(iter);
       }
       break;
     }

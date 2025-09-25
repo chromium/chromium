@@ -1118,7 +1118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed.MainFrame"
+    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed.MainFrame2"
     units="ms" expires_after="2026-07-18">
   <owner>aattar@google.com</owner>
   <owner>olivierli@chromium.org</owner>
@@ -1132,7 +1132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed.Subframe"
+    name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed.Subframe2"
     units="ms" expires_after="2026-07-18">
   <owner>aattar@google.com</owner>
   <owner>olivierli@chromium.org</owner>
