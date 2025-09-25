@@ -346,7 +346,12 @@ constexpr DataTypeSet HighPriorityUserTypes() {
       // in the creation flow for a new profile. If the user has no theme in
       // their sync data, the browser offers a theme customization bubble which
       // should appear soon after opening the browser.
-      THEMES};
+      THEMES,
+      // This guarantees that sync will process updates for collaboration groups
+      // before other data types during initial sync download and during
+      // uploads, which is critical for remote clients to correctly detect the
+      // start of a passive migration.
+      COLLABORATION_GROUP};
 }
 
 // This is the subset of UserTypes() that have a *lower* priority than other
