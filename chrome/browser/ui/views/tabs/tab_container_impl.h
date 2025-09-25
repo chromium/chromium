@@ -95,7 +95,7 @@ class TabContainerImpl : public TabContainer,
   std::optional<int> GetModelIndexOfFirstNonClosingTab(Tab* tab) const override;
 
   void UpdateHoverCard(
-      views::View* view,
+      Tab* tab,
       TabSlotController::HoverCardUpdateType update_type) override;
 
   void HandleLongTap(ui::GestureEvent* event) override;

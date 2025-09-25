@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
-#include "chrome/browser/ui/views/tabs/hover_card_anchor_view_delegate.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/events/event.h"
@@ -35,19 +34,14 @@ class TabStrip;
 
 // Controls how hover cards are shown and hidden for tabs.
 class TabHoverCardController : public views::ViewObserver,
-                               public HoverCardAnchorViewDelegate::Observer,
                                public TabResourceUsageCollector::Observer {
  public:
   explicit TabHoverCardController(TabStrip* tab_strip);
   ~TabHoverCardController() override;
 
   bool IsHoverCardVisible() const;
-  bool IsHoverCardShowingForView(const views::View* view) const;
-
-  // Updates the hover card for the given `view`. If `view` is nullptr, the
-  // hover card will be hidden. `update_type` is used to decide how the show,
-  // hide, or update will be processed.
-  void UpdateHoverCard(views::View* view,
+  bool IsHoverCardShowingForTab(Tab* tab) const;
+  void UpdateHoverCard(Tab* tab,
                        TabSlotController::HoverCardUpdateType update_type);
   void PreventImmediateReshow();
 
@@ -98,35 +92,32 @@ class TabHoverCardController : public views::ViewObserver,
 
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
-
-  // HoverCardDelegate::Observer:
-  void OnAnchorViewRemoved() override;
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override;
 
   // TabResourceUsageCollector::Observer:
   void OnTabResourceMetricsRefreshed() override;
 
   bool ArePreviewsEnabled() const;
 
-  void CreateHoverCard();
-  void UpdateCardContent();
-  void MaybeStartThumbnailObservation(bool is_initial_show);
-  void StartThumbnailObservation(const views::View* view);
+  void CreateHoverCard(Tab* tab);
+  void UpdateCardContent(Tab* tab);
+  void MaybeStartThumbnailObservation(Tab* tab, bool is_initial_show);
+  void StartThumbnailObservation(Tab* tab);
 
-  void UpdateOrShowCard(views::View* view,
+  void UpdateOrShowCard(Tab* tab,
                         TabSlotController::HoverCardUpdateType update_type);
-  void ShowHoverCard(bool is_initial, const views::View* intended_view);
+  void ShowHoverCard(bool is_initial, const Tab* intended_tab);
   void HideHoverCard();
 
-  bool IsHoverCardShowingForDelegate() const;
-  bool ShouldShowImmediately(const views::View* view) const;
+  bool ShouldShowImmediately(const Tab* tab) const;
 
   const views::View* GetTargetAnchorView() const;
-  views::View* GetCurrentAnchorView() const;
-  bool IsDelegateObserving() const;
 
-  // Determines if delegate view is still valid. Call this when entering
+  // Determines if `target_tab_` is still valid. Call this when entering
   // TabHoverCardController from an asynchronous callback.
-  bool TargetViewIsValid() const;
+  bool TargetTabIsValid() const;
 
   // Helper for recording when a card becomes fully visible to the user.
   void OnCardFullyVisible();
@@ -156,17 +147,19 @@ class TabHoverCardController : public views::ViewObserver,
   // the mouse reenters within a given amount of time.
   base::TimeTicks last_mouse_exit_timestamp_;
 
-  std::unique_ptr<HoverCardAnchorViewDelegate> delegate_;
+  raw_ptr<Tab> target_tab_ = nullptr;
   const raw_ptr<TabStrip> tab_strip_;
   raw_ptr<TabHoverCardBubbleView> hover_card_ = nullptr;
   base::ScopedObservation<views::View, views::ViewObserver>
       hover_card_observation_{this};
+  base::ScopedObservation<views::View, views::ViewObserver>
+      target_tab_observation_{this};
   std::unique_ptr<EventSniffer> event_sniffer_;
 
   // These are used to track when a hover card is shown on a new tab for
   // testing purposes. Counts cards seen from the time the first card is shown
   // to a tab is selected, or the hover card is shown from scratch again.
-  raw_ptr<const void> hover_card_last_seen_on_view_ = nullptr;
+  raw_ptr<const void> hover_card_last_seen_on_tab_ = nullptr;
   size_t hover_cards_seen_count_ = 0;
 
   // Fade animations interfere with browser tests so we disable them in tests.
