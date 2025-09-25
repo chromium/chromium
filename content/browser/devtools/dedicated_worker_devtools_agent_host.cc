@@ -6,6 +6,7 @@
 
 #include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
+#include "content/browser/devtools/protocol/storage_handler.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
@@ -46,6 +47,12 @@ DedicatedWorkerDevToolsAgentHost::DedicatedWorkerDevToolsAgentHost(
 
 DedicatedWorkerDevToolsAgentHost::~DedicatedWorkerDevToolsAgentHost() = default;
 
+std::optional<blink::StorageKey>
+DedicatedWorkerDevToolsAgentHost::GetStorageKey() {
+  DedicatedWorkerHost* const host = GetDedicatedWorkerHost();
+  return host ? std::make_optional(host->GetStorageKey()) : std::nullopt;
+}
+
 std::string DedicatedWorkerDevToolsAgentHost::GetType() {
   return kTypeDedicatedWorker;
 }
@@ -62,6 +69,8 @@ DedicatedWorkerDevToolsAgentHost::GetDedicatedWorkerHost() {
 
 bool DedicatedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::StorageHandler>(this,
+                                                         session->GetClient());
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       auto_attacher_.get(), session);

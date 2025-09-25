@@ -55,6 +55,11 @@ const char GlobalIndexedDBImpl<T>::kSupplementName[] = "GlobalIndexedDBImpl";
 
 }  // namespace
 
+IDBFactory* GlobalIndexedDB::indexedDB(ExecutionContext& context) {
+  return GlobalIndexedDBImpl<ExecutionContext>::From(context).IdbFactory(
+      &context);
+}
+
 IDBFactory* GlobalIndexedDB::indexedDB(LocalDOMWindow& window) {
   return GlobalIndexedDBImpl<LocalDOMWindow>::From(window).IdbFactory(&window);
 }

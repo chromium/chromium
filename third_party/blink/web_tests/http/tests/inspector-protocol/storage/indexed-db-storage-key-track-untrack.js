@@ -23,9 +23,8 @@
 
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
   errorForLog = new Error();
-  const storageKey = (await dp.Storage.getStorageKeyForFrame({
-                       frameId: frameId
-                     })).result.storageKey;
+  const storageKey =
+      (await dp.Storage.getStorageKey({frameId: frameId})).result.storageKey;
   errorForLog = new Error();
   await dp.Storage.trackIndexedDBForStorageKey({storageKey});
   errorForLog = new Error();

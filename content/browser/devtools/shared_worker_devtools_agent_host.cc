@@ -16,6 +16,7 @@
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/schema_handler.h"
+#include "content/browser/devtools/protocol/storage_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/worker_host/shared_worker_host.h"
@@ -108,6 +109,8 @@ bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
       GetIOContext(),
       base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
   session->CreateAndAddHandler<protocol::SchemaHandler>();
+  session->CreateAndAddHandler<protocol::StorageHandler>(this,
+                                                         session->GetClient());
   session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       auto_attacher_.get(), session);

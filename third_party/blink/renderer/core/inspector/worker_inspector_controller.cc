@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/inspector/worker_inspector_controller.h"
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_agent.h"
@@ -140,6 +141,8 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
                                                       *virtual_time_controller);
     session->CreateAndAppend<InspectorMediaAgent>(inspected_frames_.Get(),
                                                   worker_global_scope);
+    CoreInitializer::GetInstance().InitWorkerInspectorAgentSession(
+        session, worker_global_scope);
   }
   ++session_count_;
 }

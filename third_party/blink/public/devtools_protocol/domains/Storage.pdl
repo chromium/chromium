@@ -239,9 +239,18 @@ experimental domain Storage
       StorageBucketsDurability durability
 
   # Returns a storage key given a frame id.
-  command getStorageKeyForFrame
+  # Deprecated. Please use Storage.getStorageKey instead.
+  deprecated command getStorageKeyForFrame
     parameters
       Page.FrameId frameId
+    returns
+      SerializedStorageKey storageKey
+
+  # Returns storage key for the given frame. If no frame ID is provided,
+  # the storage key of the target executing this command is returned.
+  experimental command getStorageKey
+    parameters
+      optional Page.FrameId frameId
     returns
       SerializedStorageKey storageKey
 

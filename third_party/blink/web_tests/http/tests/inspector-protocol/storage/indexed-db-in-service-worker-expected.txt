@@ -1,0 +1,6 @@
+Tests that IndexedDB protocol commands work in a service worker.
+Database TestDB_Service found: true
+Value object properties:
+  - id: 1
+  - value: ServiceWorkerValue
+

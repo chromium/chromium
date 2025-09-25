@@ -29,6 +29,8 @@ class MODULES_EXPORT ModulesInitializer : public CoreInitializer {
                                  InspectorDOMAgent*,
                                  InspectedFrames*,
                                  Page*) const override;
+  void InitWorkerInspectorAgentSession(DevToolsSession*,
+                                       WorkerGlobalScope*) const override;
   std::unique_ptr<WebMediaPlayer> CreateWebMediaPlayer(
       WebLocalFrameClient*,
       HTMLMediaElement&,
