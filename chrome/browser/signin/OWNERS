@@ -6,6 +6,3 @@ file://components/signin/DESKTOP_OWNERS
 
 # Cross-platform owners. Prefer platform specific owners when relevant.
 file://components/signin/OWNERS
-
-per-file chrome_proximity_auth_*=xiyuan@chromium.org
-per-file easy_unlock_*=xiyuan@chromium.org
