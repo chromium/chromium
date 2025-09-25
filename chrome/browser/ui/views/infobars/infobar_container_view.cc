@@ -40,6 +40,7 @@ class ContentShadow : public views::View {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 };
 
 ContentShadow::ContentShadow() {
@@ -61,6 +62,13 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
 
   views::BubbleBorder::DrawBorderAndShadow(gfx::RectFToSkRect(container_bounds),
                                            canvas, GetColorProvider());
+}
+
+void ContentShadow::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  // ContentShadow is a layer, it needs to be manually marked for redraw when
+  // the theme changes.
+  SchedulePaint();
 }
 
 BEGIN_METADATA(ContentShadow)
