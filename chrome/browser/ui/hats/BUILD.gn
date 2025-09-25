@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//pdf/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("hats") {
@@ -23,6 +25,7 @@ source_set("hats") {
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
     "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
     "//content/public/browser",
+    "//pdf:buildflags",
   ]
 
   if (!is_android) {
@@ -106,6 +109,12 @@ source_set("impl") {
     deps += [
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/hats",
+    ]
+  }
+  if (enable_pdf_save_to_drive) {
+    deps += [
+      "//pdf:buildflags",
+      "//pdf:features",
     ]
   }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

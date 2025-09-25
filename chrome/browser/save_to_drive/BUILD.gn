@@ -41,6 +41,7 @@ source_set("save_to_drive") {
     "//chrome/browser/extensions",
     "//chrome/browser/pdf",
     "//chrome/browser/signin",
+    "//chrome/browser/ui/hats",
     "//chrome/browser/ui/save_to_drive",
     "//chrome/common/extensions",
     "//chrome/common/extensions/api",
@@ -72,6 +73,7 @@ source_set("browser_tests") {
     "//extensions/browser:test_support",
     "//pdf:features",
     "//testing/gtest",
+    "//chrome/browser/ui/hats:test_support",
     "//url",
   ]
 }

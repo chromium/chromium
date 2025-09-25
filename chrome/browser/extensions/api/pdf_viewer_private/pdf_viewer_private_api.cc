@@ -27,6 +27,7 @@
 #include "chrome/browser/save_to_drive/pdf_content_reader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/save_to_drive/get_account.h"
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
@@ -184,9 +185,12 @@ PdfViewerPrivateSaveToDriveFunction::RunSaveToDriveFlow(
   auto content_reader = std::make_unique<save_to_drive::PDFContentReader>(
       render_frame_host(), ToMojomSaveRequestType(request_type));
   auto account_chooser = std::make_unique<save_to_drive::AccountChooser>();
+  HatsService* hats_service = HatsServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(browser_context()),
+      /*create_if_necessary=*/true);
   auto* flow = SaveToDriveFlow::Create(
       render_frame_host(), std::move(event_dispatcher),
-      std::move(content_reader), std::move(account_chooser));
+      std::move(content_reader), std::move(account_chooser), hats_service);
   flow->Run();
   return RespondNow(NoArguments());
 }

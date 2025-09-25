@@ -78,7 +78,7 @@ class DriveUploader {
   // Starts the upload process. This function should be called only once.
   void Start();
 
-  DriveUploaderType get_drive_uploader_type_for_testing() const;
+  DriveUploaderType get_drive_uploader_type() const;
 
   void set_oauth_headers_for_testing(std::vector<std::string> oauth_headers);
 

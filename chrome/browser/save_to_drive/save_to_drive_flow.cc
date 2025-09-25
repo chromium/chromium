@@ -21,6 +21,8 @@
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_utils.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/save_to_drive/get_account.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -40,6 +42,7 @@ using extensions::api::pdf_viewer_private::SaveToDriveErrorType;
 using extensions::api::pdf_viewer_private::SaveToDriveProgress;
 using extensions::api::pdf_viewer_private::SaveToDriveStatus;
 
+constexpr base::TimeDelta kHatsSurveyTimeout = base::Seconds(4);
 constexpr base::ByteCount kMultipartUploadThreshold = base::MiB(5);
 
 WebContents* GetTabWebContents(RenderFrameHost* render_frame_host) {
@@ -61,31 +64,36 @@ SaveToDriveFlow::SaveToDriveFlow(
     RenderFrameHost* render_frame_host,
     std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
     std::unique_ptr<ContentReader> content_reader,
-    std::unique_ptr<AccountChooser> account_chooser)
+    std::unique_ptr<AccountChooser> account_chooser,
+    HatsService* hats_service)
     : content::DocumentUserData<SaveToDriveFlow>(render_frame_host),
       event_dispatcher_(std::move(event_dispatcher)),
       content_reader_(std::move(content_reader)),
-      account_chooser_(std::move(account_chooser)) {
+      account_chooser_(std::move(account_chooser)),
+      hats_service_(hats_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-SaveToDriveFlow::~SaveToDriveFlow() = default;
+SaveToDriveFlow::~SaveToDriveFlow() {
+  hats_service_ = nullptr;
+}
 
 // static
 SaveToDriveFlow* SaveToDriveFlow::Create(
     content::RenderFrameHost* render_frame_host,
     std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
     std::unique_ptr<ContentReader> content_reader,
-    std::unique_ptr<AccountChooser> account_chooser) {
+    std::unique_ptr<AccountChooser> account_chooser,
+    HatsService* hats_service) {
   if (g_create_callback_for_testing) {
     return g_create_callback_for_testing->Run(
         render_frame_host, std::move(event_dispatcher),
-        std::move(content_reader), std::move(account_chooser));
+        std::move(content_reader), std::move(account_chooser), hats_service);
   }
 
   SaveToDriveFlow::CreateForCurrentDocument(
       render_frame_host, std::move(event_dispatcher), std::move(content_reader),
-      std::move(account_chooser));
+      std::move(account_chooser), hats_service);
   return SaveToDriveFlow::GetForCurrentDocument(render_frame_host);
 }
 
@@ -162,6 +170,7 @@ void SaveToDriveFlow::OnOpenContent(AccountInfo account_info, bool success) {
 void SaveToDriveFlow::OnUploadProgress(SaveToDriveProgress progress) {
   bool should_stop = progress.status == SaveToDriveStatus::kUploadCompleted ||
                      progress.status == SaveToDriveStatus::kUploadFailed;
+  upload_progress_ = progress.Clone();
   if (save_to_drive_account_info_) {
     progress.account_email = save_to_drive_account_info_->email;
     progress.account_is_managed = save_to_drive_account_info_->is_managed;
@@ -172,8 +181,25 @@ void SaveToDriveFlow::OnUploadProgress(SaveToDriveProgress progress) {
   }
 }
 
+void SaveToDriveFlow::ShowHatsSurveyWithDelay() {
+  SurveyBitsData product_specific_bits_data = {
+      {"Upload status",
+       upload_progress_ &&
+           upload_progress_->status == SaveToDriveStatus::kUploadCompleted},
+      {"Multipart upload",
+       drive_uploader_ && drive_uploader_->get_drive_uploader_type() ==
+                              DriveUploaderType::kMultipart},
+      {"Resumable upload",
+       drive_uploader_ && drive_uploader_->get_drive_uploader_type() ==
+                              DriveUploaderType::kResumable}};
+  hats_service_->LaunchDelayedSurvey(kHatsSurveyTriggerPdfSaveToDrive,
+                                     kHatsSurveyTimeout.InMilliseconds(),
+                                     std::move(product_specific_bits_data));
+}
+
 void SaveToDriveFlow::Stop() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  ShowHatsSurveyWithDelay();
   DeleteForCurrentDocument(&render_frame_host());
   // Don't do anything else here. The flow will be destroyed after this line.
 }

@@ -287,7 +287,7 @@ DriveUploader::CreateEndpointFetcher(
       /*request_params=*/std::move(request_params));
 }
 
-DriveUploaderType DriveUploader::get_drive_uploader_type_for_testing() const {
+DriveUploaderType DriveUploader::get_drive_uploader_type() const {
   return drive_uploader_type_;
 }
 

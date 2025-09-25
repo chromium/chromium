@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "content/public/browser/document_user_data.h"
 
 struct AccountInfo;
@@ -18,9 +19,7 @@ namespace content {
 class RenderFrameHost;
 }  // namespace content
 
-namespace extensions::api::pdf_viewer_private {
-struct SaveToDriveProgress;
-}  // namespace extensions::api::pdf_viewer_private
+class HatsService;
 
 namespace save_to_drive {
 
@@ -41,7 +40,8 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
       content::RenderFrameHost* render_frame_host,
       std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
       std::unique_ptr<ContentReader> content_reader,
-      std::unique_ptr<AccountChooser> account_chooser)>;
+      std::unique_ptr<AccountChooser> account_chooser,
+      HatsService* hats_service)>;
 
   // Factory method to create a new instance of `SaveToDriveFlow`. This is
   // used to allow for creating a mock flow in tests through
@@ -50,7 +50,8 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
       content::RenderFrameHost* render_frame_host,
       std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
       std::unique_ptr<ContentReader> content_reader,
-      std::unique_ptr<AccountChooser> account_chooser);
+      std::unique_ptr<AccountChooser> account_chooser,
+      HatsService* hats_service);
 
   // Sets the callback to create a new instance of `SaveToDriveFlow`. This
   // is used to create a mock flow in tests.
@@ -90,7 +91,8 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
   SaveToDriveFlow(content::RenderFrameHost* render_frame_host,
                   std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher,
                   std::unique_ptr<ContentReader> content_reader,
-                  std::unique_ptr<AccountChooser> account_chooser);
+                  std::unique_ptr<AccountChooser> account_chooser,
+                  HatsService* hats_service);
 
  private:
   friend class content::DocumentUserData<SaveToDriveFlow>;
@@ -109,14 +111,19 @@ class SaveToDriveFlow : public content::DocumentUserData<SaveToDriveFlow> {
   void OnOpenContent(AccountInfo account_info, bool success);
   void OnUploadProgress(
       extensions::api::pdf_viewer_private::SaveToDriveProgress progress);
+  void ShowHatsSurveyWithDelay();
 
   std::unique_ptr<SaveToDriveEventDispatcher> event_dispatcher_;
   std::unique_ptr<ContentReader> content_reader_;
   std::unique_ptr<DriveUploader> drive_uploader_;
   std::unique_ptr<AccountChooser> account_chooser_;
+  raw_ptr<HatsService> hats_service_ = nullptr;
 
   // This is set when an account is chosen.
   std::optional<SaveToDriveAccountInfo> save_to_drive_account_info_;
+  // This is set after the upload starts.
+  std::optional<extensions::api::pdf_viewer_private::SaveToDriveProgress>
+      upload_progress_;
 
   base::WeakPtrFactory<SaveToDriveFlow> weak_ptr_factory_{this};
 

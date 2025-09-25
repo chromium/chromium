@@ -21,6 +21,8 @@
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/save_to_drive/get_account.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -118,16 +120,20 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
     auto account_chooser =
         std::make_unique<testing::StrictMock<MockAccountChooser>>();
     account_chooser_ = account_chooser.get();
+    hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            browser()->profile(), base::BindRepeating(&BuildMockHatsService)));
 
-    SaveToDriveFlow::CreateForCurrentDocument(rfh, std::move(event_dispatcher),
-                                              std::move(content_reader),
-                                              std::move(account_chooser));
+    SaveToDriveFlow::CreateForCurrentDocument(
+        rfh, std::move(event_dispatcher), std::move(content_reader),
+        std::move(account_chooser), hats_service_);
     test_api_ = std::make_unique<SaveToDriveFlow::TestApi>(
         SaveToDriveFlow::GetForCurrentDocument(rfh));
   }
 
   void TearDownOnMainThread() override {
     account_chooser_ = nullptr;
+    hats_service_ = nullptr;
     test_api_.reset();
     PDFExtensionTestBase::TearDownOnMainThread();
   }
@@ -157,9 +163,47 @@ class SaveToDriveFlowBrowserTest : public base::test::WithFeatureOverride,
             });
   }
 
+  void TestCreateMultipartUploaderForSmallFile() {
+    SimulateAccountChooserAction(CreateAccountInfo());
+    EXPECT_CALL(event_dispatcher(),
+                Notify(AllOf(Field(&SaveToDriveProgress::status,
+                                   SaveToDriveStatus::kInitiated),
+                             Field(&SaveToDriveProgress::error_type,
+                                   SaveToDriveErrorType::kNoError))));
+    EXPECT_CALL(event_dispatcher(),
+                Notify(AllOf(
+                    Field(&SaveToDriveProgress::status,
+                          SaveToDriveStatus::kAccountSelected),
+                    Field(&SaveToDriveProgress::error_type,
+                          SaveToDriveErrorType::kNoError),
+                    Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+                    Field(&SaveToDriveProgress::account_is_managed, false))));
+
+    // Since IdentityManager is not set up, the OAuth fetch will fail.
+    EXPECT_CALL(event_dispatcher(),
+                Notify(AllOf(
+                    Field(&SaveToDriveProgress::status,
+                          SaveToDriveStatus::kUploadFailed),
+                    Field(&SaveToDriveProgress::error_type,
+                          SaveToDriveErrorType::kOauthError),
+                    Field(&SaveToDriveProgress::account_email, "test@mail.com"),
+                    Field(&SaveToDriveProgress::account_is_managed, false))))
+        .WillOnce([&]() {
+          auto* drive_uploader = test_api_->drive_uploader();
+          ASSERT_TRUE(drive_uploader);
+          EXPECT_EQ(drive_uploader->get_drive_uploader_type(),
+                    DriveUploaderType::kMultipart);
+        });
+    EXPECT_CALL(content_reader(), Open)
+        .WillOnce(base::test::RunOnceCallback<0>(/*success=*/true));
+    EXPECT_CALL(content_reader(), GetSize).WillOnce(Return(100));
+    SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
+  }
+
  protected:
   std::unique_ptr<SaveToDriveFlow::TestApi> test_api_;
   raw_ptr<MockAccountChooser> account_chooser_ = nullptr;
+  raw_ptr<MockHatsService> hats_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, AccountChooserCanceled) {
@@ -212,40 +256,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ContentReadFails) {
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
                        CreatesMultipartUploaderForSmallFile) {
-  SimulateAccountChooserAction(CreateAccountInfo());
-  EXPECT_CALL(event_dispatcher(),
-              Notify(AllOf(Field(&SaveToDriveProgress::status,
-                                 SaveToDriveStatus::kInitiated),
-                           Field(&SaveToDriveProgress::error_type,
-                                 SaveToDriveErrorType::kNoError))));
-  EXPECT_CALL(
-      event_dispatcher(),
-      Notify(AllOf(Field(&SaveToDriveProgress::status,
-                         SaveToDriveStatus::kAccountSelected),
-                   Field(&SaveToDriveProgress::error_type,
-                         SaveToDriveErrorType::kNoError),
-                   Field(&SaveToDriveProgress::account_email, "test@mail.com"),
-                   Field(&SaveToDriveProgress::account_is_managed, false))));
-
-  // Since IdentityManager is not set up, the OAuth fetch will fail.
-  EXPECT_CALL(
-      event_dispatcher(),
-      Notify(AllOf(
-          Field(&SaveToDriveProgress::status, SaveToDriveStatus::kUploadFailed),
-          Field(&SaveToDriveProgress::error_type,
-                SaveToDriveErrorType::kOauthError),
-          Field(&SaveToDriveProgress::account_email, "test@mail.com"),
-          Field(&SaveToDriveProgress::account_is_managed, false))))
-      .WillOnce([&]() {
-        auto* drive_uploader = test_api_->drive_uploader();
-        ASSERT_TRUE(drive_uploader);
-        EXPECT_EQ(drive_uploader->get_drive_uploader_type_for_testing(),
-                  DriveUploaderType::kMultipart);
-      });
-  EXPECT_CALL(content_reader(), Open)
-      .WillOnce(base::test::RunOnceCallback<0>(/*success=*/true));
-  EXPECT_CALL(content_reader(), GetSize).WillOnce(Return(100));
-  SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
+  TestCreateMultipartUploaderForSmallFile();
 }
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
@@ -276,7 +287,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
       .WillOnce([&]() {
         auto* drive_uploader = test_api_->drive_uploader();
         ASSERT_TRUE(drive_uploader);
-        EXPECT_EQ(drive_uploader->get_drive_uploader_type_for_testing(),
+        EXPECT_EQ(drive_uploader->get_drive_uploader_type(),
                   DriveUploaderType::kResumable);
       });
   EXPECT_CALL(content_reader(), Open)
@@ -284,6 +295,11 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest,
   // 5 MB + 1 byte to ensure it's greater than the threshold.
   EXPECT_CALL(content_reader(), GetSize).WillOnce(Return(5 * 1024 * 1024 + 1));
   SaveToDriveFlow::GetForCurrentDocument(rfh())->Run();
+}
+
+IN_PROC_BROWSER_TEST_P(SaveToDriveFlowBrowserTest, ShowSurveyAfterUpload) {
+  EXPECT_CALL(*hats_service_, LaunchDelayedSurvey);
+  TestCreateMultipartUploaderForSmallFile();
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SaveToDriveFlowBrowserTest);

@@ -28,7 +28,10 @@
 #include "chrome/browser/save_to_drive/content_reader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 #include "chrome/browser/save_to_drive/save_to_drive_flow.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/save_to_drive/get_account.h"
+#include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "extensions/browser/test_event_router.h"
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
@@ -51,11 +54,13 @@ class MockSaveToDriveFlow : public SaveToDriveFlow {
       std::unique_ptr<save_to_drive::SaveToDriveEventDispatcher>
           event_dispatcher,
       std::unique_ptr<save_to_drive::ContentReader> content_reader,
-      std::unique_ptr<save_to_drive::AccountChooser> account_chooser)
+      std::unique_ptr<save_to_drive::AccountChooser> account_chooser,
+      HatsService* hats_service)
       : SaveToDriveFlow(render_frame_host,
                         std::move(event_dispatcher),
                         std::move(content_reader),
-                        std::move(account_chooser)) {}
+                        std::move(account_chooser),
+                        hats_service) {}
   MOCK_METHOD(void, Run, (), (override));
   MOCK_METHOD(void, Stop, (), (override));
 };
@@ -104,6 +109,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
     create_save_to_drive_flow_callback_.Reset();
     flow_ = nullptr;
     event_router_ = nullptr;
+    hats_service_ = nullptr;
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
     web_contents()->RemoveUserData(pdf::PdfViewerStreamManager::UserDataKey());
@@ -115,6 +121,17 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   content::RenderFrameHost* extension_host() { return extension_host_; }
+
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+  HatsService* hats_service() {
+    if (!hats_service_) {
+      hats_service_ = static_cast<MockHatsService*>(
+          HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+              profile(), base::BindRepeating(&BuildMockHatsService)));
+    }
+    return hats_service_;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
 
   // Create a claimed stream container in `pdf::PdfViewerStreamManager`. This
   // updates `extension_host_`, since the navigation deletes the embedder frame
@@ -146,14 +163,15 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
       std::unique_ptr<save_to_drive::SaveToDriveEventDispatcher>
           event_dispatcher,
       std::unique_ptr<save_to_drive::ContentReader> content_reader,
-      std::unique_ptr<save_to_drive::AccountChooser> account_chooser) {
+      std::unique_ptr<save_to_drive::AccountChooser> account_chooser,
+      HatsService* hats_service) {
     if (flow_) {
       ADD_FAILURE() << "SaveToDriveFlow already exists";
       return nullptr;
     }
     flow_ = std::make_unique<MockSaveToDriveFlow>(
         main_rfh(), std::move(event_dispatcher), std::move(content_reader),
-        std::move(account_chooser));
+        std::move(account_chooser), hats_service);
     return flow_.get();
   }
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
@@ -164,6 +182,7 @@ class PdfViewerPrivateApiUnitTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
   SaveToDriveFlow::CreateCallback create_save_to_drive_flow_callback_;
   std::unique_ptr<MockSaveToDriveFlow> flow_;
+  raw_ptr<HatsService> hats_service_ = nullptr;
 #endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
   raw_ptr<content::RenderFrameHost> extension_host_ = nullptr;
 };
@@ -402,7 +421,7 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveFailedIfAlreadyInProgress) {
   {
     // Create a new flow to simulate the previous request is in progress.
     SaveToDriveFlow::CreateForCurrentDocument(extension_host(), nullptr,
-                                              nullptr, nullptr);
+                                              nullptr, nullptr, hats_service());
     auto* flow = SaveToDriveFlow::GetForCurrentDocument(extension_host());
     ASSERT_TRUE(flow);
   }
@@ -423,7 +442,7 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveCanceledAndStartNew) {
   {
     // Create a new flow to simulate the previous request is canceled.
     SaveToDriveFlow::CreateForCurrentDocument(extension_host(), nullptr,
-                                              nullptr, nullptr);
+                                              nullptr, nullptr, hats_service());
     auto* flow = SaveToDriveFlow::GetForCurrentDocument(extension_host());
     ASSERT_TRUE(flow);
     flow->Stop();
@@ -456,7 +475,7 @@ TEST_F(PdfViewerPrivateApiUnitTest, SaveToDriveCancelUpload) {
   {
     // Create a new flow to simulate the previous request is in progress.
     SaveToDriveFlow::CreateForCurrentDocument(extension_host(), nullptr,
-                                              nullptr, nullptr);
+                                              nullptr, nullptr, hats_service());
     auto* flow = SaveToDriveFlow::GetForCurrentDocument(extension_host());
     ASSERT_TRUE(flow);
   }
