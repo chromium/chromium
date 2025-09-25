@@ -314,6 +314,9 @@ BASE_DECLARE_FEATURE(kNTPMIAEntrypointAllLocales);
 // contains temporary UI exploration for AIM.
 BASE_DECLARE_FEATURE(kAIMPrototype);
 
+// Used to gate the immersive SRP in the AIM prototype.
+BASE_DECLARE_FEATURE(kAIMPrototypeImmersiveSRP);
+
 // Variations of AIM prototype.
 extern const char kAIMPrototypeParam[];
 extern const char kAIMPrototypeParamAllOmniboxEntrypoints[];

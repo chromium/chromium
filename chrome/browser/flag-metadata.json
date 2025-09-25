@@ -104,6 +104,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "aim-prototype-immersive-srp",
+    "owners": ["lpromero@chromium.com", "christianxu@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "aim-prototype-ios",
     "owners": ["christianxu@chromium.com", "stkhapugin@chromium.org"],
     "expiry_milestone": 145
