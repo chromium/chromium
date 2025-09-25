@@ -16,7 +16,7 @@ pub type id_t = u32;
 pub type sem_t = *mut sem;
 pub type key_t = c_long;
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
+#[derive(Debug)]
 pub enum timezone {}
 impl Copy for timezone {}
 impl Clone for timezone {
@@ -24,7 +24,7 @@ impl Clone for timezone {
         *self
     }
 }
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
+#[derive(Debug)]
 pub enum sem {}
 impl Copy for sem {}
 impl Clone for sem {
@@ -651,7 +651,7 @@ pub const B230400: speed_t = 230400;
 pub const EXTA: speed_t = 19200;
 pub const EXTB: speed_t = 38400;
 
-pub const SEM_FAILED: *mut sem_t = 0 as *mut sem_t;
+pub const SEM_FAILED: *mut sem_t = ptr::null_mut();
 
 pub const CRTSCTS: crate::tcflag_t = 0x00010000;
 pub const CRTS_IFLOW: crate::tcflag_t = CRTSCTS;

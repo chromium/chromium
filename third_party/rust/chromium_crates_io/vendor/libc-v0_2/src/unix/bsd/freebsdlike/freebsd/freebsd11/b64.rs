@@ -2,7 +2,8 @@ use crate::off_t;
 use crate::prelude::*;
 
 #[repr(C)]
-#[cfg_attr(feature = "extra_traits", derive(Debug, Eq, Hash, PartialEq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Eq, Hash, PartialEq))]
 pub struct stat {
     pub st_dev: crate::dev_t,
     pub st_ino: crate::ino_t,

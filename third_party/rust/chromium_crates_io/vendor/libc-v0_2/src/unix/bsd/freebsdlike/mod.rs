@@ -59,7 +59,7 @@ cfg_if! {
 
 // link.h
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
+#[derive(Debug)]
 pub enum timezone {}
 impl Copy for timezone {}
 impl Clone for timezone {
@@ -1197,9 +1197,9 @@ pub const _SC_RAW_SOCKETS: c_int = 119;
 pub const _SC_SYMLOOP_MAX: c_int = 120;
 pub const _SC_PHYS_PAGES: c_int = 121;
 
-pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = 0 as *mut _;
-pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = 0 as *mut _;
-pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = 0 as *mut _;
+pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = ptr::null_mut();
+pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = ptr::null_mut();
+pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = ptr::null_mut();
 pub const PTHREAD_MUTEX_ERRORCHECK: c_int = 1;
 pub const PTHREAD_MUTEX_RECURSIVE: c_int = 2;
 pub const PTHREAD_MUTEX_NORMAL: c_int = 3;
@@ -1238,7 +1238,15 @@ pub const TIOCGETD: c_ulong = 0x4004741a;
 pub const TIOCSETD: c_ulong = 0x8004741b;
 pub const TIOCGDRAINWAIT: c_ulong = 0x40047456;
 pub const TIOCSDRAINWAIT: c_ulong = 0x80047457;
+#[cfg_attr(
+    not(target_os = "dragonfly"),
+    deprecated = "unused since FreeBSD 8, removed in FreeBSD 15"
+)]
 pub const TIOCMGDTRWAIT: c_ulong = 0x4004745a;
+#[cfg_attr(
+    not(target_os = "dragonfly"),
+    deprecated = "unused since FreeBSD 8, removed in FreeBSD 15"
+)]
 pub const TIOCMSDTRWAIT: c_ulong = 0x8004745b;
 pub const TIOCDRAIN: c_ulong = 0x2000745e;
 pub const TIOCEXT: c_ulong = 0x80047460;
@@ -1331,7 +1339,7 @@ pub const B230400: speed_t = 230400;
 pub const EXTA: speed_t = 19200;
 pub const EXTB: speed_t = 38400;
 
-pub const SEM_FAILED: *mut sem_t = 0 as *mut sem_t;
+pub const SEM_FAILED: *mut sem_t = ptr::null_mut();
 
 pub const CRTSCTS: crate::tcflag_t = 0x00030000;
 pub const CCTS_OFLOW: crate::tcflag_t = 0x00010000;
@@ -1482,15 +1490,15 @@ pub const POSIX_SPAWN_SETSIGDEF: c_int = 0x10;
 pub const POSIX_SPAWN_SETSIGMASK: c_int = 0x20;
 
 safe_f! {
-    pub {const} fn WIFCONTINUED(status: c_int) -> bool {
+    pub const fn WIFCONTINUED(status: c_int) -> bool {
         status == 0x13
     }
 
-    pub {const} fn WSTOPSIG(status: c_int) -> c_int {
+    pub const fn WSTOPSIG(status: c_int) -> c_int {
         status >> 8
     }
 
-    pub {const} fn WIFSTOPPED(status: c_int) -> bool {
+    pub const fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0o177) == 0o177
     }
 }

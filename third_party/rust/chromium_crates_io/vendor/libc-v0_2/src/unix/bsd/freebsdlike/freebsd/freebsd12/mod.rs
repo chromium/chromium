@@ -434,7 +434,7 @@ pub const KI_NSPARE_PTR: usize = 6;
 pub const MINCORE_SUPER: c_int = 0x20;
 
 safe_f! {
-    pub {const} fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -445,11 +445,11 @@ safe_f! {
         dev
     }
 
-    pub {const} fn major(dev: crate::dev_t) -> c_int {
+    pub const fn major(dev: crate::dev_t) -> c_int {
         (((dev >> 32) & 0xffffff00) | ((dev >> 8) & 0xff)) as c_int
     }
 
-    pub {const} fn minor(dev: crate::dev_t) -> c_int {
+    pub const fn minor(dev: crate::dev_t) -> c_int {
         (((dev >> 24) & 0xff00) | (dev & 0xffff00ff)) as c_int
     }
 }
@@ -468,6 +468,15 @@ extern "C" {
 
     pub fn dirname(path: *mut c_char) -> *mut c_char;
     pub fn basename(path: *mut c_char) -> *mut c_char;
+
+    #[link_name = "qsort_r@FBSD_1.0"]
+    pub fn qsort_r(
+        base: *mut c_void,
+        num: size_t,
+        size: size_t,
+        arg: *mut c_void,
+        compar: Option<unsafe extern "C" fn(*mut c_void, *const c_void, *const c_void) -> c_int>,
+    );
 }
 
 cfg_if! {

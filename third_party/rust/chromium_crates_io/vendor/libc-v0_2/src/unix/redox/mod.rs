@@ -29,10 +29,10 @@ pub type tcflag_t = u32;
 pub type time_t = c_longlong;
 pub type id_t = c_uint;
 pub type pid_t = usize;
-pub type uid_t = u32;
-pub type gid_t = u32;
+pub type uid_t = c_int;
+pub type gid_t = c_int;
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
+#[derive(Debug)]
 pub enum timezone {}
 impl Copy for timezone {}
 impl Clone for timezone {
@@ -352,8 +352,10 @@ pub const F_LOCK: c_int = 1;
 pub const F_TLOCK: c_int = 2;
 pub const F_TEST: c_int = 3;
 
+pub const AT_FDCWD: c_int = -100;
+
 // FIXME(redox): relibc {
-pub const RTLD_DEFAULT: *mut c_void = 0i64 as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 // }
 
 // dlfcn.h
@@ -517,6 +519,7 @@ pub const O_WRONLY: c_int = 0x0002_0000;
 pub const O_RDWR: c_int = 0x0003_0000;
 pub const O_ACCMODE: c_int = 0x0003_0000;
 pub const O_NONBLOCK: c_int = 0x0004_0000;
+pub const O_NDELAY: c_int = O_NONBLOCK;
 pub const O_APPEND: c_int = 0x0008_0000;
 pub const O_SHLOCK: c_int = 0x0010_0000;
 pub const O_EXLOCK: c_int = 0x0020_0000;
@@ -532,6 +535,7 @@ pub const O_SYMLINK: c_int = 0x4000_0000;
 // Negative to allow it to be used as int
 // FIXME(redox): Fix negative values missing from includes
 pub const O_NOFOLLOW: c_int = -0x8000_0000;
+pub const O_NOCTTY: c_int = 0x00000200;
 
 // locale.h
 pub const LC_ALL: c_int = 0;
@@ -757,12 +761,38 @@ pub const MAP_SHARED: c_int = 0x0001;
 pub const MAP_PRIVATE: c_int = 0x0002;
 pub const MAP_ANON: c_int = 0x0020;
 pub const MAP_ANONYMOUS: c_int = MAP_ANON;
-pub const MAP_FIXED: c_int = 0x0010;
+pub const MAP_FIXED: c_int = 0x0004;
 pub const MAP_FAILED: *mut c_void = !0 as _;
 
 pub const MS_ASYNC: c_int = 0x0001;
 pub const MS_INVALIDATE: c_int = 0x0002;
 pub const MS_SYNC: c_int = 0x0004;
+
+// sys/resource.h
+pub const RLIM_INFINITY: rlim_t = !0;
+pub const RLIM_SAVED_CUR: rlim_t = RLIM_INFINITY;
+pub const RLIM_SAVED_MAX: rlim_t = RLIM_INFINITY;
+pub const RLIMIT_CPU: c_int = 0;
+pub const RLIMIT_FSIZE: c_int = 1;
+pub const RLIMIT_DATA: c_int = 2;
+pub const RLIMIT_STACK: c_int = 3;
+pub const RLIMIT_CORE: c_int = 4;
+pub const RLIMIT_RSS: c_int = 5;
+pub const RLIMIT_NPROC: c_int = 6;
+pub const RLIMIT_NOFILE: c_int = 7;
+pub const RLIMIT_MEMLOCK: c_int = 8;
+pub const RLIMIT_AS: c_int = 9;
+pub const RLIMIT_LOCKS: c_int = 10;
+pub const RLIMIT_SIGPENDING: c_int = 11;
+pub const RLIMIT_MSGQUEUE: c_int = 12;
+pub const RLIMIT_NICE: c_int = 13;
+pub const RLIMIT_RTPRIO: c_int = 14;
+pub const RLIMIT_NLIMITS: c_int = 15;
+
+pub const RUSAGE_SELF: c_int = 0;
+pub const RUSAGE_CHILDREN: c_int = -1;
+pub const RUSAGE_BOTH: c_int = -2;
+pub const RUSAGE_THREAD: c_int = 1;
 
 // sys/select.h
 pub const FD_SETSIZE: usize = 1024;
@@ -935,6 +965,8 @@ pub const TCSANOW: c_int = 0;
 pub const TCSADRAIN: c_int = 1;
 pub const TCSAFLUSH: c_int = 2;
 
+pub const _POSIX_VDISABLE: crate::cc_t = 0;
+
 // sys/wait.h
 pub const WNOHANG: c_int = 1;
 pub const WUNTRACED: c_int = 2;
@@ -979,11 +1011,54 @@ pub const _SC_SYMLOOP_MAX: c_int = 173;
 pub const _SC_HOST_NAME_MAX: c_int = 180;
 // } POSIX.1
 
+// confstr
+pub const _CS_PATH: c_int = 0;
+pub const _CS_POSIX_V6_WIDTH_RESTRICTED_ENVS: c_int = 1;
+pub const _CS_POSIX_V5_WIDTH_RESTRICTED_ENVS: c_int = 4;
+pub const _CS_POSIX_V7_WIDTH_RESTRICTED_ENVS: c_int = 5;
+pub const _CS_POSIX_V6_ILP32_OFF32_CFLAGS: c_int = 1116;
+pub const _CS_POSIX_V6_ILP32_OFF32_LDFLAGS: c_int = 1117;
+pub const _CS_POSIX_V6_ILP32_OFF32_LIBS: c_int = 1118;
+pub const _CS_POSIX_V6_ILP32_OFF32_LINTFLAGS: c_int = 1119;
+pub const _CS_POSIX_V6_ILP32_OFFBIG_CFLAGS: c_int = 1120;
+pub const _CS_POSIX_V6_ILP32_OFFBIG_LDFLAGS: c_int = 1121;
+pub const _CS_POSIX_V6_ILP32_OFFBIG_LIBS: c_int = 1122;
+pub const _CS_POSIX_V6_ILP32_OFFBIG_LINTFLAGS: c_int = 1123;
+pub const _CS_POSIX_V6_LP64_OFF64_CFLAGS: c_int = 1124;
+pub const _CS_POSIX_V6_LP64_OFF64_LDFLAGS: c_int = 1125;
+pub const _CS_POSIX_V6_LP64_OFF64_LIBS: c_int = 1126;
+pub const _CS_POSIX_V6_LP64_OFF64_LINTFLAGS: c_int = 1127;
+pub const _CS_POSIX_V6_LPBIG_OFFBIG_CFLAGS: c_int = 1128;
+pub const _CS_POSIX_V6_LPBIG_OFFBIG_LDFLAGS: c_int = 1129;
+pub const _CS_POSIX_V6_LPBIG_OFFBIG_LIBS: c_int = 1130;
+pub const _CS_POSIX_V6_LPBIG_OFFBIG_LINTFLAGS: c_int = 1131;
+pub const _CS_POSIX_V7_ILP32_OFF32_CFLAGS: c_int = 1132;
+pub const _CS_POSIX_V7_ILP32_OFF32_LDFLAGS: c_int = 1133;
+pub const _CS_POSIX_V7_ILP32_OFF32_LIBS: c_int = 1134;
+pub const _CS_POSIX_V7_ILP32_OFF32_LINTFLAGS: c_int = 1135;
+pub const _CS_POSIX_V7_ILP32_OFFBIG_CFLAGS: c_int = 1136;
+pub const _CS_POSIX_V7_ILP32_OFFBIG_LDFLAGS: c_int = 1137;
+pub const _CS_POSIX_V7_ILP32_OFFBIG_LIBS: c_int = 1138;
+pub const _CS_POSIX_V7_ILP32_OFFBIG_LINTFLAGS: c_int = 1139;
+pub const _CS_POSIX_V7_LP64_OFF64_CFLAGS: c_int = 1140;
+pub const _CS_POSIX_V7_LP64_OFF64_LDFLAGS: c_int = 1141;
+pub const _CS_POSIX_V7_LP64_OFF64_LIBS: c_int = 1142;
+pub const _CS_POSIX_V7_LP64_OFF64_LINTFLAGS: c_int = 1143;
+pub const _CS_POSIX_V7_LPBIG_OFFBIG_CFLAGS: c_int = 1144;
+pub const _CS_POSIX_V7_LPBIG_OFFBIG_LDFLAGS: c_int = 1145;
+pub const _CS_POSIX_V7_LPBIG_OFFBIG_LIBS: c_int = 1146;
+pub const _CS_POSIX_V7_LPBIG_OFFBIG_LINTFLAGS: c_int = 1147;
+
 pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
 
+// stdio.h
+pub const BUFSIZ: c_uint = 1024;
+pub const _IOFBF: c_int = 0;
+pub const _IOLBF: c_int = 1;
+pub const _IONBF: c_int = 2;
 pub const SEEK_SET: c_int = 0;
 pub const SEEK_CUR: c_int = 1;
 pub const SEEK_END: c_int = 2;
@@ -1019,13 +1094,13 @@ pub const PRIO_USER: c_int = 2;
 
 f! {
     //sys/socket.h
-    pub {const} fn CMSG_ALIGN(len: size_t) -> size_t {
+    pub const fn CMSG_ALIGN(len: size_t) -> size_t {
         (len + size_of::<size_t>() - 1) & !(size_of::<size_t>() - 1)
     }
-    pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
         (CMSG_ALIGN(size_of::<cmsghdr>()) + length as usize) as c_uint
     }
-    pub {const} fn CMSG_SPACE(len: c_uint) -> c_uint {
+    pub const fn CMSG_SPACE(len: c_uint) -> c_uint {
         (CMSG_ALIGN(len as size_t) + CMSG_ALIGN(size_of::<cmsghdr>())) as c_uint
     }
 
@@ -1058,35 +1133,35 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn WIFSTOPPED(status: c_int) -> bool {
+    pub const fn WIFSTOPPED(status: c_int) -> bool {
         (status & 0xff) == 0x7f
     }
 
-    pub {const} fn WSTOPSIG(status: c_int) -> c_int {
+    pub const fn WSTOPSIG(status: c_int) -> c_int {
         (status >> 8) & 0xff
     }
 
-    pub {const} fn WIFCONTINUED(status: c_int) -> bool {
+    pub const fn WIFCONTINUED(status: c_int) -> bool {
         status == 0xffff
     }
 
-    pub {const} fn WIFSIGNALED(status: c_int) -> bool {
+    pub const fn WIFSIGNALED(status: c_int) -> bool {
         ((status & 0x7f) + 1) as i8 >= 2
     }
 
-    pub {const} fn WTERMSIG(status: c_int) -> c_int {
+    pub const fn WTERMSIG(status: c_int) -> c_int {
         status & 0x7f
     }
 
-    pub {const} fn WIFEXITED(status: c_int) -> bool {
+    pub const fn WIFEXITED(status: c_int) -> bool {
         (status & 0x7f) == 0
     }
 
-    pub {const} fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const fn WEXITSTATUS(status: c_int) -> c_int {
         (status >> 8) & 0xff
     }
 
-    pub {const} fn WCOREDUMP(status: c_int) -> bool {
+    pub const fn WCOREDUMP(status: c_int) -> bool {
         (status & 0x80) != 0
     }
 }
@@ -1095,6 +1170,9 @@ extern "C" {
     // errno.h
     pub fn __errno_location() -> *mut c_int;
     pub fn strerror_r(errnum: c_int, buf: *mut c_char, buflen: size_t) -> c_int;
+
+    // dirent.h
+    pub fn dirfd(dirp: *mut crate::DIR) -> c_int;
 
     // unistd.h
     pub fn pipe2(fds: *mut c_int, flags: c_int) -> c_int;
@@ -1207,6 +1285,8 @@ extern "C" {
         tokens: *const *mut c_char,
         valuep: *mut *mut c_char,
     ) -> c_int;
+    pub fn mkostemp(template: *mut c_char, flags: c_int) -> c_int;
+    pub fn mkostemps(template: *mut c_char, suffixlen: c_int, flags: c_int) -> c_int;
     pub fn reallocarray(ptr: *mut c_void, nmemb: size_t, size: size_t) -> *mut c_void;
 
     // string.h
@@ -1276,6 +1356,12 @@ extern "C" {
     // time.h
     pub fn gettimeofday(tp: *mut crate::timeval, tz: *mut crate::timezone) -> c_int;
     pub fn clock_gettime(clk_id: crate::clockid_t, tp: *mut crate::timespec) -> c_int;
+    pub fn strftime(
+        s: *mut c_char,
+        max: size_t,
+        format: *const c_char,
+        tm: *const crate::tm,
+    ) -> size_t;
 
     // utmp.h
     pub fn login_tty(fd: c_int) -> c_int;

@@ -17,11 +17,8 @@ const ALLOWED_CFGS: &[&str] = &[
     "gnu_file_offset_bits64",
     // Corresponds to `_TIME_BITS=64` in glibc
     "gnu_time_bits64",
-    // FIXME(ctest): this config shouldn't be needed but ctest can't parse `const extern fn`
-    "libc_const_extern_fn",
     "libc_deny_warnings",
     "libc_thread_local",
-    "libc_ctest",
     // Corresponds to `__USE_TIME_BITS64` in UAPI
     "linux_time_bits64",
     "musl_v1_2_3",
@@ -58,7 +55,7 @@ fn main() {
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
 
     // The ABI of libc used by std is backward compatible with FreeBSD 12.
-    // The ABI of libc from crates.io is backward compatible with FreeBSD 11.
+    // The ABI of libc from crates.io is backward compatible with FreeBSD 12.
     //
     // On CI, we detect the actual FreeBSD version and match its ABI exactly,
     // running tests to ensure that the ABI is correct.
@@ -69,11 +66,9 @@ fn main() {
         println!("cargo:warning=setting FreeBSD version to {vers}");
         vers
     } else if libc_ci {
-        which_freebsd().unwrap_or(11)
-    } else if rustc_dep_of_std {
-        12
+        which_freebsd().unwrap_or(12)
     } else {
-        11
+        12
     };
 
     match which_freebsd {
@@ -112,28 +107,37 @@ fn main() {
         && target_arch != "riscv32"
         && target_arch != "x86_64"
     {
-        match env::var("RUST_LIBC_UNSTABLE_GNU_TIME_BITS") {
-            Ok(val) if val == "64" => {
-                set_cfg("gnu_file_offset_bits64");
-                set_cfg("linux_time_bits64");
-                set_cfg("gnu_time_bits64");
-            }
-            Ok(val) if val != "32" => {
-                panic!("RUST_LIBC_UNSTABLE_GNU_TIME_BITS may only be set to '32' or '64'")
-            }
-            _ => {
-                match env::var("RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS") {
-                    Ok(val) if val == "64" => {
-                        set_cfg("gnu_file_offset_bits64");
-                    }
-                    Ok(val) if val != "32" => {
-                        panic!("RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS may only be set to '32' or '64'")
-                    }
-                    _ => {}
-                }
-            }
+        let defaultbits = "32".to_string();
+        let (timebits, filebits) = match (
+            env::var("RUST_LIBC_UNSTABLE_GNU_TIME_BITS"),
+            env::var("RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS"),
+        ) {
+            (Ok(_), Ok(_)) => panic!("Do not set both RUST_LIBC_UNSTABLE_GNU_TIME_BITS and RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS"),
+            (Err(_), Err(_)) => (defaultbits.clone(), defaultbits.clone()),
+            (Ok(tb), Err(_)) if tb == "64" => (tb.clone(), tb.clone()),
+            (Ok(tb), Err(_)) if tb == "32" => (tb, defaultbits.clone()),
+            (Ok(_), Err(_)) => panic!("Invalid value for RUST_LIBC_UNSTABLE_GNU_TIME_BITS, must be 32 or 64"),
+            (Err(_), Ok(fb)) if fb == "32" || fb == "64" => (defaultbits.clone(), fb),
+            (Err(_), Ok(_)) => panic!("Invalid value for RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS, must be 32 or 64"),
+        };
+        let valid_bits = ["32", "64"];
+        assert!(
+            valid_bits.contains(&filebits.as_str()) && valid_bits.contains(&timebits.as_str()),
+            "Invalid value for RUST_LIBC_UNSTABLE_GNU_TIME_BITS or RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS, must be 32, 64 or unset"
+        );
+        assert!(
+            !(filebits == "32" && timebits == "64"),
+            "RUST_LIBC_UNSTABLE_GNU_FILE_OFFSET_BITS must be 64 or unset if RUST_LIBC_UNSTABLE_GNU_TIME_BITS is 64"
+        );
+        if timebits == "64" {
+            set_cfg("linux_time_bits64");
+            set_cfg("gnu_time_bits64");
+        }
+        if filebits == "64" {
+            set_cfg("gnu_file_offset_bits64");
         }
     }
+
     // On CI: deny all warnings
     if libc_ci {
         set_cfg("libc_deny_warnings");
@@ -143,9 +147,6 @@ fn main() {
     if rustc_dep_of_std {
         set_cfg("libc_thread_local");
     }
-
-    // Set unconditionally when ctest is not being invoked.
-    set_cfg("libc_const_extern_fn");
 
     // Since Rust 1.80, configuration that isn't recognized by default needs to be provided to
     // avoid warnings.

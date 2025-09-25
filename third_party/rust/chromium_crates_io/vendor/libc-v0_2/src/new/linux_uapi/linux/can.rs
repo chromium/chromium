@@ -1,9 +1,6 @@
 //! Header: `uapi/linux/can.h`
 
-// FIXME(ctest): we shouldn't have to specify the path but garando doesn't find modules otherwise
-#[path = "can/j1939.rs"]
 pub(crate) mod j1939;
-#[path = "can/raw.rs"]
 pub(crate) mod raw;
 
 pub use j1939::*;

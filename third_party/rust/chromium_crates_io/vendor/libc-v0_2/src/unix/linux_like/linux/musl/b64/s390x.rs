@@ -7,6 +7,7 @@ pub type wchar_t = i32;
 pub type greg_t = u64;
 pub type __u64 = u64;
 pub type __s64 = i64;
+pub type statfs64 = statfs;
 
 s! {
     pub struct ipc_perm {
@@ -68,30 +69,43 @@ s! {
         pub st_blocks: crate::blkcnt64_t,
         __unused: [c_long; 3],
     }
+
+    pub struct statfs {
+        pub f_type: c_uint,
+        pub f_bsize: c_uint,
+        pub f_blocks: crate::fsblkcnt_t,
+        pub f_bfree: crate::fsblkcnt_t,
+        pub f_bavail: crate::fsblkcnt_t,
+        pub f_files: crate::fsfilcnt_t,
+        pub f_ffree: crate::fsfilcnt_t,
+        pub f_fsid: crate::fsid_t,
+        pub f_namelen: c_uint,
+        pub f_frsize: c_uint,
+        pub f_flags: c_uint,
+        pub f_spare: [c_uint; 4],
+    }
 }
 
 s_no_extra_traits! {
-    // FIXME(union): This is actually a union.
-    pub struct fpreg_t {
+    pub union fpreg_t {
         pub d: c_double,
-        // f: c_float,
+        pub f: c_float,
     }
 }
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
         impl PartialEq for fpreg_t {
-            fn eq(&self, other: &fpreg_t) -> bool {
-                self.d == other.d
+            fn eq(&self, _other: &fpreg_t) -> bool {
+                unimplemented!("traits")
             }
         }
 
         impl Eq for fpreg_t {}
 
         impl hash::Hash for fpreg_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let d: u64 = self.d.to_bits();
-                d.hash(state);
+            fn hash<H: hash::Hasher>(&self, _state: &mut H) {
+                unimplemented!("traits")
             }
         }
     }
@@ -715,3 +729,4 @@ pub const SYS_futex_waitv: c_long = 449;
 pub const SYS_set_mempolicy_home_node: c_long = 450;
 pub const SYS_cachestat: c_long = 451;
 pub const SYS_fchmodat2: c_long = 452;
+pub const SYS_mseal: c_long = 462;

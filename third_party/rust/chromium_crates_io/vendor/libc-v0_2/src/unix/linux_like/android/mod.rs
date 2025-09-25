@@ -1551,7 +1551,7 @@ pub const ST_RELATIME: c_ulong = 4096;
 pub const RTLD_NOLOAD: c_int = 0x4;
 pub const RTLD_NODELETE: c_int = 0x1000;
 
-pub const SEM_FAILED: *mut sem_t = 0 as *mut sem_t;
+pub const SEM_FAILED: *mut sem_t = ptr::null_mut();
 
 pub const AI_PASSIVE: c_int = 0x00000001;
 pub const AI_CANONNAME: c_int = 0x00000002;
@@ -3596,17 +3596,17 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn makedev(ma: c_uint, mi: c_uint) -> crate::dev_t {
+    pub const fn makedev(ma: c_uint, mi: c_uint) -> crate::dev_t {
         let ma = ma as crate::dev_t;
         let mi = mi as crate::dev_t;
         ((ma & 0xfff) << 8) | (mi & 0xff) | ((mi & 0xfff00) << 12)
     }
 
-    pub {const} fn major(dev: crate::dev_t) -> c_int {
+    pub const fn major(dev: crate::dev_t) -> c_int {
         ((dev >> 8) & 0xfff) as c_int
     }
 
-    pub {const} fn minor(dev: crate::dev_t) -> c_int {
+    pub const fn minor(dev: crate::dev_t) -> c_int {
         ((dev & 0xff) | ((dev >> 12) & 0xfff00)) as c_int
     }
 }

@@ -40,6 +40,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/switch.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/teeos/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/trusty.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/types.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/unix/aix/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/unix/aix/powerpc64.rs",
     "//third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/unix/bsd/apple/b32/mod.rs",
@@ -214,7 +215,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "libc"
   cargo_pkg_description = "Raw FFI bindings to platform libraries like libc."
   cargo_pkg_repository = "https://github.com/rust-lang/libc"
-  cargo_pkg_version = "0.2.175"
+  cargo_pkg_version = "0.2.176"
 
   allow_unsafe = true
 

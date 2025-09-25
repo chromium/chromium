@@ -53,7 +53,8 @@ pub type sctp_assoc_t = u32;
 
 pub type eventfd_t = u64;
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_support_flags {
     DEVSTAT_ALL_SUPPORTED = 0x00,
@@ -68,7 +69,8 @@ impl Clone for devstat_support_flags {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_trans_flags {
     DEVSTAT_NO_DATA = 0x00,
@@ -84,7 +86,8 @@ impl Clone for devstat_trans_flags {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_tag_type {
     DEVSTAT_TAG_SIMPLE = 0x00,
@@ -99,7 +102,8 @@ impl Clone for devstat_tag_type {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_match_flags {
     DEVSTAT_MATCH_NONE = 0x00,
@@ -114,7 +118,8 @@ impl Clone for devstat_match_flags {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_priority {
     DEVSTAT_PRIORITY_MIN = 0x000,
@@ -135,7 +140,8 @@ impl Clone for devstat_priority {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_type_flags {
     DEVSTAT_TYPE_DIRECT = 0x000,
@@ -167,7 +173,8 @@ impl Clone for devstat_type_flags {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_metric {
     DSM_NONE,
@@ -224,7 +231,8 @@ impl Clone for devstat_metric {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug, Hash, PartialEq, Eq))]
+#[derive(Debug)]
+#[cfg_attr(feature = "extra_traits", derive(Hash, PartialEq, Eq))]
 #[repr(u32)]
 pub enum devstat_select_mode {
     DS_SELECT_ADD,
@@ -2387,7 +2395,7 @@ cfg_if! {
     }
 }
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
+#[derive(Debug)]
 #[repr(u32)]
 pub enum dot3Vendors {
     dot3VendorAMD = 1,
@@ -2950,8 +2958,6 @@ pub const JAIL_CREATE: c_int = 0x01;
 pub const JAIL_UPDATE: c_int = 0x02;
 pub const JAIL_ATTACH: c_int = 0x04;
 pub const JAIL_DYING: c_int = 0x08;
-pub const JAIL_SET_MASK: c_int = 0x0f;
-pub const JAIL_GET_MASK: c_int = 0x08;
 pub const JAIL_SYS_DISABLE: c_int = 0;
 pub const JAIL_SYS_NEW: c_int = 1;
 pub const JAIL_SYS_INHERIT: c_int = 2;
@@ -4241,6 +4247,7 @@ pub const P_CONTROLT: c_int = 0x00000002;
 pub const P_KPROC: c_int = 0x00000004;
 #[deprecated(since = "1.0", note = "Replaced in FreeBSD 15 by P_IDLEPROC")]
 pub const P_UNUSED3: c_int = 0x00000008;
+#[cfg(freebsd15)]
 pub const P_IDLEPROC: c_int = 0x00000008;
 pub const P_PPWAIT: c_int = 0x00000010;
 pub const P_PROFIL: c_int = 0x00000020;
@@ -4742,10 +4749,8 @@ pub const fn MAP_ALIGNED(a: c_int) -> c_int {
     a << 24
 }
 
-const_fn! {
-    {const} fn _ALIGN(p: usize) -> usize {
-        (p + _ALIGNBYTES) & !_ALIGNBYTES
-    }
+const fn _ALIGN(p: usize) -> usize {
+    (p + _ALIGNBYTES) & !_ALIGNBYTES
 }
 
 f! {
@@ -4753,7 +4758,7 @@ f! {
         (cmsg as *mut c_uchar).add(_ALIGN(size_of::<cmsghdr>()))
     }
 
-    pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
         _ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
@@ -4770,7 +4775,7 @@ f! {
         }
     }
 
-    pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
         (_ALIGN(size_of::<cmsghdr>()) + _ALIGN(length as usize)) as c_uint
     }
 
@@ -4778,11 +4783,11 @@ f! {
         ffsl(lg as c_long - 1)
     }
 
-    pub {const} fn MALLOCX_TCACHE(tc: c_int) -> c_int {
+    pub const fn MALLOCX_TCACHE(tc: c_int) -> c_int {
         (tc + 2) << 8 as c_int
     }
 
-    pub {const} fn MALLOCX_ARENA(a: c_int) -> c_int {
+    pub const fn MALLOCX_ARENA(a: c_int) -> c_int {
         (a + 1) << 20 as c_int
     }
 
@@ -4851,11 +4856,11 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn WIFSIGNALED(status: c_int) -> bool {
+    pub const fn WIFSIGNALED(status: c_int) -> bool {
         (status & 0o177) != 0o177 && (status & 0o177) != 0 && status != 0x13
     }
 
-    pub {const} fn INVALID_SINFO_FLAG(x: c_int) -> bool {
+    pub const fn INVALID_SINFO_FLAG(x: c_int) -> bool {
         (x) & 0xfffffff0
             & !(SCTP_EOF
                 | SCTP_ABORT
@@ -4867,31 +4872,31 @@ safe_f! {
             != 0
     }
 
-    pub {const} fn PR_SCTP_POLICY(x: c_int) -> c_int {
+    pub const fn PR_SCTP_POLICY(x: c_int) -> c_int {
         x & 0x0f
     }
 
-    pub {const} fn PR_SCTP_ENABLED(x: c_int) -> bool {
+    pub const fn PR_SCTP_ENABLED(x: c_int) -> bool {
         PR_SCTP_POLICY(x) != SCTP_PR_SCTP_NONE && PR_SCTP_POLICY(x) != SCTP_PR_SCTP_ALL
     }
 
-    pub {const} fn PR_SCTP_TTL_ENABLED(x: c_int) -> bool {
+    pub const fn PR_SCTP_TTL_ENABLED(x: c_int) -> bool {
         PR_SCTP_POLICY(x) == SCTP_PR_SCTP_TTL
     }
 
-    pub {const} fn PR_SCTP_BUF_ENABLED(x: c_int) -> bool {
+    pub const fn PR_SCTP_BUF_ENABLED(x: c_int) -> bool {
         PR_SCTP_POLICY(x) == SCTP_PR_SCTP_BUF
     }
 
-    pub {const} fn PR_SCTP_RTX_ENABLED(x: c_int) -> bool {
+    pub const fn PR_SCTP_RTX_ENABLED(x: c_int) -> bool {
         PR_SCTP_POLICY(x) == SCTP_PR_SCTP_RTX
     }
 
-    pub {const} fn PR_SCTP_INVALID_POLICY(x: c_int) -> bool {
+    pub const fn PR_SCTP_INVALID_POLICY(x: c_int) -> bool {
         PR_SCTP_POLICY(x) > SCTP_PR_SCTP_MAX
     }
 
-    pub {const} fn PR_SCTP_VALID_POLICY(x: c_int) -> bool {
+    pub const fn PR_SCTP_VALID_POLICY(x: c_int) -> bool {
         PR_SCTP_POLICY(x) <= SCTP_PR_SCTP_MAX
     }
 }
@@ -5360,6 +5365,11 @@ extern "C" {
         idx1: c_ulong,
         idx2: c_ulong,
     ) -> c_int;
+    pub fn dlvsym(
+        handle: *mut c_void,
+        symbol: *const c_char,
+        version: *const c_char,
+    ) -> *mut c_void;
 }
 
 #[link(name = "memstat")]

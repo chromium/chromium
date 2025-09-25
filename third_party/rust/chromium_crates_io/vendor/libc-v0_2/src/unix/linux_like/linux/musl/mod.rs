@@ -136,10 +136,7 @@ s! {
         pub aio_offset: off_t,
         __next: *mut c_void,
         __prev: *mut c_void,
-        #[cfg(target_pointer_width = "32")]
-        __dummy4: [c_char; 24],
-        #[cfg(target_pointer_width = "64")]
-        __dummy4: [c_char; 16],
+        __dummy4: [c_char; 32 - 2 * size_of::<*const ()>()],
     }
 
     #[repr(align(8))]
@@ -392,8 +389,8 @@ s! {
         pub tcpi_snd_wnd: u32,
     }
 
-    // MIPS implementation is special (see mips arch folders)
-    #[cfg(not(any(target_arch = "mips", target_arch = "mips64")))]
+    // MIPS/s390x implementation is special (see arch folders)
+    #[cfg(not(any(target_arch = "mips", target_arch = "mips64", target_arch = "s390x")))]
     pub struct statfs {
         pub f_type: c_ulong,
         pub f_bsize: c_ulong,
@@ -409,8 +406,8 @@ s! {
         pub f_spare: [c_ulong; 4],
     }
 
-    // MIPS implementation is special (see mips arch folders)
-    #[cfg(not(any(target_arch = "mips", target_arch = "mips64")))]
+    // MIPS/s390x implementation is special (see arch folders)
+    #[cfg(not(any(target_arch = "mips", target_arch = "mips64", target_arch = "s390x")))]
     pub struct statfs64 {
         pub f_type: c_ulong,
         pub f_bsize: c_ulong,
@@ -925,7 +922,7 @@ extern "C" {
     pub fn dirname(path: *mut c_char) -> *mut c_char;
     pub fn basename(path: *mut c_char) -> *mut c_char;
 
-    // Addded in `musl` 1.1.20
+    // Added in `musl` 1.1.20
     pub fn getrandom(buf: *mut c_void, buflen: size_t, flags: c_uint) -> ssize_t;
 
     // Added in `musl` 1.1.24

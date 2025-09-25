@@ -1,6 +1,6 @@
 [package]
 name = "libc"
-version = "0.2.175"
+version = "0.2.176"
 keywords = ["libc", "ffi", "bindings", "operating", "system"]
 categories = ["external-ffi-bindings", "no-std", "os"]
 exclude = ["/ci/*", "/.github/*", "/.cirrus.yml", "/triagebot.toml"]
@@ -149,7 +149,6 @@ use_std = ['std']
 [workspace]
 members = [
     "ctest",
-    "ctest-next",
     "libc-test",
 ]
 

@@ -49,6 +49,7 @@ pub type rlim64_t = c_ulonglong;
 
 pub type sem_t = c_int;
 pub type pollset_t = c_int;
+pub type sctp_assoc_t = c_uint;
 
 pub type pthread_rwlockattr_t = *mut c_void;
 pub type pthread_condattr_t = *mut c_void;
@@ -2456,11 +2457,11 @@ f! {
         (cmsg as *mut c_uchar).offset(size_of::<cmsghdr>() as isize)
     }
 
-    pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
+    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
         size_of::<cmsghdr>() as c_uint + length
     }
 
-    pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
         size_of::<cmsghdr>() as c_uint + length
     }
 
@@ -2492,11 +2493,11 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn WIFSTOPPED(status: c_int) -> bool {
+    pub const fn WIFSTOPPED(status: c_int) -> bool {
         (status & _W_STOPPED) != 0
     }
 
-    pub {const} fn WSTOPSIG(status: c_int) -> c_int {
+    pub const fn WSTOPSIG(status: c_int) -> c_int {
         if WIFSTOPPED(status) {
             (((status as c_uint) >> 8) & 0xff) as c_int
         } else {
@@ -2504,11 +2505,11 @@ safe_f! {
         }
     }
 
-    pub {const} fn WIFEXITED(status: c_int) -> bool {
+    pub const fn WIFEXITED(status: c_int) -> bool {
         (status & 0xFF) == 0
     }
 
-    pub {const} fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const fn WEXITSTATUS(status: c_int) -> c_int {
         if WIFEXITED(status) {
             (((status as c_uint) >> 8) & 0xff) as c_int
         } else {
@@ -2516,11 +2517,11 @@ safe_f! {
         }
     }
 
-    pub {const} fn WIFSIGNALED(status: c_int) -> bool {
+    pub const fn WIFSIGNALED(status: c_int) -> bool {
         !WIFEXITED(status) && !WIFSTOPPED(status)
     }
 
-    pub {const} fn WTERMSIG(status: c_int) -> c_int {
+    pub const fn WTERMSIG(status: c_int) -> c_int {
         if WIFSIGNALED(status) {
             (((status as c_uint) >> 16) & 0xff) as c_int
         } else {
@@ -2528,26 +2529,26 @@ safe_f! {
         }
     }
 
-    pub {const} fn WIFCONTINUED(status: c_int) -> bool {
+    pub const fn WIFCONTINUED(status: c_int) -> bool {
         (status & WCONTINUED) != 0
     }
 
     // AIX doesn't have native WCOREDUMP.
-    pub {const} fn WCOREDUMP(_status: c_int) -> bool {
+    pub const fn WCOREDUMP(_status: c_int) -> bool {
         false
     }
 
-    pub {const} fn major(dev: crate::dev_t) -> c_uint {
+    pub const fn major(dev: crate::dev_t) -> c_uint {
         let x = dev >> 16;
         x as c_uint
     }
 
-    pub {const} fn minor(dev: crate::dev_t) -> c_uint {
+    pub const fn minor(dev: crate::dev_t) -> c_uint {
         let y = dev & 0xFFFF;
         y as c_uint
     }
 
-    pub {const} fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -2927,7 +2928,7 @@ extern "C" {
         name: *const c_char,
         grp: *mut crate::group,
         buf: *mut c_char,
-        buflen: c_int,
+        buflen: size_t,
         result: *mut *mut crate::group,
     ) -> c_int;
     pub fn getgrset(user: *const c_char) -> *mut c_char;
@@ -3030,6 +3031,7 @@ extern "C" {
     pub fn mincore(addr: caddr_t, len: size_t, vec: *mut c_char) -> c_int;
     pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
     pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: mode_t, dev: dev_t) -> c_int;
+    pub fn mount(device: *const c_char, path: *const c_char, flags: c_int) -> c_int;
     pub fn mprotect(addr: *mut c_void, len: size_t, prot: c_int) -> c_int;
     pub fn mq_close(mqd: crate::mqd_t) -> c_int;
     pub fn mq_getattr(mqd: crate::mqd_t, attr: *mut crate::mq_attr) -> c_int;
@@ -3199,6 +3201,13 @@ extern "C" {
         addr: *mut crate::sockaddr,
         addrlen: *mut crate::socklen_t,
     ) -> ssize_t;
+    pub fn recvmmsg(
+        sockfd: c_int,
+        msgvec: *mut crate::mmsghdr,
+        vlen: c_uint,
+        flags: c_int,
+        timeout: *mut crate::timespec,
+    ) -> c_int;
     // AIX header socket.h maps recvmsg() to nrecvmsg().
     #[link_name = "nrecvmsg"]
     pub fn recvmsg(sockfd: c_int, msg: *mut msghdr, flags: c_int) -> ssize_t;
@@ -3229,6 +3238,14 @@ extern "C" {
         policy: c_int,
         param: *const crate::sched_param,
     ) -> c_int;
+    pub fn sctp_opt_info(
+        sd: c_int,
+        id: crate::sctp_assoc_t,
+        opt: c_int,
+        arg_size: *mut c_void,
+        size: *mut size_t,
+    ) -> c_int;
+    pub fn sctp_peeloff(s: c_int, id: *mut c_uint) -> c_int;
     pub fn seed48(xseed: *mut c_ushort) -> *mut c_ushort;
     pub fn seekdir(dirp: *mut crate::DIR, loc: c_long);
     pub fn sem_close(sem: *mut sem_t) -> c_int;
@@ -3242,6 +3259,7 @@ extern "C" {
     pub fn semget(key: crate::key_t, nsems: c_int, semflag: c_int) -> c_int;
     pub fn semop(semid: c_int, sops: *mut sembuf, nsops: size_t) -> c_int;
     pub fn send_file(socket: *mut c_int, iobuf: *mut sf_parms, flags: c_uint) -> ssize_t;
+    pub fn sendmmsg(sockfd: c_int, msgvec: *mut mmsghdr, vlen: c_uint, flags: c_int) -> c_int;
     // AIX header socket.h maps sendmsg() to nsendmsg().
     #[link_name = "nsendmsg"]
     pub fn sendmsg(sockfd: c_int, msg: *const msghdr, flags: c_int) -> ssize_t;
@@ -3249,6 +3267,8 @@ extern "C" {
     pub fn setdomainname(name: *const c_char, len: c_int) -> c_int;
     pub fn setgroups(ngroups: c_int, ptr: *const crate::gid_t) -> c_int;
     pub fn setgrent();
+    pub fn sethostid(hostid: c_int) -> c_int;
+    pub fn sethostname(name: *const c_char, len: c_int) -> c_int;
     pub fn setmntent(filename: *const c_char, ty: *const c_char) -> *mut crate::FILE;
     pub fn setpriority(which: c_int, who: id_t, priority: c_int) -> c_int;
     pub fn setpwent();
@@ -3277,6 +3297,7 @@ extern "C" {
     pub fn shmget(key: key_t, size: size_t, shmflg: c_int) -> c_int;
     pub fn shm_open(name: *const c_char, oflag: c_int, mode: mode_t) -> c_int;
     pub fn shm_unlink(name: *const c_char) -> c_int;
+    pub fn splice(socket1: c_int, socket2: c_int, flags: c_int) -> c_int;
     pub fn srand(seed: c_uint);
     pub fn srand48(seed: c_long);
     pub fn stat64(path: *const c_char, buf: *mut stat64) -> c_int;

@@ -225,7 +225,7 @@ pub const SA_SIGINFO: c_int = 0x00000004;
 
 pub const RTLD_GLOBAL: c_int = 0x00100;
 pub const RTLD_NOW: c_int = 2;
-pub const RTLD_DEFAULT: *mut c_void = 0i64 as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
     value: 0,

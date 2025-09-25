@@ -385,17 +385,17 @@ pub const MINCORE_SUPER: c_int = 0x20;
 pub const SPECNAMELEN: c_int = 63;
 
 safe_f! {
-    pub {const} fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         (major << 8) | minor
     }
 
-    pub {const} fn major(dev: crate::dev_t) -> c_int {
+    pub const fn major(dev: crate::dev_t) -> c_int {
         ((dev >> 8) & 0xff) as c_int
     }
 
-    pub {const} fn minor(dev: crate::dev_t) -> c_int {
+    pub const fn minor(dev: crate::dev_t) -> c_int {
         (dev & 0xffff00ff) as c_int
     }
 }
@@ -424,6 +424,18 @@ extern "C" {
     // in FreeBSD 12
     pub fn dirname(path: *const c_char) -> *mut c_char;
     pub fn basename(path: *const c_char) -> *mut c_char;
+
+    // Argument order of the function pointer changed in FreeBSD 14. From 14 onwards the signature
+    // matches the POSIX specification by having the third argument be a mutable pointer, on
+    // earlier versions the first argument is the mutable pointer.
+    #[link_name = "qsort_r@FBSD_1.0"]
+    pub fn qsort_r(
+        base: *mut c_void,
+        num: size_t,
+        size: size_t,
+        arg: *mut c_void,
+        compar: Option<unsafe extern "C" fn(*mut c_void, *const c_void, *const c_void) -> c_int>,
+    );
 }
 
 cfg_if! {

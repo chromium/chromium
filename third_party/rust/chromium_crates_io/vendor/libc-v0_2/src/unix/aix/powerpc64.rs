@@ -3,7 +3,7 @@ use crate::prelude::*;
 
 // Define lock_data_instrumented as an empty enum
 missing! {
-    #[cfg_attr(feature = "extra_traits", derive(Debug))]
+    #[derive(Debug)]
     pub enum lock_data_instrumented {}
 }
 

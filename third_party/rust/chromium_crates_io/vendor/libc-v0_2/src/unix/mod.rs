@@ -38,7 +38,7 @@ cfg_if! {
 }
 
 missing! {
-    #[cfg_attr(feature = "extra_traits", derive(Debug))]
+    #[derive(Debug)]
     pub enum DIR {}
 }
 pub type locale_t = *mut c_void;
@@ -568,14 +568,14 @@ cfg_if! {
 cfg_if! {
     if #[cfg(not(all(target_os = "linux", target_env = "gnu")))] {
         missing! {
-            #[cfg_attr(feature = "extra_traits", derive(Debug))]
+            #[derive(Debug)]
             pub enum fpos_t {} // FIXME(unix): fill this out with a struct
         }
     }
 }
 
 missing! {
-    #[cfg_attr(feature = "extra_traits", derive(Debug))]
+    #[derive(Debug)]
     pub enum FILE {}
 }
 
@@ -1614,16 +1614,16 @@ extern "C" {
 safe_f! {
     // It seems htonl, etc are macros on macOS. So we have to reimplement them. So let's
     // reimplement them for all UNIX platforms
-    pub {const} fn htonl(hostlong: u32) -> u32 {
+    pub const fn htonl(hostlong: u32) -> u32 {
         u32::to_be(hostlong)
     }
-    pub {const} fn htons(hostshort: u16) -> u16 {
+    pub const fn htons(hostshort: u16) -> u16 {
         u16::to_be(hostshort)
     }
-    pub {const} fn ntohl(netlong: u32) -> u32 {
+    pub const fn ntohl(netlong: u32) -> u32 {
         u32::from_be(netlong)
     }
-    pub {const} fn ntohs(netshort: u16) -> u16 {
+    pub const fn ntohs(netshort: u16) -> u16 {
         u16::from_be(netshort)
     }
 }
@@ -1657,6 +1657,20 @@ cfg_if! {
     )))] {
         extern "C" {
             pub fn stpncpy(dst: *mut c_char, src: *const c_char, n: size_t) -> *mut c_char;
+        }
+    }
+}
+
+cfg_if! {
+    if #[cfg(not(any(
+        target_os = "dragonfly",
+        target_os = "emscripten",
+        target_os = "hurd",
+        target_os = "macos",
+        target_os = "openbsd",
+    )))] {
+        extern "C" {
+            pub fn sigqueue(pid: pid_t, sig: c_int, value: crate::sigval) -> c_int;
         }
     }
 }
@@ -1730,6 +1744,10 @@ cfg_if! {
             #[cfg_attr(
                 all(target_os = "freebsd", any(freebsd11, freebsd10)),
                 link_name = "readdir_r@FBSD_1.0"
+            )]
+            #[cfg_attr(
+                all(target_os = "freebsd", not(any(freebsd11, freebsd10))),
+                link_name = "readdir_r@FBSD_1.5"
             )]
             #[allow(non_autolinks)] // FIXME(docs): `<>` breaks line length limit.
             /// The 64-bit libc on Solaris and illumos only has readdir_r. If a

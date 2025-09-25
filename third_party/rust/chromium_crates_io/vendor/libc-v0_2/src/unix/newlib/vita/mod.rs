@@ -108,7 +108,7 @@ pub const POLLERR: c_short = 0x0008;
 pub const POLLHUP: c_short = 0x0010;
 pub const POLLNVAL: c_short = 0x0020;
 
-pub const RTLD_DEFAULT: *mut c_void = 0 as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 
 pub const SOL_SOCKET: c_int = 0xffff;
 pub const SO_NONBLOCK: c_int = 0x1100;

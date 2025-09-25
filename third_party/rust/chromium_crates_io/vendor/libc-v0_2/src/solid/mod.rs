@@ -395,7 +395,7 @@ pub const SIGUSR1: c_int = 30;
 pub const SIGUSR2: c_int = 31;
 pub const SIGPWR: c_int = 32;
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
+#[derive(Debug)]
 pub enum FILE {}
 impl Copy for FILE {}
 impl Clone for FILE {
@@ -403,7 +403,7 @@ impl Clone for FILE {
         *self
     }
 }
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
+#[derive(Debug)]
 pub enum fpos_t {}
 impl Copy for fpos_t {}
 impl Clone for fpos_t {

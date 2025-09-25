@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libc"
-version = "0.2.175"
+version = "0.2.176"
 authors = ["The Rust Project Developers"]
 build = "build.rs"
 exclude = [
@@ -45,9 +45,8 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/rust-lang/libc"
 
 [package.metadata.docs.rs]
-cargo-args = ["-Zbuild-std=core"]
-default-target = "x86_64-unknown-linux-gnu"
 features = ["extra_traits"]
+default-target = "x86_64-unknown-linux-gnu"
 targets = [
     "aarch64-apple-darwin",
     "aarch64-apple-ios",
@@ -158,6 +157,7 @@ targets = [
     "x86_64-unknown-redox",
     "x86_64-wrs-vxworks",
 ]
+cargo-args = ["-Zbuild-std=core"]
 
 [features]
 align = []

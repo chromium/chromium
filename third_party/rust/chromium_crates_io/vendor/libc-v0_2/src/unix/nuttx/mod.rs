@@ -274,7 +274,7 @@ pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
 };
 
 // dlfcn.h
-pub const RTLD_DEFAULT: *mut c_void = 0 as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 
 // stdlib.h
 pub const EXIT_SUCCESS: i32 = 0;
@@ -566,6 +566,7 @@ pub const IP_ADD_MEMBERSHIP: i32 = 0x14;
 pub const IP_DROP_MEMBERSHIP: i32 = 0x15;
 
 extern "C" {
+    pub fn __errno() -> *mut c_int;
     pub fn bind(sockfd: i32, addr: *const sockaddr, addrlen: socklen_t) -> i32;
     pub fn ioctl(fd: i32, request: i32, ...) -> i32;
     pub fn dirfd(dirp: *mut DIR) -> i32;

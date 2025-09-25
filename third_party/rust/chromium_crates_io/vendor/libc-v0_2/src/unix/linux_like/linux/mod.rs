@@ -68,7 +68,7 @@ pub type eventfd_t = u64;
 cfg_if! {
     if #[cfg(not(target_env = "gnu"))] {
         missing! {
-            #[cfg_attr(feature = "extra_traits", derive(Debug))]
+            #[derive(Debug)]
             pub enum fpos64_t {} // FIXME(linux): fill this out with a struct
         }
     }
@@ -2482,6 +2482,7 @@ pub const EM_XTENSA: u16 = 94;
 pub const EM_AARCH64: u16 = 183;
 pub const EM_TILEPRO: u16 = 188;
 pub const EM_TILEGX: u16 = 191;
+pub const EM_RISCV: u16 = 243;
 pub const EM_ALPHA: u16 = 0x9026;
 
 // elf.h - Legal values for e_version (version).
@@ -2711,7 +2712,7 @@ pub const ST_NOATIME: c_ulong = 1024;
 pub const ST_NODIRATIME: c_ulong = 2048;
 
 pub const RTLD_NEXT: *mut c_void = -1i64 as *mut c_void;
-pub const RTLD_DEFAULT: *mut c_void = 0i64 as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 pub const RTLD_NODELETE: c_int = 0x1000;
 pub const RTLD_NOW: c_int = 0x2;
 
@@ -2835,7 +2836,7 @@ pub const EFD_SEMAPHORE: c_int = 0x1;
 
 pub const LOG_NFACILITIES: c_int = 24;
 
-pub const SEM_FAILED: *mut crate::sem_t = 0 as *mut sem_t;
+pub const SEM_FAILED: *mut crate::sem_t = ptr::null_mut();
 
 pub const RB_AUTOBOOT: c_int = 0x01234567u32 as i32;
 pub const RB_HALT_SYSTEM: c_int = 0xcdef0123u32 as i32;
@@ -3596,17 +3597,27 @@ pub const PACKET_KERNEL: c_uchar = 7;
 
 pub const PACKET_ADD_MEMBERSHIP: c_int = 1;
 pub const PACKET_DROP_MEMBERSHIP: c_int = 2;
+pub const PACKET_RECV_OUTPUT: c_int = 3;
 pub const PACKET_RX_RING: c_int = 5;
 pub const PACKET_STATISTICS: c_int = 6;
+pub const PACKET_COPY_THRESH: c_int = 7;
 pub const PACKET_AUXDATA: c_int = 8;
+pub const PACKET_ORIGDEV: c_int = 9;
 pub const PACKET_VERSION: c_int = 10;
+pub const PACKET_HDRLEN: c_int = 11;
 pub const PACKET_RESERVE: c_int = 12;
 pub const PACKET_TX_RING: c_int = 13;
 pub const PACKET_LOSS: c_int = 14;
+pub const PACKET_VNET_HDR: c_int = 15;
+pub const PACKET_TX_TIMESTAMP: c_int = 16;
 pub const PACKET_TIMESTAMP: c_int = 17;
 pub const PACKET_FANOUT: c_int = 18;
+pub const PACKET_TX_HAS_OFF: c_int = 19;
 pub const PACKET_QDISC_BYPASS: c_int = 20;
+pub const PACKET_ROLLOVER_STATS: c_int = 21;
+pub const PACKET_FANOUT_DATA: c_int = 22;
 pub const PACKET_IGNORE_OUTGOING: c_int = 23;
+pub const PACKET_VNET_HDR_SZ: c_int = 24;
 
 pub const PACKET_FANOUT_HASH: c_uint = 0;
 pub const PACKET_FANOUT_LB: c_uint = 1;
@@ -3618,6 +3629,7 @@ pub const PACKET_FANOUT_CBPF: c_uint = 6;
 pub const PACKET_FANOUT_EBPF: c_uint = 7;
 pub const PACKET_FANOUT_FLAG_ROLLOVER: c_uint = 0x1000;
 pub const PACKET_FANOUT_FLAG_UNIQUEID: c_uint = 0x2000;
+pub const PACKET_FANOUT_FLAG_IGNORE_OUTGOING: c_uint = 0x4000;
 pub const PACKET_FANOUT_FLAG_DEFRAG: c_uint = 0x8000;
 
 pub const PACKET_MR_MULTICAST: c_int = 0;
@@ -5933,7 +5945,7 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -5944,29 +5956,29 @@ safe_f! {
         dev
     }
 
-    pub {const} fn major(dev: crate::dev_t) -> c_uint {
+    pub const fn major(dev: crate::dev_t) -> c_uint {
         let mut major = 0;
         major |= (dev & 0x00000000000fff00) >> 8;
         major |= (dev & 0xfffff00000000000) >> 32;
         major as c_uint
     }
 
-    pub {const} fn minor(dev: crate::dev_t) -> c_uint {
+    pub const fn minor(dev: crate::dev_t) -> c_uint {
         let mut minor = 0;
         minor |= (dev & 0x00000000000000ff) >> 0;
         minor |= (dev & 0x00000ffffff00000) >> 12;
         minor as c_uint
     }
 
-    pub {const} fn SCTP_PR_TTL_ENABLED(policy: c_int) -> bool {
+    pub const fn SCTP_PR_TTL_ENABLED(policy: c_int) -> bool {
         policy == SCTP_PR_SCTP_TTL
     }
 
-    pub {const} fn SCTP_PR_RTX_ENABLED(policy: c_int) -> bool {
+    pub const fn SCTP_PR_RTX_ENABLED(policy: c_int) -> bool {
         policy == SCTP_PR_SCTP_RTX
     }
 
-    pub {const} fn SCTP_PR_PRIO_ENABLED(policy: c_int) -> bool {
+    pub const fn SCTP_PR_PRIO_ENABLED(policy: c_int) -> bool {
         policy == SCTP_PR_SCTP_PRIO
     }
 }
