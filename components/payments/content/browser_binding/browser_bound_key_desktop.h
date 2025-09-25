@@ -32,6 +32,8 @@ class BrowserBoundKeyDesktop : public BrowserBoundKey {
   std::vector<uint8_t> Sign(const std::vector<uint8_t>& client_data) override;
   std::vector<uint8_t> GetPublicKeyAsCoseKey() const override;
 
+  crypto::UnexportableSigningKey* GetKeyForTesting();
+
  private:
   std::unique_ptr<crypto::UnexportableSigningKey> key_;
 };

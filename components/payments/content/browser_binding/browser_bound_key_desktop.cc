@@ -44,4 +44,8 @@ std::vector<uint8_t> BrowserBoundKeyDesktop::GetPublicKeyAsCoseKey() const {
   return crypto::PublicKeyToCoseKey(public_key.value());
 }
 
+crypto::UnexportableSigningKey* BrowserBoundKeyDesktop::GetKeyForTesting() {
+  return key_.get();
+}
+
 }  // namespace payments

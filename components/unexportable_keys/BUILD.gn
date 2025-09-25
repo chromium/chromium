@@ -48,6 +48,8 @@ source_set("test_support") {
     "fake_unexportable_key_service.h",
     "mock_unexportable_key.cc",
     "mock_unexportable_key.h",
+    "mock_unexportable_key_provider.cc",
+    "mock_unexportable_key_provider.h",
     "mock_unexportable_key_service.cc",
     "mock_unexportable_key_service.h",
     "scoped_mock_unexportable_key_provider.cc",

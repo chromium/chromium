@@ -131,6 +131,8 @@ if (is_mac || is_win || is_linux) {
     sources = [
       "browser_bound_key_desktop.cc",
       "browser_bound_key_desktop.h",
+      "browser_bound_key_store_desktop.cc",
+      "browser_bound_key_store_desktop.h",
     ]
     deps = [
       ":interface",
@@ -141,7 +143,10 @@ if (is_mac || is_win || is_linux) {
 
   source_set("desktop_unittests") {
     testonly = true
-    sources = [ "browser_bound_key_desktop_unittest.cc" ]
+    sources = [
+      "browser_bound_key_desktop_unittest.cc",
+      "browser_bound_key_store_desktop_unittest.cc",
+    ]
     deps = [
       ":desktop",
       ":interface",

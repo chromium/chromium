@@ -9,5 +9,6 @@ specific_include_rules = {
   ],
   ".*_desktop_unittest\.cc": [
     "+components/unexportable_keys/mock_unexportable_key.h",
+    "+components/unexportable_keys/mock_unexportable_key_provider.h",
   ]
 }
