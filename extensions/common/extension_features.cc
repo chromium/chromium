@@ -94,9 +94,6 @@ BASE_FEATURE(kForceWebRequestProxyForTest, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLaunchWindowsNativeHostsDirectly,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// To investigate signal beacon loss in crrev.com/c/2262402.
-BASE_FEATURE(kReportKeepaliveUkm, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

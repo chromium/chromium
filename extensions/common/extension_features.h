@@ -172,9 +172,6 @@ BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
 // input without needing keyword mode.
 BASE_DECLARE_FEATURE(kExperimentalOmniboxLabs);
 
-// To investigate signal beacon loss in crrev.com/c/2262402.
-BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
-
 // Reports Extensions.WebRequest.KeepaliveRequestFinished when enabled.
 // Automatically disable extensions not included in the Safe Browsing CRX
 // allowlist if the user has turned on Enhanced Safe Browsing (ESB). The

@@ -227,14 +227,11 @@ WebRequestProxyingURLLoaderFactory::InProgressRequest::~InProgressRequest() {
       TRACE_EVENT_FLAG_FLOW_IN, "state", state_);
 
   if (request_.keepalive && !for_cors_preflight_) {
-    if (base::FeatureList::IsEnabled(
-            extensions_features::kReportKeepaliveUkm)) {
-      ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(
-          ukm_source_id_)
-          .SetState(state_)
-          .SetNumRedirects(num_redirects_)
-          .Record(ukm::UkmRecorder::Get());
-    }
+    ukm::builders::Extensions_WebRequest_KeepaliveRequestFinished(
+        ukm_source_id_)
+        .SetState(state_)
+        .SetNumRedirects(num_redirects_)
+        .Record(ukm::UkmRecorder::Get());
   }
   // This is important to ensure that no outstanding blocking requests continue
   // to reference state owned by this object.
