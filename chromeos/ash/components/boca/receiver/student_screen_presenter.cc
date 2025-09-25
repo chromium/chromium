@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -99,6 +100,26 @@ void StudentScreenPresenterImpl::Start(
       std::move(start_request));
 }
 
+void StudentScreenPresenterImpl::CheckConnection() {
+  if (!connection_id_.has_value()) {
+    return;
+  }
+  CHECK(receiver_id_.has_value());
+  get_receiver_request_sender_ =
+      CreateSender(url_loader_factory_, identity_manager_,
+                   boca_receiver::GetKioskReceiverRequest::kTrafficAnnotation);
+  auto get_receiver_request_delegate =
+      std::make_unique<boca_receiver::GetKioskReceiverRequest>(
+          *receiver_id_, *connection_id_,
+          base::BindOnce(&StudentScreenPresenterImpl::OnCheckConnectionResponse,
+                         weak_ptr_factory_.GetWeakPtr()));
+  auto get_receiver_request =
+      std::make_unique<BocaRequest>(get_receiver_request_sender_.get(),
+                                    std::move(get_receiver_request_delegate));
+  get_receiver_request_sender_->StartRequestWithAuthRetry(
+      std::move(get_receiver_request));
+}
+
 void StudentScreenPresenterImpl::OnStartResponse(
     base::OnceCallback<void(bool)> success_cb,
     std::optional<std::string> connection_id) {
@@ -109,6 +130,16 @@ void StudentScreenPresenterImpl::OnStartResponse(
   }
   connection_id_ = connection_id;
   std::move(success_cb).Run(true);
+}
+
+void StudentScreenPresenterImpl::OnCheckConnectionResponse(
+    std::optional<::boca::KioskReceiver> receiver) {
+  if (!receiver.has_value() ||
+      receiver->state() != ::boca::ReceiverConnectionState::DISCONNECTED) {
+    return;
+  }
+  std::move(disconnected_cb_).Run();
+  Reset();
 }
 
 void StudentScreenPresenterImpl::Reset() {

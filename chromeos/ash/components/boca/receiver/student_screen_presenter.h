@@ -48,6 +48,8 @@ class StudentScreenPresenter {
                      base::OnceCallback<void(bool)> success_cb,
                      base::OnceClosure disconnected_cb) = 0;
 
+  virtual void CheckConnection() = 0;
+
  protected:
   StudentScreenPresenter() = default;
 };
@@ -73,10 +75,13 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
              std::string_view student_device_id,
              base::OnceCallback<void(bool)> success_cb,
              base::OnceClosure disconnected_cb) override;
+  void CheckConnection() override;
 
  private:
   void OnStartResponse(base::OnceCallback<void(bool)> success_cb,
                        std::optional<std::string> connection_id);
+
+  void OnCheckConnectionResponse(std::optional<::boca::KioskReceiver> receiver);
 
   void Reset();
 
@@ -89,6 +94,7 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
   base::OnceClosure disconnected_cb_;
   std::optional<std::string> connection_id_;
   std::unique_ptr<google_apis::RequestSender> start_connection_request_sender_;
+  std::unique_ptr<google_apis::RequestSender> get_receiver_request_sender_;
 
   base::WeakPtrFactory<StudentScreenPresenterImpl> weak_ptr_factory_{this};
 };

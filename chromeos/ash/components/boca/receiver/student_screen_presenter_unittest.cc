@@ -33,8 +33,13 @@ constexpr std::string_view kSessionId = "session-id";
 constexpr std::string_view kReceiverId = "receiver-id";
 constexpr std::string_view kTeacherDeviceId = "teacher_device_id";
 constexpr std::string_view kStudentDeviceId = "student_device_id";
+constexpr std::string_view kConnectionId = "connection-id";
 constexpr std::string_view kConnectionIdPair =
     R"({"connectionId": "connection-id"})";
+constexpr std::string_view kStateDisconnectedPair =
+    R"({"state": "DISCONNECTED"})";
+constexpr std::string_view kStateStopRequestedPair =
+    R"({"state": "STOP_REQUESTED"})";
 
 class StudentScreenPresenterImplTest : public testing::Test {
  protected:
@@ -56,6 +61,14 @@ class StudentScreenPresenterImplTest : public testing::Test {
         .Resolve(base::ReplaceStringPlaceholders(
             boca::kStartKioskReceiverUrlTemplate, {std::string(receiver_id)},
             nullptr));
+  }
+
+  GURL GetKioskReceiverUrl(std::string_view receiver_id,
+                           std::string_view connection_id) {
+    return GURL(boca::GetSchoolToolsUrl())
+        .Resolve(base::ReplaceStringPlaceholders(
+            boca::kGetKioskReceiverUrlTemplate,
+            {std::string(receiver_id), std::string(connection_id)}, nullptr));
   }
 
   std::optional<base::Value::Dict> GetRequestBodyAndRespond(
@@ -155,6 +168,83 @@ TEST_F(StudentScreenPresenterImplTest, OverlappingStartWillFail) {
 
   GetRequestBodyAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
   EXPECT_TRUE(start_future1.Get());
+}
+
+TEST_F(StudentScreenPresenterImplTest, CheckConnectionDisconnected) {
+  base::test::TestFuture<bool> start_future1;
+  base::test::TestFuture<bool> start_future2;
+  base::test::TestFuture<void> disconnected_future;
+  StudentScreenPresenterImpl presenter(teacher_identity_, kTeacherDeviceId,
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  presenter.Start(kSessionId, kReceiverId, student_identity_, kStudentDeviceId,
+                  start_future1.GetCallback(),
+                  disconnected_future.GetCallback());
+  GetRequestBodyAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
+  EXPECT_TRUE(start_future1.Get());
+
+  url_loader_factory_.AddResponse(
+      GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
+      kStateDisconnectedPair);
+  presenter.CheckConnection();
+  EXPECT_TRUE(disconnected_future.Wait());
+
+  // Verify that a new request will be accepted.
+  presenter.Start(kSessionId, kReceiverId, student_identity_, kStudentDeviceId,
+                  start_future2.GetCallback(),
+                  /*disconnected_cb=*/base::DoNothing());
+  GetRequestBodyAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
+  EXPECT_TRUE(start_future2.Get());
+}
+
+TEST_F(StudentScreenPresenterImplTest, CheckConnectionNotDisconnected) {
+  base::test::TestFuture<bool> start_future1;
+  base::test::TestFuture<bool> start_future2;
+  base::test::TestFuture<void> disconnected_future;
+  StudentScreenPresenterImpl presenter(teacher_identity_, kTeacherDeviceId,
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  presenter.Start(kSessionId, kReceiverId, student_identity_, kStudentDeviceId,
+                  start_future1.GetCallback(),
+                  disconnected_future.GetCallback());
+  GetRequestBodyAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
+  EXPECT_TRUE(start_future1.Get());
+
+  url_loader_factory_.AddResponse(
+      GetKioskReceiverUrl(kReceiverId, kStateStopRequestedPair).spec(),
+      kStateStopRequestedPair);
+  presenter.CheckConnection();
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(disconnected_future.IsReady());
+
+  // Verify that a new request will not be accepted.
+  presenter.Start(kSessionId, kReceiverId, student_identity_, kStudentDeviceId,
+                  start_future2.GetCallback(),
+                  /*disconnected_cb=*/base::DoNothing());
+  EXPECT_FALSE(start_future2.Get());
+}
+
+TEST_F(StudentScreenPresenterImplTest, CheckConnectionWithoutStart) {
+  StudentScreenPresenterImpl presenter(teacher_identity_, kTeacherDeviceId,
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  presenter.CheckConnection();
+  EXPECT_EQ(url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(StudentScreenPresenterImplTest, CheckConnectionBeforeStartResponse) {
+  base::test::TestFuture<bool> start_future;
+  StudentScreenPresenterImpl presenter(teacher_identity_, kTeacherDeviceId,
+                                       url_loader_factory_.GetSafeWeakWrapper(),
+                                       identity_test_env_.identity_manager());
+  presenter.Start(kSessionId, kReceiverId, student_identity_, kStudentDeviceId,
+                  start_future.GetCallback(),
+                  /*disconnected_cb=*/base::DoNothing());
+  presenter.CheckConnection();
+  GetRequestBodyAndRespond(GetStartReceiverUrl(kReceiverId), kConnectionIdPair);
+
+  EXPECT_TRUE(start_future.Get());
+  EXPECT_EQ(url_loader_factory_.NumPending(), 0);
 }
 
 }  // namespace
