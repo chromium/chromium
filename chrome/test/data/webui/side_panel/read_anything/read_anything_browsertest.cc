@@ -158,11 +158,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggledIntegration) {
-  RunSidePanelTest("side_panel/read_anything/links_toggled_integration_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
   RunSidePanelTest(
       "side_panel/read_anything/speech_uses_max_text_length_test.js",

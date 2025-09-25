@@ -4,13 +4,14 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, LanguageToastElement, SpEmptyStateElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, ContentController, ContentType, NodeStore, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, ContentController, ContentType, NodeStore, ReadAloudNode, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceClientSideStatusCode, VoiceLanguageController, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {createApp, emitEvent, setSimpleNodeStoreWithTextAndModel, setSimpleTreeWithText, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('AppContent', () => {
@@ -22,6 +23,8 @@ suite('AppContent', () => {
   let voiceLanguageController: VoiceLanguageController;
   let nodeStore: NodeStore;
   let notificationManager: VoiceNotificationManager;
+  let readAloudModel: TestReadAloudModelBrowserProxy;
+  let speech: TestSpeechBrowserProxy;
 
   setup(async () => {
     // Clearing the DOM should always be done first.
@@ -30,8 +33,10 @@ suite('AppContent', () => {
     readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
 
-    const speech = new TestSpeechBrowserProxy();
+    speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
+    readAloudModel = new TestReadAloudModelBrowserProxy();
+    setInstance(readAloudModel);
     nodeStore = new NodeStore();
     NodeStore.setInstance(nodeStore);
     notificationManager = new VoiceNotificationManager();
@@ -156,6 +161,137 @@ suite('AppContent', () => {
       assertTrue(contentController.isEmpty());
       assertStringContains(emptyState.darkImagePath, empty);
       assertStringContains(emptyState.imagePath, empty);
+    });
+  });
+
+  suite('on links toggle', () => {
+    const linkId = 44;
+    const textId = 45;
+    const linkText = 'Try to keep it hidden';
+    const url = 'www.mountainview.gov';
+
+    setup(() => {
+      readingMode.rootId = linkId;
+      readingMode.getHtmlTag = (id) => (id === linkId) ? 'a' : '';
+      readingMode.getTextContent = (id) => (id === linkId) ? '' : linkText;
+      readingMode.getChildren = (id) => (id === linkId) ? [textId] : [];
+      readingMode.getUrl = () => url;
+    });
+
+    test('shows links when enabled', async () => {
+      const expectedHtml =
+          '<a dir="ltr" href="' + url + '" lang="en-us">' + linkText + '</a>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      readingMode.linksEnabled = true;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+
+      assertEquals(
+          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
+    });
+
+    test('hides links when disabled', async () => {
+      const expectedHtml = '<span dir="ltr" lang="en-us" data-link="' + url +
+          '">' + linkText + '</span>';
+      app.updateContent();
+      await microtasksFinished();
+      assertTrue(contentController.hasContent());
+
+      readingMode.linksEnabled = false;
+      emitEvent(app, ToolbarEvent.LINKS);
+      await microtasksFinished();
+
+      assertEquals(
+          expectedHtml, app.$.container.innerHTML, app.$.container.innerHTML);
+    });
+
+    suite('with speech', () => {
+      const noLinksHtml = '<span dir="ltr" lang="en-us" data-link="' + url +
+          '"><span class="parent-of-highlight"><span class="' +
+          'current-read-highlight">Try</span> to keep it hidden</span></span>';
+      const linksHtml = '<a dir="ltr" lang="en-us" href="' + url +
+          '"><span class="parent-of-highlight"><span class="' +
+          'current-read-highlight">Try</span> to keep it hidden</span></a>';
+
+      setup(() => {
+        const parent = document.createElement('a');
+        const text = document.createTextNode(linkText);
+        parent.href = url;
+        parent.appendChild(text);
+        nodeStore.setDomNode(parent, linkId);
+        nodeStore.setDomNode(text, textId);
+        const segments =
+            [{node: ReadAloudNode.create(text)!, start: 0, length: 3}];
+        let calls = 0;
+        readAloudModel.setInitialized(true);
+        readAloudModel.setCurrentTextContent(linkText);
+        readAloudModel.getCurrentTextSegments = () => {
+          calls++;
+          if (calls === 1) {
+            return segments;
+          } else {
+            return [];
+          }
+        };
+
+
+        return app.updateContent();
+      });
+
+      test('hides links when speech active', async () => {
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        await microtasksFinished();
+        assertEquals(noLinksHtml, app.$.container.innerHTML);
+      });
+
+      test('shows links when speech paused', async () => {
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        await microtasksFinished();
+
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        await microtasksFinished();
+
+        assertEquals(linksHtml, app.$.container.innerHTML);
+      });
+
+      test('shows links when speech finished', async () => {
+        const expectedHTML = '<a dir="ltr" lang="en-us" href="' + url +
+            '"><span class="parent-of-highlight"><span class="">' +
+            'Try</span> to keep it hidden</span></a>';
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        await microtasksFinished();
+
+        const spoken = await speech.whenCalled('speak');
+        spoken.onend();
+
+        assertEquals(expectedHTML, app.$.container.innerHTML);
+      });
+
+      test('hides links when speech active and links disabled', async () => {
+        readingMode.linksEnabled = false;
+        emitEvent(app, ToolbarEvent.LINKS);
+        await microtasksFinished();
+
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        await microtasksFinished();
+        assertEquals(noLinksHtml, app.$.container.innerHTML);
+      });
+
+      test('hides links when speech paused and links disabled', async () => {
+        readingMode.linksEnabled = false;
+        emitEvent(app, ToolbarEvent.LINKS);
+        await microtasksFinished();
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        await microtasksFinished();
+
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        await microtasksFinished();
+
+        assertEquals(noLinksHtml, app.$.container.innerHTML);
+      });
     });
   });
 
