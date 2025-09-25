@@ -10,7 +10,6 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
 
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,35 +60,31 @@ public class TabStateExtractor {
      *     out-of-memory).
      */
     public static @Nullable WebContentsState getWebContentsState(Tab tab) {
+        // The tab is still frozen we can just use the existing state.
         if (tab.getWebContentsState() != null) {
             return tab.getWebContentsState();
         }
 
-        // Native call returns null when buffer allocation needed to serialize the state failed.
-        ByteBuffer buffer = getWebContentsStateAsByteBuffer(tab);
-        if (buffer == null) return null;
-
-        return new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
-    }
-
-    /** Returns an ByteBuffer representing the state of the Tab's WebContents. */
-    private static @Nullable ByteBuffer getWebContentsStateAsByteBuffer(Tab tab) {
+        // The tab is not frozen we need to create a new state. This may be null if buffer
+        // allocation fails.
         LoadUrlParams pendingLoadParams = tab.getPendingLoadParams();
         if (pendingLoadParams == null) {
             WebContents webContents = tab.getWebContents();
             assert webContents != null;
-            return WebContentsStateBridge.getContentsStateAsByteBuffer(webContents);
-        } else {
-            Referrer referrer = pendingLoadParams.getReferrer();
-            return WebContentsStateBridge.createSingleNavigationStateAsByteBuffer(
-                    tab.getProfile(),
-                    tab.getTitle(),
-                    pendingLoadParams.getUrl(),
-                    referrer != null ? referrer.getUrl() : null,
-                    // Policy will be ignored for null referrer url, 0 is just a placeholder.
-                    referrer != null ? referrer.getPolicy() : 0,
-                    pendingLoadParams.getInitiatorOrigin());
+            return WebContentsState.getWebContentsStateFromWebContents(webContents);
         }
+
+        // The tab has a pending load and no WebContents or WebContentsState, we need to create a
+        // new state for the pending load.
+        Referrer referrer = pendingLoadParams.getReferrer();
+        return WebContentsState.createSingleNavigationWebContentsState(
+                tab.getProfile(),
+                tab.getTitle(),
+                pendingLoadParams.getUrl(),
+                referrer != null ? referrer.getUrl() : null,
+                // Policy will be ignored for null referrer url, 0 is just a placeholder.
+                referrer != null ? referrer.getPolicy() : 0,
+                pendingLoadParams.getInitiatorOrigin());
     }
 
     public static void setTabStateForTesting(int tabId, TabState tabState) {

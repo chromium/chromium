@@ -831,10 +831,10 @@ class TabImpl implements Tab {
         assert isHidden() : "Should only freeze and apprend a navigation to a tab that is hidden.";
         freeze();
         Referrer referrer = params.getReferrer();
+        assumeNonNull(mWebContentsState);
         mWebContentsState =
-                WebContentsStateBridge.appendPendingNavigation(
+                mWebContentsState.appendPendingNavigation(
                         mProfile,
-                        assumeNonNull(mWebContentsState),
                         title,
                         params.getUrl(),
                         referrer != null ? referrer.getUrl() : null,
@@ -2206,8 +2206,7 @@ class TabImpl implements Tab {
             assert mWebContentsState != null;
 
             WebContents webContents =
-                    WebContentsStateBridge.restoreContentsFromByteBuffer(
-                            mWebContentsState, getProfile(), isHidden());
+                    mWebContentsState.restoreWebContents(getProfile(), isHidden());
 
             String failedRestoreUrl = UrlConstants.NTP_URL;
             if (webContents == null) {
@@ -2467,14 +2466,14 @@ class TabImpl implements Tab {
 
     /**
      * Delete navigation entries from frozen state matching the predicate.
-     * @param predicate Handle for a deletion predicate interpreted by native code.
-     *                  Only valid during this call frame.
+     *
+     * @param predicate Handle for a deletion predicate interpreted by native code. Only valid
+     *     during this call frame.
      */
     @CalledByNative
     private void deleteNavigationEntriesFromFrozenState(long predicate) {
         if (mWebContentsState == null) return;
-        WebContentsState newState =
-                WebContentsStateBridge.deleteNavigationEntries(mWebContentsState, predicate);
+        WebContentsState newState = mWebContentsState.deleteNavigationEntries(predicate);
         if (newState != null) {
             mWebContentsState = newState;
             notifyNavigationEntriesDeleted();

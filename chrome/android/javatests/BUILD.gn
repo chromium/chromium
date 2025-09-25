@@ -1554,7 +1554,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/status_indicator/StatusIndicatorTest.java",
     "src/org/chromium/chrome/browser/storage/BlobUrlStoreTest.java",
     "src/org/chromium/chrome/browser/survey/ChromeStartupSurveyIntegrationTest.java",
-    "src/org/chromium/chrome/browser/tab/WebContentsStateBridgeTest.java",
+    "src/org/chromium/chrome/browser/tab/WebContentsStateTest.java",
     "src/org/chromium/chrome/browser/tabbed_mode/KeyboardFocusRowManagerTest.java",
     "src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorControllerTest.java",
     "src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinatorTest.java",

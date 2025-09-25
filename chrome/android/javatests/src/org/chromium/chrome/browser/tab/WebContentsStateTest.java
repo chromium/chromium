@@ -32,7 +32,7 @@ import java.io.FileOutputStream;
 /** Tests whether TabState can be restored from disk properly. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class WebContentsStateBridgeTest {
+public class WebContentsStateTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
     private TestTabModelDirectory mTestTabModelDirectory;
     private Profile mProfile;
@@ -41,9 +41,7 @@ public class WebContentsStateBridgeTest {
     public void setUp() {
         mTestTabModelDirectory =
                 new TestTabModelDirectory(
-                        ApplicationProvider.getApplicationContext(),
-                        "WebContentsStateBridgeTest",
-                        null);
+                        ApplicationProvider.getApplicationContext(), "WebContentsStateTest", null);
         mProfile = ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
     }
 
@@ -91,9 +89,7 @@ public class WebContentsStateBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Return a null contents state but don't crash.
-                    Assert.assertNull(
-                            WebContentsStateBridge.restoreContentsFromByteBuffer(
-                                    tabState.contentsState, mProfile, false));
+                    Assert.assertNull(tabState.contentsState.restoreWebContents(mProfile, false));
                 });
     }
 }

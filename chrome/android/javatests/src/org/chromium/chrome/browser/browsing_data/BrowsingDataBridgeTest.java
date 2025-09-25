@@ -50,7 +50,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
-import org.chromium.chrome.browser.tab.WebContentsStateBridge;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.webapps.TestFetchStorageCallback;
 import org.chromium.chrome.browser.webapps.WebappDataStorage;
@@ -313,10 +313,9 @@ public class BrowsingDataBridgeTest {
                                     .getCurrentTabCreator()
                                     .createFrozenTab(state, tab.getId(), 1);
                     restored[0] =
-                            WebContentsStateBridge.restoreContentsFromByteBuffer(
-                                    TabStateExtractor.from(frozen[0]).contentsState,
-                                    mProfile,
-                                    false);
+                            TabStateExtractor.from(frozen[0])
+                                    .contentsState
+                                    .restoreWebContents(mProfile, false);
                 });
 
         // Check content of frozen state.
@@ -342,10 +341,9 @@ public class BrowsingDataBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     restored[0] =
-                            WebContentsStateBridge.restoreContentsFromByteBuffer(
-                                    TabStateExtractor.from(frozen[0]).contentsState,
-                                    mProfile,
-                                    false);
+                            TabStateExtractor.from(frozen[0])
+                                    .contentsState
+                                    .restoreWebContents(mProfile, false);
                 });
 
         controller = restored[0].getNavigationController();
@@ -367,7 +365,7 @@ public class BrowsingDataBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNull(
-                            WebContentsStateBridge.getContentsStateAsByteBuffer(
+                            WebContentsState.getWebContentsStateFromWebContents(
                                     tab.getWebContents()));
                 });
     }

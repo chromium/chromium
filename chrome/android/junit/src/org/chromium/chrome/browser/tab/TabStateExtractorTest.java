@@ -40,7 +40,7 @@ public class TabStateExtractorTest {
     private static final String REFERRER_URL = "referrer_url";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private WebContentsStateBridge.Natives mWebContentsBridgeJni;
+    @Mock private WebContentsState.Natives mWebContentsBridgeJni;
     @Mock private Profile mProfile;
     @Mock private Tab mTabMock;
     @Mock private WebContents mWebContentsMock;
@@ -50,7 +50,7 @@ public class TabStateExtractorTest {
 
     @Before
     public void setUp() {
-        WebContentsStateBridgeJni.setInstanceForTesting(mWebContentsBridgeJni);
+        WebContentsStateJni.setInstanceForTesting(mWebContentsBridgeJni);
 
         doReturn(new UserDataHost()).when(mTabMock).getUserDataHost();
     }

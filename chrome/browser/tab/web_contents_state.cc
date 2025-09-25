@@ -34,7 +34,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/tab/jni_headers/WebContentsStateBridge_jni.h"
+#include "chrome/browser/tab/jni_headers/WebContentsState_jni.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -694,7 +694,7 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
 // Static JNI methods.
 
 static ScopedJavaLocalRef<jobject>
-JNI_WebContentsStateBridge_RestoreContentsFromByteBuffer(
+JNI_WebContentsState_RestoreContentsFromByteBuffer(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& state,
@@ -706,7 +706,7 @@ JNI_WebContentsStateBridge_RestoreContentsFromByteBuffer(
 }
 
 static ScopedJavaLocalRef<jobject>
-JNI_WebContentsStateBridge_GetContentsStateAsByteBuffer(
+JNI_WebContentsState_GetContentsStateAsByteBuffer(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents) {
   WebContents* web_contents =
@@ -715,7 +715,7 @@ JNI_WebContentsStateBridge_GetContentsStateAsByteBuffer(
 }
 
 static base::android::ScopedJavaLocalRef<jobject>
-JNI_WebContentsStateBridge_DeleteNavigationEntries(
+JNI_WebContentsState_DeleteNavigationEntries(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& state,
     jint saved_state_version,
@@ -731,7 +731,7 @@ JNI_WebContentsStateBridge_DeleteNavigationEntries(
 }
 
 static ScopedJavaLocalRef<jobject>
-JNI_WebContentsStateBridge_CreateSingleNavigationStateAsByteBuffer(
+JNI_WebContentsState_CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jstring>& title,
@@ -744,8 +744,7 @@ JNI_WebContentsStateBridge_CreateSingleNavigationStateAsByteBuffer(
       initiator_origin);
 }
 
-static ScopedJavaLocalRef<jobject>
-JNI_WebContentsStateBridge_AppendPendingNavigation(
+static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& state,
@@ -764,7 +763,7 @@ JNI_WebContentsStateBridge_AppendPendingNavigation(
 }
 
 static ScopedJavaLocalRef<jstring>
-JNI_WebContentsStateBridge_GetDisplayTitleFromByteBuffer(
+JNI_WebContentsState_GetDisplayTitleFromByteBuffer(
     JNIEnv* env,
     const JavaParamRef<jobject>& state,
     jint saved_state_version) {
@@ -778,7 +777,7 @@ JNI_WebContentsStateBridge_GetDisplayTitleFromByteBuffer(
 }
 
 static ScopedJavaLocalRef<jstring>
-JNI_WebContentsStateBridge_GetVirtualUrlFromByteBuffer(
+JNI_WebContentsState_GetVirtualUrlFromByteBuffer(
     JNIEnv* env,
     const JavaParamRef<jobject>& state,
     jint saved_state_version) {
