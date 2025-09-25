@@ -100,9 +100,6 @@ export class TabStripController {
 
   private async loadTabStripModel_() {
     const tabSnapshot = await this.tabStripService_.getTabs();
-    // TODO(crbug.com/439844342): add type signature.
-    this.tabStripObservation_.bind(tabSnapshot.stream.handle);
-
     const tabStrip = tabSnapshot.tabStrip;
     const processContainer = (container: Container) => {
       if (!container || !container.children) {
@@ -117,6 +114,9 @@ export class TabStripController {
       });
     };
     processContainer(tabStrip);
+
+    // Now initial state is processed, start listening to events.
+    this.tabStripObservation_.bind(tabSnapshot.stream.handle);
   }
 
   private addTab_(tab: Tab) {
