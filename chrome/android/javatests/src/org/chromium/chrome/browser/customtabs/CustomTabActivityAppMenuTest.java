@@ -669,6 +669,8 @@ public class CustomTabActivityAppMenuTest {
      */
     @Test
     @SmallTest
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenInIncognitoBrowser() throws Exception {
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(false);
         // Augment the CustomTabsSession to catch the callback.

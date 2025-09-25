@@ -48,6 +48,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
 @Batch(Batch.PER_CLASS)
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
+// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+@DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
 public class TabSwitcherActionMenuBatchedPTTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =

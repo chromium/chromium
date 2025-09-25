@@ -53,6 +53,8 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenNewTab() {
         WebPageStation page = mCtaTestRule.startOnBlankPage();
 
@@ -82,6 +84,8 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testCloseTab() {
         WebPageStation page = mCtaTestRule.startOnBlankPage();
 

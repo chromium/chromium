@@ -888,6 +888,8 @@ public class ContextMenuTest {
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338969612
     @Feature({"Browser", "ContextMenu"})
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testContextMenuRetrievesLinkOptions() throws TimeoutException {
         Tab tab = sDownloadTestRule.getActivityTab();
         mMenuCoordinator = ContextMenuUtils.openContextMenu(tab, "testLink");
@@ -982,6 +984,8 @@ public class ContextMenuTest {
     @SmallTest
     @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338969612
     @Feature({"Browser", "ContextMenu"})
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testContextMenuRetrievesImageLinkOptions() throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
 
