@@ -7,8 +7,11 @@
 #include <limits>
 #include <memory>
 
+#include "extensions/buildflags/buildflags.h"
 #include "net/cookies/canonical_cookie.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
