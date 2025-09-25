@@ -328,6 +328,7 @@ public class ManageSyncSettingsTest {
     public void testSignInWithManagedDataTypes() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
+        onViewWaiting(allOf(is(fragment.getView()), isDisplayed()));
 
         Map<Integer, ChromeSwitchPreference> dataTypes = getAccountDataTypes(fragment);
         // When one or more sync types are managed, the respective preference should be disabled and
