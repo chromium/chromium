@@ -444,6 +444,11 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
 
   EXPECT_GE(fake_observer.unused_tabs_processed_count(), 1);
   EXPECT_EQ(fake_observer.trigger_declutter_ui_visibility_count(), 0);
+
+  // Reset focused_tab_strip_model_for_testing_ to eliminate reliance on browser
+  // list ordering during destruction.
+  resource_coordinator::GetTabLifecycleUnitSource()
+      ->SetFocusedTabStripModelForTesting(nullptr);
 }
 
 class TabDeclutterControllerDuplicateTabsTest

@@ -204,24 +204,32 @@ void BrowserCloseManager::CloseBrowsers() {
   }
 #endif
 
-  BrowserList::GetInstance()->ForEachCurrentAndNewBrowser([](Browser* browser) {
-    bool ignore_unload_handlers =
-        browser_shutdown::ShouldIgnoreUnloadHandlers();
-    browser->set_force_skip_warning_user_on_close(ignore_unload_handlers);
-    browser->window()->Close();
-    if (ignore_unload_handlers) {
-      // This path is hit during logoff/power-down. It could be the case that
-      // there are some tabs which would have prevented the browser from closing
-      // (Ex: A form with an open dialog asking for permission to leave the
-      // current site). Since we are attempting to end the session, we will
-      // force skip these warnings and manually close all the tabs to make sure
-      // the browser is destroyed and cleanup can happen.
-      browser->tab_strip_model()->CloseAllTabs();
-      browser->SynchronouslyDestroyBrowser();
-      // Destroying the browser should have removed it from the browser list.
-      DCHECK(!base::Contains(*BrowserList::GetInstance(), browser));
-    }
-  });
+  ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
+      [](BrowserWindowInterface* browser_window) {
+        bool ignore_unload_handlers =
+            browser_shutdown::ShouldIgnoreUnloadHandlers();
+
+        Browser* const browser = browser_window->GetBrowserForMigrationOnly();
+        browser->set_force_skip_warning_user_on_close(ignore_unload_handlers);
+        browser_window->GetWindow()->Close();
+
+        if (ignore_unload_handlers) {
+          // This path is hit during logoff/power-down. It could be the case
+          // that there are some tabs which would have prevented the browser
+          // from closing (Ex: A form with an open dialog asking for permission
+          // to leave the current site). Since we are attempting to end the
+          // session, we will force skip these warnings and manually close all
+          // the tabs to make sure the browser is destroyed and cleanup can
+          // happen.
+          browser_window->GetTabStripModel()->CloseAllTabs();
+          browser->SynchronouslyDestroyBrowser();
+
+          // Destroying the browser should have removed it from the browser
+          // list.
+          DCHECK(!base::Contains(*BrowserList::GetInstance(), browser));
+        }
+        return true;
+      });
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   NotificationUIManager* notification_manager =
