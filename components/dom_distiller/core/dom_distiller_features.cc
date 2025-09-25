@@ -39,11 +39,11 @@ constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDistiller{
 #endif
 constexpr base::FeatureParam<int> kReaderModeUseReadabilityHeuristicMinScore{
     &kReaderModeUseReadability, /*name=*/"heuristic_min_score",
-    /*default_value=*/35};
+    /*default_value=*/50};
 constexpr base::FeatureParam<int>
     kReaderModeUseReadabilityHeuristicMinContentLength{
         &kReaderModeUseReadability, /*name=*/"heuristic_min_content_length",
-        /*default_value=*/140};
+        /*default_value=*/160};
 constexpr base::FeatureParam<int> kReaderModeUseReadabilityMinContentLength{
     &kReaderModeUseReadability, /*name=*/"min_content_length",
     /*default_value=*/100};
