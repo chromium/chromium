@@ -4,7 +4,7 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {currentReadHighlightClass, MovementGranularity, NodeStore, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {currentReadHighlightClass, MovementGranularity, NodeStore, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, ReadAloudNode, SentenceHighlight, WordHighlight} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertLT, assertNotEquals, assertStringContains, assertStringExcludes, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -413,6 +413,100 @@ suite('Movement', () => {
           `<span class="${currentReadHighlightClass}">${text1}</span>`, id1);
       assertHtml(
           `<span class="${currentReadHighlightClass}">${text2}</span>`, id2);
+    });
+
+    test('sentence at start of node sets ancestors', () => {
+      const id = 1;
+      const text1 = 'I have often dreamed. ';
+      const text2 = 'Of a far off place. ';
+      const p = document.createElement('p');
+      const textNode = document.createTextNode(text1 + text2);
+      p.appendChild(textNode);
+      document.body.appendChild(p);
+      nodeStore.setDomNode(p, id);
+      const segments = [
+        {
+          node: ReadAloudNode.create(p)!,
+          start: 0,
+          length: text1.length,
+        },
+      ];
+
+      new SentenceHighlight(segments);
+
+      // The highlight should consist of the current highlight and a suffix.
+      const parent = document.querySelector('.' + PARENT_OF_HIGHLIGHT_CLASS);
+      assertTrue(!!parent);
+      const childNodes = parent.childNodes;
+      assertEquals(2, childNodes.length);
+      const currentHighlight = childNodes.item(0);
+      assertTrue(!!currentHighlight);
+      assertEquals(
+          currentReadHighlightClass,
+          (currentHighlight as HTMLElement).className);
+      const currentText = currentHighlight.firstChild;
+      assertTrue(!!currentText);
+      // The new highlight should replace the original paragraph, and the new
+      // text nodes should have set their ancestor to be the highlight.
+      const node = nodeStore.getDomNode(id);
+      const currentAncestor = nodeStore.getAncestor(currentText);
+      assertTrue(!!currentAncestor);
+      assertEquals(node, currentAncestor.node);
+      assertEquals(0, currentAncestor.offset);
+      const suffixAncestor = nodeStore.getAncestor(childNodes.item(1));
+      assertTrue(!!suffixAncestor);
+      assertEquals(node, suffixAncestor.node);
+      assertEquals(text1.length, suffixAncestor.offset);
+    });
+
+
+    test('sentence at end of node sets ancestors', () => {
+      const id = 1;
+      const text1 = 'Where a great warm welcome. ';
+      const text2 = 'Will be waiting for me. ';
+      const p = document.createElement('p');
+      const textNode = document.createTextNode(text1 + text2);
+      p.appendChild(textNode);
+      document.body.appendChild(p);
+      nodeStore.setDomNode(p, id);
+      const segments = [
+        {
+          node: ReadAloudNode.create(p)!,
+          start: text1.length,
+          length: text1.length + text2.length,
+        },
+      ];
+
+      new SentenceHighlight(segments);
+
+      // The highlight should consist of the prefix and the current highlight.
+      const parent = document.querySelector('.' + PARENT_OF_HIGHLIGHT_CLASS);
+      assertTrue(!!parent);
+      const childNodes = parent.childNodes;
+      assertEquals(2, childNodes.length);
+      const prefix = childNodes.item(0);
+      assertTrue(!!prefix);
+      assertEquals(
+          previousReadHighlightClass, (prefix as HTMLElement).className);
+      const prefixText = prefix.firstChild;
+      assertTrue(!!prefixText);
+      const current = childNodes.item(1);
+      assertTrue(!!current);
+      assertEquals(
+          currentReadHighlightClass, (current as HTMLElement).className);
+      const currentText = current.firstChild;
+      assertTrue(!!currentText);
+      // The new highlight should replace the original paragraph, and the new
+      // text nodes should have set their ancestor to be the highlight.
+      const node = nodeStore.getDomNode(id);
+      const prefixAncestor = nodeStore.getAncestor(prefixText);
+      assertTrue(!!prefixAncestor);
+      assertEquals(node, prefixAncestor.node);
+      assertEquals(0, prefixAncestor.offset);
+      const currentAncestor = nodeStore.getAncestor(currentText);
+      assertTrue(!!currentAncestor);
+      assertEquals(node, currentAncestor.node);
+      assertEquals(text1.length, currentAncestor.offset);
     });
 
     test(

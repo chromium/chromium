@@ -8,7 +8,7 @@ import {BrowserProxy, ContentController, ContentType, NodeStore, SpeechBrowserPr
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, setSimpleTreeWithText, setupBasicSpeech} from './common.js';
+import {createApp, emitEvent, setSimpleNodeStoreWithTextAndModel, setSimpleTreeWithText, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
@@ -296,5 +296,57 @@ suite('AppContent', () => {
         assertEquals(expectedHtml, app.$.container.innerHTML);
       });
     });
+  });
+
+  suite('on speech active change', () => {
+    test('selection allowed by default', () => {
+      assertEquals(
+          'user-select-disabled-when-speech-active-false',
+          app.$.container.className);
+      assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
+    });
+
+    test('selection disallowed when speech active', async () => {
+      setSimpleNodeStoreWithTextAndModel('Been there, done that');
+
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      assertEquals(
+          'user-select-disabled-when-speech-active-true',
+          app.$.container.className);
+      assertEquals('none', window.getComputedStyle(app.$.container).userSelect);
+    });
+
+    test('selection allowed after speech stops', async () => {
+      setSimpleNodeStoreWithTextAndModel('Who do you think you\'re kidding?');
+
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+      await microtasksFinished();
+
+      assertEquals(
+          'user-select-disabled-when-speech-active-false',
+          app.$.container.className);
+      assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
+    });
+  });
+
+  test('playing from selection clears selection', () => {
+    const p = document.createElement('p');
+    p.innerText = 'He\'s the earth and heaven to ya';
+    document.body.appendChild(p);
+    const selection = app.getSelection();
+    assertTrue(!!selection);
+    const range = new Range();
+    range.setStartBefore(p);
+    range.setEndAfter(p);
+    selection.addRange(range);
+    assertEquals(p.innerText, selection.toString());
+
+    app.onPlayingFromSelection();
+
+    assertEquals('', selection.toString());
   });
 });

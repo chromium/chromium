@@ -25,7 +25,7 @@ export type {SimpleActionMenuElement} from './menus/simple_action_menu.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, ReadAloudHighlightState, ReadAloudSettingsChange, ReadAnythingNewPage, ReadAnythingSettingsChange, ReadAnythingSpeechError, ReadAnythingVoiceType} from './metrics_browser_proxy.js';
 export {ESTIMATED_WORDS_PER_MS, MIN_MS_TO_READ, NodeStore} from './node_store.js';
 export {ReadAloudHighlighter} from './read_aloud/highlighter.js';
-export {currentReadHighlightClass, Highlight, MovementGranularity, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from './read_aloud/movement.js';
+export {currentReadHighlightClass, Highlight, MovementGranularity, PARENT_OF_HIGHLIGHT_CLASS, PhraseHighlight, previousReadHighlightClass, SentenceHighlight, WordHighlight} from './read_aloud/movement.js';
 export {getReadAloudModel, ReadAloudModelBrowserProxy, setInstance} from './read_aloud/read_aloud_model_browser_proxy.js';
 export {ReadAloudNodeStore} from './read_aloud/read_aloud_node_store.js';
 export {AncestorNode, AxReadAloudNode, DomReadAloudNode, ReadAloudNode, Segment} from './read_aloud/read_aloud_types.js';

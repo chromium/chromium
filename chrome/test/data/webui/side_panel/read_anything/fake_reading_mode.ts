@@ -294,6 +294,11 @@ export class FakeReadingMode {
     return [...this.savedLanguagePref.values()];
   }
 
+  // Signals that a system voice was used during a speech playback session,
+  // which will be used to log the installation state of the TTS engine
+  // extension.
+  logExtensionState() {}
+
   // Called when a user makes a selection change. AnchorNodeID and
   // focusAXNodeID are AXNodeIDs which identify the anchor and focus AXNodes
   // in the main pane. The selection can either be forward or backwards.

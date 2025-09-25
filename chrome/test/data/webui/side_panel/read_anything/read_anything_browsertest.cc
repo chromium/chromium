@@ -153,14 +153,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FakeTreeBuilderTest) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
-                       UpdateContentSelectionWithHighlights) {
-  RunSidePanelTest(
-      "side_panel/read_anything/"
-      "update_content_selection_with_highlights_test.js",
-      "mocha.run()");
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, DownloadNotification) {
   RunSidePanelTest("side_panel/read_anything/download_notification_test.js",
@@ -181,21 +173,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LinksToggledIntegration) {
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechUsesMaxTextLength) {
   RunSidePanelTest(
       "side_panel/read_anything/speech_uses_max_text_length_test.js",
-      "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
-                       ReadAloud_UpdateContentSelection) {
-  RunSidePanelTest(
-      "side_panel/read_anything/read_aloud_update_content_selection_test.js",
-      "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
-                       ReadAloud_UpdateContentSelectionPDF) {
-  RunSidePanelTest(
-      "side_panel/read_anything/"
-      "read_aloud_update_content_selection_pdf_test.js",
       "mocha.run()");
 }
 
