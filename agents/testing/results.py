@@ -87,7 +87,7 @@ class ResultThread(threading.Thread):
             print_output_on_success: If true, test logs will always be printed
                 to stdout instead of only for failed tests.
         """
-        super().__init__(**kwargs)
+        super().__init__(daemon=True, **kwargs)
         self._input_queue = input_queue
         self._failed_result_queue = failed_result_queue
         self._tests_run = tests_run
