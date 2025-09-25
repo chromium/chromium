@@ -5371,6 +5371,13 @@ data/accessibility/html/select-in-canvas-expected-mac.txt
 data/accessibility/html/select-in-canvas-expected-uia-win.txt
 data/accessibility/html/select-in-canvas-expected-win.txt
 data/accessibility/html/select-in-canvas.html
+data/accessibility/html/select-listbox-modes-expected-android.txt
+data/accessibility/html/select-listbox-modes-expected-auralinux.txt
+data/accessibility/html/select-listbox-modes-expected-blink.txt
+data/accessibility/html/select-listbox-modes-expected-mac.txt
+data/accessibility/html/select-listbox-modes-expected-uia-win.txt
+data/accessibility/html/select-listbox-modes-expected-win.txt
+data/accessibility/html/select-listbox-modes.html
 data/accessibility/html/select-open-expected-android-assist-data.txt
 data/accessibility/html/select-open-expected-android-external.txt
 data/accessibility/html/select-open-expected-android.txt

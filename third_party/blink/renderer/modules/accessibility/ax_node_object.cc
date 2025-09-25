@@ -754,7 +754,8 @@ AXObject* AXNodeObject::ActiveDescendant() const {
       // TODO(accessibility): as a simplification, just expose the active
       // descendant of a <select size=1> at all times, like we do for other
       // active descendant situations,
-      return select->PopupIsVisible() || select->IsFocusedElementInDocument()
+      return !select->IsMultiple() && (select->PopupIsVisible() ||
+                                       select->IsFocusedElementInDocument())
                  ? AXObjectCache().Get(select->OptionToBeShown())
                  : nullptr;
     }
@@ -2433,7 +2434,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   }
 
   if (auto* select_element = DynamicTo<HTMLSelectElement>(*GetNode())) {
-    if (select_element->UsesMenuList() && !select_element->IsMultiple()) {
+    if (select_element->UsesMenuList()) {
       return ax::mojom::blink::Role::kComboBoxSelect;
     } else {
       return ax::mojom::blink::Role::kListBox;
@@ -2449,8 +2450,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
 
   if (auto* option = DynamicTo<HTMLOptionElement>(*GetNode())) {
     HTMLSelectElement* select_element = option->OwnerSelectElement();
-    if (select_element && select_element->UsesMenuList() &&
-        !select_element->IsMultiple()) {
+    if (select_element && select_element->UsesMenuList()) {
       return ax::mojom::blink::Role::kMenuListOption;
     } else {
       return ax::mojom::blink::Role::kListBoxOption;

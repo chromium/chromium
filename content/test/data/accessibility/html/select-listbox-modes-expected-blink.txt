@@ -1,0 +1,31 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='no attributes:'
+++++++++staticText name='no attributes:'
+++++++++++inlineTextBox name='no attributes:'
+++++++comboBoxSelect collapsed value='one'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='one' selected=true
+++++++++++menuListOption invisible name='two' selected=false
+++++++heading name='multiple:'
+++++++++staticText name='multiple:'
+++++++++++inlineTextBox name='multiple:'
+++++++listBox multiselectable
+++++++++genericContainer ignored
+++++++++++listBoxOption name='one' selected=false
+++++++++++listBoxOption name='two' selected=false
+++++++heading name='size=4:'
+++++++++staticText name='size=4:'
+++++++++++inlineTextBox name='size=4:'
+++++++listBox
+++++++++genericContainer ignored
+++++++++++listBoxOption name='one' selected=false
+++++++++++listBoxOption name='two' selected=false
+++++++heading name='multiple size=1:'
+++++++++staticText name='multiple size=1:'
+++++++++++inlineTextBox name='multiple size=1:'
+++++++comboBoxSelect collapsed multiselectable value='0 selected'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption invisible name='one' selected=false
+++++++++++menuListOption invisible name='two' selected=false

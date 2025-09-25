@@ -5865,7 +5865,6 @@ const AXObject* AXObject::AncestorMenuList() const {
     if (ax_menu_list->IsMenuList()) {
       DCHECK(IsA<HTMLSelectElement>(ax_menu_list->GetNode()));
       DCHECK(To<HTMLSelectElement>(ax_menu_list->GetNode())->UsesMenuList());
-      DCHECK(!To<HTMLSelectElement>(ax_menu_list->GetNode())->IsMultiple());
       return ax_menu_list;
     }
   }
@@ -6074,7 +6073,7 @@ ax::mojom::blink::Role AXObject::DetermineAriaRole() const {
       role = ax::mojom::blink::Role::kTextFieldWithComboBox;
     } else if (auto* select_element =
                    DynamicTo<HTMLSelectElement>(*GetNode())) {
-      if (select_element->UsesMenuList() && !select_element->IsMultiple()) {
+      if (select_element->UsesMenuList()) {
         // This is a select element. Don't set the aria role for it.
         role = ax::mojom::blink::Role::kUnknown;
       }
