@@ -574,7 +574,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyAllProxiesBad) {
                            "GET", std::move(retry_map), &result);
 
   EXPECT_TRUE(result.is_direct());
-  EXPECT_TRUE(result.is_for_ip_protection());
+  EXPECT_FALSE(result.is_for_ip_protection());
   histogram_tester_.ExpectUniqueSample(kProxyResolutionHistogram,
                                        ProxyResolutionResult::kAttemptProxy, 1);
 }

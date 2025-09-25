@@ -3142,7 +3142,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached"
+<histogram name="Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2"
     units="ms" expires_after="2026-06-21">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>
@@ -3252,7 +3252,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached2" units="ms"
+<histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached3" units="ms"
     expires_after="2026-06-21">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>

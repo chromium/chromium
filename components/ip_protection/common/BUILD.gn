@@ -356,6 +356,25 @@ source_set("ip_protection_proxy_delegate_unittest") {
   ]
 }
 
+source_set("ip_protection_url_request_http_job_unittest") {
+  testonly = true
+  sources = [ "ip_protection_url_request_http_job_unittest.cc" ]
+  deps = [
+    ":ip_protection_core",
+    ":ip_protection_data_types",
+    ":ip_protection_proxy_delegate",
+    ":ip_protection_telemetry",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net:gtest_util",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("ip_protection_telemetry") {
   sources = [ "ip_protection_telemetry.h" ]
   public_deps = [

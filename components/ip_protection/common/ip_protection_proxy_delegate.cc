@@ -181,6 +181,28 @@ void IpProtectionProxyDelegate::OnResolveProxy(
             << ") - setting proxy list (before deprioritization) to "
             << proxy_list.ToDebugString();
   }
+
+  if (!net::features::kIpPrivacyDirectOnly.Get()) {
+    proxy_list.DeprioritizeBadProxyChains(proxy_retry_info);
+    if (proxy_list.IsEmpty()) {
+      return;
+    }
+    // Two cases are possible here:
+    //   1. All IPP Proxy Chains were marked as bad.
+    //   2. IPPCore returned no chains.
+    //
+    // In either case, using a proxy chain where is_for_ip_protection() is true
+    // is misleading since IPP is not used at all.
+    if (proxy_list.First().is_direct()) {
+      VLOG(3) << "IPPD::OnResolveProxy(" << url << ", "
+              << (top_frame_site.has_value() ? top_frame_site.value()
+                                             : net::SchemefulSite())
+              << ") - all proxy chains deprioritized: "
+              << proxy_list.ToDebugString();
+      return;
+    }
+  }
+
   result->OverrideProxyList(MergeProxyRules(result->proxy_list(), proxy_list));
   result->DeprioritizeBadProxyChains(proxy_retry_info);
   return;

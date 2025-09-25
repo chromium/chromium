@@ -2076,7 +2076,7 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       auto& proxy_chain = response_info_->proxy_chain;
       bool direct_only = features::kIpPrivacyDirectOnly.Get();
       if (proxy_chain.is_for_ip_protection()) {
-        base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached2",
+        base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached3",
                                 total_time);
         base::UmaHistogramCustomCounts("Net.HttpJob.IpProtection.BytesSent2",
                                        GetTotalSentBytes(), 1, 50000000, 50);
@@ -2137,7 +2137,7 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
         } else {
           ipp_result = IpProtectionJobResult::kDirectFallback;
           base::UmaHistogramTimes(
-              "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached",
+              "Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2",
               total_time);
           base::UmaHistogramCustomCounts(
               "Net.HttpJob.IpProtection.Fallback.BytesSent",
