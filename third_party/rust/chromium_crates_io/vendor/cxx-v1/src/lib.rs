@@ -363,7 +363,7 @@
 //! </table>
 
 #![no_std]
-#![doc(html_root_url = "https://docs.rs/cxx/1.0.184")]
+#![doc(html_root_url = "https://docs.rs/cxx/1.0.185")]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     improper_ctypes,
@@ -509,7 +509,6 @@ pub mod private {
     pub use crate::rust_vec::RustVec;
     pub use crate::string::StackString;
     pub use crate::unwind::prevent_unwind;
-    pub use core::{concat, module_path};
     pub use cxxbridge_macro::type_id;
 }
 

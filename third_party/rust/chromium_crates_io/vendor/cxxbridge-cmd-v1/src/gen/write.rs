@@ -2123,6 +2123,7 @@ fn write_cxx_vector(out: &mut OutFile, key: &NamedImplKey) {
     out.include.cstddef = true;
     out.include.utility = true;
     out.builtin.destroy = true;
+    out.builtin.vector = true;
     out.pragma.dollar_in_identifier = true;
     out.pragma.missing_declarations = true;
 
@@ -2165,10 +2166,14 @@ fn write_cxx_vector(out: &mut OutFile, key: &NamedImplKey) {
     begin_function_definition(out);
     writeln!(
         out,
-        "void cxxbridge1$std$vector${}$reserve(::std::vector<{}> *s, ::std::size_t new_cap) noexcept {{",
+        "bool cxxbridge1$std$vector${}$reserve(::std::vector<{}> *s, ::std::size_t new_cap) noexcept {{",
         instance, inner,
     );
-    writeln!(out, "  s->reserve(new_cap);");
+    writeln!(
+        out,
+        "  return ::rust::if_move_constructible<{}>::reserve(*s, new_cap);",
+        inner,
+    );
     writeln!(out, "}}");
 
     if out.types.is_maybe_trivial(element) {

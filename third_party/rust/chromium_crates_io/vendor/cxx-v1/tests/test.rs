@@ -8,7 +8,7 @@
     clippy::unit_cmp
 )]
 
-use cxx::{SharedPtr, UniquePtr};
+use cxx::{CxxVector, SharedPtr, UniquePtr};
 use cxx_test_suite::module::ffi2;
 use cxx_test_suite::{cast, ffi, R};
 use std::cell::Cell;
@@ -340,6 +340,13 @@ fn test_shared_ptr_from_raw_undefined() {
 #[should_panic = "tests::Private is not destructible"]
 fn test_shared_ptr_from_raw_private() {
     unsafe { SharedPtr::<ffi::Private>::from_raw(ptr::null_mut()) };
+}
+
+#[test]
+#[should_panic = "tests::Unmovable is not move constructible"]
+fn test_vector_reserve_unmovable() {
+    let mut vector = CxxVector::<ffi::Unmovable>::new();
+    vector.pin_mut().reserve(10);
 }
 
 #[test]

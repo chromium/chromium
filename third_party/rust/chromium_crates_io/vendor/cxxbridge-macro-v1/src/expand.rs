@@ -256,8 +256,8 @@ fn expand_struct_operators(strct: &Struct) -> TokenStream {
                     #cfg_and_lint_attrs
                     #[doc(hidden)]
                     #[#UnsafeAttr(#ExportNameAttr = #link_name)]
-                    extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> bool {
-                        let __fn = concat!("<", module_path!(), #prevent_unwind_label);
+                    extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> ::cxx::core::primitive::bool {
+                        let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_label);
                         ::cxx::private::prevent_unwind(__fn, || *lhs == *rhs)
                     }
                 });
@@ -270,8 +270,8 @@ fn expand_struct_operators(strct: &Struct) -> TokenStream {
                         #cfg_and_lint_attrs
                         #[doc(hidden)]
                         #[#UnsafeAttr(#ExportNameAttr = #link_name)]
-                        extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> bool {
-                            let __fn = concat!("<", module_path!(), #prevent_unwind_label);
+                        extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> ::cxx::core::primitive::bool {
+                            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_label);
                             ::cxx::private::prevent_unwind(__fn, || *lhs != *rhs)
                         }
                     });
@@ -285,8 +285,8 @@ fn expand_struct_operators(strct: &Struct) -> TokenStream {
                     #cfg_and_lint_attrs
                     #[doc(hidden)]
                     #[#UnsafeAttr(#ExportNameAttr = #link_name)]
-                    extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> bool {
-                        let __fn = concat!("<", module_path!(), #prevent_unwind_label);
+                    extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> ::cxx::core::primitive::bool {
+                        let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_label);
                         ::cxx::private::prevent_unwind(__fn, || *lhs < *rhs)
                     }
                 });
@@ -298,8 +298,8 @@ fn expand_struct_operators(strct: &Struct) -> TokenStream {
                     #cfg_and_lint_attrs
                     #[doc(hidden)]
                     #[#UnsafeAttr(#ExportNameAttr = #link_name)]
-                    extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> bool {
-                        let __fn = concat!("<", module_path!(), #prevent_unwind_label);
+                    extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> ::cxx::core::primitive::bool {
+                        let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_label);
                         ::cxx::private::prevent_unwind(__fn, || *lhs <= *rhs)
                     }
                 });
@@ -312,8 +312,8 @@ fn expand_struct_operators(strct: &Struct) -> TokenStream {
                         #cfg_and_lint_attrs
                         #[doc(hidden)]
                         #[#UnsafeAttr(#ExportNameAttr = #link_name)]
-                        extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> bool {
-                            let __fn = concat!("<", module_path!(), #prevent_unwind_label);
+                        extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> ::cxx::core::primitive::bool {
+                            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_label);
                             ::cxx::private::prevent_unwind(__fn, || *lhs > *rhs)
                         }
                     });
@@ -325,8 +325,8 @@ fn expand_struct_operators(strct: &Struct) -> TokenStream {
                         #cfg_and_lint_attrs
                         #[doc(hidden)]
                         #[#UnsafeAttr(#ExportNameAttr = #link_name)]
-                        extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> bool {
-                            let __fn = concat!("<", module_path!(), #prevent_unwind_label);
+                        extern "C" fn #local_name #generics(lhs: &#ident #generics, rhs: &#ident #generics) -> ::cxx::core::primitive::bool {
+                            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_label);
                             ::cxx::private::prevent_unwind(__fn, || *lhs >= *rhs)
                         }
                     });
@@ -341,8 +341,8 @@ fn expand_struct_operators(strct: &Struct) -> TokenStream {
                     #[doc(hidden)]
                     #[#UnsafeAttr(#ExportNameAttr = #link_name)]
                     #[allow(clippy::cast_possible_truncation)]
-                    extern "C" fn #local_name #generics(this: &#ident #generics) -> usize {
-                        let __fn = concat!("<", module_path!(), #prevent_unwind_label);
+                    extern "C" fn #local_name #generics(this: &#ident #generics) -> ::cxx::core::primitive::usize {
+                        let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_label);
                         ::cxx::private::prevent_unwind(__fn, || ::cxx::private::hash(this))
                     }
                 });
@@ -965,9 +965,9 @@ fn expand_function_pointer_trampoline(
                     fn trampoline();
                 }
                 #shim
-                trampoline as usize as *const ::cxx::core::ffi::c_void
+                trampoline as ::cxx::core::primitive::usize as *const ::cxx::core::ffi::c_void
             },
-            ptr: #var as usize as *const ::cxx::core::ffi::c_void,
+            ptr: #var as ::cxx::core::primitive::usize as *const ::cxx::core::ffi::c_void,
         };
     }
 }
@@ -1065,12 +1065,12 @@ fn expand_rust_type_layout(ety: &ExternType, types: &Types) -> TokenStream {
             }
             #[doc(hidden)]
             #[#UnsafeAttr(#ExportNameAttr = #link_sizeof)]
-            extern "C" fn #local_sizeof() -> usize {
+            extern "C" fn #local_sizeof() -> ::cxx::core::primitive::usize {
                 __AssertSized::<#ident #lifetimes>().size()
             }
             #[doc(hidden)]
             #[#UnsafeAttr(#ExportNameAttr = #link_alignof)]
-            extern "C" fn #local_alignof() -> usize {
+            extern "C" fn #local_alignof() -> ::cxx::core::primitive::usize {
                 __AssertSized::<#ident #lifetimes>().align()
             }
         }
@@ -1309,7 +1309,7 @@ fn expand_rust_function_shim_impl(
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_name)]
         unsafe extern "C" fn #local_name #generics(#(#all_args,)* #outparam #pointer) #ret {
-            let __fn = ::cxx::private::concat!(::cxx::private::module_path!(), #prevent_unwind_label);
+            let __fn = ::cxx::core::concat!(::cxx::core::module_path!(), #prevent_unwind_label);
             #wrap_super
             #expr
         }
@@ -1651,7 +1651,7 @@ fn expand_rust_box(
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_drop)]
         unsafe extern "C" fn #local_drop #impl_generics(this: *mut ::cxx::alloc::boxed::Box<#ident #ty_generics>) {
-            let __fn = concat!("<", module_path!(), #prevent_unwind_drop_label);
+            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
             ::cxx::private::prevent_unwind(__fn, || unsafe { ::cxx::core::ptr::drop_in_place(this) });
         }
     }
@@ -1716,7 +1716,7 @@ fn expand_rust_vec(
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_drop)]
         unsafe extern "C" fn #local_drop #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>) {
-            let __fn = concat!("<", module_path!(), #prevent_unwind_drop_label);
+            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
             ::cxx::private::prevent_unwind(
                 __fn,
                 || unsafe { ::cxx::core::ptr::drop_in_place(this) },
@@ -1726,7 +1726,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_len)]
-        unsafe extern "C" fn #local_len #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> usize {
+        unsafe extern "C" fn #local_len #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> ::cxx::core::primitive::usize {
             // No prevent_unwind: cannot panic.
             unsafe { (*this).len() }
         }
@@ -1734,7 +1734,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_capacity)]
-        unsafe extern "C" fn #local_capacity #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> usize {
+        unsafe extern "C" fn #local_capacity #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> ::cxx::core::primitive::usize {
             // No prevent_unwind: cannot panic.
             unsafe { (*this).capacity() }
         }
@@ -1750,7 +1750,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_reserve_total)]
-        unsafe extern "C" fn #local_reserve_total #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, new_cap: usize) {
+        unsafe extern "C" fn #local_reserve_total #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, new_cap: ::cxx::core::primitive::usize) {
             // No prevent_unwind: the global allocator is not allowed to panic.
             unsafe {
                 (*this).reserve_total(new_cap);
@@ -1760,7 +1760,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_set_len)]
-        unsafe extern "C" fn #local_set_len #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: usize) {
+        unsafe extern "C" fn #local_set_len #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: ::cxx::core::primitive::usize) {
             // No prevent_unwind: cannot panic.
             unsafe {
                 (*this).set_len(len);
@@ -1770,8 +1770,8 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[#UnsafeAttr(#ExportNameAttr = #link_truncate)]
-        unsafe extern "C" fn #local_truncate #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: usize) {
-            let __fn = concat!("<", module_path!(), #prevent_unwind_drop_label);
+        unsafe extern "C" fn #local_truncate #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: ::cxx::core::primitive::usize) {
+            let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
             ::cxx::private::prevent_unwind(
                 __fn,
                 || unsafe { (*this).truncate(len) },
@@ -2173,6 +2173,11 @@ fn expand_cxx_vector(
         quote_spanned!(end_span=> &mut)
     };
 
+    let not_move_constructible_err = format!(
+        "{} is not move constructible",
+        display_namespaced(resolve.name),
+    );
+
     quote_spanned! {end_span=>
         #cfg
         #[automatically_derived]
@@ -2187,39 +2192,41 @@ fn expand_cxx_vector(
                 }
                 unsafe { __vector_new() }
             }
-            fn __vector_size(v: &::cxx::CxxVector<Self>) -> usize {
+            fn __vector_size(v: &::cxx::CxxVector<Self>) -> ::cxx::core::primitive::usize {
                 #UnsafeExtern extern "C" {
                     #[link_name = #link_size]
-                    fn __vector_size #impl_generics(_: &::cxx::CxxVector<#elem #ty_generics>) -> usize;
+                    fn __vector_size #impl_generics(_: &::cxx::CxxVector<#elem #ty_generics>) -> ::cxx::core::primitive::usize;
                 }
                 unsafe { __vector_size(v) }
             }
-            fn __vector_capacity(v: &::cxx::CxxVector<Self>) -> usize {
+            fn __vector_capacity(v: &::cxx::CxxVector<Self>) -> ::cxx::core::primitive::usize {
                 #UnsafeExtern extern "C" {
                     #[link_name = #link_capacity]
-                    fn __vector_capacity #impl_generics(_: &::cxx::CxxVector<#elem #ty_generics>) -> usize;
+                    fn __vector_capacity #impl_generics(_: &::cxx::CxxVector<#elem #ty_generics>) -> ::cxx::core::primitive::usize;
                 }
                 unsafe { __vector_capacity(v) }
             }
-            unsafe fn __get_unchecked(v: *mut ::cxx::CxxVector<Self>, pos: usize) -> *mut Self {
+            unsafe fn __get_unchecked(v: *mut ::cxx::CxxVector<Self>, pos: ::cxx::core::primitive::usize) -> *mut Self {
                 #UnsafeExtern extern "C" {
                     #[link_name = #link_get_unchecked]
                     fn __get_unchecked #impl_generics(
                         v: *mut ::cxx::CxxVector<#elem #ty_generics>,
-                        pos: usize,
+                        pos: ::cxx::core::primitive::usize,
                     ) -> *mut ::cxx::core::ffi::c_void;
                 }
                 unsafe { __get_unchecked(v, pos) as *mut Self }
             }
-            unsafe fn __reserve(v: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<Self>>, new_cap: usize) {
+            unsafe fn __reserve(v: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<Self>>, new_cap: ::cxx::core::primitive::usize) {
                 #UnsafeExtern extern "C" {
                     #[link_name = #link_reserve]
                     fn __reserve #impl_generics(
                         v: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<#elem #ty_generics>>,
-                        new_cap: usize,
-                    );
+                        new_cap: ::cxx::core::primitive::usize,
+                    ) -> ::cxx::core::primitive::bool;
                 }
-                unsafe { __reserve(v, new_cap) }
+                if !unsafe { __reserve(v, new_cap) } {
+                    ::cxx::core::panic!(#not_move_constructible_err);
+                }
             }
             #by_value_methods
             fn __unique_ptr_null() -> ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void> {

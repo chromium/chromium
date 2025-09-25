@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.81"
 name = "cxx"
-version = "1.0.184"
+version = "1.0.185"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 links = "cxxbridge1"
@@ -49,6 +49,7 @@ repository = "https://github.com/dtolnay/cxx"
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",
@@ -120,7 +121,7 @@ name = "unique_ptr"
 path = "tests/unique_ptr.rs"
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.184"
+version = "=1.0.185"
 
 [dependencies.foldhash]
 version = "0.2"
@@ -170,11 +171,11 @@ features = ["diff"]
 version = "1.0.101"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.184"
+version = "=1.0.185"
 default-features = false
 
 [target."cfg(any())".build-dependencies.cxx-build]
-version = "=1.0.184"
+version = "=1.0.185"
 
 [target."cfg(any())".build-dependencies.cxxbridge-cmd]
-version = "=1.0.184"
+version = "=1.0.185"

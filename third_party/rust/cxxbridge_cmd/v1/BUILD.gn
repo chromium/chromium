@@ -88,6 +88,7 @@ cargo_crate("cxxbridge") {
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/shared_ptr.h",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/trycatch.h",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/trycatch_detail.h",
+    "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/builtin/vector.h",
     "//third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/src/gen/include/cxx.h",
   ]
 
@@ -98,7 +99,7 @@ cargo_crate("cxxbridge") {
   cargo_pkg_description =
       "C++ code generator for integrating `cxx` crate into a non-Cargo build."
   cargo_pkg_repository = "https://github.com/dtolnay/cxx"
-  cargo_pkg_version = "1.0.184"
+  cargo_pkg_version = "1.0.185"
 
   allow_unsafe = false
 

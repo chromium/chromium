@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.81"
 name = "cxxbridge-flags"
-version = "1.0.184"
+version = "1.0.185"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false
@@ -34,6 +34,7 @@ repository = "https://github.com/dtolnay/cxx"
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",

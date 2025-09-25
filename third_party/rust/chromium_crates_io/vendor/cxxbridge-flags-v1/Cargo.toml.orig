@@ -1,6 +1,6 @@
 [package]
 name = "cxxbridge-flags"
-version = "1.0.184"
+version = "1.0.185"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["development-tools::ffi", "compilers"]
 description = "Compiler configuration of the `cxx` crate (implementation detail)"
@@ -19,6 +19,7 @@ default = [] # c++11
 targets = ["x86_64-unknown-linux-gnu"]
 rustdoc-args = [
     "--generate-link-to-definition",
+    "--generate-macro-expansion",
     "--extern-html-root-url=core=https://doc.rust-lang.org",
     "--extern-html-root-url=alloc=https://doc.rust-lang.org",
     "--extern-html-root-url=std=https://doc.rust-lang.org",

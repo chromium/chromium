@@ -1,7 +1,7 @@
 Name: cxxbridge-cmd
 URL: https://crates.io/crates/cxxbridge-cmd
-Version: 1.0.184
-Revision: 25f361334a1ef57e33a24cad1ad3eca336bf2fbc
+Version: 1.0.185
+Revision: e685ad079f074114f301d678aaaa28adca0b73ba
 Update Mechanism: Manual
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v1/LICENSE-APACHE

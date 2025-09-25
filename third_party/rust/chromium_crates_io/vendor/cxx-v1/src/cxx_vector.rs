@@ -231,7 +231,8 @@ where
     ///
     /// # Panics
     ///
-    /// Panics if the new capacity overflows usize.
+    /// Panics if the new capacity overflows usize, or if `T` is not
+    /// move-constructible in C++.
     ///
     /// [reserve]: https://en.cppreference.com/w/cpp/container/vector/reserve.html
     pub fn reserve(self: Pin<&mut Self>, additional: usize) {

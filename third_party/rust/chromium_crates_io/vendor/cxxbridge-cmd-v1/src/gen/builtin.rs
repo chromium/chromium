@@ -35,6 +35,7 @@ pub(crate) struct Builtins<'a> {
     pub destroy: bool,
     pub deleter_if: bool,
     pub shared_ptr: bool,
+    pub vector: bool,
     pub alignmax: bool,
     pub content: Content<'a>,
 }
@@ -327,6 +328,10 @@ pub(super) fn write(out: &mut OutFile) {
 
     if builtin.shared_ptr {
         write_builtin!("builtin/shared_ptr.h");
+    }
+
+    if builtin.vector {
+        write_builtin!("builtin/vector.h");
     }
 
     if builtin.relocatable_or_array {
