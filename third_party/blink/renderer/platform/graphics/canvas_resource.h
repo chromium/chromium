@@ -32,7 +32,6 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
-class GrBackendTexture;
 class SkSurface;
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
@@ -218,7 +217,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const gpu::SyncToken GetSyncToken() override;
 
   void NotifyResourceLost() final;
-  GrBackendTexture CreateGrTexture() const;
 
   void WillDraw();
   bool IsLost() const { return owning_thread_data().is_lost; }

@@ -911,13 +911,6 @@ sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
   return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
 }
 
-GrBackendTexture CanvasResourceProviderSharedImage::CreateGrTextureForResource()
-    const {
-  DCHECK(is_accelerated_);
-
-  return resource()->CreateGrTexture();
-}
-
 // For WebGpu RecyclableCanvasResource.
 void CanvasResourceProviderSharedImage::OnAcquireRecyclableCanvasResource() {
   EnsureWriteAccess();

@@ -611,7 +611,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       override;
   void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
-  GrBackendTexture CreateGrTextureForResource() const;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
  private:

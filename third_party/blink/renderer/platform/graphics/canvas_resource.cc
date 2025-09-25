@@ -369,20 +369,6 @@ SkImageInfo CanvasResourceSharedImage::CreateSkImageInfo() const {
                            color_space.ToSkColorSpace());
 }
 
-GrBackendTexture CanvasResourceSharedImage::CreateGrTexture() const {
-  scoped_refptr<gpu::ClientSharedImage> client_si = GetClientSharedImage();
-
-  GrGLTextureInfo texture_info = {};
-  texture_info.fID = 0u;
-  texture_info.fTarget = GetClientSharedImage()->GetTextureTarget();
-  texture_info.fFormat =
-      context_provider_wrapper_->ContextProvider().GetGrGLTextureFormat(
-          client_si->format());
-  return GrBackendTextures::MakeGL(client_si->size().width(),
-                                   client_si->size().height(),
-                                   skgpu::Mipmapped::kNo, texture_info);
-}
-
 CanvasResourceSharedImage::~CanvasResourceSharedImage() {
   if (is_cross_thread()) {
     // Destroyed on wrong thread. This can happen when the thread of origin was
