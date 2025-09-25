@@ -1483,29 +1483,22 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 // TODO(crbug.com/331746545): Re-enable this test
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled \
-  DISABLED_HistorySyncOptinNotShownWhenPromotionsDisabled
-#else
-#define MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled \
-  HistorySyncOptinNotShownWhenPromotionsDisabled
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
-                       MAYBE_HistorySyncOptinNotShownWhenPromotionsDisabled) {
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             HistorySyncOptinNotShownWhenPromotionsDisabled) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kPromotionsEnabled, false);
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const AccountInfo account = SigninWithImage(/*email=*/u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(),
             l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       base::UTF8ToUTF16(account.given_name)));
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
   // The greeting should NOT be followed by the history sync opt-in entry point
   // if promotions are disabled.
   EXPECT_TRUE(avatar->GetText().empty());
 }
+#endif
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if !BUILDFLAG(IS_WIN)
