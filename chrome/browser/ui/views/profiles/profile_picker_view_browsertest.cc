@@ -3449,15 +3449,20 @@ IN_PROC_BROWSER_TEST_F(
                                      ->GetProfileAttributesStorage()
                                      .GetNumberOfProfiles();
 
-  // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in profile switch screen getting displayed (in between,
-  // chrome://sync-confirmation/loading gets displayed but that page may not
-  // finish loading and anyway is not so relevant).
+  GURL expected_switch_url("chrome://profile-picker/profile-switch");
+  // The profile switch path is expected to be appended to the profile picker
+  // switch url.
+  expected_switch_url = net::AppendQueryParameter(
+      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
+
+  // Simulate a successful sign-in and wait for the sign-in to propagate to
+  // the flow, resulting in profile switch screen getting displayed (in
+  // between, chrome://sync-confirmation/loading gets displayed but that
+  // page may not finish loading and anyway is not so relevant).
   Profile* contents_profile =
-      SignInForNewProfile(GURL("chrome://profile-picker/profile-switch"),
-                          "joe.consumer@gmail.com", "Joe");
+      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe");
+
   base::FilePath contents_profile_path = contents_profile->GetPath();
-  EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
 
   // Simulate clicking on the confirm switch button.
   ProfilePickerHandler* handler = profile_picker_handler();
@@ -3509,17 +3514,19 @@ IN_PROC_BROWSER_TEST_F(
                                      ->GetProfileAttributesStorage()
                                      .GetNumberOfProfiles();
 
+  GURL expected_switch_url("chrome://profile-picker/profile-switch");
+  // The profile switch path is expected to be appended to the profile picker
+  // switch url.
+  expected_switch_url = net::AppendQueryParameter(
+      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
+
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in profile switch screen getting displayed (in between,
   // chrome://sync-confirmation/loading gets displayed but that page may not
   // finish loading and anyway is not so relevant).
   Profile* contents_profile =
-      SignInForNewProfile(GURL("chrome://profile-picker/profile-switch"),
-                          "joe.consumer@gmail.com", "Joe");
+      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe");
   base::FilePath contents_profile_path = contents_profile->GetPath();
-
-  // The profile switch screen should be displayed
-  EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
 
   // Simulate clicking on the cancel button.
   ProfileDeletionObserver observer;

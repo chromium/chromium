@@ -111,9 +111,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetProfileThemeInfo(const base::Value::List& args);
   void HandleGetAvailableIcons(const base::Value::List& args);
   void HandleContinueWithoutAccount(const base::Value::List& args);
+  void HandleGetProfileState(const base::Value::List& args);
 
   // Profile switch screen:
-  void HandleGetSwitchProfile(const base::Value::List& args);
   void HandleConfirmProfileSwitch(const base::Value::List& args);
   void HandleCancelProfileSwitch(const base::Value::List& args);
 

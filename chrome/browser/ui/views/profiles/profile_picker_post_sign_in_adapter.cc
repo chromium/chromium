@@ -35,6 +35,7 @@
 #include "components/sync/base/features.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
+#include "net/base/url_util.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace {
@@ -223,10 +224,14 @@ void ProfilePickerPostSignInAdapter::SwitchToProfileSwitch(
   // The sign-in flow is finished, no profile window should be shown in the end.
   Cancel();
 
+  GURL profile_switch_url(chrome::kChromeUIProfilePickerUrl);
+  profile_switch_url = profile_switch_url.Resolve("profile-switch");
+  // Appends the `profile_path` to be retrieved in the web page.
+  profile_switch_url = net::AppendQueryParameter(
+      profile_switch_url, "profileSwitchPath", base::ToString(profile_path));
+
   switch_profile_path_ = profile_path;
-  host_->ShowScreenInPickerContents(
-      GURL(chrome::kChromeUIProfilePickerUrl).Resolve("profile-switch"),
-      base::OnceClosure());
+  host_->ShowScreenInPickerContents(profile_switch_url, base::OnceClosure());
 }
 
 void ProfilePickerPostSignInAdapter::ResetHostAndShowErrorDialog(
