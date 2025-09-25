@@ -1935,7 +1935,7 @@ TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
             SessionError::ErrorType::kInvalidRefreshInitiators);
 }
 
-TEST_F(RegistrationTest, IncludeSiteDefaultFalse) {
+TEST_F(RegistrationTestWithoutOriginTrialFeedback, IncludeSiteDefaultFalse) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
 
   constexpr char kIncludeSiteUnspecified[] =
@@ -1973,6 +1973,53 @@ TEST_F(RegistrationTest, IncludeSiteDefaultFalse) {
   ASSERT_TRUE(out_session.is_session());
   proto::Session session = out_session.session().ToProto();
   EXPECT_FALSE(session.session_inclusion_rules().do_include_site());
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback, MissingIncludeSiteFails) {
+  constexpr char kTestingJson[] =
+      R"({
+  "session_identifier": "session_id",
+  "refresh_url": "/refresh",
+  "scope": {
+    "scope_specification" : [
+      {
+        "type": "include",
+        "domain": "trusted.a.test"
+      },
+      {
+        "type": "exclude",
+        "domain": "new.a.test",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "other_cookie",
+    "attributes": "Domain=a.test; Path=/; Secure; SameSite=None"
+  }]
+})";
+
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&ReturnResponse, HTTP_OK, kTestingJson));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_error());
+  EXPECT_EQ(out_session.error().type,
+            SessionError::ErrorType::kInvalidScopeIncludeSite);
 }
 
 TEST_F(RegistrationTest, ShutdownDuringRequest) {
