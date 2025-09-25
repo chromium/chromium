@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
-import static com.google.common.truth.Truth.assertThat;
-
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -14,6 +15,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
 
 import com.google.android.material.button.MaterialButton;
@@ -72,16 +76,13 @@ public class ReaderModePrefsViewTest {
     @SmallTest
     public void testInitialState() {
         // Verify that the initial state of the view is correct.
-        assertThat(
-                        ((MaterialButton) mReaderModePrefsView.findViewById(R.id.light_mode))
-                                .isChecked())
-                .isTrue();
-        assertThat(
-                        ((MaterialButton) mReaderModePrefsView.findViewById(R.id.font_sans_serif))
-                                .isChecked())
-                .isTrue();
+        assertTrue(
+                ((MaterialButton) mReaderModePrefsView.findViewById(R.id.light_mode)).isChecked());
+        assertTrue(
+                ((MaterialButton) mReaderModePrefsView.findViewById(R.id.font_sans_serif))
+                        .isChecked());
         Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
-        assertThat(slider.getValue()).isEqualTo(1.0f);
+        assertEquals(1.0f, slider.getValue(), 0.0f);
     }
 
     @Test
@@ -195,5 +196,81 @@ public class ReaderModePrefsViewTest {
         Assert.assertEquals(
                 1, mActionTester.getActionCount("DomDistiller.Android.FontScalingChanged"));
         histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testThemeButtonsAccessibility() {
+        // Test container
+        View themeContainer = mReaderModePrefsView.findViewById(R.id.theme_container);
+        AccessibilityDelegateCompat containerDelegate =
+                ViewCompat.getAccessibilityDelegate(themeContainer);
+        AccessibilityNodeInfoCompat containerInfo = AccessibilityNodeInfoCompat.obtain();
+        containerDelegate.onInitializeAccessibilityNodeInfo(themeContainer, containerInfo);
+
+        AccessibilityNodeInfoCompat.CollectionInfoCompat collectionInfo =
+                containerInfo.getCollectionInfo();
+        assertNotNull(collectionInfo);
+        assertEquals(3, collectionInfo.getColumnCount());
+        assertEquals(1, collectionInfo.getRowCount());
+        assertEquals(
+                AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_SINGLE,
+                collectionInfo.getSelectionMode());
+
+        // Test buttons
+        int[] buttonIds = new int[] {R.id.light_mode, R.id.sepia_mode, R.id.dark_mode};
+        for (int i = 0; i < buttonIds.length; i++) {
+            View button = mReaderModePrefsView.findViewById(buttonIds[i]);
+            AccessibilityDelegateCompat buttonDelegate =
+                    ViewCompat.getAccessibilityDelegate(button);
+            AccessibilityNodeInfoCompat buttonInfo = AccessibilityNodeInfoCompat.obtain();
+            buttonDelegate.onInitializeAccessibilityNodeInfo(button, buttonInfo);
+
+            AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
+                    buttonInfo.getCollectionItemInfo();
+            assertNotNull(itemInfo);
+            assertEquals(0, itemInfo.getRowIndex());
+            assertEquals(i, itemInfo.getColumnIndex());
+            assertEquals(((MaterialButton) button).isChecked(), itemInfo.isSelected());
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void testFontFamilyButtonsAccessibility() {
+        // Test container
+        View fontFamilyButtonContainer =
+                mReaderModePrefsView.findViewById(R.id.font_family_button_container);
+        AccessibilityDelegateCompat containerDelegate =
+                ViewCompat.getAccessibilityDelegate(fontFamilyButtonContainer);
+        AccessibilityNodeInfoCompat containerInfo = AccessibilityNodeInfoCompat.obtain();
+        containerDelegate.onInitializeAccessibilityNodeInfo(
+                fontFamilyButtonContainer, containerInfo);
+
+        AccessibilityNodeInfoCompat.CollectionInfoCompat collectionInfo =
+                containerInfo.getCollectionInfo();
+        assertNotNull(collectionInfo);
+        assertEquals(3, collectionInfo.getColumnCount());
+        assertEquals(1, collectionInfo.getRowCount());
+        assertEquals(
+                AccessibilityNodeInfoCompat.CollectionInfoCompat.SELECTION_MODE_SINGLE,
+                collectionInfo.getSelectionMode());
+
+        // Test buttons
+        int[] buttonIds = new int[] {R.id.font_sans_serif, R.id.font_serif, R.id.font_monospace};
+        for (int i = 0; i < buttonIds.length; i++) {
+            View button = mReaderModePrefsView.findViewById(buttonIds[i]);
+            AccessibilityDelegateCompat buttonDelegate =
+                    ViewCompat.getAccessibilityDelegate(button);
+            AccessibilityNodeInfoCompat buttonInfo = AccessibilityNodeInfoCompat.obtain();
+            buttonDelegate.onInitializeAccessibilityNodeInfo(button, buttonInfo);
+
+            AccessibilityNodeInfoCompat.CollectionItemInfoCompat itemInfo =
+                    buttonInfo.getCollectionItemInfo();
+            assertNotNull(itemInfo);
+            assertEquals(0, itemInfo.getRowIndex());
+            assertEquals(i, itemInfo.getColumnIndex());
+            assertEquals(((MaterialButton) button).isChecked(), itemInfo.isSelected());
+        }
     }
 }
