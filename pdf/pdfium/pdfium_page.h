@@ -87,9 +87,11 @@ class PDFiumPage {
   // Resets loaded text and loads it again.
   void ReloadTextPage();
 
-  // Get all the chars and text runs from the page.
-  void GetTextAndCharInfo(std::vector<AccessibilityTextRunInfo>& text_runs,
-                          std::vector<AccessibilityCharInfo>& chars);
+  // Get all the chars from the page.
+  std::vector<AccessibilityCharInfo> GetCharInfo();
+
+  // Gets all the text runs from the page.
+  std::vector<AccessibilityTextRunInfo> GetTextRunInfo();
 
   // Given a start char index, find the longest continuous run of text that's
   // in a single direction and with the same text style. Return a filled out

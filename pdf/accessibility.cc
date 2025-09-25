@@ -38,7 +38,8 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   PDFiumPage* page = engine->GetPage(page_index);
   CHECK(page);
 
-  page->GetTextAndCharInfo(text_runs, chars);
+  text_runs = page->GetTextRunInfo();
+  chars = page->GetCharInfo();
 
   page_info.page_index = page_index;
   page_info.bounds = page->rect();

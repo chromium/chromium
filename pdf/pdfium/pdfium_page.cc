@@ -505,28 +505,25 @@ int PDFiumPage::GetCharCount() {
   return FPDFText_CountChars(GetTextPage());
 }
 
-void PDFiumPage::GetTextAndCharInfo(
-    std::vector<AccessibilityTextRunInfo>& text_runs,
-    std::vector<AccessibilityCharInfo>& chars) {
+std::vector<AccessibilityCharInfo> PDFiumPage::GetCharInfo() {
+  if (!available_) {
+    return {};
+  }
+  CalculateTextRuns();
   const int raw_char_count = GetCharCount();
   // Treat a char count of -1 (error) as 0 (an empty page), since
   // other pages might have valid content.
   const uint32_t char_count = std::max<uint32_t>(raw_char_count, 0);
 
-  chars.resize(char_count);
+  std::vector<AccessibilityCharInfo> chars(char_count);
   for (uint32_t i = 0; i < char_count; ++i) {
     chars[i].unicode_character = GetCharUnicode(i);
   }
 
   uint32_t char_index = 0;
-  while (char_index < char_count) {
-    std::optional<AccessibilityTextRunInfo> text_run_info_result =
-        GetTextRunInfoAt(char_index);
-    CHECK(text_run_info_result.has_value());
-    AccessibilityTextRunInfo& text_run_info = *text_run_info_result;
-    uint32_t text_run_end = char_index + text_run_info.len;
+  for (const AccessibilityTextRunInfo& text_run : text_runs_) {
+    uint32_t text_run_end = char_index + text_run.len;
     CHECK_LE(text_run_end, char_count);
-    text_runs.push_back(text_run_info);
 
     // We need to provide enough information to draw a bounding box
     // around any arbitrary text range, but the bounding boxes of characters
@@ -542,7 +539,7 @@ void PDFiumPage::GetTextAndCharInfo(
       CHECK_LT(i + 1, char_count);
       gfx::RectF next_char_bounds = GetCharBounds(i + 1);
       double& char_width = chars[i].char_width;
-      switch (text_run_info.direction) {
+      switch (text_run.direction) {
         case AccessibilityTextDirection::kNone:
         case AccessibilityTextDirection::kLeftToRight:
           char_width = next_char_bounds.x() - char_bounds.x();
@@ -560,15 +557,16 @@ void PDFiumPage::GetTextAndCharInfo(
       char_bounds = next_char_bounds;
     }
     double& char_width = chars[text_run_end - 1].char_width;
-    if (text_run_info.direction == AccessibilityTextDirection::kBottomToTop ||
-        text_run_info.direction == AccessibilityTextDirection::kTopToBottom) {
+    if (text_run.direction == AccessibilityTextDirection::kBottomToTop ||
+        text_run.direction == AccessibilityTextDirection::kTopToBottom) {
       char_width = char_bounds.height();
     } else {
       char_width = char_bounds.width();
     }
 
-    char_index += text_run_info.len;
+    char_index = text_run_end;
   }
+  return chars;
 }
 
 std::optional<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfoAt(
@@ -866,6 +864,14 @@ bool PDFiumPage::IsCharInPageBounds(int char_index,
   }
 
   return page_bounds.Intersects(char_bounds);
+}
+
+std::vector<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo() {
+  if (!available_) {
+    return {};
+  }
+  CalculateTextRuns();
+  return text_runs_;
 }
 
 std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
