@@ -31,22 +31,24 @@ class UserUploadedImageManager : public KeyedService {
   // calls the callback with that filename or an empty path if image storing
   // failed. This path is relative, so should only be loaded with
   // `LoadUserUploadedImage`.
-  void StoreUserUploadedImage(
+  virtual void StoreUserUploadedImage(
       UIImage* image,
       base::OnceCallback<void(base::FilePath)> callback);
 
   // Loads an image previously stored at the provided relative file path.
-  void LoadUserUploadedImage(base::FilePath relative_image_file_path,
-                             base::OnceCallback<void(UIImage*)> callback);
+  virtual void LoadUserUploadedImage(
+      base::FilePath relative_image_file_path,
+      base::OnceCallback<void(UIImage*)> callback);
 
   // Deletes an image previously stored at the provided relative file path.
-  void DeleteUserUploadedImage(
+  virtual void DeleteUserUploadedImage(
       base::FilePath relative_image_file_path,
       base::OnceClosure completion = base::DoNothing());
 
   // Deletes all images from the managed directory that aren't currently in use.
-  void DeleteUnusedImages(std::set<base::FilePath> relative_file_paths_in_use,
-                          base::OnceClosure completion = base::DoNothing());
+  virtual void DeleteUnusedImages(
+      std::set<base::FilePath> relative_file_paths_in_use,
+      base::OnceClosure completion = base::DoNothing());
 
   // Returns the full, absolute path to an image file.
   base::FilePath GetFullImagePath(

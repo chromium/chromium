@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 
-#import "base/files/scoped_temp_dir.h"
 #import "base/scoped_observation.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
@@ -18,6 +17,7 @@
 #import "components/themes/ntp_background_service.h"
 #import "components/themes/pref_names.h"
 #import "ios/chrome/browser/home_customization/model/fake_home_background_image_service.h"
+#import "ios/chrome/browser/home_customization/model/fake_user_uploaded_image_manager.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_observer.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -26,6 +26,7 @@
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "ui/gfx/image/image_unittest_util.h"
 
 namespace {
 
@@ -44,7 +45,6 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
   void SetUp() override {
     feature_list_.InitAndEnableFeature(kNTPBackgroundCustomization);
 
-    ASSERT_TRUE(image_dir_.CreateUniqueTempDir());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     test_shared_loader_factory_ =
@@ -54,8 +54,8 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
     ntp_background_service_ = std::make_unique<NtpBackgroundService>(
         application_locale_storage_.get(), test_shared_loader_factory_);
 
-    user_image_manager_ = std::make_unique<UserUploadedImageManager>(
-        image_dir_.GetPath(), base::SequencedTaskRunner::GetCurrentDefault());
+    user_image_manager_ = std::make_unique<FakeUserUploadedImageManager>(
+        base::SequencedTaskRunner::GetCurrentDefault());
     background_image_service_ =
         std::make_unique<FakeHomeBackgroundImageService>(
             ntp_background_service_.get());
@@ -138,14 +138,12 @@ class HomeBackgroundCustomizationServiceTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
 
-  base::ScopedTempDir image_dir_;
-
   std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<NtpBackgroundService> ntp_background_service_;
 
-  std::unique_ptr<UserUploadedImageManager> user_image_manager_;
+  std::unique_ptr<FakeUserUploadedImageManager> user_image_manager_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<FakeHomeBackgroundImageService> background_image_service_;
 
@@ -830,4 +828,33 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   EXPECT_FALSE(service_->IsCustomizationDisabledOrColorManagedByPolicy());
   EXPECT_EQ(color_theme, service_->GetCurrentColorTheme());
   EXPECT_EQ(2u, service_->GetRecentlyUsedBackgrounds().size());
+}
+
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       ClearsUnusedUserImagesOnInitialization) {
+  // Generate test data.
+  gfx::Image image1 = gfx::test::CreateImage(10, 10);
+  base::FilePath image1_file_path =
+      user_image_manager_->StoreUserUploadedImage(image1.ToUIImage());
+  gfx::Image image2 = gfx::test::CreateImage(20, 20);
+  base::FilePath image2_file_path =
+      user_image_manager_->StoreUserUploadedImage(image2.ToUIImage());
+
+  // Set up recently used items on disk. Only image 1 will be in the recently
+  // used items list, so image 2 should be deleted.
+  HomeUserUploadedBackground background1;
+  background1.image_path = image1_file_path.value();
+  background1.framing_coordinates = FramingCoordinates(5, 10, 15, 20);
+
+  base::Value::List recent_backgrounds_data =
+      base::Value::List().Append(background1.ToDict());
+  pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds,
+                         std::move(recent_backgrounds_data));
+
+  // Create service to initialize and load recent items. This should remove
+  // image 2 from the manager.
+  CreateService();
+
+  EXPECT_NE(nil, user_image_manager_->LoadUserUploadedImage(image1_file_path));
+  EXPECT_EQ(nil, user_image_manager_->LoadUserUploadedImage(image2_file_path));
 }

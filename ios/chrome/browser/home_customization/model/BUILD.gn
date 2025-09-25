@@ -75,6 +75,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp:cpp_base",
     "//testing/gtest",
     "//ui/base",
+    "//ui/gfx:test_support",
     "//url",
   ]
 }
@@ -84,6 +85,8 @@ source_set("test_support") {
   sources = [
     "fake_home_background_image_service.h",
     "fake_home_background_image_service.mm",
+    "fake_user_uploaded_image_manager.h",
+    "fake_user_uploaded_image_manager.mm",
   ]
 
   deps = [

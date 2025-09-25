@@ -6,7 +6,6 @@
 
 #import <variant>
 
-#import "base/files/scoped_temp_dir.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/background_customization_configuration_item.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_data_conversion.h"
 #import "ios/chrome/browser/home_customization/model/fake_home_background_image_service.h"
+#import "ios/chrome/browser/home_customization/model/fake_user_uploaded_image_manager.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
@@ -55,10 +55,9 @@ std::unique_ptr<KeyedService> CreateBackgroundImageService(
 }
 
 std::unique_ptr<KeyedService> CreateUserUploadedImageManager(
-    const base::FilePath& path,
     ProfileIOS* profile) {
-  return std::make_unique<UserUploadedImageManager>(
-      path, base::SequencedTaskRunner::GetCurrentDefault());
+  return std::make_unique<FakeUserUploadedImageManager>(
+      base::SequencedTaskRunner::GetCurrentDefault());
 }
 
 // Post reply to image fetch. `p0` represents the image to return. `p1`
@@ -102,14 +101,11 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
   void SetUp() override {
     feature_list_.InitAndEnableFeature(kNTPBackgroundCustomization);
 
-    ASSERT_TRUE(image_dir_.CreateUniqueTempDir());
-
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.SetPrefService(CreatePrefService());
     test_profile_builder.AddTestingFactory(
         UserUploadedImageManagerFactory::GetInstance(),
-        base::BindRepeating(&CreateUserUploadedImageManager,
-                            image_dir_.GetPath()));
+        base::BindRepeating(&CreateUserUploadedImageManager));
     test_profile_builder.AddTestingFactory(
         HomeBackgroundImageServiceFactory::GetInstance(),
         base::BindRepeating(&CreateBackgroundImageService));
@@ -155,6 +151,11 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
         HomeBackgroundImageServiceFactory::GetForProfile(profile_.get()));
   }
 
+  FakeUserUploadedImageManager* FakeUserImageManager() {
+    return static_cast<FakeUserUploadedImageManager*>(
+        UserUploadedImageManagerFactory::GetForProfile(profile_.get()));
+  }
+
   HomeBackgroundCustomizationService* CustomizationService() {
     return HomeBackgroundCustomizationServiceFactory::GetForProfile(
         profile_.get());
@@ -180,9 +181,6 @@ class HomeCustomizationBackgroundConfigurationMediatorTest
   web::WebTaskEnvironment task_environment_;
 
   base::test::ScopedFeatureList feature_list_;
-
-  // Temp dir for the UserUploadedImageManager.
-  base::ScopedTempDir image_dir_;
 
   std::unique_ptr<TestProfileIOS> profile_;
 
@@ -722,4 +720,29 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   histogram_tester.ExpectUniqueSample(
       "IOS.HomeCustomization.Background.Gallery.ImageDownloadErrorCode", 404,
       1);
+}
+
+// Tests that the mediator correctly loads the user-uploaded background images.
+TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
+       FetchBackgroundCustomizationUserUploadedImage) {
+  // First, make sure the user image manager contains the image.
+  UIImage* expected_image = gfx::test::CreateImage(20, 20).ToUIImage();
+  base::FilePath image_path =
+      FakeUserImageManager()->StoreUserUploadedImage(expected_image);
+
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+  __block UIImage* actual_image;
+
+  [mediator_
+      fetchBackgroundCustomizationUserUploadedImage:base::SysUTF8ToNSString(
+                                                        image_path.value())
+                                         completion:^(UIImage* image) {
+                                           actual_image = image;
+                                           run_loop_ptr->Quit();
+                                         }];
+
+  run_loop.Run();
+
+  EXPECT_EQ(expected_image, actual_image);
 }
