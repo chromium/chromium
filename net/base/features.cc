@@ -667,11 +667,6 @@ const base::FeatureParam<base::TimeDelta>
         /*name=*/"SimpleCachePrioritizedCachingPrioritizationPeriod",
         /*default_value=*/base::Days(1)};
 
-#if BUILDFLAG(USE_NSS_CERTS)
-// TODO(crbug.com/390333881): Remove this flag after a few milestones.
-BASE_FEATURE(kNewClientCertPathBuilding, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(USE_NSS_CERTS)
-
 BASE_FEATURE(kHstsTopLevelNavigationsOnly, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)

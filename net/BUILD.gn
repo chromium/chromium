@@ -1591,8 +1591,6 @@ component("net") {
       "third_party/mozilla_security_manager/nsNSSCertificateDB.h",
       "third_party/mozilla_security_manager/nsPKCS12Blob.cpp",
       "third_party/mozilla_security_manager/nsPKCS12Blob.h",
-      "third_party/nss/ssl/cmpcert.cc",
-      "third_party/nss/ssl/cmpcert.h",
     ]
     deps += [ "//build:chromeos_buildflags" ]
     if (!is_castos) {

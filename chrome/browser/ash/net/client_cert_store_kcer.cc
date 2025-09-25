@@ -19,7 +19,6 @@
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chromeos/ash/components/kcer/client_cert_identity_kcer.h"
 #include "chromeos/ash/components/kcer/kcer.h"
-#include "net/base/features.h"
 #include "net/ssl/client_cert_matcher.h"
 #include "net/ssl/client_cert_store_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -27,13 +26,6 @@
 
 namespace ash {
 namespace {
-net::ClientCertIdentityList FilterCertsOnWorkerThreadOld(
-    scoped_refptr<const net::SSLCertRequestInfo> request,
-    net::ClientCertIdentityList client_certs) {
-  net::ClientCertStoreNSS::FilterCertsOnWorkerThread(&client_certs, *request);
-  return client_certs;
-}
-
 net::ClientCertIdentityList FilterCertsOnWorkerThread(
     scoped_refptr<const net::SSLCertRequestInfo> request,
     net::ClientCertIdentityList client_certs,
@@ -139,21 +131,11 @@ void ClientCertStoreKcer::GotAllClientCerts(
     scoped_refptr<const net::SSLCertRequestInfo> request,
     ClientCertListCallback callback,
     net::ClientCertIdentityList certs) {
-  if (base::FeatureList::IsEnabled(net::features::kNewClientCertPathBuilding)) {
-    // `GotAllCertsAndIssuers` may be called synchronously or asynchronously.
-    std::move(issuer_source_getter_)
-        .Run(base::BindOnce(&ClientCertStoreKcer::GotAllCertsAndIssuers,
-                            weak_factory_.GetWeakPtr(), std::move(request),
-                            std::move(callback), std::move(certs)));
-  } else {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&FilterCertsOnWorkerThreadOld, std::move(request),
-                       std::move(certs)),
-        base::BindOnce(&ClientCertStoreKcer::ReturnClientCerts,
-                       weak_factory_.GetWeakPtr(), std::move(callback)));
-  }
+  // `GotAllCertsAndIssuers` may be called synchronously or asynchronously.
+  std::move(issuer_source_getter_)
+      .Run(base::BindOnce(&ClientCertStoreKcer::GotAllCertsAndIssuers,
+                          weak_factory_.GetWeakPtr(), std::move(request),
+                          std::move(callback), std::move(certs)));
 }
 
 void ClientCertStoreKcer::GotAllCertsAndIssuers(
