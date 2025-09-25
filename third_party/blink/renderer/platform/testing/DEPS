@@ -51,6 +51,7 @@ include_rules = [
 specific_include_rules = {
     "blink_fuzzer_test_support\.cc": [
         "+content/public/test/blink_test_environment.h",
+        "+content/public/test/setup_field_trials.h",
     ],
     "empty_web_media_player\.cc": [
         "+media/base/video_frame.h",
