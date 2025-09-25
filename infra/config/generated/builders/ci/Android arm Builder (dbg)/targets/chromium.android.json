@@ -216,6 +216,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests",
+        "module_scheme": "junit",
         "name": "keyboard_accessory_junit_tests",
         "resultdb": {
           "enable": true,

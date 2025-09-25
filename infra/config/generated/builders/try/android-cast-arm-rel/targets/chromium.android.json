@@ -247,6 +247,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chromecast/base:cast_base_junit_tests",
+        "module_scheme": "junit",
         "name": "cast_base_junit_tests",
         "resultdb": {
           "enable": true,
@@ -269,6 +270,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//chromecast/browser/android:cast_shell_junit_tests",
+        "module_scheme": "junit",
         "name": "cast_shell_junit_tests",
         "resultdb": {
           "enable": true,
