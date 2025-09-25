@@ -543,7 +543,7 @@ export class NetworkRequest {
   onResponseReceivedEvent(event: Protocol.Network.ResponseReceivedEvent) {
     this.#response.hasExtraInfo = event.hasExtraInfo;
     this.#response.info = event.response;
-    this.#networkStorage.markRequestCollectedIfNeeded(this);
+    this.#networkStorage.collectIfNeeded(this);
     this.#emitEventsIfReady();
   }
 

@@ -21,16 +21,16 @@ import {
   InvalidArgumentException,
   Network,
   NoSuchInterceptException,
-  NoSuchNetworkCollectorException,
   NoSuchNetworkDataException,
 } from '../../../protocol/protocol.js';
-import {type LoggerFn, LogType} from '../../../utils/log.js';
+import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
+import {CollectorsStorage} from './CollectorsStorage.js';
 import {NetworkRequest} from './NetworkRequest.js';
 import {matchUrlPattern, type ParsedUrlPattern} from './NetworkUtils.js';
 
@@ -41,12 +41,12 @@ type NetworkInterception = Omit<
   urlPatterns: ParsedUrlPattern[];
 };
 
-type NetworkCollector = Network.AddDataCollectorParameters;
-
 /** Stores network and intercept maps. */
 export class NetworkStorage {
   readonly #browsingContextStorage: BrowsingContextStorage;
   readonly #eventManager: EventManager;
+  readonly #collectorsStorage: CollectorsStorage;
+
   readonly #logger?: LoggerFn;
 
   /**
@@ -57,9 +57,6 @@ export class NetworkStorage {
 
   /** A map from intercept ID to track active network intercepts. */
   readonly #intercepts = new Map<Network.Intercept, NetworkInterception>();
-
-  readonly #collectors = new Map<string, NetworkCollector>();
-  readonly #requestCollectors = new Map<Network.Request, Set<string>>();
 
   #defaultCacheBehavior: Network.SetCacheBehaviorParameters['cacheBehavior'] =
     'default';
@@ -72,6 +69,7 @@ export class NetworkStorage {
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#eventManager = eventManager;
+    this.#collectorsStorage = new CollectorsStorage(logger);
 
     browserClient.on('Target.detachedFromTarget', ({sessionId}) => {
       this.disposeRequestMap(sessionId);
@@ -234,66 +232,19 @@ export class NetworkStorage {
     }
   }
 
-  getCollectorsForBrowsingContext(
-    browsingContextId: BrowsingContext.BrowsingContext,
-  ) {
-    if (!this.#browsingContextStorage.hasContext(browsingContextId)) {
-      this.#logger?.(
-        LogType.debugError,
-        'trying to get collector for unknown browsing context',
-      );
-      return [];
-    }
-
-    const userContext =
-      this.#browsingContextStorage.getContext(browsingContextId).userContext;
-
-    const collectors = new Set<NetworkCollector>();
-    for (const collector of this.#collectors.values()) {
-      if (collector.contexts?.includes(browsingContextId)) {
-        // Collector is targeted to the browsing context.
-        collectors.add(collector);
-      }
-      if (collector.userContexts?.includes(userContext)) {
-        // Collector is targeted to the user context.
-        collectors.add(collector);
-      }
-      if (
-        collector.userContexts === undefined &&
-        collector.contexts === undefined
-      ) {
-        // Collector is global.
-        collectors.add(collector);
-      }
-    }
-    return [...collectors.values()];
-  }
-
   async getCollectedData(
     params: Network.GetDataParameters,
   ): Promise<Network.GetDataResult> {
     if (
-      params.collector !== undefined &&
-      !this.#collectors.has(params.collector)
+      !this.#collectorsStorage.isCollected(params.request, params.collector)
     ) {
-      throw new NoSuchNetworkCollectorException(
-        `Unknown collector ${params.collector}`,
-      );
-    }
-
-    const requestCollectors = this.#requestCollectors.get(params.request);
-    if (requestCollectors === undefined) {
+      if (params.collector !== undefined) {
+        throw new NoSuchNetworkDataException(
+          `Collector ${params.collector} didn't collect data for request ${params.request}`,
+        );
+      }
       throw new NoSuchNetworkDataException(
         `No collected data for request ${params.request}`,
-      );
-    }
-
-    if (
-      params.collector !== undefined &&
-      !requestCollectors.has(params.collector)
-    ) {
-      throw new NoSuchNetworkDataException(
-        `Collector ${params.collector} didn't collect data for request ${params.request}`,
       );
     }
 
@@ -306,7 +257,7 @@ export class NetworkStorage {
     const request = this.getRequestById(params.request)!;
     if (request === undefined) {
       throw new NoSuchNetworkDataException(
-        `No collected data for request ${params.request}`,
+        `No data for request ${params.request}`,
       );
     }
 
@@ -317,13 +268,9 @@ export class NetworkStorage {
     );
 
     if (params.disown && params.collector !== undefined) {
-      // Disown the data for this collector. If no other collectors are tracking this
-      // request, dispose the request.
-      requestCollectors.delete(params.collector);
-      if (requestCollectors.size === 0) {
-        this.#requestCollectors.delete(params.request);
-        this.disposeRequest(request.id);
-      }
+      this.#collectorsStorage.disown(params.request, params.collector);
+      // `disposeRequest` disposes request only if no other collectors for it are left.
+      this.disposeRequest(request.id);
     }
 
     return {
@@ -334,40 +281,13 @@ export class NetworkStorage {
     };
   }
 
-  #getCollectorIdsForRequest(request: NetworkRequest): string[] {
-    const collectors = new Set<string>();
-    for (const collectorId of this.#collectors.keys()) {
-      const collector = this.#collectors.get(collectorId)!;
-
-      if (!collector.userContexts && !collector.contexts) {
-        // A global collector.
-        collectors.add(collectorId);
-      }
-      if (collector.contexts?.includes(request.cdpTarget.topLevelId)) {
-        collectors.add(collectorId);
-      }
-      if (
-        collector.userContexts?.includes(
-          this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
-            .userContext,
-        )
-      ) {
-        collectors.add(collectorId);
-      }
-    }
-
-    this.#logger?.(
-      LogType.debug,
-      `Request ${request.id} has ${collectors.size} collectors`,
+  collectIfNeeded(request: NetworkRequest) {
+    this.#collectorsStorage.collectIfNeeded(
+      request,
+      request.cdpTarget.topLevelId,
+      this.#browsingContextStorage.getContext(request.cdpTarget.topLevelId)
+        .userContext,
     );
-    return [...collectors.values()];
-  }
-
-  markRequestCollectedIfNeeded(request: NetworkRequest) {
-    const collectorIds = this.#getCollectorIdsForRequest(request);
-    if (collectorIds.length > 0) {
-      this.#requestCollectors.set(request.id, new Set(collectorIds));
-    }
   }
 
   getInterceptionStages(browsingContextId: BrowsingContext.BrowsingContext) {
@@ -496,7 +416,7 @@ export class NetworkStorage {
   }
 
   disposeRequest(id: Network.Request) {
-    if (this.#requestCollectors.get(id)?.size ?? 0 > 0) {
+    if (this.#collectorsStorage.isCollected(id)) {
       // Keep request, as it's data can be accessed later.
       return;
     }
@@ -527,59 +447,27 @@ export class NetworkStorage {
   }
 
   addDataCollector(params: Network.AddDataCollectorParameters): string {
-    const collectorId = uuidv4();
-    this.#collectors.set(collectorId, params);
-    return collectorId;
+    return this.#collectorsStorage.addDataCollector(params);
   }
 
   removeDataCollector(params: Network.RemoveDataCollectorParameters) {
-    const collectorId = params.collector;
-    if (!this.#collectors.has(collectorId)) {
-      throw new NoSuchNetworkCollectorException(
-        `Collector ${params.collector} does not exist`,
-      );
-    }
-    this.#collectors.delete(params.collector);
-
-    // Clean up collected responses.
-    for (const [requestId, collectorIds] of this.#requestCollectors) {
-      if (collectorIds.has(collectorId)) {
-        collectorIds.delete(collectorId);
-        if (collectorIds.size === 0) {
-          this.#requestCollectors.delete(requestId);
-          this.disposeRequest(requestId);
-        }
-      }
-    }
+    const releasedRequests = this.#collectorsStorage.removeDataCollector(
+      params.collector,
+    );
+    releasedRequests.map((request) => this.disposeRequest(request));
   }
 
   disownData(params: Network.DisownDataParameters) {
-    const collectorId = params.collector;
-    const requestId = params.request;
-
-    if (!this.#collectors.has(collectorId)) {
-      throw new NoSuchNetworkCollectorException(
-        `Collector ${collectorId} does not exist`,
-      );
-    }
-
-    if (!this.#requestCollectors.has(requestId)) {
+    if (
+      !this.#collectorsStorage.isCollected(params.request, params.collector)
+    ) {
       throw new NoSuchNetworkDataException(
-        `No collected data for request ${requestId}`,
-      );
-    }
-    const collectorIds = this.#requestCollectors.get(requestId)!;
-
-    if (!collectorIds.has(collectorId)) {
-      throw new NoSuchNetworkDataException(
-        `No collected data for request ${requestId} and collector ${collectorId}`,
+        `Collector ${params.collector} didn't collect data for request ${params.request}`,
       );
     }
 
-    collectorIds.delete(collectorId);
-    if (collectorIds.size === 0) {
-      this.#requestCollectors.delete(requestId);
-      this.disposeRequest(requestId);
-    }
+    this.#collectorsStorage.disown(params.request, params.collector);
+    // `disposeRequest` disposes request only if no other collectors for it are left.
+    this.disposeRequest(params.request);
   }
 }

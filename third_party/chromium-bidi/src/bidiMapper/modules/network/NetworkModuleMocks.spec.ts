@@ -490,6 +490,10 @@ export class MockCdpTarget {
     return Promise.resolve();
   }
 
+  get topLevelId() {
+    return MockCdpNetworkEvents.defaultFrameId;
+  }
+
   isSubscribedTo() {
     return true;
   }
