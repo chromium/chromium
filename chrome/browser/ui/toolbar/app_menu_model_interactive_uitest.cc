@@ -381,6 +381,24 @@ IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
                                 MENU_ACTION_MANAGE_EXTENSIONS, 0);
 }
 
+class AppMenuModelCreateNewTabGroupTest : public AppMenuModelInteractiveTest {
+ public:
+  AppMenuModelCreateNewTabGroupTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kTabGroupMenuMoreEntryPoints}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppMenuModelCreateNewTabGroupTest,
+                       CheckCreateNewTabGroupAppMenuTopLevel) {
+  RunTestSequence(InstrumentTab(kPrimaryTabPageElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  EnsurePresent(AppMenuModel::kCreateNewTabGroupTopLevel));
+}
+
 class PasswordManagerMenuItemInteractiveTest
     : public AppMenuModelInteractiveTest,
       public testing::WithParamInterface<bool> {

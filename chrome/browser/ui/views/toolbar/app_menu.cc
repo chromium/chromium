@@ -1212,6 +1212,10 @@ bool AppMenu::IsCommandEnabled(int command_id) const {
     return true;
   }
 
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL) {
+    return true;
+  }
+
   if (IsTabGroupsCommand(command_id)) {
     return stg_everything_menu_->ShouldEnableCommand(command_id);
   }
@@ -1294,6 +1298,14 @@ bool AppMenu::GetAccelerator(int command_id,
 
     return false;
   }
+
+  if (command_id == IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL) {
+    // Same as 'Create new tab group' except the menu item is at the top level
+    // of the app menu instead of in the tab groups submenu.
+      return browser_->browser_window_features()
+          ->accelerator_provider()
+          ->GetAcceleratorForCommandId(IDC_CREATE_NEW_TAB_GROUP, accelerator);
+    }
 
   if (IsTabGroupsCommand(command_id)) {
     return false;

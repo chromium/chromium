@@ -1166,10 +1166,10 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupContextMenuFeatureInteractiveTest,
       EnsurePresent(STGTabsMenuModel::kTab));
 }
 
-class SavedTabGroupEverythingMenuSubmenuTest
+class SavedTabGroupEverythingMenuMoreEntryPointsFeature
     : public SavedTabGroupInteractiveTestBase {
  public:
-  SavedTabGroupEverythingMenuSubmenuTest() {
+  SavedTabGroupEverythingMenuMoreEntryPointsFeature() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kTabGroupMenuMoreEntryPoints);
   }
@@ -1178,8 +1178,8 @@ class SavedTabGroupEverythingMenuSubmenuTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SavedTabGroupEverythingMenuSubmenuTest,
-                       CheckTabGroupInEverythingMenuHasSubmenu) {
+IN_PROC_BROWSER_TEST_F(SavedTabGroupEverythingMenuMoreEntryPointsFeature,
+                       CheckCreateNewTabGroupInEverythingMenuHasSubmenu) {
   browser()->tab_strip_model()->AddToNewGroup({0});
 
   RunTestSequence(
@@ -1196,6 +1196,17 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupEverythingMenuSubmenuTest,
       EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
       EnsurePresent(STGTabsMenuModel::kTabsTitleItem),
       EnsurePresent(STGTabsMenuModel::kTab));
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupEverythingMenuMoreEntryPointsFeature,
+                       CheckCreateNewTabGroupPresentInAppMenuEverythingMenu) {
+  RunTestSequence(FinishTabstripAnimations(),
+                  EnsurePresent(kToolbarAppMenuButtonElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  EnsurePresent(AppMenuModel::kCreateNewTabGroupTopLevel),
+                  WaitForShow(AppMenuModel::kTabGroupsMenuItem),
+                  SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
+                  EnsurePresent(STGEverythingMenu::kCreateNewTabGroup));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

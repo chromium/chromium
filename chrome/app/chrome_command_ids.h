@@ -109,6 +109,7 @@
 #define IDC_FOCUS_PREV_TAB_GROUP      34103
 #define IDC_CLOSE_TAB_GROUP           34104
 #define IDC_GROUP_UNGROUPED_TABS      34105
+#define IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL 34106
 
 // Page-related commands
 #define IDC_BOOKMARK_THIS_TAB           35000
