@@ -85,7 +85,8 @@ class AshWebViewImpl : public ash::AshWebView,
 
   // content::WebContentsObserver:
   void DidStopLoading() override;
-  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override;
+  void OnFocusChangedInPage(
+      const content::FocusedNodeDetails& details) override;
   void PrimaryPageChanged(content::Page& page) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;

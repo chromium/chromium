@@ -853,8 +853,8 @@ class FocusedNodeObserver : public WebContentsObserver {
   void WaitForFocusChangedInPage() { run_loop_.Run(); }
 
   // WebContentsObserver:
-  void OnFocusChangedInPage(FocusedNodeDetails* details) override {
-    last_focus_type_ = details->focus_type;
+  void OnFocusChangedInPage(const FocusedNodeDetails& details) override {
+    last_focus_type_ = details.focus_type;
     run_loop_.Quit();
   }
 

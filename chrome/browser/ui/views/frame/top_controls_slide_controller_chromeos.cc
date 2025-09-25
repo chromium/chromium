@@ -218,11 +218,12 @@ class TopControlsSlideTabObserver
     UpdateBrowserControlsStateShown(/*animate=*/true);
   }
 
-  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override {
+  void OnFocusChangedInPage(
+      const content::FocusedNodeDetails& details) override {
     // Even if a non-editable node gets focused, if top-chrome is fully shown,
     // we should also update the browser controls state constraints so that
     // top-chrome is able to be hidden again.
-    if (details->is_editable_node || shown_ratio_ == 1.f) {
+    if (details.is_editable_node || shown_ratio_ == 1.f) {
       UpdateBrowserControlsStateShown(/*animate=*/true);
     }
   }

@@ -976,7 +976,7 @@ void ChromeComposeClient::DidGetUserInteraction(
   }
 }
 void ChromeComposeClient::OnFocusChangedInPage(
-    content::FocusedNodeDetails* details) {
+    const content::FocusedNodeDetails& details) {
   // TODO(crbug/337690061): Use Autofill events to track focus change.
   return nudge_tracker_.FocusChangedInPage();
 }

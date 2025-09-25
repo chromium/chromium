@@ -99,7 +99,8 @@ class FocusChangeObserver : public views::FocusChangeListener,
   }
 
   // WebContentsObserver:
-  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override {
+  void OnFocusChangedInPage(
+      const content::FocusedNodeDetails& details) override {
     SCOPED_TRACE(base::StrCat(
         {"Page element with id=",
          content::EvalJs(web_contents(), kGetFocusedElementJS).ExtractString(),

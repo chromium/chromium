@@ -359,13 +359,12 @@ void WebContentsObserverProxy::OnWebContentsLostFocus(RenderWidgetHost*) {
 }
 
 void WebContentsObserverProxy::OnFocusChangedInPage(
-    FocusedNodeDetails* details) {
-  CHECK(details);
-  const gfx::Rect& bounds = details->node_bounds_in_root_view;
+    const FocusedNodeDetails& details) {
+  const gfx::Rect& bounds = details.node_bounds_in_root_view;
   JNIEnv* env = AttachCurrentThread();
   Java_WebContentsObserverProxy_onFocusChangedInPage(
-      env, java_observer_, details->is_editable_node, bounds.x(), bounds.y(),
-      bounds.right(), bounds.bottom(), static_cast<jint>(details->focus_type));
+      env, java_observer_, details.is_editable_node, bounds.x(), bounds.y(),
+      bounds.right(), bounds.bottom(), static_cast<jint>(details.focus_type));
 }
 
 void WebContentsObserverProxy::MediaSessionCreated(MediaSession* session) {
