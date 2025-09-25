@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_map_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compare_function.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_component_swizzle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_cull_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
@@ -988,23 +989,22 @@ wgpu::ErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum) {
   NOTREACHED();
 }
 
-wgpu::ComponentSwizzle AsDawnEnum(const UChar c) {
-  switch (c) {
-    case 'r':
-      return wgpu::ComponentSwizzle::R;
-    case 'g':
-      return wgpu::ComponentSwizzle::G;
-    case 'b':
-      return wgpu::ComponentSwizzle::B;
-    case 'a':
-      return wgpu::ComponentSwizzle::A;
-    case '0':
+wgpu::ComponentSwizzle AsDawnEnum(const V8GPUComponentSwizzle& webgpu_enum) {
+  switch (webgpu_enum.AsEnum()) {
+    case V8GPUComponentSwizzle::Enum::kZero:
       return wgpu::ComponentSwizzle::Zero;
-    case '1':
+    case V8GPUComponentSwizzle::Enum::kOne:
       return wgpu::ComponentSwizzle::One;
-    default:
-      return wgpu::ComponentSwizzle::Undefined;
+    case V8GPUComponentSwizzle::Enum::kR:
+      return wgpu::ComponentSwizzle::R;
+    case V8GPUComponentSwizzle::Enum::kG:
+      return wgpu::ComponentSwizzle::G;
+    case V8GPUComponentSwizzle::Enum::kB:
+      return wgpu::ComponentSwizzle::B;
+    case V8GPUComponentSwizzle::Enum::kA:
+      return wgpu::ComponentSwizzle::A;
   }
+  NOTREACHED();
 }
 
 V8GPUBufferMapState FromDawnEnum(wgpu::BufferMapState dawn_enum) {
