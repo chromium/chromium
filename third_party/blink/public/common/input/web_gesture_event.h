@@ -214,7 +214,9 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
     memset(&data, 0, sizeof(data));
   }
 
-  WebGestureEvent() { memset(&data, 0, sizeof(data)); }
+  WebGestureEvent() : WebInputEvent(Type::kUndefined) {
+    memset(&data, 0, sizeof(data));
+  }
 
   const gfx::PointF& PositionInWidget() const { return position_in_widget_; }
   const gfx::PointF& PositionInScreen() const { return position_in_screen_; }

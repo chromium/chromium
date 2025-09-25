@@ -46,7 +46,7 @@ class BLINK_COMMON_EXPORT WebTouchEvent : public WebInputEvent {
   // increase monotonically. Zero means an unknown id.
   uint32_t unique_touch_event_id = 0;
 
-  WebTouchEvent() = default;
+  WebTouchEvent() : WebInputEvent(Type::kUndefined) {}
 
   WebTouchEvent(Type type, int modifiers, base::TimeTicks time_stamp)
       : WebInputEvent(type, modifiers, time_stamp) {}

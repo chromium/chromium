@@ -94,7 +94,8 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
 
  protected:
   WebMouseEvent(PointerId id_param)
-      : WebPointerProperties(id_param, PointerType::kMouse) {}
+      : WebInputEvent(Type::kUndefined),
+        WebPointerProperties(id_param, PointerType::kMouse) {}
 
   void FlattenTransformSelf();
 

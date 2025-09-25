@@ -406,19 +406,19 @@ class BLINK_COMMON_EXPORT WebInputEvent {
   }
 
  protected:
+  static DispatchType MergeDispatchTypes(DispatchType type_1,
+                                         DispatchType type_2);
+
+  explicit WebInputEvent(Type type,
+                         int modifiers = kNoModifiers,
+                         base::TimeTicks time_stamp = base::TimeTicks())
+      : time_stamp_(time_stamp), type_(type), modifiers_(modifiers) {}
+
   // The root frame scale.
   float frame_scale_ = 1;
 
   // The root frame translation (applied post scale).
   gfx::Vector2dF frame_translate_;
-
-  WebInputEvent(Type type, int modifiers, base::TimeTicks time_stamp)
-      : time_stamp_(time_stamp), type_(type), modifiers_(modifiers) {}
-
-  WebInputEvent() { time_stamp_ = base::TimeTicks(); }
-
-  static DispatchType MergeDispatchTypes(DispatchType type_1,
-                                         DispatchType type_2);
 
   base::TimeTicks time_stamp_;
   base::TimeTicks queued_time_stamp_;

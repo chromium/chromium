@@ -21,12 +21,14 @@ namespace blink {
 class BLINK_COMMON_EXPORT WebPointerEvent : public WebInputEvent,
                                             public WebPointerProperties {
  public:
-  WebPointerEvent() : WebPointerProperties(0) {}
+  WebPointerEvent()
+      : WebInputEvent(Type::kUndefined), WebPointerProperties(0) {}
   WebPointerEvent(WebInputEvent::Type type_param,
                   WebPointerProperties web_pointer_properties_param,
                   float width_param,
                   float height_param)
-      : WebPointerProperties(web_pointer_properties_param),
+      : WebInputEvent(Type::kUndefined),
+        WebPointerProperties(web_pointer_properties_param),
         width(width_param),
         height(height_param) {
     SetType(type_param);
