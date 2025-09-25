@@ -172,6 +172,11 @@ const base::FeatureParam<bool> kShowContextMenu(&kNtpComposebox,
                                                 "ShowContextMenu",
                                                 false);
 
+const base::FeatureParam<bool> kShowContextMenuDescription(
+    &kNtpComposebox,
+    "ShowContextMenuDescription",
+    true);
+
 const base::FeatureParam<bool> kShowToolsAndModels(&kNtpComposebox,
                                                    "kShowToolsAndModels",
                                                    false);
@@ -186,11 +191,6 @@ const base::FeatureParam<bool> kShowNextRealbox(&kNtpComposebox,
                                                 false);
 
 const base::FeatureParam<int> kMaxNumFiles(&kNtpComposebox, "MaxNumFiles", 1);
-
-const base::FeatureParam<bool> kShowContextMenuDescription(
-    &kNtpComposebox,
-    "ShowContextMenuDescription",
-    false);
 
 const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpComposebox,
                                                     "CyclingPlaceholders",

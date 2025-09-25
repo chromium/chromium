@@ -167,7 +167,7 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean("composeboxShowImageSuggest", false);
   // Disable context menu and related features.
   html_source->AddBoolean("composeboxShowContextMenu", false);
-  html_source->AddBoolean("composeboxShowContextMenuDescription", false);
+  html_source->AddBoolean("composeboxShowContextMenuDescription", true);
   // Send event when escape is pressed.
   html_source->AddBoolean("composeboxCloseByEscape", true);
 
