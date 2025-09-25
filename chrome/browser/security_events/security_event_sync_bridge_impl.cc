@@ -165,6 +165,12 @@ std::string SecurityEventSyncBridgeImpl::GetStorageKey(
   return GetStorageKeyFromSpecifics(entity_data.specifics.security_event());
 }
 
+bool SecurityEventSyncBridgeImpl::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  // SECURITY_EVENTS is a commit only data type so this method is not called.
+  NOTREACHED();
+}
+
 void SecurityEventSyncBridgeImpl::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   store_->DeleteAllDataAndMetadata(
