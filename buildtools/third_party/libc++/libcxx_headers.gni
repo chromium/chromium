@@ -11,7 +11,7 @@
 import("//buildtools/deps_revisions.gni")
 
 assert(
-    libcxx_revision == "c662aee7f0e36f1477e3fa6839e408d0f2748775",
+    libcxx_revision == "e39a56726813663b378f05bd3096cbde2ec92ce7",
     "libcxx_headers.gni and third_party/libc++ are out of sync.$0x0A$0x0AIf you were messing around with the libc++ repository, run:$0x0A`buildtools/third_party/libc++/generate_libcxx_headers.py`$0x0A$0x0AIf the script doesn't resolve the error, file a bug to msta@ with reproduction details.$0x0A")
 
 libcxx_headers = [
@@ -232,6 +232,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__atomic/check_memory_order.h",
   "//third_party/libc++/src/include/__atomic/contention_t.h",
   "//third_party/libc++/src/include/__atomic/fence.h",
+  "//third_party/libc++/src/include/__atomic/floating_point_helper.h",
   "//third_party/libc++/src/include/__atomic/is_always_lock_free.h",
   "//third_party/libc++/src/include/__atomic/kill_dependency.h",
   "//third_party/libc++/src/include/__atomic/memory_order.h",
