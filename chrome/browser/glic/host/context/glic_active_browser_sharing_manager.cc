@@ -8,13 +8,19 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_list.h"
 
 namespace glic {
 
 GlicActiveBrowserSharingManager::GlicActiveBrowserSharingManager(
     Profile* profile)
-    : profile_(profile) {}
-GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() = default;
+    : profile_(profile) {
+  BrowserList::AddObserver(this);
+}
+
+GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() {
+  BrowserList::RemoveObserver(this);
+}
 
 void GlicActiveBrowserSharingManager::OnBrowserSetLastActive(Browser* browser) {
   if (browser->profile() != profile_) {

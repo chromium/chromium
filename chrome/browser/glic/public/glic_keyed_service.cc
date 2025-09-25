@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/context/glic_active_browser_sharing_manager.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
@@ -107,6 +108,18 @@ std::unique_ptr<GlicWindowController> CreateWindowController(
       profile, identity_manager, glic_service, glic_enabling);
 }
 
+std::unique_ptr<GlicSharingManager> CreateSharingManager(
+    Profile* profile,
+    GlicWindowController* window_controller,
+    GlicMetrics* metrics) {
+  if (UseDefaultWindowController()) {
+    return std::make_unique<GlicSharingManagerImpl>(profile, window_controller,
+                                                    metrics);
+  }
+
+  return std::make_unique<GlicActiveBrowserSharingManager>(profile);
+}
+
 }  // namespace
 
 GlicKeyedService::GlicKeyedService(
@@ -128,9 +141,7 @@ GlicKeyedService::GlicKeyedService(
                                                 this,
                                                 enabling_.get())),
       sharing_manager_(
-          std::make_unique<GlicSharingManagerImpl>(profile,
-                                                   &window_controller(),
-                                                   metrics_.get())),
+          CreateSharingManager(profile, &window_controller(), metrics_.get())),
       screenshot_capturer_(std::make_unique<GlicScreenshotCapturer>()),
       auth_controller_(std::make_unique<AuthController>(profile,
                                                         identity_manager,
