@@ -71,17 +71,17 @@ source_set("tabs") {
 source_set("test_support") {
   testonly = true
 
-  if (toolkit_views) {
-    sources = [
-      "impl/mock_tab_interface.cc",
-      "public/mock_tab_interface.h",
-    ]
+  sources = [
+    "impl/mock_tab_interface.cc",
+    "public/mock_tab_interface.h",
+  ]
 
-    deps = [
-      ":public",
-      "//testing/gmock",
-      "//ui/views",
-    ]
+  deps = [
+    ":public",
+    "//testing/gmock",
+  ]
+  if (toolkit_views) {
+    deps += [ "//ui/views" ]
   }
 }
 

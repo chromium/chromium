@@ -67,6 +67,7 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               (TabInterfaceCallback),
               (override));
   MOCK_METHOD(bool, IsInNormalWindow, (), (const override));
+#if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(BrowserWindowInterface*,
               GetBrowserWindowInterface,
               (),
@@ -75,6 +76,7 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               GetBrowserWindowInterface,
               (),
               (const override));
+#endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(TabFeatures*, GetTabFeatures, (), (override));
   MOCK_METHOD(const TabFeatures*, GetTabFeatures, (), (const override));
   MOCK_METHOD(bool, IsPinned, (), (const override));
