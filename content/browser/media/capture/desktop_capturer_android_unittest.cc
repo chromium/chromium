@@ -32,6 +32,7 @@ constexpr int kWidth = 8;
 constexpr int kHeight = 4;
 constexpr int kBytesPerPixel = 4;
 constexpr int kStride = kWidth * kBytesPerPixel;
+constexpr int kFrameSize = kStride * kHeight;
 constexpr int kTimestampNs = 1000;
 
 class RunnableFlag {
@@ -129,14 +130,31 @@ class DesktopCapturerAndroidTest : public testing::Test,
   raw_ptr<JNIEnv> env_ = nullptr;
   std::unique_ptr<DesktopCapturerAndroid> capturer_;
 
-  void PushRgbaFrame() {
-    std::vector<uint8_t> buffer(kStride * kHeight, 'A');
+  void PushRgbaFrame(base::span<uint8_t> buffer, int64_t timestamp_ns) {
     auto j_buf = CreateJavaByteBuffer(buffer);
     RunnableFlag release_cb;
     capturer_->OnRgbaFrameAvailable(env_, release_cb.GetJavaObject(),
-                                    kTimestampNs, j_buf, kBytesPerPixel,
+                                    timestamp_ns, j_buf, kBytesPerPixel,
                                     kStride, 0, 0, kWidth, kHeight);
     EXPECT_TRUE(release_cb.WasRun());
+  }
+
+  void PushRgbaFrame(base::span<uint8_t> buffer) {
+    PushRgbaFrame(buffer, kTimestampNs);
+  }
+
+  void PushRgbaFrame() { PushRgbaFrameWithTimestampNs(kTimestampNs); }
+
+  void PushRgbaFrameWithTimestampNs(int64_t timestamp_ns) {
+    std::vector<uint8_t> buffer(kFrameSize, 'A');
+    PushRgbaFrame(buffer, timestamp_ns);
+  }
+
+  void ExpectFrameWithCaptureTime(base::TimeDelta capture_time) {
+    const auto& [result, frame] = CaptureFrame();
+    EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
+    ASSERT_TRUE(frame);
+    EXPECT_EQ(frame->capture_time_ms(), capture_time.InMilliseconds());
   }
 
  private:
@@ -206,6 +224,90 @@ TEST_F(DesktopCapturerAndroidTest, OnStopCalledTwiceDeathTest) {
   StartCapturer(/*start_success=*/true);
   capturer_->OnStop(env_);
   EXPECT_DEATH(capturer_->OnStop(env_), "");
+}
+
+TEST_F(DesktopCapturerAndroidTest, CaptureAndTemporaryError) {
+  StartCapturer(/*start_success=*/true);
+
+  const auto& [result0, frame0] = CaptureFrame();
+  EXPECT_EQ(result0, webrtc::DesktopCapturer::Result::ERROR_TEMPORARY);
+
+  // Simulate a frame from the OS.
+  std::vector<uint8_t> buffer(kFrameSize, 'A');
+  PushRgbaFrame(buffer);
+
+  // We should get the frame back.
+  const auto& [result1, frame1] = CaptureFrame();
+  EXPECT_EQ(result1, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame1);
+  EXPECT_EQ(frame1->size().width(), kWidth);
+  ASSERT_EQ(frame1->size().height(), kHeight);
+  ASSERT_EQ(frame1->stride(), kStride);
+  EXPECT_EQ(frame1->pixel_format(), webrtc::FOURCC_ABGR);
+  webrtc::DesktopRegion full_region(
+      webrtc::DesktopRect::MakeSize(frame1->size()));
+  EXPECT_TRUE(frame1->updated_region().Equals(full_region));
+
+  // SAFETY: No safe interface to DesktopFrame. Size must be equal to `buffer`
+  // if the stride and height are the same.
+  EXPECT_EQ(UNSAFE_BUFFERS(base::span(frame1->data(), buffer.size())),
+            base::span(buffer));
+
+  const auto& [result2, frame2] = CaptureFrame();
+  EXPECT_EQ(result2, webrtc::DesktopCapturer::Result::ERROR_TEMPORARY);
+}
+
+TEST_F(DesktopCapturerAndroidTest, MultipleFramesArriveBeforeCapture) {
+  StartCapturer(/*start_success=*/true);
+
+  std::vector<uint8_t> buffer_a(kFrameSize, 'A');
+  std::vector<uint8_t> buffer_b(kFrameSize, 'B');
+
+  PushRgbaFrame(buffer_a, kTimestampNs);
+  PushRgbaFrame(buffer_b, kTimestampNs + 1000);
+
+  // We should get the more recent frame back.
+  const auto& [result, frame] = CaptureFrame();
+  EXPECT_EQ(result, webrtc::DesktopCapturer::Result::SUCCESS);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->size().width(), kWidth);
+  ASSERT_EQ(frame->size().height(), kHeight);
+  ASSERT_EQ(frame->stride(), kStride);
+
+  // Verify the data is from the second frame.
+  // SAFETY: No safe interface to DesktopFrame. Size must be equal to
+  // `buffer_b` if the stride and height are the same.
+  EXPECT_EQ(UNSAFE_BUFFERS(base::span(frame->data(), buffer_b.size())),
+            base::span(buffer_b));
+}
+
+TEST_F(DesktopCapturerAndroidTest, TimestampCalculation) {
+  StartCapturer(/*start_success=*/true);
+
+  // The capture time should be how long it took to capture the frame. Android
+  // does not provide this value, so we estimate it as the time since the last
+  // frame was produced. Initially, we have it be zero to represent an unknown
+  // amount.
+  PushRgbaFrameWithTimestampNs(100 * base::Time::kNanosecondsPerMillisecond);
+  ExpectFrameWithCaptureTime(base::Milliseconds(0));
+
+  // Frame 2: 33ms later.
+  PushRgbaFrameWithTimestampNs(133 * base::Time::kNanosecondsPerMillisecond);
+  ExpectFrameWithCaptureTime(base::Milliseconds(33));
+
+  // Frame 3: Timestamp goes backwards (non-monotonic). We have it be zero in
+  // this case, since it's unknown.
+  PushRgbaFrameWithTimestampNs(130 * base::Time::kNanosecondsPerMillisecond);
+  ExpectFrameWithCaptureTime(base::Milliseconds(0));
+
+  // Frame 4: Timestamp is the same. Time delta should be 0.
+  PushRgbaFrameWithTimestampNs(130 * base::Time::kNanosecondsPerMillisecond);
+  ExpectFrameWithCaptureTime(base::Milliseconds(0));
+
+  // Frame 5: Timestamp goes forward again. Difference should be based on the
+  // last timestamp, even if it was a non-monotonic update.
+  PushRgbaFrameWithTimestampNs(160 * base::Time::kNanosecondsPerMillisecond);
+  ExpectFrameWithCaptureTime(base::Milliseconds(30));
 }
 
 }  // namespace content
