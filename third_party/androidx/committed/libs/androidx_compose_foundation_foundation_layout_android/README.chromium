@@ -1,6 +1,6 @@
 Name: Compose Layouts
 Short Name: foundation-layout-android
-URL: https://developer.android.com/jetpack/androidx/releases/compose-foundation#1.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/compose/foundation/foundation-layout-android/1.10.0-SNAPSHOT/foundation-layout-android-1.10.0-20250925.045448-1.aar
 Version: 1.10.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Compose layout implementations
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-foundation#1.10.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

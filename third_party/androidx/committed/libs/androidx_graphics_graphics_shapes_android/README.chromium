@@ -1,6 +1,6 @@
 Name: Graphics Shapes
 Short Name: graphics-shapes-android
-URL: https://developer.android.com/jetpack/androidx/releases/graphics#1.1.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/graphics/graphics-shapes-android/1.1.0-SNAPSHOT/graphics-shapes-android-1.1.0-20250925.045448-1.aar
 Version: 1.1.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 create and render rounded polygonal shapes
+
+See also: https://developer.android.com/jetpack/androidx/releases/graphics#1.1.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

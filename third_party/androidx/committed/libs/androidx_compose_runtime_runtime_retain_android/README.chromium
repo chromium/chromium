@@ -1,6 +1,6 @@
 Name: Compose Runtime Retain
 Short Name: runtime-retain-android
-URL: https://developer.android.com/jetpack/androidx/releases/compose-runtime#1.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/compose/runtime/runtime-retain-android/1.10.0-SNAPSHOT/runtime-retain-android-1.10.0-20250925.045448-1.aar
 Version: 1.10.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Preserve state in composable methods across configuration changes and other transient content destruction scenarios
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-runtime#1.10.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

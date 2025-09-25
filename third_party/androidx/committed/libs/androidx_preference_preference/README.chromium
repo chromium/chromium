@@ -1,6 +1,6 @@
 Name: Preference
 Short Name: preference
-URL: https://developer.android.com/jetpack/androidx/releases/preference#1.3.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/preference/preference/1.3.0-SNAPSHOT/preference-1.3.0-20250925.045448-1.aar
 Version: 1.3.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 AndroidX Preference
+
+See also: https://developer.android.com/jetpack/androidx/releases/preference#1.3.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

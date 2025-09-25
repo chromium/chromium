@@ -1,6 +1,6 @@
 Name: androidx.pdf:pdf-viewer
 Short Name: pdf-viewer
-URL: https://developer.android.com/jetpack/androidx/releases/pdf#1.0.0-alpha06
+URL: https://dl.google.com/dl/android/maven2/androidx/pdf/pdf-viewer/1.0.0-alpha06/pdf-viewer-1.0.0-alpha06.aar
 Version: 1.0.0-alpha06
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 add pdf viewing to their apps.
+
+See also: https://developer.android.com/jetpack/androidx/releases/pdf#1.0.0-alpha06
+
 
 Local Modifications:
 No modifications.

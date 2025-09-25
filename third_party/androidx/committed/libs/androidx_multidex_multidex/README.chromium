@@ -1,6 +1,6 @@
 Name: Android Multi-Dex Library
 Short Name: multidex
-URL: https://maven.google.com/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar
+URL: https://dl.google.com/dl/android/maven2/androidx/multidex/multidex/2.0.0/multidex-2.0.0.aar
 Version: 2.0.0
 Update Mechanism: Autoroll
 License: Apache-2.0

@@ -1,6 +1,6 @@
 Name: SQLite
 Short Name: sqlite-android
-URL: https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.1
+URL: https://dl.google.com/dl/android/maven2/androidx/sqlite/sqlite-android/2.6.1/sqlite-android-2.6.1.aar
 Version: 2.6.1
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 SQLite API
+
+See also: https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.1
+
 
 Local Modifications:
 No modifications.

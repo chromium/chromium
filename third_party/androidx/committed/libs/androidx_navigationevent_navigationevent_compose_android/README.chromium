@@ -1,6 +1,6 @@
 Name: NavigationEvent Compose
 Short Name: navigationevent-compose-android
-URL: https://developer.android.com/jetpack/androidx/releases/navigationevent#1.0.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/navigationevent/navigationevent-compose-android/1.0.0-SNAPSHOT/navigationevent-compose-android-1.0.0-20250925.045448-1.aar
 Version: 1.0.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Compose integration with NavigationEvent
+
+See also: https://developer.android.com/jetpack/androidx/releases/navigationevent#1.0.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

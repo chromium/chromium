@@ -1,6 +1,6 @@
 Name: Activity Compose
 Short Name: activity-compose
-URL: https://developer.android.com/jetpack/androidx/releases/activity#1.12.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/activity/activity-compose/1.12.0-SNAPSHOT/activity-compose-1.12.0-20250925.045448-1.aar
 Version: 1.12.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Compose integration with Activity
+
+See also: https://developer.android.com/jetpack/androidx/releases/activity#1.12.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

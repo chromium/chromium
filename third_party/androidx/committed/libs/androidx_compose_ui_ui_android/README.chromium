@@ -1,6 +1,6 @@
 Name: Compose UI
 Short Name: ui-android
-URL: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/compose/ui/ui-android/1.10.0-SNAPSHOT/ui-android-1.10.0-20250925.045448-1.aar
 Version: 1.10.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Compose UI primitives. This library contains the primitives that form the Compose UI Toolkit, such as drawing, measurement and layout.
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-ui#1.10.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

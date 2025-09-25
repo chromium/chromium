@@ -1,6 +1,6 @@
 Name: AnimatedVectorDrawable
 Short Name: vectordrawable-animated
-URL: https://developer.android.com/jetpack/androidx/releases/vectordrawable#1.2.0
+URL: https://dl.google.com/dl/android/maven2/androidx/vectordrawable/vectordrawable-animated/1.2.0/vectordrawable-animated-1.2.0.aar
 Version: 1.2.0
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Android Support AnimatedVectorDrawable
+
+See also: https://developer.android.com/jetpack/androidx/releases/vectordrawable#1.2.0
+
 
 Local Modifications:
 No modifications.

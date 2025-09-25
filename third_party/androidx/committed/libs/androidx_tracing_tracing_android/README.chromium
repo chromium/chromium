@@ -1,6 +1,6 @@
 Name: Tracing
 Short Name: tracing-android
-URL: https://developer.android.com/jetpack/androidx/releases/tracing#1.3.0
+URL: https://dl.google.com/dl/android/maven2/androidx/tracing/tracing-android/1.3.0/tracing-android-1.3.0.aar
 Version: 1.3.0
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Android Tracing
+
+See also: https://developer.android.com/jetpack/androidx/releases/tracing#1.3.0
+
 
 Local Modifications:
 No modifications.

@@ -1,6 +1,6 @@
 Name: DataStore Core Okio
 Short Name: datastore-core-okio-jvm
-URL: https://developer.android.com/jetpack/androidx/releases/datastore#1.2.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/datastore/datastore-core-okio-jvm/1.2.0-SNAPSHOT/datastore-core-okio-jvm-1.2.0-20250925.045448-1.jar
 Version: 1.2.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Android DataStore Core Okio- contains APIs to use datastore-core in multiplatform via okio
+
+See also: https://developer.android.com/jetpack/androidx/releases/datastore#1.2.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

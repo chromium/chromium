@@ -1,6 +1,6 @@
 Name: Compose Foundation
 Short Name: foundation-android
-URL: https://developer.android.com/jetpack/androidx/releases/compose-foundation#1.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/compose/foundation/foundation-android/1.10.0-SNAPSHOT/foundation-android-1.10.0-20250925.045448-1.aar
 Version: 1.10.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Higher level abstractions of the Compose UI primitives. This library is design system agnostic, providing the high-level building blocks for both application and design-system developers
+
+See also: https://developer.android.com/jetpack/androidx/releases/compose-foundation#1.10.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

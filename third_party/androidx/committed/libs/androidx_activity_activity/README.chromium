@@ -1,6 +1,6 @@
 Name: Activity
 Short Name: activity
-URL: https://developer.android.com/jetpack/androidx/releases/activity#1.12.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/activity/activity/1.12.0-SNAPSHOT/activity-1.12.0-20250925.045448-1.aar
 Version: 1.12.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Provides the base Activity subclass and the relevant hooks to build a composable structure on top.
+
+See also: https://developer.android.com/jetpack/androidx/releases/activity#1.12.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

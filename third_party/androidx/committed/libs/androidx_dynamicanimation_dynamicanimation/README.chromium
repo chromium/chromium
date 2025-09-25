@@ -1,6 +1,6 @@
 Name: DynamicAnimation
 Short Name: dynamicanimation
-URL: https://developer.android.com/jetpack/androidx/releases/dynamicanimation#1.1.0
+URL: https://dl.google.com/dl/android/maven2/androidx/dynamicanimation/dynamicanimation/1.1.0/dynamicanimation-1.1.0.aar
 Version: 1.1.0
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Physics-based animation in support library, where the animations are driven by physics force. You can use this Animation library to create smooth and realistic animations.
+
+See also: https://developer.android.com/jetpack/androidx/releases/dynamicanimation#1.1.0
+
 
 Local Modifications:
 No modifications.

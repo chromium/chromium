@@ -1,6 +1,6 @@
 Name: LiveData Core Kotlin Extensions
 Short Name: lifecycle-livedata-core-ktx
-URL: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14164213/artifacts/repository/androidx/lifecycle/lifecycle-livedata-core-ktx/2.10.0-SNAPSHOT/lifecycle-livedata-core-ktx-2.10.0-20250925.045448-1.aar
 Version: 2.10.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Kotlin extensions for 'livedata-core' artifact
+
+See also: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.10.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

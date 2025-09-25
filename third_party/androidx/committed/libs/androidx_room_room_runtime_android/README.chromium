@@ -1,6 +1,6 @@
 Name: Room-Runtime
 Short Name: room-runtime-android
-URL: https://developer.android.com/jetpack/androidx/releases/room#2.8.1
+URL: https://dl.google.com/dl/android/maven2/androidx/room/room-runtime-android/2.8.1/room-runtime-android-2.8.1.aar
 Version: 2.8.1
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Android Room-Runtime
+
+See also: https://developer.android.com/jetpack/androidx/releases/room#2.8.1
+
 
 Local Modifications:
 No modifications.
