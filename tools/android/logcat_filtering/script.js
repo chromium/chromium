@@ -1103,7 +1103,7 @@ function jumpToPreviousException() {
     const parsedLine = currentFileParsedLines[lineNumber];
     if (isStartOfStackTrace(parsedLine)) {
       totalNumExceptions += 1;
-      if (lineNumber < firstVisibleLineNumber) {
+      if (lineNumber < firstVisibleLineNumber - 1) {
         currentExceptionPosition = totalNumExceptions;
         currentExceptionLogcatLine = logcatLine;
       }
@@ -1194,7 +1194,7 @@ function jumpToPreviousTest() {
     const parsedLine = currentFileParsedLines[lineNumber];
     if (isStartOfTest(parsedLine)) {
       totalNumTests += 1;
-      if (lineNumber < firstVisibleLineNumber) {
+      if (lineNumber < firstVisibleLineNumber - 1) {
         currentTestPosition = totalNumTests;
         currentTestLogcatLine = logcatLine;
       }
