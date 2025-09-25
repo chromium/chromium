@@ -32,7 +32,6 @@ ComposeboxHandler::ComposeboxHandler(
           profile,
           web_contents,
           metrics_reporter,
-          std::move(query_controller),
           std::move(metrics_recorder),
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
@@ -40,7 +39,8 @@ ComposeboxHandler::ComposeboxHandler(
                   profile,
                   web_contents,
                   this,
-                  query_controller.get()))),
+                  query_controller.get())),
+          std::move(query_controller)),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
