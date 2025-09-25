@@ -75,8 +75,16 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ThreadLocalNode
   }
 
   // Transfers `pipe` from the process's global node to the thread-local ipcz
-  // node owned by this object and returns a new pipe handle for it.
+  // node owned by this object and returns a new pipe handle for it. If the
+  // transfer fails synchronously, falls back to a non-direct receiver by
+  // returning `pipe` unchanged. (Note that if the transfer fails
+  // *asynchronously*, the new pipe handle will be returned but black-hole any
+  // messages sent to it.)
   ScopedMessagePipeHandle AdoptPipe(ScopedMessagePipeHandle pipe);
+
+  // Overwrites the portal used to transfer `pipe` to the thread-local node
+  // with a dummy handle, to test how AdoptPipe() handles failures.
+  void ReplacePortalForTesting(ScopedHandle dummy_portal);
 
  private:
   friend class base::RefCounted<ThreadLocalNode>;

@@ -11,6 +11,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -85,6 +86,39 @@ TransportPair TransportPairStorage::TakeTransportPair() {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MojoAdoptPipeResult)
+enum class MojoAdoptPipeResult {
+  kSuccess = 0,
+  kTransportNotConnected = 1,
+  kPutFailed = 2,
+  kMaxValue = kPutFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:MojoAdoptPipeResult)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MojoMergePortalsResult)
+enum class MojoMergePortalsResult {
+  kSuccess = 0,
+  kNotAttempted = 1,
+  kGetFailed = 2,
+  kMaxValue = kGetFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:MojoMergePortalsResult)
+
+void LogAdoptPipeResult(MojoAdoptPipeResult result) {
+  base::UmaHistogramEnumeration("Mojo.DirectReceiver.AdoptPipeResult", result);
+}
+
+void LogMergePortalsResult(MojoMergePortalsResult result) {
+  base::UmaHistogramEnumeration("Mojo.DirectReceiver.MergePortalsResult",
+                                result);
+}
 
 thread_local ThreadLocalNode* g_thread_local_node;
 
@@ -212,13 +246,9 @@ ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
   const IpczResult open_result =
       ipcz.OpenPortals(node_->value(), IPCZ_NO_FLAGS, nullptr, &portal_to_bind,
                        &portal_to_merge);
-  if (open_result != IPCZ_RESULT_OK) {
-    // TODO(crbug.com/445243335): Remove the crash key after investigating. This
-    // is left as a CHECK_EQ even though it's temporarily wrapped in an if so
-    // the crash signature doesn't change.
-    SCOPED_CRASH_KEY_NUMBER("adopt-pipe", "open-result", open_result);
-    CHECK_EQ(open_result, IPCZ_RESULT_OK);
-  }
+  // OpenPortals should only fail due to invalid arguments, which is a coding
+  // error.
+  CHECK_EQ(open_result, IPCZ_RESULT_OK);
 
   // Stash the portal for later merge.
   const uint64_t merge_id = next_merge_id_++;
@@ -229,14 +259,26 @@ ScopedMessagePipeHandle ThreadLocalNode::AdoptPipe(
       global_portal_->value(), &merge_id, sizeof(merge_id),
       /*handles=*/&portal_to_adopt, /*num_handles=*/1, IPCZ_NO_FLAGS, nullptr);
   if (put_result != IPCZ_RESULT_OK) {
-    // TODO(crbug.com/445243335): Remove the crash key after investigating. This
-    // is left as a CHECK_EQ even though it's temporarily wrapped in an if so
-    // the crash signature doesn't change.
-    SCOPED_CRASH_KEY_NUMBER("adopt-pipe", "put-result", put_result);
-    CHECK_EQ(put_result, IPCZ_RESULT_OK);
+    // If the *first* attempt to write data to `global_portal_` fails with
+    // IPCZ_RESULT_NOT_FOUND, it's probably because the underlying transport
+    // never connected in the first place.
+    LogAdoptPipeResult(merge_id == 1 && put_result == IPCZ_RESULT_NOT_FOUND
+                           ? MojoAdoptPipeResult::kTransportNotConnected
+                           : MojoAdoptPipeResult::kPutFailed);
+    LogMergePortalsResult(MojoMergePortalsResult::kNotAttempted);
+
+    // Put() only takes ownership of `portal_to_adopt` on success, so it's safe
+    // to keep using it.
+    return ScopedMessagePipeHandle{MessagePipeHandle{portal_to_adopt}};
   }
 
+  LogAdoptPipeResult(MojoAdoptPipeResult::kSuccess);
   return ScopedMessagePipeHandle{MessagePipeHandle{portal_to_bind}};
+}
+
+void ThreadLocalNode::ReplacePortalForTesting(ScopedHandle dummy_portal) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  global_portal_ = std::move(dummy_portal);
 }
 
 void ThreadLocalNode::WatchForIncomingTransfers() {
@@ -297,7 +339,10 @@ void ThreadLocalNode::OnTransferredPortalAvailable() {
   const IpczResult get_result = ipcz.Get(
       local_portal_->value(), IPCZ_NO_FLAGS, nullptr, &merge_id, &num_bytes,
       /*handles=*/&portal, /*num_handles=*/&num_portals, /*parcel=*/nullptr);
-  CHECK_EQ(get_result, IPCZ_RESULT_OK);
+  if (get_result != IPCZ_RESULT_OK) {
+    LogMergePortalsResult(MojoMergePortalsResult::kGetFailed);
+    return;
+  }
   CHECK_EQ(num_bytes, sizeof(merge_id));
   CHECK_EQ(num_portals, 1u);
   CHECK_NE(portal, IPCZ_INVALID_HANDLE);
@@ -306,8 +351,11 @@ void ThreadLocalNode::OnTransferredPortalAvailable() {
   CHECK(it != pending_merges_.end());
   const IpczResult merge_result = ipcz.MergePortals(
       portal, it->second.release().value(), IPCZ_NO_FLAGS, nullptr);
+  // MergePortals should only fail due to invalid arguments or unmet
+  // preconditions, which are coding errors.
   CHECK_EQ(merge_result, IPCZ_RESULT_OK);
   pending_merges_.erase(it);
+  LogMergePortalsResult(MojoMergePortalsResult::kSuccess);
 }
 
 }  // namespace mojo::internal

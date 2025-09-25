@@ -6106,6 +6106,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.DirectReceiver.AdoptPipeResult"
+    enum="MojoAdoptPipeResult" expires_after="2026-03-22">
+  <owner>joenotcharles@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Logs the result of the AdoptPipe operation whenever
+    mojo::DirectReceiver&lt;T&gt;::Bind() is called. Each kSuccess result will
+    be followed by an asynchronous MergePortals operation, whose result is
+    logged in Mojo.DirectReceiver.MergePortalsResult. Each failure immediately
+    logs kNotAttempted to Mojo.DirectReceiver.MergePortalsResult.
+  </summary>
+</histogram>
+
+<histogram name="Mojo.DirectReceiver.MergePortalsResult"
+    enum="MojoMergePortalsResult" expires_after="2026-03-22">
+  <owner>joenotcharles@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <summary>
+    Logs the result of the MergePortals operation whenever
+    mojo::DirectReceiver&lt;T&gt;::Bind() is called. MergePortals happens after
+    an AdoptPipe operation whose result is logged in
+    Mojo.DirectReceiver.AdoptPipeResult. If the AdoptPipe fails, kNotAttempted
+    is logged immediately. Otherwise the MergePortals result is logged when the
+    Mojo message to merge the portals in the local node is processed. So, a
+    difference in counts between this and AdoptPipeResult indicates merges that
+    never completed.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.EndToEndLatencyUs.{ThreadName}" units="microseconds"
     expires_after="2026-02-09">
   <owner>lizeb@chromium.org</owner>
