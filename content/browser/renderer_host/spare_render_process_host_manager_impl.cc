@@ -564,7 +564,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::WarmupSpare(
     spare_renderer_maybe_take_timer_ = std::make_unique<base::ElapsedTimer>();
   }
   RenderProcessHost* new_spare_rph =
-      RenderProcessHostImpl::CreateRenderProcessHost(
+      RenderProcessHostImpl::CreateSpareRenderProcessHost(
           browser_context, nullptr /* site_instance */);
   new_spare_rph->AddObserver(this);
   new_spare_rph->Init();
@@ -708,7 +708,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
   // further updates are made. For navigation requests we will keep the priority
   // until the RenderFrameHostImpl constructor sets the priority.
   if (returned_process && !allocation_context.IsForNavigation()) {
-    returned_process->SetHasSpareRendererPriority(false);
+    returned_process->GraduateSpareToNormalRendererPriority();
   }
 
   return returned_process;
@@ -907,10 +907,6 @@ void SpareRenderProcessHostManagerImpl::RenderProcessReady(
   UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessStartupTime",
                       process_startup_timer_->Elapsed());
 
-  if (base::FeatureList::IsEnabled(features::kSpareRendererProcessPriority)) {
-    host->SetHasSpareRendererPriority(true);
-  }
-
   process_startup_timer_.reset();
 
   for (auto& observer : observer_list_) {
@@ -1052,7 +1048,7 @@ void SpareRenderProcessHostManagerImpl::MaybeCreateExtraSpare() {
 
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
   RenderProcessHost* new_spare_rph =
-      RenderProcessHostImpl::CreateRenderProcessHost(
+      RenderProcessHostImpl::CreateSpareRenderProcessHost(
           browser_context, nullptr /* site_instance */);
   new_spare_rph->AddObserver(this);
   new_spare_rph->Init();
