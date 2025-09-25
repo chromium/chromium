@@ -42,6 +42,7 @@ const char kRemoveSessionUMAName[] = "RemoveSession";
 const char kUpdateSessionUMAName[] = "UpdateSession";
 const char kKeyStatusSystemCodeUMAName[] = "KeyStatusSystemCode";
 const char kInitialKeyStatusMixUMAName[] = "InitialKeyStatusMix";
+const char kLastKeyStatusMixUMAName[] = "LastKeyStatusMix";
 
 media::CdmSessionType ConvertSessionType(
     WebEncryptedMediaSessionType session_type) {
@@ -256,6 +257,14 @@ WebContentDecryptionModuleSessionImpl::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!session_id_.empty()) {
+    if (last_keys_info_.has_value()) {
+      auto key_status_mix_for_uma =
+          GetKeyStatusMixForUma(last_keys_info_.value());
+      base::UmaHistogramEnumeration(
+          adapter_->GetKeySystemUMAPrefix() + kLastKeyStatusMixUMAName,
+          key_status_mix_for_uma);
+    }
+
     adapter_->UnregisterSession(session_id_);
 
     // From http://w3c.github.io/encrypted-media/#mediakeysession-interface
@@ -489,6 +498,9 @@ void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
         adapter_->GetKeySystemUMAPrefix() + kInitialKeyStatusMixUMAName,
         key_status_mix_for_uma);
   }
+
+  // Update the last key status information.
+  last_keys_info_ = std::move(keys_info);
 
   // Now send the event to blink.
   client_->OnSessionKeysChange(keys, has_additional_usable_key);

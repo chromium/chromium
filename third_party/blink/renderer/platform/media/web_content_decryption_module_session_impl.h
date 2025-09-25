@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -95,6 +96,9 @@ class PLATFORM_EXPORT WebContentDecryptionModuleSessionImpl
   bool is_closed_;
 
   bool has_key_status_uma_reported_ = false;
+
+  // Last key status information to report UMA when the CDM session gets closed.
+  std::optional<media::CdmKeysInfo> last_keys_info_;
 
   THREAD_CHECKER(thread_checker_);
 
