@@ -107,7 +107,7 @@ function autoComplete(element: fillConstants.FormControlElement|null): boolean {
  * @param element An element to check if it can be autocompleted.
  * @return true if autocomplete dropdown should be suggested.
  */
-gCrWebLegacy.fill.shouldAutocomplete = function(
+function shouldAutocomplete(
     element: fillConstants.FormControlElement|null): boolean {
   if (!autoComplete(element)) {
     return false;
@@ -120,7 +120,7 @@ gCrWebLegacy.fill.shouldAutocomplete = function(
     return false;
   }
   return true;
-};
+}
 
 /**
  * Sets the value of a data-bound input using AngularJS.
@@ -774,4 +774,5 @@ export {
   isElementInsideFormOrFieldSet,
   isVisibleNode,
   getUniqueID,
+  shouldAutocomplete,
 };

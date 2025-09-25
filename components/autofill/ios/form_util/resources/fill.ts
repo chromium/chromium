@@ -527,7 +527,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
       gCrWebLegacy.fill.isSelectElement(element)) {
     field.is_autofilled = (element as any).isAutofilled;
     field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
-    field.should_autocomplete = gCrWebLegacy.fill.shouldAutocomplete(element);
+    field.should_autocomplete = fillUtil.shouldAutocomplete(element);
     field.is_focusable = !element.disabled && !(element as any).readOnly &&
         element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
   }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getUniqueID, shouldAutocomplete} from '//components/autofill/ios/form_util/resources/fill_util.js';
 
 /**
 * @fileoverview Registers a testing-only `CrWebApi` to expose fill utils
@@ -13,5 +13,6 @@ import {getUniqueID} from '//components/autofill/ios/form_util/resources/fill_ut
 const fillApi = new CrWebApi();
 
 fillApi.addFunction('getUniqueID', getUniqueID);
+fillApi.addFunction('shouldAutocomplete', shouldAutocomplete);
 
 gCrWeb.registerApi('fill_test_api', fillApi);

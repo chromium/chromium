@@ -182,7 +182,8 @@ TEST_F(FillJsTest, ShouldAutocompleteOneTimeCode) {
   LoadHtml(@"<input id='input' type='text' autocomplete='one-time-code'/>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.shouldAutocomplete(document.getElementById('input'));");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('shouldAutocomplete')(document.getElementById('input'));");
   EXPECT_NSEQ(result, @NO);
 }
 
