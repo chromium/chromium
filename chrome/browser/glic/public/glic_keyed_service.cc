@@ -36,6 +36,7 @@
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/context/glic_tab_source_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/host.h"
@@ -166,6 +167,11 @@ GlicKeyedService::GlicKeyedService(
         static_cast<int>(prefs::FreStatus::kCompleted));
   }
 
+  if (!UseDefaultWindowController()) {
+    glic_tab_source_observer_ = std::make_unique<GlicTabSourceObserver>(
+        window_controller_.get(), profile_);
+  }
+
   // This is only used by automation for tests.
   glic_profile_manager->MaybeAutoOpenGlicPanel();
 }
@@ -181,6 +187,11 @@ GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
 
 void GlicKeyedService::Shutdown() {
   CloseUI();
+
+  if (!UseDefaultWindowController()) {
+    glic_tab_source_observer_.reset();
+  }
+
   GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
   if (glic_profile_manager) {
     glic_profile_manager->OnServiceShutdown(this);
@@ -347,6 +358,7 @@ GlicKeyedService::AddContextAccessIndicatorStatusChangedCallback(
 }
 
 void GlicKeyedService::CreateTab(
+    content::RenderFrameHost* source,
     const ::GURL& url,
     bool open_in_background,
     const std::optional<int32_t>& window_id,
@@ -361,6 +373,11 @@ void GlicKeyedService::CreateTab(
   params.disposition = open_in_background
                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+
+  // Ensure the source is Glic, then set the opener of the navigation.
+  if (source && host_manager().IsGlicWebUiHost(source->GetProcess())) {
+    params.opener = source;
+  }
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       Navigate(&params);
   if (!navigation_handle.get()) {

@@ -143,11 +143,13 @@ void GlicInstanceImpl::RegisterConversation(
 }
 
 void GlicInstanceImpl::CreateTab(
+    content::RenderFrameHost* source,
     const ::GURL& url,
     bool open_in_background,
     const std::optional<int32_t>& window_id,
     glic::mojom::WebClientHandler::CreateTabCallback callback) {
-  service_->CreateTab(url, open_in_background, window_id, std::move(callback));
+  service_->CreateTab(source, url, open_in_background, window_id,
+                      std::move(callback));
 }
 
 void GlicInstanceImpl::CreateTask(

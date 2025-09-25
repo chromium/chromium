@@ -58,7 +58,8 @@ void GlicFrePageHandler::PrepareForClient(
 
 void GlicFrePageHandler::ValidateAndOpenLinkInNewTab(const GURL& url) {
   if (url.DomainIs("google.com")) {
-    GetGlicService()->CreateTab(url, /*open_in_background=*/true, std::nullopt,
+    GetGlicService()->CreateTab(nullptr, url,
+                                /*open_in_background=*/true, std::nullopt,
                                 base::DoNothing());
     GetGlicService()->fre_controller().OnLinkClicked(url);
   }

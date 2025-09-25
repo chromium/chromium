@@ -24,6 +24,10 @@ class MockGlicWindowController
               GetInstanceForTab,
               (tabs::TabInterface*),
               (override));
+  MOCK_METHOD(void,
+              FindInstanceFromGlicContentsAndBindToTab,
+              (content::WebContents*, tabs::TabInterface*),
+              (override));
 
   MOCK_METHOD(void,
               Toggle,

@@ -112,6 +112,18 @@ GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
   return GetInstanceImplForTab(tab);
 }
 
+void GlicInstanceCoordinatorImpl::FindInstanceFromGlicContentsAndBindToTab(
+    content::WebContents* source_glic_web_contents,
+    tabs::TabInterface* tab_to_bind) {
+  // Find the instance for the given web contents
+  for (auto const& [instance_id, instance] : instances_) {
+    if (instance->host().webui_contents() == source_glic_web_contents) {
+      // Show the instance in the new tab
+      instance->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab_to_bind);
+    }
+  }
+}
+
 void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
                                          bool prevent_close,
                                          mojom::InvocationSource source) {

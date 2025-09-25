@@ -56,6 +56,7 @@ class GlicOcclusionNotifier;
 class GlicProfileManager;
 class GlicScreenshotCapturer;
 class GlicSharingManagerImpl;
+class GlicTabSourceObserver;
 class GlicWindowController;
 class HostManager;
 
@@ -164,8 +165,11 @@ class GlicKeyedService : public KeyedService,
 
   // Host::InstanceDelegate:
   // CreateTab is used by both the FRE page and the glic web client to open a
-  // URL in a new tab.
+  // URL in a new tab. The source is the RenderFrameHost of the Glic
+  // instance that is requesting the navigation - this gets set as the
+  // navigation handle's opener param.
   void CreateTab(
+      content::RenderFrameHost* source,
       const ::GURL& url,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
@@ -299,6 +303,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicOcclusionNotifier> occlusion_notifier_;
   std::unique_ptr<GlicZeroStateSuggestionsManager>
       zero_state_suggestions_manager_;
+  std::unique_ptr<GlicTabSourceObserver> glic_tab_source_observer_;
   base::OnceCallback<void()> preload_callback_;
 
   // Unowned

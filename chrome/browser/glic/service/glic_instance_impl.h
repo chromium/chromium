@@ -97,6 +97,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Host::InstanceDelegate:
   void CreateTab(
+      content::RenderFrameHost* source,
       const ::GURL& url,
       bool open_in_background,
       const std::optional<int32_t>& window_id,

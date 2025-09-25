@@ -843,7 +843,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         }
       }
     }
-    host().instance_delegate().CreateTab(url, open_in_background, window_id,
+    content::RenderFrameHost* host_main_frame =
+        page_handler_->host().webui_contents()->GetPrimaryMainFrame();
+    host().instance_delegate().CreateTab(host_main_frame, url,
+                                         open_in_background, window_id,
                                          std::move(callback));
   }
 

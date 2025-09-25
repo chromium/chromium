@@ -153,6 +153,9 @@ class GlicWindowControllerImpl
   HostManager& host_manager() override;
   std::vector<GlicInstance*> GetInstances() override;
   GlicInstance* GetInstanceForTab(tabs::TabInterface* tab) override;
+  void FindInstanceFromGlicContentsAndBindToTab(
+      content::WebContents* source_glic_web_contents,
+      tabs::TabInterface* tab_to_bind) override {}
 
   // GlicInstance implementation
   Host& host() override;
