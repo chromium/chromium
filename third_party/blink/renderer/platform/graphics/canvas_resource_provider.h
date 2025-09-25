@@ -286,10 +286,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
                                 int x,
                                 int y);
 
-  virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
-    NOTREACHED();
-  }
-
   CanvasResourceProvider(const CanvasResourceProvider&) = delete;
   CanvasResourceProvider& operator=(const CanvasResourceProvider&) = delete;
   ~CanvasResourceProvider() override;
@@ -516,7 +512,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override;
   bool IsValid() const override;
-  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const override;
+  gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool HasUnusedResourcesForTesting() const;
 
   // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
