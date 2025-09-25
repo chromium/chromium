@@ -630,8 +630,8 @@ TEST_F(SigninPromoViewMediatorTest, SigninPromoWhileSignedIn) {
   AddDefaultIdentity();
   identity_ = [FakeSystemIdentity fakeIdentity2];
   fake_system_identity_manager()->AddIdentity(identity_);
-  GetAuthenticationService()->SignIn(identity_,
-                                     signin_metrics::AccessPoint::kSigninPromo);
+  GetAuthenticationService()->SignIn(
+      identity_, signin_metrics::AccessPoint::kFullscreenSigninPromo);
   CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
   ExpectConfiguratorNotification(/*identity_changed=*/NO);
   [mediator_ signinPromoViewIsVisible];
@@ -742,8 +742,8 @@ TEST_F(SigninPromoViewMediatorTest,
   AddDefaultIdentity();
   identity_ = [FakeSystemIdentity fakeIdentity2];
   fake_system_identity_manager()->AddIdentity(identity_);
-  GetAuthenticationService()->SignIn(identity_,
-                                     signin_metrics::AccessPoint::kSigninPromo);
+  GetAuthenticationService()->SignIn(
+      identity_, signin_metrics::AccessPoint::kFullscreenSigninPromo);
 
   CreateMediator(signin_metrics::AccessPoint::kBookmarkManager);
   ExpectConfiguratorNotification(/*identity_changed=*/NO);

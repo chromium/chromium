@@ -308,7 +308,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -331,7 +331,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNull(intent);
                 });
     }
@@ -356,7 +356,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -380,7 +380,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNull(intent);
                 });
     }
@@ -404,7 +404,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNull(intent);
                 });
     }
@@ -424,7 +424,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -447,7 +447,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNull(intent);
                 });
         verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
@@ -473,7 +473,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNotNull(intent);
                 });
     }
@@ -497,7 +497,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNull(intent);
                 });
         verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);
@@ -522,7 +522,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             mContext,
                                             mProfileMock,
                                             FULLSCREEN_CONFIG,
-                                            SigninAccessPoint.SIGNIN_PROMO);
+                                            SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
                     assertNull(intent);
                 });
         verifyToastShown(R.string.signin_account_picker_bottom_sheet_error_title);

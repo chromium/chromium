@@ -162,7 +162,7 @@ enum class AccessPoint : int {
   kDevicesPage = 12,
   // kCloudPrint = 13, no longer used.
   // kContentArea = 14, no longer used.
-  kSigninPromo = 15,
+  kFullscreenSigninPromo = 15,
   kRecentTabs = 16,
   // This should never have been used to get signin URL.
   kUnknown = 17,

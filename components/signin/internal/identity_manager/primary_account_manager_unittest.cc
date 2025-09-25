@@ -633,7 +633,7 @@ TEST_F(PrimaryAccountManagerTest, SetPrimaryAccountInfoWithSigninConsent) {
   // observers are not notified.
   account_info.email = "us.er@gmail.com";
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
-                                  AccessPoint::kSigninPromo);
+                                  AccessPoint::kFullscreenSigninPromo);
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
@@ -698,7 +698,7 @@ TEST_F(PrimaryAccountManagerTest, SetPrimaryAccountInfoWithSyncConsent) {
   // observers are not notified.
   account_info.email = "us.er@gmail.com";
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSync,
-                                  AccessPoint::kSigninPromo);
+                                  AccessPoint::kFullscreenSigninPromo);
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_EQ(1, num_unconsented_account_changed_);

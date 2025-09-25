@@ -62,7 +62,7 @@ public final class FullscreenSigninPromoLauncher {
                         .build();
         @Nullable Intent intent =
                 signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
-                        context, profile, config, SigninAccessPoint.SIGNIN_PROMO);
+                        context, profile, config, SigninAccessPoint.FULLSCREEN_SIGNIN_PROMO);
         if (intent == null) {
             return false;
         }

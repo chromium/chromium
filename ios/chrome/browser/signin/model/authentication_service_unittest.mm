@@ -322,8 +322,8 @@ TEST_P(AuthenticationServiceTest, TestDefaultGetPrimaryIdentity) {
 
 TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   // Sign in.
-  authentication_service()->SignIn(identity(0),
-                                   signin_metrics::AccessPoint::kSigninPromo);
+  authentication_service()->SignIn(
+      identity(0), signin_metrics::AccessPoint::kFullscreenSigninPromo);
   VerifyLastSigninTimestamp();
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
@@ -339,7 +339,8 @@ TEST_P(AuthenticationServiceTest, TestSignInAndGetPrimaryIdentity) {
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   histogram_tester_.ExpectUniqueSample(
-      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kSigninPromo, 1);
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::kFullscreenSigninPromo, 1);
 }
 
 // Tests that reauth prompt can be set and reset.

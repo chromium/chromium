@@ -192,7 +192,7 @@ using signin_metrics::PromoAction;
                           (const ChangeProfileContinuationProvider&)
                               changeProfileContinuationProvider {
   CHECK(changeProfileContinuationProvider);
-  AccessPoint accessPoint = AccessPoint::kSigninPromo;
+  AccessPoint accessPoint = AccessPoint::kFullscreenSigninPromo;
   PromoAction promoAction = PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   return [[TwoScreensSigninCoordinator alloc]
       initWithBaseViewController:viewController

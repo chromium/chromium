@@ -104,7 +104,7 @@ using base::UserMetricsAction;
 
 - (void)start {
   [super start];
-  if (self.accessPoint == signin_metrics::AccessPoint::kSigninPromo) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kFullscreenSigninPromo) {
     // TODO(crbug.com/41352590): Need to add `CHECK(accountManagerService)`.
     [_upgradeSigninLogger logSigninStarted];
   }
@@ -227,7 +227,7 @@ using base::UserMetricsAction;
 // `identity`.
 - (void)finishWithResult:(SigninCoordinatorResult)result
                 identity:(id<SystemIdentity>)identity {
-  if (self.accessPoint == signin_metrics::AccessPoint::kSigninPromo) {
+  if (self.accessPoint == signin_metrics::AccessPoint::kFullscreenSigninPromo) {
     // TODO(crbug.com/40074532): `addedAccount` is not always `NO`. Need to fix
     // that call to have the right value.
     [_upgradeSigninLogger logSigninCompletedWithResult:result addedAccount:NO];

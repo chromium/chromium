@@ -57,7 +57,7 @@ TEST(SigninPromoTest, TestPromoURL) {
   replace_query.SetQueryStr("access_point=15&reason=1");
   EXPECT_EQ(
       GURL(chrome::kChromeUIChromeSigninURL).ReplaceComponents(replace_query),
-      GetEmbeddedPromoURL(signin_metrics::AccessPoint::kSigninPromo,
+      GetEmbeddedPromoURL(signin_metrics::AccessPoint::kFullscreenSigninPromo,
                           signin_metrics::Reason::kAddSecondaryAccount, false));
 }
 

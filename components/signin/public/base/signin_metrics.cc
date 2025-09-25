@@ -433,7 +433,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromDevicesPage"));
       break;
-    case AccessPoint::kSigninPromo:
+    case AccessPoint::kFullscreenSigninPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromSigninPromo"));
       break;
@@ -695,7 +695,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromDevicesPage"));
       break;
-    case AccessPoint::kSigninPromo:
+    case AccessPoint::kFullscreenSigninPromo:
       base::RecordAction(
           base::UserMetricsAction("Signin_Impression_FromSigninPromo"));
       break;

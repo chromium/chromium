@@ -27,7 +27,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kAvatarBubbleSignIn,
     AccessPoint::kUserManager,
     AccessPoint::kDevicesPage,
-    AccessPoint::kSigninPromo,
+    AccessPoint::kFullscreenSigninPromo,
     AccessPoint::kRecentTabs,
     AccessPoint::kUnknown,
     AccessPoint::kPasswordBubble,
@@ -65,7 +65,7 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kBookmarkManager,
     AccessPoint::kAvatarBubbleSignIn,
     AccessPoint::kDevicesPage,
-    AccessPoint::kSigninPromo,
+    AccessPoint::kFullscreenSigninPromo,
     AccessPoint::kRecentTabs,
     AccessPoint::kPasswordBubble,
     AccessPoint::kAutofillDropdown,
@@ -111,7 +111,7 @@ class SigninMetricsTest : public ::testing::Test {
         return "UserManager";
       case AccessPoint::kDevicesPage:
         return "DevicesPage";
-      case AccessPoint::kSigninPromo:
+      case AccessPoint::kFullscreenSigninPromo:
         return "SigninPromo";
       case AccessPoint::kRecentTabs:
         return "RecentTabs";

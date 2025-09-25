@@ -42086,7 +42086,7 @@ should be able to be added at any place in this file.
   <owner>gogerald@chromium.org</owner>
   <description>
     Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kSigninPromo.
+    signin_metrics::AccessPoint::kFullscreenSigninPromo.
   </description>
 </action>
 

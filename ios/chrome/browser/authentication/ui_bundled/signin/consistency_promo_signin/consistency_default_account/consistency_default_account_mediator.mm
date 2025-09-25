@@ -102,7 +102,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kDevicesPage:
-    case signin_metrics::AccessPoint::kSigninPromo:
+    case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAutofillDropdown:

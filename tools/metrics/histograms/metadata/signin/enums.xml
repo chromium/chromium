@@ -855,7 +855,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Devices page"/>
   <int value="13" label="(obsolete) Cloud print"/>
   <int value="14" label="(obsolete) Content area"/>
-  <int value="15" label="Signin promo"/>
+  <int value="15" label="Fullscreen Signin promo shown on start-up"/>
   <int value="16" label="Recent tabs"/>
   <int value="17" label="Unknown"/>
   <int value="18" label="Password bubble"/>
