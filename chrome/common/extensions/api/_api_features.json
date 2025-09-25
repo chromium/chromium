@@ -24,7 +24,7 @@
   },
   "accessibilityPrivate.onTwoFingerTouchStart": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "dependencies": [],
     "extension_types": ["platform_app"],
     "session_types": ["kiosk"],
@@ -42,7 +42,7 @@
   },
   "accessibilityPrivate.onTwoFingerTouchStop": {
     "channel": "stable",
-    "contexts": ["blessed_extension"],
+    "contexts": ["privileged_extension"],
     "dependencies": [],
     "extension_types": ["platform_app"],
     "session_types": ["kiosk"],
