@@ -101,6 +101,7 @@ BASE_DECLARE_FEATURE(kDevToolsGlobalAiButton);
 extern const base::FeatureParam<bool> kDevToolsGlobalAiButtonPromotionEnabled;
 
 BASE_DECLARE_FEATURE(kDevToolsGdpProfiles);
+extern const base::FeatureParam<bool> kDevToolsGdpProfilesBadgesEnabled;
 extern const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled;
 
 BASE_DECLARE_FEATURE(kDevToolsLiveEdit);

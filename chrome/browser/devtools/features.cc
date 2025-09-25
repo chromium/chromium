@@ -159,6 +159,12 @@ const base::FeatureParam<bool> kDevToolsGlobalAiButtonPromotionEnabled{
 
 // Whether the Google Developer Program integration is enabled.
 BASE_FEATURE(kDevToolsGdpProfiles, base::FEATURE_DISABLED_BY_DEFAULT);
+// Whether the badges for the Google Developer Program is enabled. It's used
+// as a kill-switch to disable granting badges in case something goes wrong and
+// we start spamming users with badge notifications.
+const base::FeatureParam<bool> kDevToolsGdpProfilesBadgesEnabled{
+    &kDevToolsGdpProfiles, "badges_enabled",
+    /*default_value=*/true};
 // Whether the starter badge for the Google Developer Program is enabled.
 const base::FeatureParam<bool> kDevToolsGdpProfilesStarterBadgeEnabled{
     &kDevToolsGdpProfiles, "starter_badge_enabled",

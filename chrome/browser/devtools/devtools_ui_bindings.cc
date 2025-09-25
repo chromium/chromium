@@ -1969,6 +1969,8 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
     base::Value::Dict gdp_profiles_dict;
     gdp_profiles_dict.Set("enabled", base::FeatureList::IsEnabled(
                                          ::features::kDevToolsGdpProfiles));
+    gdp_profiles_dict.Set("badgesEnabled",
+                          features::kDevToolsGdpProfilesBadgesEnabled.Get());
     gdp_profiles_dict.Set(
         "starterBadgeEnabled",
         features::kDevToolsGdpProfilesStarterBadgeEnabled.Get());
