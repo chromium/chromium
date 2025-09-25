@@ -1250,6 +1250,9 @@ class AvatarToolbarButtonSyncPromoBaseBrowserTest
         if (enable_replace_sync_with_signin) {
           enabled_features.push_back(
               syncer::kReplaceSyncPromosWithSignInPromos);
+        } else {
+          disabled_features.push_back(
+              syncer::kReplaceSyncPromosWithSignInPromos);
         }
         disabled_features.push_back(switches::kAvatarButtonSyncPromoForTesting);
         break;
@@ -1454,6 +1457,8 @@ struct HistorySyncOptinSyncManagedTypeTestCase {
   syncer::UserSelectableType managed_type;
 };
 
+// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
+#if !BUILDFLAG(IS_WIN)
 class AvatarToolbarButtonHistorySyncOptinManagedTypeTest
     : public AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest,
       public WithParamInterface<HistorySyncOptinSyncManagedTypeTestCase> {
@@ -1466,39 +1471,6 @@ class AvatarToolbarButtonHistorySyncOptinManagedTypeTest
  private:
   base::test::ScopedFeatureList feature_list_;
 };
-
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_HistorySyncOptinNotShownWhenSyncManaged \
-  DISABLED_HistorySyncOptinNotShownWhenSyncManaged
-#else
-#define MAYBE_HistorySyncOptinNotShownWhenSyncManaged \
-  HistorySyncOptinNotShownWhenSyncManaged
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
-                       MAYBE_HistorySyncOptinNotShownWhenSyncManaged) {
-  switch (GetParam().managed_by) {
-    case ManagedBy::kPolicy:
-      SimulateTypeManagedByPolicy(GetParam().managed_type);
-      break;
-    case ManagedBy::kCustodian:
-      SimulateTypeManagedByCustodian(GetParam().managed_type);
-      break;
-    default:
-      NOTREACHED();
-  }
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar->GetText().empty());
-  const std::u16string account_name(u"Account name");
-  SigninWithImage(/*email=*/u"test@gmail.com", account_name);
-  ASSERT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
-                                   IDS_AVATAR_BUTTON_GREETING, account_name));
-  avatar->ClearActiveStateForTesting();
-  // The greeting should NOT be followed by the history sync opt-in entry point
-  // if sync is not allowed.
-  EXPECT_TRUE(avatar->GetText().empty());
-}
 
 const HistorySyncOptinSyncManagedTypeTestCase
     kHistorySyncOptinSyncManagedTypeTestCases[] = {
@@ -1520,9 +1492,33 @@ const HistorySyncOptinSyncManagedTypeTestCase
         },
 };
 
+TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
+                             AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
+                             HistorySyncOptinNotShownWhenSyncManaged) {
+  switch (GetParam().managed_by) {
+    case ManagedBy::kPolicy:
+      SimulateTypeManagedByPolicy(GetParam().managed_type);
+      break;
+    case ManagedBy::kCustodian:
+      SimulateTypeManagedByCustodian(GetParam().managed_type);
+      break;
+    default:
+      NOTREACHED();
+  }
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  ASSERT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+  avatar->ClearActiveStateForTesting();
+  // The greeting should NOT be followed by the history sync opt-in entry point
+  // if sync is not allowed.
+  EXPECT_TRUE(avatar->GetText().empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(HistorySyncOptinManagedType,
                          AvatarToolbarButtonHistorySyncOptinManagedTypeTest,
                          ValuesIn(kHistorySyncOptinSyncManagedTypeTestCases));
+#endif
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if !BUILDFLAG(IS_WIN)
@@ -2353,6 +2349,9 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
       scoped_browser_management_;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
@@ -2528,6 +2527,12 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
   EXPECT_EQ(avatar_button->GetText(), work_label);
 
   EnableSyncWithImage(u"work@managed.com");
+  ASSERT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+  avatar_button->ClearActiveStateForTesting();
+
+  ASSERT_EQ(avatar_button->GetText(), work_label);
+
   SimulateSyncPaused();
   // Sync Paused has priority over the Work badge.
   ExpectSyncPaused(avatar_button);
@@ -2554,49 +2559,85 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       GreetingNotShownWhenManagementAccepted) {
+                       PRE_GreetingNotShownWhenManagementAccepted) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
 
-  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
-  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+  Signin(u"work@managed.com", u"TestName");
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+}
 
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       GreetingNotShownWhenManagementAccepted) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
   // The greeting would only show when the image is loaded. Set the image to
   // make sure we do not have a false positive later.
-  AddSignedInImage(account_info.account_id);
+  AddSignedInImage(
+      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 
   // We do not expect a greeting to be shown if user accepted management.
   EXPECT_EQ(avatar->GetText(), u"Work");
 }
 
-class AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest
-    : public base::test::WithFeatureOverride,
-      public AvatarToolbarButtonEnterpriseBadgingBrowserTest {
+class AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest
+    : public AvatarToolbarButtonEnterpriseBadgingBrowserTest {
  protected:
-  AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest()
-      : WithFeatureOverride(switches::kEnableHistorySyncOptinExpansionPill) {}
+  AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kEnableHistorySyncOptinExpansionPill},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_GreetingShownWhenManagementNotAccepted \
+  DISABLED_PRE_GreetingShownWhenManagementNotAccepted
 #define MAYBE_GreetingShownWhenManagementNotAccepted \
   DISABLED_GreetingShownWhenManagementNotAccepted
 #else
+#define MAYBE_PRE_GreetingShownWhenManagementNotAccepted \
+  PRE_GreetingShownWhenManagementNotAccepted
 #define MAYBE_GreetingShownWhenManagementNotAccepted \
   GreetingShownWhenManagementNotAccepted
 #endif
-// test makes sure the greeting is not shown when the management badge is shown
-// in the profile avatar pill.
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
-    MAYBE_GreetingShownWhenManagementNotAccepted) {
+// Test makes sure the greeting is shown when the management badge is not shown
+// (management declined) in the profile avatar pill.
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest,
+    MAYBE_PRE_GreetingShownWhenManagementNotAccepted) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
 
-  std::u16string name(u"TestName");
-  AccountInfo account_info = Signin(u"work@managed.com", name);
+  Signin(u"work@managed.com", test_given_name());
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest,
+    MAYBE_GreetingShownWhenManagementNotAccepted) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  // Disable the preferences about syncing the tabs and history to make the
+  // avatar promo eligible.
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
                                                     false);
 
@@ -2605,19 +2646,19 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(avatar->GetText(), std::u16string());
 
   // The greeting will only show when the image is loaded.
-  AddSignedInImage(account_info.account_id);
+  AddSignedInImage(
+      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 
   // Since the user has not accepted management, the greeting will still be
   // shown.
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
-  if (IsParamFeatureEnabled()) {
-    // The greeting is followed by the history sync opt-in.
-    EXPECT_EQ(avatar->GetText(),
-              l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
-    avatar->ClearActiveStateForTesting();
-  }
+  // The greeting is followed by the history sync opt-in.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  avatar->ClearActiveStateForTesting();
   // Once the name (or sync promo) is not shown anymore, we expect no text.
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
@@ -2625,36 +2666,54 @@ IN_PROC_BROWSER_TEST_P(
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_PRE_SignedInWithNewSessionKeepWorkBadge \
+  DISABLED_PRE_PRE_SignedInWithNewSessionKeepWorkBadge
 #define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge \
   DISABLED_PRE_SignedInWithNewSessionKeepWorkBadge
 #define MAYBE_SignedInWithNewSessionKeepWorkBadge \
   DISABLED_SignedInWithNewSessionKeepWorkBadge
 #else
+#define MAYBE_PRE_PRE_SignedInWithNewSessionKeepWorkBadge \
+  PRE_PRE_SignedInWithNewSessionKeepWorkBadge
 #define MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge \
   PRE_SignedInWithNewSessionKeepWorkBadge
 #define MAYBE_SignedInWithNewSessionKeepWorkBadge \
   SignedInWithNewSessionKeepWorkBadge
 #endif
 // Tests the flow for a managed sign-in.
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
-    MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge) {
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest,
+    MAYBE_PRE_PRE_SignedInWithNewSessionKeepWorkBadge) {
   // Sign in.
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  std::u16string name(u"TestName");
-  AccountInfo account_info = SigninWithImage(u"work@managed.com", name);
+  AccountInfo account_info =
+      SigninWithImage(u"work@managed.com", test_given_name());
 
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest,
+    MAYBE_PRE_SignedInWithNewSessionKeepWorkBadge) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+
+  // Disable the preferences about syncing the tabs and history to make the
+  // avatar promo eligible.
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Since the user has not accepted management yet, the greeting will be
   // shown.
   EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING, name));
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
   avatar->ClearActiveStateForTesting();
-  if (IsParamFeatureEnabled()) {
-    // The greeting is followed by the history sync opt-in.
-    EXPECT_EQ(avatar->GetText(),
-              l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
-    avatar->ClearActiveStateForTesting();
-  }
+  // The greeting is followed by the history sync opt-in.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  avatar->ClearActiveStateForTesting();
 
   // Once the name (or sync promo) is not shown anymore, we expect no text since
   // management is not accepted.
@@ -2672,8 +2731,8 @@ IN_PROC_BROWSER_TEST_P(
 // Test that the work badge remains upon restart for a user that is managed.
 // Note that we need to unset and reset UserAcceptedAccountManagement due to the
 // management service override.
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest,
     MAYBE_SignedInWithNewSessionKeepWorkBadge) {
   // Disable the preferences about syncing the tabs and history to make the
   // avatar promo eligible.
@@ -2685,12 +2744,10 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(avatar->GetText(), l10n_util::GetStringFUTF16(
                                    IDS_AVATAR_BUTTON_GREETING, u"TestName"));
   avatar->ClearActiveStateForTesting();
-  if (IsParamFeatureEnabled()) {
-    // The greeting is followed by the history sync opt-in.
-    EXPECT_EQ(avatar->GetText(),
-              l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
-    avatar->ClearActiveStateForTesting();
-  }
+  // The greeting is followed by the history sync opt-in.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  avatar->ClearActiveStateForTesting();
 
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(),
                                                     false);
@@ -2709,40 +2766,55 @@ IN_PROC_BROWSER_TEST_P(
 
 // TODO(crbug.com/331746545): Check the flaky test issue on Windows.
 #if BUILDFLAG(IS_WIN)
+#define MAYBE_PRE_SyncPromoShownOnInactivityWhenManagementAccepted \
+  DISABLED_PRE_SyncPromoShownOnInactivityWhenManagementAccepted
 #define MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted \
   DISABLED_SyncPromoShownOnInactivityWhenManagementAccepted
 #else
+#define MAYBE_PRE_SyncPromoShownOnInactivityWhenManagementAccepted \
+  PRE_SyncPromoShownOnInactivityWhenManagementAccepted
 #define MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted \
   SyncPromoShownOnInactivityWhenManagementAccepted
 #endif
-IN_PROC_BROWSER_TEST_P(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest,
-    MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted) {
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest,
+    MAYBE_PRE_SyncPromoShownOnInactivityWhenManagementAccepted) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Normal state.
   ASSERT_TRUE(avatar->GetText().empty());
 
-  AccountInfo account_info = Signin(u"work@managed.com", u"TestName");
+  Signin(u"work@managed.com", test_given_name());
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoBrowserTest,
+    MAYBE_SyncPromoShownOnInactivityWhenManagementAccepted) {
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
+
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar->GetText().empty());
+
   enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
 
   // The greeting would only show when the image is loaded. Set the image to
   // make sure we do not have a false positive later.
-  AddSignedInImage(account_info.account_id);
+  AddSignedInImage(
+      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   // We do not expect a greeting to be shown if user accepted management.
   EXPECT_EQ(avatar->GetText(), u"Work");
   // Simulate long enough inactivity to trigger the sync promo.
   RunTestSequence(
       SetLastActive(user_education::features::GetIdleTimeBetweenSessions()));
-  if (IsParamFeatureEnabled()) {
-    EXPECT_EQ(avatar->GetText(),
-              l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
-    avatar->ClearActiveStateForTesting();
-  }
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY));
+  avatar->ClearActiveStateForTesting();
   EXPECT_EQ(avatar->GetText(), u"Work");
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    AvatarToolbarButtonEnterpriseBadgingWithSyncPromoParamsBrowserTest);
 
 // TODO(b/331746545): Check flaky test issue on windows.
 #if BUILDFLAG(IS_WIN)
