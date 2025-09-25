@@ -153,6 +153,7 @@ class GlicInstanceImpl : public GlicInstance,
 
     std::unique_ptr<GlicUiEmbedder> embedder;
     base::CallbackListSubscription destruction_subscription;
+    base::CallbackListSubscription tab_activation_subscription;
   };
 
   struct ConversationInfo {
@@ -169,6 +170,7 @@ class GlicInstanceImpl : public GlicInstance,
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
   void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
                                 const InstanceId& instance_id);
+  void OnAssociatedTabActivated(tabs::TabInterface* tab);
   void OnZeroStateSuggestionsFetched(
       mojom::ZeroStateSuggestionsPtr suggestions,
       mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback

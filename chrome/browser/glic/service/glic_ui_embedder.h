@@ -36,6 +36,10 @@ class GlicUiEmbedder {
 
   // Show the glic UI.
   virtual void Show() = 0;
+
+  // Returns true if the embedder is currently showing.
+  virtual bool IsShowing() const = 0;
+
   // Close the glic UI (keeps webclient alive for now)
   virtual void Close() = 0;
 

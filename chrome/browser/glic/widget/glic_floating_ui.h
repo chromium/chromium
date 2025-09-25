@@ -23,6 +23,7 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   // GlicUiEmbedder:
   Host::EmbedderDelegate* GetHostEmbedderDelegate() override;
   void Show() override;
+  bool IsShowing() const override;
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
@@ -37,7 +38,6 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   void Attach() override;
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
-  bool IsShowing() const override;
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;

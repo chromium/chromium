@@ -49,13 +49,15 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   void Attach() override;
   void Detach() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
-  bool IsShowing() const override;
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
 
   // GlicSidePanelCoordinator::StateObserver
   void VisibilityChanged(bool visible) override;
+
+  // GlicUiEmbedder and Host::Delegate:
+  bool IsShowing() const override;
 
  private:
   base::ScopedObservation<GlicSidePanelCoordinator,

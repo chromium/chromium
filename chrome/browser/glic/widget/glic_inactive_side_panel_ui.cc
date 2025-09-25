@@ -22,12 +22,16 @@ std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
 
 GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
     base::WeakPtr<tabs::TabInterface> tab)
-    : empty_embedder_delegate_(std::make_unique<EmptyEmbedderDelegate>()) {
-  if (tab && tab->GetTabFeatures()) {
-    auto* glic_side_panel_coordinator =
-        tab->GetTabFeatures()->glic_side_panel_coordinator();
-    glic_side_panel_coordinator->SetContentsView(CreateView(tab));
+    : tab_(tab),
+      empty_embedder_delegate_(std::make_unique<EmptyEmbedderDelegate>()) {
+  if (!tab_ || !tab_->GetTabFeatures()) {
+    return;
   }
+
+  auto* glic_side_panel_coordinator =
+      tab_->GetTabFeatures()->glic_side_panel_coordinator();
+  coordinator_observation_.Observe(glic_side_panel_coordinator);
+  glic_side_panel_coordinator->SetContentsView(CreateView(tab_));
 }
 
 std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView(
@@ -40,6 +44,10 @@ GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 
 Host::EmbedderDelegate* GlicInactiveSidePanelUi::GetHostEmbedderDelegate() {
   return empty_embedder_delegate_.get();
+}
+
+bool GlicInactiveSidePanelUi::IsShowing() const {
+  return is_showing_;
 }
 
 void GlicInactiveSidePanelUi::Show() {
@@ -55,6 +63,10 @@ void GlicInactiveSidePanelUi::Close() {
 std::unique_ptr<GlicUiEmbedder>
 GlicInactiveSidePanelUi::CreateInactiveEmbedder() const {
   NOTREACHED() << "The embedder is already inactive.";
+}
+
+void GlicInactiveSidePanelUi::VisibilityChanged(bool visible) {
+  is_showing_ = visible;
 }
 
 }  // namespace glic

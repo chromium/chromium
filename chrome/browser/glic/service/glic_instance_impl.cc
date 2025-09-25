@@ -340,22 +340,25 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
     const EmbedderKey& key) {
   EmbedderEntry new_entry;
-  std::visit(absl::Overload{
-                 [&](FloatingEmbedderKey) {
-                   new_entry.embedder = std::make_unique<GlicFloatingUi>();
-                 },
-                 [&](tabs::TabInterface* tab) {
-                   new_entry.embedder = std::make_unique<GlicSidePanelUi>(
-                       profile_, tab->GetWeakPtr(), *this);
-                   auto* helper = GlicInstanceHelper::From(tab);
-                   CHECK(helper);
-                   new_entry.destruction_subscription =
-                       helper->SubscribeToDestruction(base::BindRepeating(
-                           &GlicInstanceImpl::OnAssociatedTabDestroyed,
-                           weak_ptr_factory_.GetWeakPtr()));
-                 },
-             },
-             key);
+  std::visit(
+      absl::Overload{
+          [&](FloatingEmbedderKey) {
+            new_entry.embedder = std::make_unique<GlicFloatingUi>();
+          },
+          [&](tabs::TabInterface* tab) {
+            new_entry.embedder = std::make_unique<GlicSidePanelUi>(
+                profile_, tab->GetWeakPtr(), *this);
+            auto* helper = GlicInstanceHelper::From(tab);
+            CHECK(helper);
+            new_entry.destruction_subscription = helper->SubscribeToDestruction(
+                base::BindRepeating(&GlicInstanceImpl::OnAssociatedTabDestroyed,
+                                    weak_ptr_factory_.GetWeakPtr()));
+            new_entry.tab_activation_subscription = tab->RegisterDidActivate(
+                base::BindRepeating(&GlicInstanceImpl::OnAssociatedTabActivated,
+                                    weak_ptr_factory_.GetWeakPtr()));
+          },
+      },
+      key);
 
   auto* embedder_ptr = new_entry.embedder.get();
   // Avoid use-after-free.
@@ -387,6 +390,14 @@ void GlicInstanceImpl::OnAssociatedTabDestroyed(tabs::TabInterface* tab,
   DisassociateFromTab(tab);
   if (IsOrphaned() && attachment_delegate_) {
     attachment_delegate_->OnInstanceOrphaned(this);
+  }
+}
+
+void GlicInstanceImpl::OnAssociatedTabActivated(tabs::TabInterface* tab) {
+  auto* embedder = GetEmbedderForTab(tab);
+  if (embedder && embedder->IsShowing()) {
+    // Ensure that the side panel in this tab becomes the active embedder.
+    Show(EmbedderType::kSidePanel, tab);
   }
 }
 

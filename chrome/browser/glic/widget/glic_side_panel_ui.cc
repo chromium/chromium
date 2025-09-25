@@ -23,16 +23,15 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
                                  base::WeakPtr<tabs::TabInterface> tab,
                                  GlicUiEmbedder::Delegate& delegate)
     : profile_(profile), tab_(tab), delegate_(delegate) {
-  if (tab_) {
-    coordinator_observation_.Observe(
-        tab_->GetTabFeatures()->glic_side_panel_coordinator());
+  if (!tab_ || !tab_->GetTabFeatures()) {
+    return;
   }
 
-  if (tab && tab->GetTabFeatures()) {
-    auto* glic_side_panel_coordinator =
-        tab_->GetTabFeatures()->glic_side_panel_coordinator();
-    glic_side_panel_coordinator->SetContentsView(CreateView(profile));
-  }
+  auto* glic_side_panel_coordinator =
+      tab_->GetTabFeatures()->glic_side_panel_coordinator();
+  coordinator_observation_.Observe(
+      tab_->GetTabFeatures()->glic_side_panel_coordinator());
+  glic_side_panel_coordinator->SetContentsView(CreateView(profile_));
 }
 
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
