@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file.h"
 
 // The only 32-bit platform that uses this file is Android. On Android APIs
@@ -27,6 +22,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -118,22 +114,22 @@ int CallFtruncate(PlatformFile file, int64_t length) {
 #endif
 }
 
-int CallFutimes(PlatformFile file, const struct timeval times[2]) {
+int CallFutimes(PlatformFile file, const std::array<struct timeval, 2> times) {
 #ifdef __USE_XOPEN2K8
   // futimens should be available, but futimes might not be
   // http://pubs.opengroup.org/onlinepubs/9699919799/
 
-  timespec ts_times[2];
+  std::array<timespec, 2> ts_times;
   ts_times[0].tv_sec = times[0].tv_sec;
   ts_times[0].tv_nsec = times[0].tv_usec * 1000;
   ts_times[1].tv_sec = times[1].tv_sec;
   ts_times[1].tv_nsec = times[1].tv_usec * 1000;
 
-  return futimens(file, ts_times);
+  return futimens(file, ts_times.data());
 #else
 #pragma clang diagnostic push  // Can be removed once Cronet's min-sdk is >= 26.
 #pragma clang diagnostic ignored "-Wunguarded-availability"
-  return futimes(file, times);
+  return futimes(file, times.data());
 #pragma clang diagnostic pop
 #endif
 }
@@ -471,7 +467,7 @@ bool File::SetTimes(Time last_access_time, Time last_modified_time) {
 
   SCOPED_FILE_TRACE("SetTimes");
 
-  timeval times[2];
+  std::array<timeval, 2> times;
   times[0] = last_access_time.ToTimeVal();
   times[1] = last_modified_time.ToTimeVal();
 
@@ -770,7 +766,7 @@ int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
     Info info;
     if ((file.IsValid() && file.GetInfo(&info)) ||
         GetContentUriInfo(*content_uri, &info)) {
-      memset(sb, 0, sizeof(*sb));
+      UNSAFE_BUFFERS(memset(sb, 0, sizeof(*sb)));
       sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
       sb->st_size = info.size;
       sb->st_mtime = info.last_modified.ToTimeT();
