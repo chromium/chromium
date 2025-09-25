@@ -207,8 +207,8 @@ std::optional<base::Value> CWTRequestHandler::ProcessCommand(
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    std::optional<base::Value::Dict> content_dict =
-        base::JSONReader::ReadDict(request_content);
+    std::optional<base::Value::Dict> content_dict = base::JSONReader::ReadDict(
+        request_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!content_dict) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverMissingRequestMessage);
