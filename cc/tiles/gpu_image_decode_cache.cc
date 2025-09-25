@@ -2852,15 +2852,9 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
       sk_image_info.height() > max_texture_size_ ||
       (has_gainmap && (gainmap_sk_image_info.width() > max_texture_size_ ||
                        gainmap_sk_image_info.height() > max_texture_size_));
-  DecodedDataMode mode;
-  if (use_transfer_cache_) {
-    mode = DecodedDataMode::kTransferCache;
-  } else if (image_larger_than_max_texture) {
-    // Image too large to upload. Try to use SW fallback.
-    mode = DecodedDataMode::kCpu;
-  } else {
-    mode = DecodedDataMode::kGpu;
-  }
+  // TODO(crbug.com/391648152): Remove DecodedDataMode entirely, as it is now
+  // always kTransferCache.
+  DecodedDataMode mode = DecodedDataMode::kTransferCache;
 
   // We need to cache the result of color conversion on the cpu if the image
   // will be color converted during the decode.
