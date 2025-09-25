@@ -58,6 +58,18 @@ BASE_FEATURE(kContextualPageActions, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualPageActionTabGrouping,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualPageActionTabGroupThrottling,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool>
+    kContextualPageActionTabGroupParamThrottleOnNewTab{
+        &kContextualPageActionTabGroupThrottling, "throttle_on_new_tab", false};
+
+const base::FeatureParam<bool>
+    kContextualPageActionTabGroupParamShowWhenNotClickedInLastDay{
+        &kContextualPageActionTabGroupThrottling,
+        "show_when_not_clicked_in_last_day", false};
+
 BASE_FEATURE(kSegmentationDefaultReportingSegments,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

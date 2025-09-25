@@ -43,12 +43,30 @@ constexpr std::array<int32_t, 7> kNonContextualActionEnumIds = {
     13,  // AdaptiveToolbarButtonVariant::kPageSummary
 };
 
-constexpr std::array<MetadataWriter::UMAFeature, 1> kUmaFeatures = {
+constexpr std::array<int32_t, 1> kTabGroupingEnumId = {
+    16,  // AdaptiveToolbarButtonVariant::kTabGrouping
+};
+
+constexpr std::array<MetadataWriter::UMAFeature, 3> kUmaFeatures = {
+    // For throttling based on non-contextual actions.
     MetadataWriter::UMAFeature::FromEnumHistogram(
         "Android.AdaptiveToolbarButton.Clicked",
         /*bucket_count=*/1,
         kNonContextualActionEnumIds.data(),
-        kNonContextualActionEnumIds.size())};
+        kNonContextualActionEnumIds.size()),
+    // For getting the shown count of tab grouping action.
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "Android.AdaptiveToolbarButton.Variant.OnPageLoad",
+        /*bucket_count=*/1,
+        kTabGroupingEnumId.data(),
+        kTabGroupingEnumId.size()),
+    // For getting the clicked count of tab grouping action.
+    MetadataWriter::UMAFeature::FromEnumHistogram(
+        "Android.AdaptiveToolbarButton.Clicked",
+        /*bucket_count=*/1,
+        kTabGroupingEnumId.data(),
+        kTabGroupingEnumId.size()),
+};
 
 MetadataWriter::CustomInput CreateCustomInput(const char* name) {
   return MetadataWriter::CustomInput{
@@ -133,7 +151,9 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   bool has_reader_mode = inputs[3];
   bool has_tab_grouping_suggestions = inputs[4];
   // Start of UMA features
-  float non_contextual_click_count = inputs[kLabelInputSize];
+  float non_contextual_click_count = inputs[kLabelInputSize + 0];
+  float tab_group_shown_count = inputs[kLabelInputSize + 1];
+  float tab_group_clicked_count = inputs[kLabelInputSize + 2];
 
   // Create response.
   ModelProvider::Response response(kLabelInputSize, 0);
@@ -141,7 +161,18 @@ void ContextualPageActionsModel::ExecuteModelWithInput(
   response[1] = has_price_insights;
   response[2] = can_track_price;
   response[3] = has_reader_mode;
-  response[4] = has_tab_grouping_suggestions && non_contextual_click_count == 0;
+
+  bool show_tab_grouping = has_tab_grouping_suggestions;
+  if (features::kContextualPageActionTabGroupParamThrottleOnNewTab.Get()) {
+    show_tab_grouping &= (non_contextual_click_count == 0);
+  }
+  if (features::kContextualPageActionTabGroupParamShowWhenNotClickedInLastDay
+          .Get()) {
+    show_tab_grouping &=
+        !(tab_group_shown_count > 0 && tab_group_clicked_count == 0);
+  }
+  response[4] = show_tab_grouping;
+
   // TODO(crbug.com/40249852): Set a classifier threshold.
 
   // TODO(shaktisahu): This class needs some rethinking to correctly associate

@@ -48,6 +48,15 @@ BASE_DECLARE_FEATURE(kSegmentationPlatformDeviceSwitcher);
 // Feature flag for enabling tab grouping action feature.
 BASE_DECLARE_FEATURE(kContextualPageActionTabGrouping);
 
+// Feature flag for enabling tab group throttling.
+BASE_DECLARE_FEATURE(kContextualPageActionTabGroupThrottling);
+
+extern const base::FeatureParam<bool>
+    kContextualPageActionTabGroupParamThrottleOnNewTab;
+
+extern const base::FeatureParam<bool>
+    kContextualPageActionTabGroupParamShowWhenNotClickedInLastDay;
+
 // Feature flag for enabling shopping user segment feature.
 BASE_DECLARE_FEATURE(kShoppingUserSegmentFeature);
 
