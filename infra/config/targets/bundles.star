@@ -484,8 +484,6 @@ targets.bundle(
                 # TODO(crbug.com/444753297): Remove this config.
                 "--timeout-scale=2.0",
             ],
-            # TODO(crbug.com/441704684): Remove the ci_only after green.
-            ci_only = True,
         ),
         "chrome_public_unit_test_apk": targets.mixin(
             swarming = targets.swarming(
