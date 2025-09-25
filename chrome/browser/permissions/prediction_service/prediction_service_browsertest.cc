@@ -533,7 +533,9 @@ class PredictionServiceHoldbackBrowserTest
                                           permissions::features::
                                               kPermissionsAIv3,
                                           permissions::features::
-                                              kPermissionsAIv4}) {}
+                                              kPermissionsAIv4,
+                                          permissions::features::
+                                              kPermissionsAIP92}) {}
 
   void SetUpOnMainThread() override {
     PredictionServiceBrowserTestBase::SetUpOnMainThread();
@@ -669,7 +671,9 @@ class SignatureModelPredictionServiceBrowserTest
                                           permissions::features::
                                               kPermissionsAIv3,
                                           permissions::features::
-                                              kPermissionsAIv4}) {}
+                                              kPermissionsAIv4,
+                                          permissions::features::
+                                              kPermissionsAIP92}) {}
 
   void TriggerCpssV1AndVerifyUi(
       PermissionAction permission_action,
@@ -903,7 +907,9 @@ class Aiv3ModelPredictionServiceBrowserTest
                                                    {}},
                                               }, /*disabled_features=*/
                                               {permissions::features::
-                                                   kPermissionsAIv4}) {}
+                                                   kPermissionsAIv4,
+                                               permissions::features::
+                                                   kPermissionsAIP92}) {}
 
   RequestType request_type() const override {
     return get<1>(GetParam()).request_type;
@@ -1087,7 +1093,8 @@ class Aiv4ModelPredictionServiceBrowserTestBase
                                                        kPermissionsAIv4,
                                                    {}},
                                               }, /*disabled_features=*/
-                                              {}) {}
+                                              {permissions::features::
+                                                   kPermissionsAIP92}) {}
 
   void SetUpOnMainThread() override {
     AivXModelPredictionServiceBrowserTest<

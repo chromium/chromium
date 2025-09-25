@@ -72,6 +72,8 @@ using ::optimization_guide::proto::PermissionsAiResponse;
 
 constexpr auto VeryUnlikely = permissions::
     PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY;
+constexpr auto Unlikely =
+    permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY;
 
 // The data we consider can only be at most 28 days old to match the data that
 // the ML model is built on.
@@ -113,6 +115,9 @@ ParsePredictionServiceMockLikelihood(const std::string& value) {
 
 bool ShouldPredictionTriggerQuietUi(
     permissions::PermissionUiSelector::PredictionGrantLikelihood likelihood) {
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIP92)) {
+    return likelihood == Unlikely || likelihood == VeryUnlikely;
+  }
   return likelihood == VeryUnlikely;
 }
 }  // namespace
