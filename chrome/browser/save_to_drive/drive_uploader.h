@@ -13,7 +13,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class GoogleServiceAuthError;
 class GURL;
@@ -38,7 +40,6 @@ class SharedURLLoaderFactory;
 
 namespace signin {
 class AccessTokenFetcher;
-class IdentityManager;
 struct AccessTokenInfo;
 }  // namespace signin
 
@@ -58,7 +59,7 @@ enum class DriveUploaderType {
 // Drive, and notifying the caller about the upload progress. Destroying the
 // DriveUploader will cancel the upload if it is in progress. This class should
 // only be used on the UI thread.
-class DriveUploader {
+class DriveUploader : public signin::IdentityManager::Observer {
  public:
   // Callback to be invoked periodically when there is progress in the Save to
   // Drive upload process.
@@ -73,7 +74,7 @@ class DriveUploader {
                 ContentReader* content_reader);
   DriveUploader(const DriveUploader&) = delete;
   DriveUploader& operator=(const DriveUploader&) = delete;
-  virtual ~DriveUploader();
+  ~DriveUploader() override;
 
   // Starts the upload process. This function should be called only once.
   void Start();
@@ -133,6 +134,10 @@ class DriveUploader {
   void NotifyError(
       extensions::api::pdf_viewer_private::SaveToDriveErrorType error_type);
 
+  // signin::IdentityManager::Observer:
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override;
+
   const std::vector<std::string>& oauth_headers() const;
 
   const DriveUploaderType drive_uploader_type_;
@@ -148,6 +153,9 @@ class DriveUploader {
 
  private:
   std::vector<std::string> oauth_headers_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_identity_manager_observation_{this};
 
   base::WeakPtrFactory<DriveUploader> weak_ptr_factory_{this};
 };

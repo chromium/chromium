@@ -200,6 +200,7 @@ void DriveUploader::Start() {
     NotifyError(SaveToDriveErrorType::kOauthError);
     return;
   }
+  scoped_identity_manager_observation_.Observe(identity_manager_);
   access_token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       account_info_.account_id, signin::OAuthConsumerId::kSaveToDrive,
       base::BindOnce(&DriveUploader::OnFetchAccessToken,
@@ -316,6 +317,13 @@ void DriveUploader::NotifyError(SaveToDriveErrorType error_type) {
   progress.status = SaveToDriveStatus::kUploadFailed;
   progress.error_type = error_type;
   progress_callback_.Run(std::move(progress));
+}
+
+void DriveUploader::OnRefreshTokenRemovedForAccount(
+    const CoreAccountId& account_id) {
+  if (account_info_.account_id == account_id) {
+    NotifyError(SaveToDriveErrorType::kOauthError);
+  }
 }
 
 }  // namespace save_to_drive

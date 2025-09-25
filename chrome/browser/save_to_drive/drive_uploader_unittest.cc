@@ -159,6 +159,27 @@ TEST_F(DriveUploaderTest, NoRefreshToken) {
   uploader->Start();
 }
 
+TEST_F(DriveUploaderTest, OnRefreshTokenRemovedForAccount) {
+  auto account_info = test_env()->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  auto uploader = std::make_unique<FakeDriveUploader>(
+      "test_title", account_info, progress_callback_.Get(), profile_.get(),
+      &mock_content_reader_);
+
+  // The `progress_callback_` is expected to be run twice: once during the
+  // initial `Start()` call as refresh token for the primary account is not
+  // configured, and again when the refresh token is removed for the account.
+  EXPECT_CALL(progress_callback_,
+              Run(AllOf(Field(&SaveToDriveProgress::status,
+                              SaveToDriveStatus::kUploadFailed),
+                        Field(&SaveToDriveProgress::error_type,
+                              SaveToDriveErrorType::kOauthError))))
+      .Times(2);
+
+  uploader->Start();
+  test_env()->RemoveRefreshTokenForAccount(account_info.account_id);
+}
+
 class FetchParentFolderTest : public DriveUploaderTest {
  public:
   FetchParentFolderTest() = default;
