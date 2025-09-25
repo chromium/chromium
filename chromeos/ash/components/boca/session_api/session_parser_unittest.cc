@@ -42,7 +42,7 @@ constexpr char kFullSessionResponse[] = R"(
         {
           "kDummyDeviceId":
          {
-            "info": {"device_id":"kDummyDeviceId"},
+            "info": {"deviceId":"kDummyDeviceId"},
             "state":"INACTIVE",
             "activity": {
               "activeTab": {
@@ -387,6 +387,12 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                           .activity()
                           .active_tab()
                           .title());
+  EXPECT_EQ("kDummyDeviceId", session_full->student_statuses()
+                                  .at("3")
+                                  .devices()
+                                  .at("kDummyDeviceId")
+                                  .info()
+                                  .device_id());
   EXPECT_EQ(::boca::ViewScreenConfig::AVAILABLE,
             session_full->student_statuses()
                 .at("3")

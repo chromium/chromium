@@ -331,6 +331,10 @@ void ParseIndividualStudentStatusFromJson(
                     : "");
           }
         }
+        if (auto* device_id =
+                device_dict->FindStringByDottedPath("info.deviceId")) {
+          device_entry.mutable_info()->set_device_id(*device_id);
+        }
 
         if (::ash::features::IsBocaSpotlightEnabled()) {
           if (auto* view_screen_config_dict =

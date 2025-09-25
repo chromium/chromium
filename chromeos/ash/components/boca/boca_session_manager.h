@@ -171,6 +171,8 @@ class BocaSessionManager
     // order changed in the vector too.
     virtual void OnConsumerActivityUpdated(
         const std::map<std::string, ::boca::StudentStatus>& activities);
+
+    virtual void OnReceiverInvalidation();
   };
   // CrosNetworkConfigObserver
   void OnNetworkStateChanged(
@@ -249,6 +251,9 @@ class BocaSessionManager
       const std::string& fcm_token,
       base::OnceCallback<void(bool)> on_token_uploaded_cb) override;
   void OnInvalidationReceived(const std::string& payload) override;
+
+  std::optional<std::string> GetStudentActiveDeviceId(
+      std::string_view student_id);
 
   base::ObserverList<Observer>& observers() { return observers_; }
 

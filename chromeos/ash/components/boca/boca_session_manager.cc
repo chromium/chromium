@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
@@ -56,6 +57,11 @@ const net::BackoffEntry::Policy kStudentHeartbeatBackoffPolicy = {
     .maximum_backoff_ms = base::Seconds(90).InMilliseconds(),
     .entry_lifetime_ms = -1,
     .always_use_initial_delay = false};
+
+bool IsScreenSharingEnabled() {
+  return features::IsBocaScreenSharingStudentEnabled() ||
+         features::IsBocaScreenSharingTeacherEnabled();
+}
 }  // namespace
 
 BocaSessionManager::BocaSessionManager(
@@ -147,6 +153,8 @@ void BocaSessionManager::Observer::OnAppReloaded() {}
 void BocaSessionManager::Observer::OnConsumerActivityUpdated(
     const std::map<std::string, ::boca::StudentStatus>& activities) {}
 
+void BocaSessionManager::Observer::OnReceiverInvalidation() {}
+
 void BocaSessionManager::OnNetworkStateChanged(
     chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -163,6 +171,11 @@ void BocaSessionManager::OnNetworkStateChanged(
       // flipped from offline to online.
       is_network_connected_ = true;
       LoadCurrentSession(/*from_polling=*/false);
+      if (IsScreenSharingEnabled()) {
+        for (auto& observer : observers_) {
+          observer.OnReceiverInvalidation();
+        }
+      }
     }
   } else {
     is_network_connected_ = false;
@@ -432,6 +445,13 @@ void BocaSessionManager::UploadToken(
 }
 
 void BocaSessionManager::OnInvalidationReceived(const std::string& payload) {
+  constexpr std::string_view kReceiverInvalidation = "GetKioskReceiver";
+  if (IsScreenSharingEnabled() && payload == kReceiverInvalidation) {
+    for (auto& observer : observers_) {
+      observer.OnReceiverInvalidation();
+    }
+    return;
+  }
   // TODO(crbug.com/354769102): Potentially validate FCM payload before
   // dispatching. And implement a thread-safe approach to skip loading when
   // there is already active loading in progress.
@@ -440,6 +460,21 @@ void BocaSessionManager::OnInvalidationReceived(const std::string& payload) {
   // LoadCurrentSession has a validation to skip load if the current active user
   // doesn't match the profile user.
   LoadCurrentSession(/*from_polling=*/false);
+}
+
+std::optional<std::string> BocaSessionManager::GetStudentActiveDeviceId(
+    std::string_view student_id) {
+  if (!current_session_ ||
+      !current_session_->student_statuses().contains(student_id)) {
+    return std::nullopt;
+  }
+  for (const auto& [device_id, device] :
+       current_session_->student_statuses().at(student_id).devices()) {
+    if (device.state() == ::boca::StudentDevice::ACTIVE) {
+      return device_id;
+    }
+  }
+  return std::nullopt;
 }
 
 void BocaSessionManager::LoadInitialNetworkState() {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -133,6 +134,7 @@ class MockObserver : public BocaSessionManager::Observer {
   MOCK_METHOD(void, OnAppReloaded, (), (override));
   MOCK_METHOD(void, OnLocalCaptionClosed, (), (override));
   MOCK_METHOD(void, OnSessionCaptionClosed, (bool), (override));
+  MOCK_METHOD(void, OnReceiverInvalidation, (), (override));
 };
 
 class MockBocaAppClient : public BocaAppClient {
@@ -210,7 +212,7 @@ class BocaSessionManagerTestBase : public testing::Test {
     session_client_impl_ =
         std::make_unique<NiceMock<MockSessionClientImpl>>(nullptr);
 
-    observer_ = std::make_unique<StrictMock<MockObserver>>();
+    observer_ = std::make_unique<NiceMock<MockObserver>>();
 
     boca_app_client_ = std::make_unique<StrictMock<MockBocaAppClient>>();
 
@@ -297,7 +299,7 @@ class BocaSessionManagerTestBase : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
   // Owned by BocaSessionManager, destructed before it.
   std::unique_ptr<NiceMock<MockSessionClientImpl>> session_client_impl_;
-  std::unique_ptr<StrictMock<MockObserver>> observer_;
+  std::unique_ptr<NiceMock<MockObserver>> observer_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::CrosSettings> cros_settings_;
   std::unique_ptr<user_manager::UserManager> user_manager_;
@@ -310,7 +312,8 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
   void SetUp() override {
     BocaSessionManagerTestBase::SetUp();
     scoped_feature_list().InitWithFeatures(
-        {ash::features::kBoca, ash::features::kBocaStudentHeartbeat},
+        {ash::features::kBoca, ash::features::kBocaStudentHeartbeat,
+         ash::features::kBocaScreenSharingStudent},
         /*disabled_features=*/{ash::features::kBocaCustomPolling});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
@@ -1151,6 +1154,89 @@ TEST_F(BocaSessionManagerTest,
                                     base::Seconds(1));
 }
 
+TEST_F(BocaSessionManagerTest, GetStudentActiveDeviceIdOutOfSession) {
+  EXPECT_FALSE(boca_session_manager()
+                   ->GetStudentActiveDeviceId("student-id")
+                   .has_value());
+}
+
+TEST_F(BocaSessionManagerTest, GetStudentActiveDeviceIdNotFound) {
+  base::test::TestFuture<void> signal;
+  auto session =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  ::boca::StudentStatus status;
+  ::boca::StudentDevice device;
+  device.set_state(::boca::StudentDevice::ACTIVE);
+  auto* activity = device.mutable_activity();
+  activity->mutable_active_tab()->set_title("google");
+  (*status.mutable_devices())["device1"] = std::move(device);
+  (*session->mutable_student_statuses())["1"] = std::move(status);
+  EXPECT_CALL(*session_client_impl(), GetSession)
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session));
+        signal.GetCallback().Run();
+      }));
+  boca_session_manager()->OnInvalidationReceived("payload");
+
+  EXPECT_FALSE(boca_session_manager()
+                   ->GetStudentActiveDeviceId("invalid id")
+                   .has_value());
+}
+
+TEST_F(BocaSessionManagerTest, GetStudentActiveDeviceIdNoActiveDevices) {
+  constexpr std::string_view kInactiveStudentId = "123";
+  base::test::TestFuture<void> signal;
+  auto session =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  ::boca::StudentStatus status;
+  ::boca::StudentDevice device;
+  device.set_state(::boca::StudentDevice::INACTIVE);
+  auto* activity = device.mutable_activity();
+  activity->mutable_active_tab()->set_title("google");
+  (*status.mutable_devices())["device1"] = std::move(device);
+  (*session->mutable_student_statuses())[kInactiveStudentId] =
+      std::move(status);
+  EXPECT_CALL(*session_client_impl(), GetSession)
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session));
+        signal.GetCallback().Run();
+      }));
+  boca_session_manager()->OnInvalidationReceived("payload");
+
+  EXPECT_TRUE(signal.Wait());
+  EXPECT_FALSE(boca_session_manager()
+                   ->GetStudentActiveDeviceId(kInactiveStudentId)
+                   .has_value());
+}
+
+TEST_F(BocaSessionManagerTest, GetStudentActiveDeviceIdFound) {
+  constexpr std::string_view kActiveStudentId = "123";
+  base::test::TestFuture<void> signal;
+  auto session =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  ::boca::StudentStatus status;
+  ::boca::StudentDevice device;
+  device.set_state(::boca::StudentDevice::ACTIVE);
+  auto* activity = device.mutable_activity();
+  activity->mutable_active_tab()->set_title("google");
+  (*status.mutable_devices())[kDeviceId] = std::move(device);
+  (*session->mutable_student_statuses())[kActiveStudentId] = std::move(status);
+  EXPECT_CALL(*session_client_impl(), GetSession)
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session));
+        signal.GetCallback().Run();
+      }));
+  boca_session_manager()->OnInvalidationReceived("payload");
+  EXPECT_TRUE(signal.Wait());
+  std::optional<std::string> device_id =
+      boca_session_manager()->GetStudentActiveDeviceId(kActiveStudentId);
+  ASSERT_TRUE(device_id.has_value());
+  EXPECT_EQ(device_id.value(), kDeviceId);
+}
+
 TEST_F(BocaSessionManagerTest,
        DoNotNotifyEventsExceptSessionEndedWhenSessionEnded) {
   auto session_1 =
@@ -1659,8 +1745,16 @@ TEST_F(BocaSessionManagerTest, OnInvalidationReceived) {
             .Run(std::make_unique<::boca::Session>(
                 GetInitialSession(base::Time::Now())));
       });
+  EXPECT_CALL(*observer(), OnReceiverInvalidation).Times(0);
   boca_session_manager()->OnInvalidationReceived("payload");
   histogram_tester.ExpectTotalCount(boca::kPollingResult, 0);
+}
+
+TEST_F(BocaSessionManagerTest, OnReceiverInvalidationReceived) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_client_impl(), GetSession).Times(0);
+  EXPECT_CALL(*observer(), OnReceiverInvalidation).Times(1);
+  boca_session_manager()->OnInvalidationReceived("GetKioskReceiver");
 }
 
 class BocaSessionManagerSodaTest : public BocaSessionManagerTestBase {
