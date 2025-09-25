@@ -111,7 +111,11 @@ message FormTypeQuality {
 // See `AutofillAiUkmLogger::FieldEvent`.
 message AutofillAiFieldEvent {
   // The server AI type of the field as classified by autofill's ML model.
+  // TODO(crbug.com/432645177): Remove the non-`repeated` when almost all
+  // clients have migrated to the repeated field.
   int32 ai_field_type = 1 [features = { field_presence: EXPLICIT }];
+
+  repeated int32 ai_field_types = 16;
 
   // Type of the event being recorded.
   AutofillAiFieldEventType event_type = 2 [features = { field_presence: IMPLICIT }];
@@ -129,7 +133,11 @@ message AutofillAiFieldEvent {
   uint64 field_signature = 4 [features = { field_presence: IMPLICIT }];
 
   // The type of the field as classified by autofill.
+  // TODO(crbug.com/432645177): Remove the non-`repeated` when almost all
+  // clients have migrated to the repeated field.
   int32 field_type = 5 [features = { field_presence: EXPLICIT }];
+
+  repeated int32 field_types = 15;
 
   // The source of the format string of the field, see `FormatStringSource` in
   // components/autofill/core/browser/autofill_field.h for more info.

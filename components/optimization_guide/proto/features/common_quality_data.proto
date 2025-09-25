@@ -1949,7 +1949,7 @@ enum ContentAttributeType {
 }
 
 // The reason why a node is clickable.
-// Next ID: 12
+// Next ID: 14
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -1958,8 +1958,9 @@ enum ClickabilityReason {
   CLICKABILITY_REASON_CLICK_HANDLER = 1;
 
   // The node has mouse event handlers like mouseup, mousedown, mouseover and
-  // mouseenter.
-  CLICKABILITY_REASON_MOUSE_EVENTS = 2;
+  // mouseenter. Deprecated in favor of
+  // CLICKABILITY_REASON_MOUSE_CLICK and CLICKABILITY_REASON_MOUSE_HOVER.
+  CLICKABILITY_REASON_MOUSE_EVENTS = 2 [deprecated = true];
 
   // The node has keyboard event handlers like keydown, keypress, keyup.
   CLICKABILITY_REASON_KEY_EVENTS = 3;
@@ -1993,6 +1994,12 @@ enum ClickabilityReason {
   // The node has autocomplete, as indicated by the same-named attribute or
   // aria-autocomplete.
   CLICKABILITY_REASON_AUTOCOMPLETE = 11;
+
+  // The node has mouse event handlers like mouseup and mousedown.
+  CLICKABILITY_REASON_MOUSE_CLICK = 12;
+
+  // The node has mouse event handlers like mouseover and mouseenter.
+  CLICKABILITY_REASON_MOUSE_HOVER = 13;
 }
 
 // Next ID: 5
