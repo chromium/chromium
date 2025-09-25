@@ -2589,6 +2589,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.CanceledToast"
+    enum="PasswordChangeToastEvent" expires_after="2026-09-18">
+  <owner>otara@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records password change toast events. This toast is diplayed after user
+    cancels the flow. This metric can include user interactions with the toast
+    or events that happen automatically.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.PasswordChange.ChangingFailedBubble"
     enum="PasswordManagerUIDismissalReason" expires_after="2025-11-30">
   <owner>atsvirchkova@google.com</owner>

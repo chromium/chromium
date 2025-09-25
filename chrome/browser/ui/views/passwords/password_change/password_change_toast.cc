@@ -50,9 +50,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordChangeToast,
 
 PasswordChangeToast::ToastOptions::ToastOptions(
     const std::u16string& text,
+    base::OnceClosure close_callback,
     const std::optional<std::u16string>& action_button_text,
-    base::OnceClosure action_button_closure,
-    base::OnceClosure close_callback)
+    base::OnceClosure action_button_closure)
     : text(text),
       icon(std::nullopt),
       action_button_text(action_button_text),
@@ -62,9 +62,9 @@ PasswordChangeToast::ToastOptions::ToastOptions(
 PasswordChangeToast::ToastOptions::ToastOptions(
     const std::u16string& text,
     const gfx::VectorIcon& icon,
+    base::OnceClosure close_callback,
     const std::optional<std::u16string>& action_button_text,
-    base::OnceClosure action_button_closure,
-    base::OnceClosure close_callback)
+    base::OnceClosure action_button_closure)
     : text(text),
       icon(icon),
       action_button_text(action_button_text),
@@ -156,6 +156,7 @@ PasswordChangeToast::PasswordChangeToast(ToastOptions toast_configuration) {
                                  DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING)));
   close_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOAST_CLOSE_TOOLTIP));
+  close_button_->SetVisible(true);
 
   UpdateLayout(std::move(toast_configuration));
 }
@@ -186,7 +187,6 @@ void PasswordChangeToast::UpdateLayout(ToastOptions configuration) {
     action_button_->GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
     action_button_->SetVisible(false);
   }
-  close_button_->SetVisible(configuration.has_close_button());
 
   layout_manager_->SetInteriorMargin(CalculateInteriorMargin());
   GetViewAccessibility().AnnounceText(configuration.text);
@@ -235,10 +235,7 @@ void PasswordChangeToast::OnActionButtonClicked() {
 }
 
 void PasswordChangeToast::OnCloseButtonClicked() {
-  if (close_callback_) {
-    std::move(close_callback_).Run();
-  }
-  GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  std::move(close_callback_).Run();
 }
 
 BEGIN_METADATA(PasswordChangeToast)

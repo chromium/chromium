@@ -982,14 +982,14 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
       static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
   EXPECT_TRUE(ui_controller->toast_view());
   // Verify action button is present and visible.
-  EXPECT_TRUE(ui_controller->toast_view()->action_button());
-  EXPECT_TRUE(ui_controller->toast_view()->action_button()->GetVisible());
+  EXPECT_TRUE(ui_controller->toast_view()->close_button());
+  EXPECT_TRUE(ui_controller->toast_view()->close_button()->GetVisible());
 
   SetModelQualityLogsUploader();
 
   // Click action button, this should cancel the flow.
   views::test::ButtonTestApi clicker(
-      ui_controller->toast_view()->action_button());
+      ui_controller->toast_view()->close_button());
   clicker.NotifyClick(ui::test::TestEvent());
 
   EXPECT_EQ(PasswordChangeDelegate::State::kCanceled,
@@ -997,9 +997,8 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, CancelFromToast) {
 
   // Verify toast is displayed.
   EXPECT_TRUE(ui_controller->toast_view());
-  // Verify the toast has no action button, meaning it's just a
-  // confirmation.
-  EXPECT_FALSE(ui_controller->toast_view()->action_button()->GetVisible());
+  // Action button navigates to the password change tab
+  EXPECT_TRUE(ui_controller->toast_view()->action_button()->GetVisible());
 
   // The quality log is uploaded in the destructor.
   base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =
@@ -1373,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       delegate->AsWeakPtr();
   // Simulate clicking the "cancel" button on the UI toast.
   views::test::ButtonTestApi clicker(
-      ui_controller->toast_view()->action_button());
+      ui_controller->toast_view()->close_button());
   clicker.NotifyClick(ui::test::TestEvent());
   // Verify that the flow's state is "canceled".
   EXPECT_EQ(PasswordChangeDelegate::State::kCanceled,
@@ -1427,7 +1426,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       delegate->AsWeakPtr();
   // Simulate clicking the "cancel" button on the UI toast.
   views::test::ButtonTestApi clicker(
-      ui_controller->toast_view()->action_button());
+      ui_controller->toast_view()->close_button());
   clicker.NotifyClick(ui::test::TestEvent());
   // Verify that the flow's state is "canceled".
   EXPECT_EQ(PasswordChangeDelegate::State::kCanceled,
@@ -1652,21 +1651,18 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestWithLoginCheck,
       static_cast<PasswordChangeDelegateImpl*>(delegate)->ui_controller();
   EXPECT_TRUE(ui_controller->toast_view());
   // Verify action button is present and visible.
-  EXPECT_TRUE(ui_controller->toast_view()->action_button());
-  EXPECT_TRUE(ui_controller->toast_view()->action_button()->GetVisible());
+  EXPECT_TRUE(ui_controller->toast_view()->close_button());
+  EXPECT_TRUE(ui_controller->toast_view()->close_button()->GetVisible());
 
   SetModelQualityLogsUploader();
 
   // Click action button, this should cancel the flow.
   // Which is counted as an interruption in the quality logs.
   views::test::ButtonTestApi clicker(
-      ui_controller->toast_view()->action_button());
+      ui_controller->toast_view()->close_button());
   clicker.NotifyClick(ui::test::TestEvent());
   EXPECT_EQ(PasswordChangeDelegate::State::kCanceled,
             delegate->GetCurrentState());
-
-  EXPECT_TRUE(ui_controller->toast_view());
-  EXPECT_FALSE(ui_controller->toast_view()->action_button()->GetVisible());
 
   // The quality log is uploaded in the destructor.
   base::WeakPtr<PasswordChangeDelegate> delegate_weak_ptr =

@@ -858,6 +858,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Shown"/>
   <int value="1" label="Canceled"/>
   <int value="2" label="Continue"/>
+  <int value="3" label="Open password change tab"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/passwords/password_change_ui_controller.h:PasswordChangeToastEvent) -->

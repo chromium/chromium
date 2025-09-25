@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CHANGE_PASSWORD_CHANGE_TOAST_H_
 #define CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_CHANGE_PASSWORD_CHANGE_TOAST_H_
 
+#include <optional>
+
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -30,16 +32,18 @@ class PasswordChangeToast : public views::View {
   // Helper structure which allows to customize toast according to the
   // requirements.
   struct ToastOptions {
-    ToastOptions(const std::u16string& text,
-                 const gfx::VectorIcon& icon,
-                 const std::optional<std::u16string>& action_button_text,
-                 base::OnceClosure action_button_closure = base::DoNothing(),
-                 base::OnceClosure close_callback = base::NullCallback());
+    ToastOptions(
+        const std::u16string& text,
+        const gfx::VectorIcon& icon,
+        base::OnceClosure close_callback,
+        const std::optional<std::u16string>& action_button_text = std::nullopt,
+        base::OnceClosure action_button_closure = base::DoNothing());
 
-    ToastOptions(const std::u16string& text,
-                 const std::optional<std::u16string>& action_button_text,
-                 base::OnceClosure action_button_closure = base::DoNothing(),
-                 base::OnceClosure close_callback = base::NullCallback());
+    ToastOptions(
+        const std::u16string& text,
+        base::OnceClosure close_callback,
+        const std::optional<std::u16string>& action_button_text = std::nullopt,
+        base::OnceClosure action_button_closure = base::DoNothing());
 
     ToastOptions(ToastOptions&& other) noexcept;
     ToastOptions& operator=(ToastOptions&& other) noexcept;
