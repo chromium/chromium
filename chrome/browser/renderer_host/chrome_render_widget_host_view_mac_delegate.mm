@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/strings/sys_string_conversions.h"
+#include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
@@ -451,6 +452,12 @@
     return AcceptMouseEvents::kWhenInActiveApp;
   }
 #endif
+
+  // If the WebContents are from the ActorOverlayUI WebUIController, we should
+  // accept mouse events when any part of the application is active.
+  if (actor::ui::ActorOverlayUI::IsActorOverlayWebContents(webContents)) {
+    return AcceptMouseEvents::kWhenInActiveApp;
+  }
 
   return AcceptMouseEvents::kWhenInActiveWindow;
 }

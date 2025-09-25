@@ -6,6 +6,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
@@ -66,8 +67,16 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, PageLoadsWhenFeatureOn) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(web_contents->GetLastCommittedURL(), kUrl);
+  EXPECT_TRUE(ActorOverlayUI::IsActorOverlayWebContents(web_contents));
   EXPECT_FALSE(web_contents->IsCrashed());
   EXPECT_EQ(web_contents->GetTitle(), u"Actor Overlay");
+  // Check WebContents from another WebUIController.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUISettingsURL)));
+  EXPECT_FALSE(ActorOverlayUI::IsActorOverlayWebContents(web_contents));
+  // Check WebContents from a non WebUIController.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  EXPECT_FALSE(ActorOverlayUI::IsActorOverlayWebContents(web_contents));
 }
 
 // Verifies that the ActorUiWindowController and Actor Ui Tab Controller

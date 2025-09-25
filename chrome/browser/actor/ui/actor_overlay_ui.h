@@ -32,6 +32,10 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
 
   void SetOverlayBackground(bool is_visible);
 
+  // Checks if the passed in WebContents are associated with the ActorOverlayUI
+  // WebUIController.
+  static bool IsActorOverlayWebContents(content::WebContents* web_contents);
+
  private:
   // The PendingRemote must be valid and bind to a receiver in order to start
   // sending messages to the receiver.
