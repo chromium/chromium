@@ -40,9 +40,9 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
     {
         "OpenVINOExecutionProvider",
         {
-            .package_family_name =
-                L"Microsoft.WindowsMLRuntime.Intel.OpenVINO.EP_8wekyb3d8bbwe",
-            .library_name = L"onnxruntime_providers_openvino.dll",
+            .package_family_name = L"MicrosoftCorporationII.WinML.Intel."
+                                   L"OpenVINO.EP.1.8_8wekyb3d8bbwe",
+            .library_name = L"onnxruntime_providers_openvino_plugin.dll",
             .package_version =
                 {
                     .Major = 0,

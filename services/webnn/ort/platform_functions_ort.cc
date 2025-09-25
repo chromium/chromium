@@ -20,10 +20,10 @@ namespace {
 
 using OrtGetApiBaseProc = decltype(OrtGetApiBase)*;
 
-// WinAppRuntime, run the installer for version 1.8 experimental 4 found at
+// Family name of the WinAppRuntime Chromium binds to in order to run WinML.
 // https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads
 constexpr base::wcstring_view kWinAppRuntimePackageFamilyName =
-    L"Microsoft.WindowsAppRuntime.1.8-experimental4_8wekyb3d8bbwe";
+    L"Microsoft.WindowsAppRuntime.1.8_8wekyb3d8bbwe";
 
 constexpr base::wcstring_view kOnnxRuntimeLibraryName = L"onnxruntime.dll";
 
