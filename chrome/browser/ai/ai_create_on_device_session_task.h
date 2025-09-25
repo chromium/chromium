@@ -40,11 +40,10 @@ class CreateOnDeviceSessionTask
 
   virtual void OnFinish(
       std::unique_ptr<
-          optimization_guide::OptimizationGuideModelExecutor::Session>
-          session) = 0;
+          optimization_guide::OptimizationGuideModelExecutor::Session> session);
 
   virtual void UpdateSessionConfigParams(
-      optimization_guide::SessionConfigParams* config_params) {}
+      optimization_guide::SessionConfigParams* config_params);
 
  private:
   // The state of `CreateOnDeviceSessionTask`.

@@ -145,6 +145,21 @@ class AIManager : public base::SupportsUserData::Data,
       CanCreateLanguageModelCallback callback,
       optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
+  template <typename ContextBoundObjectType,
+            typename ContextBoundObjectReceiverInterface,
+            typename ClientRemoteInterface,
+            typename CreateOptionsPtrType>
+  void OnSessionCreated(
+      AIContextBoundObjectSet& context_bound_object_set,
+      CreateOptionsPtrType options,
+      std::optional<optimization_guide::MultimodalMessage> initial_request,
+      mojo::Remote<ClientRemoteInterface> client_remote,
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session> session);
+
+  // Eagerly initializes a broad set of features.
+  void MaybeTryEagerInit();
+
   void MaybeLogMissingOutputLanguageWarning(
       const std::string_view api_name,
       const base::flat_set<std::string_view>& supported_languages);
@@ -170,6 +185,9 @@ class AIManager : public base::SupportsUserData::Data,
 
   bool did_log_missing_output_language_warning_ = false;
   bool did_log_unsupported_language_error_ = false;
+
+  // Features that have attempted initialization in this session.
+  base::flat_set<optimization_guide::ModelBasedCapabilityKey> tried_init_;
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };

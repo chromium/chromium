@@ -110,6 +110,13 @@ void CreateOnDeviceSessionTask::Cancel() {
   RemoveFromSet();
 }
 
+void CreateOnDeviceSessionTask::OnFinish(
+    std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+        session) {}
+
+void CreateOnDeviceSessionTask::UpdateSessionConfigParams(
+    optimization_guide::SessionConfigParams* config_params) {}
+
 void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
     optimization_guide::ModelBasedCapabilityKey feature,
     optimization_guide::OnDeviceModelEligibilityReason reason) {
