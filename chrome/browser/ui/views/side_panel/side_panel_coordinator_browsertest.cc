@@ -872,8 +872,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kReadingList);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
 
   // Verify the first tab's registry does not have an active entry.
   tabs::TabInterface* tab =
@@ -882,23 +883,31 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   SidePanelRegistry* tab_registry =
       tab->GetTabFeatures()->side_panel_registry();
   SidePanelEntryKey key(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(tab_registry->active_entry().has_value());
+  EXPECT_FALSE(
+      tab_registry->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+          .has_value());
 
   // Show an entry from the first tab's registry
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(tab_registry->active_entry(),
-                               SidePanelEntry::Id::kShoppingInsights);
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistenceAndValue(
+      tab_registry->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kShoppingInsights);
 
   // Deregister kShoppingInsights from the first tab.
   tab_registry->Deregister(key);
 
   // Verify the panel is no longer showing.
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(tab_registry->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(
+      tab_registry->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+          .has_value());
 }
 
 // Test that the side panel closes if a contextual entry is deregistered while
@@ -912,7 +921,9 @@ IN_PROC_BROWSER_TEST_F(
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Verify the first tab's registry has an active entry.
   tabs::TabInterface* tab =
@@ -921,8 +932,9 @@ IN_PROC_BROWSER_TEST_F(
   SidePanelRegistry* tab_registry =
       tab->GetTabFeatures()->side_panel_registry();
   SidePanelEntryKey key(SidePanelEntry::Id::kShoppingInsights);
-  VerifyEntryExistenceAndValue(tab_registry->active_entry(),
-                               SidePanelEntry::Id::kShoppingInsights);
+  VerifyEntryExistenceAndValue(
+      tab_registry->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kShoppingInsights);
 
   // Deregister kShoppingInsights from the first tab.
   tab_registry->Deregister(key);
@@ -930,8 +942,12 @@ IN_PROC_BROWSER_TEST_F(
 
   // Verify the panel closes.
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(tab_registry->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(
+      tab_registry->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+          .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ShowContextualEntry) {
@@ -975,47 +991,69 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to a different global entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   auto* bookmarks_entry = coordinator()->GetCurrentSidePanelEntryForTesting();
 
   // Switch to a contextual entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   auto* shopping_entry = coordinator()->GetCurrentSidePanelEntryForTesting();
 
   // Switch to a tab where this contextual entry is not available and verify we
   // fall back to the last seen global entry.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(bookmarks_entry,
             coordinator()->GetCurrentSidePanelEntryForTesting());
 
   // Switch back to the tab where the contextual entry was visible and verify it
   // is shown.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(shopping_entry,
             coordinator()->GetCurrentSidePanelEntryForTesting());
 }
@@ -1029,37 +1067,57 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(coordinator()->GetCurrentEntryId(), SidePanelEntry::Id::kBookmarks);
 
   // Switch to a different global entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kReadingList);
 
   // Switch to a contextual entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kShoppingInsights);
 
   // Close the side panel.
   coordinator()->Close();
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -1071,43 +1129,68 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to a contextual entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kShoppingInsights);
 
   // Switch to a global entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kReadingList);
 
   // Close the side panel and verify the active entries are reset.
   coordinator()->Close();
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to another tab and open a contextual entry.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[1]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[1]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kShoppingInsights);
@@ -1122,44 +1205,70 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to a contextual entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_EQ(coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kShoppingInsights);
 
   // Close the side panel and verify the active entries are reset.
   coordinator()->Close();
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to another tab, open the side panel, and verify the active entries
   // are as expected.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Close the side panel and verify the active entries.
   coordinator()->Close();
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1172,55 +1281,91 @@ IN_PROC_BROWSER_TEST_F(
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to another global entry and verify the active entry is updated.
   coordinator()->Show(SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to another tab and open a contextual entry.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[1]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[1]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
 
   // Close the side panel and verify active entries.
   coordinator()->Close();
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch back to the first tab and open the side panel.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch back to the second tab and verify the active entries.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Close the side panel and verify the active entries.
   coordinator()->Close();
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -1229,27 +1374,42 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   // Open side panel to contextual entry and verify.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to another tab and verify the side panel is closed.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch back to the tab with the contextual entry open and verify the side
   // panel is then open.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1261,41 +1421,67 @@ IN_PROC_BROWSER_TEST_F(
   coordinator()->Toggle(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks),
                         SidePanelOpenTrigger::kPinnedEntryToolbarButton);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kBookmarks);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   coordinator()->Close();
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Open side panel to contextual entry and verify.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to another tab and verify the side panel is closed.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch back to the tab with the contextual entry open and verify the side
   // panel is then open.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -1304,36 +1490,56 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   // Open side panel to contextual entry and verify.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to a global entry and verify the contextual entry is no longer
   // active.
   coordinator()->Show(SidePanelEntry::Id::kReadingList);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to a different tab and verify state.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch back to the original tab and verify the contextual entry is not
   // active or showing.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  EXPECT_FALSE(contextual_registries_[0]->active_entry().has_value());
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  EXPECT_FALSE(contextual_registries_[0]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
@@ -1344,44 +1550,68 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   // Open side panel to contextual entry and verify.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator()->Show(SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Switch to another tab and verify the side panel is closed.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Open a global entry and verify.
   coordinator()->Show(SidePanelEntry::Id::kReadingList);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               SidePanelEntry::Id::kReadingList);
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      SidePanelEntry::Id::kReadingList);
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Verify the panel closes but the first tab still has an active entry.
   coordinator()->Close();
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 
   // Verify returning to the first tab reopens the side panel to the active
   // contextual entry.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kShoppingInsights);
-  EXPECT_FALSE(contextual_registries_[1]->active_entry().has_value());
+  EXPECT_FALSE(contextual_registries_[1]
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 // Verify that side panels maintain individual widths when the
@@ -1766,7 +1996,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, DeregisterExtensionEntries) {
   // If the contextual entry is deregistered while there exists a global entry,
   // the global entry is not shown.
   GetActiveTabRegistry()->Deregister(extension_key);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_FALSE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
 }
 
@@ -1821,18 +2053,21 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_EQ(global_registry()->GetEntryForKey(extension_key),
             coordinator()->GetCurrentSidePanelEntryForTesting());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               extension_key);
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      extension_key);
 
   // Reset the active entry on the first tab.
-  contextual_registries_[0]->ResetActiveEntry();
+  contextual_registries_[0]->ResetActiveEntryFor(
+      SidePanelEntry::PanelType::kContent);
 
   // Switching from a tab with the global extension entry to a tab with a
   // contextual extension entry should show the contextual entry.
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(0);
   EXPECT_EQ(contextual_registries_[0]->GetEntryForKey(extension_key),
             coordinator()->GetCurrentSidePanelEntryForTesting());
-  VerifyEntryExistenceAndValue(contextual_registries_[0]->active_entry(),
+  VerifyEntryExistenceAndValue(contextual_registries_[0]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                extension_key);
 
   // Now register a reading list entry in the global registry and show it on the
@@ -1851,14 +2086,16 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   EXPECT_EQ(global_registry()->GetEntryForKey(extension_key),
             coordinator()->GetCurrentSidePanelEntryForTesting());
-  VerifyEntryExistenceAndValue(global_registry()->active_entry(),
-                               extension_key);
+  VerifyEntryExistenceAndValue(
+      global_registry()->GetActiveEntryFor(SidePanelEntry::PanelType::kContent),
+      extension_key);
 
   // Show shopping insights on the second tab.
   coordinator()->Show(
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
   // Reset the active entry on the first tab.
-  contextual_registries_[0]->ResetActiveEntry();
+  contextual_registries_[0]->ResetActiveEntryFor(
+      SidePanelEntry::PanelType::kContent);
 }
 
 // Test that when switching tabs while an extension's entry is showing, the new
@@ -1949,7 +2186,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
   // Open the headerless side panel and verify the side panel is showing with no
   // header.
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_TRUE(browser()->GetBrowserView().unified_side_panel()->GetVisible());
   EXPECT_FALSE(browser()
                    ->GetBrowserView()
@@ -2054,7 +2293,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLensOverlayTest,
   Init();
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   coordinator()->Show(SidePanelEntry::Id::kLensOverlayResults);
-  VerifyEntryExistenceAndValue(contextual_registries_[1]->active_entry(),
+  VerifyEntryExistenceAndValue(contextual_registries_[1]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kLensOverlayResults);
   views::ImageButton* more_info_button =
       coordinator()->GetHeaderMoreInfoButtonForTesting();
@@ -2066,7 +2306,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorLensOverlayTest,
   Init();
   browser()->GetBrowserView().browser()->tab_strip_model()->ActivateTabAt(1);
   coordinator()->Show(SidePanelEntry::Id::kLens);
-  VerifyEntryExistenceAndValue(contextual_registries_[1]->active_entry(),
+  VerifyEntryExistenceAndValue(contextual_registries_[1]->GetActiveEntryFor(
+                                   SidePanelEntry::PanelType::kContent),
                                SidePanelEntry::Id::kLens);
   views::ImageButton* more_info_button =
       coordinator()->GetHeaderMoreInfoButtonForTesting();

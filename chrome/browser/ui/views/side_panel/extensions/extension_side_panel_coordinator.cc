@@ -180,7 +180,8 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
     CreateAndRegisterEntry();
   } else if (entry && previous_url != side_panel_url_) {
     // Handle changes to the side panel's url if an entry exists.
-    if (registry_->active_entry() == entry) {
+    if (registry_->GetActiveEntryFor(SidePanelEntry::PanelType::kContent) ==
+        entry) {
       // If this extension's entry is active, navigate the entry's view to the
       // updated URL.
       NavigateIfNecessary();

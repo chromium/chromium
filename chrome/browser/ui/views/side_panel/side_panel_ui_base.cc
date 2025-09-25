@@ -148,17 +148,21 @@ SidePanelUIBase::GetNewActiveKeyOnTabChanged() {
   // that entry will be active in its owning registry.
   auto* active_contextual_registry = GetActiveContextualRegistry();
   if (active_contextual_registry &&
-      active_contextual_registry->active_entry()) {
+      active_contextual_registry->GetActiveEntryFor(
+          SidePanelEntry::PanelType::kContent)) {
     return UniqueKey{browser_->GetActiveTabInterface()->GetHandle(),
-                     (*active_contextual_registry->active_entry())->key()};
+                     (*active_contextual_registry->GetActiveEntryFor(
+                          SidePanelEntry::PanelType::kContent))
+                         ->key()};
   }
 
   if (current_key_ && window_registry_->GetEntryForKey(current_key_->key)) {
     return GetUniqueKeyForKey(current_key_->key);
   }
 
-  if (window_registry_->active_entry()) {
-    return GetUniqueKeyForKey((*window_registry_->active_entry())->key());
+  if (auto entry = window_registry_->GetActiveEntryFor(
+          SidePanelEntry::PanelType::kContent)) {
+    return GetUniqueKeyForKey((*entry)->key());
   }
 
   return std::nullopt;

@@ -515,7 +515,8 @@ void SidePanelCoordinator::PopulateSidePanel(
       content_view.has_value() ? std::move(content_view.value())
                                : entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    contextual_registry->ResetActiveEntry();
+    contextual_registry->ResetActiveEntryFor(
+        SidePanelEntry::PanelType::kContent);
   }
   set_current_key(unique_key);
   set_current_entry(entry->GetWeakPtr());
@@ -743,25 +744,30 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
       // If there is no suitable entry to be shown after the tab switch, cache
       // the view of the old contextual registry (if it was active), and close
       // the side panel.
-      if (old_contextual_registry && old_contextual_registry->active_entry() &&
-          current_key() &&
-          (*old_contextual_registry->active_entry())->key() ==
-              current_key()->key &&
-          current_key()->tab_handle) {
+      if (auto active_entry = old_contextual_registry
+                                  ? old_contextual_registry->GetActiveEntryFor(
+                                        SidePanelEntry::PanelType::kContent)
+                                  : std::nullopt;
+          active_entry.has_value() && current_key() &&
+          current_key()->tab_handle &&
+          (*active_entry)->key() == current_key()->key) {
         auto* content_wrapper =
             browser_view_->unified_side_panel()->GetContentParentView();
         DCHECK(content_wrapper->children().size() == 1);
         auto current_entry_view = content_wrapper->RemoveChildViewT(
             content_wrapper->children().front());
-        auto* active_entry = old_contextual_registry->active_entry().value();
-        active_entry->CacheView(std::move(current_entry_view));
+        (*active_entry)->CacheView(std::move(current_entry_view));
       }
       Close(/*suppress_animations=*/true);
     }
-  } else if (new_contextual_registry &&
-             new_contextual_registry->active_entry().has_value()) {
+  } else if (auto active_entry =
+                 new_contextual_registry
+                     ? new_contextual_registry->GetActiveEntryFor(
+                           SidePanelEntry::PanelType::kContent)
+                     : std::nullopt;
+             active_entry.has_value()) {
     Show({browser_view_->browser()->GetActiveTabInterface()->GetHandle(),
-          (*new_contextual_registry->active_entry())->key()},
+          (*active_entry)->key()},
          SidePanelUtil::SidePanelOpenTrigger::kTabChanged,
          /*suppress_animations=*/true);
   }
@@ -897,9 +903,10 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // everything except remaining active entries (i.e. if another tab has an
   // active contextual entry).
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
-    contextual_registry->ResetActiveEntry();
+    contextual_registry->ResetActiveEntryFor(
+        SidePanelEntry::PanelType::kContent);
   }
-  window_registry_->ResetActiveEntry();
+  window_registry_->ResetActiveEntryFor(SidePanelEntry::PanelType::kContent);
   ClearCachedEntryViews();
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may

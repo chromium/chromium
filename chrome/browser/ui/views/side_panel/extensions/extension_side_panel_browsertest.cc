@@ -2236,7 +2236,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   RunSetOptions(*extension, second_tab_id, "panel_2.html", /*enabled=*/true);
   side_panel_coordinator()->Show(extension_key);
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
-  EXPECT_TRUE(second_tab_registry->active_entry().has_value());
+  EXPECT_TRUE(second_tab_registry
+                  ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                  .has_value());
 
   // Switch back to the first tab, making the second tab inactive.
   browser()->tab_strip_model()->ActivateTabAt(0);
@@ -2249,7 +2251,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   RunClosePanel(*extension, second_tab_id, /*window_id=*/std::nullopt);
 
   // Directly check that the inactive tab's registry has been reset.
-  EXPECT_FALSE(second_tab_registry->active_entry().has_value());
+  EXPECT_FALSE(second_tab_registry
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
   // Switch back to the second tab to confirm the panel does not reopen.
@@ -2276,7 +2280,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   // Show the global panel first to set it as the window's active global entry.
   side_panel_coordinator()->Show(global_key);
   ASSERT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(global_key));
-  ASSERT_TRUE(global_registry()->active_entry().has_value());
+  ASSERT_TRUE(global_registry()
+                  ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                  .has_value());
 
   // Enable and show the contextual panel, which will replace the global
   // panel in the UI.
@@ -2293,7 +2299,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
   EXPECT_TRUE(
       side_panel_coordinator()->IsSidePanelEntryShowing(contextual_key));
   // The global registry's active entry should be reset.
-  EXPECT_FALSE(global_registry()->active_entry().has_value());
+  EXPECT_FALSE(global_registry()
+                   ->GetActiveEntryFor(SidePanelEntry::PanelType::kContent)
+                   .has_value());
 }
 
 class ExtensionOnOpenedEventSidePanelBrowserTest
