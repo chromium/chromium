@@ -80,10 +80,7 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
       deps += [ "//gpu/config" ]
     }
     if (!is_fuchsia) {
-      deps += [
-        "//services/on_device_model/safety:bert_safety_model",
-        "//third_party/xnnpack",
-      ]
+      deps += [ "//services/on_device_model/safety:bert_safety_model" ]
     }
     public_deps = [
       ":api",
