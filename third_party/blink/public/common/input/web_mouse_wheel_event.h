@@ -85,7 +85,11 @@ class BLINK_COMMON_EXPORT WebMouseWheelEvent : public WebMouseEvent {
   WebMouseWheelEvent(Type type, int modifiers, base::TimeTicks time_stamp)
       : WebMouseEvent(type, modifiers, time_stamp, kMousePointerId) {}
 
-  WebMouseWheelEvent() : WebMouseEvent(kMousePointerId) {}
+  WebMouseWheelEvent()
+      : WebMouseEvent(Type::kUndefined,
+                      kNoModifiers,
+                      base::TimeTicks(),
+                      kMousePointerId) {}
 
   float DeltaXInRootFrame() const;
   float DeltaYInRootFrame() const;

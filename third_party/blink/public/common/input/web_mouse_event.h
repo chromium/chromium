@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_MOUSE_EVENT_H_
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_menu_source_type.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
@@ -48,13 +49,25 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
   }
 
   WebMouseEvent(Type type_param,
+                const WebGestureEvent&,
+                Button button_param,
+                int click_count_param,
+                int modifiers_param,
+                base::TimeTicks time_stamp_param,
+                PointerId id_param = kMousePointerId);
+
+  WebMouseEvent(Type type_param,
                 int modifiers_param,
                 base::TimeTicks time_stamp_param,
                 PointerId id_param = kMousePointerId)
       : WebInputEvent(type_param, modifiers_param, time_stamp_param),
         WebPointerProperties(id_param, PointerType::kMouse) {}
 
-  WebMouseEvent() : WebMouseEvent(kMousePointerId) {}
+  WebMouseEvent()
+      : WebMouseEvent(Type::kUndefined,
+                      kNoModifiers,
+                      base::TimeTicks(),
+                      kMousePointerId) {}
 
   bool FromTouch() const {
     return (GetModifiers() & kIsCompatibilityEventForTouch) != 0;
@@ -63,14 +76,6 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
   int ClickCount() const { return click_count; }
 
   WebMenuSourceType GetMenuSourceType() const { return menu_source_type; }
-
-  WebMouseEvent(Type type_param,
-                const WebGestureEvent&,
-                Button button_param,
-                int click_count_param,
-                int modifiers_param,
-                base::TimeTicks time_stamp_param,
-                PointerId id_param = kMousePointerId);
 
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;
@@ -93,10 +98,6 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
   void UpdateEventModifiersToMatchButton();
 
  protected:
-  WebMouseEvent(PointerId id_param)
-      : WebInputEvent(Type::kUndefined),
-        WebPointerProperties(id_param, PointerType::kMouse) {}
-
   void FlattenTransformSelf();
 
  private:
