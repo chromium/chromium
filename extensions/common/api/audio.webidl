@@ -30,31 +30,31 @@ enum DeviceType {
 
 dictionary AudioDeviceInfo {
   // The unique identifier of the audio device.
-  DOMString id;
+  required DOMString id;
   // Stream type associated with this device.
-  StreamType streamType;
+  required StreamType streamType;
   // Type of the device.
-  DeviceType deviceType;
+  required DeviceType deviceType;
   // The user-friendly name (e.g. "USB Microphone").
-  DOMString displayName;
+  required DOMString displayName;
   // Device name.
-  DOMString deviceName;
+  required DOMString deviceName;
   // True if this is the current active device.
-  boolean isActive;
+  required boolean isActive;
   // The sound level of the device, volume for output, gain for input.
-  long level;
+  required long level;
   // The stable/persisted device id string when available.
-  DOMString? stableDeviceId;
+  DOMString stableDeviceId;
 };
 
 dictionary DeviceFilter {
   // If set, only audio devices whose stream type is included in this list
   // will satisfy the filter.
-  sequence<StreamType>? streamTypes;
+  sequence<StreamType> streamTypes;
 
   // If set, only audio devices whose active state matches this value will
   // satisfy the filter.
-  boolean? isActive;
+  boolean isActive;
 };
 
 dictionary DeviceProperties {
@@ -64,36 +64,36 @@ dictionary DeviceProperties {
   // </p>
   // <p>If used with audio input device, represents audio device gain.</p>
   // <p>If used with audio output device, represents audio device volume.</p>
-  long? level;
+  long level;
 };
 
 dictionary DeviceIdLists {
   // <p>List of input devices specified by their ID.</p>
   // <p>To indicate input devices should be unaffected, leave this property
   //   unset.</p>
-  sequence<DOMString>? input;
+  sequence<DOMString> input;
 
   // <p>List of output devices specified by their ID.</p>
   // <p>To indicate output devices should be unaffected, leave this property
   //   unset.</p>
-  sequence<DOMString>? output;
+  sequence<DOMString> output;
 };
 
 dictionary MuteChangedEvent {
   // The type of the stream for which the mute value changed. The updated mute
   // value applies to all devices with this stream type.
-  StreamType streamType;
+  required StreamType streamType;
 
   // Whether or not the stream is now muted.
-  boolean isMuted;
+  required boolean isMuted;
 };
 
 dictionary LevelChangedEvent {
   // ID of device whose sound level has changed.
-  DOMString deviceId;
+  required DOMString deviceId;
 
   // The device's new sound level.
-  long level;
+  required long level;
 };
 
 callback OnLevelChangedListener = undefined(LevelChangedEvent event);

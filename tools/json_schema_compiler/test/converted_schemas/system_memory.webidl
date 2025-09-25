@@ -4,9 +4,9 @@
 
 dictionary MemoryInfo {
   // The total amount of physical memory capacity, in bytes.
-  double capacity;
+  required double capacity;
   // The amount of available capacity, in bytes.
-  double availableCapacity;
+  required double availableCapacity;
 };
 
 // The <code>chrome.system.memory</code> API.

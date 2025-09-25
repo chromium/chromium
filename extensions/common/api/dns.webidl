@@ -4,11 +4,11 @@
 
 dictionary ResolveCallbackResolveInfo {
   // The result code. Zero indicates success.
-  long resultCode;
+  required long resultCode;
 
   // A string representing the IP address literal. Supplied only if resultCode
   // indicates success.
-  DOMString? address;
+  DOMString address;
 };
 
 // Use the <code>chrome.dns</code> API for dns resolution.

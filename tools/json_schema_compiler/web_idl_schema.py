@@ -533,9 +533,8 @@ class DictionaryMember(TypedProperty):
     # TODO(crbug.com/340297705): Add support for extended attributes on custom
     # type members.
     self.properties['name'] = self.node.GetName()
-    # We consider nullable properties on custom types as being "optional" in the
-    # schema compiler's logic.
-    if self.type_node.GetProperty('NULLABLE'):
+
+    if not self.node.GetProperty('REQUIRED'):
       self.properties['optional'] = True
 
     if deprecated := GetExtendedAttributeValue(self.node, 'deprecated'):

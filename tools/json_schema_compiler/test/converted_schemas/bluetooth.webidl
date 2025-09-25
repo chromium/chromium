@@ -42,88 +42,88 @@ enum Transport {
 // Information about the state of the Bluetooth adapter.
 dictionary AdapterState {
   // The address of the adapter, in the format 'XX:XX:XX:XX:XX:XX'.
-  DOMString address;
+  required DOMString address;
 
   // The human-readable name of the adapter.
-  DOMString name;
+  required DOMString name;
 
   // Indicates whether or not the adapter has power.
-  boolean powered;
+  required boolean powered;
 
   // Indicates whether or not the adapter is available (i.e. enabled).
-  boolean available;
+  required boolean available;
 
   // Indicates whether or not the adapter is currently discovering.
-  boolean discovering;
+  required boolean discovering;
 };
 
 // Information about the state of a known Bluetooth device. Note: this
 // dictionary is also used in bluetooth_private.idl
 dictionary Device {
   // The address of the device, in the format 'XX:XX:XX:XX:XX:XX'.
-  DOMString address;
+  required DOMString address;
 
   // The human-readable name of the device.
-  DOMString? name;
+  DOMString name;
 
   // The class of the device, a bit-field defined by
   // http://www.bluetooth.org/en-us/specification/assigned-numbers/baseband.
-  long? deviceClass;
+  long deviceClass;
 
   // The Device ID record of the device, where available.
-  VendorIdSource? vendorIdSource;
-  long? vendorId;
-  long? productId;
-  long? deviceId;
+  VendorIdSource vendorIdSource;
+  long vendorId;
+  long productId;
+  long deviceId;
 
   // The type of the device, if recognized by Chrome. This is obtained from
   // the |deviceClass| field and only represents a small fraction of the
   // possible device types. When in doubt you should use the |deviceClass|
   // field directly.
-  DeviceType? type;
+  DeviceType type;
 
   // Indicates whether or not the device is paired with the system.
-  boolean? paired;
+  boolean paired;
 
   // Indicates whether the device is currently connected to the system.
-  boolean? connected;
+  boolean connected;
 
   // Indicates whether the device is currently connecting to the system.
-  boolean? connecting;
+  boolean connecting;
 
   // Indicates whether the device is connectable.
-  boolean? connectable;
+  boolean connectable;
 
   // UUIDs of protocols, profiles and services advertised by the device.
   // For classic Bluetooth devices, this list is obtained from EIR data and
   // SDP tables. For Low Energy devices, this list is obtained from AD and
   // GATT primary services. For dual mode devices this may be obtained from
   // both.
-  sequence<DOMString>? uuids;
+  sequence<DOMString> uuids;
 
   // The received signal strength, in dBm. This field is avaliable and valid
   // only during discovery. Outside of discovery it's value is not specified.
-  long? inquiryRssi;
+  long inquiryRssi;
 
   // The transmitted power level. This field is avaliable only for LE devices
   // that include this field in AD. It is avaliable and valid only during
   // discovery.
-  long? inquiryTxPower;
+  long inquiryTxPower;
 
   // The transport type of the bluetooth device.
-  Transport? transport;
+  Transport transport;
 
   // The remaining battery of the device.
-  long? batteryPercentage;
+  long batteryPercentage;
 };
 
 dictionary BluetoothFilter {
   // Type of filter to apply to the device list. Default is all.
-  FilterType? filterType;
+  FilterType filterType;
 
   // Maximum number of bluetooth devices to return. Default is 0 (no limit)
   // if unspecified.
-  long? limit;
+  long limit;
 };
 
 // |state|: The new state of the adapter.

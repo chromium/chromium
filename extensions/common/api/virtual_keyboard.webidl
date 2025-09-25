@@ -10,15 +10,15 @@
 // If omitted, the current value is preserved.</p>
 dictionary FeatureRestrictions {
   // Whether virtual keyboards can provide auto-complete.
-  boolean? autoCompleteEnabled;
+  boolean autoCompleteEnabled;
   // Whether virtual keyboards can provide auto-correct.
-  boolean? autoCorrectEnabled;
+  boolean autoCorrectEnabled;
   // Whether virtual keyboards can provide input via handwriting recognition.
-  boolean? handwritingEnabled;
+  boolean handwritingEnabled;
   // Whether virtual keyboards can provide spell-check.
-  boolean? spellCheckEnabled;
+  boolean spellCheckEnabled;
   // Whether virtual keyboards can provide voice input.
-  boolean? voiceInputEnabled;
+  boolean voiceInputEnabled;
 };
 
 // The <code>chrome.virtualKeyboard</code> API is a kiosk only API used to

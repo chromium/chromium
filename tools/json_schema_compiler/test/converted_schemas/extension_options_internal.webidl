@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 dictionary SizeChangedOptions {
-  long oldWidth;
-  long oldHeight;
-  long newWidth;
-  long newHeight;
+  required long oldWidth;
+  required long oldHeight;
+  required long newWidth;
+  required long newHeight;
 };
 
 dictionary PreferredSizeChangedOptions {
-  double width;
-  double height;
+  required double width;
+  required double height;
 };
 
 // Listener callback for the onClose event.

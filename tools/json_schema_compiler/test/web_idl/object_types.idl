@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 dictionary ObjectDict {
-  object requiredObject;
-  object? optionalObject;
-  [instanceOf=Blob] object instanceOfObject;
+  required object requiredObject;
+  object optionalObject;
+  [instanceOf=Blob] required object instanceOfObject;
 };
 
 dictionary AnyDict {
-  any requiredAny;
-  // Note: nullable any (i.e. 'any?') is not valid in WebIDL
+  required any requiredAny;
+  any optionalAny;
 };
 
 // Schema to test various 'object' types in IDL.

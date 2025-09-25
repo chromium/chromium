@@ -16,20 +16,20 @@ dictionary StorageUnitInfo {
   // This ID will be persistent within the same run of a single application.
   // It will not be a persistent identifier between different runs of an
   // application, or between different applications.
-  DOMString id;
+  required DOMString id;
   // The name of the storage unit.
-  DOMString name;
+  required DOMString name;
   // The media type of the storage unit.
-  StorageUnitType type;
+  required StorageUnitType type;
   // The total amount of the storage space, in bytes.
-  double capacity;
+  required double capacity;
 };
 
 dictionary StorageAvailableCapacityInfo {
   // A copied |id| of getAvailableCapacity function parameter |id|.
-  DOMString id;
+  required DOMString id;
   // The available capacity of the storage device, in bytes.
-  double availableCapacity;
+  required double availableCapacity;
 };
 
 enum EjectDeviceResultCode {

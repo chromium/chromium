@@ -5,13 +5,13 @@
 dictionary NetworkInterface {
   // The underlying name of the adapter. On *nix, this will typically be
   // "eth0", "wlan0", etc.
-  DOMString name;
+  required DOMString name;
 
   // The available IPv4/6 address.
-  DOMString address;
+  required DOMString address;
 
   // The prefix length
-  long prefixLength;
+  required long prefixLength;
 };
 
 // Use the <code>chrome.system.network</code> API.

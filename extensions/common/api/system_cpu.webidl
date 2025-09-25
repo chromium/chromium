@@ -6,47 +6,47 @@
 // increasing while the processor is powered on.  Values are in milliseconds.
 dictionary CpuTime {
   // The cumulative time used by userspace programs on this processor.
-  double user;
+  required double user;
 
   // The cumulative time used by kernel programs on this processor.
-  double kernel;
+  required double kernel;
 
   // The cumulative time spent idle by this processor.
-  double idle;
+  required double idle;
 
   // The total cumulative time for this processor.  This value is equal to
   // user + kernel + idle.
-  double total;
+  required double total;
 };
 
 dictionary ProcessorInfo {
   // Cumulative usage info for this logical processor.
-  CpuTime usage;
+  required CpuTime usage;
 };
 
 dictionary CpuInfo {
   // The number of logical processors.
-  long numOfProcessors;
+  required long numOfProcessors;
 
   // The architecture name of the processors.
-  DOMString archName;
+  required DOMString archName;
 
   // The model name of the processors.
-  DOMString modelName;
+  required DOMString modelName;
 
   // A set of feature codes indicating some of the processor's capabilities.
   // The currently supported codes are "mmx", "sse", "sse2", "sse3", "ssse3",
   // "sse4_1", "sse4_2", and "avx".
-  sequence<DOMString> features;
+  required sequence<DOMString> features;
 
   // Information about each logical processor.
-  sequence<ProcessorInfo> processors;
+  required sequence<ProcessorInfo> processors;
 
   // List of CPU temperature readings from each thermal zone of the CPU.
   // Temperatures are in degrees Celsius.
   //
   // <b>Currently supported on Chrome OS only.</b>
-  sequence<double> temperatures;
+  required sequence<double> temperatures;
 };
 
 // Use the <code>system.cpu</code> API to query CPU metadata.

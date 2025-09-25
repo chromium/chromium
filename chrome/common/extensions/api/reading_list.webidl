@@ -4,61 +4,61 @@
 
 dictionary ReadingListEntry {
   // The url of the entry.
-  DOMString url;
+  required DOMString url;
 
   // The title of the entry.
-  DOMString title;
+  required DOMString title;
 
   // Will be <code>true</code> if the entry has been read.
-  boolean hasBeenRead;
+  required boolean hasBeenRead;
 
   // The last time the entry was updated.
   // This value is in milliseconds since Jan 1, 1970.
-  double lastUpdateTime;
+  required double lastUpdateTime;
 
   // The time the entry was created.
   // Recorded in milliseconds since Jan 1, 1970.
-  double creationTime;
+  required double creationTime;
 };
 
 dictionary AddEntryOptions {
   // The url of the entry.
-  DOMString url;
+  required DOMString url;
 
   // The title of the entry.
-  DOMString title;
+  required DOMString title;
 
   // Will be <code>true</code> if the entry has been read.
-  boolean hasBeenRead;
+  required boolean hasBeenRead;
 };
 
 dictionary RemoveOptions {
   // The url to remove.
-  DOMString url;
+  required DOMString url;
 };
 
 dictionary UpdateEntryOptions {
   // The url that will be updated.
-  DOMString url;
+  required DOMString url;
 
   // The new title. The existing tile remains if a value isn't provided.
-  DOMString? title;
+  DOMString title;
 
   // The updated read status. The existing status remains if a value
   // isn't provided.
-  boolean? hasBeenRead;
+  boolean hasBeenRead;
 };
 
 dictionary QueryInfo {
   // A url to search for.
-  DOMString? url;
+  DOMString url;
 
   // A title to search for.
-  DOMString? title;
+  DOMString title;
 
   // Indicates whether to search for read (<code>true</code>) or unread
   // (<code>false</code>) items.
-  boolean? hasBeenRead;
+  boolean hasBeenRead;
 };
 
 // Listener callback for the onEntryAdded event.

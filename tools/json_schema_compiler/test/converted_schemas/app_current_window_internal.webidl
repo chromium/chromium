@@ -4,30 +4,30 @@
 
 // Null or undefined indicates that a value should not change.
 dictionary Bounds {
-  long? left;
-  long? top;
-  long? width;
-  long? height;
-};
-
-// Null or undefined indicates that a value should not change. A value of 0
-// will clear the constraints.
-dictionary SizeConstraints {
-  long? minWidth;
-  long? minHeight;
-  long? maxWidth;
-  long? maxHeight;
-};
-
-dictionary RegionRect {
   long left;
   long top;
   long width;
   long height;
 };
 
+// Null or undefined indicates that a value should not change. A value of 0
+// will clear the constraints.
+dictionary SizeConstraints {
+  long minWidth;
+  long minHeight;
+  long maxWidth;
+  long maxHeight;
+};
+
+dictionary RegionRect {
+  required long left;
+  required long top;
+  required long width;
+  required long height;
+};
+
 dictionary Region {
-  sequence<RegionRect>? rects;
+  sequence<RegionRect> rects;
 };
 
 callback OnClosedListener = undefined();

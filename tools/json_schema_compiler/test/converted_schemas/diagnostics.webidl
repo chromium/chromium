@@ -4,24 +4,24 @@
 
 dictionary SendPacketOptions {
   // Target IP address.
-  DOMString ip;
+  required DOMString ip;
   // Packet time to live value. If omitted, the system default value will be
   // used.
-  long? ttl;
+  long ttl;
   // Packet timeout in seconds. If omitted, the system default value will be
   // used.
-  long? timeout;
+  long timeout;
   // Size of the payload. If omitted, the system default value will be used.
-  long? size;
+  long size;
 };
 
 dictionary SendPacketResult {
   // The IP of the host which we receives the ICMP reply from.
   // The IP may differs from our target IP if the packet's ttl is used up.
-  DOMString ip;
+  required DOMString ip;
 
   // Latency in millisenconds.
-  double latency;
+  required double latency;
 };
 
 // Use the <code>chrome.diagnostics</code> API to query various properties of

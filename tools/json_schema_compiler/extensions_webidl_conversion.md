@@ -46,7 +46,14 @@ partial interface Browser {
 ```
 
 ### Dictionaries
-Dictionaries are moved outside the main interface to the top level of the file. Their internal structure remains the same. Descriptive comments above them should be moved along with them.
+Dictionaries are moved outside the main interface to the top level of the file. Their internal structure remains the same. Descriptive comments above them should be moved along with them. For dictionary members, non-optional members must be prefixed with `required`, and optional members should not have a `?` suffix.
+e.g.
+```
+dictionary MyDictionary {
+  required DOMString requiredMember;
+  DOMString optionalMember;
+};
+```
 
 ### Enums
 Enums are moved outside the main interface to the top level of the file. Their internal structure remains very similar, but the values are instead defined with quoted strings e.g.

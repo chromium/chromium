@@ -118,21 +118,21 @@ interface OnTestTwoEvent : ExtensionEvent {
 
 dictionary ExampleType {
   // Attribute comment attached to ExampleType.someString.
-  DOMString someString;
+  required DOMString someString;
   // Comment where <var>someNumber</var> has some markup.
-  double someNumber;
+  required double someNumber;
   // Comment with HTML comment. <!-- Which should get through -->
-  boolean? optionalBoolean;
+  boolean optionalBoolean;
   // Comment on sequence type.
-  sequence<boolean> booleanSequence;
+  required sequence<boolean> booleanSequence;
 };
 
 dictionary UnionTypes {
-  (DOMString or long or boolean) stringLongOrBoolean;
-  (DOMString or EnumType) stringOrEnum;
-  (EnumType or DOMString)? optionalEnumOrString;
-  (DOMString or sequence<DOMString>)? optionalStringOrStringSequence;
-  (ExampleType or long) dictTypeOrLong;
+  required (DOMString or long or boolean) stringLongOrBoolean;
+  required (DOMString or EnumType) stringOrEnum;
+  (EnumType or DOMString) optionalEnumOrString;
+  (DOMString or sequence<DOMString>) optionalStringOrStringSequence;
+  required (ExampleType or long) dictTypeOrLong;
 };
 
 // Enum description.
@@ -149,9 +149,9 @@ enum EnumType {
 
 partial dictionary Manifest {
   // Description of a manifest key.
-  DOMString string_key;
-  ExampleType custom_type_key;
-  (DOMString or long) union_type_key;
+  required DOMString string_key;
+  required ExampleType custom_type_key;
+  required (DOMString or long) union_type_key;
 };
 
 partial interface Browser {

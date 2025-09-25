@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 dictionary ArrayBufferDict {
-  ArrayBuffer requiredArrayBuffer;
-  ArrayBuffer? optionalArrayBuffer;
+  required ArrayBuffer requiredArrayBuffer;
+  ArrayBuffer optionalArrayBuffer;
 };
 
 // Schema to test 'ArrayBuffer' types in IDL.

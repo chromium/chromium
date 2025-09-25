@@ -7,73 +7,73 @@
 // call.
 dictionary IsUvpaaRequest {
   // An opaque identifier for the request.
-  long requestId;
+  required long requestId;
 };
 
 // An object representing a WebAuthn
 // <code>navigator.credentials.create()</code> call.
 dictionary CreateRequest {
   // An opaque identifier for the request.
-  long requestId;
+  required long requestId;
 
   // The <code>PublicKeyCredentialCreationOptions</code> passed to
   // <code>navigator.credentials.create()</code>, serialized as a JSON
   // string. The serialization format is compatible with <a
   // href="https://w3c.github.io/webauthn/#sctn-parseCreationOptionsFromJSON">
   // <code>PublicKeyCredential.parseCreationOptionsFromJSON()</code></a>.
-  DOMString requestDetailsJson;
+  required DOMString requestDetailsJson;
 };
 
 // An object representing a WebAuthn <code>navigator.credentials.get()</code>
 // call.
 dictionary GetRequest {
   // An opaque identifier for the request.
-  long requestId;
+  required long requestId;
 
   // The <code>PublicKeyCredentialRequestOptions</code> passed to
   // <code>navigator.credentials.get()</code>, serialized as a JSON string.
   // The serialization format is compatible with <a
   // href="https://w3c.github.io/webauthn/#sctn-parseRequestOptionsFromJSON">
   // <code>PublicKeyCredential.parseRequestOptionsFromJSON()</code></a>.
-  DOMString requestDetailsJson;
+  required DOMString requestDetailsJson;
 };
 
 dictionary DOMExceptionDetails {
-  DOMString name;
-  DOMString message;
+  required DOMString name;
+  required DOMString message;
 };
 
 dictionary CreateResponseDetails {
   // The <code>requestId</code> of the <code>CreateRequest</code>.
-  long requestId;
+  required long requestId;
 
   // The <code>DOMException</code> yielded by the remote request, if any.
-  DOMExceptionDetails? error;
+  DOMExceptionDetails error;
 
   // The <code>PublicKeyCredential</code>, yielded by the remote request, if
   // any, serialized as a JSON string by calling
   // href="https://w3c.github.io/webauthn/#dom-publickeycredential-tojson">
   // <code>PublicKeyCredential.toJSON()</code></a>.
-  DOMString? responseJson;
+  DOMString responseJson;
 };
 
 dictionary GetResponseDetails {
   // The <code>requestId</code> of the <code>CreateRequest</code>.
-  long requestId;
+  required long requestId;
 
   // The <code>DOMException</code> yielded by the remote request, if any.
-  DOMExceptionDetails? error;
+  DOMExceptionDetails error;
 
   // The <code>PublicKeyCredential</code>, yielded by the remote request, if
   // any, serialized as a JSON string by calling
   // href="https://w3c.github.io/webauthn/#dom-publickeycredential-tojson">
   // <code>PublicKeyCredential.toJSON()</code></a>.
-  DOMString? responseJson;
+  DOMString responseJson;
 };
 
 dictionary IsUvpaaResponseDetails {
-  long requestId;
-  boolean isUvpaa;
+  required long requestId;
+  required boolean isUvpaa;
 };
 
 // Listener callback for the onRemoteSessionStateChange event.

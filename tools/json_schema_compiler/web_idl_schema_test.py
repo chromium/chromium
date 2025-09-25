@@ -931,12 +931,15 @@ class WebIdlSchemaTest(unittest.TestCase):
 
     any_dict = getType(schema, 'AnyDict')
     self.assertEqual('object', any_dict['type'])
-    # Note: we only test a required 'any' here as WebIDL doesn't support
-    # nullable 'any' (i.e. 'any?').
     self.assertEqual({
         'type': 'any',
         'name': 'requiredAny'
     }, any_dict['properties']['requiredAny'])
+    self.assertEqual({
+        'type': 'any',
+        'optional': True,
+        'name': 'optionalAny'
+    }, any_dict['properties']['optionalAny'])
 
   # Tests 'object' and 'any' types used as function parameters.
   def testObjectFunctionParams(self):

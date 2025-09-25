@@ -4,16 +4,16 @@
 
 dictionary Alarm {
   // Name of this alarm.
-  DOMString name;
+  required DOMString name;
 
   // Time at which this alarm was scheduled to fire, in milliseconds past the
   // epoch (e.g. <code>Date.now() + n</code>).  For performance reasons, the
   // alarm may have been delayed an arbitrary amount beyond this.
-  double scheduledTime;
+  required double scheduledTime;
 
   // If not null, the alarm is a repeating alarm and will fire again in
   // <var>periodInMinutes</var> minutes.
-  double? periodInMinutes;
+  double periodInMinutes;
 };
 
 // TODO(mpcomplete): rename to CreateInfo when http://crbug.com/123073 is
@@ -21,20 +21,20 @@ dictionary Alarm {
 dictionary AlarmCreateInfo {
   // Time at which the alarm should fire, in milliseconds past the epoch
   // (e.g. <code>Date.now() + n</code>).
-  double? when;
+  double when;
 
   // Length of time in minutes after which the <code>onAlarm</code> event
   // should fire.
   //
   // <!-- TODO: need minimum=0 -->
-  double? delayInMinutes;
+  double delayInMinutes;
 
   // If set, the onAlarm event should fire every <var>periodInMinutes</var>
   // minutes after the initial event specified by <var>when</var> or
   // <var>delayInMinutes</var>.  If not set, the alarm will only fire once.
   //
   // <!-- TODO: need minimum=0 -->
-  double? periodInMinutes;
+  double periodInMinutes;
 };
 
 // Listener callback for the onAlarm event.

@@ -24,37 +24,37 @@ enum AutofocusState {
 };
 
 dictionary ProtocolConfiguration {
-  Protocol? protocol;
+  Protocol protocol;
 };
 
 dictionary WebcamConfiguration {
-  double? pan;
-  double? panSpeed;
-  PanDirection? panDirection;
-  double? tilt;
-  double? tiltSpeed;
-  TiltDirection? tiltDirection;
-  double? zoom;
-  AutofocusState? autofocusState;
-  double? focus;
+  double pan;
+  double panSpeed;
+  PanDirection panDirection;
+  double tilt;
+  double tiltSpeed;
+  TiltDirection tiltDirection;
+  double zoom;
+  AutofocusState autofocusState;
+  double focus;
 };
 
 dictionary Range {
-  double min;
-  double max;
+  required double min;
+  required double max;
 };
 
 dictionary WebcamCurrentConfiguration {
-  double pan;
-  double tilt;
-  double zoom;
-  double focus;
+  required double pan;
+  required double tilt;
+  required double zoom;
+  required double focus;
 
   // Supported range of pan, tilt and zoom values.
-  Range? panRange;
-  Range? tiltRange;
-  Range? zoomRange;
-  Range? focusRange;
+  Range panRange;
+  Range tiltRange;
+  Range zoomRange;
+  Range focusRange;
 };
 
 // Webcam Private API.
