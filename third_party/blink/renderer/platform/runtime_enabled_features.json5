@@ -3354,6 +3354,10 @@
       implied_by: ["SoftNavigationHeuristics"],
     },
     {
+      name: "NavigationTransitionDestination",
+      status: "experimental",
+    },
+    {
       name: "NavigatorContentUtils",
       // Android does not yet support NavigatorContentUtils.
       status: {"Android": "", "default": "stable"},

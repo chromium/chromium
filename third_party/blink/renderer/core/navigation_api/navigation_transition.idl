@@ -2,6 +2,7 @@
 interface NavigationTransition {
   readonly attribute NavigationType navigationType;
   readonly attribute NavigationHistoryEntry from;
+  [RuntimeEnabled=NavigationTransitionDestination] readonly attribute NavigationDestination to;
   [CallWith=ScriptState, RuntimeEnabled=NavigateEventCommitBehavior] readonly attribute Promise<undefined> committed;
   [CallWith=ScriptState] readonly attribute Promise<undefined> finished;
 };
