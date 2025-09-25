@@ -274,6 +274,12 @@ std::string DeskSyncBridge::GetStorageKey(
   return entity_data.specifics.workspace_desk().uuid();
 }
 
+bool DeskSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return desk_template_conversion::FromSyncProto(
+             entity_data.specifics.workspace_desk()) != nullptr;
+}
+
 DeskModel::GetAllEntriesResult DeskSyncBridge::GetAllEntries() {
   if (!IsReady()) {
     LOG(WARNING) << "Unable to get all entries: Not Ready";

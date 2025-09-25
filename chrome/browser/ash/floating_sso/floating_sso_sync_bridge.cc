@@ -177,6 +177,11 @@ std::string FloatingSsoSyncBridge::GetClientTag(
   return entity_data.specifics.cookie().unique_key();
 }
 
+bool FloatingSsoSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return FromSyncProto(entity_data.specifics.cookie()) != nullptr;
+}
+
 std::unique_ptr<syncer::DataBatch> FloatingSsoSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   auto batch = std::make_unique<syncer::MutableDataBatch>();

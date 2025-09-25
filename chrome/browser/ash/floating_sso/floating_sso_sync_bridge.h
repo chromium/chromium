@@ -67,6 +67,7 @@ class FloatingSsoSyncBridge : public syncer::DataTypeSyncBridge {
       const syncer::EntityData& entity_data) const override;
   std::string GetClientTag(
       const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
