@@ -139,17 +139,6 @@ BASE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 );
 
-BASE_FEATURE(kDisableLoadExtensionCommandLineSwitch,
-// --load-extension is disabled for chrome-branded release builds except on
-// ChromeOS where it is required for testing, and is not a security risk
-// since it cannot be controlled by users.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-);
-
 BASE_FEATURE(kDisableExtensionsOnChromeUrlsSwitch,
 // TODO (crbug.com/426554244): Determine if this switch should be
 // removed for desktop-android builds as well.

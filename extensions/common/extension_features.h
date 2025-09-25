@@ -237,8 +237,6 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestHeaderSubstitution);
 // line switch.
 BASE_DECLARE_FEATURE(kDisableDisableExtensionsExceptCommandLineSwitch);
 
-// Disables loading extensions via the `--load-extension` command line switch.
-BASE_DECLARE_FEATURE(kDisableLoadExtensionCommandLineSwitch);
 
 // Disables the `--extensions-on-chrome-urls` flag's functionality on
 // `chrome://` URLs. Extension can still run on extension URLs using the new

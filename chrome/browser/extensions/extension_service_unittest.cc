@@ -6069,32 +6069,6 @@ TEST_F(ExtensionServiceTest, MAYBE_LoadsFromCommandLineForUsersWithoutPolicy) {
       ExtensionService::LoadExtensionFlag::kDisableExtensionsExcept, 1);
 }
 
-TEST_F(ExtensionServiceTest, DisableLoadExtensionCommandLineSwitch) {
-  base::HistogramTester histograms;
-  base::test::ScopedFeatureList feature_list(
-      /*enable_feature=*/extensions_features::
-          kDisableLoadExtensionCommandLineSwitch);
-  InitializeEmptyExtensionServiceWithTestingPrefs();
-
-  // Try to load an extension from command line.
-  base::FilePath path =
-      base::MakeAbsoluteFilePath(data_dir().AppendASCII("good_unpacked"));
-  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
-      switches::kLoadExtension, path);
-  service()->Init();
-
-  ExtensionSystem* extension_system = ExtensionSystem::Get(profile());
-  // Wait until the extension system is ready.
-  base::RunLoop run_loop;
-  extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
-
-  ASSERT_EQ(0u, loaded_extensions().size());
-  ValidatePrefKeyCount(0);
-
-  histograms.ExpectTotalCount("Extensions.LoadingFromCommandLine", 0);
-}
-
 TEST_F(ExtensionServiceTest, DisableDisableExtensionsExceptCommandLineSwitch) {
   base::test::ScopedFeatureList feature_list(
       /*enable_feature=*/extensions_features::
