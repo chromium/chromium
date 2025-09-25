@@ -1,6 +1,7 @@
 apk_path=lib/arm64-v8a/libcrashpad_handler_trampoline.so, compress=False
 apk_path=lib/arm64-v8a/libmonochrome.so, compress=False
 apk_path=assets/chrome_100_percent.pak+com.android.webview+, compress=False
+apk_path=assets/chrome_200_percent.pak+com.android.webview+, compress=False
 apk_path=assets/resources.pak+com.android.webview+, compress=False
 apk_path=assets/snapshot_blob_64.bin+com.android.webview+, compress=False
 apk_path=assets/stored-locales/af.pak+com.android.webview+, compress=False
