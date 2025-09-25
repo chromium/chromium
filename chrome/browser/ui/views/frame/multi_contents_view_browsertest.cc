@@ -464,17 +464,10 @@ IN_PROC_BROWSER_TEST_F(
   CheckNoResizeHappened();
 }
 
-// TODO(crbug.com/429495554): Flaky on Mac and Windows.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes \
-  DISABLED_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes
-#else
-#define MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes \
-  EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes
-#endif
+// TODO(crbug.com/429495554): Flaky on most bots across all platforms.
 IN_PROC_BROWSER_TEST_F(
     MultiContentsViewWebContentsReLayoutBrowserTest,
-    MAYBE_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes) {
+    DISABLED_EnterAndExitFullscreenInSplitTabShouldResizeThreeTimes) {
 #if BUILDFLAG(IS_OZONE)
   // TODO(crbug.com/429495554): Investigate why this test failed on wayland.
   if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
