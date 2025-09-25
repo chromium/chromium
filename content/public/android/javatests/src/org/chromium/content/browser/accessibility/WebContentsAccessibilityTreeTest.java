@@ -12,10 +12,12 @@ import android.annotation.SuppressLint;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -27,6 +29,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for WebContentsAccessibilityImpl integration with accessibility services. */
@@ -54,6 +57,15 @@ public class WebContentsAccessibilityTreeTest {
     @Rule
     public AccessibilityContentShellActivityTestRule mActivityTestRule =
             new AccessibilityContentShellActivityTestRule();
+
+    @Before
+    public void setUp() {
+        // Needed for `interestfor` in test_nameFromPopovertargetAndInterestfor.
+        // TODO(crbug.com/326681249): Remove when the feature is launched.
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        ContentSwitches.ENABLE_BLINK_FEATURES, "HTMLInterestForAttribute");
+    }
 
     /**
      * Perform a single test which will:
@@ -2383,6 +2395,12 @@ public class WebContentsAccessibilityTreeTest {
     @SmallTest
     public void test_picture() {
         performHtmlTest("picture.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_nameFromPopovertargetAndInterestfor() {
+        performHtmlTest("name-from-popovertarget-and-interestfor.html");
     }
 
     @Test

@@ -2554,6 +2554,8 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
       }
       break;
     case ax::mojom::NameFrom::kCssAltText:
+    case ax::mojom::NameFrom::kPopoverTarget:
+    case ax::mojom::NameFrom::kInterestFor:
       name_to_cache_ = AndroidNameTo::kContentDescription;
       break;
     case ax::mojom::NameFrom::kNone:
@@ -2566,8 +2568,6 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
     case ax::mojom::NameFrom::kProhibitedAndRedundant:
     case ax::mojom::NameFrom::kTitle:
     case ax::mojom::NameFrom::kValue:
-    case ax::mojom::NameFrom::kPopoverTarget:
-    case ax::mojom::NameFrom::kInterestFor:
       // If the accessible name comes from the node's content (e.g., inner
       // text)
       //    and not a specific attribute (like aria-label), it's considered

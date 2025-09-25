@@ -5013,6 +5013,13 @@ data/accessibility/html/multi-selectable-expected-win.txt
 data/accessibility/html/multi-selectable.html
 data/accessibility/html/name-calc-focusable-expected-blink.txt
 data/accessibility/html/name-calc-focusable.html
+data/accessibility/html/name-from-popovertarget-and-interestfor-expected-android-external.txt
+data/accessibility/html/name-from-popovertarget-and-interestfor-expected-android.txt
+data/accessibility/html/name-from-popovertarget-and-interestfor-expected-auralinux.txt
+data/accessibility/html/name-from-popovertarget-and-interestfor-expected-blink.txt
+data/accessibility/html/name-from-popovertarget-and-interestfor-expected-mac.txt
+data/accessibility/html/name-from-popovertarget-and-interestfor-expected-win.txt
+data/accessibility/html/name-from-popovertarget-and-interestfor.html
 data/accessibility/html/name-img-labelledby-inputs-tree-expected-blink.txt
 data/accessibility/html/name-img-labelledby-inputs-tree.html
 data/accessibility/html/navigation-expected-android-assist-data.txt

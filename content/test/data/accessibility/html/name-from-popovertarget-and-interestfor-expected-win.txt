@@ -1,0 +1,4 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_PUSHBUTTON name='popover description' COLLAPSED FOCUSABLE name-from:tooltip
+++++ROLE_SYSTEM_PUSHBUTTON name='popover description' FOCUSABLE name-from:tooltip

@@ -3487,6 +3487,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeWithProhibitedNamesTest,
   RunHtmlTest(FILE_PATH_LITERAL("prohibited-name.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityNameFromPopovertargetAndInterestfor) {
+  RunPopoverHintTest(
+      FILE_PATH_LITERAL("name-from-popovertarget-and-interestfor.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopoverApi) {
   RunPopoverHintTest(FILE_PATH_LITERAL("popover-api.html"));
 }

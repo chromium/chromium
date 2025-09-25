@@ -1,0 +1,5 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button collapsed name='popover description' nameFrom=popoverTarget
+++++++button name='popover description' nameFrom=interestFor
