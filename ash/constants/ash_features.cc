@@ -271,7 +271,7 @@ constexpr base::FeatureParam<int> kBocaMaxNumStudentsAllowed{
     &kBocaConfigureMaxStudents, "BocaMaxNumStudentsAllowed", 100};
 
 // Enables or disables use of the courseWorkMaterials API in the Boca app.
-BASE_FEATURE(kBocaCourseWorkMaterialApi, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBocaCourseWorkMaterialApi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables sharing teacher's screen in the Boca app.
 BASE_FEATURE(kBocaScreenSharingTeacher, base::FEATURE_DISABLED_BY_DEFAULT);
