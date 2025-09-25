@@ -10,8 +10,6 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/web/common/crw_obscured_insets_controller.h"
-#import "ios/web/common/crw_web_view_resizing_type.h"
-#import "ios/web/common/features.h"
 
 namespace {
 
@@ -34,7 +32,6 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
 @synthesize viewportInsets = _viewportInsets;
 @synthesize webView = _webView;
 @synthesize fullscreenState = _fullscreenState;
-@synthesize webViewResizingType = _webViewResizingType;
 
 - (instancetype)initWithWebView:(UIView<CRWObscuredInsetsController>*)webView
                      scrollView:(UIScrollView*)scrollView
@@ -47,12 +44,6 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
     _webView = webView;
     _scrollView = scrollView;
     _fullscreenState = fullscreenState;
-    // Default resizing value.
-    if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-      _webViewResizingType = WebViewResizingType::kContentInset;
-    } else {
-      _webViewResizingType = WebViewResizingType::kFrame;
-    }
   }
   return self;
 }
