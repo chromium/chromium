@@ -32,12 +32,13 @@ EventMonitorRemoteCocoa::EventMonitorRemoteCocoa(
 
 void EventMonitorRemoteCocoa::NativeWidgetMacEventMonitorOnEvent(
     ui::Event* ui_event,
+    bool target_is_this_window,
     bool* was_handled) {
   if (*was_handled || !ui_event) {
     return;
   }
 
-  if (base::Contains(types_, ui_event->type())) {
+  if (target_is_this_window && base::Contains(types_, ui_event->type())) {
     event_observer_->OnEvent(*ui_event);
   }
 }
