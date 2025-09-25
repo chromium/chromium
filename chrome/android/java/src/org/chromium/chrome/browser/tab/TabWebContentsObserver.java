@@ -435,15 +435,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 int bottomInView,
                 @FocusType.EnumType int focusType) {
             // Request that the Android platform show the newly-focused element.
-            // TODO(b/446642377): Determine whether other `FocusType` values should be handled here.
-            if (!isEditableNode
-                    || (focusType != FocusType.FORWARD && focusType != FocusType.BACKWARD)) {
-                return;
-            }
-
             View view = mTab.getView();
             if (view == null) return;
+
             Rect boundsInView = new Rect(leftInView, topInView, rightInView, bottomInView);
+            if (boundsInView.isEmpty()) return;
 
             // TODO(aaronmoss): when Baklava 36.1 support lands in Clank, remove delegate
             // indirection and inline `requestInputFocusOnScreen()` call.
