@@ -310,11 +310,6 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
   // animated smoothly.
   // TODO(tapted): Investigate using a static Widget size.
   gfx::Rect bounds = GetContentsBounds();
-  bounds.set_height(
-      bounds.height() +
-      (is_webui_ ? views::LayoutProvider::Get()->GetCornerRadiusMetric(
-                       views::ShapeContextTokens::kOmniboxExpandedRadius)
-                 : 0));
   contents_host_->SetBoundsRect(bounds);
 
   gfx::Rect top_bounds(contents_host_->GetContentsBounds());
