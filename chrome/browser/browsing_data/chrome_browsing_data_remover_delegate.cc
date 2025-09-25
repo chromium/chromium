@@ -934,6 +934,10 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS, delete_begin_,
         delete_end_, website_settings_filter);
 
+    host_content_settings_map_->ClearSettingsForOneTypeWithPredicate(
+        ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
+        delete_begin_, delete_end_, website_settings_filter);
+
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
         ->RemoveEmbargoAndResetCounts(filter);
   }

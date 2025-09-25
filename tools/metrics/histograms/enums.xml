@@ -2541,6 +2541,7 @@ Called by update_net_error_codes.py.-->
   <int value="139" label="Geolocation with options"/>
   <int value="140" label="Device Attributes"/>
   <int value="141" label="Permission actions history setting"/>
+  <int value="142" label="Suspicious notification show original"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue) -->

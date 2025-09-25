@@ -260,6 +260,7 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::GEOLOCATION_WITH_OPTIONS, nullptr},
     {ContentSettingsType::DEVICE_ATTRIBUTES, nullptr},
     {ContentSettingsType::PERMISSION_ACTIONS_HISTORY, nullptr},
+    {ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL, nullptr},
 });
 
 static_assert(

@@ -204,6 +204,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::SUSPICIOUS_NOTIFICATION_IDS:
       case ContentSettingsType::DEVICE_ATTRIBUTES:
       case ContentSettingsType::PERMISSION_ACTIONS_HISTORY:
+      case ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL:
         break;
 
       default:
