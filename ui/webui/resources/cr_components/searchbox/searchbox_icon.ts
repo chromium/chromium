@@ -355,7 +355,8 @@ export class SearchboxIconElement extends CrLitElement {
     return (this.imageLoading_ && this.match?.imageDominantColor) ?
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         `${this.match.imageDominantColor}40` :
-        'transparent';
+        'var(--color-searchbox-results-icon-container-background-fallback,' +
+        'transparent)';
   }
 
   protected onIconLoad_() {
