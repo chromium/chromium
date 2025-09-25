@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -113,12 +112,7 @@ public class ReaderModeBottomSheetCoordinator {
 
         // Workaround for a bug where the bottom sheet will get stuck in the NONE state after the
         // activity is recreated by a theme change.
-        if (showing && mBottomSheetController.getTargetSheetState() == SheetState.NONE) {
-            mBottomSheetController.hideContent(mBottomSheetContent, /*animate=*/ false);
-            mBottomSheetController.requestShowContent(
-                            mBottomSheetContent, /*animate=*/ false);
-            mBottomSheetController.collapseSheet(/*animate=*/ false);
-        } else if (!showing) {
+        if (!showing) {
             showing = mBottomSheetController.requestShowContent(
                             mBottomSheetContent, /* animate= */ true);
             if (showing) {
@@ -172,11 +166,6 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public boolean swipeToDismissEnabled() {
-            return false;
-        }
-
-        @Override
         public int getPeekHeight() {
             return ((ReaderModeBottomSheetView) mContentView).getPeekHeight();
         }
@@ -187,8 +176,18 @@ public class ReaderModeBottomSheetCoordinator {
         }
 
         @Override
-        public boolean hideOnScroll() {
+        public boolean swipeToDismissEnabled() {
             return true;
+        }
+
+        @Override
+        public boolean hideOnScroll() {
+            // This bottom sheet is "persistent", but the default #hideOnScroll behavior is too
+            // buggy when the sheet interacts with the bottom controls. Correct implementation for
+            // this is to integrate BottomSheetManager directly with BottomControlsStacker, but the
+            // implementation is non-trivial. Instead, this sheet will be easily dismissable and
+            // come back on scroll up.
+            return false;
         }
 
         @Override

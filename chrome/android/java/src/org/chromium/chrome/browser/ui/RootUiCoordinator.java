@@ -1054,6 +1054,7 @@ public class RootUiCoordinator
                             mActivity,
                             getBottomSheetController(),
                             mActivityTabProvider,
+                            mBrowserControlsManager,
                             mTopUiThemeColorProvider);
         }
 

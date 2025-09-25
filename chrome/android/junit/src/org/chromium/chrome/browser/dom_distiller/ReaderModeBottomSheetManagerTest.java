@@ -29,6 +29,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,8 +39,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerService;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
-import org.chromium.content.browser.GestureListenerManagerImpl;
-import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -53,9 +53,9 @@ public class ReaderModeBottomSheetManagerTest {
     @Mock private Profile mProfile;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ActivityTabProvider mTabProvider;
+    @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Mock private GestureListenerManagerImpl mGestureListenerManager;
     @Mock private NavigationHandle mNavigationHandle;
     @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
     @Mock private DomDistillerServiceFactoryJni mDomDistillerServiceFactoryJni;
@@ -63,9 +63,11 @@ public class ReaderModeBottomSheetManagerTest {
     @Mock private DomDistillerService mDomDistillerService;
     @Mock private ThemeColorProvider mThemeColorProvider;
 
-    @Captor private ArgumentCaptor<GestureStateListener> mGestureStateListenerCaptor;
     @Captor private ArgumentCaptor<Callback<Tab>> mActivityTabObserverCaptor;
     @Captor private ArgumentCaptor<EmptyTabObserver> mEmptyTabObserverCaptor;
+
+    @Captor
+    private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;
 
     private ReaderModeBottomSheetManager mManager;
     private Activity mActivity;
@@ -77,16 +79,13 @@ public class ReaderModeBottomSheetManagerTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mGurl = new GURL(DISTILLED_URL);
-
-        when(mTab.getProfile()).thenReturn(mProfile);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mTab.getUrl()).thenReturn(mGurl);
         when(mTab.getWebContents()).thenReturn(mWebContents);
-        when(mWebContents.getVisibleUrl()).thenReturn(mGurl);
         when(mTabProvider.get()).thenReturn(mTab);
         when(mNavigationHandle.hasCommitted()).thenReturn(true);
         when(mNavigationHandle.isInPrimaryMainFrame()).thenReturn(true);
-
-        GestureListenerManagerImpl.setInstanceForTesting(mGestureListenerManager);
 
         DomDistillerServiceFactoryJni.setInstanceForTesting(mDomDistillerServiceFactoryJni);
         when(mDomDistillerService.getDistilledPagePrefs()).thenReturn(mDistilledPagePrefs);
@@ -107,7 +106,11 @@ public class ReaderModeBottomSheetManagerTest {
     private void createManagerAndGetTabObserver() {
         mManager =
                 new ReaderModeBottomSheetManager(
-                        mActivity, mBottomSheetController, mTabProvider, mThemeColorProvider);
+                        mActivity,
+                        mBottomSheetController,
+                        mTabProvider,
+                        mBrowserControlsVisibilityManager,
+                        mThemeColorProvider);
         verify(mTabProvider).addObserver(mActivityTabObserverCaptor.capture());
         verify(mTab).addObserver(mEmptyTabObserverCaptor.capture());
     }
@@ -153,68 +156,102 @@ public class ReaderModeBottomSheetManagerTest {
     }
 
     @Test
-    public void testGestureListenerRegistration() {
+    public void testHideOnTabClosure() {
         createManagerAndGetTabObserver();
-        verify(mGestureListenerManager).addListener(any(GestureStateListener.class));
+        // The sheet is shown on the distilled page.
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+
+        // When the tab is closing, the sheet should be hidden.
+        mEmptyTabObserverCaptor.getValue().onClosingStateChanged(mTab, true);
+        verify(mBottomSheetController).hideContent(any(), anyBoolean());
     }
 
     @Test
-    public void testShowOnScrollUp() {
+    public void testHideOnNoActiveTab() {
+        createManagerAndGetTabObserver();
+        // The sheet is shown on the distilled page.
+        verify(mBottomSheetController).requestShowContent(any(), anyBoolean());
+
+        // When there's no active tab, the sheet should be hidden.
+        mActivityTabObserverCaptor.getValue().onResult(null);
+        verify(mBottomSheetController).hideContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testBrowserControlsObserverRegistration() {
+        createManagerAndGetTabObserver();
+        verify(mBrowserControlsVisibilityManager)
+                .addObserver(mBrowserControlsObserverCaptor.capture());
+    }
+
+    @Test
+    public void testShowOnControlsCompletelyShown() {
         updateUrl(DISTILLED_URL);
         createManagerAndGetTabObserver();
-        verify(mGestureListenerManager).addListener(mGestureStateListenerCaptor.capture());
-        GestureStateListener listener = mGestureStateListenerCaptor.getValue();
-        listener.onScrollStarted(0, 0, true);
+        when(mDomDistillerUrlUtilsJni.isDistilledPage(any())).thenReturn(true);
+        verify(mBrowserControlsVisibilityManager)
+                .addObserver(mBrowserControlsObserverCaptor.capture());
+        when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(0f);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
         // show() is called once on initial distilled page load, and once on scroll up.
         verify(mBottomSheetController, times(2)).requestShowContent(any(), anyBoolean());
     }
 
     @Test
-    public void testShowOnScrollUp_onlyOnDistilledPages() {
-        updateUrl("https://www.google.com");
+    public void testHideOnControlsHiddenEnough() {
+        updateUrl(DISTILLED_URL);
         createManagerAndGetTabObserver();
-        verify(mGestureListenerManager).addListener(mGestureStateListenerCaptor.capture());
-        GestureStateListener listener = mGestureStateListenerCaptor.getValue();
-        listener.onScrollStarted(0, 0, true);
-        verify(mBottomSheetController, times(0)).requestShowContent(any(), anyBoolean());
+
+        verify(mBrowserControlsVisibilityManager)
+                .addObserver(mBrowserControlsObserverCaptor.capture());
+        when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(0.5f);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        // show() is called once on initial distilled page load, and once on scroll up.
+        verify(mBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        verify(mBottomSheetController, times(1)).hideContent(any(), anyBoolean());
     }
 
     @Test
-    public void testNoShowOnScrollDown() {
+    public void testShowOnScroll_onlyOnDistilledPages() {
+        updateUrl("https://www.google.com");
         createManagerAndGetTabObserver();
-        verify(mGestureListenerManager).addListener(mGestureStateListenerCaptor.capture());
-        GestureStateListener listener = mGestureStateListenerCaptor.getValue();
-        listener.onScrollStarted(0, 0, false);
-        // show() is called once on initial distilled page load.
-        verify(mBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+
+        verify(mBrowserControlsVisibilityManager)
+                .addObserver(mBrowserControlsObserverCaptor.capture());
+        when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(1f);
+        mBrowserControlsObserverCaptor
+                .getValue()
+                .onControlsOffsetChanged(0, 0, false, 0, 0, false, false, false);
+        verify(mBottomSheetController, times(0)).requestShowContent(any(), anyBoolean());
     }
 
     @Test
     public void testObserversRemovedOnTabChange() {
         createManagerAndGetTabObserver();
         verify(mTab).addObserver(any());
-        verify(mGestureListenerManager).addListener(any());
 
         mActivityTabObserverCaptor.getValue().onResult(null);
         verify(mTab).removeObserver(any());
-        verify(mGestureListenerManager).removeListener(any());
     }
 
     @Test
     public void testObserversRemovedOnDestroy() {
         createManagerAndGetTabObserver();
         verify(mTab).addObserver(any());
-        verify(mGestureListenerManager).addListener(any());
 
         mManager.destroy();
         verify(mTabProvider).removeObserver(any());
         verify(mTab).removeObserver(any());
-        verify(mGestureListenerManager).removeListener(any());
+        verify(mBrowserControlsVisibilityManager).removeObserver(any());
         mManager = null;
     }
 
     private void updateUrl(String url) {
         mGurl = new GURL(url);
-        when(mWebContents.getVisibleUrl()).thenReturn(mGurl);
+        when(mTab.getUrl()).thenReturn(mGurl);
     }
 }
