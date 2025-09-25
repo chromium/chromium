@@ -4,6 +4,7 @@
 
 #include "content/public/test/permissions_test_utils.h"
 
+#include "base/test/test_future.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
@@ -15,10 +16,14 @@ void SetPermissionControllerOverrideForDevTools(
     const std::optional<url::Origin>& origin,
     blink::PermissionType permission,
     const blink::mojom::PermissionStatus& status) {
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+
   PermissionControllerImpl* permission_controller_impl =
       static_cast<PermissionControllerImpl*>(permission_controller);
-  permission_controller_impl->SetOverrideForDevTools(origin, origin, permission,
-                                                     status);
+  permission_controller_impl->SetOverrideForDevTools(
+      origin, origin, permission, status, future.GetCallback());
+  ASSERT_EQ(future.Get(),
+            PermissionControllerImpl::OverrideStatus::kOverrideSet);
 }
 
 void AddNotifyListenerObserver(PermissionController* permission_controller,

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/types/optional_ref.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_result.h"
 #include "net/base/schemeful_site.h"
@@ -50,6 +51,10 @@ class CONTENT_EXPORT PermissionOverrides {
                                       const url::Origin& embedding_origin,
                                       blink::PermissionType permission) const;
 
+  // Creates content settings for all overrides for |permission_type|.
+  std::vector<ContentSettingPatternSource> CreateContentSettingsForType(
+      blink::PermissionType permission_type) const;
+
   // Sets status for |permissions| to GRANTED in |requesting_origin| and
   // |embedding_origin|, and DENIED for all others. Null |requesting_origin| and
   // |embedding_origin| grants permissions globally for context.
@@ -81,6 +86,12 @@ class CONTENT_EXPORT PermissionOverrides {
 
     friend auto operator<=>(const PermissionKey&,
                             const PermissionKey&) = default;
+
+    // The pair is ordered as <Requesting-Origin, Embedding-Origin>
+    std::pair<ContentSettingsPattern, ContentSettingsPattern>
+    CreateContentSettingsPatterns() const;
+
+    blink::PermissionType type() const { return type_; }
 
    private:
     // Represents the global state within a PermissionKey.

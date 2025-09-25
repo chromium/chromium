@@ -7,8 +7,13 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -277,6 +282,18 @@ std::vector<std::optional<PermissionResult>> OverridePermissions(
   return results;
 }
 
+ContentSettingsType ConvertPermissionTypeForCookieManager(
+    PermissionType permission) {
+  switch (permission) {
+    case PermissionType::STORAGE_ACCESS_GRANT:
+      return ContentSettingsType::STORAGE_ACCESS;
+    case PermissionType::TOP_LEVEL_STORAGE_ACCESS:
+      return ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS;
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 PermissionControllerImpl::PermissionControllerImpl(
@@ -362,42 +379,44 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
   }
 }
 
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::GrantOverridesForDevTools(
+void PermissionControllerImpl::GrantOverridesForDevTools(
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,
-    const std::vector<PermissionType>& permissions) {
-  return GrantPermissionOverrides(requesting_origin, embedding_origin,
-                                  permissions);
+    const std::vector<PermissionType>& permissions,
+    base::OnceCallback<void(OverrideStatus)> callback) {
+  GrantPermissionOverrides(requesting_origin, embedding_origin, permissions,
+                           std::move(callback));
 }
 
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::SetOverrideForDevTools(
-    base::optional_ref<const url::Origin> requesting_origin,
-    base::optional_ref<const url::Origin> embedding_origin,
-    PermissionType permission,
-    const PermissionStatus& status) {
-  return SetPermissionOverride(requesting_origin, embedding_origin, permission,
-                               status);
-}
-
-void PermissionControllerImpl::ResetOverridesForDevTools() {
-  ResetPermissionOverrides();
-}
-
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::SetPermissionOverride(
+void PermissionControllerImpl::SetOverrideForDevTools(
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,
     PermissionType permission,
-    const PermissionStatus& status) {
+    const PermissionStatus& status,
+    base::OnceCallback<void(OverrideStatus)> callback) {
+  SetPermissionOverride(requesting_origin, embedding_origin, permission, status,
+                        std::move(callback));
+}
+
+void PermissionControllerImpl::ResetOverridesForDevTools(
+    base::OnceClosure callback) {
+  ResetPermissionOverrides(std::move(callback));
+}
+
+void PermissionControllerImpl::SetPermissionOverride(
+    base::optional_ref<const url::Origin> requesting_origin,
+    base::optional_ref<const url::Origin> embedding_origin,
+    PermissionType permission,
+    const PermissionStatus& status,
+    base::OnceCallback<void(OverrideStatus)> callback) {
   CHECK_EQ(requesting_origin.has_value(), embedding_origin.has_value());
 
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
   if (delegate && !delegate->IsPermissionOverridable(
                       permission, requesting_origin, embedding_origin)) {
-    return OverrideStatus::kOverrideNotSet;
+    std::move(callback).Run(OverrideStatus::kOverrideNotSet);
+    return;
   }
 
   const std::optional<GURL> requesting_origin_url =
@@ -414,15 +433,16 @@ PermissionControllerImpl::SetPermissionOverride(
   permission_overrides_.Set(requesting_origin, embedding_origin, permission,
                             status);
   NotifyChangedSubscriptions(old_statuses);
-
-  return OverrideStatus::kOverrideSet;
+  UpdateCookieManagerContentSettings(
+      permission,
+      base::BindOnce(std::move(callback), OverrideStatus::kOverrideSet));
 }
 
-PermissionControllerImpl::OverrideStatus
-PermissionControllerImpl::GrantPermissionOverrides(
+void PermissionControllerImpl::GrantPermissionOverrides(
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,
-    const std::vector<PermissionType>& permissions) {
+    const std::vector<PermissionType>& permissions,
+    base::OnceCallback<void(OverrideStatus)> callback) {
   CHECK_EQ(requesting_origin.has_value(), embedding_origin.has_value());
 
   PermissionControllerDelegate* delegate =
@@ -431,7 +451,8 @@ PermissionControllerImpl::GrantPermissionOverrides(
     for (const auto permission : permissions) {
       if (!delegate->IsPermissionOverridable(permission, requesting_origin,
                                              embedding_origin)) {
-        return OverrideStatus::kOverrideNotSet;
+        std::move(callback).Run(OverrideStatus::kOverrideNotSet);
+        return;
       }
     }
   }
@@ -454,16 +475,22 @@ PermissionControllerImpl::GrantPermissionOverrides(
   // notified manually.
   NotifyChangedSubscriptions(old_statuses);
 
-  return OverrideStatus::kOverrideSet;
+  UpdateCookieManagerContentSettings(
+      /*permission=*/std::nullopt,
+      base::BindOnce(std::move(callback), OverrideStatus::kOverrideSet));
 }
 
-void PermissionControllerImpl::ResetPermissionOverrides() {
+void PermissionControllerImpl::ResetPermissionOverrides(
+    base::OnceClosure callback) {
   const auto old_statuses = GetSubscriptionsStatuses();
   permission_overrides_ = PermissionOverrides();
 
   // If any statuses changed because they lost their overrides, the subscribers
   // must be notified manually.
   NotifyChangedSubscriptions(old_statuses);
+
+  UpdateCookieManagerContentSettings(/*permission=*/std::nullopt,
+                                     std::move(callback));
 }
 
 void PermissionControllerImpl::RequestPermissions(
@@ -563,6 +590,42 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
 void PermissionControllerImpl::ResetPermission(blink::PermissionType permission,
                                                const url::Origin& origin) {
   ResetPermission(permission, origin.GetURL(), origin.GetURL());
+}
+
+void PermissionControllerImpl::UpdateCookieManagerContentSettings(
+    std::optional<PermissionType> permission_to_process,
+    base::OnceClosure callback) {
+  std::vector<PermissionType> permissions;
+  if (permission_to_process == PermissionType::STORAGE_ACCESS_GRANT ||
+      permission_to_process == PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
+    permissions.push_back(permission_to_process.value());
+  } else if (!permission_to_process) {
+    // A null `permission_to_process` value indicates that a bulk operation
+    // like `ResetPermissionOverrides` or `GrantPermissionOverrides` was
+    // performed. In such cases, we must update all permissions that require
+    // it, which currently includes both Storage Access API permissions.
+    permissions = {PermissionType::STORAGE_ACCESS_GRANT,
+                   PermissionType::TOP_LEVEL_STORAGE_ACCESS};
+  }
+
+  const auto callback_after_ipc =
+      base::BarrierClosure(permissions.size(), std::move(callback));
+
+  for (auto permission : permissions) {
+    std::vector<ContentSettingPatternSource> grants =
+        permission_overrides_.CreateContentSettingsForType(permission);
+
+    // The network service does not care about non-allowed settings. So we can
+    // filter those ones out here.
+    std::erase_if(grants, [](const ContentSettingPatternSource& setting) {
+      return setting.GetContentSetting() != CONTENT_SETTING_ALLOW;
+    });
+
+    browser_context_->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->SetContentSettings(ConvertPermissionTypeForCookieManager(permission),
+                             grants, callback_after_ipc);
+  }
 }
 
 PermissionResult PermissionControllerImpl::GetPermissionResultInternal(

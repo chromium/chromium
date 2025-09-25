@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/containers/id_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/permissions/permission_overrides.h"
 #include "content/common/content_export.h"
@@ -55,31 +56,41 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   // in |overrides| and reject all others. If no |requesting_origin| and
   // |embedding_origin| are specified, grant permissions globally for context.
   // It is invalid to call these methods with exactly one non-null origin.
-  OverrideStatus GrantOverridesForDevTools(
+  void GrantOverridesForDevTools(
       base::optional_ref<const url::Origin> requesting_origin,
       base::optional_ref<const url::Origin> embedding_origin,
-      const std::vector<PermissionType>& permissions);
-  OverrideStatus SetOverrideForDevTools(
+      const std::vector<PermissionType>& permissions,
+      base::OnceCallback<void(OverrideStatus)> callback);
+  void SetOverrideForDevTools(
       base::optional_ref<const url::Origin> requesting_origin,
       base::optional_ref<const url::Origin> embedding_origin,
       PermissionType permission,
-      const PermissionStatus& status);
-  void ResetOverridesForDevTools();
+      const PermissionStatus& status,
+      base::OnceCallback<void(OverrideStatus)> callback);
+  void ResetOverridesForDevTools(base::OnceClosure callback);
 
   // Sets status for |permissions| to GRANTED for |requesting_origin| and
   // |embedding_origin|, and DENIED for all others. Null |requesting_origin| and
   // |embedding_origin| grants permissions globally for context.
   // It is invalid to call these methods with exactly one non-null origin.
-  OverrideStatus GrantPermissionOverrides(
+  // If the overrides were set, the callback is run with
+  // |OverrideStatus::kOverrideSet|. If not set, the callback is run with
+  // |OverrideStatus::kOverrideNotSet|.
+  void GrantPermissionOverrides(
       base::optional_ref<const url::Origin> requesting_origin,
       base::optional_ref<const url::Origin> embedding_origin,
-      const std::vector<PermissionType>& permissions);
-  OverrideStatus SetPermissionOverride(
+      const std::vector<PermissionType>& permissions,
+      base::OnceCallback<void(OverrideStatus)> callback);
+  // If the overrides were set, the callback is run with
+  // |OverrideStatus::kOverrideSet|. If not set, the callback is run with
+  // |OverrideStatus::kOverrideNotSet|.
+  void SetPermissionOverride(
       base::optional_ref<const url::Origin> requesting_origin,
       base::optional_ref<const url::Origin> embedding_origin,
       PermissionType permission,
-      const PermissionStatus& status);
-  void ResetPermissionOverrides();
+      const PermissionStatus& status,
+      base::OnceCallback<void(OverrideStatus)> callback);
+  void ResetPermissionOverrides(base::OnceClosure callback);
 
   void ResetPermission(PermissionType permission,
                        const GURL& requesting_origin,
@@ -116,6 +127,14 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
  private:
   friend class PermissionControllerImplTest;
   friend class PermissionServiceImpl;
+
+  // Updates CookieManager content settings. Currently this is only used for
+  // Storage Access permissions. This method can be used for extra processing
+  // for other permissions. If you add more permissions or different
+  // processesing steps, update the method's name.
+  void UpdateCookieManagerContentSettings(
+      std::optional<PermissionType> permission_to_process,
+      base::OnceClosure callback);
 
   PermissionResult GetPermissionResultInternal(
       const blink::mojom::PermissionDescriptorPtr& permission,

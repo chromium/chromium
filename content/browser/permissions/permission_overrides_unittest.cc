@@ -21,6 +21,7 @@ namespace {
 using blink::PermissionType;
 using blink::mojom::PermissionStatus;
 using testing::AllOf;
+using testing::ElementsAre;
 using testing::IsSupersetOf;
 using testing::Pair;
 using testing::SizeIs;
@@ -231,6 +232,87 @@ TEST(PermissionOverridesTest, DifferentOriginsDifferentOverrides) {
   EXPECT_FALSE(
       overrides.Get(second_url, second_url, PermissionType::GEOLOCATION)
           .has_value());
+}
+
+TEST(PermissionOverridesTest, CreateContentSettingsForTypeSingleOrigin) {
+  PermissionOverrides overrides;
+  Origin first_origin = Origin::Create(GURL("https://sub.foo.com/"));
+  Origin second_origin = Origin::Create(GURL("https://sub.bar.com/"));
+
+  overrides.Set(/*requesting_origin=*/std::nullopt,
+                /*embedding_origin=*/std::nullopt, PermissionType::GEOLOCATION,
+                PermissionStatus::DENIED);
+  overrides.Set(first_origin, second_origin, PermissionType::GEOLOCATION,
+                PermissionStatus::GRANTED);
+
+  EXPECT_THAT(
+      overrides.CreateContentSettingsForType(PermissionType::GEOLOCATION),
+      testing::ElementsAre(
+          ContentSettingPatternSource(
+              ContentSettingsPattern::Wildcard(),
+              ContentSettingsPattern::FromURLNoWildcard(first_origin.GetURL()),
+              base::Value(CONTENT_SETTING_ALLOW),
+              content_settings::ProviderType::kNone, false),
+          ContentSettingPatternSource(ContentSettingsPattern::Wildcard(),
+                                      ContentSettingsPattern::Wildcard(),
+                                      base::Value(CONTENT_SETTING_BLOCK),
+                                      content_settings::ProviderType::kNone,
+                                      false)));
+}
+
+TEST(PermissionOverridesTest, CreateContentSettingsForTypeTwoSites) {
+  PermissionOverrides overrides;
+  Origin first_origin = Origin::Create(GURL("https://sub.foo.com/"));
+  Origin second_origin = Origin::Create(GURL("https://sub.bar.com/"));
+
+  overrides.Set(first_origin, second_origin,
+                PermissionType::STORAGE_ACCESS_GRANT,
+                PermissionStatus::GRANTED);
+  overrides.Set(/*requesting_origin=*/std::nullopt,
+                /*embedding_origin=*/std::nullopt,
+                PermissionType::STORAGE_ACCESS_GRANT, PermissionStatus::DENIED);
+
+  EXPECT_THAT(overrides.CreateContentSettingsForType(
+                  PermissionType::STORAGE_ACCESS_GRANT),
+              testing::ElementsAre(
+                  ContentSettingPatternSource(
+                      ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                          first_origin.GetURL()),
+                      ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                          second_origin.GetURL()),
+                      base::Value(CONTENT_SETTING_ALLOW),
+                      content_settings::ProviderType::kNone, false),
+                  ContentSettingPatternSource(
+                      ContentSettingsPattern::Wildcard(),
+                      ContentSettingsPattern::Wildcard(),
+                      base::Value(CONTENT_SETTING_BLOCK),
+                      content_settings::ProviderType::kNone, false)));
+}
+
+TEST(PermissionOverridesTest, CreateContentSettingsForTypeOriginSite) {
+  PermissionOverrides overrides;
+  Origin first_origin = Origin::Create(GURL("https://sub.foo.com/"));
+  net::SchemefulSite first_site(first_origin);
+  Origin second_origin = Origin::Create(GURL("https://sub.bar.com/"));
+  net::SchemefulSite second_site(second_origin);
+
+  overrides.Set(first_origin, second_origin,
+                PermissionType::TOP_LEVEL_STORAGE_ACCESS,
+                PermissionStatus::GRANTED);
+
+  auto content_settings = overrides.CreateContentSettingsForType(
+      PermissionType::TOP_LEVEL_STORAGE_ACCESS);
+  ASSERT_THAT(
+      content_settings,
+      ElementsAre(ContentSettingPatternSource(
+          ContentSettingsPattern::FromURLNoWildcard(first_origin.GetURL()),
+          ContentSettingsPattern::FromURLToSchemefulSitePattern(
+              second_origin.GetURL()),
+          base::Value(CONTENT_SETTING_ALLOW),
+          content_settings::ProviderType::kNone, false)));
+
+  EXPECT_FALSE(
+      content_settings[0].primary_pattern.Matches(first_site.GetURL()));
 }
 
 TEST(PermissionOverridesTest, GrantPermissions_SetsSomeBlocksRest) {

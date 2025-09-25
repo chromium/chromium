@@ -21,7 +21,7 @@
                 "domain": "Browser",
                 "include": ["getVersion", "getHistograms", "getHistogram", "getBrowserCommandLine", "grantPermissions", "setDownloadBehavior", "cancelDownload", "resetPermissions", "crash", "crashGpuProcess", "setPermission",
                 "addPrivacySandboxCoordinatorKeyConfig"],
-                "async": ["addPrivacySandboxCoordinatorKeyConfig"]
+                "async": ["addPrivacySandboxCoordinatorKeyConfig", "grantPermissions", "resetPermissions", "setPermission"]
             },
             {
                 "domain": "DOM",

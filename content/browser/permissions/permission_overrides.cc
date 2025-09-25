@@ -5,13 +5,17 @@
 #include "content/browser/permissions/permission_overrides.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/permission_result.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "url/gurl.h"
 
 namespace content {
 using PermissionStatus = blink::mojom::PermissionStatus;
@@ -110,6 +114,44 @@ std::optional<PermissionResult> PermissionOverrides::Get(
                 : std::nullopt;
 }
 
+std::vector<ContentSettingPatternSource>
+PermissionOverrides::CreateContentSettingsForType(
+    blink::PermissionType permission_type) const {
+  std::vector<ContentSettingPatternSource> patterns;
+  for (const auto& [key, status] : overrides_) {
+    if (permission_type != key.type()) {
+      continue;
+    }
+
+    std::optional<ContentSetting> setting;
+    switch (status) {
+      case blink::mojom::PermissionStatus::GRANTED:
+        setting = ContentSetting::CONTENT_SETTING_ALLOW;
+        break;
+      case blink::mojom::PermissionStatus::DENIED:
+      case blink::mojom::PermissionStatus::UNSATISFIED_OPTIONS:
+        setting = ContentSetting::CONTENT_SETTING_BLOCK;
+        break;
+      case blink::mojom::PermissionStatus::ASK:
+        continue;
+    }
+    std::pair<ContentSettingsPattern, ContentSettingsPattern> setting_patterns =
+        key.CreateContentSettingsPatterns();
+    patterns.emplace_back(setting_patterns.first, setting_patterns.second,
+                          base::Value(setting.value()),
+                          content_settings::ProviderType::kNone,
+                          /*incognito=*/false);
+  }
+
+  std::ranges::sort(patterns, std::ranges::greater{},
+                    [](const ContentSettingPatternSource& p) {
+                      return std::make_pair(p.primary_pattern,
+                                            p.secondary_pattern);
+                    });
+
+  return patterns;
+}
+
 void PermissionOverrides::GrantPermissions(
     base::optional_ref<const url::Origin> requesting_origin,
     base::optional_ref<const url::Origin> embedding_origin,
@@ -119,6 +161,35 @@ void PermissionOverrides::GrantPermissions(
         base::Contains(permissions, type) ? PermissionStatus::GRANTED
                                           : PermissionStatus::DENIED);
   }
+}
+
+std::pair<ContentSettingsPattern, ContentSettingsPattern>
+PermissionOverrides::PermissionKey::CreateContentSettingsPatterns() const {
+  return std::visit(
+      absl::Overload(
+          [](const GlobalKey& global_key) {
+            return std::make_pair(ContentSettingsPattern::Wildcard(),
+                                  ContentSettingsPattern::Wildcard());
+          },
+          [](const url::Origin& origin) {
+            return std::make_pair(
+                ContentSettingsPattern::Wildcard(),
+                ContentSettingsPattern::FromURLNoWildcard(origin.GetURL()));
+          },
+          [](const std::pair<net::SchemefulSite, net::SchemefulSite>& key) {
+            return std::make_pair(
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    key.first.GetURL()),
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    key.second.GetURL()));
+          },
+          [](const std::pair<url::Origin, net::SchemefulSite>& key) {
+            return std::make_pair(
+                ContentSettingsPattern::FromURLNoWildcard(key.first.GetURL()),
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    key.second.GetURL()));
+          }),
+      scope_);
 }
 
 }  // namespace content

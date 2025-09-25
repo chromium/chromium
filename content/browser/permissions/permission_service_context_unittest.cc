@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -93,8 +94,14 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
       PermissionType type,
       blink::mojom::PermissionStatus last_status,
       blink::mojom::PermissionStatus current_status) {
-    permission_controller()->SetOverrideForDevTools(origin_, origin_, type,
-                                                    last_status);
+    base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+
+    permission_controller()->SetOverrideForDevTools(
+        origin_, origin_, type, last_status, future.GetCallback());
+
+    EXPECT_EQ(future.Get(),
+              PermissionControllerImpl::OverrideStatus::kOverrideSet);
+
     auto observer = std::make_unique<TestPermissionObserver>();
     permission_service_context()->CreateSubscription(
         content::PermissionDescriptorUtil::
@@ -108,8 +115,11 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
 
   void SimulatePermissionChangedEvent(PermissionType type,
                                       blink::mojom::PermissionStatus status) {
-    permission_controller()->SetOverrideForDevTools(origin_, origin_, type,
-                                                    status);
+    base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
+    permission_controller()->SetOverrideForDevTools(
+        origin_, origin_, type, status, future.GetCallback());
+    ASSERT_EQ(future.Get(),
+              PermissionControllerImpl::OverrideStatus::kOverrideSet);
     WaitForAsyncTasksToComplete();
   }
 

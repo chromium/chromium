@@ -7,6 +7,7 @@
 #include "base/strings/pattern.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
@@ -424,13 +425,16 @@ IN_PROC_BROWSER_TEST_F(
   // However, Chrome implements that in //chrome
   // (`StorageAccessGrantPermissionContext::DecidePermission`), so //content
   // can't rely on it. Thus, we must manually grant the permission here.
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
   static_cast<PermissionControllerImpl*>(
       rfh_c_2->GetBrowserContext()->GetPermissionController())
       ->SetPermissionOverride(
           /*requesting_origin=*/url::Origin::Create(main_url),
           /*embedding_origin=*/url::Origin::Create(main_url),
           blink::PermissionType::STORAGE_ACCESS_GRANT,
-          blink::mojom::PermissionStatus::GRANTED);
+          blink::mojom::PermissionStatus::GRANTED, future.GetCallback());
+  ASSERT_EQ(future.Get(),
+            PermissionControllerImpl::OverrideStatus::kOverrideSet);
 
   EXPECT_TRUE(content::ExecJs(rfh_c_2, "document.requestStorageAccess()"));
 
@@ -518,12 +522,16 @@ IN_PROC_BROWSER_TEST_F(BlobUrlDevToolsIssueTest, PartitioningBlobUrlIssue) {
   RenderFrameHost* rfh_b = ChildFrameAt(rfh_c, 0);
   RenderFrameHost* rfh_c_2 = ChildFrameAt(rfh_b, 0);
 
+  base::test::TestFuture<PermissionControllerImpl::OverrideStatus> future;
   static_cast<PermissionControllerImpl*>(
       rfh_c_2->GetBrowserContext()->GetPermissionController())
-      ->SetPermissionOverride(/*requesting_origin=*/std::nullopt,
-                              /*embedding_origin=*/std::nullopt,
-                              blink::PermissionType::STORAGE_ACCESS_GRANT,
-                              blink::mojom::PermissionStatus::DENIED);
+      ->SetPermissionOverride(
+          /*requesting_origin=*/std::nullopt,
+          /*embedding_origin=*/std::nullopt,
+          blink::PermissionType::STORAGE_ACCESS_GRANT,
+          blink::mojom::PermissionStatus::DENIED, future.GetCallback());
+  ASSERT_EQ(future.Get(),
+            PermissionControllerImpl::OverrideStatus::kOverrideSet);
 
   std::unique_ptr<content::TestDevToolsProtocolClient> client =
       std::make_unique<content::TestDevToolsProtocolClient>();
