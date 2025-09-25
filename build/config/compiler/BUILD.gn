@@ -1165,10 +1165,18 @@ config("compiler") {
     # abort instead of unwinding when panic occurs. In official builds, panics
     # abort immediately (this is configured in the stdlib) to keep binary size
     # down. So we unconditionally match behaviour in unofficial too.
-    rustflags += [
-      "-Cpanic=abort",
-      "-Zpanic_abort_tests",
-    ]
+    if (is_official_build) {
+      rustflags += [
+        "-Zunstable-options",
+        "-Cpanic=immediate-abort",
+        "-Zpanic_abort_tests",
+      ]
+    } else {
+      rustflags += [
+        "-Cpanic=abort",
+        "-Zpanic_abort_tests",
+      ]
+    }
   }
 
   # crbug.com/397463803: Set this until CrOS' user enumeration is done; its

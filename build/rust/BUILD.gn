@@ -95,8 +95,8 @@ config("panic_immediate_abort") {
   visibility = [ "//build/rust/std/rules:*" ]
   if (is_official_build) {
     rustflags = [
-      "--cfg",
-      "feature=\"panic_immediate_abort\"",
+      "-Zunstable-options",
+      "-Cpanic=immediate-abort",
     ]
   }
 }
