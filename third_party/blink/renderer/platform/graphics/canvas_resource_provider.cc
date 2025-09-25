@@ -1865,6 +1865,7 @@ bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
                                          int x,
                                          int y) {
   TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
+  CHECK(!IsAccelerated());
 
   DCHECK(IsValid());
   DCHECK(!recorder_->HasRecordedDrawOps());
