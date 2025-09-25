@@ -20,6 +20,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -213,7 +214,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
             CachedZeroSuggestionsManager.saveSearchEngineMetadata(mDefaultSearchEngineMetadata);
         }
 
-        retrieveFavicon(templateUrl);
+        retrieveFaviconFromBrandedResources(templateUrl);
     }
 
     /** Add observer to be notified whenever the Omnibox hint text changes. */
@@ -261,19 +262,21 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     }
 
     @VisibleForTesting
-    void retrieveFavicon(TemplateUrl templateUrl) {
+    void retrieveFaviconFromDefaultResources(TemplateUrl templateUrl) {
         if (!mTemplateUrlService.isDefaultSearchEngineGoogle()) {
             // Fall back to next source.
             recordEvent(Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
-            retrieveFaviconFromBuiltinResources(templateUrl);
+            retrieveFaviconFromOriginUrl(templateUrl);
             return;
         }
 
         setSearchEngineIcon(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
     }
 
-    private void retrieveFaviconFromBuiltinResources(TemplateUrl templateUrl) {
-        if (OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
+    private void retrieveFaviconFromBrandedResources(TemplateUrl templateUrl) {
+        // Branded resources are only available on Chrome branded builds.
+        if (BuildConfig.IS_CHROME_BRANDED
+                && OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
             @Nullable Bitmap bm = templateUrl.getBuiltInSearchEngineIcon();
             if (bm != null) {
                 onFaviconRetrieveCompleted(templateUrl.getFaviconURL(), bm);
@@ -281,7 +284,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
             }
         }
 
-        retrieveFaviconFromOriginUrl(templateUrl);
+        retrieveFaviconFromDefaultResources(templateUrl);
     }
 
     private void retrieveFaviconFromOriginUrl(TemplateUrl templateUrl) {
