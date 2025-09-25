@@ -321,6 +321,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/user_education",
+      "//components/tabs:test_support",
     ]
   }
 

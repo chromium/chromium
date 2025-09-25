@@ -12,7 +12,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
-#include "content/public/browser/visibility.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace autofill {
 
@@ -90,7 +90,12 @@ bool BubbleManagerImpl::PendingRequest::operator<(
   return time_added < other.time_added;
 }
 
-BubbleManagerImpl::BubbleManagerImpl() = default;
+BubbleManagerImpl::BubbleManagerImpl(tabs::TabInterface* tab) {
+  tab_subscriptions_.push_back(tab->RegisterWillDeactivate(base::BindRepeating(
+      &BubbleManagerImpl::TabWillEnterBackground, base::Unretained(this))));
+  tab_subscriptions_.push_back(tab->RegisterDidActivate(base::BindRepeating(
+      &BubbleManagerImpl::TabDidEnterForeground, base::Unretained(this))));
+}
 
 BubbleManagerImpl::~BubbleManagerImpl() = default;
 
@@ -273,17 +278,19 @@ bool BubbleManagerImpl::ShouldReplaceExistingBubble(
          GetPriorityForBubbleType(active_bubble_type);
 }
 
-void BubbleManagerImpl::OnVisibilityChanged(content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN) {
-    if (active_bubble_controller_ &&
-        active_bubble_controller_->IsShowingBubble()) {
-      AddToPendingQueue(active_bubble_controller_);
-      active_bubble_controller_->HideBubble(/*show_next_bubble=*/false);
-      active_bubble_controller_ = nullptr;
-    }
-  } else if (visibility == content::Visibility::VISIBLE) {
-    ProcessPendingBubbles();
+void BubbleManagerImpl::TabWillEnterBackground(
+    tabs::TabInterface* tab_interface) {
+  if (active_bubble_controller_ &&
+      active_bubble_controller_->IsShowingBubble()) {
+    AddToPendingQueue(active_bubble_controller_);
+    active_bubble_controller_->HideBubble(/*show_next_bubble=*/false);
+    active_bubble_controller_ = nullptr;
   }
+}
+
+void BubbleManagerImpl::TabDidEnterForeground(
+    tabs::TabInterface* tab_interface) {
+  ProcessPendingBubbles();
 }
 
 }  // namespace autofill

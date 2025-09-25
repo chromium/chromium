@@ -329,7 +329,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
-    autofill_bubble_manager_ = autofill::BubbleManager::Create();
+    autofill_bubble_manager_ = autofill::BubbleManager::Create(&tab);
   }
 
   customize_chrome_side_panel_controller_ =

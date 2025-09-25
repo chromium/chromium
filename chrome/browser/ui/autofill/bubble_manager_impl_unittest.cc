@@ -9,8 +9,13 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
+#include "chrome/browser/ui/autofill/bubble_manager.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,6 +24,55 @@ namespace autofill {
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Return;
+
+class FakeTabInterface : public tabs::MockTabInterface {
+ public:
+  ~FakeTabInterface() override = default;
+  explicit FakeTabInterface(TestingProfile* testing_profile);
+  base::CallbackListSubscription RegisterDidActivate(
+      base::RepeatingCallback<void(TabInterface*)> cb) override;
+  base::CallbackListSubscription RegisterWillDeactivate(
+      base::RepeatingCallback<void(TabInterface*)> cb) override;
+  content::WebContents* GetContents() const override { return web_contents_; }
+  void Activate();
+  void Deactivate();
+
+ private:
+  // Only created if a non-null profile is provided.
+  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
+  // Owned by `web_contents_factory_`.
+  raw_ptr<content::WebContents> web_contents_;
+  bool is_activated_ = false;
+  base::RepeatingCallbackList<void(TabInterface*)> activation_callbacks_;
+  base::RepeatingCallbackList<void(TabInterface*)> deactivation_callbacks_;
+};
+
+FakeTabInterface::FakeTabInterface(TestingProfile* testing_profile) {
+  if (testing_profile) {
+    web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
+    web_contents_ = web_contents_factory_->CreateWebContents(testing_profile);
+  }
+}
+
+base::CallbackListSubscription FakeTabInterface::RegisterDidActivate(
+    base::RepeatingCallback<void(TabInterface*)> cb) {
+  return activation_callbacks_.Add(cb);
+}
+
+base::CallbackListSubscription FakeTabInterface::RegisterWillDeactivate(
+    base::RepeatingCallback<void(TabInterface*)> cb) {
+  return deactivation_callbacks_.Add(cb);
+}
+
+void FakeTabInterface::Activate() {
+  is_activated_ = true;
+  activation_callbacks_.Notify(this);
+}
+
+void FakeTabInterface::Deactivate() {
+  is_activated_ = false;
+  deactivation_callbacks_.Notify(this);
+}
 
 // A mock implementation of BubbleControllerBase to use in tests.
 class MockBubbleController : public BubbleControllerBase {
@@ -69,9 +123,32 @@ class BubbleManagerImplTest : public ::testing::Test {
   }
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  BubbleManagerImpl bubble_manager_;
+  void SetUp() override {
+    Test::SetUp();
+
+    tab_interface_ = std::make_unique<FakeTabInterface>(&profile_);
+    tab_interface_->Activate();
+
+    bubble_manager_ = std::make_unique<BubbleManagerImpl>(tab_interface_.get());
+  }
+
+  void FastForwardBy(base::TimeDelta time) {
+    task_environment_.FastForwardBy(time);
+  }
+
+  BubbleManagerImpl& bubble_manager() const { return *bubble_manager_; }
+
+  FakeTabInterface* tab_interface() const { return tab_interface_.get(); }
+
+  TestingProfile* profile() { return &profile_; }
+
   base::HistogramTester histogram_tester_;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
+  std::unique_ptr<FakeTabInterface> tab_interface_;
+  std::unique_ptr<BubbleManagerImpl> bubble_manager_;
 };
 
 // Test that requesting a bubble when none is active shows it immediately.
@@ -80,8 +157,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_NoActiveBubble_ShowsImmediately) {
       CreateController(BubbleType::kSaveUpdateAddress);
 
   EXPECT_CALL(*address_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
   EXPECT_TRUE(address_controller->IsShowingBubble());
 
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.RequestShow",
@@ -98,8 +175,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
       CreateController(BubbleType::kSaveUpdateCard);
 
   EXPECT_CALL(*address_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(address_controller->IsShowingBubble());
 
   {
@@ -108,7 +185,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
     EXPECT_CALL(*card_controller, ShowBubble());
   }
 
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
   EXPECT_FALSE(address_controller->IsShowingBubble());
   EXPECT_TRUE(card_controller->IsShowingBubble());
 
@@ -131,10 +209,11 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
 
   // Show card bubble, then queue address bubble.
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(card_controller->IsShowingBubble());
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
   ASSERT_FALSE(address_controller->IsShowingBubble());
 
   // When the active (card) bubble is hidden, the address bubble should be shown
@@ -142,8 +221,8 @@ TEST_F(BubbleManagerImplTest, HideActiveBubble_WithPendingRequest_ShowsNext) {
   EXPECT_CALL(*address_controller, ShowBubble());
 
   // Hide the card bubble.
-  bubble_manager_.OnBubbleHiddenByController(*card_controller,
-                                             /*show_next_bubble=*/true);
+  bubble_manager().OnBubbleHiddenByController(*card_controller,
+                                              /*show_next_bubble=*/true);
 
   // The state of the card controller should now be false.
   card_controller->HideBubble(/*show_next_bubble=*/false);
@@ -165,10 +244,11 @@ TEST_F(BubbleManagerImplTest,
 
   // Show card bubble and then queue address bubble.
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(card_controller->IsShowingBubble());
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
   ASSERT_FALSE(address_controller->IsShowingBubble());
 
   // Request a high-priority password bubble. This will preempt the active
@@ -181,8 +261,8 @@ TEST_F(BubbleManagerImplTest,
 
   // Ensure that the queued address bubble is never shown during this process.
   EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
-  bubble_manager_.RequestShowController(*password_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
 
   // The password bubble is now active, and the other two are not.
   EXPECT_TRUE(password_controller->IsShowingBubble());
@@ -199,13 +279,14 @@ TEST_F(BubbleManagerImplTest, RequestShow_LowerPriority_QueuesRequest) {
       CreateController(BubbleType::kSaveUpdateCard);
 
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(card_controller->IsShowingBubble());
 
   EXPECT_CALL(*address_controller, ShowBubble()).Times(0);
   EXPECT_CALL(*card_controller, HideBubble(/*show_next_bubble=*/true)).Times(0);
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
 
   EXPECT_TRUE(card_controller->IsShowingBubble());
   EXPECT_FALSE(address_controller->IsShowingBubble());
@@ -221,8 +302,8 @@ TEST_F(BubbleManagerImplTest,
 
   // Show first password bubble and then replace it.
   EXPECT_CALL(*password_controller_1, ShowBubble());
-  bubble_manager_.RequestShowController(*password_controller_1,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller_1,
+                                         /*force_show=*/false);
   ASSERT_TRUE(password_controller_1->IsShowingBubble());
 
   {
@@ -231,8 +312,8 @@ TEST_F(BubbleManagerImplTest,
     EXPECT_CALL(*password_controller_2, ShowBubble());
   }
 
-  bubble_manager_.RequestShowController(*password_controller_2,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller_2,
+                                         /*force_show=*/false);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
   EXPECT_TRUE(password_controller_2->IsShowingBubble());
 }
@@ -250,22 +331,22 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_IgnoredBeforeTimeout) {
 
   // Show password bubbles and couple of address bubbles back-to-back.
   EXPECT_CALL(*password_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*password_controller,
-                                        /*force_show=*/false);
-  bubble_manager_.RequestShowController(*address_controller_1,
-                                        /*force_show=*/false);
-  bubble_manager_.RequestShowController(*address_controller_2,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller_1,
+                                         /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller_2,
+                                         /*force_show=*/false);
 
-  bubble_manager_.OnBubbleHiddenByController(*password_controller,
-                                             /*show_next_bubble=*/true);
+  bubble_manager().OnBubbleHiddenByController(*password_controller,
+                                              /*show_next_bubble=*/true);
 
   EXPECT_TRUE(address_controller_1->IsShowingBubble());
   EXPECT_FALSE(address_controller_2->IsShowingBubble());
 
   // Ensure `address_controller_2` is never shown.
-  bubble_manager_.OnBubbleHiddenByController(*address_controller_1,
-                                             /*show_next_bubble=*/true);
+  bubble_manager().OnBubbleHiddenByController(*address_controller_1,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(address_controller_2->IsShowingBubble());
 }
 
@@ -282,24 +363,24 @@ TEST_F(BubbleManagerImplTest, AddToQueue_DuplicateType_ReplacedAfterTimeout) {
   // Show password bubbles and address bubbles. Then add another address bubble
   // after 3601 seconds.
   EXPECT_CALL(*password_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*password_controller,
-                                        /*force_show=*/false);
-  bubble_manager_.RequestShowController(*address_controller_1,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller_1,
+                                         /*force_show=*/false);
 
-  task_environment_.FastForwardBy(base::Seconds(3601));
-  bubble_manager_.RequestShowController(*address_controller_2,
-                                        /*force_show=*/false);
+  FastForwardBy(base::Seconds(3601));
+  bubble_manager().RequestShowController(*address_controller_2,
+                                         /*force_show=*/false);
 
-  bubble_manager_.OnBubbleHiddenByController(*password_controller,
-                                             /*show_next_bubble=*/true);
+  bubble_manager().OnBubbleHiddenByController(*password_controller,
+                                              /*show_next_bubble=*/true);
 
   EXPECT_FALSE(address_controller_1->IsShowingBubble());
   EXPECT_TRUE(address_controller_2->IsShowingBubble());
 
   // Ensure `address_controller_1` is never shown.
-  bubble_manager_.OnBubbleHiddenByController(*address_controller_2,
-                                             /*show_next_bubble=*/true);
+  bubble_manager().OnBubbleHiddenByController(*address_controller_2,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(address_controller_1->IsShowingBubble());
 }
 
@@ -317,21 +398,21 @@ TEST_F(BubbleManagerImplTest,
   // Filled card controller is shown and then password controllers are added to
   // the queue.
   EXPECT_CALL(*filled_card_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*filled_card_controller,
-                                        /*force_show=*/false);
-  bubble_manager_.RequestShowController(*password_controller_1,
-                                        /*force_show=*/false);
-  bubble_manager_.RequestShowController(*password_controller_2,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*filled_card_controller,
+                                         /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller_1,
+                                         /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller_2,
+                                         /*force_show=*/false);
 
-  bubble_manager_.OnBubbleHiddenByController(*filled_card_controller,
-                                             /*show_next_bubble=*/true);
+  bubble_manager().OnBubbleHiddenByController(*filled_card_controller,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
   EXPECT_TRUE(password_controller_2->IsShowingBubble());
 
   // Ensure `password_controller_1` is never shown.
-  bubble_manager_.OnBubbleHiddenByController(*password_controller_2,
-                                             /*show_next_bubble=*/true);
+  bubble_manager().OnBubbleHiddenByController(*password_controller_2,
+                                              /*show_next_bubble=*/true);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
 }
 
@@ -345,8 +426,8 @@ TEST_F(BubbleManagerImplTest,
       CreateController(BubbleType::kSaveUpdateCard);
 
   EXPECT_CALL(*address_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(address_controller->IsShowingBubble());
 
   // Simulate mouse hover.
@@ -356,7 +437,8 @@ TEST_F(BubbleManagerImplTest,
   EXPECT_CALL(*card_controller, ShowBubble()).Times(0);
   EXPECT_CALL(*address_controller, HideBubble(/*show_next_bubble=*/true))
       .Times(0);
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
 
   EXPECT_TRUE(address_controller->IsShowingBubble());
   EXPECT_FALSE(card_controller->IsShowingBubble());
@@ -366,7 +448,7 @@ TEST_F(BubbleManagerImplTest,
 TEST_F(BubbleManagerImplTest, HasPendingBubble_NoBubble_ReturnsFalse) {
   std::unique_ptr<MockBubbleController> address_controller =
       CreateController(BubbleType::kSaveUpdateAddress);
-  EXPECT_FALSE(bubble_manager_.HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
       address_controller->GetBubbleType()));
 }
 
@@ -382,18 +464,18 @@ TEST_F(BubbleManagerImplTest, HasPendingBubble_BubblePending_ReturnsTrue) {
 
   // Show a high-priority bubble to ensure the next one is queued.
   EXPECT_CALL(*password_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*password_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
 
   // Queue the address bubble.
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
 
   // Check that the address bubble is correctly reported as pending.
-  EXPECT_TRUE(bubble_manager_.HasPendingBubbleOfSameType(
+  EXPECT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
       address_controller->GetBubbleType()));
   // Check that a bubble type not in the queue returns false.
-  EXPECT_FALSE(bubble_manager_.HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
       card_controller->GetBubbleType()));
 }
 
@@ -407,20 +489,20 @@ TEST_F(BubbleManagerImplTest,
 
   // Show a high-priority bubble.
   EXPECT_CALL(*password_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*password_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*password_controller,
+                                         /*force_show=*/false);
 
   // Queue the address bubble and confirm it's pending.
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
-  ASSERT_TRUE(bubble_manager_.HasPendingBubbleOfSameType(
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
+  ASSERT_TRUE(bubble_manager().HasPendingBubbleOfSameType(
       address_controller->GetBubbleType()));
 
   // Fast forward time past the timeout.
-  task_environment_.FastForwardBy(base::Seconds(3601));
+  FastForwardBy(base::Seconds(3601));
 
   // Now, checking for the bubble should return false because it has timed out.
-  EXPECT_FALSE(bubble_manager_.HasPendingBubbleOfSameType(
+  EXPECT_FALSE(bubble_manager().HasPendingBubbleOfSameType(
       address_controller->GetBubbleType()));
 }
 
@@ -433,7 +515,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_ForceShow_PreemptsActiveBubble) {
 
   // Show the high-priority bubble first.
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(card_controller->IsShowingBubble());
 
   // Expect the active bubble to be hidden and the new one shown.
@@ -444,8 +527,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_ForceShow_PreemptsActiveBubble) {
   }
 
   // Force show the lower-priority bubble. It should preempt the active one.
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/true);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/true);
   EXPECT_FALSE(card_controller->IsShowingBubble());
   EXPECT_TRUE(address_controller->IsShowingBubble());
 }
@@ -458,21 +541,22 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_HidesAndQueuesBubble) {
 
   // Show a bubble, making it active.
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(card_controller->IsShowingBubble());
 
   // Expect the bubble to be hidden when visibility changes.
   EXPECT_CALL(*card_controller, HideBubble(/*show_next_bubble=*/false));
 
   // Simulate the tab becoming hidden.
-  bubble_manager_.OnVisibilityChanged(content::Visibility::HIDDEN);
+  tab_interface()->Deactivate();
 
   // The bubble should no longer be considered "showing".
   EXPECT_FALSE(card_controller->IsShowingBubble());
 
   // To verify it was queued, we can simulate the tab becoming visible again.
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.OnVisibilityChanged(content::Visibility::VISIBLE);
+  tab_interface()->Activate();
   EXPECT_TRUE(card_controller->IsShowingBubble());
 }
 
@@ -486,22 +570,23 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Visible_ShowsPendingBubble) {
 
   // Show a high-priority bubble, then queue a lower-priority one.
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.RequestShowController(*card_controller, /*force_show=*/false);
-  bubble_manager_.RequestShowController(*address_controller,
-                                        /*force_show=*/false);
+  bubble_manager().RequestShowController(*card_controller,
+                                         /*force_show=*/false);
+  bubble_manager().RequestShowController(*address_controller,
+                                         /*force_show=*/false);
   ASSERT_TRUE(card_controller->IsShowingBubble());
   ASSERT_FALSE(address_controller->IsShowingBubble());
 
   // Hide the active bubble and simulate the tab becoming hidden.
   // This leaves the address bubble in the queue.
   EXPECT_CALL(*card_controller, HideBubble(/*show_next_bubble=*/false));
-  bubble_manager_.OnVisibilityChanged(content::Visibility::HIDDEN);
+  tab_interface()->Deactivate();
   ASSERT_FALSE(card_controller->IsShowingBubble());
 
   // When the tab becomes visible again, the card bubble should show again as
   // it has higher priority.
   EXPECT_CALL(*card_controller, ShowBubble());
-  bubble_manager_.OnVisibilityChanged(content::Visibility::VISIBLE);
+  tab_interface()->Activate();
 
   EXPECT_TRUE(card_controller->IsShowingBubble());
 }
@@ -517,7 +602,7 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_NoActiveBubble) {
 
   // Simulate the tab becoming hidden. The test will fail if any unexpected
   // methods are called.
-  bubble_manager_.OnVisibilityChanged(content::Visibility::HIDDEN);
+  tab_interface()->Deactivate();
 }
 
 }  // namespace autofill

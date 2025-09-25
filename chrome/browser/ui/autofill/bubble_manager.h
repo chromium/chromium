@@ -14,6 +14,10 @@ namespace content {
 class WebContents;
 }
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace autofill {
 // BubbleManager is responsible for coordinating showing and hiding bubble
 // dialogs for Autofill and Password Manager.
@@ -72,7 +76,7 @@ class BubbleManager {
  public:
   virtual ~BubbleManager() = default;
 
-  static std::unique_ptr<BubbleManager> Create();
+  static std::unique_ptr<BubbleManager> Create(tabs::TabInterface* tab);
   static BubbleManager* GetForWebContents(content::WebContents* web_contents);
 
   // Called by the bubbles once they are ready to be shown.

@@ -15,8 +15,8 @@
 namespace autofill {
 
 // static
-std::unique_ptr<BubbleManager> BubbleManager::Create() {
-  return base::WrapUnique<BubbleManager>(new BubbleManagerImpl());
+std::unique_ptr<BubbleManager> BubbleManager::Create(tabs::TabInterface* tab) {
+  return base::WrapUnique<BubbleManager>(new BubbleManagerImpl(tab));
 }
 
 // static

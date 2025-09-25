@@ -8,18 +8,24 @@
 #include <memory>
 #include <set>
 
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
-#include "content/public/browser/visibility.h"
-#include "content/public/browser/web_contents_observer.h"
+
+namespace base {
+class CallbackListSubscription;
+}  // namespace base
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace autofill {
 
-class BubbleManagerImpl : public BubbleManager,
-                          public content::WebContentsObserver {
+class BubbleManagerImpl : public BubbleManager {
  public:
-  BubbleManagerImpl();
+  explicit BubbleManagerImpl(tabs::TabInterface* tab);
   ~BubbleManagerImpl() override;
 
   BubbleManagerImpl(const BubbleManagerImpl&) = delete;
@@ -31,9 +37,6 @@ class BubbleManagerImpl : public BubbleManager,
   void OnBubbleHiddenByController(BubbleControllerBase& controller_to_hide,
                                   bool show_next_bubble) override;
   bool HasPendingBubbleOfSameType(const BubbleType bubble_type) const override;
-
-  // content::WebContentsObserver:
-  void OnVisibilityChanged(content::Visibility visibility) override;
 
  private:
   struct PendingRequest {
@@ -76,6 +79,10 @@ class BubbleManagerImpl : public BubbleManager,
   // 2. Any bubble with a higher priority replaces the active one.
   bool ShouldReplaceExistingBubble(const BubbleType new_bubble_type) const;
 
+  // tabs::TabInterface related overrides:
+  void TabWillEnterBackground(tabs::TabInterface* tab_interface);
+  void TabDidEnterForeground(tabs::TabInterface* tab_interface);
+
   // Currently active controller that is shown.
   base::WeakPtr<BubbleControllerBase> active_bubble_controller_ = nullptr;
 
@@ -86,6 +93,8 @@ class BubbleManagerImpl : public BubbleManager,
   // A boolean indicating that the manager is in the process of showing a
   // bubble. This could mean another bubble is in the process of preemption.
   bool handling_show_request_ = false;
+
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 };
 
 }  // namespace autofill
