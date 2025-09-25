@@ -348,16 +348,9 @@ void OpenLoginTab(Browser* browser,
 }
 
 // static
-void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
-    content::WebContents* web_contents,
-    bool focus) {
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-
-  // If the Profile doesn't have a tabbed browser window open, do nothing.
-  if (!browser) {
-    return;
-  }
-
+void ChromeSecurityBlockingPageFactory::OpenLoginPageForBrowser(
+    base::FunctionRef<Browser*()> get_browser,
+    bool focus_tab) {
   SecureDnsConfig secure_dns_config =
       SystemNetworkContextManager::GetStubResolverConfigReader()
           ->GetSecureDnsConfiguration(
@@ -379,8 +372,15 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
         return;
       }
     }
+  }
 
-    // Otherwise, create a captive portal popup window.
+  Browser* browser = get_browser();
+  // If the Profile doesn't have a tabbed browser window open, do nothing.
+  if (!browser) {
+    return;
+  }
+  // Create a captive portal popup window.
+  if (secure_dns_config.mode() == net::SecureDnsMode::kSecure) {
     OpenLoginTab(browser, captive_portal::CaptivePortalWindowType::kPopup);
     return;
   }
@@ -395,7 +395,7 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
     captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
         captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
     if (captive_portal_tab_helper->IsLoginTab()) {
-      if (focus) {
+      if (focus_tab) {
         browser->tab_strip_model()->ActivateTabAt(i);
       }
       return;
@@ -404,6 +404,39 @@ void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
 
   // Otherwise, open a login tab.
   OpenLoginTab(browser, captive_portal::CaptivePortalWindowType::kTab);
+}
+
+// static
+void ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents(
+    content::WebContents* web_contents,
+    bool focus_tab) {
+  OpenLoginPageForBrowser(
+      [&web_contents]() { return chrome::FindBrowserWithTab(web_contents); },
+      focus_tab);
+}
+
+// static
+void ChromeSecurityBlockingPageFactory::
+    OpenLoginPageInAnyTabbedBrowserOrCreateOne(Profile* profile,
+                                               bool focus_tab) {
+  auto lambda = [&profile]() -> Browser* {
+    Browser* browser = chrome::FindTabbedBrowser(profile, false);
+    // Create browser if not exists.
+    if (!browser && Browser::GetCreationStatusForProfile(profile) ==
+                        Browser::CreationStatus::kOk) {
+      Browser::CreateParams params(profile, /*user_gesture=*/true);
+      browser = Browser::Create(params);
+    }
+
+    if (browser && browser->window()) {
+      browser->window()->Activate();
+      return browser;
+    } else {
+      return nullptr;
+    }
+  };
+
+  OpenLoginPageForBrowser(lambda, focus_tab);
 }
 
 #endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
