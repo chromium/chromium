@@ -196,6 +196,14 @@ class MutableProfileOAuth2TokenServiceDelegate
       ClearBoundTokenOnStartup);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            KeepPrimaryAccountTokenOnStartupWithClearOnExit);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           UpdateCredentialsClearsUnreadableTokens);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      UpdateCredentialsWithNoErrorDoesNotClearUnreadableTokens);
+  FRIEND_TEST_ALL_PREFIXES(
+      MutableProfileOAuth2TokenServiceDelegateTest,
+      UpdateCredentialsBeforeLoadCompletesDoesNotClearUnreadableTokens);
 
   // WebDataServiceConsumer implementation:
   void OnWebDataServiceRequestDone(
@@ -241,6 +249,10 @@ class MutableProfileOAuth2TokenServiceDelegate
                           const std::string& refresh_token,
                           const std::vector<uint8_t>& wrapped_binding_key);
 
+  // Clears credentials that have failed to load into memory but are still
+  // persisted in the DB.
+  void ClearUnreadableCredentials();
+
   // Clears credentials persisted for |account_id|. Enables overriding for
   // testing purposes, or other cases, when accessing the DB is not desired.
   void ClearPersistedCredentials(const CoreAccountId& account_id);
@@ -273,6 +285,9 @@ class MutableProfileOAuth2TokenServiceDelegate
 
   // Handle to the request reading tokens from database.
   WebDataServiceBase::Handle web_data_service_request_;
+
+  // Flag limiting `ClearUnreadableCredentials()` to take action at most once.
+  bool has_cleared_unreadable_credentials_ = false;
 
   // The primary account id of this service's profile during the loading of
   // credentials.  This member is empty otherwise.

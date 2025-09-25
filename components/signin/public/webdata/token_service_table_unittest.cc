@@ -5,7 +5,9 @@
 #include "components/signin/public/webdata/token_service_table.h"
 
 #include <memory>
+#include <string>
 
+#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -18,9 +20,15 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::Time;
+using ::base::Time;
+using ::testing::IsEmpty;
+using ::testing::Key;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
+using ::testing::UnorderedElementsAreArray;
 using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
 
 class TokenServiceTableTest : public testing::Test {
@@ -131,6 +139,84 @@ TEST_F(TokenServiceTableTest, TokenServiceRemove) {
   EXPECT_EQ(0u, out_map.count(service));
   EXPECT_EQ(TokenWithBindingKey("steak"), out_map.find(service2)->second);
 }
+
+TEST_F(TokenServiceTableTest, TokenServiceRemoveOther) {
+  EXPECT_TRUE(table_->SetTokenForService("a", "1", {}));
+  EXPECT_TRUE(table_->SetTokenForService("b", "2", {}));
+  EXPECT_TRUE(table_->SetTokenForService("c", "3", {}));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(table_->RemoveOtherTokens({"a", "c", "zzz"}));
+
+  std::map<std::string, TokenWithBindingKey> out_map;
+  bool should_reencrypt = false;
+  EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
+            table_->GetAllTokens(&out_map, should_reencrypt));
+  EXPECT_THAT(out_map, UnorderedElementsAre(
+                           std::make_pair("a", TokenWithBindingKey("1")),
+                           std::make_pair("c", TokenWithBindingKey("3"))));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.TokenTable.RemoveOtherTokensCount",
+      /*sample=*/1, /*expected_bucket_count=*/1);
+}
+
+TEST_F(TokenServiceTableTest, TokenServiceRemoveOtherKeepNone) {
+  EXPECT_TRUE(table_->SetTokenForService("a", "1", {}));
+  EXPECT_TRUE(table_->SetTokenForService("b", "2", {}));
+  EXPECT_TRUE(table_->SetTokenForService("c", "3", {}));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(table_->RemoveOtherTokens({}));
+
+  std::map<std::string, TokenWithBindingKey> out_map;
+  bool should_reencrypt = false;
+  EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
+            table_->GetAllTokens(&out_map, should_reencrypt));
+  EXPECT_THAT(out_map, IsEmpty());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.TokenTable.RemoveOtherTokensCount",
+      /*sample=*/3, /*expected_bucket_count=*/1);
+}
+
+class TokenServiceTableRemoveOtherStressTest
+    : public TokenServiceTableTest,
+      public testing::WithParamInterface<size_t> {};
+
+// Tests variable `services_to_keep` vector sizes in `RemoveOtherTokens()`.
+TEST_P(TokenServiceTableRemoveOtherStressTest, TokenServiceRemoveOtherStress) {
+  const size_t test_size = GetParam();
+
+  std::vector<std::string> services_to_keep;
+  for (size_t i = 0; i < test_size; ++i) {
+    services_to_keep.push_back("keep_" + base::NumberToString(i));
+    EXPECT_TRUE(
+        table_->SetTokenForService(services_to_keep[i], "keep_token", {}));
+    EXPECT_TRUE(table_->SetTokenForService("remove_" + base::NumberToString(i),
+                                           "remove_token", {}));
+  }
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(table_->RemoveOtherTokens(services_to_keep));
+
+  std::map<std::string, TokenWithBindingKey> out_map;
+  bool should_reencrypt = false;
+  EXPECT_EQ(TokenServiceTable::Result::TOKEN_DB_RESULT_SUCCESS,
+            table_->GetAllTokens(&out_map, should_reencrypt));
+
+  std::vector<std::pair<std::string, TokenWithBindingKey>> expected_pairs =
+      base::ToVector(services_to_keep, [](const std::string& service) {
+        return std::make_pair(service, TokenWithBindingKey("keep_token"));
+      });
+  EXPECT_THAT(out_map, UnorderedElementsAreArray(expected_pairs));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.TokenTable.RemoveOtherTokensCount",
+      /*sample=*/test_size,
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TokenServiceTableRemoveOtherStressTest,
+                         testing::Values(0u, 1u, 10u, 42u, 100u));
 
 TEST_F(TokenServiceTableTest, GetSetWithBidningKey) {
   bool should_reencrypt = false;

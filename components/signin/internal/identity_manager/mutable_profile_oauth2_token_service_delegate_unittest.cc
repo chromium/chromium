@@ -42,6 +42,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/load_credentials_state.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -65,9 +66,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
-
 namespace {
+
+using TokenWithBindingKey = TokenServiceTable::TokenWithBindingKey;
+using ::testing::ElementsAre;
+using ::testing::Key;
+using ::testing::SizeIs;
+
 constexpr char kTestTokenDatabase[] = "TestTokenDatabase";
 constexpr char kNoBindingChallenge[] = "";
 
@@ -265,10 +270,13 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   void OnWebDataServiceRequestDone(
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result) override {
-    DCHECK(!token_web_data_result_);
-    DCHECK_EQ(TOKEN_RESULT, result->GetType());
-    token_web_data_result_.reset(
-        static_cast<WDResult<TokenResult>*>(result.release()));
+    CHECK(!token_web_data_result_.IsReady())
+        << "Call `token_web_data_result_.Clear()` before scheduling a new "
+           "request";
+    CHECK(result);
+    CHECK_EQ(TOKEN_RESULT, result->GetType());
+    token_web_data_result_.SetValue(base::WrapUnique(
+        static_cast<WDResult<TokenResult>*>(result.release())));
   }
 
   // OAuth2AccessTokenConusmer implementation
@@ -380,7 +388,8 @@ class MutableProfileOAuth2TokenServiceDelegateTest
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_;
   scoped_refptr<TokenWebData> token_web_data_;
-  std::unique_ptr<WDResult<TokenResult>> token_web_data_result_;
+  base::test::TestFuture<std::unique_ptr<WDResult<TokenResult>>>
+      token_web_data_result_;
   int access_token_success_count_;
   int access_token_failure_count_;
   GoogleServiceAuthError access_token_failure_;
@@ -459,6 +468,104 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_EQ(0, tokens_loaded_count_);
   EXPECT_EQ(1, end_batch_changes_);
   ResetObserverCounts();
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       UpdateCredentialsClearsUnreadableTokens) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  oauth2_service_delegate_->LoadCredentials(
+      /*primary_account_id=*/CoreAccountId());
+  WaitForRefreshTokensLoaded();
+  oauth2_service_delegate_->set_load_credentials_state(
+      signin::LoadCredentialsState::
+          LOAD_CREDENTIALS_FINISHED_WITH_DECRYPT_ERRORS);
+
+  // Simulate unreadable tokens in the database by adding them after the
+  // delegate completed database load.
+  CoreAccountId account_a = CoreAccountId::FromGaiaId(GaiaId("a"));
+  CoreAccountId account_b = CoreAccountId::FromGaiaId(GaiaId("b"));
+  AddAuthTokenManually("AccountId-" + account_a.ToString(), "refresh_token");
+  AddAuthTokenManually("AccountId-" + account_b.ToString(), "refresh_token");
+
+  // Update credentials for account "a". This should trigger the cleanup of
+  // unreadable tokens.
+  oauth2_service_delegate_->UpdateCredentials(account_a, "new_token_a");
+  EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), SizeIs(1));
+
+  // Verify that token "b" has been removed from the database.
+  token_web_data_->GetAllTokens(this);
+  EXPECT_THAT(token_web_data_result_.Get()->GetValue().tokens,
+              ElementsAre(Key("AccountId-a")));
+
+  // Add a new account to the DB to verify that the cleanup happens only once
+  // per delegate lifetime.
+  CoreAccountId account_c = CoreAccountId::FromGaiaId(GaiaId("c"));
+  AddAuthTokenManually("AccountId-" + account_c.ToString(), "refresh_token");
+  oauth2_service_delegate_->UpdateCredentials(account_a, "newest_token_a");
+  token_web_data_result_.Clear();
+  token_web_data_->GetAllTokens(this);
+  EXPECT_THAT(token_web_data_result_.Get()->GetValue().tokens,
+              ElementsAre(Key("AccountId-a"), Key("AccountId-c")));
+}
+
+// This test is similar to `UpdateCredentialsCleansUnreadableTokens` but it
+// doesn't modify the `load_credentials_state()`, so that the cleaning doesn't
+// actually happens.
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       UpdateCredentialsWithNoErrorDoesNotClearUnreadableTokens) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+  oauth2_service_delegate_->LoadCredentials(
+      /*primary_account_id=*/CoreAccountId());
+  WaitForRefreshTokensLoaded();
+  EXPECT_EQ(
+      oauth2_service_delegate_->load_credentials_state(),
+      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
+
+  // Simulate unreadable tokens in the database by adding them after the
+  // delegate completed database load.
+  CoreAccountId account_a = CoreAccountId::FromGaiaId(GaiaId("a"));
+  CoreAccountId account_b = CoreAccountId::FromGaiaId(GaiaId("b"));
+  AddAuthTokenManually("AccountId-" + account_a.ToString(), "refresh_token");
+  AddAuthTokenManually("AccountId-" + account_b.ToString(), "refresh_token");
+
+  oauth2_service_delegate_->UpdateCredentials(account_a, "new_token_a");
+  EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), SizeIs(1));
+
+  // Verify that token "b" has not been removed from the database.
+  token_web_data_->GetAllTokens(this);
+  EXPECT_THAT(token_web_data_result_.Get()->GetValue().tokens,
+              ElementsAre(Key("AccountId-a"), Key("AccountId-b")));
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       UpdateCredentialsBeforeLoadCompletesDoesNotClearUnreadableTokens) {
+  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
+
+  // Populate the database with some tokens.
+  CoreAccountId account_a = CoreAccountId::FromGaiaId(GaiaId("a"));
+  CoreAccountId account_b = CoreAccountId::FromGaiaId(GaiaId("b"));
+  AddAuthTokenManually("AccountId-" + account_a.ToString(), "refresh_token");
+  AddAuthTokenManually("AccountId-" + account_b.ToString(), "refresh_token");
+
+  CoreAccountId account_c = CoreAccountId::FromGaiaId(GaiaId("c"));
+  // Add new credentials before the database load completes. This should not
+  // trigger the cleanup of unreadable tokens.
+  oauth2_service_delegate_->UpdateCredentials(account_c, "new_token_c");
+  EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), SizeIs(1));
+
+  oauth2_service_delegate_->LoadCredentials(
+      /*primary_account_id=*/CoreAccountId());
+  WaitForRefreshTokensLoaded();
+  oauth2_service_delegate_->set_load_credentials_state(
+      signin::LoadCredentialsState::
+          LOAD_CREDENTIALS_FINISHED_WITH_DECRYPT_ERRORS);
+
+  // Verify that all three tokens are available now.
+  EXPECT_THAT(oauth2_service_delegate_->GetAccounts(), SizeIs(3));
+
+  // Verify that a database contains all tokens.
+  token_web_data_->GetAllTokens(this);
+  EXPECT_THAT(token_web_data_result_.Get()->GetValue().tokens, SizeIs(3));
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -690,9 +797,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 
   // Handle to the request reading tokens from database.
   token_web_data_->GetAllTokens(this);
-  base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(token_web_data_result_.get());
-  ASSERT_EQ(0u, token_web_data_result_->GetValue().tokens.size());
+  ASSERT_EQ(token_web_data_result_.Get()->GetValue().tokens.size(), 0u);
 }
 
 // Tests that calling UpdateCredentials revokes the old token, without sending
@@ -2103,7 +2208,6 @@ INSTANTIATE_TEST_SUITE_P(
     MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest,
     testing::ValuesIn(kExtractCredentialsTestCases),
     [](const auto& info) { return info.param.test_suffix; });
-
 
 // Checks that, for a signed in non-syncing account in UNO with clear on exit,
 // set_revoke_all_tokens_on_first_load() keeps the tokens for the primary and

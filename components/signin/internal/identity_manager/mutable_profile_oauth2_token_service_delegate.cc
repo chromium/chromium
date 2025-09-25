@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +51,11 @@
 namespace {
 
 const char kAccountIdPrefix[] = "AccountId-";
+
+// Temporary kill-switch in case the unreadable tokens clearing logic needs to
+// be disabled.
+BASE_FEATURE(kClearUnreadableTokensUponAddingNewCredential,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enum for the Signin.LoadTokenFromDB histogram.
 // Do not modify, or add or delete other than directly before
@@ -660,6 +666,12 @@ void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
   if (GetRefreshToken(account_id) != refresh_token) {
     UpdateCredentialsInMemory(account_id, refresh_token, wrapped_binding_key);
     PersistCredentials(account_id, refresh_token, wrapped_binding_key);
+    if (base::FeatureList::IsEnabled(
+            kClearUnreadableTokensUponAddingNewCredential)) {
+      // If any tokens failed to read from the DB, discard them now to avoid
+      // mixing them with the new token in the next session.
+      ClearUnreadableCredentials();
+    }
     FireRefreshTokenAvailable(account_id);
   }
 }
@@ -736,6 +748,33 @@ void MutableProfileOAuth2TokenServiceDelegate::PersistCredentials(
         ApplyAccountIdPrefix(account_id.ToString()), refresh_token,
         wrapped_binding_key);
   }
+}
+
+void MutableProfileOAuth2TokenServiceDelegate::ClearUnreadableCredentials() {
+  if (!token_web_data_) {
+    return;
+  }
+
+  // No need to clear the DB if credentials hasn't finished loading yet or there
+  // were no credential loading errors.
+  using enum signin::LoadCredentialsState;
+  if (load_credentials_state() != LOAD_CREDENTIALS_FINISHED_WITH_DB_ERRORS &&
+      load_credentials_state() !=
+          LOAD_CREDENTIALS_FINISHED_WITH_DECRYPT_ERRORS) {
+    return;
+  }
+
+  // No need to clear credentials more than once.
+  if (has_cleared_unreadable_credentials_) {
+    return;
+  }
+  has_cleared_unreadable_credentials_ = true;
+
+  std::vector<std::string> accounts_to_keep;
+  for (const auto& [account_id, refresh_token] : refresh_tokens_) {
+    accounts_to_keep.push_back(ApplyAccountIdPrefix(account_id.ToString()));
+  }
+  token_web_data_->RemoveOtherTokens(accounts_to_keep);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::RevokeAllCredentialsInternal(

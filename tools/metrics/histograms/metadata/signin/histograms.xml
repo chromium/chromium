@@ -3718,6 +3718,18 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.TokenTable.RemoveOtherTokensCount" units="tokens"
+    expires_after="2026-03-22">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the number of tokens removed from the token database when cleaning
+    up unreadable credentials. This cleanup is triggered when updating
+    credentials for an account if some tokens failed to load from the database
+    earlier in the session (e.g. due to a transient decryption error).
+  </summary>
+</histogram>
+
 <histogram name="Signin.TokenTable.SetTokenResult"
     enum="SigninTokenTableWriteTokenToDBResult" expires_after="2026-03-22">
   <owner>wfh@chromium.org</owner>

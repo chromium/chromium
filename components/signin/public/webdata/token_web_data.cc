@@ -38,6 +38,16 @@ class TokenWebDataBackend
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
+  WebDatabase::State RemoveOtherTokens(
+      const std::vector<std::string>& services_to_keep,
+      WebDatabase* db) {
+    if (TokenServiceTable::FromWebDatabase(db)->RemoveOtherTokens(
+            services_to_keep)) {
+      return WebDatabase::COMMIT_NEEDED;
+    }
+    return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+
   WebDatabase::State SetTokenForService(
       const std::string& service,
       const std::string& token,
@@ -99,6 +109,13 @@ void TokenWebData::RemoveTokenForService(const std::string& service) {
   wdbs_->ScheduleDBTask(FROM_HERE,
                         BindOnce(&TokenWebDataBackend::RemoveTokenForService,
                                  token_backend_, service));
+}
+
+void TokenWebData::RemoveOtherTokens(
+    const std::vector<std::string>& services_to_keep) {
+  wdbs_->ScheduleDBTask(FROM_HERE,
+                        BindOnce(&TokenWebDataBackend::RemoveOtherTokens,
+                                 token_backend_, services_to_keep));
 }
 
 // Null on failure. Success is WDResult<std::string>

@@ -60,6 +60,10 @@ class TokenServiceTable : public WebDatabaseTable {
   // Removes a token related to the service from the token_service table.
   bool RemoveTokenForService(const std::string& service);
 
+  // Removes all tokens stored in the web database except for those whose
+  // service is present in `services_to_keep`.
+  bool RemoveOtherTokens(const std::vector<std::string>& services_to_keep);
+
   // Retrieves all tokens previously set with SetTokenForService.
   // Returns true if there were tokens and we decrypted them,
   // false if there was a failure somehow. If `should_reencrypt` is set to true,
