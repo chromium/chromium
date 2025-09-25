@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "ios/chrome/browser/google/model/google_logo_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_background_configuration_mediator.h"
@@ -209,15 +210,15 @@ CGFloat const kSheetCornerRadius = 30;
 // Presents the background customization picker based on the given type.
 - (void)presentPickerWithStyle:(HomeCustomizationBackgroundStyle)pickerStyle {
   switch (pickerStyle) {
-    case HomeCustomizationBackgroundStyle::kDefault:
-      // Do nothing.
-      break;
     case HomeCustomizationBackgroundStyle::kColor:
       _mainViewController = [self createColorPickerViewController];
       _backgroundConfigurationMediator.configurationConsumer =
           _mainViewController;
       _backgroundConfigurationMediator.consumer = _mainViewController;
       [_backgroundConfigurationMediator loadColorBackgroundConfigurations];
+      base::RecordAction(base::UserMetricsAction(
+          "IOS.HomeCustomization.Background.PickerActionSheet."
+          "Color.Tapped"));
       break;
     case HomeCustomizationBackgroundStyle::kPreset:
       _mainViewController = [self createPresetGalleryPickerViewController];
@@ -225,6 +226,9 @@ CGFloat const kSheetCornerRadius = 30;
           _mainViewController;
       _backgroundConfigurationMediator.consumer = _mainViewController;
       [_backgroundConfigurationMediator loadGalleryBackgroundConfigurations];
+      base::RecordAction(base::UserMetricsAction(
+          "IOS.HomeCustomization.Background.PickerActionSheet."
+          "Gallery.Tapped"));
       break;
     case HomeCustomizationBackgroundStyle::kUserUploaded:
       // Create and start the photo picker coordinator.
@@ -236,7 +240,12 @@ CGFloat const kSheetCornerRadius = 30;
       _photoPickerCoordinator.searchEngineLogoMediatorProvider =
           self.searchEngineLogoMediatorProvider;
       [_photoPickerCoordinator start];
+      base::RecordAction(base::UserMetricsAction(
+          "IOS.HomeCustomization.Background.PickerActionSheet."
+          "UserUploaded.Tapped"));
       return;
+    case HomeCustomizationBackgroundStyle::kDefault:
+      NOTREACHED();
   }
 
   _mainViewController.modalPresentationStyle = UIModalPresentationFormSheet;

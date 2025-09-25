@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -60,6 +61,8 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 // options.
 - (void)handleTap {
   [self.delegate showBackgroundPickerOptionsFromSourceView:self.contentView];
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.HomeCustomization.Background.PickerActionSheet.Tapped"));
 }
 
 @end

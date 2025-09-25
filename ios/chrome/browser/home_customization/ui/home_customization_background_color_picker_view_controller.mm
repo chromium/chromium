@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
@@ -144,6 +145,12 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
       _backgroundCollectionConfiguration.configurations[selectedID];
   _selectedColorId = backgroundConfiguration.configurationID;
   [self.mutator applyBackgroundForConfiguration:backgroundConfiguration];
+
+  if (backgroundConfiguration.backgroundStyle ==
+      HomeCustomizationBackgroundStyle::kDefault) {
+    base::RecordAction(base::UserMetricsAction(
+        "IOS.HomeCustomization.Background.ResetDefault.Tapped"));
+  }
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView

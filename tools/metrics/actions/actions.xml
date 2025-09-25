@@ -15725,6 +15725,62 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.HomeCustomization.Background.PickerActionSheet.Color.Tapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    User tapped the color option in the background picker action sheet on the
+    customization main menu on iOS.
+  </description>
+</action>
+
+<action
+    name="IOS.HomeCustomization.Background.PickerActionSheet.Gallery.Tapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    User tapped the gallery option in the background picker action sheet on the
+    customization main menu on iOS.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.Background.PickerActionSheet.Tapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    User tapped the entry point to open the background picker action sheet on
+    the customization main menu on iOS.
+  </description>
+</action>
+
+<action
+    name="IOS.HomeCustomization.Background.PickerActionSheet.UserUploaded.Tapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    User tapped the user uploaded image option in the background picker action
+    sheet on the customization main menu on iOS.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.Background.RecentlyUsed.Tapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    User tapped on any recently used background image on the customization main
+    menu on iOS.
+  </description>
+</action>
+
+<action name="IOS.HomeCustomization.Background.ResetDefault.Tapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <description>
+    User tapped the option to reset the background to the default on the
+    customization main menu on iOS.
+  </description>
+</action>
+
 <action name="IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled">
   <obsolete>
     Unused as of 08/2025, as ParcelTracking code has been turned down and

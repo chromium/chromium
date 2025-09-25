@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
@@ -341,6 +342,16 @@
 
   [self.customizationMutator
       applyBackgroundForConfiguration:backgroundConfiguration];
+
+  if (backgroundConfiguration.backgroundStyle ==
+      HomeCustomizationBackgroundStyle::kDefault) {
+    base::RecordAction(base::UserMetricsAction(
+        "IOS.HomeCustomization.Background.ResetDefault.Tapped"));
+    return;
+  }
+
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.HomeCustomization.Background.RecentlyUsed.Tapped"));
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
