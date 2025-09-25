@@ -1,4 +1,5 @@
 html{
 	height:100%;
 	background:url('test-scalable-background-image2.svg') no-repeat fixed center center;
+	background-size: 100% 100%;
 }

@@ -4891,6 +4891,10 @@
       status: "stable",
     },
     {
+      name: "SvgSizingWithPreserveAspectRatioNone",
+      status: "experimental",
+    },
+    {
       name: "SvgSmilPruneInstanceTimes",
       status: "stable",
     },
