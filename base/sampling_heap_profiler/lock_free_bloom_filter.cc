@@ -8,8 +8,8 @@
 #include <stdint.h>
 
 #include <atomic>
+#include <bitset>
 
-#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/hash/hash.h"
 
@@ -60,6 +60,11 @@ LockFreeBloomFilter::BitStorage LockFreeBloomFilter::GetBitsForTesting() const {
 
 void LockFreeBloomFilter::SetBitsForTesting(const BitStorage& bits) {
   bits_.store(bits, std::memory_order_relaxed);
+}
+
+size_t LockFreeBloomFilter::CountBits() const {
+  // Relaxed ordering is enough since this is only for statistics.
+  return std::bitset<kMaxBits>(bits_.load(std::memory_order_relaxed)).count();
 }
 
 }  // namespace base

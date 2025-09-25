@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <bitset>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -101,17 +100,12 @@ class WriterThread : public SimpleThread {
   base::RepeatingClosure on_started_closure_;
 };
 
-size_t CountBits(const LockFreeBloomFilter& filter) {
-  return std::bitset<LockFreeBloomFilter::kMaxBits>(filter.GetBitsForTesting())
-      .count();
-}
-
 }  // namespace
 
 TEST(LockFreeBloomFilterTest, SingleHash) {
   LockFreeBloomFilter filter(/*num_hash_functions=*/1);
   filter.SetFakeHashFunctionsForTesting(true);
-  EXPECT_EQ(0, CountBits(filter));
+  EXPECT_EQ(0, filter.CountBits());
 
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
@@ -120,7 +114,7 @@ TEST(LockFreeBloomFilterTest, SingleHash) {
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kEcho)));
 
   filter.Add(reinterpret_cast<void*>(kAlfa));
-  EXPECT_EQ(1, CountBits(filter));
+  EXPECT_EQ(1, filter.CountBits());
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kCharlie)));
@@ -130,7 +124,7 @@ TEST(LockFreeBloomFilterTest, SingleHash) {
 
   filter.Add(reinterpret_cast<void*>(kBravo));
   filter.Add(reinterpret_cast<void*>(kCharlie));
-  EXPECT_EQ(3, CountBits(filter));
+  EXPECT_EQ(3, filter.CountBits());
 
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
@@ -142,7 +136,7 @@ TEST(LockFreeBloomFilterTest, SingleHash) {
 TEST(LockFreeBloomFilterTest, MultiHash) {
   LockFreeBloomFilter filter(/*num_hash_functions=*/3);
   filter.SetFakeHashFunctionsForTesting(true);
-  EXPECT_EQ(CountBits(filter), 0);
+  EXPECT_EQ(filter.CountBits(), 0);
 
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
@@ -153,7 +147,7 @@ TEST(LockFreeBloomFilterTest, MultiHash) {
   // None of the pointers collide for all 3 hash functions, so there should be
   // no false positives.
   filter.Add(reinterpret_cast<void*>(kAlfa));
-  EXPECT_EQ(CountBits(filter), 3);
+  EXPECT_EQ(filter.CountBits(), 3);
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
   EXPECT_FALSE(filter.MaybeContains(reinterpret_cast<void*>(kCharlie)));
@@ -163,12 +157,12 @@ TEST(LockFreeBloomFilterTest, MultiHash) {
   // kBravo only sets 1 new bit because it collides with kAlfa for hash
   // functions 1 and 2.
   filter.Add(reinterpret_cast<void*>(kBravo));
-  EXPECT_EQ(CountBits(filter), 4);
+  EXPECT_EQ(filter.CountBits(), 4);
 
   // kCharlie only sets 2 new bits because it collides with kAlfa and kBravo for
   // hash function 2.
   filter.Add(reinterpret_cast<void*>(kCharlie));
-  EXPECT_EQ(CountBits(filter), 6);
+  EXPECT_EQ(filter.CountBits(), 6);
 
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kAlfa)));
   EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(kBravo)));
@@ -187,9 +181,9 @@ TEST(LockFreeBloomFilterTest, FalsePositivesWithSingleBitFilterCollisions) {
     if (filter.MaybeContains(ptr)) {
       // Hash collision occurred. Adding the new key should appear to succeed,
       // but change nothing.
-      size_t bits_before = CountBits(filter);
+      size_t bits_before = filter.CountBits();
       filter.Add(ptr);
-      EXPECT_EQ(CountBits(filter), bits_before);
+      EXPECT_EQ(filter.CountBits(), bits_before);
       for (size_t j = 0; j <= i; ++j) {
         EXPECT_TRUE(filter.MaybeContains(reinterpret_cast<void*>(j)));
       }
@@ -232,7 +226,7 @@ TEST(LockFreeBloomFilterTest, ConcurrentAccess) {
     void* ptr = reinterpret_cast<void*>(value);
     expected_filter.Add(ptr);
   }
-  ASSERT_LT(CountBits(expected_filter), LockFreeBloomFilter::kMaxBits);
+  ASSERT_LT(expected_filter.CountBits(), LockFreeBloomFilter::kMaxBits);
 
   LockFreeBloomFilter filter(/*num_hash_functions=*/2);
 

@@ -20,6 +20,8 @@
 
 namespace base {
 
+using ContainsResult = LockFreeAddressHashSet::ContainsResult;
+
 class LockFreeAddressHashSetTest : public ::testing::Test {
  public:
   static bool IsSubset(const LockFreeAddressHashSet& superset,
@@ -30,7 +32,7 @@ class LockFreeAddressHashSetTest : public ::testing::Test {
                bucket.load(std::memory_order_acquire);
            node; node = node->next) {
         void* key = node->key.load(std::memory_order_relaxed);
-        if (key && !superset.Contains(key)) {
+        if (key && superset.Contains(key) != ContainsResult::kFound) {
           return false;
         }
       }
@@ -79,7 +81,7 @@ TEST_F(LockFreeAddressHashSetTest, EmptySet) {
   EXPECT_EQ(size_t(0), set.size());
   EXPECT_EQ(size_t(8), set.buckets_count());
   EXPECT_EQ(0., set.load_factor());
-  EXPECT_FALSE(set.Contains(&set));
+  EXPECT_NE(set.Contains(&set), ContainsResult::kFound);
 }
 
 TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
@@ -91,7 +93,7 @@ TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
     void* ptr = reinterpret_cast<void*>(i);
     set.Insert(ptr);
     EXPECT_EQ(i, set.size());
-    EXPECT_TRUE(set.Contains(ptr));
+    EXPECT_EQ(set.Contains(ptr), ContainsResult::kFound);
   }
 
   size_t size = 100;
@@ -103,14 +105,14 @@ TEST_F(LockFreeAddressHashSetTest, BasicOperations) {
     void* ptr = reinterpret_cast<void*>(i);
     set.Remove(ptr);
     EXPECT_EQ(--size, set.size());
-    EXPECT_FALSE(set.Contains(ptr));
+    EXPECT_NE(set.Contains(ptr), ContainsResult::kFound);
   }
   // Removed every 3rd value (33 total) from the set, 67 have left.
   EXPECT_EQ(set.size(), 67u);
 
   for (size_t i = 1; i <= 100; ++i) {
     void* ptr = reinterpret_cast<void*>(i);
-    EXPECT_EQ(i % 3 != 0, set.Contains(ptr));
+    EXPECT_EQ(i % 3 != 0, set.Contains(ptr) == ContainsResult::kFound);
   }
 }
 
@@ -158,12 +160,12 @@ class WriterThread : public SimpleThread {
         AutoLock auto_lock(*lock_);
         set_->Insert(ptr);
       }
-      EXPECT_TRUE(set_->Contains(ptr));
+      EXPECT_EQ(set_->Contains(ptr), ContainsResult::kFound);
       {
         AutoLock auto_lock(*lock_);
         set_->Remove(ptr);
       }
-      EXPECT_FALSE(set_->Contains(ptr));
+      EXPECT_NE(set_->Contains(ptr), ContainsResult::kFound);
     }
     // Leave a key for reader to test.
     AutoLock auto_lock(*lock_);
@@ -199,14 +201,17 @@ TEST_F(LockFreeAddressHashSetTest, ConcurrentAccess) {
 
   for (size_t k = 0; k < 100000; ++k) {
     for (size_t i = 1; i <= 30; ++i) {
-      EXPECT_EQ(i < 16, set.Contains(reinterpret_cast<void*>(i)));
+      EXPECT_EQ(i < 16, set.Contains(reinterpret_cast<void*>(i)) ==
+                            ContainsResult::kFound);
     }
   }
   cancel.store(true, std::memory_order_release);
   thread->Join();
 
-  EXPECT_TRUE(set.Contains(reinterpret_cast<void*>(0x1337)));
-  EXPECT_FALSE(set.Contains(reinterpret_cast<void*>(0xbadf00d)));
+  EXPECT_EQ(set.Contains(reinterpret_cast<void*>(0x1337)),
+            ContainsResult::kFound);
+  EXPECT_NE(set.Contains(reinterpret_cast<void*>(0xbadf00d)),
+            ContainsResult::kFound);
 }
 
 TEST_F(LockFreeAddressHashSetTest, BucketsUsage) {
@@ -238,7 +243,7 @@ TEST_F(LockFreeAddressHashSetDeathTest, LockAsserts) {
   LockFreeAddressHashSet set2(8, lock);
 
   // Should not require lock.
-  EXPECT_FALSE(set.Contains(&lock));
+  EXPECT_NE(set.Contains(&lock), ContainsResult::kFound);
   EXPECT_EQ(set.buckets_count(), 8);
 
   // Should require lock.

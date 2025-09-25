@@ -101,12 +101,18 @@ PoissonAllocationSamplerStats::PoissonAllocationSamplerStats(
     size_t address_cache_misses,
     size_t address_cache_max_size,
     float address_cache_max_load_factor,
-    AddressCacheBucketStats address_cache_bucket_stats)
+    AddressCacheBucketStats address_cache_bucket_stats,
+    size_t bloom_filter_hits,
+    size_t bloom_filter_misses,
+    size_t bloom_filter_max_saturation)
     : address_cache_hits(address_cache_hits),
       address_cache_misses(address_cache_misses),
       address_cache_max_size(address_cache_max_size),
       address_cache_max_load_factor(address_cache_max_load_factor),
-      address_cache_bucket_stats(std::move(address_cache_bucket_stats)) {}
+      address_cache_bucket_stats(std::move(address_cache_bucket_stats)),
+      bloom_filter_hits(bloom_filter_hits),
+      bloom_filter_misses(bloom_filter_misses),
+      bloom_filter_max_saturation(bloom_filter_max_saturation) {}
 
 PoissonAllocationSamplerStats::~PoissonAllocationSamplerStats() = default;
 
@@ -248,7 +254,10 @@ PoissonAllocationSamplerStats PoissonAllocationSampler::GetAndResetStats() {
       address_cache_misses_.exchange(0, std::memory_order_relaxed),
       std::exchange(address_cache_max_size_, 0),
       std::exchange(address_cache_max_load_factor_, 0.0),
-      sampled_addresses_set().GetBucketStats());
+      sampled_addresses_set().GetBucketStats(),
+      bloom_filter_hits_.exchange(0, std::memory_order_relaxed),
+      bloom_filter_misses_.exchange(0, std::memory_order_relaxed),
+      std::exchange(bloom_filter_max_saturation_, 0));
 }
 
 // static
@@ -351,17 +360,27 @@ void PoissonAllocationSampler::DoRecordAllocation(
 
     // TODO(alph): Sometimes RecordAlloc is called twice in a row without
     // a RecordFree in between. Investigate it.
-    if (sampled_addresses_set().Contains(address)) {
+    LockFreeAddressHashSet& address_cache = sampled_addresses_set();
+    if (address_cache.Contains(address) ==
+        LockFreeAddressHashSet::ContainsResult::kFound) {
       return;
     }
-    sampled_addresses_set().Insert(address);
+    address_cache.Insert(address);
     BalanceAddressesHashSet();
+
     // Record the load factor after balancing gets a chance to reduce it.
     // Balancing won't change the size.
+    const LockFreeAddressHashSet& balanced_address_cache =
+        sampled_addresses_set();
     address_cache_max_size_ =
-        std::max(address_cache_max_size_, sampled_addresses_set().size());
+        std::max(address_cache_max_size_, balanced_address_cache.size());
     address_cache_max_load_factor_ = std::max(
-        address_cache_max_load_factor_, sampled_addresses_set().load_factor());
+        address_cache_max_load_factor_, balanced_address_cache.load_factor());
+    if (balanced_address_cache.bloom_filter()) {
+      bloom_filter_max_saturation_ =
+          std::max(bloom_filter_max_saturation_,
+                   balanced_address_cache.bloom_filter()->CountBits());
+    }
     observers_copy = observers_;
   }
 

@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
+#include "base/sampling_heap_profiler/lock_free_bloom_filter.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -34,7 +35,10 @@ struct BASE_EXPORT PoissonAllocationSamplerStats {
       size_t address_cache_misses,
       size_t address_cache_max_size,
       float address_cache_max_load_factor,
-      AddressCacheBucketStats address_cache_bucket_stats);
+      AddressCacheBucketStats address_cache_bucket_stats,
+      size_t bloom_filter_hits,
+      size_t bloom_filter_misses,
+      size_t bloom_filter_max_saturation);
   ~PoissonAllocationSamplerStats();
 
   PoissonAllocationSamplerStats(const PoissonAllocationSamplerStats&);
@@ -46,6 +50,9 @@ struct BASE_EXPORT PoissonAllocationSamplerStats {
   size_t address_cache_max_size;
   float address_cache_max_load_factor;
   AddressCacheBucketStats address_cache_bucket_stats;
+  size_t bloom_filter_hits;
+  size_t bloom_filter_misses;
+  size_t bloom_filter_max_saturation;
 };
 
 // This singleton class implements Poisson sampling of the incoming allocations
@@ -265,6 +272,9 @@ class BASE_EXPORT PoissonAllocationSampler {
   size_t address_cache_max_size_ GUARDED_BY(mutex_) = 0;
   // The max load factor that's observed in sampled_addresses_set().
   float address_cache_max_load_factor_ GUARDED_BY(mutex_) = 0;
+  std::atomic<size_t> bloom_filter_hits_;
+  std::atomic<size_t> bloom_filter_misses_;
+  size_t bloom_filter_max_saturation_ GUARDED_BY(mutex_) = 0;
 
   // The load factor that will trigger rebalancing in sampled_addresses_set().
   // By definition `address_cache_max_load_factor_` will never exceed this.
@@ -377,11 +387,28 @@ ALWAYS_INLINE void PoissonAllocationSampler::OnFree(
   if (address == nullptr) [[unlikely]] {
     return;
   }
-  if (!sampled_addresses_set().Contains(address)) [[likely]] {
-    address_cache_misses_.fetch_add(1, std::memory_order_relaxed);
-    return;
+  const LockFreeAddressHashSet& address_cache = sampled_addresses_set();
+  switch (address_cache.Contains(address)) {
+    [[likely]] case LockFreeAddressHashSet::ContainsResult::kNotFound:
+      if (address_cache.bloom_filter()) {
+        bloom_filter_misses_.fetch_add(1, std::memory_order_relaxed);
+      } else {
+        address_cache_misses_.fetch_add(1, std::memory_order_relaxed);
+      }
+      return;
+    case LockFreeAddressHashSet::ContainsResult::
+        kNotFoundButMatchedInBloomFilter:
+      bloom_filter_hits_.fetch_add(1, std::memory_order_relaxed);
+      address_cache_misses_.fetch_add(1, std::memory_order_relaxed);
+      return;
+    [[unlikely]] case LockFreeAddressHashSet::ContainsResult::kFound:
+      if (address_cache.bloom_filter()) {
+        bloom_filter_hits_.fetch_add(1, std::memory_order_relaxed);
+      }
+      address_cache_hits_.fetch_add(1, std::memory_order_relaxed);
+      // Continue after switch.
+      break;
   }
-  address_cache_hits_.fetch_add(1, std::memory_order_relaxed);
   if (ScopedMuteThreadSamples::IsMuted()) [[unlikely]] {
     return;
   }

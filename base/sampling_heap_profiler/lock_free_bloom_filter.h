@@ -125,6 +125,9 @@ class BASE_EXPORT LockFreeBloomFilter {
     use_fake_hash_functions_ = use_fake_hash_functions;
   }
 
+  // Returns the number of bits that are set, for stats.
+  size_t CountBits() const;
+
  private:
   // Number of bits to set for each added key.
   const size_t num_hash_functions_;
