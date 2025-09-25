@@ -1492,6 +1492,18 @@ const FeatureEntry::FeatureVariation kDefaultBrowserMagicStackIosVariations[] =
      {" - Tap to In App Settings", kDefaultBrowserMagicStackIosInAppSettings,
       std::size(kDefaultBrowserMagicStackIosInAppSettings), nullptr}};
 
+const FeatureEntry::FeatureParam kTaiyakiChoiceScreenSurfaceParamAll[] = {
+    {"choice_screen_surface", "all"}};
+const FeatureEntry::FeatureParam kTaiyakiChoiceScreenSurfaceParamFREOnly[] = {
+    {"choice_screen_surface", "fre_only"}};
+
+const FeatureEntry::FeatureVariation kTaiyakiChoiceScreenSurfaceVariations[] = {
+    {"all", kTaiyakiChoiceScreenSurfaceParamAll,
+     std::size(kTaiyakiChoiceScreenSurfaceParamAll), nullptr},
+    {"FRE only", kTaiyakiChoiceScreenSurfaceParamFREOnly,
+     std::size(kTaiyakiChoiceScreenSurfaceParamFREOnly), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2733,7 +2745,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kShareExtensionForMultiprofile)},
     {"taiyaki", flag_descriptions::kTaiyakiName,
      flag_descriptions::kTaiyakiDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(switches::kTaiyaki)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kTaiyaki,
+                                    kTaiyakiChoiceScreenSurfaceVariations,
+                                    "Taiyaki")},
     {"lens-camera-no-still-output-required",
      flag_descriptions::kLensCameraNoStillOutputRequiredName,
      flag_descriptions::kLensCameraNoStillOutputRequiredDescription,
