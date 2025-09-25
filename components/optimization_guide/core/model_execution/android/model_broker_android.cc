@@ -309,9 +309,10 @@ ModelBrokerAndroid::GetOrCreateModelRemote(
         std::move(backend_model), service.remote.BindNewPipeAndPassReceiver(),
         base::BindOnce(&ModelBrokerAndroid::OnModelDisconnected,
                        weak_ptr_factory_.GetWeakPtr(), feature));
-    service.remote.reset_on_disconnect();
-    service.remote.reset_on_idle_timeout(
-        features::GetOnDeviceModelIdleTimeout());
+    service.remote.set_idle_handler(
+        features::GetOnDeviceModelIdleTimeout(),
+        base::BindRepeating(&ModelBrokerAndroid::OnModelDisconnected,
+                            weak_ptr_factory_.GetWeakPtr(), feature, nullptr));
     model_services_.emplace(feature, std::move(service));
   }
   return model_services_.at(feature).remote;
