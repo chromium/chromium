@@ -35,6 +35,10 @@
 
 namespace content {
 
+// When enabled, we check that DSNs have a value other than -1.
+// This is enforced at several points in the navigation flow.
+BASE_FEATURE(kCheckDocumentSequenceNumber, base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 // Overridden time for unit tests. Should be accessed only from the main thread.
@@ -81,6 +85,12 @@ BackForwardCacheMetrics::CreateOrReuseBackForwardCacheMetricsForNavigation(
     NavigationEntryImpl* previous_entry,
     bool is_main_frame_navigation,
     int64_t committing_document_sequence_number) {
+  // TODO(https://crbug.com/445585641): Make this enforceable on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kCheckDocumentSequenceNumber)) {
+    CHECK_NE(committing_document_sequence_number, -1);
+  }
+#endif
   if (!previous_entry) {
     // There is no previous NavigationEntry, so we must create a new metrics
     // object.

@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -29,6 +30,9 @@ class Origin;
 }
 
 namespace content {
+// TODO(https://crbug.com/40229455): Remove this once established to be safe.
+BASE_DECLARE_FEATURE(kCheckDocumentSequenceNumber);
+
 class BackForwardCacheCanStoreDocumentResult;
 class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;

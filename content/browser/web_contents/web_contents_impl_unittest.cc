@@ -467,6 +467,7 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
   params->did_create_new_entry = true;
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(params->url);
+  params->document_sequence_number = 1;
 
   main_test_rfh()->SendNavigateWithParams(std::move(params),
                                           false /* was_within_same_document */);

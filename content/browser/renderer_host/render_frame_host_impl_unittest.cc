@@ -605,6 +605,7 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptShowLoadingUi) {
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(url2);
   params->post_id = -1;
+  params->document_sequence_number = 1;
   main_test_rfh()->SendDidCommitSameDocumentNavigation(
       std::move(params),
       blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept,
@@ -655,6 +656,7 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptBrowserInitiated) {
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(url2);
   params->post_id = -1;
+  params->document_sequence_number = 1;
   main_test_rfh()->SendDidCommitSameDocumentNavigation(
       std::move(params),
       blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept, true);
