@@ -1825,6 +1825,9 @@ extern const char kOptimizationGuideEnableDogfoodLoggingDescription[];
 extern const char kOptimizationGuideOnDeviceModelName[];
 extern const char kOptimizationGuideOnDeviceModelDescription[];
 
+extern const char kOptimizationGuideOnDeviceModelAndroidName[];
+extern const char kOptimizationGuideOnDeviceModelAndroidDescription[];
+
 extern const char kOptimizationGuidePersonalizedFetchingName[];
 extern const char kOptimizationGuidePersonalizedFetchingDescription[];
 

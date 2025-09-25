@@ -7183,7 +7183,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"optimization-guide-model-execution",
      flag_descriptions::kOptimizationGuideModelExecutionName,
-     flag_descriptions::kOptimizationGuideModelExecutionDescription, kOsDesktop,
+     flag_descriptions::kOptimizationGuideModelExecutionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kOptimizationGuideModelExecution)},
 
@@ -7194,6 +7194,13 @@ const FeatureEntry kFeatureEntries[] = {
          optimization_guide::features::kOnDeviceModelPerformanceParams,
          kOptimizationGuideOnDeviceModelVariations,
          "OptimizationGuideOnDeviceModel")},
+
+    {"optimization-guide-on-device-model-android",
+     flag_descriptions::kOptimizationGuideOnDeviceModelAndroidName,
+     flag_descriptions::kOptimizationGuideOnDeviceModelAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kOptimizationGuideOnDeviceModel)},
 
     {"text-safety-classifier", flag_descriptions::kTextSafetyClassifierName,
      flag_descriptions::kTextSafetyClassifierDescription, kOsDesktop,

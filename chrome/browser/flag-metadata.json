@@ -7811,12 +7811,17 @@
   },
   {
     "name": "optimization-guide-model-execution",
-    "owners": [ "rajendrant@chromium.org", "sophiechang@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 125
+    "owners": [ "xinghuilu@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "optimization-guide-on-device-model",
     "owners": [ "cduvall@chromium.org", "jam@chromium.org", "rockot@chromium.org", "sky@chromium.org", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
+    "name": "optimization-guide-on-device-model-android",
+    "owners": [ "xinghuilu@chromium.org", "chrome-intelligence-core@google.com" ],
     "expiry_milestone": 150
   },
   {
