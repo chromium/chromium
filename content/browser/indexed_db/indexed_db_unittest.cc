@@ -1554,6 +1554,64 @@ TEST_P(IndexedDBTestFirstOrThirdParty,
   EXPECT_TRUE(base::DirectoryExists(test_path));
 }
 
+// Regression test for https://crbug.com/446722008
+TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
+  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  BucketLocator bucket_locator = bucket_info.ToBucketLocator();
+  mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
+      checker_remote;
+  BindFactory(std::move(checker_remote),
+              factory_remote_.BindNewPipeAndPassReceiver(), bucket_info);
+
+  // Open a database.
+  base::RunLoop run_loop_for_first_open;
+  MockMojoDatabaseCallbacks database_callbacks;
+  EXPECT_CALL(database_callbacks, ForcedClose())
+      .WillOnce(
+          ::base::test::RunClosure(run_loop_for_first_open.QuitClosure()));
+  MockMojoFactoryClient client;
+  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
+  EXPECT_CALL(client, MockedOpenSuccess)
+      .WillOnce(testing::DoAll(MoveArgPointee<0>(&pending_database)));
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
+  factory_remote_->Open(client.CreateInterfacePtrAndBind(),
+                        database_callbacks.CreateInterfacePtrAndBind(),
+                        u"opendb", /*version=*/0,
+                        transaction_remote.BindNewEndpointAndPassReceiver(),
+                        /*host_transaction_id=*/0, /*priority=*/0);
+
+  // Delete with force_close = true.
+  MockMojoFactoryClient delete_client;
+  factory_remote_->DeleteDatabase(delete_client.CreateInterfacePtrAndBind(),
+                                  u"opendb",
+                                  /*force_close=*/true);
+
+  // Open the database again, without waiting for any of the previous steps to
+  // finish. The timing of this is very particular, which is why this test does
+  // not use `VerifyForcedClosedCalled()`. If the second open() comes any later,
+  // it will succeed because the original Database will have finished being
+  // deleted. We want to verify that there is no crash in the situation where
+  // the second open is handled while the database is still in the process of
+  // being deleted.
+  MockMojoFactoryClient client2;
+  EXPECT_CALL(client2, Error);
+  MockMojoDatabaseCallbacks database_callbacks2;
+  base::RunLoop run_loop_for_second_open;
+  EXPECT_CALL(database_callbacks2, ForcedClose())
+      .WillOnce(
+          ::base::test::RunClosure(run_loop_for_second_open.QuitClosure()));
+  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote2;
+  factory_remote_->Open(
+      client2.CreateInterfacePtrAndBind(),
+      database_callbacks2.CreateInterfacePtrAndBind(), u"opendb",
+      /*version=*/0, transaction_remote2.BindNewEndpointAndPassReceiver(),
+      /*host_transaction_id=*/42, /*priority=*/0);
+
+  // Block until expectations are satisfied.
+  run_loop_for_first_open.Run();
+  run_loop_for_second_open.Run();
+}
+
 TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
   const blink::StorageKey storage_key_1 =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
