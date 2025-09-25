@@ -873,7 +873,10 @@ public class ReaderModeManager extends EmptyTabObserver
      * @return Whether reader mode should trigger through messages.
      */
     public static boolean shouldUseReaderModeMessages(Tab tab) {
-        return tab != null && (tab.isCustomTab() || tab.isIncognito());
+        // Messages are explicitly disabled for in-app distillation.
+        return !DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()
+                && tab != null
+                && (tab.isCustomTab() || tab.isIncognito());
     }
 
     /**
