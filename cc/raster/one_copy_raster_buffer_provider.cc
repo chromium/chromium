@@ -23,7 +23,6 @@
 #include "cc/base/math_util.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -33,7 +32,9 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/trace_util.h"
 
@@ -325,7 +326,6 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     bool mailbox_texture_is_overlay_candidate,
     const gpu::SyncToken& sync_token) {
   const gfx::Size& resource_size = backing->size();
-  const viz::SharedImageFormat format = backing->format();
 
   DCHECK(sii_);
 
@@ -388,15 +388,12 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
 
   // Clear to ensure the resource is fully initialized and BeginAccess succeeds.
   if (needs_clear) {
-    int clear_bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
-        resource_size.width(), format);
-    SkImageInfo dst_info = SkImageInfo::MakeN32Premul(resource_size.width(),
-                                                      resource_size.height());
+    SkImageInfo dst_info = SkImageInfo::Make(
+        {resource_size.width(), resource_size.height()},
+        ToClosestSkColorType(backing->format()), kPremul_SkAlphaType);
     SkBitmap bitmap;
-    if (bitmap.tryAllocPixels(dst_info, clear_bytes_per_row)) {
-      // SkBitmap.cpp doesn't yet have an interface for SkColor4fs
-      // https://bugs.chromium.org/p/skia/issues/detail?id=13329
-      bitmap.eraseColor(raster_source->background_color().toSkColor());
+    if (bitmap.tryAllocPixels(dst_info)) {
+      bitmap.eraseColor(raster_source->background_color());
       ri->WritePixels(backing->shared_image()->mailbox(), /*dst_x_offset=*/0,
                       /*dst_y_offset=*/0, texture_target, bitmap.pixmap());
     }
