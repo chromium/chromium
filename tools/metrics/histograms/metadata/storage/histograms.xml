@@ -338,20 +338,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IndexedDB.Create{Mode}Transaction.DBExists" enum="Boolean"
-    expires_after="2026-03-30">
-  <owner>fdoray@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Whether the associated database exists. Recorded everytime a {Mode}
-    transaction is created. Will be used to diagnose crbug.com/381086791.
-    Specifically, we'll assses whether the number of clients who get high values
-    for these histograms is similar to the number of clients who hit transaction
-    timeouts.
-  </summary>
-  <token key="Mode" variants="IndexedDBTransactionMode"/>
-</histogram>
-
 <histogram name="IndexedDB.Create{Mode}Transaction.NumTransactionsInConnection"
     units="transactions" expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>

@@ -20,6 +20,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/time/time.h"
@@ -843,6 +844,9 @@ bool Connection::IsHoldingLocks(
 
 void Connection::RecordCreateTransactionHistograms(
     blink::mojom::IDBTransactionMode mode) {
+  const bool db_exists = database_.get() != nullptr;
+  CHECK(db_exists, base::NotFatalUntil::M145);
+
   // Histograms to diagnose memory leak crbug.com/381086791.
   // TODO(crbug.com/381086791): Remove after the leak is fixed.
 
@@ -863,10 +867,6 @@ void Connection::RecordCreateTransactionHistograms(
       base::StrCat({"IndexedDB.Create", mode_name,
                     "Transaction.NumTransactionsInConnection"}),
       transactions_.size());
-  const bool db_exists = database_.get() != nullptr;
-  base::UmaHistogramBoolean(
-      base::StrCat({"IndexedDB.Create", mode_name, "Transaction.DBExists"}),
-      db_exists);
   if (db_exists) {
     base::UmaHistogramCounts10000(
         base::StrCat({"IndexedDB.Create", mode_name,
