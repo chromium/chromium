@@ -72,6 +72,7 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -873,16 +874,15 @@ IN_PROC_BROWSER_TEST_F(IdentityGetProfileUserInfoFunctionTest,
 class IdentityGetProfileUserInfoFunctionNoSyncServiceTest
     : public IdentityGetProfileUserInfoFunctionTest {
  public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IdentityGetProfileUserInfoFunctionTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(syncer::kDisableSync);
+  }
+
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     IdentityGetProfileUserInfoFunctionTest::SetUpBrowserContextKeyedServices(
         context);
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindOnce(
-            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return nullptr;
-            }));
   }
 };
 

@@ -137,6 +137,7 @@ void AutoSignOutService::OnStateChanged(syncer::SyncService* sync) {
     if (device->auto_sign_out_last_signin_timestamp().has_value() &&
         device->auto_sign_out_last_signin_timestamp().value() >
             initialization_time_) {
+      LOG(WARNING) << "An automatic sign-out is about to be performed.";
       session_manager_->RequestSignOut();
       return;
     }

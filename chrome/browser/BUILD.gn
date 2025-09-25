@@ -5833,6 +5833,7 @@ static_library("browser") {
       "//components/services/font/public/mojom",
       "//components/session_manager/core",
       "//components/signin/public/identity_manager",
+      "//components/sync/base",
       "//components/trusted_vault",
       "//components/user_manager",
       "//components/webapk:proto",

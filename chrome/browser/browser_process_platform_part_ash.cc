@@ -73,6 +73,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -320,7 +321,8 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
       g_browser_process->local_state(), CHECK_DEREF(user),
       primary_profile->GetProfilePolicyConnector()->IsManaged());
 
-  if (ash::features::IsAutoSignOutEnabled()) {
+  if (ash::features::IsAutoSignOutEnabled() &&
+      primary_profile->IsRegularProfile() && syncer::IsSyncAllowedByFlag()) {
     PrefService* prefs = primary_profile->GetPrefs();
     auto_sign_out_service_ = std::make_unique<ash::AutoSignOutService>(
         DeviceInfoSyncServiceFactory::GetForProfile(primary_profile),
