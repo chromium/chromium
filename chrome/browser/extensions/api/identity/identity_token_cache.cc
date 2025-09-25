@@ -136,12 +136,6 @@ IdentityTokenCache::AccessTokensKey::AccessTokensKey(
     const CoreAccountId& account_id)
     : extension_id(extension_id), account_id(account_id) {}
 
-bool IdentityTokenCache::AccessTokensKey::operator<(
-    const AccessTokensKey& rhs) const {
-  return std::tie(extension_id, account_id) <
-         std::tie(rhs.extension_id, rhs.account_id);
-}
-
 // Ensure that the access tokens are ordered by scope sizes.
 bool IdentityTokenCache::ScopesSizeCompare::operator()(
     const IdentityTokenCacheValue& lhs,

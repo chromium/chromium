@@ -207,7 +207,7 @@ struct RequestCookie {
   RequestCookie& operator=(RequestCookie&& other);
   ~RequestCookie();
 
-  bool operator==(const RequestCookie& other) const;
+  auto operator<=>(const RequestCookie& rhs) const = default;
 
   RequestCookie Clone() const;
 
@@ -225,7 +225,7 @@ struct ResponseCookie {
   ResponseCookie& operator=(ResponseCookie&& other);
   ~ResponseCookie();
 
-  bool operator==(const ResponseCookie& other) const;
+  auto operator<=>(const ResponseCookie& rhs) const = default;
 
   ResponseCookie Clone() const;
 
@@ -251,7 +251,9 @@ struct FilterResponseCookie : ResponseCookie {
 
   FilterResponseCookie Clone() const;
 
-  bool operator==(const FilterResponseCookie& other) const;
+  // This ignores all of the fields of the base class ResponseCookie. Why?
+  // https://crbug.com/916248
+  auto operator<=>(const FilterResponseCookie& rhs) const = default;
 
   std::optional<int> age_lower_bound;
   std::optional<int> age_upper_bound;

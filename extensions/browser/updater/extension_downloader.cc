@@ -251,12 +251,6 @@ ExtensionDownloader::FetchDataGroupKey::FetchDataGroupKey(
 
 ExtensionDownloader::FetchDataGroupKey::~FetchDataGroupKey() = default;
 
-bool ExtensionDownloader::FetchDataGroupKey::operator<(
-    const FetchDataGroupKey& other) const {
-  return std::tie(request_id, update_url, is_force_installed) <
-         std::tie(other.request_id, other.update_url, other.is_force_installed);
-}
-
 ExtensionDownloader::ExtensionDownloader(
     ExtensionDownloaderDelegate* delegate,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

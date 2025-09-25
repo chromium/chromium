@@ -42,6 +42,8 @@ class LazyContextId {
   LazyContextId& operator=(const LazyContextId&) noexcept = default;
   LazyContextId& operator=(LazyContextId&&) noexcept = default;
 
+  auto operator<=>(const LazyContextId& other) const = default;
+
   bool IsForBackgroundPage() const { return type_ == Type::kBackgroundPage; }
   bool IsForServiceWorker() const { return type_ == Type::kServiceWorker; }
 
@@ -58,9 +60,6 @@ class LazyContextId {
     kServiceWorker,
   };
 
-  friend bool operator<(const LazyContextId& lhs, const LazyContextId& rhs);
-  friend bool operator==(const LazyContextId& lhs, const LazyContextId& rhs);
-
   // An event page or service worker based on the type.
   LazyContextId(Type type,
                 content::BrowserContext* context,
@@ -73,20 +72,6 @@ class LazyContextId {
   raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
   ExtensionId extension_id_;
 };
-
-inline bool operator<(const LazyContextId& lhs, const LazyContextId& rhs) {
-  return std::tie(lhs.type_, lhs.context_, lhs.extension_id_) <
-         std::tie(rhs.type_, rhs.context_, rhs.extension_id_);
-}
-
-inline bool operator==(const LazyContextId& lhs, const LazyContextId& rhs) {
-  return std::tie(lhs.type_, lhs.context_, lhs.extension_id_) ==
-         std::tie(rhs.type_, rhs.context_, rhs.extension_id_);
-}
-
-inline bool operator!=(const LazyContextId& lhs, const LazyContextId& rhs) {
-  return !(lhs == rhs);
-}
 
 }  // namespace extensions
 

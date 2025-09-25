@@ -565,6 +565,8 @@ struct EventTarget {
   int render_process_id;
   int64_t service_worker_version_id;
   int worker_thread_id;
+
+  auto operator<=>(const EventTarget& rhs) const = default;
 };
 
 struct Event {

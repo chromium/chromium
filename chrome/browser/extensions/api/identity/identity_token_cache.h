@@ -107,7 +107,7 @@ class IdentityTokenCache {
     explicit AccessTokensKey(const ExtensionTokenKey& key);
     AccessTokensKey(const std::string& extension_id,
                     const CoreAccountId& account_id);
-    bool operator<(const AccessTokensKey& rhs) const;
+    auto operator<=>(const AccessTokensKey& rhs) const = default;
     std::string extension_id;
     CoreAccountId account_id;
   };

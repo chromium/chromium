@@ -45,10 +45,7 @@ struct RoutingInfoKey {
                  std::string script_id)
       : frame_token(frame_token), script_id(std::move(script_id)) {}
 
-  bool operator<(const RoutingInfoKey& other) const {
-    return std::tie(frame_token, script_id) <
-           std::tie(other.frame_token, other.script_id);
-  }
+  auto operator<=>(const RoutingInfoKey& rhs) const = default;
 };
 
 using RoutingInfoMap = std::map<RoutingInfoKey, bool>;

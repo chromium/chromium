@@ -132,7 +132,7 @@ class ActionTracker {
     ExtensionId extension_id;
     T secondary_id;
 
-    bool operator<(const TrackedInfoContextKey& other) const;
+    auto operator<=>(const TrackedInfoContextKey& rhs) const = default;
   };
 
   using ExtensionTabIdKey = TrackedInfoContextKey<int>;
