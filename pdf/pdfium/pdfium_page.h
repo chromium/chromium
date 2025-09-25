@@ -120,15 +120,14 @@ class PDFiumPage {
 
   // For all the links on the page, get their urls, underlying text ranges and
   // bounding boxes.
-  std::vector<AccessibilityLinkInfo> GetLinkInfo(
-      base::span<const AccessibilityTextRunInfo> text_runs);
+  std::vector<AccessibilityLinkInfo> GetLinkInfo();
 
   // For all the images on the page, get their alt texts and bounding boxes. If
   // the alt text is empty or unavailable, and if the user has requested that
   // the OCR service tag the PDF so that it is made accessible, transfer the raw
   // image pixels in the `image_data` field. Otherwise do not populate the
   // `image_data` field.
-  std::vector<AccessibilityImageInfo> GetImageInfo(uint32_t text_run_count);
+  std::vector<AccessibilityImageInfo> GetImageInfo();
 
   // Returns the indices of image objects.
   std::vector<int> GetImageObjectIndices();
@@ -156,20 +155,17 @@ class PDFiumPage {
 
   // For all the highlights on the page, get their underlying text ranges and
   // bounding boxes.
-  std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
-      base::span<const AccessibilityTextRunInfo> text_runs);
+  std::vector<AccessibilityHighlightInfo> GetHighlightInfo();
 
   // For all the text fields on the page, get their properties like name,
   // value, bounding boxes, etc.
-  std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo(
-      uint32_t text_run_count);
+  std::vector<AccessibilityTextFieldInfo> GetTextFieldInfo();
 
   // Traverses the entire struct tree of the page recursively and extracts the
   // text run type or the alt text from struct tree elements corresponding to
-  // the marked content IDs associated with `text_runs` or present in
+  // the marked content IDs present in `marked_content_id_to_text_runs_map_` or
   // `marked_content_id_to_images_map_` respectively.
-  void PopulateTextRunTypeAndImageAltText(
-      std::vector<AccessibilityTextRunInfo>& text_runs);
+  void PopulateTextRunTypeAndImageAltText();
 
   enum Area {
     NONSELECTABLE_AREA,

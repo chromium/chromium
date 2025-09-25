@@ -874,12 +874,12 @@ std::vector<AccessibilityTextRunInfo> PDFiumPage::GetTextRunInfo() {
   return text_runs_;
 }
 
-std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
-    base::span<const AccessibilityTextRunInfo> text_runs) {
+std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo() {
   std::vector<AccessibilityLinkInfo> link_info;
   if (!available_)
     return link_info;
 
+  CalculateTextRuns();
   CalculateLinks();
 
   link_info.reserve(links_.size());
@@ -889,7 +889,7 @@ std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
     cur_info.url = link.target.url;
     cur_info.index_in_page = i;
     cur_info.text_range = GetEnclosingTextRunRangeForCharRange(
-        text_runs, link.start_char_index, link.char_count);
+        text_runs_, link.start_char_index, link.char_count);
 
     gfx::Rect link_rect;
     for (const auto& rect : link.bounding_rects)
@@ -905,19 +905,19 @@ std::vector<AccessibilityLinkInfo> PDFiumPage::GetLinkInfo(
   return link_info;
 }
 
-std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo(
-    uint32_t text_run_count) {
+std::vector<AccessibilityImageInfo> PDFiumPage::GetImageInfo() {
   std::vector<AccessibilityImageInfo> image_info;
   if (!available_)
     return image_info;
 
+  CalculateTextRuns();
   CalculateImages();
   image_info.reserve(images_.size());
   for (const Image& image : images_) {
     AccessibilityImageInfo cur_info;
     cur_info.alt_text = image.alt_text;
     // TODO(mohitb): Update text run index to nearest text run to image bounds.
-    cur_info.text_run_index = text_run_count;
+    cur_info.text_run_index = text_runs_.size();
     cur_info.bounds =
         gfx::RectF(image.bounding_rect.x(), image.bounding_rect.y(),
                    image.bounding_rect.width(), image.bounding_rect.height());
@@ -968,12 +968,12 @@ bool PDFiumPage::PageCanBeUnloaded() const {
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(
-    base::span<const AccessibilityTextRunInfo> text_runs) {
+std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo() {
   std::vector<AccessibilityHighlightInfo> highlight_info;
   if (!available_)
     return highlight_info;
 
+  CalculateTextRuns();
   PopulateAnnotations();
 
   highlight_info.reserve(highlights_.size());
@@ -982,7 +982,7 @@ std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(
     AccessibilityHighlightInfo cur_info;
     cur_info.index_in_page = i;
     cur_info.text_range = GetEnclosingTextRunRangeForCharRange(
-        text_runs, highlight.start_char_index, highlight.char_count);
+        text_runs_, highlight.start_char_index, highlight.char_count);
     cur_info.bounds = gfx::RectF(
         highlight.bounding_rect.x(), highlight.bounding_rect.y(),
         highlight.bounding_rect.width(), highlight.bounding_rect.height());
@@ -996,12 +996,12 @@ std::vector<AccessibilityHighlightInfo> PDFiumPage::GetHighlightInfo(
   return highlight_info;
 }
 
-std::vector<AccessibilityTextFieldInfo> PDFiumPage::GetTextFieldInfo(
-    uint32_t text_run_count) {
+std::vector<AccessibilityTextFieldInfo> PDFiumPage::GetTextFieldInfo() {
   std::vector<AccessibilityTextFieldInfo> text_field_info;
   if (!available_)
     return text_field_info;
 
+  CalculateTextRuns();
   PopulateAnnotations();
 
   text_field_info.reserve(text_fields_.size());
@@ -1016,7 +1016,7 @@ std::vector<AccessibilityTextFieldInfo> PDFiumPage::GetTextFieldInfo(
     cur_info.is_password = !!(text_field.flags & FPDF_FORMFLAG_TEXT_PASSWORD);
     // TODO(crbug.com/40661774): Update text run index to nearest text run to
     // text field bounds.
-    cur_info.text_run_index = text_run_count;
+    cur_info.text_run_index = text_runs_.size();
     cur_info.bounds = gfx::RectF(
         text_field.bounding_rect.x(), text_field.bounding_rect.y(),
         text_field.bounding_rect.width(), text_field.bounding_rect.height());
@@ -1471,8 +1471,7 @@ void PDFiumPage::CalculateImages() {
   }
 }
 
-void PDFiumPage::PopulateTextRunTypeAndImageAltText(
-    std::vector<AccessibilityTextRunInfo>& text_runs) {
+void PDFiumPage::PopulateTextRunTypeAndImageAltText() {
   CalculateTextRuns();
   CalculateImages();
 
@@ -1493,12 +1492,6 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltText(
         FPDF_StructTree_GetChildAtIndex(struct_tree.get(), i);
     PopulateTextRunTypeAndImageAltTextForStructElement(current_element,
                                                        visited_elements);
-  }
-
-  // TODO(crbug.com/40707542): Remove this once we use text_runs_ directly.
-  text_runs.resize(text_runs_.size());
-  for (size_t i = 0; i < text_runs.size(); ++i) {
-    text_runs[i].tag_type = text_runs_[i].tag_type;
   }
 }
 

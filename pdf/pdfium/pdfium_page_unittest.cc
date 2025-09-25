@@ -541,8 +541,7 @@ TEST_P(PDFiumPageImageTest, ImagesWithAltText) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  std::vector<AccessibilityTextRunInfo> text_runs;
-  page.PopulateTextRunTypeAndImageAltText(text_runs);
+  page.PopulateTextRunTypeAndImageAltText();
   ASSERT_EQ(3u, page.images_.size());
   EXPECT_EQ(gfx::Rect(380, 78, 67, 68), page.images_[0].bounding_rect);
   EXPECT_EQ("Image 1", page.images_[0].alt_text);
@@ -560,8 +559,7 @@ TEST_P(PDFiumPageImageTest, TextAndImagesWithAltText) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  std::vector<AccessibilityTextRunInfo> text_runs;
-  page.PopulateTextRunTypeAndImageAltText(text_runs);
+  page.PopulateTextRunTypeAndImageAltText();
   ASSERT_EQ(3u, page.images_.size());
   EXPECT_EQ(gfx::Rect(380, 78, 67, 68), page.images_[0].bounding_rect);
   EXPECT_EQ("Image 1", page.images_[0].alt_text);
@@ -605,8 +603,7 @@ TEST_P(PDFiumPageImageForOcrTest, LowResolutionImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  std::vector<AccessibilityTextRunInfo> text_runs;
-  page.PopulateTextRunTypeAndImageAltText(text_runs);
+  page.PopulateTextRunTypeAndImageAltText();
   ASSERT_EQ(3u, page.images_.size());
 
   ASSERT_FALSE(page.images_[0].alt_text.empty());
@@ -634,8 +631,7 @@ TEST_P(PDFiumPageImageForOcrTest, HighResolutionImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  std::vector<AccessibilityTextRunInfo> text_runs;
-  page.PopulateTextRunTypeAndImageAltText(text_runs);
+  page.PopulateTextRunTypeAndImageAltText();
   ASSERT_EQ(1u, page.images_.size());
 
   SkBitmap image_bitmap = page.GetImageForOcr(page.images_[0].page_object_index,
@@ -657,8 +653,7 @@ TEST_P(PDFiumPageImageForOcrTest, RotatedPage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  std::vector<AccessibilityTextRunInfo> text_runs;
-  page.PopulateTextRunTypeAndImageAltText(text_runs);
+  page.PopulateTextRunTypeAndImageAltText();
   ASSERT_EQ(1u, page.images_.size());
 
   SkBitmap image_bitmap = page.GetImageForOcr(page.images_[0].page_object_index,
@@ -677,8 +672,7 @@ TEST_P(PDFiumPageImageForOcrTest, NonImage) {
   ASSERT_EQ(1, engine->GetNumberOfPages());
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, 0);
-  std::vector<AccessibilityTextRunInfo> text_runs;
-  page.PopulateTextRunTypeAndImageAltText(text_runs);
+  page.PopulateTextRunTypeAndImageAltText();
   ASSERT_EQ(3u, page.images_.size());
   ASSERT_EQ(1, page.images_[0].page_object_index);
 
