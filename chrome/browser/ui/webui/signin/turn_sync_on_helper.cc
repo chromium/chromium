@@ -54,6 +54,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_service.h"
@@ -179,6 +180,12 @@ TurnSyncOnHelper::TurnSyncOnHelper(
   DCHECK(profile_);
   // Should not start syncing if the profile is already authenticated
   DCHECK(!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync));
+
+  // This class should be unreachable if `kReplaceSyncPromosWithSignInPromos` is
+  // enabled.
+  CHECK(
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos),
+      base::NotFatalUntil::M144);
 
   // Cancel any existing helper.
   AttachToProfile();

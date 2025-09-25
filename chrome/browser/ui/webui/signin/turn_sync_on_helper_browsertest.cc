@@ -68,7 +68,10 @@ class Delegate : public TurnSyncOnHelper::Delegate {
   ~Delegate() override = default;
 
   // TurnSyncOnHelper::Delegate:
-  void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
+  void ShowLoginError(const SigninUIError& error) override {
+    ADD_FAILURE() << "ShowLoginError() invoked unpexectedly with error: "
+                  << error.message();
+  }
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
@@ -205,8 +208,8 @@ class TurnSyncOnHelperBrowserTestWithParam
  public:
   TurnSyncOnHelperBrowserTestWithParam()
       : SigninBrowserTestBase(/*use_main_profile=*/false) {
-    // TODO(crbug.com/444621074): Update the tests to work with the feature
-    // enabled, if still needed.
+    // Class `TurnSyncOnHelper` is only reachable and usable if the feature is
+    // disabled.
     scoped_feature_list_.InitAndDisableFeature(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -346,8 +349,8 @@ class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
  public:
   TurnSyncOnHelperBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/false) {
-    // TODO(crbug.com/444621074): Update the tests to work with the feature
-    // enabled, if still needed.
+    // Class `TurnSyncOnHelper` is only reachable and usable if the feature is
+    // disabled.
     scoped_feature_list_.InitAndDisableFeature(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
