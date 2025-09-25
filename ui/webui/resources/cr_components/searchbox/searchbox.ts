@@ -544,7 +544,7 @@ export class SearchboxElement extends SearchboxElementBase {
     // the selection and requery autocomplete. This is needed to avoid flicker.
     if (inputSelection === this.lastInput_.inline &&
         inputValue === lastInputValue &&
-        this.lastInput_.inline[0].toLocaleLowerCase() ===
+        this.lastInput_.inline[0]!.toLocaleLowerCase() ===
             e.key.toLocaleLowerCase()) {
       const text = this.lastInput_.text + e.key;
       assert(text);
