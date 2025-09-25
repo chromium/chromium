@@ -98,11 +98,11 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // Only calculate the relevant animations. If we actually set the
   // animation value, we don't need to calculate what is beneath it
   // in the sandwich.
-  auto sandwich_start = active_.end();
-  while (sandwich_start != active_.begin()) {
-    UNSAFE_TODO(--sandwich_start);
-    if ((*sandwich_start)->OverwritesUnderlyingAnimationValue())
+  wtf_size_t sandwich_start = active_.size();
+  while (sandwich_start != 0) {
+    if (active_[--sandwich_start]->OverwritesUnderlyingAnimationValue()) {
       break;
+    }
   }
 
   // For now we need an element to setup and apply an animation. Any animation
@@ -114,9 +114,8 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // contributes to a particular element/attribute pair.
   SMILAnimationValue animation_value = animation->CreateAnimationValue();
 
-  for (auto sandwich_it = sandwich_start; sandwich_it != active_.end();
-       UNSAFE_TODO(sandwich_it++)) {
-    (*sandwich_it)->ApplyAnimation(animation_value);
+  for (; sandwich_start < active_.size(); ++sandwich_start) {
+    active_[sandwich_start]->ApplyAnimation(animation_value);
   }
 
   animation->ApplyResultsToTarget(animation_value);
