@@ -1316,10 +1316,6 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
         canvas());
   }
 
-  if (provider) {
-    provider->SetResourceRecyclingEnabled(true);
-  }
-
   return provider;
 }
 
