@@ -168,10 +168,10 @@ void ClientTagBasedDataTypeProcessor::OnSyncStarting(
     StartCallback start_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Sync is starting for " << DataTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(request.IsValid()) << DataTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(start_callback) << DataTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(!start_callback_) << DataTypeToDebugString(type_);
-  DUMP_WILL_BE_CHECK(!IsConnected()) << DataTypeToDebugString(type_);
+  CHECK(request.IsValid()) << DataTypeToDebugString(type_);
+  CHECK(start_callback) << DataTypeToDebugString(type_);
+  CHECK(!start_callback_) << DataTypeToDebugString(type_);
+  CHECK(!IsConnected()) << DataTypeToDebugString(type_);
 
   start_callback_ = std::move(start_callback);
   activation_request_ = request;
@@ -185,7 +185,7 @@ void ClientTagBasedDataTypeProcessor::OnSyncStarting(
 
 void ClientTagBasedDataTypeProcessor::OnModelStarting(
     DataTypeSyncBridge* bridge) {
-  DUMP_WILL_BE_CHECK(bridge);
+  CHECK(bridge);
   bridge_ = bridge;
 }
 
@@ -741,9 +741,9 @@ void ClientTagBasedDataTypeProcessor::GetLocalChanges(
     size_t max_entries,
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DUMP_WILL_BE_CHECK_GT(max_entries, 0U);
-  DUMP_WILL_BE_CHECK(IsConnected());
-  DUMP_WILL_BE_CHECK(!model_error_);
+  CHECK_GT(max_entries, 0U);
+  CHECK(IsConnected());
+  CHECK(!model_error_);
 
   // Use base::debug::Alias() to ensure that crash dumps in reports include
   // DataType.
@@ -1102,17 +1102,17 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   std::unique_ptr<MetadataChangeList> metadata_changes =
       bridge_->CreateMetadataChangeList();
-  DUMP_WILL_BE_CHECK(model_ready_to_sync_);
+  CHECK(model_ready_to_sync_);
 
   // Check that the worker correctly marked initial sync as (at least) partially
   // done for this update.
-  DUMP_WILL_BE_CHECK(IsInitialSyncDone(data_type_state.initial_sync_state()) ||
-                     (ApplyUpdatesImmediatelyTypes().Has(type_) &&
-                      IsInitialSyncAtLeastPartiallyDone(
-                          data_type_state.initial_sync_state())));
+  CHECK(IsInitialSyncDone(data_type_state.initial_sync_state()) ||
+        (ApplyUpdatesImmediatelyTypes().Has(type_) &&
+         IsInitialSyncAtLeastPartiallyDone(
+             data_type_state.initial_sync_state())));
 
   // Ensure that this is the initial sync, and it was not already marked done.
-  DUMP_WILL_BE_CHECK(HasClearAllDirective(gc_directive) || !entity_tracker_);
+  CHECK(HasClearAllDirective(gc_directive) || !entity_tracker_);
 
   if (entity_tracker_ && HasClearAllDirective(gc_directive)) {
     ExpireAllEntries(metadata_changes.get());
@@ -1243,8 +1243,8 @@ void ClientTagBasedDataTypeProcessor::ConsumeDataBatch(
 void ClientTagBasedDataTypeProcessor::CommitLocalChanges(
     size_t max_entries,
     GetLocalChangesCallback callback) {
-  DUMP_WILL_BE_CHECK(!model_error_);
-  DUMP_WILL_BE_CHECK(entity_tracker_);
+  CHECK(!model_error_);
+  CHECK(entity_tracker_);
   // Prepares entities commit request data for entities which are
   // out of sync with the sync thread.
   CommitRequestDataList commit_requests;
