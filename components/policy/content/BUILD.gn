@@ -19,6 +19,8 @@ source_set("safe_sites_navigation_throttle") {
 
   deps = [
     "//base",
+    "//components/captive_portal/content",
+    "//components/captive_portal/core:buildflags",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/safe_search_api",

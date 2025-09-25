@@ -33,6 +33,9 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kCustomPolicyRegistrationDelay);
 POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kPolicyRegistrationDelay;
 
+// Used to add a captive portal check in SafeSitesNavigationThrottle.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kSafeSitesCaptivePortalCheck);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

@@ -5,9 +5,13 @@
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 
 #include "base/functional/bind.h"
+#include "components/captive_portal/content/captive_portal_tab_helper.h"
+#include "components/captive_portal/core/buildflags.h"
 #include "components/policy/content/safe_search_service.h"
+#include "components/policy/core/common/features.h"
 #include "components/url_matcher/url_util.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 // Use of Unretained for is safe because it is called synchronously from this
@@ -45,6 +49,22 @@ SafeSitesNavigationThrottle::WillStartRequest() {
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return PROCEED;
   }
+
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
+  if (base::FeatureList::IsEnabled(
+          policy::features::kSafeSitesCaptivePortalCheck)) {
+    content::WebContents* contents = navigation_handle()->GetWebContents();
+    if (contents) {
+      captive_portal::CaptivePortalTabHelper* captive_portal_tab_helper =
+          captive_portal::CaptivePortalTabHelper::FromWebContents(contents);
+      if (captive_portal_tab_helper &&
+          (captive_portal_tab_helper->is_captive_portal_tab() ||
+           captive_portal_tab_helper->is_captive_portal_window())) {
+        return PROCEED;
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 
   GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid()) {

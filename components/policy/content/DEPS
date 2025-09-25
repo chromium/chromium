@@ -1,5 +1,6 @@
 include_rules = [
   "+content/public/browser",
+  "+components/captive_portal",
   "+components/policy",
   "+components/keyed_service",
   "+components/prefs",

@@ -29,4 +29,9 @@ BASE_FEATURE(kCustomPolicyRegistrationDelay, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kPolicyRegistrationDelay{
     &kCustomPolicyRegistrationDelay, "PolicyRegistrationDelay", base::Hours(6)};
 
+// Used to add a captive portal check in SafeSitesNavigationThrottle.
+BASE_FEATURE(kSafeSitesCaptivePortalCheck,
+             "SafeSitesCaptivePortalCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace policy::features
