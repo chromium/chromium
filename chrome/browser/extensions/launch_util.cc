@@ -13,7 +13,10 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/launch_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

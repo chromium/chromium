@@ -50,6 +50,7 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/browser/ui_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_set.h"
@@ -68,6 +69,8 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 

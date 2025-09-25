@@ -27,10 +27,13 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

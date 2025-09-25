@@ -26,6 +26,7 @@
 #include "crypto/hash.h"
 #include "crypto/random.h"
 #include "crypto/signature_verifier.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "rlz/buildflags/buildflags.h"
@@ -37,6 +38,8 @@
 #if BUILDFLAG(ENABLE_RLZ)
 #include "rlz/lib/machine_id.h"  // nogncheck crbug.com/1125897
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 

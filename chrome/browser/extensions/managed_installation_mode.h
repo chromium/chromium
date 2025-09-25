@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MANAGED_INSTALLATION_MODE_H_
 #define CHROME_BROWSER_EXTENSIONS_MANAGED_INSTALLATION_MODE_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 // Policy-based installation mode for extensions, default is kAllowed.

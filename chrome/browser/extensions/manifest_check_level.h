@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MANIFEST_CHECK_LEVEL_H_
 #define CHROME_BROWSER_EXTENSIONS_MANIFEST_CHECK_LEVEL_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 // The amount of manifest checking to perform.

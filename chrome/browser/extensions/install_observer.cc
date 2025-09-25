@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/install_observer.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 InstallObserver::ExtensionInstallParams::ExtensionInstallParams(

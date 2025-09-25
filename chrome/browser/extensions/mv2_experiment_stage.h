@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MV2_EXPERIMENT_STAGE_H_
 #define CHROME_BROWSER_EXTENSIONS_MV2_EXPERIMENT_STAGE_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 // The current stage of the Manifest V2 deprecation. Note that for all stages,

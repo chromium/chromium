@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MANAGED_TOOLBAR_PIN_MODE_H_
 #define CHROME_BROWSER_EXTENSIONS_MANAGED_TOOLBAR_PIN_MODE_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 // Policy-based behavior for "Pin extension to toolbar" from the extensions
