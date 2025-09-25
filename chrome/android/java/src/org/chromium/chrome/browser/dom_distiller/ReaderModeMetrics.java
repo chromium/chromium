@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.dom_distiller;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
@@ -11,9 +14,58 @@ import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Metrics utils for use in reader mode. */
 @NullMarked
 public class ReaderModeMetrics {
+    @VisibleForTesting
+    public static final String READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM =
+            "DomDistiller.Android.ReaderModeContextualPageActionEvent";
+
+    // LINT.IfChange(ReaderModeContextualPageActionEvent)
+
+    /**
+     * These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused.
+     */
+    @IntDef({
+        ReaderModeContextualPageActionEvent.UNKNOWN,
+        ReaderModeContextualPageActionEvent.NOT_ELIGIBLE,
+        ReaderModeContextualPageActionEvent.ELIGIBLE,
+        ReaderModeContextualPageActionEvent.SUPPRESSED,
+        ReaderModeContextualPageActionEvent.SHOWN,
+        ReaderModeContextualPageActionEvent.TIME_OUT,
+        ReaderModeContextualPageActionEvent.CLICKED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ReaderModeContextualPageActionEvent {
+        int UNKNOWN = 0;
+        int NOT_ELIGIBLE = 1;
+        int ELIGIBLE = 2;
+        int SUPPRESSED = 3;
+        int SHOWN = 4;
+        int TIME_OUT = 5;
+        int CLICKED = 6;
+        int MAX_VALUE = CLICKED;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReaderModeContextualPageActionEvent)
+
+    /**
+     * Records an action taken by the user on the reader mode contextual page action.
+     *
+     * @param action The {@link ReaderModeAction} to record.
+     */
+    public static void recordReaderModeContextualPageActionEvent(
+            @ReaderModeContextualPageActionEvent int action) {
+        RecordHistogram.recordEnumeratedHistogram(
+                READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
+                action,
+                ReaderModeContextualPageActionEvent.MAX_VALUE);
+    }
+
     /**
      * Record if any distillation signal was in time for the CPA timeout.
      *

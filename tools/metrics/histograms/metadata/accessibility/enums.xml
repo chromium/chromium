@@ -2318,6 +2318,25 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_aloud_app_model.h:ReadAloudStopSource) -->
 
+<!-- LINT.IfChange(ReaderModeContextualPageActionEvent) -->
+
+<enum name="ReaderModeContextualPageActionEvent">
+  <summary>
+    Track the type of action taken on the contextual page action button.
+  </summary>
+  <int value="0" label="Unknown action"/>
+  <int value="1" label="The page was not eligible for Reader Mode"/>
+  <int value="2" label="The page was eligible for Reader Mode"/>
+  <int value="3"
+      label="The action was suppressed from showing due to inactivity"/>
+  <int value="4" label="The action was shown"/>
+  <int value="5"
+      label="The action timed out and reverted back to the default action"/>
+  <int value="6" label="The action was clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeMetrics.java:ReaderModeContextualPageActionEvent) -->
+
 <!-- LINT.IfChange(ReaderModeEntryPoint) -->
 
 <enum name="ReaderModeEntryPoint">

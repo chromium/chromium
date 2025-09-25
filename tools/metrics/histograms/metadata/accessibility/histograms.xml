@@ -4017,6 +4017,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="DomDistiller.Android.ReaderModeContextualPageActionEvent"
+    enum="ReaderModeContextualPageActionEvent" expires_after="2026-06-01">
+  <owner>wylieb@google.com</owner>
+  <owner>chrome-reader-mode-team@google.com</owner>
+  <summary>
+    Records various events that happen in the Reader Mode Contextual Page
+    Action. These represent a funnel of user actions starting from eligibility
+    to click-through.
+  </summary>
+</histogram>
+
 <histogram name="DomDistiller.Android.ReaderModeEnabledInAccessibilitySettings"
     enum="Boolean" expires_after="2026-06-01">
   <owner>wylieb@google.com</owner>

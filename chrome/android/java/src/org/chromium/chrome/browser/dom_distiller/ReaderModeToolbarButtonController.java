@@ -147,6 +147,8 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
             return;
         }
 
+        ReaderModeMetrics.recordReaderModeContextualPageActionEvent(
+                ReaderModeMetrics.ReaderModeContextualPageActionEvent.CLICKED);
         readerModeManager.activateReaderMode(EntryPoint.TOOLBAR_BUTTON);
     }
 
@@ -173,6 +175,8 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
         Runnable task =
                 mCallbackController.makeCancelable(
                         () -> {
+                            ReaderModeMetrics.recordReaderModeContextualPageActionEvent(
+                                    ReaderModeMetrics.ReaderModeContextualPageActionEvent.TIME_OUT);
                             setCanShowButton(false);
                         });
         PostTask.postDelayedTask(

@@ -33,6 +33,7 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
@@ -202,8 +203,17 @@ public class ReaderModeToolbarButtonControllerTest {
                 };
         controller.addObserver(observer);
 
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ReaderModeMetrics
+                                        .READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
+                                ReaderModeMetrics.ReaderModeContextualPageActionEvent.TIME_OUT)
+                        .build();
+
         // Simulate the button being shown, and verify that the button is hidden after a delay.
         controller.onActionShown();
         callbackHelper.waitForNext();
+        watcher.assertExpected();
     }
 }

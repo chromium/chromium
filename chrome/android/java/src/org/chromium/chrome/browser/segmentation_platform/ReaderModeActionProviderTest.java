@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeActionRateLimiter;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeMetrics;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -181,6 +182,12 @@ public class ReaderModeActionProviderTest {
                                 "DomDistiller.Android.AnyPageSignalWithinTimeout", true)
                         .expectBooleanRecord(
                                 "DomDistiller.Android.DistillablePageSignalWithinTimeout", true)
+                        // First step in the CPA funnel which shows the page is eligible for
+                        // distillation.
+                        .expectIntRecord(
+                                ReaderModeMetrics
+                                        .READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
+                                ReaderModeMetrics.ReaderModeContextualPageActionEvent.ELIGIBLE)
                         .expectAnyRecord("DomDistiller.Time.TimeToProvideResultToAccumulator")
                         .build();
         setReaderModeBackendSignal(true);
@@ -326,7 +333,22 @@ public class ReaderModeActionProviderTest {
                 .runReadabilityHeuristicsOnWebContents(
                         any(), readabilityHeuristicCallbackCaptor.capture());
         Assert.assertNotNull(readabilityHeuristicCallbackCaptor.getValue());
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ReaderModeMetrics
+                                        .READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
+                                ReaderModeMetrics.ReaderModeContextualPageActionEvent.ELIGIBLE)
+                        .expectIntRecord(
+                                ReaderModeMetrics
+                                        .READER_MODE_CONTEXTUAL_PAGE_ACTION_EVENT_HISTOGRAM,
+                                ReaderModeMetrics.ReaderModeContextualPageActionEvent.SUPPRESSED)
+                        .build();
+
         readabilityHeuristicCallbackCaptor.getValue().onResult(true);
+
+        watcher.assertExpected();
         verify(mMockSignalAccumulator, Mockito.times(0))
                 .setSignal(AdaptiveToolbarButtonVariant.READER_MODE, true);
     }
