@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonPrope
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridge;
+import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -78,7 +79,10 @@ public class ExtensionActionListMediatorTest {
 
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
-    private FakeExtensionActionsBridge mFakeExtensionActionsBridge;
+    @Rule
+    public final FakeExtensionActionsBridgeRule mFakeBridgeRule =
+            new FakeExtensionActionsBridgeRule();
+
     private FakeExtensionActionsBridge.ProfileModel mProfileModel;
     private MockTab mTab1;
     private MockTab mTab2;
@@ -90,8 +94,6 @@ public class ExtensionActionListMediatorTest {
     @Before
     public void setUp() {
         Context context = ApplicationProvider.getApplicationContext();
-        mFakeExtensionActionsBridge = new FakeExtensionActionsBridge();
-        mFakeExtensionActionsBridge.install();
 
         // Mock {@link ExtensionActionsBridge}.
         ExtensionActionContextMenuBridgeJni.setInstanceForTesting(mActionContextMenuBridgeJniMock);
@@ -120,7 +122,6 @@ public class ExtensionActionListMediatorTest {
     @After
     public void tearDown() {
         mMediator.destroy();
-        mFakeExtensionActionsBridge.uninstall();
     }
 
     @Test
@@ -220,7 +221,7 @@ public class ExtensionActionListMediatorTest {
     }
 
     private void setUpProfileModel() {
-        mProfileModel = mFakeExtensionActionsBridge.getOrCreateProfileModel(mProfile);
+        mProfileModel = mFakeBridgeRule.getFakeBridge().getOrCreateProfileModel(mProfile);
         mProfileModel.setInitialized(true);
 
         mProfileModel.putAction(
