@@ -542,16 +542,19 @@ GCMDriverDesktop::GCMDriverDesktop(
   // Create and initialize the GCMClient. Note that this does not initiate the
   // GCM check-in.
   io_worker_ = std::make_unique<IOWorker>(ui_thread, io_thread);
-  os_crypt_async->GetInstance(base::BindOnce(
-      &GCMDriverDesktop::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr(),
+  os_crypt_async->GetInstance(
       base::BindOnce(
-          &GCMDriverDesktop::IOWorker::Initialize,
-          base::Unretained(io_worker_.get()), std::move(gcm_client_factory),
-          chrome_build_info, store_path, std::move(get_socket_factory_callback),
-          // ->Clone() permits creation of an equivalent
-          // SharedURLLoaderFactory on IO thread.
-          url_loader_factory_for_ui->Clone(),
-          base::Unretained(network_connection_tracker), blocking_task_runner)));
+          &GCMDriverDesktop::OnOsCryptReady, weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&GCMDriverDesktop::IOWorker::Initialize,
+                         base::Unretained(io_worker_.get()),
+                         std::move(gcm_client_factory), chrome_build_info,
+                         store_path, std::move(get_socket_factory_callback),
+                         // ->Clone() permits creation of an equivalent
+                         // SharedURLLoaderFactory on IO thread.
+                         url_loader_factory_for_ui->Clone(),
+                         base::Unretained(network_connection_tracker),
+                         blocking_task_runner)),
+      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
 }
 
 GCMDriverDesktop::~GCMDriverDesktop() = default;
