@@ -263,10 +263,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // rate.
   virtual bool IsSingleBuffered() const = 0;
 
-  // CanvasResourceProviderSharedImage overrides these methods as part of
-  // implementing resource recycling.
-  virtual void SetResourceRecyclingEnabled(bool) {}
-
   SkSurface* GetSkSurface() const;
   bool IsGpuContextLost() const;
 
@@ -565,6 +561,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource);
   void OnDestroyResource() { --num_inflight_resources_; }
+  void SetResourceRecyclingEnabled(bool value);
 
  protected:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -614,7 +611,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
 
-  void SetResourceRecyclingEnabled(bool value) override;
   void RecycleResource(scoped_refptr<CanvasResourceSharedImage>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
