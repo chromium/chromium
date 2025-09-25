@@ -227,6 +227,9 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             RecyclerView recyclerView,
             RecyclerView.ViewHolder current,
             RecyclerView.ViewHolder target) {
+        if (isPinnedRegularTab(current) != isPinnedRegularTab(target)) {
+            return false;
+        }
         if (isArchivedMessageCard(current)) {
             return canDropOnArchivalMessage((SimpleRecyclerViewAdapter.ViewHolder) target);
         }
@@ -387,7 +390,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
                 onDropOnArchivalMessageCard();
             } else if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX
                     && mActionsOnAllRelatedTabs
-                    && !hasCollaboration(viewHolder)) {
+                    && !hasCollaboration(viewHolder)
+                    && !isPinnedRegularTab(viewHolder)) {
                 if (selectedViewHolder != null
                         && !recyclerView.isComputingLayout()
                         && shouldUpdate) {
@@ -594,7 +598,10 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
 
             handleHoverForArchiveMessage(recyclerView);
 
-            if (hasTabPropertiesModel(hoveredViewHolder) && !hasCollaboration(viewHolder)) {
+            if (hasTabPropertiesModel(hoveredViewHolder)
+                    && !hasCollaboration(viewHolder)
+                    && !isPinnedRegularTab(viewHolder)
+                    && !isPinnedRegularTab(hoveredViewHolder)) {
                 mModel.updateHoveredCardForHover(mHoveredTabIndex, true);
             } else {
                 mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
@@ -867,7 +874,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
         return true;
     }
 
-    private boolean isPinnedRegularTab(RecyclerView.ViewHolder viewHolder) {
+    private boolean isPinnedRegularTab(RecyclerView.@Nullable ViewHolder viewHolder) {
         if (viewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder simpleViewHolder) {
             PropertyModel model = simpleViewHolder.model;
             if (model != null && model.get(CARD_TYPE) == TAB) {
