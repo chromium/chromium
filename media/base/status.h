@@ -15,6 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
@@ -118,14 +120,13 @@ struct StatusTraitsHelper {
     }
   }
 
-  static constexpr std::string_view GetMessage(std::string_view message,
-                                               T::Codes code) {
-    if (!message.empty()) {
-      return message;
-    } else if constexpr (requires { &T::ReadableCodeName; }) {
-      return T::ReadableCodeName(code);
+  static std::string RenderGroupAndCode(T::Codes code) {
+    if constexpr (requires { &T::ReadableCodeName; }) {
+      return base::StrCat({T::Group(), "::", T::ReadableCodeName(code)});
     } else {
-      return "";
+      return base::StrCat(
+          {T::Group(),
+           "::", base::NumberToString(static_cast<StatusCodeType>(code))});
     }
   }
 };
@@ -247,9 +248,8 @@ class MEDIA_EXPORT TypedStatus {
       return;
     }
     data_ = std::make_unique<internal::StatusData>(
-        T::Group(), static_cast<StatusCodeType>(code),
-        internal::StatusTraitsHelper<Traits>::GetMessage(std::move(message),
-                                                         code));
+        internal::StatusTraitsHelper<Traits>::RenderGroupAndCode(code),
+        static_cast<StatusCodeType>(code), std::move(message));
     data_->AddLocation(location);
   }
 
@@ -269,8 +269,6 @@ class MEDIA_EXPORT TypedStatus {
       return *internal::StatusTraitsHelper<Traits>::OkEnumValue();
     return static_cast<Codes>(data_->code);
   }
-
-  std::string_view group() const { return data_ ? data_->group : T::Group(); }
 
   std::string_view message() const {
     DCHECK(data_);

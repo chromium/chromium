@@ -211,8 +211,7 @@ void MojoVideoDecoder::OnInitializeDone(const DecoderStatus& status,
                                         int32_t max_decode_requests,
                                         VideoDecoderType decoder_type,
                                         bool needs_transcryption) {
-  DVLOG(1) << __func__ << ": status = " << status.group() << ":"
-           << static_cast<int>(status.code());
+  status.DebugLog(1);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   initialized_ = status.is_ok();
   needs_bitstream_conversion_ = needs_bitstream_conversion;

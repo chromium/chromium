@@ -622,16 +622,4 @@ TEST_F(StatusTest, OrTypeMapping) {
   ASSERT_TRUE(case_5 == MapValueCodeTraits::Codes::kBadStartCode);
 }
 
-TEST_F(StatusTest, TestDefaultMessageHelper) {
-  using Status = TypedStatus<TraitsWithDefaultNamedMessage>;
-  Status default_msg1 = Status::Codes::kFail1;
-  Status default_msg2 = Status::Codes::kFail2;
-  Status default_msg3 = Status::Codes::kFail3;
-  Status custom_msg = {Status::Codes::kFail1, "Custom"};
-  ASSERT_EQ(default_msg1.message(), "Failure1");
-  ASSERT_EQ(default_msg2.message(), "Failure2");
-  ASSERT_EQ(default_msg3.message(), "Failure3");
-  ASSERT_EQ(custom_msg.message(), "Custom");
-}
-
 }  // namespace media
