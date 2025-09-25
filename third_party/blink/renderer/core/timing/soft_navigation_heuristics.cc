@@ -158,16 +158,13 @@ constexpr bool IsInteractionEnd(
 }
 
 std::optional<SoftNavigationHeuristics::EventScope::Type>
-EventScopeTypeFromEvent(const Event& event,
-                        bool has_interaction_effects_monitor) {
+EventScopeTypeFromInputEvent(const Event& event,
+                             bool has_interaction_effects_monitor) {
   if (!event.isTrusted()) {
     return std::nullopt;
   }
   if (event.IsMouseEvent() && event.type() == event_type_names::kClick) {
     return SoftNavigationHeuristics::EventScope::Type::kClick;
-  }
-  if (event.type() == event_type_names::kNavigate) {
-    return SoftNavigationHeuristics::EventScope::Type::kNavigate;
   }
   if (event.IsKeyboardEvent()) {
     Node* target_node =
@@ -685,9 +682,10 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
 }
 
 std::optional<SoftNavigationHeuristics::EventScope>
-SoftNavigationHeuristics::MaybeCreateEventScopeForEvent(const Event& event) {
-  std::optional<EventScope::Type> type =
-      EventScopeTypeFromEvent(event, !interaction_effects_monitors_.empty());
+SoftNavigationHeuristics::MaybeCreateEventScopeForInputEvent(
+    const Event& event) {
+  std::optional<EventScope::Type> type = EventScopeTypeFromInputEvent(
+      event, !interaction_effects_monitors_.empty());
   if (!type) {
     return std::nullopt;
   }

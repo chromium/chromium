@@ -85,7 +85,8 @@ class InteractionEffectsMonitorTest : public testing::Test {
     auto* event =
         CreateEventForEventScopeType(type, GetScriptStateForTest(), node);
     std::optional<SoftNavigationHeuristics::EventScope> event_scope(
-        GetSoftNavigationHeuristics()->MaybeCreateEventScopeForEvent(*event));
+        GetSoftNavigationHeuristics()->MaybeCreateEventScopeForInputEvent(
+            *event));
     scheduler::TaskAttributionInfo* task_state =
         scheduler::TaskAttributionTracker::From(GetIsolate())
             ->CurrentTaskState();

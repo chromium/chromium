@@ -118,9 +118,9 @@ class CORE_EXPORT SoftNavigationHeuristics
     return CreateEventScope(EventScope::Type::kNavigate);
   }
 
-  // Returns an `EventScope` for the given `Event` if the event is relevant to
-  // soft navigation tracking, otherwise it returns nullopt.
-  std::optional<EventScope> MaybeCreateEventScopeForEvent(const Event&);
+  // Returns an `EventScope` for the given input `Event` if the event is
+  // relevant to soft navigation tracking, otherwise it returns nullopt.
+  std::optional<EventScope> MaybeCreateEventScopeForInputEvent(const Event&);
 
   SoftNavigationPaintAttributionTracker* GetPaintAttributionTracker() {
     CHECK_EQ(IsPrePaintBasedAttributionEnabled(), !!paint_attribution_tracker_);

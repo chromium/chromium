@@ -852,8 +852,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       // If these conditions are met, create a SoftNavigationEventScope to
       // consider this a "user initiated click", and the dispatched event
       // handlers as potential soft navigation tasks.
-      soft_navigation_scope =
-          heuristics->MaybeCreateEventScopeForEvent(*navigate_event);
+      soft_navigation_scope = heuristics->CreateNavigationEventScope();
     }
   }
 

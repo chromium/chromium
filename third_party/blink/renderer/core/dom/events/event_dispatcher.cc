@@ -216,7 +216,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
   if (window) {
     if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
       soft_navigation_scope =
-          heuristics->MaybeCreateEventScopeForEvent(*event_);
+          heuristics->MaybeCreateEventScopeForInputEvent(*event_);
     }
   }
 
