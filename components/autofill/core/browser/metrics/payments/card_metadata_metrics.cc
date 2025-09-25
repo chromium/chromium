@@ -280,9 +280,6 @@ void LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent event,
             CardBenefitFormEvent::
                 kSuggestionWithBenefitShownWithMultipleServerCards);
       }
-      LogBenefitFormEventForAllBenefitSourcesWithBenefitAvailableDeprecated(
-          context.instrument_ids_to_available_benefit_sources,
-          FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE);
       break;
     }
     case CardMetadataLoggingEvent::kSelected:

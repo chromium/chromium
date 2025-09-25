@@ -130,15 +130,10 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   // Log if any of the suggestions had benefit available.
   if (!has_logged_suggestion_shown_for_benefits_) {
     if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
-      Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE,
-          form);
       LogCardBenefitFormEventMetrics(CardMetadataLoggingEvent::kShown,
                                      metadata_logging_context_);
     }
     has_logged_suggestion_shown_for_benefits_ = true;
-  }
-  if (metadata_logging_context_.DidShowCardWithBenefitAvailable()) {
-    Log(FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN, form);
   }
 
   // Log if any of the suggestions contains card info retrieval enrolled card.

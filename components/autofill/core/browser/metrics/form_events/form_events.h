@@ -244,15 +244,18 @@ enum FormEvent {
   // Same as above but only triggered once per page load.
   FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_SELECTED_ONCE = 88,
 
+  // DEPRECATED in M141, DO NOT USE.
   // Suggestions containing cards with a benefit available were shown.
-  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN = 89,
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN = 89,
   // DEPRECATED in M128, DO NOT USE.
   // Suggestions were shown, and no card had a benefit available.
   DEPRECATED_FORM_EVENT_SUGGESTION_FOR_CARD_WITHOUT_BENEFIT_AVAILABLE_SHOWN =
       90,
+  // DEPRECATED in M141, DO NOT USE.
   // Suggestions containing cards with a benefit available were shown. Logged
   // once per page load.
-  FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE = 91,
+  DEPRECATED_FORM_EVENT_SUGGESTION_FOR_CARD_WITH_BENEFIT_AVAILABLE_SHOWN_ONCE =
+      91,
   // DEPRECATED in M128, DO NOT USE.
   // Suggestions were shown, and no card had a benefit available. Logged once
   // per page load.

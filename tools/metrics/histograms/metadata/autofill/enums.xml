@@ -2376,13 +2376,14 @@ Called by update_autofill_enums.py.-->
   <int value="87" label="Masked server card suggestion selected"/>
   <int value="88" label="Masked server card suggestion selected (once)"/>
   <int value="89"
-      label="Suggestions containing cards with a benefit available were shown"/>
+      label="(DEPRECATED) Suggestions containing cards with a benefit
+             available were shown"/>
   <int value="90"
       label="(DEPRECATED) Suggestions were shown, and no card had a benefit
              available"/>
   <int value="91"
-      label="Suggestions containing cards with a benefit available were shown
-             (once)"/>
+      label="(DEPRECATED) Suggestions containing cards with a benefit
+             available were shown (once)"/>
   <int value="92"
       label="(DEPRECATED) Suggestions were shown, and no card had a benefit
              available (once)"/>
