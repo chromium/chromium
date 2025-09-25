@@ -76,21 +76,18 @@ struct NavigateParams {
   explicit NavigateParams(
       std::unique_ptr<content::WebContents> contents_to_insert);
 #else
-  // Deprecated. Use the constructor that takes a |BrowserWindowInterface|
-  // if possible.
-  // TODO(http://crbug.com/443062679): Delete this.
+  // TODO(http://crbug.com/443062679): Delete these.
   NavigateParams(Browser* browser,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
 
-  // Deprecated. Use the constructor that takes a |BrowserWindowInterface|
-  // if possible.
   // TODO(http://crbug.com/443062679): Delete this.
   NavigateParams(Browser* browser,
                  std::unique_ptr<content::WebContents> contents_to_insert);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID)
+  // TODO(http://crbug.com/443062679): Unused in WML's Navigate().
   NavigateParams(BrowserWindowInterface* a_bwi,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
@@ -301,6 +298,7 @@ struct NavigateParams {
   // Please see the |browser_window_interface| field for documentation.
   //
   // Note: Please don't use this if you can use |browser_window_interface|.
+  //       Many usages are not yet supported, this is a WIP.
   //
   // TODO(http://crbug.com/443062679): Delete this.
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser = nullptr;
