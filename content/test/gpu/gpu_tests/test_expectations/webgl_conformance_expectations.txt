@@ -378,6 +378,9 @@ crbug.com/401988385 [ chromeos angle-opengles mesa_ge_21.0 passthrough ] conform
 # Comment below entry temporarily due to conflicts with crbug.com/443182226. Uncomment when crbug.com/443182226 is resolved
 # crbug.com/1490427 [ fuchsia web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
+# Samsung A13s are slow
+[ android android-sm-a137f ] deqp/data/gles2/shaders/conversions_vector_to_vector.html [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -397,7 +400,7 @@ crbug.com/1175371 [ angle-opengl display-server-x linux passthrough renderer-ski
 crbug.com/1175371 [ angle-opengles display-server-wayland linux passthrough ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 # Won't investigate failure on validating command decoder. Remove once it's unshipped.
-crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Failure ]
+crbug.com/angleproject/5499 [ no-passthrough ] conformance/glsl/misc/shaders-with-name-conflicts.html [ Skip ]
 
 # Need to implement new error semantics
 # https://github.com/KhronosGroup/WebGL/pull/2607
