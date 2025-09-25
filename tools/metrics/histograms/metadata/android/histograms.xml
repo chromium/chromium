@@ -7942,7 +7942,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RegisterResourcePathsAvailable2"
-    enum="NullableBoolean" expires_after="2025-10-22">
+    enum="NullableBoolean" expires_after="2026-04-22">
   <owner>alexmitra@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -7955,7 +7955,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.RegisterResourcePathsTimeTaken" units="ms"
-    expires_after="2025-10-22">
+    expires_after="2026-04-22">
   <owner>alexmitra@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
