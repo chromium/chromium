@@ -942,20 +942,26 @@ if (_is_default_toolchain) {
     }
   }
 
-  repack("repack_100_percent") {
-    sources = [
-      "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-      "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    ]
-    deps = [
-      "//third_party/blink/public:scaled_resources_100_percent",
-      "//ui/resources",
-    ]
-    output = "$target_gen_dir/chrome_100_percent.pak"
+  foreach(scale,
+          [
+            100,
+            200,
+          ]) {
+    repack("repack_${scale}_percent") {
+      sources = [
+        "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_${scale}_percent.pak",
+        "$root_gen_dir/ui/resources/ui_resources_${scale}_percent.pak",
+      ]
+      deps = [
+        "//third_party/blink/public:scaled_resources_${scale}_percent",
+        "//ui/resources",
+      ]
+      output = "$target_gen_dir/chrome_${scale}_percent.pak"
 
-    if (enable_resource_allowlist_generation) {
-      repack_allowlist = system_webview_pak_allowlist
-      deps += [ ":system_webview_pak_allowlist" ]
+      if (enable_resource_allowlist_generation) {
+        repack_allowlist = system_webview_pak_allowlist
+        deps += [ ":system_webview_pak_allowlist" ]
+      }
     }
   }
 
@@ -964,10 +970,17 @@ if (_is_default_toolchain) {
       "$target_gen_dir/chrome_100_percent.pak",
       "$target_gen_dir/resources.pak",
     ]
+
     deps = [
       ":repack_100_percent",
       ":repack_pack",
     ]
+
+    if (enable_hidpi) {
+      sources += [ "$target_gen_dir/chrome_200_percent.pak" ]
+      deps += [ ":repack_200_percent" ]
+    }
+
     disable_compression = true
   }
 
