@@ -730,9 +730,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     state->can_attach = browser_attach_observation_->CanAttachToBrowser();
     state->panel_is_active = active_state_calculator_.IsActive();
 
-    state->focused_tab_data =
-        CreateFocusedTabData(sharing_manager().GetFocusedTabData());
-
     if (base::FeatureList::IsEnabled(glic::mojom::features::kGlicMultiTab)) {
       OnPinningChanged(sharing_manager().GetPinnedTabs());
     }
