@@ -977,9 +977,13 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   mojom::blink::ScrollType scroll_type = GetParam();
-
-  GetDocument().View()->LayoutViewport()->ScrollBy(ScrollOffset(0, 100),
-                                                   scroll_type);
+  cc::ScrollSourceType source_type =
+      (scroll_type == mojom::blink::ScrollType::kAnchoring ||
+       scroll_type == mojom::blink::ScrollType::kClamping)
+          ? cc::ScrollSourceType::kStationaryScroll
+          : cc::ScrollSourceType::kRelativeScroll;
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, 100), scroll_type, source_type);
   // Set the target text to visible and change its position to cause a layout
   // and invoke the fragment anchor in the next begin frame.
   css_request.Complete("p { visibility: visible; top: 1001px; }");
@@ -1044,7 +1048,13 @@ TEST_P(TextFragmentAnchorScrollTest, DontDismissTextHighlightOnUserScroll) {
   ASSERT_EQ(2u, GetDocument().Markers().Markers().size());
 
   mojom::blink::ScrollType scroll_type = GetParam();
-  LayoutViewport()->ScrollBy(ScrollOffset(0, -10), scroll_type);
+  cc::ScrollSourceType source_type =
+      (scroll_type == mojom::blink::ScrollType::kAnchoring ||
+       scroll_type == mojom::blink::ScrollType::kClamping)
+          ? cc::ScrollSourceType::kStationaryScroll
+          : cc::ScrollSourceType::kRelativeScroll;
+  LayoutViewport()->SetScrollOffset(ScrollOffset(0, -10), scroll_type,
+                                    source_type);
 
   Compositor().BeginFrame();
 

@@ -1570,7 +1570,8 @@ TEST_P(LayoutBoxModelObjectTest, RemoveStickyUnderContain) {
 
   // This should not crash.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 }
 

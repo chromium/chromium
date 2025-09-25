@@ -73,7 +73,7 @@ TEST_P(FractionalScrollSimTest, GetBoundingClientRectAtFractional) {
   // Scroll on the layout viewport.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(700.5f, 500.6f), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
 
@@ -131,7 +131,7 @@ TEST_P(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
   // Scroll on the layout viewport.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0.f, 100.5f), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
   Compositor().BeginFrame();
   EXPECT_FALSE(
@@ -183,7 +183,7 @@ TEST_P(FractionalScrollSimTest, StickyDoesntOscillate) {
   // boundary and reproduced https://crbug.com/1010961.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0.f, 98.8675308f), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
   Compositor().BeginFrame();
   EXPECT_EQ(0, sticky->GetBoundingClientRect()->top());
 
@@ -464,7 +464,8 @@ TEST_P(ScrollAnimatorSimTest, TestRootFrameUserScrollCallBackCancelAnimation) {
   // callback will be executed.
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0, 300), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kSmooth, ScrollableArea::ScrollCallback());
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth,
+      ScrollableArea::ScrollCallback());
   Compositor().BeginFrame();
   ASSERT_TRUE(finished);
 }

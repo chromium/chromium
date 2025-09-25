@@ -256,7 +256,8 @@ TEST_F(EventHandlerTest, dragSelectionAfterScroll) {
 
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 400), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kAbsoluteScroll);
 
   WebMouseEvent mouse_down_event(WebInputEvent::Type::kMouseDown,
                                  gfx::PointF(0, 0), gfx::PointF(100, 200),
@@ -2183,7 +2184,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterCompositorScrollAtBeginFrame) {
   // true in WebViewImpl.
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->DidCompositorScroll(
-      gfx::PointF(0, 500), cc::ScrollSourceType::kNone);
+      gfx::PointF(0, 500), cc::ScrollSourceType::kAbsoluteScroll);
   WebView().MainFrameWidget()->ApplyViewportChangesForTesting(
       {gfx::Vector2dF(), gfx::Vector2dF(), 1.0f, false, 0, 0,
        cc::BrowserControlsState::kBoth, true});
@@ -2235,6 +2236,7 @@ TEST_F(EventHandlerSimTest, TestUpdateHoverAfterJSScrollAtBeginFrame) {
   bool finished = false;
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 1000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kAbsoluteScroll,
       mojom::blink::ScrollBehavior::kSmooth,
       ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {

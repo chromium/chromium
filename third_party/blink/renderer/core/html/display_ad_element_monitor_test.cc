@@ -132,7 +132,8 @@ TEST_F(DisplayAdElementMonitorTest, ScrollingDoesNotSendNewReport) {
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
@@ -188,7 +189,8 @@ TEST_F(DisplayAdElementMonitorTest, NestedAdElement) {
               OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
                                             gfx::Rect(110, 1350, 300, 250)));
   iframe_doc->View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
@@ -268,7 +270,8 @@ TEST_F(DisplayAdElementMonitorTest,
   EXPECT_CALL(MockClient(), OnMainFrameAdRectangleChanged(
                                 ad_element->GetDomNodeId(), gfx::Rect()));
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 200), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   task_environment_.FastForwardBy(base::Seconds(1));
   UpdateLifecycle();
   testing::Mock::VerifyAndClearExpectations(&MockClient());

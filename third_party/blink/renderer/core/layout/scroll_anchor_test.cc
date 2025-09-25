@@ -1006,7 +1006,8 @@ TEST_F(ScrollAnchorTest, ClampAdjustsAnchorAnimation) {
     <div class="content" id=four></div>
   )HTML");
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, 2000),
-                                    mojom::blink::ScrollType::kUser);
+                                    mojom::blink::ScrollType::kUser,
+                                    cc::ScrollSourceType::kStationaryScroll);
   Update();
   GetDocument()
       .getElementById(AtomicString("hidden"))
@@ -1150,7 +1151,8 @@ TEST_F(ScrollAnchorFindInPageTest, FindInPageResultPrioritized) {
   )HTML");
 
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, 150),
-                                    mojom::blink::ScrollType::kUser);
+                                    mojom::blink::ScrollType::kUser,
+                                    cc::ScrollSourceType::kStationaryScroll);
 
   const String search_text = "findme";
   ScrollAnchorTestFindInPageClient client;
@@ -1198,7 +1200,8 @@ TEST_F(ScrollAnchorFindInPageTest, FocusPrioritizedOverFindInPage) {
   )HTML");
 
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, 150),
-                                    mojom::blink::ScrollType::kUser);
+                                    mojom::blink::ScrollType::kUser,
+                                    cc::ScrollSourceType::kStationaryScroll);
 
   const String search_text = "findme";
   ScrollAnchorTestFindInPageClient client;
@@ -1260,7 +1263,8 @@ TEST_F(ScrollAnchorFindInPageTest, FocusedUnderStickyIsSkipped) {
   )HTML");
 
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, 150),
-                                    mojom::blink::ScrollType::kUser);
+                                    mojom::blink::ScrollType::kUser,
+                                    cc::ScrollSourceType::kStationaryScroll);
 
   GetDocument().getElementById(AtomicString("target"))->Focus();
 

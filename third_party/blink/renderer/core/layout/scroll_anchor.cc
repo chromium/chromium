@@ -718,7 +718,8 @@ void ScrollAnchor::Adjust() {
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"), "Adjust",
                       "new_offset", new_offset.ToString());
 
-  scroller_->SetScrollOffset(new_offset, mojom::blink::ScrollType::kAnchoring);
+  scroller_->SetScrollOffset(new_offset, mojom::blink::ScrollType::kAnchoring,
+                             cc::ScrollSourceType::kStationaryScroll);
 
   UseCounter::Count(ScrollerLayoutBox(scroller_)->GetDocument(),
                     WebFeature::kScrollAnchored);
@@ -795,14 +796,16 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
                         "RestoreAnchor", "anchor_object",
                         anchor_object->DebugName());
     scroller_->SetScrollOffset(desired_offset,
-                               mojom::blink::ScrollType::kAnchoring);
+                               mojom::blink::ScrollType::kAnchoring,
+                               cc::ScrollSourceType::kStationaryScroll);
     FindAnchor();
 
     // If the above FindAnchor call failed, reset the scroll position and try
     // again with the next found element.
     if (!anchor_object_) {
       scroller_->SetScrollOffset(current_offset,
-                                 mojom::blink::ScrollType::kAnchoring);
+                                 mojom::blink::ScrollType::kAnchoring,
+                                 cc::ScrollSourceType::kStationaryScroll);
       continue;
     }
 

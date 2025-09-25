@@ -1910,7 +1910,8 @@ ScriptPromise<IDLUndefined> LocalDOMWindow::scrollBy(
           scroll_to_options->behavior().AsEnum());
   viewport->SetScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
-      mojom::blink::ScrollType::kProgrammatic, scroll_behavior);
+      mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kRelativeScroll, scroll_behavior);
 
   return CreateScrollResolvedPromise(script_state);
 }
@@ -1983,7 +1984,8 @@ ScriptPromise<IDLUndefined> LocalDOMWindow::scrollTo(
           scroll_to_options->behavior().AsEnum());
   viewport->SetScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
-      mojom::blink::ScrollType::kProgrammatic, scroll_behavior);
+      mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
 
   return CreateScrollResolvedPromise(script_state);
 }

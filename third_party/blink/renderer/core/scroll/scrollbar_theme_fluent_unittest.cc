@@ -196,20 +196,23 @@ TEST_P(ScrollbarThemeFluentTest, ScrollbarBackgroundInvalidationTest) {
 
   // Verifies that when the thumb position changes from min offset, the
   // background invalidation is not triggered.
-  mock_scrollable_area()->SetScrollOffset(
-      ScrollOffset(0, 10), mojom::blink::ScrollType::kCompositor);
+  mock_scrollable_area()->SetScrollOffset(ScrollOffset(0, 10),
+                                          mojom::blink::ScrollType::kCompositor,
+                                          cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Verifies that when the thumb position changes from a non-zero offset,
   // the background invalidation is not triggered.
-  mock_scrollable_area()->SetScrollOffset(
-      ScrollOffset(0, 20), mojom::blink::ScrollType::kCompositor);
+  mock_scrollable_area()->SetScrollOffset(ScrollOffset(0, 20),
+                                          mojom::blink::ScrollType::kCompositor,
+                                          cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Verifies that when the thumb position changes back to 0 (min) offset,
   // the background invalidation is not triggered.
-  mock_scrollable_area()->SetScrollOffset(
-      ScrollOffset(0, 0), mojom::blink::ScrollType::kCompositor);
+  mock_scrollable_area()->SetScrollOffset(ScrollOffset(0, 0),
+                                          mojom::blink::ScrollType::kCompositor,
+                                          cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 }
 

@@ -240,7 +240,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureExtract) {
   // Scroll down to the anchor element.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, kViewportHeight * 1.5),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
 
   auto metrics2 = CreateAnchorElementMetrics(*anchor_element);
   EXPECT_FALSE(metrics2->is_in_iframe);
@@ -302,7 +302,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureInIframe) {
   // Scroll down the main frame.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, kViewportHeight * 1.8),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   auto metrics2 = CreateAnchorElementMetrics(*anchor_element);
   EXPECT_TRUE(metrics2->is_in_iframe);
@@ -313,7 +313,7 @@ TEST_F(AnchorElementMetricsTest, AnchorFeatureInIframe) {
   // Scroll down inside iframe. Now the anchor element is visible.
   subframe->View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, kViewportHeight * 0.2),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   auto metrics3 = CreateAnchorElementMetrics(*anchor_element);
   EXPECT_TRUE(metrics3->is_in_iframe);

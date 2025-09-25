@@ -2604,8 +2604,8 @@ void Element::setScrollLeft(double new_left) {
     }
     scrollable_area->SetScrollOffset(end_offset,
                                      mojom::blink::ScrollType::kProgrammatic,
-                                     mojom::blink::ScrollBehavior::kAuto,
-                                     cc::ScrollSourceType::kAbsoluteScroll);
+                                     cc::ScrollSourceType::kAbsoluteScroll,
+                                     mojom::blink::ScrollBehavior::kAuto);
   }
 }
 
@@ -2663,8 +2663,8 @@ void Element::setScrollTop(double new_top) {
 
     scrollable_area->SetScrollOffset(end_offset,
                                      mojom::blink::ScrollType::kProgrammatic,
-                                     mojom::blink::ScrollBehavior::kAuto,
-                                     cc::ScrollSourceType::kAbsoluteScroll);
+                                     cc::ScrollSourceType::kAbsoluteScroll,
+                                     mojom::blink::ScrollBehavior::kAuto);
   }
 }
 
@@ -2919,8 +2919,8 @@ bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
   }
 
   return scrollable_area->SetScrollOffset(
-      new_offset, mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
-      cc::ScrollSourceType::kAbsoluteScroll);
+      new_offset, mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
 }
 
 bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
@@ -2958,8 +2958,8 @@ bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options) {
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(new_position);
   return viewport->SetScrollOffset(
       viewport->ScrollPositionToOffset(new_position),
-      mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
-      cc::ScrollSourceType::kRelativeScroll);
+      mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kRelativeScroll, scroll_behavior);
 }
 
 bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
@@ -2998,8 +2998,8 @@ bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(new_position);
   new_offset = viewport->ScrollPositionToOffset(new_position);
   return viewport->SetScrollOffset(
-      new_offset, mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
-      cc::ScrollSourceType::kAbsoluteScroll);
+      new_offset, mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
 }
 
 gfx::Rect Element::BoundsInWidget() const {

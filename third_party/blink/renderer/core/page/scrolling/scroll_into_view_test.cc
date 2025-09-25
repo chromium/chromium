@@ -984,7 +984,8 @@ TEST_F(ScrollIntoViewTest, OriginCrossingUseCounter) {
   }
 
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   // Cross origin frames should record the scroll into view use count.
   {

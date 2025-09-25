@@ -1321,10 +1321,10 @@ void Page::DidCommitLoad(LocalFrame* frame) {
     // would update the previous history item, Page::didCommitLoad is called
     // after a new history item is created in FrameLoader.
     // See crbug.com/642279
-    GetVisualViewport().SetScrollOffset(ScrollOffset(),
-                                        mojom::blink::ScrollType::kProgrammatic,
-                                        mojom::blink::ScrollBehavior::kInstant,
-                                        ScrollableArea::ScrollCallback());
+    GetVisualViewport().SetScrollOffset(
+        ScrollOffset(), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
+        ScrollableArea::ScrollCallback());
   }
   // crbug/1312107: If DevTools has "Highlight ad frames" checked when the
   // main frame is refreshed or the ad frame is navigated to a different

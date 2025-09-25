@@ -58,13 +58,12 @@ class CORE_EXPORT RootFrameViewport final
   // ScrollableArea Implementation
   PhysicalOffset LocalToScrollOriginOffset() const final;
   bool IsRootFrameViewport() const override { return true; }
-  bool SetScrollOffset(
-      const ScrollOffset&,
-      mojom::blink::ScrollType,
-      mojom::blink::ScrollBehavior,
-      ScrollCallback on_finish,
-      bool targeted_scroll = false,
-      cc::ScrollSourceType = cc::ScrollSourceType::kNone) override;
+  bool SetScrollOffset(const ScrollOffset&,
+                       mojom::blink::ScrollType,
+                       cc::ScrollSourceType,
+                       mojom::blink::ScrollBehavior,
+                       ScrollCallback on_finish,
+                       bool targeted_scroll = false) override;
   PhysicalRect ScrollIntoView(
       const PhysicalRect&,
       const PhysicalBoxStrut& scroll_margin,
@@ -194,10 +193,10 @@ class CORE_EXPORT RootFrameViewport final
   bool DistributeScrollBetweenViewports(
       const ScrollOffset&,
       mojom::blink::ScrollType,
+      cc::ScrollSourceType,
       mojom::blink::ScrollBehavior,
       ViewportToScrollFirst,
-      ScrollCallback on_finish = ScrollCallback(),
-      cc::ScrollSourceType = cc::ScrollSourceType::kNone);
+      ScrollCallback on_finish = ScrollCallback());
 
   // If either of the layout or visual viewports are scrolled explicitly (i.e.
   // not through this class), their updated offset will not be reflected in this

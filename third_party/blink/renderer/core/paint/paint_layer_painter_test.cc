@@ -481,7 +481,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   // Scroll the view so that both |content1| and |content2| are in the interest
   // rect.
   GetLayoutView().GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 3000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 3000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesExceptPaint();
   // The layer needs repaint when its contents cull rect changes.
   EXPECT_TRUE(target_layer->SelfNeedsRepaint());

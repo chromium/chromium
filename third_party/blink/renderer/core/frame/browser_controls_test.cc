@@ -540,7 +540,8 @@ TEST_F(BrowserControlsTest, MAYBE(ScrollDownThenUp)) {
                                       50.f, 0, true);
   web_view->GetBrowserControls().SetShownRatio(1, 1);
   GetFrame()->View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   CompositeForTest();
 
   GetWebFrameWidget()->DispatchThroughCcInputHandler(
@@ -599,7 +600,8 @@ TEST_F(BrowserControlsTest, MAYBE(ScrollUpThenDown)) {
                                       50.f, 0, false);
   web_view->GetBrowserControls().SetShownRatio(0, 0);
   GetFrame()->View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   CompositeForTest();
 
   GetWebFrameWidget()->DispatchThroughCcInputHandler(
@@ -729,7 +731,8 @@ TEST_F(BrowserControlsTest, MAYBE(ScrollableSubregionScrollFirst)) {
                                       50.f, 0, true);
   web_view->GetBrowserControls().SetShownRatio(1, 1);
   GetFrame()->View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   CompositeForTest();
 
   // Test scroll down
@@ -797,7 +800,8 @@ TEST_F(BrowserControlsTest, MAYBE(ScrollableIframeScrollFirst)) {
                                       50.f, 0, true);
   web_view->GetBrowserControls().SetShownRatio(1, 1);
   GetFrame()->View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   CompositeForTest();
 
   // Test scroll down
@@ -1019,7 +1023,8 @@ TEST_F(BrowserControlsTest, MAYBE(ZeroHeightMeansNoEffect)) {
                                       0, 0, false);
   web_view->GetBrowserControls().SetShownRatio(0, 0);
   GetFrame()->View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   CompositeForTest();
 
   EXPECT_FLOAT_EQ(0.f, web_view->GetBrowserControls().ContentOffset());
@@ -1112,7 +1117,8 @@ TEST_F(BrowserControlsSimTest, MAYBE(StateConstraints)) {
   Compositor().BeginFrame();
 
   GetDocument().View()->GetScrollableArea()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   // Setting permitted state should change the content offset to match the
   // constraint.
   Compositor().LayerTreeHost()->UpdateBrowserControlsState(
@@ -1869,7 +1875,7 @@ TEST_F(BrowserControlsTest,
     GetVisualViewport().ClampToBoundaries();
     view->LayoutViewport()->SetScrollOffset(
         view->LayoutViewport()->GetScrollOffset(),
-        mojom::blink::ScrollType::kProgrammatic);
+        mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
 
     ASSERT_EQ(80.f, web_view->GetBrowserControls().ContentOffset());
     EXPECT_EQ(expected_root_offset, root_viewport->GetScrollOffset().y());

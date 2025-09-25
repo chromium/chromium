@@ -1523,7 +1523,8 @@ TEST_F(LayoutObjectTest, LocalToAncestoRectViewIgnoreAncestorScroll) {
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   PhysicalRect rect(0, 0, 100, 100);
@@ -1583,7 +1584,8 @@ TEST_F(LayoutObjectTest,
   LayoutBoxModelObject* intermediate =
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("intermediate"));
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   intermediate->GetScrollableArea()->ScrollBy(ScrollOffset(0, 100),
                                               mojom::blink::ScrollType::kUser);
   UpdateAllLifecyclePhasesForTest();
@@ -1829,7 +1831,8 @@ TEST_F(LayoutObjectTest, ScrollOffsetMapping) {
   ASSERT_TRUE(scroller);
   scroller->scrollToForTesting(100, 200);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(10, 20), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(10, 20), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   LayoutObject* inner = GetLayoutObjectByElementId("inner");
   ASSERT_TRUE(inner);

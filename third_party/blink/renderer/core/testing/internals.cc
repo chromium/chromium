@@ -702,7 +702,8 @@ void Internals::ResetToConsistentState(Page* page) {
 
   LocalFrame* frame = page->DeprecatedLocalMainFrame();
   frame->View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   OverrideUserPreferredLanguagesForTesting(Vector<AtomicString>());
 
   KeyboardEventManager::SetCurrentCapsLockState(

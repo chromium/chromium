@@ -549,7 +549,8 @@ TEST_F(MapCoordinatesTest, FixedPosInFixedPosScrollView) {
   ASSERT_TRUE(IsA<LayoutView>(view));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
@@ -583,7 +584,8 @@ TEST_F(MapCoordinatesTest, FixedPosInAbsolutePosScrollView) {
   ASSERT_TRUE(IsA<LayoutView>(view));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
@@ -611,7 +613,8 @@ TEST_F(MapCoordinatesTest, FixedPosInTransform) {
   )HTML");
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
@@ -650,7 +653,8 @@ TEST_F(MapCoordinatesTest, FixedPosInContainPaint) {
   )HTML");
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0.0, 50), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(50, GetDocument().View()->LayoutViewport()->ScrollOffsetInt().y());
 
@@ -693,7 +697,8 @@ TEST_F(MapCoordinatesTest, FixedPosInIFrameWhenMainFrameScrolled) {
       "position:fixed}</style><div id=target></div>");
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = ChildDocument().getElementById(AtomicString("target"));
@@ -724,7 +729,8 @@ TEST_F(MapCoordinatesTest, IFrameTransformed) {
   UpdateAllLifecyclePhasesForTest();
 
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   ChildDocument().View()->UpdateAllLifecyclePhasesForTest();
 
   Element* target = ChildDocument().getElementById(AtomicString("target"));
@@ -760,7 +766,8 @@ TEST_F(MapCoordinatesTest, FixedPosInScrolledIFrameWithTransform) {
 
   UpdateAllLifecyclePhasesForTest();
   ChildDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0.0, 1000), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   UpdateAllLifecyclePhasesForTest();
 
   Element* target = ChildDocument().getElementById(AtomicString("target"));

@@ -286,10 +286,10 @@ void ScrollableArea::ClearPendingScrollAnchorAdjustment() {
 
 bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType scroll_type,
+                                     cc::ScrollSourceType source_type,
                                      mojom::blink::ScrollBehavior behavior,
                                      ScrollCallback on_finish,
-                                     bool targeted_scroll,
-                                     cc::ScrollSourceType source_type) {
+                                     bool targeted_scroll) {
   if (on_finish)
     RegisterScrollCompleteCallback(std::move(on_finish));
 
@@ -358,26 +358,20 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
       ScrollOffsetChanged(clamped_offset, scroll_type, source_type);
       break;
     case mojom::blink::ScrollType::kClamping:
+      DCHECK_EQ(source_type, cc::ScrollSourceType::kStationaryScroll);
       ScrollOffsetChanged(clamped_offset, scroll_type,
                           cc::ScrollSourceType::kNone);
       GetScrollAnimator().AdjustAnimation(animation_adjustment);
       break;
     case mojom::blink::ScrollType::kAnchoring:
-      // TODO(crbug.com/414556050): We need to have the correct
-      // `source_type=cc::ScrollSourceType::kStationaryScroll` here. Add a
-      // DCHECK and replace `cc::ScrollSourceType::kStationaryScroll` with
-      // `source_type` below.
-      ScrollOffsetChanged(clamped_offset, scroll_type,
-                          cc::ScrollSourceType::kStationaryScroll);
+      DCHECK_EQ(source_type, cc::ScrollSourceType::kStationaryScroll);
+      ScrollOffsetChanged(clamped_offset, scroll_type, source_type);
       GetScrollAnimator().AdjustAnimation(animation_adjustment);
       pending_scroll_anchor_adjustment_ += clamped_offset - previous_offset;
       break;
     case mojom::blink::ScrollType::kScrollStart:
-      // TODO(crbug.com/414556050): We need to have the correct
-      // `source_type=cc::ScrollSourceType::kNone` here. Add a DCHECK and
-      // replace `cc::ScrollSourceType::kNone` with `source_type` below.
-      ScrollOffsetChanged(clamped_offset, scroll_type,
-                          cc::ScrollSourceType::kNone);
+      DCHECK_EQ(source_type, cc::ScrollSourceType::kAbsoluteScroll);
+      ScrollOffsetChanged(clamped_offset, scroll_type, source_type);
       GetScrollAnimator().AdjustAnimation(animation_adjustment);
       break;
     case mojom::blink::ScrollType::kProgrammatic:
@@ -415,10 +409,9 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
 
 bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType type,
-                                     mojom::blink::ScrollBehavior behavior,
-                                     cc::ScrollSourceType source_type) {
-  return SetScrollOffset(offset, type, behavior, ScrollCallback(), false,
-                         source_type);
+                                     cc::ScrollSourceType source_type,
+                                     mojom::blink::ScrollBehavior behavior) {
+  return SetScrollOffset(offset, type, source_type, behavior, ScrollCallback());
 }
 
 float ScrollableArea::ScrollStartValueToOffsetAlongAxis(
@@ -560,6 +553,7 @@ void ScrollableArea::ApplyScrollStart() {
     ScrollOffset scroll_start_offset =
         ScrollOffsetFromScrollStartData(y_data, x_data);
     SetScrollOffset(scroll_start_offset, mojom::blink::ScrollType::kScrollStart,
+                    cc::ScrollSourceType::kAbsoluteScroll,
                     mojom::blink::ScrollBehavior::kInstant);
   }
 }
@@ -567,8 +561,8 @@ void ScrollableArea::ApplyScrollStart() {
 void ScrollableArea::ScrollBy(const ScrollOffset& delta,
                               mojom::blink::ScrollType type,
                               mojom::blink::ScrollBehavior behavior) {
-  SetScrollOffset(GetScrollOffset() + delta, type, behavior,
-                  cc::ScrollSourceType::kRelativeScroll);
+  SetScrollOffset(GetScrollOffset() + delta, type,
+                  cc::ScrollSourceType::kRelativeScroll, behavior);
 }
 
 bool ScrollableArea::ProgrammaticScrollHelper(
@@ -1159,7 +1153,7 @@ void ScrollableArea::DidCompositorScroll(const gfx::PointF& position,
   // targeted scroll, the associated ScrollMarkerGroupPseudoElement's
   // selected marker will still be pinned and we should not change that.
   bool targeted_scroll = group && group->SelectedMarkerIsPinned();
-  // if `source_type=cc::ScrollSourceType::kNone` then compositor scroll was
+  // If `source_type=cc::ScrollSourceType::kNone` then compositor scroll was
   // triggered from `ScrollAnimator` or `ProgrammaticScrollAnimator` so we need
   // to use `ScrollSourceType` cached in `ScrollAnimator` or
   // `ProgrammaticScrollAnimator` accordingly.
@@ -1171,8 +1165,8 @@ void ScrollableArea::DidCompositorScroll(const gfx::PointF& position,
     source_type = ExistingProgrammaticScrollAnimator()->GetScrollSourceType();
   }
   SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor,
-                  mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
-                  targeted_scroll, source_type);
+                  source_type, mojom::blink::ScrollBehavior::kInstant,
+                  ScrollCallback(), targeted_scroll);
 }
 
 Scrollbar* ScrollableArea::GetScrollbar(
@@ -1342,7 +1336,7 @@ bool ScrollableArea::PerformSnapping(
   }
   if (!SetScrollOffset(
           ScrollPositionToOffset(snap_point.value()),
-          mojom::blink::ScrollType::kProgrammatic, scroll_behavior,
+          mojom::blink::ScrollType::kProgrammatic, source_type, scroll_behavior,
           IgnoreArgs<ScrollableArea::ScrollCompletionMode>(on_finish.Release()),
           targeted_scroll)) {
     // If no scroll happens, e.g. we got here because of a layout change, we

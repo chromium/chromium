@@ -1386,7 +1386,8 @@ void DisplayLockContext::RestoreScrollOffsetIfStashed() {
   // Restore the offset and reset the value.
   if (auto* area = GetScrollableArea(element_)) {
     area->SetScrollOffset(*stashed_scroll_offset_,
-                          mojom::blink::ScrollType::kAnchoring);
+                          mojom::blink::ScrollType::kAnchoring,
+                          cc::ScrollSourceType::kStationaryScroll);
     stashed_scroll_offset_.reset();
   }
 }

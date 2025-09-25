@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -35,7 +36,8 @@ class AnchorPositionScrollDataTest : public RenderingTest {
     DCHECK(scroller) << id;
     DCHECK(scroller->GetScrollableArea()) << id;
     scroller->GetScrollableArea()->SetScrollOffset(
-        ScrollOffset(0, offset), mojom::blink::ScrollType::kProgrammatic);
+        ScrollOffset(0, offset), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone);
   }
 };
 

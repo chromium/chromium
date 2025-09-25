@@ -751,7 +751,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 2 * kViewportHeight),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
   ProcessEvents(1);
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
   EXPECT_EQ(
@@ -765,7 +765,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
   clock_.Advance(time_in_viewport_1);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, -2 * kViewportHeight),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
   ProcessEvents(1);
   EXPECT_EQ(1u, mock_host->entered_viewport_.size());
   EXPECT_EQ(1u, mock_host->left_viewport_.size());
@@ -778,7 +778,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
   clock_.Advance(wait_time2);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 2 * kViewportHeight),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
   ProcessEvents(1);
   EXPECT_EQ(2u, mock_host->entered_viewport_.size());
   EXPECT_EQ(
@@ -792,7 +792,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
   clock_.Advance(time_in_viewport_2);
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, -2 * kViewportHeight),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
   ProcessEvents(1);
   EXPECT_EQ(2u, mock_host->entered_viewport_.size());
   EXPECT_EQ(2u, mock_host->left_viewport_.size());
@@ -967,7 +967,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementEnteredViewportLater) {
   // Scroll down. Now the anchor element is visible.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
       ScrollOffset(0, 2 * kViewportHeight),
-      mojom::blink::ScrollType::kProgrammatic);
+      mojom::blink::ScrollType::kProgrammatic, cc::ScrollSourceType::kNone);
   ProcessEvents(1);
   EXPECT_EQ(1u, hosts_.size());
   EXPECT_EQ(0u, mock_host->clicks_.size());

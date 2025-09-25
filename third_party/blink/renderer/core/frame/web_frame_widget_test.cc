@@ -14,6 +14,7 @@
 #include "cc/base/features.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/property_tree_test_utils.h"
+#include "cc/trees/scroll_source_type.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -244,7 +245,8 @@ class WebFrameWidgetScrollContainerHitTest : public WebFrameWidgetSimTest {
     EXPECT_EQ(scrollable_id, box1_dom_node_id);
 
     visual_viewport.SetScrollOffset(ScrollOffset(0, 50),
-                                    mojom::blink::ScrollType::kProgrammatic);
+                                    mojom::blink::ScrollType::kProgrammatic,
+                                    cc::ScrollSourceType::kNone);
     EXPECT_EQ(visual_viewport.GetScrollOffset(), ScrollOffset(0, 50));
     scrollable_id = widget.GetScrollableContainerIdAt(box2_target_offset);
     EXPECT_EQ(scrollable_id, box2_dom_node_id);

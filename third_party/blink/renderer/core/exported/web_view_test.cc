@@ -5638,7 +5638,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   web_view_impl->SetPageScaleFactor(1.5f);
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(100, 150), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
 
   DeviceEmulationParams emulation_params;
   emulation_params.viewport_offset = gfx::PointF(50, 55);
@@ -5653,7 +5653,7 @@ TEST_F(WebViewTest, ViewportOverrideAdaptsToScaleAndScroll) {
   // Transform adapts to scroll changes.
   frame_view->LayoutViewport()->SetScrollOffset(
       ScrollOffset(50, 55), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant);
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant);
   expected_matrix = gfx::Transform::MakeScale(2.f);
   expected_matrix.Translate(-50, -55);
   expected_matrix.Translate(50, 55);

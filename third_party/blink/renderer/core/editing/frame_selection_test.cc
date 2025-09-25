@@ -1390,7 +1390,8 @@ TEST_F(FrameSelectionTest, SelectionBounds) {
   const int scroll_offset = 500;
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   EXPECT_EQ(PhysicalRect(0, node_margin_top, node_width, node_height),
             frame_view->FrameToDocument(Selection().AbsoluteUnclippedBounds()));
 
@@ -1418,7 +1419,8 @@ TEST_F(FrameSelectionTest, AbosluteSelectionBoundsAfterScroll) {
   // Scroll 50px down.
   const int scroll_offset = 50;
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, scroll_offset), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   // Check absolute selection bounds are updated.
   gfx::Rect anchor_after_scroll, focus_after_scroll;

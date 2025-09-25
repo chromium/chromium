@@ -263,7 +263,8 @@ TEST_F(MediaVideoVisibilityTrackerTest, NoViewPortIntersection) {
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   CreateAndAttachVideoVisibilityTracker(10000);
 
@@ -778,7 +779,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 
   // Scroll page and verify that the visibility threshold is not met.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 500), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   EXPECT_CALL(ReportVisibilityCb(), Run(false));
 
   Compositor().BeginFrame();
@@ -819,7 +821,8 @@ TEST_F(MediaVideoVisibilityTrackerTest,
 
   // Scroll page and verify that the visibility threshold is not met.
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 600), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   EXPECT_CALL(ReportVisibilityCb(), Run(true));
 
   Compositor().BeginFrame();

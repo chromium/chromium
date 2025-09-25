@@ -127,18 +127,17 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // See https://crbug.com/413002675: `on_finish` is not always executed at the
   // end of the scroll (example: it may be executed while the scroll is in
   // progress for animated programmatic scrolls).
+  virtual bool SetScrollOffset(const ScrollOffset&,
+                               mojom::blink::ScrollType,
+                               cc::ScrollSourceType,
+                               mojom::blink::ScrollBehavior,
+                               ScrollCallback on_finish,
+                               bool targeted_scroll = false);
   virtual bool SetScrollOffset(
       const ScrollOffset&,
       mojom::blink::ScrollType,
-      mojom::blink::ScrollBehavior,
-      ScrollCallback on_finish,
-      bool targeted_scroll = false,
-      cc::ScrollSourceType = cc::ScrollSourceType::kNone);
-  virtual bool SetScrollOffset(
-      const ScrollOffset&,
-      mojom::blink::ScrollType,
-      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant,
-      cc::ScrollSourceType = cc::ScrollSourceType::kNone);
+      cc::ScrollSourceType,
+      mojom::blink::ScrollBehavior = mojom::blink::ScrollBehavior::kInstant);
   void ScrollBy(
       const ScrollOffset&,
       mojom::blink::ScrollType,

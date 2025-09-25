@@ -721,9 +721,11 @@ bool WebViewImpl::StartPageScaleAnimation(const gfx::Point& target_position,
 
       LocalFrameView* view = MainFrameImpl()->GetFrameView();
       if (view && view->GetScrollableArea()) {
+        // TODO(crbug.com/414556050): Pass the correct `ScrollSourceType`.
         view->GetScrollableArea()->SetScrollOffset(
             ScrollOffset(gfx::Vector2dF(clamped_point.OffsetFromOrigin())),
-            mojom::blink::ScrollType::kProgrammatic);
+            mojom::blink::ScrollType::kProgrammatic,
+            cc::ScrollSourceType::kNone);
       }
 
       return false;
@@ -3250,8 +3252,10 @@ void WebViewImpl::ResetScrollAndScaleState() {
     ScrollableArea* scrollable_area = frame_view->LayoutViewport();
 
     if (!scrollable_area->GetScrollOffset().IsZero()) {
+      // TODO(crbug.com/414556050): Pass the correct `ScrollSourceType`.
       scrollable_area->SetScrollOffset(ScrollOffset(),
-                                       mojom::blink::ScrollType::kProgrammatic);
+                                       mojom::blink::ScrollType::kProgrammatic,
+                                       cc::ScrollSourceType::kNone);
     }
   }
 

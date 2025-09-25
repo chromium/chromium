@@ -1834,7 +1834,8 @@ TEST_P(AnimationAnimationTestCompositing,
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kAbsoluteScroll);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -1906,7 +1907,8 @@ TEST_P(AnimationAnimationTestCompositing,
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kAbsoluteScroll);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -1988,7 +1990,8 @@ TEST_P(AnimationAnimationTestNoCompositing, ScrollLinkedAnimationCreation) {
       To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kAbsoluteScroll);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =
@@ -2015,7 +2018,8 @@ TEST_P(AnimationAnimationTestNoCompositing, ScrollLinkedAnimationCreation) {
 
   // Verify current time after scroll.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 40),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kAbsoluteScroll);
   SimulateFrameForScrollAnimations();
   EXPECT_TIME(40, GetCurrentTimePercent(scroll_animation));
 }
@@ -2406,7 +2410,8 @@ TEST_P(AnimationAnimationTestCompositing,
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_FALSE(UsesCompositedScrolling(*scroller));
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kAbsoluteScroll);
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
   options->setSource(GetElementById("scroller"));
   ScrollTimeline* scroll_timeline =

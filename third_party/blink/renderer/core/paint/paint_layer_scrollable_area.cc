@@ -254,6 +254,7 @@ void PaintLayerScrollableArea::ApplyPendingHistoryRestoreScrollOffset() {
   if (!did_restore) {
     SetScrollOffset(pending_view_state_->state.scroll_offset_,
                     mojom::blink::ScrollType::kProgrammatic,
+                    cc::ScrollSourceType::kStationaryScroll,
                     pending_view_state_->scroll_behavior);
   }
 
@@ -1019,6 +1020,7 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type) {
   CancelScrollAnimation();
+  // TODO(crbug.com/414556050): Pass the correct `ScrollSourceType`.
   ScrollOffsetChanged(offset, scroll_type, cc::ScrollSourceType::kNone);
 }
 
@@ -1244,6 +1246,7 @@ void PaintLayerScrollableArea::ClampScrollOffsetAfterOverflowChangeInternal() {
     bool targeted_scroll = group && group->SelectedMarkerIsPinned();
     ScrollableArea::SetScrollOffset(GetScrollOffset(),
                                     mojom::blink::ScrollType::kClamping,
+                                    cc::ScrollSourceType::kStationaryScroll,
                                     mojom::blink::ScrollBehavior::kInstant,
                                     ScrollCallback(), targeted_scroll);
   }
@@ -2499,12 +2502,13 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   if (params->is_for_scroll_sequence) {
     mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
         params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-    SetScrollOffset(new_scroll_offset, params->type, behavior, ScrollCallback(),
-                    true);
-  } else {
     SetScrollOffset(new_scroll_offset, params->type,
-                    mojom::blink::ScrollBehavior::kInstant, ScrollCallback(),
-                    true);
+                    cc::ScrollSourceType::kAbsoluteScroll, behavior,
+                    ScrollCallback(), true);
+  } else {
+    SetScrollOffset(
+        new_scroll_offset, params->type, cc::ScrollSourceType::kAbsoluteScroll,
+        mojom::blink::ScrollBehavior::kInstant, ScrollCallback(), true);
   }
   ScrollOffset scroll_offset_difference = new_scroll_offset - old_scroll_offset;
   // The container hasn't performed the scroll yet if it's for scroll sequence.

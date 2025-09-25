@@ -239,7 +239,8 @@ TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
   // scroll extent.
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
   mock_scrollable_area->SetScrollOffset(ScrollOffset(0, 10),
-                                        mojom::blink::ScrollType::kCompositor);
+                                        mojom::blink::ScrollType::kCompositor,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Tests that when the scroll offset changes from a value greater than 0 to a
@@ -247,14 +248,16 @@ TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
   // *not* triggered.
   scrollbar->ClearTrackAndButtonsNeedRepaint();
   mock_scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
-                                        mojom::blink::ScrollType::kCompositor);
+                                        mojom::blink::ScrollType::kCompositor,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Tests that when the scroll offset changes to 0, a track-and-buttons
   // invalidation gets triggered (for the arrow).
   scrollbar->ClearTrackAndButtonsNeedRepaint();
   mock_scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
-                                        mojom::blink::ScrollType::kCompositor);
+                                        mojom::blink::ScrollType::kCompositor,
+                                        cc::ScrollSourceType::kNone);
   EXPECT_TRUE(scrollbar->TrackAndButtonsNeedRepaint());
 
   // Tests that mousedown on the arrow causes an invalidation.
