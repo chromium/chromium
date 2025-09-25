@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_WIN_H_
 
+#include <array>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_gdi_object.h"
@@ -199,7 +201,7 @@ class BrowserFrameViewWin : public BrowserFrameView, public TabIconViewModel {
   int throbber_frame_ = 0;
 
   static const int kThrobberIconCount = 24;
-  static HICON throbber_icons_[kThrobberIconCount];
+  static std::array<HICON, kThrobberIconCount> throbber_icons_;
   static void InitThrobberIcons();
 };
 
