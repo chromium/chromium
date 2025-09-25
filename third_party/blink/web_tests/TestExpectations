@@ -9708,5 +9708,16 @@ crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-in-child-of-head.t
 crbug.com/446773671 [ Mac ] external/wpt/editing/other/delete-without-unwrapping-first-line-of-child-block.html?method=DeleteKey&lineBreak=br [ Failure ]
 crbug.com/446773671 [ Mac ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/execution-timing/031.html [ Failure ]
 
+crbug.com/414630818 http/tests/devtools/coverage/coverage-repeated-per-function.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-repeated.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-suspended-per-function.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-suspended.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-view-css-import.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-view-filter-per-function.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-view-filter.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-view-per-function.js [ Failure Pass ]
+crbug.com/414630818 http/tests/devtools/coverage/coverage-view.js [ Failure Pass ]
+
+
 # Gardener 2025-09-25
 crbug.com/444048840 [ Linux ] inspector-protocol/sessions/page-set-document-content.js [ Pass Timeout ]
