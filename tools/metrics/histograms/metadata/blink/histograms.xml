@@ -3000,6 +3000,37 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.TokenizationTime.MainDocument"
+    units="microseconds" expires_after="2026-09-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The total wall time spent in the tokenization phase for all tokenization
+    done by the HTMLDocumentParser. Tokenization is the process of converting
+    the raw HTML text into a stream of tokens that can be used to build the DOM.
+    This is measured across the entire parsing of the document, but excludes
+    time spent executing scripts or parsing done by other scanners (e.g., the
+    preload scanner). This metric helps quantify the cost of parsing HTML text,
+    which is a target for loading performance optimizations. The UMA is recorded
+    when the parsing of the main document finishes.
+
+    Note: This metric is only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Blink.HTMLParsing.TokenizationTimePercentage.MainDocument"
+    units="%" expires_after="2026-09-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The percentage of the total parsing time that is spent in the tokenization
+    phase. This is calculated as (tokenization time) / (total parsing time). The
+    UMA is recorded when the parsing of the main document finishes.
+
+    Note: This metric is only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.TokensParsedAverage4" units="tokens"
     expires_after="2026-02-22">
   <owner>masonf@chromium.org</owner>

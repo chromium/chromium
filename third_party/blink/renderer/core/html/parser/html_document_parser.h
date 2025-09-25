@@ -33,6 +33,7 @@
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/parser_content_policy.h"
@@ -327,6 +328,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   base::TimeTicks time_waiting_for_user_timing_;
 
   base::MetricsSubSampler metrics_sub_sampler_;
+
+  base::TimeDelta total_tokenization_time_;
+  base::TimeDelta total_parsing_time_;
 };
 
 }  // namespace blink
