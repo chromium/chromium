@@ -941,6 +941,69 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
       GetSyncService(0)));
 }
 
+// TODO(b/327118794): Delete this test once implicit signin no longer exists.
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
+                       PRE_ClearAccountStoreOnStartup) {
+  ASSERT_TRUE(SetupClients());
+
+  // Add a credential to the server.
+  AddCredentialToFakeServer(
+      CreateTestPasswordForm("accountuser", "accountpass"));
+
+  SetupSyncTransportWithPasswordAccountStorage(/*explicit_signin=*/false);
+
+  // Also add a credential to the profile store.
+  AddLocalCredential("localuser", "localpass");
+
+  ASSERT_THAT(GetAllLoginsFromProfilePasswordStore(),
+              ElementsAre(MatchesLogin("localuser", "localpass")));
+  ASSERT_THAT(GetAllLoginsFromAccountPasswordStore(),
+              ElementsAre(MatchesLogin("accountuser", "accountpass")));
+}
+
+// TODO(b/327118794): Delete this test once implicit signin no longer exists.
+IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, ClearAccountStoreOnStartup) {
+  // Before setting up the client (aka profile), manually set account storage to
+  // off in the profile's prefs file. This simulates the case where the user
+  // disabled account storage, but the account store was not cleared correctly,
+  // e.g. due to a poorly-timed crash.
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::FilePath profile_path = user_data_dir.Append(GetProfileBaseName(0));
+  base::FilePath json_path = profile_path.Append(chrome::kPreferencesFilename);
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string json;
+    ASSERT_TRUE(base::ReadFileToString(json_path, &json));
+    std::optional<base::Value> prefs = base::JSONReader::Read(json);
+    ASSERT_TRUE(prefs.has_value());
+    ASSERT_TRUE(prefs->is_dict());
+    ASSERT_TRUE(prefs->GetDict().RemoveByDottedPath(
+        syncer::prefs::internal::kSelectedTypesPerAccount));
+    std::optional<std::string> new_json = base::WriteJson(prefs.value());
+    ASSERT_TRUE(new_json.has_value());
+    ASSERT_TRUE(base::WriteFile(json_path, new_json.value()));
+  }
+
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+
+  // Since we mangled the prefs file, account storage should be disabled.
+  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+      GetSyncService(0)));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+
+  // The account-scoped store should have been cleared during startup, and the
+  // credential added by the PRE_ test should be gone.
+  EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(), IsEmpty());
+
+  // Just as a sanity check: The credential in the profile-scoped store should
+  // still be there.
+  ASSERT_THAT(GetAllLoginsFromProfilePasswordStore(),
+              ElementsAre(MatchesLogin("localuser", "localpass")));
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
@@ -1048,82 +1111,6 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest,
     waiter.Wait();
   }
 }
-
-class PasswordManagerSyncTestWithForcedDiceMigrationDisabled
-    : public PasswordManagerSyncTest {
- public:
-  PasswordManagerSyncTestWithForcedDiceMigrationDisabled() {
-    feature_list_.InitAndDisableFeature(switches::kForcedDiceMigration);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// TODO(b/327118794): Delete this test once implicit signin no longer exists.
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithForcedDiceMigrationDisabled,
-                       PRE_ClearAccountStoreOnStartup) {
-  ASSERT_TRUE(SetupClients());
-
-  // Add a credential to the server.
-  AddCredentialToFakeServer(
-      CreateTestPasswordForm("accountuser", "accountpass"));
-
-  SetupSyncTransportWithPasswordAccountStorage(/*explicit_signin=*/false);
-
-  // Also add a credential to the profile store.
-  AddLocalCredential("localuser", "localpass");
-
-  ASSERT_THAT(GetAllLoginsFromProfilePasswordStore(),
-              ElementsAre(MatchesLogin("localuser", "localpass")));
-  ASSERT_THAT(GetAllLoginsFromAccountPasswordStore(),
-              ElementsAre(MatchesLogin("accountuser", "accountpass")));
-}
-
-// TODO(b/327118794): Delete this test once implicit signin no longer exists.
-IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTestWithForcedDiceMigrationDisabled,
-                       ClearAccountStoreOnStartup) {
-  // Before setting up the client (aka profile), manually set account storage to
-  // off in the profile's prefs file. This simulates the case where the user
-  // disabled account storage, but the account store was not cleared correctly,
-  // e.g. due to a poorly-timed crash.
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath profile_path = user_data_dir.Append(GetProfileBaseName(0));
-  base::FilePath json_path = profile_path.Append(chrome::kPreferencesFilename);
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    std::string json;
-    ASSERT_TRUE(base::ReadFileToString(json_path, &json));
-    std::optional<base::Value> prefs = base::JSONReader::Read(json);
-    ASSERT_TRUE(prefs.has_value());
-    ASSERT_TRUE(prefs->is_dict());
-    ASSERT_TRUE(prefs->GetDict().RemoveByDottedPath(
-        syncer::prefs::internal::kSelectedTypesPerAccount));
-    std::optional<std::string> new_json = base::WriteJson(prefs.value());
-    ASSERT_TRUE(new_json.has_value());
-    ASSERT_TRUE(base::WriteFile(json_path, new_json.value()));
-  }
-
-  ASSERT_TRUE(SetupClients());
-
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-
-  // Since we mangled the prefs file, account storage should be disabled.
-  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      GetSyncService(0)));
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
-
-  // The account-scoped store should have been cleared during startup, and the
-  // credential added by the PRE_ test should be gone.
-  EXPECT_THAT(GetAllLoginsFromAccountPasswordStore(), IsEmpty());
-
-  // Just as a sanity check: The credential in the profile-scoped store should
-  // still be there.
-  ASSERT_THAT(GetAllLoginsFromProfilePasswordStore(),
-              ElementsAre(MatchesLogin("localuser", "localpass")));
-}
-
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

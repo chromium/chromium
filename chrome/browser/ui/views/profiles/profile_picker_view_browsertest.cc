@@ -2969,12 +2969,7 @@ class SupervisedUserProfileIPHTest
       public testing::WithParamInterface<
           LoginUIService::SyncConfirmationUIClosedResult> {
  public:
-  SupervisedUserProfileIPHTest() {
-    // TODO(crbug.com/447099373): Fix the tests to work with the feature
-    // enabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
+  SupervisedUserProfileIPHTest() = default;
 
  protected:
   LoginUIService::SyncConfirmationUIClosedResult GetSyncConfirmationResult() {
@@ -2986,8 +2981,6 @@ class SupervisedUserProfileIPHTest
     return HasPromoBeenShown(
         browser, feature_engagement::kIPHSupervisedUserProfileSigninFeature);
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 std::string SyncConfirmationResultToString(

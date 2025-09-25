@@ -25548,25 +25548,6 @@
             ]
         }
     ],
-    "UnoPhase2Desktop": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ForcedDiceMigration",
-                        "ReplaceSyncPromosWithSignInPromos",
-                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers"
-                    ]
-                }
-            ]
-        }
-    ],
     "UpdateStateBeforeUnbinding": [
         {
             "platforms": [

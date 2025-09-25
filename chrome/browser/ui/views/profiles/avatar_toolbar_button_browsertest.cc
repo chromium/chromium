@@ -934,6 +934,20 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest, SyncError) {
   EXPECT_EQ(avatar_button->GetText(), std::u16string());
 }
 
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SigninWithSyncError) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
+  SimulateSyncError();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  ClearSyncError();
+  EXPECT_EQ(avatar_button->GetText(), std::u16string());
+}
+
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
                        SyncPausedThenExplicitText) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
@@ -955,6 +969,32 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
   hide_callback.RunAndReset();
   ExpectSyncPaused(avatar_button);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SigninPendingThenExplicitText) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
+  SimulateSigninPending(/*web_sign_out=*/false);
+  ASSERT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+
+  const std::u16string profile_switch_text(u"Profile Switch?");
+  base::ScopedClosureRunner hide_callback =
+      avatar_button->SetExplicitButtonState(
+          profile_switch_text, /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt);
+  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
+
+  // Clearing explicit text should go back to Signin Pending.
+  hide_callback.RunAndReset();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+#endif
 
 // Explicit text over sync paused/error.
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
@@ -979,6 +1019,33 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithSyncBrowserTest,
   hide_callback.RunAndReset();
   ExpectSyncPaused(avatar_button);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Explicit text over signin pending.
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       ExplicitTextThenSigninPending) {
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  // Normal state.
+  ASSERT_TRUE(avatar_button->GetText().empty());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
+  const std::u16string profile_switch_text(u"Profile Switch?");
+  base::ScopedClosureRunner hide_callback =
+      avatar_button->SetExplicitButtonState(
+          profile_switch_text, /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt);
+  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
+
+  SimulateSigninPending(/*web_sign_out=*/false);
+  // Explicit text should still be shown even if Signin Pending.
+  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
+
+  // Clearing explicit text should go back to Signin Pending.
+  hide_callback.RunAndReset();
+  EXPECT_EQ(avatar_button->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
                        ShowExplicitTextAndHide) {
@@ -1134,151 +1201,6 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
 }
 
 #endif
-
-class AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos
-    : public AvatarToolbarButtonBrowserTest {
- public:
-  AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos() {
-    // TODO(crbug.com/444617947): Fix the tests to work with the feature enabled
-    // and move them back to AvatarToolbarButtonBrowserTest.
-    feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos,
-    SigninWithSyncError) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
-  SimulateSyncError();
-  EXPECT_EQ(avatar_button->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-
-  ClearSyncError();
-  EXPECT_EQ(avatar_button->GetText(), std::u16string());
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(
-    AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos,
-    SigninPendingThenExplicitText) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
-  SimulateSigninPending(/*web_sign_out=*/false);
-  ASSERT_EQ(avatar_button->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-
-  const std::u16string profile_switch_text(u"Profile Switch?");
-  base::ScopedClosureRunner hide_callback =
-      avatar_button->SetExplicitButtonState(
-          profile_switch_text, /*accessibility_label=*/std::nullopt,
-          /*explicit_action=*/std::nullopt);
-  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
-
-  // Clearing explicit text should go back to Signin Pending.
-  hide_callback.RunAndReset();
-  EXPECT_EQ(avatar_button->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-}
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS)
-// Explicit text over signin pending.
-IN_PROC_BROWSER_TEST_F(
-    AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos,
-    ExplicitTextThenSigninPending) {
-  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
-  // Normal state.
-  ASSERT_TRUE(avatar_button->GetText().empty());
-
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar_button, u"test@gmail.com");
-  const std::u16string profile_switch_text(u"Profile Switch?");
-  base::ScopedClosureRunner hide_callback =
-      avatar_button->SetExplicitButtonState(
-          profile_switch_text, /*accessibility_label=*/std::nullopt,
-          /*explicit_action=*/std::nullopt);
-  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
-
-  SimulateSigninPending(/*web_sign_out=*/false);
-  // Explicit text should still be shown even if Signin Pending.
-  ASSERT_EQ(avatar_button->GetText(), profile_switch_text);
-
-  // Clearing explicit text should go back to Signin Pending.
-  hide_callback.RunAndReset();
-  EXPECT_EQ(avatar_button->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-}
-#endif
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-IN_PROC_BROWSER_TEST_F(
-    AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos,
-    PRE_SigninPendingFromWebSignoutThenRestartChrome) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar, test_email(),
-                                              test_given_name());
-
-  SimulateSigninPending(/*web_sign_out=*/true);
-  ASSERT_EQ(avatar->GetText(), std::u16string());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos,
-    SigninPendingFromWebSignoutThenRestartChrome) {
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-  // The greetings are shown after the restart.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
-                                       test_given_name()));
-
-  avatar->ClearActiveStateForTesting();
-  // The error text is expected to be shown even if the error delay has not
-  // reached yet.
-  EXPECT_EQ(avatar->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-}
-
-// Regression test for https://crbug.com/348587566
-IN_PROC_BROWSER_TEST_F(
-    AvatarToolbarButtonBrowserTestWithoutReplaceSyncWithSigninPromos,
-    SigninPendingDelayEndedNoBrowser) {
-  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
-  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
-
-  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
-                                              u"TestName");
-  SimulateSigninPending(/*web_sign_out=*/true);
-  ASSERT_TRUE(avatar->GetText().empty());
-  Profile* profile = browser()->profile();
-
-  // Close the browser before the delay ends, but keep the profile and Chrome
-  // alive by opening an incognito browser.
-  CreateIncognitoBrowser(profile);
-  CloseBrowserSynchronously(browser());
-
-  // This simulates the delay expiry for the next browser. Instead of advancing
-  // time, we set the expected delay to 0, making the elapsed time greater than
-  // the delay for sure - simulating the delay expiry.
-  SetZeroAvatarDelayForSigninPendingText();
-
-  // Open a new browser, this should not crash.
-  Browser* new_browser = CreateBrowser(profile);
-  EXPECT_EQ(GetAvatarToolbarButton(new_browser)->GetText(),
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
-}
-
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 class AvatarToolbarButtonWithInteractiveFeaturePromoBrowserTest
     : public InteractiveFeaturePromoTest,
@@ -2973,6 +2895,59 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
   EXPECT_EQ(avatar->GetText(), std::u16string());
   EXPECT_EQ(opened_browser_avatar_button->GetText(), std::u16string());
   EXPECT_EQ(new_browser_avatar_button->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       PRE_SigninPendingFromWebSignoutThenRestartChrome) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, test_email(),
+                                              test_given_name());
+
+  SimulateSigninPending(/*web_sign_out=*/true);
+  ASSERT_EQ(avatar->GetText(), std::u16string());
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SigninPendingFromWebSignoutThenRestartChrome) {
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+  // The greetings are shown after the restart.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringFUTF16(IDS_AVATAR_BUTTON_GREETING,
+                                       test_given_name()));
+
+  avatar->ClearActiveStateForTesting();
+  // The error text is expected to be shown even if the error delay has not
+  // reached yet.
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
+}
+
+// Regression test for https://crbug.com/348587566
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       SigninPendingDelayEndedNoBrowser) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
+
+  SigninWithImageAndClearGreetingAndSyncPromo(avatar, u"test@gmail.com",
+                                              u"TestName");
+  SimulateSigninPending(/*web_sign_out=*/true);
+  ASSERT_TRUE(avatar->GetText().empty());
+  Profile* profile = browser()->profile();
+
+  // Close the browser before the delay ends, but keep the profile and Chrome
+  // alive by opening an incognito browser.
+  CreateIncognitoBrowser(profile);
+  CloseBrowserSynchronously(browser());
+
+  // This simulates the delay expiry for the next browser. Instead of advancing
+  // time, we set the expected delay to 0, making the elapsed time greater than
+  // the delay for sure - simulating the delay expiry.
+  SetZeroAvatarDelayForSigninPendingText();
+
+  // Open a new browser, this should not crash.
+  Browser* new_browser = CreateBrowser(profile);
+  EXPECT_EQ(GetAvatarToolbarButton(new_browser)->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED));
 }
 
 // TODO(b/331746545): Check flaky test issue on windows.

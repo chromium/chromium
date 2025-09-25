@@ -39,7 +39,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -121,12 +120,7 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
                  /*use_main_profile=*/true),
         scoped_iph_delay_(
             AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
-                base::Seconds(0))) {
-    // TODO(crbug.com/447155093): Fix the tests to work with
-    // `kReplaceSyncPromosWithSignInPromos` enabled.
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
+                base::Seconds(0))) {}
 
   ~SigninInterceptFirstRunExperienceDialogBrowserTest() override = default;
 
@@ -255,7 +249,6 @@ class SigninInterceptFirstRunExperienceDialogBrowserTest : public TestBase {
   const GURL kSyncSettingsUrl = GURL("chrome://settings/syncSetup");
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   // Needed for profile switch IPH testing.
   base::AutoReset<base::TimeDelta> scoped_iph_delay_;
