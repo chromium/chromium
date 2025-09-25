@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/uuid.h"
@@ -25,9 +26,11 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
 
   // ContextualTasksService implementation.
   ContextualTask CreateTask() override;
-  std::optional<ContextualTask> GetTaskById(
-      const base::Uuid& task_id) const override;
-  std::vector<ContextualTask> GetTasks() const override;
+  void GetTaskById(const base::Uuid& task_id,
+                   base::OnceCallback<void(std::optional<ContextualTask>)>
+                       callback) const override;
+  void GetTasks(base::OnceCallback<void(std::vector<ContextualTask>)> callback)
+      const override;
   void DeleteTask(const base::Uuid& task_id) override;
   void AddThreadToTask(const base::Uuid& task_id,
                        const Thread& thread) override;

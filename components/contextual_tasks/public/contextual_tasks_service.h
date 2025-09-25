@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -54,9 +55,12 @@ class ContextualTasksService : public KeyedService {
 
   // Methods for creating and managing tasks.
   virtual ContextualTask CreateTask() = 0;
-  virtual std::optional<ContextualTask> GetTaskById(
-      const base::Uuid& task_id) const = 0;
-  virtual std::vector<ContextualTask> GetTasks() const = 0;
+  virtual void GetTaskById(
+      const base::Uuid& task_id,
+      base::OnceCallback<void(std::optional<ContextualTask>)> callback)
+      const = 0;
+  virtual void GetTasks(
+      base::OnceCallback<void(std::vector<ContextualTask>)> callback) const = 0;
   virtual void DeleteTask(const base::Uuid& task_id) = 0;
 
   // Methods related to server-side conversations.

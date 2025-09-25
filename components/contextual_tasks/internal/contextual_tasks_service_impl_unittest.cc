@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -41,6 +42,36 @@ class ContextualTasksServiceImplTest : public testing::Test {
   ContextualTasksServiceImplTest() = default;
   ~ContextualTasksServiceImplTest() override = default;
 
+  std::vector<ContextualTask> GetTasks() {
+    std::vector<ContextualTask> tasks;
+    base::RunLoop run_loop;
+    service_.GetTasks(base::BindOnce(
+        [](std::vector<ContextualTask>* out_tasks,
+           base::OnceClosure quit_closure, std::vector<ContextualTask> tasks) {
+          *out_tasks = std::move(tasks);
+          std::move(quit_closure).Run();
+        },
+        &tasks, run_loop.QuitClosure()));
+    run_loop.Run();
+    return tasks;
+  }
+
+  std::optional<ContextualTask> GetTaskById(const base::Uuid& task_id) {
+    std::optional<ContextualTask> task;
+    base::RunLoop run_loop;
+    service_.GetTaskById(task_id,
+                         base::BindOnce(
+                             [](std::optional<ContextualTask>* out_task,
+                                base::OnceClosure quit_closure,
+                                std::optional<ContextualTask> result) {
+                               *out_task = std::move(result);
+                               std::move(quit_closure).Run();
+                             },
+                             &task, run_loop.QuitClosure()));
+    run_loop.Run();
+    return task;
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   ContextualTasksServiceImpl service_;
@@ -57,47 +88,47 @@ TEST_F(ContextualTasksServiceImplTest, CreateTask) {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(task.GetTaskId().is_valid());
 
-  std::vector<ContextualTask> tasks = service_.GetTasks();
+  std::vector<ContextualTask> tasks = GetTasks();
   ASSERT_EQ(1u, tasks.size());
   EXPECT_EQ(task.GetTaskId(), tasks[0].GetTaskId());
 
   service_.DeleteTask(task.GetTaskId());
-  tasks = service_.GetTasks();
-  EXPECT_TRUE(tasks.empty());
+
+  EXPECT_TRUE(GetTasks().empty());
   service_.RemoveObserver(&observer_);
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetTaskById) {
   ContextualTask task = service_.CreateTask();
-  std::optional<ContextualTask> result = service_.GetTaskById(task.GetTaskId());
+  std::optional<ContextualTask> result = GetTaskById(task.GetTaskId());
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(task.GetTaskId(), result->GetTaskId());
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetTaskById_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  std::optional<ContextualTask> result = service_.GetTaskById(task_id);
+  std::optional<ContextualTask> result = GetTaskById(task_id);
   EXPECT_FALSE(result.has_value());
 }
 
 TEST_F(ContextualTasksServiceImplTest, CreateAndRemoveMultipleTasks) {
   ContextualTask task1 = service_.CreateTask();
   ContextualTask task2 = service_.CreateTask();
-  EXPECT_EQ(2u, service_.GetTasks().size());
+  EXPECT_EQ(2u, GetTasks().size());
 
   service_.DeleteTask(task1.GetTaskId());
-  std::vector<ContextualTask> tasks = service_.GetTasks();
+  std::vector<ContextualTask> tasks = GetTasks();
   ASSERT_EQ(1u, tasks.size());
   EXPECT_EQ(task2.GetTaskId(), tasks[0].GetTaskId());
 
   service_.DeleteTask(task2.GetTaskId());
-  EXPECT_TRUE(service_.GetTasks().empty());
+  EXPECT_TRUE(GetTasks().empty());
 }
 
 TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
   service_.AddObserver(&observer_);
   ContextualTask task = service_.CreateTask();
-  EXPECT_EQ(1u, service_.GetTasks().size());
+  EXPECT_EQ(1u, GetTasks().size());
 
   SessionID session_id = SessionID::FromSerializedValue(1);
   service_.AttachSessionIdToTask(task.GetTaskId(), session_id);
@@ -108,32 +139,31 @@ TEST_F(ContextualTasksServiceImplTest, DeleteTask) {
                             ContextualTasksService::TriggerSource::kLocal));
   service_.DeleteTask(task.GetTaskId());
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(service_.GetTasks().empty());
+  EXPECT_TRUE(GetTasks().empty());
   EXPECT_FALSE(service_.GetMostRecentContextualTaskForSessionID(session_id));
   service_.RemoveObserver(&observer_);
 }
 
 TEST_F(ContextualTasksServiceImplTest, DeleteTask_Twice) {
   ContextualTask task = service_.CreateTask();
-  EXPECT_EQ(1u, service_.GetTasks().size());
-
+  EXPECT_EQ(1u, GetTasks().size());
   service_.DeleteTask(task.GetTaskId());
-  EXPECT_TRUE(service_.GetTasks().empty());
+  EXPECT_TRUE(GetTasks().empty());
 
   // Calling delete again should be a no-op and not crash.
   service_.DeleteTask(task.GetTaskId());
-  EXPECT_TRUE(service_.GetTasks().empty());
+  EXPECT_TRUE(GetTasks().empty());
 }
 
 TEST_F(ContextualTasksServiceImplTest, DeleteTask_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   service_.DeleteTask(task_id);
-  EXPECT_TRUE(service_.GetTasks().empty());
+  EXPECT_TRUE(GetTasks().empty());
 }
 
 TEST_F(ContextualTasksServiceImplTest, GetTasks_Empty) {
-  std::vector<ContextualTask> tasks = service_.GetTasks();
-  EXPECT_TRUE(tasks.empty());
+  // A newly created service should have no tasks.
+  EXPECT_TRUE(GetTasks().empty());
 }
 
 TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
@@ -151,7 +181,7 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask) {
       task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
   task_environment_.RunUntilIdle();
 
-  std::optional<ContextualTask> result = service_.GetTaskById(task.GetTaskId());
+  std::optional<ContextualTask> result = GetTaskById(task.GetTaskId());
   ASSERT_TRUE(result.has_value());
   std::optional<Thread> thread = result->GetThread();
   ASSERT_TRUE(thread.has_value());
@@ -178,35 +208,31 @@ TEST_F(ContextualTasksServiceImplTest, AddAndRemoveThread_MultipleTasks) {
   service_.AddThreadToTask(task2.GetTaskId(), Thread(type, server_id2, title2,
                                                      conversation_turn_id2));
 
-  std::vector<ContextualTask> tasks = service_.GetTasks();
-  ASSERT_EQ(2u, tasks.size());
+  std::vector<ContextualTask> tasks_before_remove = GetTasks();
+  ASSERT_EQ(2u, tasks_before_remove.size());
 
-  ContextualTask result_task1 =
-      tasks[0].GetTaskId() == task1.GetTaskId() ? tasks[0] : tasks[1];
-  ContextualTask result_task2 =
-      tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
+  ContextualTask result_task1_before =
+      tasks_before_remove[0].GetTaskId() == task1.GetTaskId()
+          ? tasks_before_remove[0]
+          : tasks_before_remove[1];
+  ContextualTask result_task2_before =
+      tasks_before_remove[0].GetTaskId() == task2.GetTaskId()
+          ? tasks_before_remove[0]
+          : tasks_before_remove[1];
 
-  std::optional<Thread> thread1 = result_task1.GetThread();
+  std::optional<Thread> thread1 = result_task1_before.GetThread();
   ASSERT_TRUE(thread1.has_value());
   EXPECT_EQ(server_id1, thread1->server_id);
   EXPECT_EQ(title1, thread1->title);
 
-  std::optional<Thread> thread2 = result_task2.GetThread();
+  std::optional<Thread> thread2 = result_task2_before.GetThread();
   ASSERT_TRUE(thread2.has_value());
   EXPECT_EQ(server_id2, thread2->server_id);
   EXPECT_EQ(title2, thread2->title);
 
   service_.RemoveThreadFromTask(task1.GetTaskId(), type, server_id1);
-  tasks = service_.GetTasks();
-  ASSERT_EQ(2u, tasks.size());
-
-  result_task1 =
-      tasks[0].GetTaskId() == task1.GetTaskId() ? tasks[0] : tasks[1];
-  result_task2 =
-      tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
-
-  EXPECT_FALSE(result_task1.GetThread().has_value());
-  EXPECT_TRUE(result_task2.GetThread().has_value());
+  EXPECT_FALSE(GetTaskById(task1.GetTaskId())->GetThread().has_value());
+  EXPECT_TRUE(GetTaskById(task2.GetTaskId())->GetThread().has_value());
 }
 
 TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
@@ -221,22 +247,22 @@ TEST_F(ContextualTasksServiceImplTest, RemoveThreadFromTask) {
       task.GetTaskId(), Thread(type, server_id, title, conversation_turn_id));
   task_environment_.RunUntilIdle();
 
-  std::vector<ContextualTask> tasks = service_.GetTasks();
-  ASSERT_EQ(1u, tasks.size());
-  EXPECT_TRUE(tasks[0].GetThread().has_value());
+  std::vector<ContextualTask> tasks_before_remove = GetTasks();
+  ASSERT_EQ(1u, tasks_before_remove.size());
+  EXPECT_TRUE(tasks_before_remove[0].GetThread().has_value());
 
   service_.RemoveThreadFromTask(task.GetTaskId(), type, server_id);
   task_environment_.RunUntilIdle();
-  tasks = service_.GetTasks();
-  ASSERT_EQ(1u, tasks.size());
-  EXPECT_FALSE(tasks[0].GetThread().has_value());
+  std::vector<ContextualTask> tasks_after_remove = GetTasks();
+  ASSERT_EQ(1u, tasks_after_remove.size());
+  EXPECT_FALSE(tasks_after_remove[0].GetThread().has_value());
 
   // Calling remove again should be a no-op and not crash.
   service_.RemoveThreadFromTask(task.GetTaskId(), type, server_id);
   task_environment_.RunUntilIdle();
-  tasks = service_.GetTasks();
-  ASSERT_EQ(1u, tasks.size());
-  EXPECT_FALSE(tasks[0].GetThread().has_value());
+  std::vector<ContextualTask> tasks_after_second_remove = GetTasks();
+  ASSERT_EQ(1u, tasks_after_second_remove.size());
+  EXPECT_FALSE(tasks_after_second_remove[0].GetThread().has_value());
   service_.RemoveObserver(&observer_);
 }
 
@@ -255,7 +281,7 @@ TEST_F(ContextualTasksServiceImplTest, AddThreadToTask_TaskDoesNotExist) {
       task_id, Thread(type, server_id, title, conversation_turn_id));
   task_environment_.RunUntilIdle();
 
-  std::vector<ContextualTask> tasks = service_.GetTasks();
+  std::vector<ContextualTask> tasks = GetTasks();
   ASSERT_EQ(1u, tasks.size());
   EXPECT_EQ(task_id, tasks[0].GetTaskId());
   std::optional<Thread> thread = tasks[0].GetThread();
@@ -278,7 +304,7 @@ TEST_F(ContextualTasksServiceImplTest, AttachUrlToTask) {
   service_.AttachUrlToTask(task.GetTaskId(), url);
   task_environment_.RunUntilIdle();
 
-  std::vector<ContextualTask> tasks = service_.GetTasks();
+  std::vector<ContextualTask> tasks = GetTasks();
   ASSERT_EQ(1u, tasks.size());
   std::vector<GURL> urls = tasks[0].GetUrls();
   ASSERT_EQ(1u, urls.size());
@@ -295,33 +321,31 @@ TEST_F(ContextualTasksServiceImplTest, AttachAndDetachUrl_MultipleTasks) {
   service_.AttachUrlToTask(task1.GetTaskId(), url1);
   service_.AttachUrlToTask(task2.GetTaskId(), url2);
 
-  std::vector<ContextualTask> tasks = service_.GetTasks();
-  ASSERT_EQ(2u, tasks.size());
+  std::vector<ContextualTask> tasks_before_detach = GetTasks();
+  ASSERT_EQ(2u, tasks_before_detach.size());
 
-  ContextualTask result_task1 =
-      tasks[0].GetTaskId() == task1.GetTaskId() ? tasks[0] : tasks[1];
-  ContextualTask result_task2 =
-      tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
+  ContextualTask result_task1_before =
+      tasks_before_detach[0].GetTaskId() == task1.GetTaskId()
+          ? tasks_before_detach[0]
+          : tasks_before_detach[1];
+  ContextualTask result_task2_before =
+      tasks_before_detach[0].GetTaskId() == task2.GetTaskId()
+          ? tasks_before_detach[0]
+          : tasks_before_detach[1];
 
-  std::vector<GURL> urls1 = result_task1.GetUrls();
+  std::vector<GURL> urls1 = result_task1_before.GetUrls();
   ASSERT_EQ(1u, urls1.size());
   EXPECT_EQ(url1, urls1[0]);
 
-  std::vector<GURL> urls2 = result_task2.GetUrls();
+  std::vector<GURL> urls2 = result_task2_before.GetUrls();
   ASSERT_EQ(1u, urls2.size());
   EXPECT_EQ(url2, urls2[0]);
 
   service_.DetachUrlFromTask(task1.GetTaskId(), url1);
-  tasks = service_.GetTasks();
-  ASSERT_EQ(2u, tasks.size());
-
-  result_task1 =
-      tasks[0].GetTaskId() == task1.GetTaskId() ? tasks[0] : tasks[1];
-  result_task2 =
-      tasks[0].GetTaskId() == task2.GetTaskId() ? tasks[0] : tasks[1];
-
-  EXPECT_TRUE(result_task1.GetUrls().empty());
-  EXPECT_EQ(1u, result_task2.GetUrls().size());
+  std::vector<ContextualTask> tasks_after_detach = GetTasks();
+  ASSERT_EQ(2u, tasks_after_detach.size());
+  EXPECT_TRUE(GetTaskById(task1.GetTaskId())->GetUrls().empty());
+  EXPECT_EQ(1u, GetTaskById(task2.GetTaskId())->GetUrls().size());
 }
 
 TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
@@ -331,14 +355,16 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
 
   service_.AttachUrlToTask(task.GetTaskId(), url);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(1u, service_.GetTasks()[0].GetUrls().size());
+  std::vector<ContextualTask> tasks_before_detach = GetTasks();
+  EXPECT_EQ(1u, tasks_before_detach[0].GetUrls().size());
 
   EXPECT_CALL(
       observer_,
       OnTaskUpdated(testing::_, ContextualTasksService::TriggerSource::kLocal));
   service_.DetachUrlFromTask(task.GetTaskId(), url);
   task_environment_.RunUntilIdle();
-  EXPECT_TRUE(service_.GetTasks()[0].GetUrls().empty());
+  std::vector<ContextualTask> tasks_after_detach = GetTasks();
+  EXPECT_TRUE(tasks_after_detach[0].GetUrls().empty());
   service_.RemoveObserver(&observer_);
 }
 

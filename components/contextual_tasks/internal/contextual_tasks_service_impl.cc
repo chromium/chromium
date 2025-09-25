@@ -7,6 +7,7 @@
 #include <map>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -33,21 +34,26 @@ ContextualTask ContextualTasksServiceImpl::CreateTask() {
   return it->second;
 }
 
-std::optional<ContextualTask> ContextualTasksServiceImpl::GetTaskById(
-    const base::Uuid& task_id) const {
+void ContextualTasksServiceImpl::GetTaskById(
+    const base::Uuid& task_id,
+    base::OnceCallback<void(std::optional<ContextualTask>)> callback) const {
   auto it = tasks_.find(task_id);
+  std::optional<ContextualTask> result;
   if (it != tasks_.end()) {
-    return it->second;
+    result = it->second;
   }
-  return std::nullopt;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
-std::vector<ContextualTask> ContextualTasksServiceImpl::GetTasks() const {
+void ContextualTasksServiceImpl::GetTasks(
+    base::OnceCallback<void(std::vector<ContextualTask>)> callback) const {
   std::vector<ContextualTask> tasks;
   for (const auto& pair : tasks_) {
     tasks.push_back(pair.second);
   }
-  return tasks;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(tasks)));
 }
 
 void ContextualTasksServiceImpl::DeleteTask(const base::Uuid& task_id) {
