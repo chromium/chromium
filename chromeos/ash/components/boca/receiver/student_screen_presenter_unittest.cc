@@ -84,7 +84,8 @@ class StudentScreenPresenterImplTest : public testing::Test {
         (*body->elements())[0].As<network::DataElementBytes>().AsStringPiece());
     url_loader_factory_.SimulateResponseForPendingRequest(url.spec(), response,
                                                           status);
-    return base::JSONReader::ReadDict(request_body);
+    return base::JSONReader::ReadDict(request_body,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   }
 
   void VerifyUserDeviceInfo(base::Value::Dict* user_device_dict,
