@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -64,12 +65,28 @@ class OmniboxEditModel {
     const AutocompleteInput autocomplete_input;
   };
 
+  // Intended for view code to update itself when the model changes. Most view
+  // updates are propagated by calling methods on `view_` & `popup_view_`
+  // directly. But it's possible to have multiple views interested in being
+  // updates (e.g. when the side-by-side debugging feature
+  // `kWebUIOmniboxPopupDebug` is enabled). So updates that multiple views might
+  // be interested in use the observer pattern. In the future, perhaps all
+  // model->view updates can go through the observer.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called whenever `popup_view_->OnSelectionChanged()` is called.
+    virtual void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                                    OmniboxPopupSelection new_selection) {}
+  };
+
   OmniboxEditModel(OmniboxController* controller, OmniboxView* view);
   virtual ~OmniboxEditModel();
   OmniboxEditModel(const OmniboxEditModel&) = delete;
   OmniboxEditModel& operator=(const OmniboxEditModel&) = delete;
 
   void set_popup_view(OmniboxPopupView* popup_view);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
 
@@ -852,6 +869,9 @@ class OmniboxEditModel {
   // suggestion whose tab switch button was focused, so that we may compare
   // if equal.
   GURL old_focused_url_;
+
+  // See comment on `Observer`.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<OmniboxEditModel> weak_factory_{this};
 };

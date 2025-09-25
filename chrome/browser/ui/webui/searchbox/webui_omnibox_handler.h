@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_WEBUI_OMNIBOX_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -22,7 +24,8 @@ class WebContents;
 }  // namespace content
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
-class WebuiOmniboxHandler : public SearchboxHandler {
+class WebuiOmniboxHandler : public SearchboxHandler,
+                            OmniboxEditModel::Observer {
  public:
   WebuiOmniboxHandler(
       mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
@@ -38,10 +41,14 @@ class WebuiOmniboxHandler : public SearchboxHandler {
 
   void OnThumbnailRemoved() override {}
 
-  void UpdateSelection(OmniboxPopupSelection old_selection,
-                       OmniboxPopupSelection selection);
+  // OmniboxEditModel::Observer:
+  void OnSelectionChanged(OmniboxPopupSelection old_selection,
+                          OmniboxPopupSelection selection) override;
 
  private:
+  // Observe `OmniboxEditModel` for updates that require updating the views.
+  base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>
+      edit_model_observation_{this};
 
   base::WeakPtrFactory<WebuiOmniboxHandler> weak_ptr_factory_{this};
 };

@@ -86,12 +86,14 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
   CHECK(omnibox_controller);
   controller_ = omnibox_controller;
   autocomplete_controller_observation_.Observe(autocomplete_controller());
+  edit_model_observation_.Observe(omnibox_controller->edit_model());
 }
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;
 
-void WebuiOmniboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
-                                          OmniboxPopupSelection selection) {
+void WebuiOmniboxHandler::OnSelectionChanged(
+    OmniboxPopupSelection old_selection,
+    OmniboxPopupSelection selection) {
   page_->UpdateSelection(
       searchbox::mojom::OmniboxPopupSelection::New(
           old_selection.line, ConvertLineState(old_selection.state),

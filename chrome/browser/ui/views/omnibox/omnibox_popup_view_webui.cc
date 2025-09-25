@@ -61,14 +61,6 @@ bool OmniboxPopupViewWebUI::IsOpen() const {
 
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
 
-void OmniboxPopupViewWebUI::OnSelectionChanged(
-    OmniboxPopupSelection old_selection,
-    OmniboxPopupSelection new_selection) {
-  if (WebuiOmniboxHandler* handler = presenter_->GetHandler()) {
-    handler->UpdateSelection(old_selection, new_selection);
-  }
-}
-
 void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
   // Measure time since construction just once.
   if (!construction_time_.is_null()) {

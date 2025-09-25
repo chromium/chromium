@@ -557,14 +557,14 @@ TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
         selection = std::move(arg1);
       });
 
-  handler_->UpdateSelection(
+  handler_->OnSelectionChanged(
       OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
       OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL));
   page_.FlushForTesting();
   EXPECT_EQ(0, selection->line);
   EXPECT_EQ(searchbox::mojom::SelectionLineState::kNormal, selection->state);
 
-  handler_->UpdateSelection(
+  handler_->OnSelectionChanged(
       OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL),
       OmniboxPopupSelection(1, OmniboxPopupSelection::KEYWORD_MODE));
   page_.FlushForTesting();
@@ -572,7 +572,7 @@ TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
   EXPECT_EQ(searchbox::mojom::SelectionLineState::kKeywordMode,
             selection->state);
 
-  handler_->UpdateSelection(
+  handler_->OnSelectionChanged(
       OmniboxPopupSelection(2, OmniboxPopupSelection::NORMAL),
       OmniboxPopupSelection(2, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
                             4));
@@ -582,7 +582,7 @@ TEST_F(WebuiOmniboxHandlerTest, WebuiOmniboxUpdatesSelection) {
   EXPECT_EQ(searchbox::mojom::SelectionLineState::kFocusedButtonAction,
             selection->state);
 
-  handler_->UpdateSelection(
+  handler_->OnSelectionChanged(
       OmniboxPopupSelection(3, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION, 4),
       OmniboxPopupSelection(
           3, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION));

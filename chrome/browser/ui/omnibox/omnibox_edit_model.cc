@@ -246,6 +246,14 @@ void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
                                            OmniboxPopupSelection::NORMAL);
 }
 
+void OmniboxEditModel::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void OmniboxEditModel::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModel::GetPageClassification() const {
   return controller_->client()->GetPageClassification(/*is_prefetch=*/false);
@@ -1793,6 +1801,8 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   const OmniboxPopupSelection old_selection = popup_selection_;
   popup_selection_ = new_selection;
   popup_view_->OnSelectionChanged(old_selection, popup_selection_);
+  observers_.Notify(&Observer::OnSelectionChanged, old_selection,
+                    popup_selection_);
 
   // Special case for updating the focus ring around the AIM button.
   bool apply_focus_ring_to_aim_button =
