@@ -111,6 +111,21 @@ class MockContentBrowserClient : public TestContentBrowserClient {
 
 }  // anonymous namespace
 
+MATCHER_P(EnterPictureInPictureReasonEquals,
+          expected_reason,
+          "Matches a MediaSessionActionDetails with a specific "
+          "EnterPictureInPicture reason.") {
+  if (!arg) {
+    return false;
+  }
+
+  if (!arg->is_enter_picture_in_picture()) {
+    return false;
+  }
+
+  return arg->get_enter_picture_in_picture()->reason == expected_reason;
+}
+
 class MediaSessionImplTest : public RenderViewHostTestHarness {
  public:
   MediaSessionImplTest()
@@ -1508,6 +1523,38 @@ TEST_F(MediaSessionImplTest, NewPlayerReceivesAutoPictureInPictureInfoOnce) {
       player_observer_->received_auto_picture_in_picture_info_changed_calls());
 
   SetBrowserClientForTesting(old_client);
+}
+
+TEST_F(MediaSessionImplTest, EnterPictureInPictureWithReason) {
+  StartNewPlayer();
+  mock_media_session_service().EnableAction(
+      MediaSessionAction::kEnterPictureInPicture);
+
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(
+                  MediaSessionAction::kEnterPictureInPicture,
+                  EnterPictureInPictureReasonEquals(
+                      blink::mojom::MediaSessionEnterPictureInPictureReason::
+                          kUserAction)));
+
+  GetMediaSession()->EnterPictureInPicture();
+  mock_media_session_service().FlushForTesting();
+}
+
+TEST_F(MediaSessionImplTest, EnterAutoPictureInPictureWithReason) {
+  StartNewPlayer();
+  mock_media_session_service().EnableAction(
+      MediaSessionAction::kEnterPictureInPicture);
+
+  EXPECT_CALL(mock_media_session_service().mock_client(),
+              DidReceiveAction(
+                  MediaSessionAction::kEnterPictureInPicture,
+                  EnterPictureInPictureReasonEquals(
+                      blink::mojom::MediaSessionEnterPictureInPictureReason::
+                          kContentOccluded)));
+
+  GetMediaSession()->EnterAutoPictureInPicture();
+  mock_media_session_service().FlushForTesting();
 }
 
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {
