@@ -260,7 +260,7 @@ AutofillProfile::AutofillProfile(const std::string& guid,
       initial_creator_id_(kInitialCreatorOrModifierChrome),
       last_modifier_id_(kInitialCreatorOrModifierChrome),
       token_quality_(this),
-      usage_history_information_(/*usage_history_size=*/3) {}
+      usage_history_information_(/*usage_history_size=*/1) {}
 
 AutofillProfile::AutofillProfile(RecordType record_type,
                                  AddressCountryCode country_code)

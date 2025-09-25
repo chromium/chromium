@@ -85,12 +85,11 @@ message ContactInfoSpecifics {
   // The number of time this profile has been used.
   optional int64 use_count = 3;
 
-  // The last times this profile was used. use_date.. is the last use date of
-  // the profile, use_date2.. the second last use date, etc. If a profile hasn't
-  // been used at least that many times, the field is unset.
+  // The last time this profile was used. Since profile creation counts as a
+  // use, this should always have a value.
   optional int64 use_date_unix_epoch_seconds = 4;
-  optional int64 use_date2_unix_epoch_seconds = 54;
-  optional int64 use_date3_unix_epoch_seconds = 55;
+  reserved 54, 55;
+  reserved "use_date2_unix_epoch_seconds", "use_date3_unix_epoch_seconds";
 
   // The last time the profile was modified.
   optional int64 date_modified_unix_epoch_seconds = 37;
