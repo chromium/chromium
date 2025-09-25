@@ -642,6 +642,16 @@ class PDFiumEngine : public DocumentLoader::Client,
     std::vector<gfx::Rect> GetVisibleChangeRects() const override;
   };
 
+  // Tracks and invalidates find result changes.
+  class FindResultChangeInvalidator : public ChangeInvalidator {
+   public:
+    explicit FindResultChangeInvalidator(PDFiumEngine* engine);
+    ~FindResultChangeInvalidator() override;
+
+   private:
+    std::vector<gfx::Rect> GetVisibleChangeRects() const override;
+  };
+
   // Tracks and invalidates text fragment highlight changes.
   class HighlightChangeInvalidator : public ChangeInvalidator {
    public:
@@ -800,6 +810,10 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // Inserts a find result into `find_results_`, which is sorted.
   void AddFindResult(PDFiumRange result);
+
+  // Returns the current find selection, otherwise returns nullptr if there is
+  // no find selection.
+  const PDFiumRange* GetFindSelection() const;
 
   // Search a page ourself using ICU.
   void SearchUsingICU(const std::u16string& term,

@@ -249,15 +249,13 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResult) {
   engine->StartFind(u"o", /*case_sensitive=*/false);
   EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  // TODO(crbug.com/410777432): Should be empty.
-  EXPECT_EQ("o", engine->GetSelectedText());
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
   DrawSelectionAndCompareWithPlatformExpectations(
       *engine, kPageIndex, "hello_world_draw_find_result_0.png");
 
   EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  // TODO(crbug.com/410777432): Should be empty.
-  EXPECT_EQ("o", engine->GetSelectedText());
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
   DrawSelectionAndCompareWithPlatformExpectations(
       *engine, kPageIndex, "hello_world_draw_find_result_1.png");
 
@@ -265,10 +263,8 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResult) {
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
 
   EXPECT_EQ("e", engine->GetSelectedText());
-  // TODO(crbug.com/410777432): Both the find result and the text selection
-  // should be highlighted.
   DrawSelectionAndCompareWithPlatformExpectations(
-      *engine, kPageIndex, "hello_world_selection_1.png");
+      *engine, kPageIndex, "hello_world_draw_find_result_2.png");
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
@@ -290,8 +286,7 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResultInAnnotationMode) {
   engine->StartFind(u"o", /*case_sensitive=*/false);
   EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  // TODO(crbug.com/410777432): Should be empty.
-  EXPECT_EQ("o", engine->GetSelectedText());
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
   DrawSelectionAndCompareWithPlatformExpectations(
       *engine, kPageIndex, "hello_world_draw_find_result_0.png");
 
@@ -300,9 +295,8 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResultInAnnotationMode) {
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
 
   EXPECT_EQ("e", engine->GetSelectedText());
-  // TODO(crbug.com/410777432): Only the find result should be highlighted.
   DrawSelectionAndCompareWithPlatformExpectations(
-      *engine, kPageIndex, "hello_world_selection_1.png");
+      *engine, kPageIndex, "hello_world_draw_find_result_0.png");
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 

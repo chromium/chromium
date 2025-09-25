@@ -2353,12 +2353,20 @@ void PDFiumEngine::AddFindResult(PDFiumRange result) {
   client_->NotifyNumberOfFindResultsChanged(find_results_.size(), false);
 }
 
+const PDFiumRange* PDFiumEngine::GetFindSelection() const {
+  if (!current_find_index_.has_value()) {
+    return nullptr;
+  }
+  return &find_results_[current_find_index_.value()];
+}
+
 bool PDFiumEngine::SelectFindResult(bool forward) {
   if (find_results_.empty()) {
     return false;
   }
 
-  SelectionChangeInvalidator selection_invalidator(this);
+  // Invalidate the previous find selection.
+  FindResultChangeInvalidator find_change_invalidator(this);
 
   // Move back/forward through the search locations we previously found.
   size_t new_index;
@@ -2384,10 +2392,9 @@ bool PDFiumEngine::SelectFindResult(bool forward) {
   }
   current_find_index_ = new_index;
 
-  // Update the selection before telling the client to scroll, since it could
-  // paint then.
+  // Clear the current text selection.
+  SelectionChangeInvalidator selection_invalidator(this);
   selection_.clear();
-  selection_.push_back(find_results_[current_find_index_.value()]);
 
   // If the result is not in view, scroll to it.
   ScrollToBoundingRects(find_results_[current_find_index_.value()],
@@ -2399,9 +2406,7 @@ bool PDFiumEngine::SelectFindResult(bool forward) {
 }
 
 void PDFiumEngine::StopFind() {
-  SelectionChangeInvalidator selection_invalidator(this);
-  selection_.clear();
-  selecting_ = false;
+  FindResultChangeInvalidator find_change_invalidator(this);
 
   find_results_.clear();
   next_page_to_search_ = -1;
@@ -3616,14 +3621,6 @@ void PDFiumEngine::DrawCaret(size_t progressive_index,
 
 void PDFiumEngine::DrawSelections(size_t progressive_index,
                                   SkBitmap& image_data) const {
-#if BUILDFLAG(ENABLE_PDF_INK2)
-  if (features::kPdfInk2TextHighlighting.Get() &&
-      client_->IsInAnnotationMode()) {
-    // Ink2 should handle drawing selections.
-    return;
-  }
-#endif  // BUILDFLAG(ENABLE_PDF_INK2)
-
   CHECK_LT(progressive_index, progressive_paints_.size());
 
   uint32_t page_index = progressive_paints_[progressive_index].page_index();
@@ -3635,11 +3632,23 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
     return;
   }
 
+  // Draw the find-in-page selection.
   std::vector<gfx::Rect> highlighted_rects;
   gfx::Rect visible_rect = GetVisibleRect();
-  // First, the selections from find-in-page or mouse selections are drawn. This
-  // ensures that these selection highlights are drawn on top of text fragment
-  // highlights and form highlights.
+  const PDFiumRange* find_selection = GetFindSelection();
+  if (find_selection && find_selection->page_index() == page_index) {
+    DrawHighlightOnPage(*find_selection, dirty_in_screen, visible_rect,
+                        region.value(), kHighlightColor, highlighted_rects);
+  }
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // Ink2 ignores all other selections.
+  if (client_->IsInAnnotationMode()) {
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+  // Draw text selections next.
   for (const auto& range : selection_) {
     if (range.page_index() != page_index) {
       continue;
@@ -3649,6 +3658,8 @@ void PDFiumEngine::DrawSelections(size_t progressive_index,
                         kHighlightColor, highlighted_rects);
   }
 
+  // Draw text fragment and form highlights last. This ensures that the previous
+  // selection highlights are drawn on top.
   for (const auto& range : text_fragment_highlights_) {
     if (range.page_index() != page_index) {
       continue;
@@ -3923,6 +3934,24 @@ PDFiumEngine::SelectionChangeInvalidator::~SelectionChangeInvalidator() {
 std::vector<gfx::Rect>
 PDFiumEngine::SelectionChangeInvalidator::GetVisibleChangeRects() const {
   return GetVisibleScreenRectsFromRanges(engine_->selection_);
+}
+
+PDFiumEngine::FindResultChangeInvalidator::FindResultChangeInvalidator(
+    PDFiumEngine* engine)
+    : ChangeInvalidator(engine) {
+  previous_rects_ = GetVisibleChangeRects();
+}
+
+PDFiumEngine::FindResultChangeInvalidator::~FindResultChangeInvalidator() {
+  InvalidateChangesOnDestruct();
+}
+
+std::vector<gfx::Rect>
+PDFiumEngine::FindResultChangeInvalidator::GetVisibleChangeRects() const {
+  const PDFiumRange* find_selection = engine_->GetFindSelection();
+  return find_selection ? GetVisibleScreenRectsFromRanges(
+                              base::span_from_ref(*find_selection))
+                        : std::vector<gfx::Rect>();
 }
 
 PDFiumEngine::HighlightChangeInvalidator::HighlightChangeInvalidator(
