@@ -49,7 +49,7 @@ public class KnownPreferenceKeyRegistries {
                 String message =
                         "An unknown registry was used, PreferenceKeyRegistries must be declared as "
                                 + "known in AllPreferenceKeyRegistries: "
-                                + String.join(",", registry.toDebugString());
+                                + registry.toDebugString();
                 assert false : message;
             }
         }
