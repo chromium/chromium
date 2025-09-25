@@ -429,6 +429,12 @@ using enum OmniboxKeyboardAction;
   [attributes setValue:UIColor.clearColor
                 forKey:NSBackgroundColorAttributeName];
   self.typingAttributes = attributes;
+
+  // Also apply the attributes to the whole text.
+  NSMutableAttributedString* attributedText = [self.attributedText mutableCopy];
+  [attributedText addAttributes:attributes
+                          range:NSMakeRange(0, self.attributedText.length)];
+  self.attributedText = attributedText;
 }
 
 #pragma mark - UITextView
