@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks.bar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -40,7 +42,9 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.FakeBookmarkModel;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListItemType;
@@ -52,6 +56,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -255,5 +260,64 @@ public class BookmarkBarMediatorTest {
         // any integer values.
         verify(mAnchoredPopupWindow, Mockito.atLeastOnce())
                 .setDesiredContentSize(Mockito.anyInt(), Mockito.anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnThemeChanged_UpdatesAllBookmarksButton() {
+        // Stub the iterator on the mock mItemsModel to prevent a NullPointerException.
+        // This test doesn't care about the model list, only the "All Bookmarks" button.
+        when(mItemsModel.iterator()).thenReturn(new ArrayList<ListItem>().iterator());
+
+        // Call onThemeChanged for Incognito.
+        mMediator.onThemeChanged(/* isIncognito= */ true, BrandedColorScheme.INCOGNITO);
+
+        // Verify the "All Bookmarks" button model was updated for incognito.
+        verify(mAllBookmarksButtonModel)
+                .set(
+                        BookmarkBarButtonProperties.ICON_TINT_LIST_ID,
+                        R.color.default_icon_color_light_tint_list);
+        verify(mAllBookmarksButtonModel)
+                .set(
+                        BookmarkBarButtonProperties.TEXT_APPEARANCE_ID,
+                        R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnThemeChanged_ThemeChangedFirstAndThenAnItemIsAdded() {
+        // Since we are adding an item after #onThemeChanged is called, the for-loop inside
+        // #onThemeChanged will be skipped.
+        when(mItemsModel.iterator()).thenReturn(new ArrayList<ListItem>().iterator());
+
+        // 1. Call onThemeChanged for Incognito. This saves the light theme to the Mediator's state
+        // variables.
+        mMediator.onThemeChanged(/* isIncognito= */ true, BrandedColorScheme.INCOGNITO);
+
+        // 2. Create a new folder inside the bookmarks bar.
+        BookmarkId folderId =
+                mBookmarkModel.addFolder(mBookmarkModel.getDesktopFolderId(), 0, "Folder");
+
+        BookmarkItem folderItem = mBookmarkModel.getBookmarkById(folderId);
+
+        // 3. This will trigger #createListItemFor, which should now use the light theme saved in
+        // 1., and update the colors. In production, this line will be auomatically called after
+        // #onThemeChanged but we are calling it manually in the unit test.
+        mMediator.onBookmarkItemAdded(BookmarkBarItemsProvider.ObservationId.LOCAL, folderItem, 0);
+
+        // Verify that mItemsModel.add() was called, and save the ListItem that was passed.
+        ArgumentCaptor<ListItem> listItemCaptor = ArgumentCaptor.forClass(ListItem.class);
+        verify(mItemsModel).add(eq(0), listItemCaptor.capture());
+        PropertyModel itemModel = listItemCaptor.getValue().model;
+
+        assertEquals(
+                "New item should have the light text style",
+                R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light,
+                itemModel.get(BookmarkBarButtonProperties.TEXT_APPEARANCE_ID));
+
+        assertEquals(
+                "New folder item should have the light icon tint",
+                R.color.default_icon_color_light_tint_list,
+                itemModel.get(BookmarkBarButtonProperties.ICON_TINT_LIST_ID));
     }
 }

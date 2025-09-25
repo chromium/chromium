@@ -23,6 +23,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.RecyclerView;
@@ -584,7 +585,8 @@ public class BookmarkBarCoordinator
         }
     }
 
-    private void updateBackgroundColor(Tab tab) {
+    @VisibleForTesting
+    void updateBackgroundColor(Tab tab) {
         // We set both the Android widget background and the scene layer background. The scene
         // layer background will update the container layer holding the snapshot (which overlaps the
         // padding of the Android widgets). The snapshot includes the background of the Android
@@ -647,5 +649,10 @@ public class BookmarkBarCoordinator
             super.onAnimationFinished(viewHolder);
             mPostAnimationRunnable.run();
         }
+    }
+
+    @VisibleForTesting
+    PropertyModel getModelForTesting() {
+        return mModel;
     }
 }

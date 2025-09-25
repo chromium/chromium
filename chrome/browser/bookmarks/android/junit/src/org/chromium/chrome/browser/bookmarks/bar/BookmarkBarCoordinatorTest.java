@@ -16,6 +16,8 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
@@ -24,7 +26,9 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ActivityScenario.ActivityAction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -61,11 +65,13 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceFactory;
 import org.chromium.ui.resources.ResourceFactoryJni;
 import org.chromium.ui.resources.ResourceManager;
@@ -514,5 +520,74 @@ public class BookmarkBarCoordinatorTest {
                 "Verify view visibility after top controls offset changed to zero value.",
                 View.VISIBLE,
                 mView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateBackgroundColor_SetsModelProperties_Incognito() {
+        PropertyModel bookmarBarModel = mCoordinator.getModelForTesting();
+
+        when(mCurrentTab.isIncognito()).thenReturn(true);
+        when(mTopUiThemeColorProvider.getSceneLayerBackground(mCurrentTab)).thenReturn(Color.BLACK);
+
+        // The expected colors in incognito.
+        @ColorInt
+        int expectedDarkHairline =
+                ContextCompat.getColor(mView.getContext(), R.color.divider_line_bg_color_light);
+
+        ColorStateList expectedLightTint =
+                ContextCompat.getColorStateList(
+                        mView.getContext(), R.color.default_icon_color_light_tint_list);
+
+        mCoordinator.updateBackgroundColor(mCurrentTab);
+
+        // Verify the incognito colors.
+        assertEquals(
+                "Hairline color should be set to the dark divider color.",
+                expectedDarkHairline,
+                bookmarBarModel.get(BookmarkBarProperties.HAIRLINE_COLOR));
+        assertEquals(
+                "Divider color should be set to the dark divider color.",
+                expectedDarkHairline,
+                bookmarBarModel.get(BookmarkBarProperties.DIVIDER_COLOR));
+        assertEquals(
+                "Overflow tint should be set to the light tint.",
+                expectedLightTint,
+                bookmarBarModel.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateBackgroundColor_SetsModelProperties_RegularLightTheme() {
+        PropertyModel bookmarBarModel = mCoordinator.getModelForTesting();
+
+        // Simulate being on a regular light theme tab (BrandedColorScheme.APP_DEFAULT).
+        when(mCurrentTab.isIncognito()).thenReturn(false);
+        when(mTopUiThemeColorProvider.getSceneLayerBackground(mCurrentTab)).thenReturn(Color.WHITE);
+
+        // The expected colors for the regular light theme.
+        @ColorInt
+        int expectedDarkHairline =
+                ThemeUtils.getToolbarHairlineColor(
+                        mView.getContext(), Color.WHITE, /* isIncognito= */ false);
+        ColorStateList expectedDarkTint =
+                ContextCompat.getColorStateList(
+                        mView.getContext(), R.color.default_icon_color_tint_list);
+
+        mCoordinator.updateBackgroundColor(mCurrentTab);
+
+        // Verify the the colors for the regular light theme mode.
+        assertEquals(
+                "Hairline color should be set for regular light theme.",
+                expectedDarkHairline,
+                bookmarBarModel.get(BookmarkBarProperties.HAIRLINE_COLOR));
+        assertEquals(
+                "Divider color should be set for regular light theme.",
+                expectedDarkHairline,
+                bookmarBarModel.get(BookmarkBarProperties.DIVIDER_COLOR));
+        assertEquals(
+                "Overflow tint should be set for regular light theme.",
+                expectedDarkTint,
+                bookmarBarModel.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
     }
 }
