@@ -101,9 +101,7 @@ void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
   if (embedder) {
     embedder->Close();
   }
-  if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
-    DeactivateCurrentEmbedder();
-  }
+  MaybeDeactivateEmbedderAndCloseHostUi(key);
 }
 
 void GlicInstanceImpl::Toggle(EmbedderType type, tabs::TabInterface* tab) {
@@ -427,6 +425,18 @@ void GlicInstanceImpl::SwitchConversation(
   } else {
     std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
   }
+}
+
+void GlicInstanceImpl::MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key) {
+  if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
+    // TODO: Figure out what else should go into host_.PanelWasClosed() and
+    // maybe call it here.
+    DeactivateCurrentEmbedder();
+  }
+}
+
+void GlicInstanceImpl::WillCloseFor(tabs::TabInterface* tab) {
+  MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey(tab));
 }
 
 }  // namespace glic

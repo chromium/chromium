@@ -65,7 +65,6 @@ class GlicSidePanelUi : public GlicUiEmbedder,
       coordinator_observation_{this};
   std::unique_ptr<views::View> CreateView(Profile* profile);
   mojom::PanelState panel_state_;
-
   raw_ptr<Profile> profile_;
   base::WeakPtr<tabs::TabInterface> tab_;
   raw_ref<GlicUiEmbedder::Delegate> delegate_;

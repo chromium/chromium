@@ -139,6 +139,7 @@ class GlicInstanceImpl : public GlicInstance,
       tabs::TabInterface* tab,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  void WillCloseFor(tabs::TabInterface* tab) override;
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
@@ -182,6 +183,7 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
           callback,
       std::vector<std::string> returned_suggestions);
+  void MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key);
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;

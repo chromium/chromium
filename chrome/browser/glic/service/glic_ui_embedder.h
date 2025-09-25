@@ -26,6 +26,7 @@ class GlicUiEmbedder {
         tabs::TabInterface* tab,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
+    virtual void WillCloseFor(tabs::TabInterface* tab) = 0;
     virtual Host& host() = 0;
   };
 

@@ -26,12 +26,11 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
   if (!tab_ || !tab_->GetTabFeatures()) {
     return;
   }
-
   auto* glic_side_panel_coordinator =
       tab_->GetTabFeatures()->glic_side_panel_coordinator();
-  coordinator_observation_.Observe(
-      tab_->GetTabFeatures()->glic_side_panel_coordinator());
+  coordinator_observation_.Observe(glic_side_panel_coordinator);
   glic_side_panel_coordinator->SetContentsView(CreateView(profile_));
+  panel_state_.kind = mojom::PanelState_Kind::kAttached;
 }
 
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
@@ -85,7 +84,16 @@ bool GlicSidePanelUi::IsShowing() const {
   if (!tab_) {
     return false;
   }
-  return panel_state_.kind == mojom::PanelState_Kind::kAttached;
+  // If this embedder is active, side panel must be showing.
+  return true;
+}
+
+void GlicSidePanelUi::VisibilityChanged(bool visible) {
+  // Showing only happens through glic entrypoint, hiding can also be triggered
+  // by side panel coordinator when replacing glic with another entry.
+  if (!visible && tab_) {
+    delegate_->WillCloseFor(tab_.get());
+  }
 }
 
 void GlicSidePanelUi::SwitchConversation(
@@ -93,16 +101,6 @@ void GlicSidePanelUi::SwitchConversation(
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   delegate_->SwitchConversation(tab_.get(), std::move(info),
                                 std::move(callback));
-}
-
-// TODO(crbug.com/444293841): Support closing multi instance.
-void GlicSidePanelUi::VisibilityChanged(bool visible) {
-  // Showing only happens through glic entrypoint, hiding can also be triggered
-  // by side panel coordinator when replacing glic with another entry.
-  if (!visible) {
-    panel_state_.kind = mojom::PanelState_Kind::kHidden;
-    // TODO(crbug.com/444293841): Support closing multi instance.
-  }
 }
 
 void GlicSidePanelUi::Show() {
