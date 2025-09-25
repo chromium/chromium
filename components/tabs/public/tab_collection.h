@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
+#include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_storage.h"
@@ -28,6 +29,7 @@ namespace tabs {
 
 class TabInterface;
 class DirectChildWalker;
+class TabCollectionObserver;
 
 DECLARE_HANDLE_FACTORY(TabCollection);
 
@@ -123,6 +125,12 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   ~TabCollection() override;
   TabCollection(const TabCollection&) = delete;
   TabCollection& operator=(const TabCollection&) = delete;
+
+  void AddObserver(TabCollectionObserver* observer);
+
+  void RemoveObserver(TabCollectionObserver* observer);
+
+  bool HasObserver(TabCollectionObserver* observer) const;
 
   // Returns true is the tab collection contains the collection. This is a
   // non-recursive check.
@@ -242,6 +250,8 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   Type type_;
   std::unordered_set<Type> supported_child_collections_;
   bool supports_tabs_;
+
+  base::ObserverList<TabCollectionObserver> observers_;
 
   // Underlying implementation for the storage of children.
   std::unique_ptr<TabCollectionStorage> impl_;

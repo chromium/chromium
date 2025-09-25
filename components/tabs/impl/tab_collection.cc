@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/tabs/public/supports_handles.h"
+#include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
@@ -76,6 +77,18 @@ TabCollection::TabCollection(
       impl_(std::make_unique<TabCollectionStorage>(*this)) {}
 
 TabCollection::~TabCollection() = default;
+
+void TabCollection::AddObserver(TabCollectionObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabCollection::RemoveObserver(TabCollectionObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool TabCollection::HasObserver(TabCollectionObserver* observer) const {
+  return observers_.HasObserver(observer);
+}
 
 bool TabCollection::ContainsCollection(TabCollection* collection) const {
   CHECK(collection);
