@@ -2254,14 +2254,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "delay-media-sink-discovery",
-    "owners": [
-      "muyaoxu@google.com",
-      "openscreen-eng@google.com"
-    ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "demo-mode-test-tag",
     "owners": [ "llin@google.com", "cros-demo-mode-eng@google.com" ],
     "expiry_milestone": 150
@@ -6341,11 +6333,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "keyboard-lock-prompt",
-    "owners": ["muyaoxu@google.com", "liberato@chromium.org", "openscreen-eng@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "language-detection-api",
     "owners": ["//chrome/browser/ai/OWNERS", "builtin-ai-team@google.com"],
     "expiry_milestone": 145
@@ -6810,11 +6797,6 @@
     "name": "media-playback-while-not-visible-permission-policy",
     "owners": [ "gabrielbrito@microsoft.com", "stevebe@microsoft.com"],
     "expiry_milestone": 142
-  },
-  {
-    "name": "media-remoting-without-fullscreen",
-    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 140
   },
   {
     "name": "media-route-dial-provider",
@@ -8221,11 +8203,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "press-and-hold-esc-to-exit-browser-fullscreen",
-    "owners": ["muyaoxu@google.com", "takumif@chromium.org"],
-    "expiry_milestone": 134
-  },
-  {
     "name": "price-insights",
     "owners": [ "qib@google.com", "chrome-shopping-eng@google.com", "chrommerce-eng@google.com" ],
     "expiry_milestone": 135
@@ -8832,11 +8809,6 @@
     "expiry_milestone": 142
   },
   {
-    "name": "remote-playback-backend",
-    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "remove-autofill-badges",
     "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 144
@@ -9348,11 +9320,6 @@
     // caused by specific hardware, noisy environments, etc. Thus, it should not
     // expire.
     "expiry_milestone": -1
-  },
-  {
-    "name": "show-cast-permission-rejected-error",
-    "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 140
   },
   {
     "name": "show-featured-enterprise-site-search",
@@ -10301,7 +10268,7 @@
   {
     "name": "use-network-framework-for-local-discovery",
     "owners": [ "muyaoxu@google.com", "openscreen-eng@google.com" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 150
   },
   {
     "name": "use-new-feed-eligibility-service",
