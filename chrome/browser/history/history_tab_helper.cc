@@ -282,8 +282,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetNavigationUIData());
 
   // (crbug.com/365922169) When generating the HistoryAddPageArgs below,
-  // we must calculate the value for its member `is_ephemeral`. This
-  // member represents whether our navigation came from a credentialless
+  // we must calculate the value for its member `visit_context_ephemerality`.
+  // This member represents whether our navigation came from a credentialless
   // iframe (which is an ephemeral context). Our goal is to use this
   // information to avoid storing ephemeral navigations from
   // credentialless iframes in the history backend. Currently, this is
@@ -295,20 +295,22 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // most history DB code lives).
 
   // Instead, we check the values of these flags here - setting
-  // `is_ephemeral` to false if neither of these experimental flags are
-  // enabled. Once the experiments have completed, is_ephemeral will go
-  // back to being a pure check of whether the navigation is from a
-  // credentialless iframe.
+  // `visit_context_ephemerality` to `kNotEphemeral` if neither of these
+  // experimental flags are enabled. Once the experiments have completed,
+  // `visit_context_ephemerality` will go back to being a pure check of whether
+  // the navigation is from a credentialless iframe.
   const bool are_partitioned_visited_links_enabled =
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
-  const bool is_ephemeral = are_partitioned_visited_links_enabled &&
-                                    navigation_handle->GetRenderFrameHost()
-                                ? navigation_handle->GetRenderFrameHost()
-                                      ->GetStorageKey()
-                                      .nonce()
-                                      .has_value()
-                                : false;
+  const history::VisitContextEphemerality visit_context_ephemerality =
+      are_partitioned_visited_links_enabled &&
+              navigation_handle->GetRenderFrameHost() &&
+              navigation_handle->GetRenderFrameHost()
+                  ->GetStorageKey()
+                  .nonce()
+                  .has_value()
+          ? history::VisitContextEphemerality::kEphemeral
+          : history::VisitContextEphemerality::kNotEphemeral;
 
   // If `history::kVisitedLinksOn404` is enabled, visits to reachable URLs that
   // result in a 404 response will be saved to history. We don't want to count
@@ -412,8 +414,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       has_actor_task_id ? history::SOURCE_ACTOR : history::SOURCE_BROWSED,
       response_code_category, navigation_handle->DidReplaceEntry(),
-      should_consider_for_ntp_most_visited, is_ephemeral, title, top_level_url,
-      frame_url, opener,
+      should_consider_for_ntp_most_visited, visit_context_ephemerality, title,
+      top_level_url, frame_url, opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
       app_id_, std::move(context_annotations),
       has_actor_task_id

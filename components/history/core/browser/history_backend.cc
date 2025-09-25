@@ -283,13 +283,15 @@ bool CanAddForeignVisitToSegments(
 // invalid, we DO NOT add this navigation to the VisitedLinkDatabase. We
 // do not add ephemeral keys because, by definition, their state shouldn't be
 // persisted across browsing sessions.
-bool ShouldAddToVisitedLinkDatabase(std::optional<GURL> top_level_url,
-                                    std::optional<GURL> frame_url,
-                                    bool is_ephemeral) {
+bool ShouldAddToVisitedLinkDatabase(
+    std::optional<GURL> top_level_url,
+    std::optional<GURL> frame_url,
+    VisitContextEphemerality visit_context_ephemerality) {
   // If our navigation comes from an ephemeral context or does not provide
   // enough information to construct our triple partition key, do not add it to
   // the database.
-  if (is_ephemeral || !top_level_url.has_value() || !frame_url.has_value()) {
+  if (visit_context_ephemerality == VisitContextEphemerality::kEphemeral ||
+      !top_level_url.has_value() || !frame_url.has_value()) {
     return false;
   }
 
@@ -1031,13 +1033,13 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
 
     // No redirect case (one element means just the page itself).
     last_visit_id =
-        AddPageVisit(request.url, request.time, last_visit_id,
-                     external_referrer_url, t, request.hidden,
-                     request.visit_source, request.response_code_category,
-                     IsTypedIncrement(t), opener_visit,
-                     request.consider_for_ntp_most_visited,
-                     request.is_ephemeral, request.local_navigation_id,
-                     request.title, top_level_url, frame_url, request.app_id)
+        AddPageVisit(
+            request.url, request.time, last_visit_id, external_referrer_url, t,
+            request.hidden, request.visit_source,
+            request.response_code_category, IsTypedIncrement(t), opener_visit,
+            request.consider_for_ntp_most_visited,
+            request.visit_context_ephemerality, request.local_navigation_id,
+            request.title, top_level_url, frame_url, request.app_id)
             .second;
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
@@ -1162,15 +1164,15 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
       // from the redirect chain. Only place the opener on the initial visit in
       // the chain.
       last_visit_id =
-          AddPageVisit(redirects[redirect_index], request.time, last_visit_id,
-                       redirect_index == 0 ? external_referrer_url : GURL(), t,
-                       request.hidden, request.visit_source,
-                       request.response_code_category,
-                       should_increment_typed_count,
-                       redirect_index == 0 ? opener_visit : 0,
-                       request.consider_for_ntp_most_visited,
-                       request.is_ephemeral, request.local_navigation_id,
-                       request.title, top_level_url, frame_url, request.app_id)
+          AddPageVisit(
+              redirects[redirect_index], request.time, last_visit_id,
+              redirect_index == 0 ? external_referrer_url : GURL(), t,
+              request.hidden, request.visit_source,
+              request.response_code_category, should_increment_typed_count,
+              redirect_index == 0 ? opener_visit : 0,
+              request.consider_for_ntp_most_visited,
+              request.visit_context_ephemerality, request.local_navigation_id,
+              request.title, top_level_url, frame_url, request.app_id)
               .second;
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
@@ -1386,7 +1388,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     bool should_increment_typed_count,
     VisitID opener_visit,
     bool consider_for_ntp_most_visited,
-    bool is_ephemeral,
+    VisitContextEphemerality visit_context_ephemerality,
     std::optional<int64_t> local_navigation_id,
     std::optional<std::u16string> title,
     std::optional<GURL> top_level_url,
@@ -1445,7 +1447,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
   VisitedLinkRow visited_link_info;
   if (base::FeatureList::IsEnabled(kPopulateVisitedLinkDatabase)) {
     if (ShouldAddToVisitedLinkDatabase(top_level_url, frame_url,
-                                       is_ephemeral)) {
+                                       visit_context_ephemerality)) {
       // Determine if the visited link is already in the database.
       VisitedLinkID existing_row_id = db_->GetRowForVisitedLink(
           url_id, *top_level_url, *frame_url, visited_link_info);
@@ -1739,7 +1741,7 @@ VisitID HistoryBackend::AddSyncedVisit(
       visit.transition, hidden, VisitSource::SOURCE_SYNCED,
       response_code_category, IsTypedIncrement(visit.transition),
       visit.opener_visit, visit.consider_for_ntp_most_visited,
-      /*is_ephemeral=*/false,
+      VisitContextEphemerality::kNotEphemeral,
       /*local_navigation_id=*/std::nullopt, title,
       /*top_level_url=*/std::nullopt, /*frame_url=*/std::nullopt, visit.app_id,
       visit.visit_duration, visit.originator_cache_guid,

@@ -1284,6 +1284,14 @@ enum class VisitResponseCodeCategory {
   k404,
 };
 
+enum class VisitContextEphemerality {
+  // The page visit is not ephemeral.
+  kNotEphemeral = 0,
+  // The page visit occurred in an ephemeral context (i.e., a credentialless
+  // iframe).
+  kEphemeral,
+};
+
 // Marshalling structure for AddPage.
 struct HistoryAddPageArgs {
   // The default constructor is equivalent to:
@@ -1292,13 +1300,10 @@ struct HistoryAddPageArgs {
   //       GURL(), base::Time(), nullptr, 0, std::nullopt, GURL(),
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
   //       false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404, false,
-  //       true, false, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
-  //       std::nullopt, std::nullopt, std::nullopt)
+  //       true, VisitContextEphemerality::kNotEphemeral, std::nullopt,
+  //       std::nullopt, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+  //       std::nullopt)
   HistoryAddPageArgs();
-  // TODO: crbug.com/439920192 - Stop using a defaulted boolean for
-  // `is_ephemeral`. Using boolean params with a default value adjacent to
-  // boolean params with no default creates dangerous ambiguity when adding
-  // new boolean params.
   HistoryAddPageArgs(const GURL& url,
                      base::Time time,
                      ContextID context_id,
@@ -1312,7 +1317,8 @@ struct HistoryAddPageArgs {
                      VisitResponseCodeCategory response_code_category,
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
-                     bool is_ephemeral = false,
+                     VisitContextEphemerality visit_context_ephemerality =
+                         VisitContextEphemerality::kNotEphemeral,
                      std::optional<std::u16string> title = std::nullopt,
                      std::optional<GURL> top_level_url = std::nullopt,
                      std::optional<GURL> frame_url = std::nullopt,
@@ -1345,7 +1351,7 @@ struct HistoryAddPageArgs {
   // doesn't guarantee it's relevant for Most Visited, since other requirements
   // exist (e.g. certain page transition types).
   bool consider_for_ntp_most_visited;
-  bool is_ephemeral;
+  VisitContextEphemerality visit_context_ephemerality;
   std::optional<std::u16string> title;
   // `top_level_url` is a GURL representing the top-level frame that this
   // navigation originated from.

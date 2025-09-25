@@ -864,15 +864,16 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // be 0 on failure.
   //
   // If the caller wants to add this visit to the VisitedLinkDatabase, it needs
-  // to provide values for the `top_level_url`, `frame_url`, `is_ephemeral`
-  // parameters. `top_level_url` is a GURL representing the top-level frame that
-  // this navigation originated from. `frame_url` is GURL representing the
-  // immediate frame that this navigation originated from. For example, if a
-  // link to `c.com` is clicked in an iframe `b.com` that is embedded in
-  // `a.com`, the `top_level_url` is `a.com` and the `frame_url` is `b.com` (and
-  // the `url` is `c.com`). `is_ephemeral` represents whether our navigation
-  // came from a credentialless iframe (which is an ephemeral context). When
-  // true, we want to avoid adding the visit into the VisitedLinkDatabase.
+  // to provide values for the `top_level_url`, `frame_url`,
+  // `visit_context_ephemerality` parameters. `top_level_url` is a GURL
+  // representing the top-level frame that this navigation originated from.
+  // `frame_url` is GURL representing the immediate frame that this navigation
+  // originated from. For example, if a link to `c.com` is clicked in an iframe
+  // `b.com` that is embedded in `a.com`, the `top_level_url` is `a.com` and the
+  // `frame_url` is `b.com` (and the `url` is `c.com`).
+  // `visit_context_ephemerality` represents whether our navigation came from a
+  // credentialless iframe (which is an ephemeral context). When `kEphemeral`,
+  // we want to avoid adding the visit into the VisitedLinkDatabase.
   //
   // This does not schedule database commits, it is intended to be used as a
   // subroutine for AddPage only. It also assumes the database is valid.
@@ -889,7 +890,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool should_increment_typed_count,
       VisitID opener_visit,
       bool consider_for_ntp_most_visited,
-      bool is_ephemeral = false,
+      VisitContextEphemerality visit_context_ephemerality =
+          VisitContextEphemerality::kNotEphemeral,
       std::optional<int64_t> local_navigation_id = std::nullopt,
       std::optional<std::u16string> title = std::nullopt,
       std::optional<GURL> top_level_url = std::nullopt,

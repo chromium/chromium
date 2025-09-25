@@ -1541,8 +1541,9 @@ TEST_F(OrderingHistoryServiceTest, EnsureCorrectOrder) {
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id1, 0,
       std::nullopt, GURL(),
       /*redirects=*/{}, ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED,
-      VisitResponseCodeCategory::kNot404, false, true, /*is_ephemeral=*/false,
-      std::nullopt, top_level_url, frame_url);
+      VisitResponseCodeCategory::kNot404, false, true,
+      VisitContextEphemerality::kNotEphemeral, std::nullopt, top_level_url,
+      frame_url);
 
   // Simulate a user clicking on our VistedLink.
   history_service_->AddPage(request);

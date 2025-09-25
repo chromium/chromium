@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_macros.h"
 #import "components/history/core/browser/history_constants.h"
 #import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/core/common/language_detection_details.h"
@@ -164,7 +165,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       referrer_url, redirects, transition, hidden, history::SOURCE_BROWSED,
       response_code_category,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
-      /*is_ephemeral=*/false,
+      history::VisitContextEphemerality::kNotEphemeral,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
                                            : std::nullopt,
       // TODO(crbug.com/40279742): due to WebKit constraints, iOS does not

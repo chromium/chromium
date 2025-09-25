@@ -295,7 +295,7 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
       /*hidden=*/false, history::SOURCE_BROWSED,
       history::VisitResponseCodeCategory::kNot404,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*is_ephemeral=*/false,
+      history::VisitContextEphemerality::kNotEphemeral,
       /*title=*/std::nullopt,
       // TODO(crbug.com/40279734): Investigate whether we want to record blocked
       // navigations in the VisitedLinkDatabase, and if so, populate

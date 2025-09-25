@@ -573,7 +573,8 @@ void HistoryService::AddPage(const GURL& url,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
       /*hidden=*/false, visit_source, VisitResponseCodeCategory::kNot404,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*is_ephemeral=*/false, /*title=*/std::nullopt,
+      VisitContextEphemerality::kNotEphemeral,
+      /*title=*/std::nullopt,
       /*top_level_url=*/url, /*frame_url=*/url));
 }
 
@@ -628,7 +629,7 @@ void HistoryService::AddPartitionedVisitedLinks(
 
   // When links are partitioned and the navigation comes from an ephemeral
   // context we want to avoid adding it to the hashtable.
-  if (args.is_ephemeral) {
+  if (args.visit_context_ephemerality == VisitContextEphemerality::kEphemeral) {
     return;
   }
 
