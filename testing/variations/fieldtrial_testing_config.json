@@ -22528,6 +22528,36 @@
             ]
         }
     ],
+    "ScreenSharingStudent": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScreenSharingStudent"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ScreenSharingTeacher": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScreenSharingTeacher"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScreencastForceEnableServerSideSpeechRecognition": [
         {
             "platforms": [
