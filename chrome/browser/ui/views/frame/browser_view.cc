@@ -1298,8 +1298,8 @@ void BrowserView::Show() {
   // example, new window in Mac fullscreen with toolbar showing) where we need
   // restore it.
   if (browser_widget_->IsFullscreen() &&
-      !browser_widget_->GetFrameView()->ShouldHideTopUIForFullscreen() &&
-      GetFocusManager() && !GetFocusManager()->GetFocusedView()) {
+      !GetFrameView()->ShouldHideTopUIForFullscreen() && GetFocusManager() &&
+      !GetFocusManager()->GetFocusedView()) {
     SetFocusToLocationBar(false);
   }
 
@@ -1334,8 +1334,8 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
 
   // If the BrowserFrameView has been created, give it a chance to handle the
   // BrowserWidget's bounds change.
-  if (browser_widget_->GetFrameView()) {
-    browser_widget_->GetFrameView()->SetFrameBounds(bounds);
+  if (auto* const frame_view = GetFrameView()) {
+    frame_view->SetFrameBounds(bounds);
   } else {
     browser_widget_->SetBounds(bounds);
   }
@@ -2049,7 +2049,7 @@ bool BrowserView::ShouldHideUIForFullscreen() const {
     return false;
   }
 
-  return browser_widget_->GetFrameView()->ShouldHideTopUIForFullscreen();
+  return GetFrameView()->ShouldHideTopUIForFullscreen();
 }
 
 bool BrowserView::IsFullscreen() const {
@@ -2091,7 +2091,7 @@ void BrowserView::FullscreenStateChanging() {
 void BrowserView::FullscreenStateChanged() {
 #if BUILDFLAG(IS_CHROMEOS)
   const auto* frame_view =
-      static_cast<BrowserFrameViewChromeOS*>(browser_widget_->GetFrameView());
+      static_cast<BrowserFrameViewChromeOS*>(GetFrameView());
   immersive_mode_controller()->SetEnabled(
       frame_view->ShouldEnableImmersiveModeController());
 #endif
@@ -2119,7 +2119,7 @@ void BrowserView::FullscreenStateChanged() {
 
   if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
     ToolbarSizeChanged(false);
-    browser_widget_->GetFrameView()->OnFullscreenStateChanged();
+    GetFrameView()->OnFullscreenStateChanged();
 
     // Reshow the split view after completing the toolbar sizing.
     if (!IsFullscreen() && browser_->tab_strip_model()->IsActiveTabSplit()) {
@@ -2357,7 +2357,7 @@ void BrowserView::OnLockedForOnTaskUpdated() {
 
 bool BrowserView::IsTrustedPinned() const {
   const auto* frame_view =
-      static_cast<BrowserFrameViewChromeOS*>(browser_widget_->GetFrameView());
+      static_cast<const BrowserFrameViewChromeOS*>(GetFrameView());
   return frame_view->IsTrustedPinned();
 }
 
@@ -2415,8 +2415,10 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
     web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
   }
 
-  if (browser_widget_ && browser_widget_->GetFrameView()) {
-    browser_widget_->GetFrameView()->WindowControlsOverlayEnabledChanged();
+  if (browser_widget_) {
+    if (auto* const frame_view = GetFrameView()) {
+      frame_view->WindowControlsOverlayEnabledChanged();
+    }
   }
 
   // When Window Controls Overlay is enabled or disabled, the browser window
@@ -3115,9 +3117,8 @@ views::Button* BrowserView::GetSharingHubIconButton() {
       PageActionIconType::kSharingHub);
 }
 
-void BrowserView::ToggleMultitaskMenu() const {
-  auto* frame_view =
-      static_cast<BrowserFrameViewChromeOS*>(browser_widget_->GetFrameView());
+void BrowserView::ToggleMultitaskMenu() {
+  auto* frame_view = static_cast<BrowserFrameViewChromeOS*>(GetFrameView());
   if (!frame_view) {
     return;
   }
@@ -4204,8 +4205,7 @@ void BrowserView::SaveWindowPlacement(const gfx::Rect& bounds,
   gfx::Rect saved_bounds = bounds;
   if (chrome::SavedBoundsAreContentBounds(browser_.get())) {
     // Invert the transformation done in GetSavedWindowPlacement().
-    gfx::Size client_size =
-        browser_widget_->GetFrameView()->GetBoundsForClientView().size();
+    gfx::Size client_size = GetFrameView()->GetBoundsForClientView().size();
     if (IsToolbarVisible()) {
       client_size.Enlarge(0, -toolbar_->GetPreferredSize().height());
     }
@@ -5003,7 +5003,7 @@ void BrowserView::Layout(PassKey) {
   // TODO(jamescook): Why was this in the middle of layout code?
   toolbar_->location_bar()->omnibox_view()->SetFocusBehavior(
       IsToolbarVisible() ? FocusBehavior::ALWAYS : FocusBehavior::NEVER);
-  browser_widget()->GetFrameView()->UpdateMinimumSize();
+  GetFrameView()->UpdateMinimumSize();
 
   // Some of the situations when the BrowserView is laid out are:
   // - Enter/exit immersive fullscreen mode.
@@ -5155,8 +5155,9 @@ void BrowserView::AddedToWidget() {
   browser_->GetFeatures().download_toolbar_ui_controller()->Init();
 #endif
 
-  browser_widget_->OnBrowserViewInitViewsComplete();
-  browser_widget_->GetFrameView()->UpdateMinimumSize();
+  auto* const frame_view = GetFrameView();
+  frame_view->OnBrowserViewInitViewsComplete();
+  frame_view->UpdateMinimumSize();
   using_native_frame_ = browser_widget_->ShouldUseNativeFrame();
 
   MaybeInitializeWebUITabStrip();
@@ -5350,7 +5351,7 @@ void BrowserView::LoadingAnimationCallback(base::TimeTicks timestamp) {
     // GetActiveWebContents can return null for example under Purify when
     // the animations are running slowly and this function is called on a timer
     // through LoadingAnimationCallback.
-    browser_widget_->UpdateThrobber(web_contents && web_contents->IsLoading());
+    GetFrameView()->UpdateThrobber(web_contents && web_contents->IsLoading());
   }
 }
 
@@ -5371,6 +5372,14 @@ bool BrowserView::ShouldShowAvatarToolbarIPH() {
           ? toolbar_button_provider_->GetAvatarToolbarButton()
           : nullptr;
   return avatar_button != nullptr;
+}
+
+BrowserFrameView* BrowserView::GetFrameView() {
+  return browser_widget_ ? browser_widget_->GetFrameView() : nullptr;
+}
+
+const BrowserFrameView* BrowserView::GetFrameView() const {
+  return browser_widget_ ? browser_widget_->GetFrameView() : nullptr;
 }
 
 BrowserViewLayout* BrowserView::GetBrowserViewLayout() const {
@@ -5582,7 +5591,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
   // Undo our anti-jankiness hacks and force a re-layout.
   in_process_fullscreen_ = false;
   ToolbarSizeChanged(false);
-  browser_widget_->GetFrameView()->OnFullscreenStateChanged();
+  GetFrameView()->OnFullscreenStateChanged();
 
   // Reshow the split view after completing the toolbar sizing.
   if (!fullscreen && browser_->tab_strip_model()->IsActiveTabSplit()) {
@@ -5998,7 +6007,7 @@ Profile* BrowserView::GetProfile() {
 }
 
 void BrowserView::UpdateUIForTabFullscreen() {
-  browser_widget()->GetFrameView()->UpdateFullscreenTopUI();
+  GetFrameView()->UpdateFullscreenTopUI();
 }
 
 WebContents* BrowserView::GetWebContentsForExclusiveAccess() {
@@ -6010,7 +6019,7 @@ bool BrowserView::CanUserEnterFullscreen() const {
 }
 
 bool BrowserView::CanUserExitFullscreen() const {
-  return browser_widget_->GetFrameView()->CanUserExitFullscreen();
+  return GetFrameView()->CanUserExitFullscreen();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -6138,10 +6147,10 @@ void BrowserView::PaintAsActiveChanged() {
 
 void BrowserView::FrameColorsChanged() {
   if (web_app_window_title_) {
-    SkColor frame_color = browser_widget_->GetFrameView()->GetFrameColor(
-        BrowserFrameActiveState::kUseCurrent);
-    SkColor caption_color = browser_widget_->GetFrameView()->GetCaptionColor(
-        BrowserFrameActiveState::kUseCurrent);
+    SkColor frame_color =
+        GetFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent);
+    SkColor caption_color =
+        GetFrameView()->GetCaptionColor(BrowserFrameActiveState::kUseCurrent);
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
   }

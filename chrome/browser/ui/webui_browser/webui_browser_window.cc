@@ -828,7 +828,7 @@ views::Button* WebUIBrowserWindow::GetSharingHubIconButton() {
   return nullptr;
 }
 
-void WebUIBrowserWindow::ToggleMultitaskMenu() const {
+void WebUIBrowserWindow::ToggleMultitaskMenu() {
   NOTIMPLEMENTED();
 }
 #else

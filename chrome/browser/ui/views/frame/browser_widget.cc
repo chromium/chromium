@@ -288,14 +288,6 @@ void BrowserWidget::LayoutWebAppWindowTitle(
 #endif
 }
 
-int BrowserWidget::GetTopInset() const {
-  return browser_frame_view_->GetTopInset(false);
-}
-
-void BrowserWidget::UpdateThrobber(bool running) {
-  browser_frame_view_->UpdateThrobber(running);
-}
-
 BrowserFrameView* BrowserWidget::GetFrameView() const {
   return browser_frame_view_;
 }
@@ -328,10 +320,6 @@ bool BrowserWidget::HandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
   return browser_native_widget_ &&
          browser_native_widget_->HandleKeyboardEvent(event);
-}
-
-void BrowserWidget::OnBrowserViewInitViewsComplete() {
-  browser_frame_view_->OnBrowserViewInitViewsComplete();
 }
 
 void BrowserWidget::UserChangedTheme(BrowserThemeChangeType theme_change_type) {

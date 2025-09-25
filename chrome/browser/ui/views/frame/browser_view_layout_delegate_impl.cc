@@ -56,7 +56,8 @@ int BrowserViewLayoutDelegateImplBase::GetTopInsetInBrowserView() const {
   }
 #endif
 
-  return browser_view_->browser_widget()->GetTopInset() - browser_view_->y();
+  return browser_view_->browser_widget()->GetFrameView()->GetTopInset(false) -
+         browser_view_->y();
 }
 
 bool BrowserViewLayoutDelegateImplBase::IsToolbarVisible() const {

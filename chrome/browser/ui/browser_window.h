@@ -460,7 +460,7 @@ class BrowserWindow : public ui::BaseWindow {
   virtual views::Button* GetSharingHubIconButton() = 0;
 
   // Toggles the multitask menu on the browser frame size button.
-  virtual void ToggleMultitaskMenu() const = 0;
+  virtual void ToggleMultitaskMenu() = 0;
 #else
   // Shows the Sharing Hub bubble. This must only be called as a direct result
   // of user action.
