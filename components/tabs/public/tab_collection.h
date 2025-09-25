@@ -27,6 +27,7 @@ class MojoTreeBuilder;
 namespace tabs {
 
 class TabInterface;
+class DirectChildWalker;
 
 DECLARE_HANDLE_FACTORY(TabCollection);
 
@@ -216,6 +217,9 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
       base::PassKey<tabs_api::MojoTreeBuilder> pass_key) const {
     return GetChildren();
   }
+
+  virtual const ChildrenVector& GetChildren(
+      base::PassKey<DirectChildWalker> pass_key) const;
 
  protected:
   explicit TabCollection(Type type,
