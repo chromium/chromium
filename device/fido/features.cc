@@ -106,14 +106,11 @@ BASE_FEATURE(kWebAuthnHelloSignal,
 BASE_FEATURE(kDigitalCredentialsHybridLinking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled in M136. Remove in or after M139.
+// Default enabled on Desktop in M136 and Android in M142. Remove in or after
+// M145.
 BASE_FEATURE(kWebAuthnPasskeyUpgrade,
              "WebAuthenticationPasskeyUpgrade",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
              base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 // Disabled by default.
