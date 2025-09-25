@@ -245,6 +245,8 @@ public class ListMenuHost
         menu.addContentViewClickRunnable(this::dismiss);
         final View contentView = menu.getContentView();
 
+        final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+
         AnchoredPopupWindow popupMenu =
                 new AnchoredPopupWindow.Builder(
                                 mView.getContext(),
@@ -260,6 +262,7 @@ public class ListMenuHost
                         .setAnimateFromAnchor(false)
                         .setAnimationStyle(R.style.PopupWindowAnimFade)
                         .setSpecCalculator(new FlyoutPopupSpecCalculator())
+                        .setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding)
                         .build();
 
         popupMenu.show();
