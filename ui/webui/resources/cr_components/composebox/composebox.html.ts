@@ -90,7 +90,7 @@ export function getHtml(this: ComposeboxElement) {
             </cr-icon>
             <cr-icon class="close-icon" icon="cr:close"></cr-icon>
           </div>
-          <div>Deep Search</div>
+          <div>${this.i18n('deepSearch')}</div>
         </cr-button>` : ''}
       </div>
     ` : html`

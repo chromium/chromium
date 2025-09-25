@@ -532,6 +532,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"composeboxFileUploadExpired", IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED},
       {"menu", IDS_MENU},
       {"uploadFile", IDS_NTP_COMPOSE_UPLOAD_FILE},
+      {"deepSearch", IDS_NTP_COMPOSE_DEEP_SEARCH},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddString("searchboxComposePlaceholder",

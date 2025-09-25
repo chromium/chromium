@@ -8577,16 +8577,19 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Upload file
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXT" desc="The text to display to ask user to add context to their search e.g. pdf or image.">
-        Add tab or file
+        Add tabs or more
       </message>
       <message name="IDS_NTP_COMPOSE_ADD_CONTEXT_TITLE" desc="The a11y title for a button that allows users to add context to their search e.g. pdf or image.">
-        Add a tab or file to your search
+        Add a tab or file to your search, and also use a tool
       </message>
       <message name="IDS_NTP_COMPOSE_SUGGESTIONS_INFO" desc="The text underneath the composebox that explains to users how suggestions are generated.">
         Suggestions based on your <ph name="BEGIN_LINK_GOOGLE_ACTIVITY">&lt;a target="_blank" href="$1"&gt;</ph>Google activity<ph name="END_LINK_GOOGLE_ACTIVITY">&lt;/a&gt;</ph>
       </message>
       <message name="IDS_NTP_COMPOSE_SMART_COMPOSE_TAB" desc="The label for the call to action to accept the inline suggestion.">
         Tab
+      </message>
+      <message name="IDS_NTP_COMPOSE_DEEP_SEARCH" desc="The label for the deep search button in the context menu in the composebox as well as the chip that indicates that the user is in deep search mode.">
+        Deep Search
       </message>
 
       <!-- NTP Modules -->
