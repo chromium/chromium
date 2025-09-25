@@ -29,6 +29,7 @@ import androidx.appsearch.builtintypes.WebPage;
 import androidx.appsearch.exceptions.AppSearchException;
 import androidx.appsearch.platformstorage.PlatformStorage;
 
+import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -58,6 +59,7 @@ import java.util.concurrent.TimeUnit;
 
 /** This class handles the donation of Tabs. */
 @NullMarked
+@SuppressWarnings("CheckReturnValue") // For Futures.transform() and not using the result.
 public class AuxiliarySearchDonor {
 
     /** Callback to set schema visibilities for package names. */
@@ -187,17 +189,12 @@ public class AuxiliarySearchDonor {
         boolean ret = onConsumerSchemaSearchedImpl(success);
 
         // Closes the mGlobalSearchSession after querying the schema.
-        Futures.addCallback(
+        Futures.transform(
                 mGlobalSearchSession,
-                new FutureCallback<>() {
-                    @Override
-                    public void onSuccess(GlobalSearchSession session) {
-                        session.close();
-                        mGlobalSearchSession = null;
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {}
+                session -> {
+                    session.close();
+                    mGlobalSearchSession = null;
+                    return null;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -237,27 +234,22 @@ public class AuxiliarySearchDonor {
             return false;
         }
 
-        Futures.addCallback(
+        Futures.transformAsync(
                 mAppSearchSession,
-                new FutureCallback<>() {
-                    @Override
-                    public void onSuccess(AppSearchSession session) {
-                        SetSchemaRequest setSchemaRequest = buildSetSchemaRequest();
-                        if (setSchemaRequest == null) {
-                            return;
-                        }
-
-                        ListenableFuture<SetSchemaResponse> responseFutureCallback =
-                                session.setSchemaAsync(setSchemaRequest);
-                        addRequestCallback(
-                                responseFutureCallback,
-                                (Callback<@Nullable SetSchemaResponse>)
-                                        (response) -> onSetSchemaResponseAvailable(response),
-                                UI_THREAD_EXECUTOR);
+                session -> {
+                    SetSchemaRequest setSchemaRequest = buildSetSchemaRequest();
+                    if (setSchemaRequest == null) {
+                        return null;
                     }
 
-                    @Override
-                    public void onFailure(Throwable t) {}
+                    ListenableFuture<SetSchemaResponse> responseFutureCallback =
+                            session.setSchemaAsync(setSchemaRequest);
+                    addRequestCallback(
+                            responseFutureCallback,
+                            (Callback<@Nullable SetSchemaResponse>)
+                                    (response) -> onSetSchemaResponseAvailable(response),
+                            UI_THREAD_EXECUTOR);
+                    return responseFutureCallback;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
         return true;
@@ -515,52 +507,52 @@ public class AuxiliarySearchDonor {
             return;
         }
 
-        Futures.addCallback(
-                mAppSearchSession,
-                new FutureCallback<>() {
-                    @Override
-                    public void onSuccess(AppSearchSession session) {
-                        PutDocumentsRequest.Builder requestBuilder =
-                                new PutDocumentsRequest.Builder();
-                        try {
-                            requestBuilder.addDocuments(docs);
-                        } catch (AppSearchException e) {
-                            return;
-                        }
-                        PutDocumentsRequest request = requestBuilder.build();
-                        ListenableFuture<AppSearchBatchResult<String, Void>>
-                                appSearchBatchResultCallback = session.putAsync(request);
+        try {
+            Futures.transformAsync(
+                    mAppSearchSession,
+                    (AsyncFunction<AppSearchSession, AppSearchBatchResult<String, Void>>)
+                            session -> {
+                                PutDocumentsRequest.Builder requestBuilder =
+                                        new PutDocumentsRequest.Builder();
+                                requestBuilder.addDocuments(docs);
+                                PutDocumentsRequest request = requestBuilder.build();
+                                ListenableFuture<AppSearchBatchResult<String, Void>>
+                                        appSearchBatchResultCallback = session.putAsync(request);
 
-                        addRequestCallback(
-                                appSearchBatchResultCallback,
-                                (Callback<@Nullable AppSearchBatchResult<String, Void>>)
-                                        (batchResult) -> {
-                                            boolean isSuccess = false;
-                                            if (batchResult != null) {
-                                                Log.i(
-                                                        TAG,
-                                                        "successfulResults:"
-                                                                + batchResult.getSuccesses().size()
-                                                                + ", failedResults:"
-                                                                + batchResult.getFailures().size());
-                                                isSuccess =
-                                                        batchResult.getSuccesses().size()
-                                                                == docs.size();
-                                            } else {
-                                                Log.i(TAG, "Failed to put documents.");
-                                            }
+                                addRequestCallback(
+                                        appSearchBatchResultCallback,
+                                        (Callback<@Nullable AppSearchBatchResult<String, Void>>)
+                                                (batchResult) -> {
+                                                    boolean isSuccess = false;
+                                                    if (batchResult != null) {
+                                                        Log.i(
+                                                                TAG,
+                                                                "successfulResults:"
+                                                                        + batchResult
+                                                                                .getSuccesses()
+                                                                                .size()
+                                                                        + ", failedResults:"
+                                                                        + batchResult
+                                                                                .getFailures()
+                                                                                .size());
+                                                        isSuccess =
+                                                                batchResult.getSuccesses().size()
+                                                                        == docs.size();
+                                                    } else {
+                                                        Log.i(TAG, "Failed to put documents.");
+                                                    }
 
-                                            if (callback != null) {
-                                                callback.onResult(isSuccess);
-                                            }
-                                        },
-                                UI_THREAD_EXECUTOR);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {}
-                },
-                UI_THREAD_EXECUTOR);
+                                                    if (callback != null) {
+                                                        callback.onResult(isSuccess);
+                                                    }
+                                                },
+                                        UI_THREAD_EXECUTOR);
+                                return appSearchBatchResultCallback;
+                            },
+                    UI_THREAD_EXECUTOR);
+        } catch (Exception e) {
+            Log.i(TAG, "Failed to donate documents.", e);
+        }
     }
 
     /**
@@ -576,30 +568,25 @@ public class AuxiliarySearchDonor {
 
         SearchSpec spec = new SearchSpec.Builder().addFilterNamespaces(mNamespace).build();
 
-        Futures.addCallback(
+        Futures.transformAsync(
                 mAppSearchSession,
-                new FutureCallback<>() {
-                    @Override
-                    public void onSuccess(AppSearchSession session) {
-                        ListenableFuture<Void> result = session.removeAsync("", spec);
-                        Futures.addCallback(
-                                result,
-                                new FutureCallback<>() {
-                                    @Override
-                                    public void onSuccess(@Nullable Void result) {
-                                        Callback.runNullSafe(onDeleteCompleteCallback, true);
-                                    }
+                session -> {
+                    ListenableFuture<Void> result = session.removeAsync("", spec);
+                    Futures.addCallback(
+                            result,
+                            new FutureCallback<>() {
+                                @Override
+                                public void onSuccess(@Nullable Void result) {
+                                    Callback.runNullSafe(onDeleteCompleteCallback, true);
+                                }
 
-                                    @Override
-                                    public void onFailure(Throwable t) {
-                                        Callback.runNullSafe(onDeleteCompleteCallback, false);
-                                    }
-                                },
-                                AsyncTask.THREAD_POOL_EXECUTOR);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {}
+                                @Override
+                                public void onFailure(Throwable t) {
+                                    Callback.runNullSafe(onDeleteCompleteCallback, false);
+                                }
+                            },
+                            AsyncTask.THREAD_POOL_EXECUTOR);
+                    return result;
                 },
                 AsyncTask.THREAD_POOL_EXECUTOR);
         return true;
@@ -626,17 +613,12 @@ public class AuxiliarySearchDonor {
     @SuppressLint("CheckResult")
     private void closeSession() {
         if (mAppSearchSession != null) {
-            Futures.addCallback(
+            Futures.transform(
                     mAppSearchSession,
-                    new FutureCallback<>() {
-                        @Override
-                        public void onSuccess(AppSearchSession session) {
-                            session.close();
-                            mAppSearchSession = null;
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {}
+                    session -> {
+                        session.close();
+                        mAppSearchSession = null;
+                        return null;
                     },
                     AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -775,20 +757,13 @@ public class AuxiliarySearchDonor {
                     return false;
                 };
 
-        Futures.addCallback(
+        Futures.transformAsync(
                 mGlobalSearchSession,
-                new FutureCallback<>() {
-                    @Override
-                    public void onSuccess(GlobalSearchSession session) {
+                session ->
                         processSearchResults(
                                 session.search(/* queryExpression= */ "", searchSpec),
                                 callback,
-                                searchQueryChecker);
-                    }
-
-                    @Override
-                    public void onFailure(Throwable t) {}
-                },
+                                searchQueryChecker),
                 AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -845,18 +820,13 @@ public class AuxiliarySearchDonor {
         addRequestCallback(
                 searchFutureCallback,
                 (Callback<@Nullable SearchResults>)
-                        searchResults -> {
+                        (searchResults) -> {
                             if (searchResults != null) {
-                                Futures.addCallback(
+                                Futures.transform(
                                         searchResults.getNextPageAsync(),
-                                        new FutureCallback<>() {
-                                            @Override
-                                            public void onSuccess(List<SearchResult> page) {
-                                                callback.onResult(page);
-                                            }
-
-                                            @Override
-                                            public void onFailure(Throwable t) {}
+                                        page -> {
+                                            callback.onResult(page);
+                                            return null;
                                         },
                                         UI_THREAD_EXECUTOR);
                             } else {
