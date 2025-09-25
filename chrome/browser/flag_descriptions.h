@@ -4427,6 +4427,9 @@ extern const char kUiDevToolsDescription[];
 extern const char kUiSlowAnimationsName[];
 extern const char kUiSlowAnimationsDescription[];
 
+extern const char kUnicornChromeActivityReportingName[];
+extern const char kUnicornChromeActivityReportingDescription[];
+
 extern const char kUploadOfficeToCloudName[];
 extern const char kUploadOfficeToCloudDescription[];
 

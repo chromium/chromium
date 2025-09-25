@@ -4591,6 +4591,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-unicorn-chrome-activity-reporting",
+    "owners": [ "michaelcheco@google.com", "zhangwenyu@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-unrestricted-usb",
     "owners": [ "deviceapi-team@google.com" ],
     "expiry_milestone": 150

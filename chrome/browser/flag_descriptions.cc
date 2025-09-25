@@ -7685,6 +7685,11 @@ const char kUiDevToolsDescription[] =
 const char kUiSlowAnimationsName[] = "Slow UI animations";
 const char kUiSlowAnimationsDescription[] = "Makes all UI animations slow.";
 
+const char kUnicornChromeActivityReportingName[] =
+    "Chrome app activity reporting for supervised users";
+const char kUnicornChromeActivityReportingDescription[] =
+    "Enables reporting Chrome app activity for supervised users.";
+
 const char kVcDlcUiName[] = "VC DLC UI";
 const char kVcDlcUiDescription[] =
     "Enable UI for video conference effect toggle tiles in the video "

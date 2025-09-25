@@ -17053,6 +17053,7 @@ from previous Chrome versions.
   <int value="1051797561" label="OngoingProcesses:enabled"/>
   <int value="1052550677"
       label="BlockRootWindowAccessibleNameChangeEvent:enabled"/>
+  <int value="1053593250" label="UnicornChromeActivityReporting:enabled"/>
   <int value="1053743655" label="NewOverviewAnimations:enabled"/>
   <int value="1054363360"
       label="PrivateNetworkAccessForNavigationsWarningOnly:enabled"/>
@@ -18425,6 +18426,7 @@ from previous Chrome versions.
   <int value="1526574513" label="HoldingSpaceRefresh:enabled"/>
   <int value="1526718531"
       label="DarkenWebsitesCheckboxInThemesSetting:enabled"/>
+  <int value="1526745520" label="UnicornChromeActivityReporting:disabled"/>
   <int value="1527072723" label="PdfUseSkiaRenderer:enabled"/>
   <int value="1527172748" label="disable-http2-grease-settings"/>
   <int value="1527292264" label="DisplayChangeModal:enabled"/>
