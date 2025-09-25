@@ -126,14 +126,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   }
 
  private:
-  struct ReleaseContext {
-    scoped_refptr<MailboxRef> mailbox_ref;
-    GLuint texture_id = 0u;
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper;
-  };
-
-  static void ReleaseTexture(void* ctx);
-
   AcceleratedStaticBitmapImage(
       scoped_refptr<gpu::ClientSharedImage>,
       const gpu::SyncToken&,
