@@ -148,6 +148,7 @@ input::-webkit-search-cancel-button {
 
 input::placeholder {
   color: var(--color-searchbox-placeholder);
+  opacity: var(--placeholder-opacity);
 }
 
 input:focus::placeholder {

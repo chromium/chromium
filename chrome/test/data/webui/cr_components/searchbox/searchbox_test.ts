@@ -5,7 +5,7 @@
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {SearchboxElement, SearchboxIconElement, SearchboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, BrowserProxyImpl, createAutocompleteMatch, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, BrowserProxyImpl, createAutocompleteMatch, MetricsReporterImpl, PlaceholderTextCycler, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
@@ -17,7 +17,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertStyle, createAutocompleteResult} from './searchbox_test_utils.js';
+import {assertStyle, createAutocompleteResult, waitForAttributeChange} from './searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from './test_searchbox_browser_proxy.js';
 
 enum Attributes {
@@ -127,6 +127,7 @@ suite('NewTabPageRealboxTest', () => {
     loadTimeData.overrideValues({
       isLensSearchbox: false,
       queryAutocompleteOnEmptyInput: false,
+      searchboxCyclingPlaceholders: false,
       searchboxDefaultIcon: 'search.svg',
       searchboxSeparator: ' - ',
       searchboxVoiceSearch: true,
@@ -3001,5 +3002,30 @@ suite('NewTabPageRealboxTest', () => {
     // Checking the input value after a backspace event doesn't work
     // so check the default behavior occurs (deleting a character).
     assertFalse(backspaceEvent.defaultPrevented);
+  });
+});
+
+suite('PlaceholderTextCyclerTest', () => {
+  let testInputElement: HTMLInputElement;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testInputElement = document.createElement('input');
+    testInputElement.type = 'text';
+    document.body.appendChild(testInputElement);
+  });
+
+  test('start and stop cycling input placeholder', async () => {
+    const sampleTransitionPlaceholder = 'Make a plan';
+    const placeholderTextCycler: PlaceholderTextCycler =
+        new PlaceholderTextCycler(
+            testInputElement, ['Ask Google', sampleTransitionPlaceholder], 50,
+            25);
+    placeholderTextCycler.start();
+    const text =
+        await waitForAttributeChange(testInputElement, 'placeholder', '');
+    assertEquals(sampleTransitionPlaceholder, text);
+
+    placeholderTextCycler.stop();
   });
 });

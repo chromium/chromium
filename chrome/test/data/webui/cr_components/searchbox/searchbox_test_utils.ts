@@ -27,3 +27,36 @@ export function assertStyle(element: Element, name: string, expected: string) {
   const actual = window.getComputedStyle(element).getPropertyValue(name).trim();
   assertEquals(expected, actual);
 }
+
+/**
+ * Waits for the specified attribute of a given element to change.
+ * @param attributeName The attribute to observe.
+ * @param initialValue The value to compare against to detect the attribute
+ *     change.
+ */
+export function waitForAttributeChange(
+    element: HTMLElement, attributeName: string, initialValue: string) {
+  return new Promise((resolve) => {
+    // Create a MutationObserver to watch for attribute changes.
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' &&
+            mutation.attributeName === attributeName) {
+          // Check if the value actually changed.
+          const newValue = (element as any)[attributeName];
+          if (newValue !== initialValue) {
+            observer.disconnect();
+            resolve(newValue);
+            return;
+          }
+        }
+      }
+    });
+
+    // Configure the observer to watch for attribute changes.
+    observer.observe(element, {
+      attributes: true,
+      attributeFilter: [attributeName],
+    });
+  });
+}

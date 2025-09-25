@@ -31,6 +31,117 @@ const LENS_GHOST_LOADER_TAG_NAME = 'cr-searchbox-ghost-loader';
 // LINT.ThenChange(/chrome/browser/resources/lens/shared/searchbox_ghost_loader.ts:GhostLoaderTagName)
 const DESKTOP_CHROME_NTP_REALBOX_ENTRY_POINT_VALUE = '42';
 
+// Register --placeholder-opacity as type <number> so that we can animate it.
+CSS.registerProperty({
+  name: '--placeholder-opacity',
+  syntax: '<number>',
+  initialValue: '1',
+  inherits: true,
+});
+
+enum AnimationState {
+  FADE_IN,
+  HOLD,
+  FADE_OUT,
+}
+
+interface AnimationDetails {
+  startOpacity: number;
+  endOpacity: number;
+  duration: number;
+  nextAnimationState: AnimationState;
+}
+
+/**
+ * Responsible for cycling placeholder text animations on an HTMLInputElement.
+ */
+export class PlaceholderTextCycler {
+  private input_: HTMLInputElement;
+  private animation_: Animation|null = null;
+  private placeholderTexts_: string[] = [];
+  private placeholderTextsCurrentIndex_: number = 0;
+  private changePlaceholderTextIntervalMs_: number = 4000;
+  private fadePlaceholderTextDurationMs_: number = 250;
+
+  constructor(
+      animatedPlaceholderContainer: HTMLInputElement,
+      placeholderTexts: string[], changeTextAnimationIntervalMs: number,
+      fadeTextAnimationDurationMs: number) {
+    assert(placeholderTexts.length > 0);
+
+    this.input_ = animatedPlaceholderContainer;
+    this.placeholderTexts_ = placeholderTexts;
+    this.changePlaceholderTextIntervalMs_ = changeTextAnimationIntervalMs;
+    this.fadePlaceholderTextDurationMs_ = fadeTextAnimationDurationMs;
+  }
+
+  start() {
+    this.stop();
+
+    this.placeholderTextsCurrentIndex_ = 0;
+    this.animate_(AnimationState.HOLD);
+  }
+
+  stop() {
+    if (this.animation_) {
+      this.animation_.cancel();
+      this.animation_ = null;
+    }
+
+    this.placeholderTextsCurrentIndex_ = 0;
+    this.input_.placeholder =
+            this.placeholderTexts_[this.placeholderTextsCurrentIndex_]!;
+  }
+
+  private animate_(state: AnimationState) {
+    let animationDetails: AnimationDetails|null = null;
+    switch (state) {
+      case AnimationState.FADE_IN:
+        this.input_.placeholder =
+            this.placeholderTexts_[this.placeholderTextsCurrentIndex_]!;
+        animationDetails = {
+          startOpacity: 0,
+          endOpacity: 1,
+          duration: this.fadePlaceholderTextDurationMs_,
+          nextAnimationState: AnimationState.HOLD,
+        };
+        break;
+      case AnimationState.HOLD:
+        animationDetails = {
+          startOpacity: 1,
+          endOpacity: 1,
+          duration: this.changePlaceholderTextIntervalMs_,
+          nextAnimationState: AnimationState.FADE_OUT,
+        };
+        break;
+      case AnimationState.FADE_OUT:
+        this.placeholderTextsCurrentIndex_ =
+            (this.placeholderTextsCurrentIndex_ + 1) %
+            this.placeholderTexts_.length;
+        animationDetails = {
+          startOpacity: 1,
+          endOpacity: 0,
+          duration: this.fadePlaceholderTextDurationMs_,
+          nextAnimationState: AnimationState.FADE_IN,
+        };
+        break;
+    }
+
+    this.animation_ = this.input_.animate(
+        [
+          {'--placeholder-opacity': animationDetails.startOpacity},
+          {'--placeholder-opacity': animationDetails.endOpacity},
+        ],
+        {duration: animationDetails.duration},
+    );
+    this.animation_.onfinish = () => {
+      if (this.animation_) {
+        this.animate_(animationDetails.nextAnimationState);
+      }
+    };
+  }
+}
+
 interface Input {
   text: string;
   inline: string;
@@ -301,6 +412,7 @@ export class SearchboxElement extends SearchboxElementBase {
   private autocompleteResultChangedListenerId_: number|null = null;
   private inputTextChangedListenerId_: number|null = null;
   private thumbnailChangedListenerId_: number|null = null;
+  private placeholderCycler_: PlaceholderTextCycler|null = null;
 
   constructor() {
     performance.mark('realbox-creation-start');
@@ -310,7 +422,7 @@ export class SearchboxElement extends SearchboxElementBase {
     this.callbackRouter_ = SearchboxBrowserProxy.getInstance().callbackRouter;
   }
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
     this.autocompleteResultChangedListenerId_ =
         this.callbackRouter_.autocompleteResultChanged.addListener(
@@ -321,6 +433,18 @@ export class SearchboxElement extends SearchboxElementBase {
     this.thumbnailChangedListenerId_ =
         this.callbackRouter_.setThumbnail.addListener(
             this.onSetThumbnail_.bind(this));
+
+    if (loadTimeData.getBoolean('searchboxCyclingPlaceholders')) {
+      const {config} = await this.pageHandler_.getPlaceholderConfig();
+      const texts = config.texts.map(text => decodeString16(text));
+      assert(texts[0]);
+      this.placeholderText = texts[0];
+      this.placeholderCycler_ = new PlaceholderTextCycler(
+          this.$.input, texts,
+          Number(config.changeTextAnimationInterval.microseconds / 1000n),
+          Number(config.fadeTextAnimationDuration.microseconds / 1000n));
+      this.placeholderCycler_.start();
+    }
   }
 
   override disconnectedCallback() {
@@ -332,6 +456,8 @@ export class SearchboxElement extends SearchboxElementBase {
     this.callbackRouter_.removeListener(this.inputTextChangedListenerId_);
     assert(this.thumbnailChangedListenerId_);
     this.callbackRouter_.removeListener(this.thumbnailChangedListenerId_);
+
+    this.placeholderCycler_?.stop();
   }
 
   override firstUpdated() {
@@ -488,6 +614,7 @@ export class SearchboxElement extends SearchboxElementBase {
 
   protected onInputFocus_() {
     this.pageHandler_.onFocusChanged(true);
+    this.placeholderCycler_?.stop();
   }
 
   protected onInputInput_(e: InputEvent) {
@@ -632,6 +759,7 @@ export class SearchboxElement extends SearchboxElementBase {
       this.pageHandler_.stopAutocomplete(/*clearResult=*/ false);
     }
     this.pageHandler_.onFocusChanged(false);
+    this.placeholderCycler_?.start();
   }
 
   protected async onInputWrapperKeydown_(e: KeyboardEvent) {
