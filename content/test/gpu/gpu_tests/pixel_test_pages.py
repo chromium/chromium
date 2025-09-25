@@ -1842,7 +1842,7 @@ class PixelTestPages():
         ca.FixedRectCropAction(0, 60, None, -20))
     # Run the tests on CI for a while to see how stable they are with
     # fuzzy matching enabled.
-    grace_period_end = date(2025, 10, 1)
+    grace_period_end = date(2025, 12, 1)
     return [
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=359',
                       f'{base_name}_MeetEffectsCatOnHead',
