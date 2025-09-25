@@ -134,6 +134,7 @@ enum class HomeCustomizationBackgroundStyle : NSInteger {
 // Records the final outcome of the user's background selection flow.
 // This is logged once the user either applies a background or exits
 // the customization UI.
+// LINT.IfChange(BackgroundSelectionOutcome)
 enum class BackgroundSelectionOutcome : NSInteger {
   // User selected and applied a new background.
   kApplied,
@@ -143,11 +144,12 @@ enum class BackgroundSelectionOutcome : NSInteger {
   kCanceled,
 
   // User selected a background, but then canceled instead of applying it.
-  kCanceledAfterSelection,
+  kCanceledAfterSelected,
 
   // Must be last.
-  kMaxValue = kCanceledAfterSelection,
+  kMaxValue = kCanceledAfterSelected,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSBackgroundSelectionOutcome)
 
 // Records errors that can occur during the user uploaded image.
 // LINT.IfChange(UserUploadedImageError)

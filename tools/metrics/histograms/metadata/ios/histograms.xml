@@ -2473,6 +2473,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.Background.Color.Outcome"
+    enum="IOSBackgroundSelectionOutcome" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the outcome of a user's interaction with the color picker. Logged
+    each time the background picker action sheet is dismissed, capturing whether
+    the user applied a color, canceled, or canceled after selecting a color.
+  </summary>
+</histogram>
+
 <histogram
     name="IOS.HomeCustomization.Background.Gallery.CollectionImageFetchError"
     enum="IOSNtpBackgroundServiceErrorType" expires_after="2026-03-01">
@@ -2543,6 +2554,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.Background.Gallery.Outcome"
+    enum="IOSBackgroundSelectionOutcome" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the outcome of a user's interaction with the image gallery picker.
+    Logged each time the background picker action sheet is dismissed, capturing
+    whether the user applied an image, canceled, or canceled after selecting an
+    image.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.Background.UserUploaded.Error"
     enum="IOSUserUploadedImageError" expires_after="2026-03-01">
   <owner>cheickcisse@google.com</owner>
@@ -2562,6 +2585,18 @@ chromium-metrics-reviews@google.com.
     Records the size (in KB) of the image uploaded by the user for the ntp
     background customization on iOS. This is logged each time a user
     successfully selects and uploads a new background image.
+  </summary>
+</histogram>
+
+<histogram name="IOS.HomeCustomization.Background.UserUploaded.Outcome"
+    enum="IOSBackgroundSelectionOutcome" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the outcome of a user's interaction with the user-uploaded image
+    picker. Logged each time the background picker action sheet is dismissed,
+    capturing whether the user uploaded their own image, canceled, or canceled
+    after selecting an image.
   </summary>
 </histogram>
 

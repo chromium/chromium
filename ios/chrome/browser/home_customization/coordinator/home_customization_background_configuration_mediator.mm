@@ -258,7 +258,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   _backgroundCustomizationService->RestoreCurrentTheme();
   self.themeHasChanged = NO;
   self.backgroundSelectionOutcome =
-      BackgroundSelectionOutcome::kCanceledAfterSelection;
+      BackgroundSelectionOutcome::kCanceledAfterSelected;
 }
 
 #pragma mark - HomeCustomizationBackgroundConfigurationMutator

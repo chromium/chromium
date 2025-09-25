@@ -270,6 +270,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Fetching Time Out Error"/>
 </enum>
 
+<!-- LINT.IfChange(IOSBackgroundSelectionOutcome) -->
+
+<enum name="IOSBackgroundSelectionOutcome">
+  <int value="0" label="Background change was applied"/>
+  <int value="1" label="Background change was canceled"/>
+  <int value="2" label="Background was selected but change was canceled"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/home_customization/utils/home_customization_constants.h:BackgroundSelectionOutcome) -->
+
 <!-- LINT.IfChange(IOSBestFeaturesDetailScreenActionType) -->
 
 <enum name="IOSBestFeaturesDetailScreenActionType">
