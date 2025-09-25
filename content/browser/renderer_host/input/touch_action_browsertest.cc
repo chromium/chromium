@@ -364,7 +364,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     ASSERT_OK_AND_ASSIGN(
         auto parsed_json,
-        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json));
+        base::JSONReader::ReadAndReturnValueWithError(
+            pointer_actions_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     ActionsParser actions_parser(std::move(parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());
@@ -403,7 +404,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     UNSAFE_BUFFERS(ASSERT_OK_AND_ASSIGN(
         auto parsed_json,
-        base::JSONReader::ReadAndReturnValueWithError(pointer_actions_json)));
+        base::JSONReader::ReadAndReturnValueWithError(
+            pointer_actions_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)));
     ActionsParser actions_parser(std::move(parsed_json));
 
     ASSERT_TRUE(actions_parser.Parse());

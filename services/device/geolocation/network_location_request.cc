@@ -300,7 +300,8 @@ void NetworkLocationRequest::OnRequestComplete(
     DVLOG(1) << "NetworkLocationRequest::OnRequestComplete() : "
                 "Parsing response "
              << *data;
-    auto response_result = base::JSONReader::ReadAndReturnValueWithError(*data);
+    auto response_result = base::JSONReader::ReadAndReturnValueWithError(
+        *data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!response_result.has_value()) {
       LOG(WARNING) << "NetworkLocationRequest::OnRequestComplete() : "
                       "JSONReader failed : "

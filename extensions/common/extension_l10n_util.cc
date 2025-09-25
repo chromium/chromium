@@ -86,7 +86,8 @@ std::optional<base::Value::Dict> LoadMessageFile(
         return dictionary;
       }
       base::JSONReader::Result value =
-          base::JSONReader::ReadAndReturnValueWithError(data);
+          base::JSONReader::ReadAndReturnValueWithError(
+              data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (value.has_value()) {
         dictionary = std::move(*value).TakeDict();
       } else {

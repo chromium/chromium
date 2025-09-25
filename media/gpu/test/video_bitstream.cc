@@ -74,8 +74,8 @@ bool VideoBitstream::LoadMetadata(const base::FilePath& json_file_path,
   if (!base::ReadFileToString(json_file_path, &json_data)) {
     return false;
   }
-  auto metadata_result =
-      base::JSONReader::ReadAndReturnValueWithError(json_data);
+  auto metadata_result = base::JSONReader::ReadAndReturnValueWithError(
+      json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!metadata_result.has_value()) {
     LOG(ERROR) << "Failed to parse video metadata: " << json_file_path << ": "
                << metadata_result.error().message;

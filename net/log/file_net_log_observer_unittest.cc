@@ -125,7 +125,9 @@ base::expected<void, std::string> ParsedNetLog::InitFromFileContents(
     return base::unexpected("input is empty");
   }
 
-  ASSIGN_OR_RETURN(root, base::JSONReader::ReadAndReturnValueWithError(input),
+  ASSIGN_OR_RETURN(root,
+                   base::JSONReader::ReadAndReturnValueWithError(
+                       input, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                    &base::JSONReader::Error::message);
 
   const base::Value::Dict* dict = root.GetIfDict();

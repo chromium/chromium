@@ -1231,8 +1231,8 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
 Status WritePrefsFile(const std::string& template_string,
                       const base::FilePath& path,
                       const base::Value::Dict* custom_prefs) {
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(template_string);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      template_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     return Status(kUnknownError, "cannot parse internal JSON template: " +
                                      parsed_json.error().message);

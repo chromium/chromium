@@ -2445,7 +2445,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       scroll_end_location_in_screen.y());
   ASSERT_OK_AND_ASSIGN(
       auto parsed_json,
-      base::JSONReader::ReadAndReturnValueWithError(touch_move_sequence_json));
+      base::JSONReader::ReadAndReturnValueWithError(
+          touch_move_sequence_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ActionsParser actions_parser(std::move(parsed_json));
 
   ASSERT_TRUE(actions_parser.Parse());

@@ -316,7 +316,8 @@ ExtensionBuilder& ExtensionBuilder::SetManifestVersion(int manifest_version) {
 ExtensionBuilder& ExtensionBuilder::AddJSON(std::string_view json) {
   CHECK(manifest_data_);
   std::string wrapped_json = base::StringPrintf("{%s}", json.data());
-  auto parsed = base::JSONReader::ReadAndReturnValueWithError(wrapped_json);
+  auto parsed = base::JSONReader::ReadAndReturnValueWithError(
+      wrapped_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(parsed.has_value())
       << "Failed to parse json for extension '" << manifest_data_->name
       << "':" << parsed.error().message;

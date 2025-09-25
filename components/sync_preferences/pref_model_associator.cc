@@ -58,7 +58,8 @@ const sync_pb::PreferenceSpecifics& GetSpecifics(const syncer::SyncData& pref) {
 std::optional<base::Value> ReadPreferenceSpecifics(
     const sync_pb::PreferenceSpecifics& preference) {
   base::JSONReader::Result parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(preference.value());
+      base::JSONReader::ReadAndReturnValueWithError(
+          preference.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     LOG(ERROR) << "Failed to deserialize preference value: "
                << parsed_json.error().message;
@@ -146,7 +147,8 @@ void PrefModelAssociator::InitPrefAndAssociate(
     CHECK_EQ(pref_name, preference.name());
     ASSIGN_OR_RETURN(
         base::Value sync_value,
-        base::JSONReader::ReadAndReturnValueWithError(preference.value()),
+        base::JSONReader::ReadAndReturnValueWithError(
+            preference.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS),
         [&](base::JSONReader::Error error) {
           LOG(ERROR) << "Failed to deserialize value of preference '"
                      << pref_name << "': " << std::move(error).message;

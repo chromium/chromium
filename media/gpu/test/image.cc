@@ -133,8 +133,8 @@ bool Image::LoadMetadata() {
     return false;
   }
 
-  auto metadata_result =
-      base::JSONReader::ReadAndReturnValueWithError(json_data);
+  auto metadata_result = base::JSONReader::ReadAndReturnValueWithError(
+      json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!metadata_result.has_value()) {
     VLOGF(1) << "Failed to parse image metadata: " << json_path << ": "
              << metadata_result.error().message;

@@ -244,7 +244,8 @@ std::unique_ptr<AppInfo> AppStorageFileHandler::ReadFromFile() {
   }
 
   base::JSONReader::Result app_info_value =
-      base::JSONReader::ReadAndReturnValueWithError(app_info_data);
+      base::JSONReader::ReadAndReturnValueWithError(
+          app_info_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!app_info_value.has_value()) {
     LOG(ERROR)
         << "Fail to deserialize json value from string with error message: "

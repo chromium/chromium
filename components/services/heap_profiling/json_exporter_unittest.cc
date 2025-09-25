@@ -430,7 +430,8 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
 
   // JSON should parse.
   ASSERT_OK_AND_ASSIGN(auto parsed_json,
-                       base::JSONReader::ReadAndReturnValueWithError(json));
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   // Validate the allocators summary.
   const base::Value::Dict* malloc_summary =

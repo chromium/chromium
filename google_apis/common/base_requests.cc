@@ -133,7 +133,8 @@ std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
 }
 
 std::unique_ptr<base::Value> ParseJson(const std::string& json) {
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(json);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     std::string trimmed_json;
     if (json.size() < 80) {

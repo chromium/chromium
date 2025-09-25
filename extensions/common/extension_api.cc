@@ -38,7 +38,8 @@ const char* const kChildKinds[] = {"functions", "events"};
 
 base::Value::Dict LoadSchemaDictionary(const std::string& name,
                                        std::string_view schema) {
-  auto result = base::JSONReader::ReadAndReturnValueWithError(schema);
+  auto result = base::JSONReader::ReadAndReturnValueWithError(
+      schema, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   // Tracking down http://crbug.com/121424
   char buf[128];

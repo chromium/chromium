@@ -1052,7 +1052,8 @@ void SandboxedUnpacker::ParseJsonFile(const base::FilePath& path) {
   }
 
   base::JSONReader::Result result =
-      base::JSONReader::ReadAndReturnValueWithError(contents);
+      base::JSONReader::ReadAndReturnValueWithError(
+          contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ReadManifestDone(std::move(result).transform_error(
       [](const base::JSONReader::Error& error) { return error.ToString(); }));
 }

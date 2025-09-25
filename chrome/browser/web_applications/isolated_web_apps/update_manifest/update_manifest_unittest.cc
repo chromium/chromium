@@ -622,9 +622,11 @@ TEST(GetLatestVersionTest, CalculatesLatestVersionForChannel) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelsMissing) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -644,10 +646,12 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelsMissing) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, EmptyChannelMetadata) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {},
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -667,10 +671,12 @@ TEST(UpdateManifestParsesChannelMetadataTest, EmptyChannelMetadata) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelsNotADict) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": [],
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_THAT(
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")),
       ErrorIs(Eq(UpdateManifest::JsonFormatError::kChannelsNotADictionary)));
@@ -678,12 +684,14 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelsNotADict) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelNotADict) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": []
     },
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_THAT(
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")),
       ErrorIs(Eq(UpdateManifest::JsonFormatError::kChannelNotADictionary)));
@@ -691,12 +699,14 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelNotADict) {
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelMetadataWithoutName) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": {}
     },
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -713,14 +723,16 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelMetadataWithoutName) {
 TEST(UpdateManifestParsesChannelMetadataTest,
      ChannelMetadataWithAdditionalField) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": {
         "flubber": "blubber"
       }
     },
     "versions": []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));
@@ -734,7 +746,8 @@ TEST(UpdateManifestParsesChannelMetadataTest,
 
 TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
   ASSERT_OK_AND_ASSIGN(base::Value json,
-                       base::JSONReader::ReadAndReturnValueWithError(R"({
+                       base::JSONReader::ReadAndReturnValueWithError(
+                           R"({
     "channels": {
       "default": {
         "name": "default channel"
@@ -746,7 +759,8 @@ TEST(UpdateManifestParsesChannelMetadataTest, ChannelName) {
       }
     },
     "versions" : []
-  })"));
+  })",
+                           base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   ASSERT_OK_AND_ASSIGN(
       auto update_manifest,
       UpdateManifest::CreateFromJson(json, GURL("https://c.de/um.json")));

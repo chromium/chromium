@@ -38,8 +38,8 @@ namespace {
 Status OverridePreferenceJson(const std::string &template_string,
                              const base::Value::Dict *custom_prefs,
                              std::string *prefs_str) {
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(template_string);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      template_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     return Status(kUnknownError, "cannot parse internal JSON template: " +
                                      parsed_json.error().message);

@@ -138,11 +138,13 @@ bool FakeLog::Emptied() const {
 
 base::expected<base::Value::Dict, std::string> ParseDictionary(
     const std::string& json) {
-  ASSIGN_OR_RETURN(
-      auto parsed_json, base::JSONReader::ReadAndReturnValueWithError(json),
-      [&](base::JSONReader::Error error) {
-        return "Couldn't parse " + json + ", got: " + std::move(error).message;
-      });
+  ASSIGN_OR_RETURN(auto parsed_json,
+                   base::JSONReader::ReadAndReturnValueWithError(
+                       json, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+                   [&](base::JSONReader::Error error) {
+                     return "Couldn't parse " + json +
+                            ", got: " + std::move(error).message;
+                   });
 
   base::Value::Dict* dict = parsed_json.GetIfDict();
   if (!dict) {

@@ -68,8 +68,8 @@ class ScopedTraceTest : public testing::Test {
         &ScopedTraceTest::TraceDataCb, run_loop.QuitClosure(), &json_data));
     run_loop.Run();
 
-    auto parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(json_data.json_output);
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        json_data.json_output, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(parsed_json.has_value())
         << "JSON parsing failed (" << parsed_json.error().message
         << ") JSON data:\n"

@@ -135,7 +135,8 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
   // Default parsing failure to be true.
   *parsing_failed = true;
 
-  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(response_sp);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      response_sp, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     LOG(WARNING) << parsed_json.error().message << " at "
                  << parsed_json.error().line << ":"

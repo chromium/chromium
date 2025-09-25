@@ -20,7 +20,8 @@ JSONFeatureProviderSource::~JSONFeatureProviderSource() {
 void JSONFeatureProviderSource::LoadJSON(int resource_id) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          resource_id));
+          resource_id),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(result.has_value())
       << "Could not load features: " << name_ << " " << result.error().message;
 

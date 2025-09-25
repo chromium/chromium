@@ -2181,8 +2181,8 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
           test_config_dir);
 
   base::Value::List app_configs;
-  auto json_parse_result =
-      base::JSONReader::ReadAndReturnValueWithError(app_config_string);
+  auto json_parse_result = base::JSONReader::ReadAndReturnValueWithError(
+      app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(json_parse_result.has_value())
       << "JSON parse error: " << json_parse_result.error().message;
   if (!json_parse_result.has_value()) {

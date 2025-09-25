@@ -50,7 +50,8 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
   auto result =
       [&]() -> base::expected<mojom::WebAppOriginAssociationPtr, Result> {
     ASSIGN_OR_RETURN(auto parsed_data,
-                     base::JSONReader::ReadAndReturnValueWithError(data),
+                     base::JSONReader::ReadAndReturnValueWithError(
+                         data, base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                      [&](base::JSONReader::Error error) {
                        AddErrorInfo(error.message, error.line, error.column);
                        return Result::kParseFailedInvalidJson;
