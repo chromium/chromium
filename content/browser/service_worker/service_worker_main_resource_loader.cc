@@ -1064,6 +1064,26 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
 
   is_synthetic_response_used_ = true;
 
+  // Always decode on the network service side, since the renderer is not
+  // involved with processing the synthetic response.
+  //
+  // TODO(crbug.com/352578800): When the renderer side decoding is enabled, we
+  // need to plumb `client_side_content_decoding_types` in `URLResponseHead`
+  // from `response_head` in `OnReceiveResponse()` to `response_head_` in
+  // `ServiceWorkerMainResourceLoader`. To achieve that,
+  // `ServiceWorkerSyntheticResponseManager` should be updated not to use
+  // `blink::mojom::FetchAPIResponse` to handle the response, because
+  // `blink::mojom::FetchAPIResponse` doesn't have a corresponding field of
+  // `client_side_content_decoding_types`. The necessary field for decoding will
+  // be lost under the current implementation.
+  //
+  // Note that `ServiceWorkerMainResourceLoader` doesn't dispatch a fetch event
+  // if `ServiceWorkerSyntheticResponseManager::StartRequest()` is called. This
+  // means `resource_request_` is used by
+  // `ServiceWorkerSyntheticResponseManager` only, not used for sending other
+  // network request purpose anymore.
+  resource_request_.client_side_content_decoding_enabled = false;
+
   synthetic_response_manager_.emplace(
       service_worker_client_->CreateNetworkURLLoaderFactory(
           ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::

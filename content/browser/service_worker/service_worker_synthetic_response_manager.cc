@@ -263,21 +263,7 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
     OnCompleteCallback complete_callback) {
   TRACE_EVENT("ServiceWorker",
               "ServiceWorkerSyntheticResponseManager::StartRequest");
-  // Always decode on the network service side, since the renderer is not
-  // involved with processing the synthetic response.
-  //
-  // TODO(crbug.com/352578800): When the renderer side decoding is enabled, we
-  // need to plumb `client_side_content_decoding_types` in `URLResponseHead`
-  // from `response_head` in `OnReceiveResponse()` to `response_head_` in
-  // `ServiceWorkerMainResourceLoader`. To achieve that,
-  // `ServiceWorkerSyntheticResponseManager` should be updated not to use
-  // `blink::mojom::FetchAPIResponse` to handle the response, because
-  // `blink::mojom::FetchAPIResponse` doesn't have a corresponding field of
-  // `client_side_content_decoding_types`. The necessary field for decoding will
-  // be lost under the current implementation.
-  network::ResourceRequest request_for_synthetic_response(request);
-  request_for_synthetic_response.client_side_content_decoding_enabled = false;
-
+  CHECK(!request.client_side_content_decoding_enabled);
   response_callback_ = std::move(receive_response_callback);
   complete_callback_ = std::move(complete_callback);
   client_ = std::make_unique<SyntheticResponseURLLoaderClient>(
@@ -295,7 +281,7 @@ void ServiceWorkerSyntheticResponseManager::StartRequest(
   // TODO(crbug.com/352578800): Create and use own traffic_annotation tag.
   url_loader_factory_->CreateLoaderAndStart(
       url_loader_.InitWithNewPipeAndPassReceiver(), request_id, options,
-      request_for_synthetic_response, std::move(client_to_pass),
+      request, std::move(client_to_pass),
       net::MutableNetworkTrafficAnnotationTag(
           ServiceWorkerRaceNetworkRequestURLLoaderClient::
               NetworkTrafficAnnotationTag()));
