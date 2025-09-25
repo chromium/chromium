@@ -490,6 +490,19 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="10" label="Sunfish"/>
 </enum>
 
+<!-- LINT.IfChange(CaptureModeImageSearchResult) -->
+
+<enum name="CaptureModeImageSearchResult">
+  <int value="0" label="Success"/>
+  <int value="1"
+      label="Failure, identity manager missing or no primary account"/>
+  <int value="2" label="Failure, access token authentication error"/>
+  <int value="3" label="Failure, empty access token"/>
+  <int value="4" label="Failure, unsuccessful status code"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/capture_mode/capture_mode_metrics.h:CaptureModeImageSearchResult) -->
+
 <enum name="CaptureModeSaveToLocation">
   <int value="0" label="Default downloads folder"/>
   <int value="1" label="Root drive folder"/>
@@ -507,6 +520,23 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="2"
       label="User selects the default downloads folder from settings menu"/>
 </enum>
+
+<!-- LINT.IfChange(CaptureModeTextDetectionResult) -->
+
+<enum name="CaptureModeTextDetectionResult">
+  <int value="0" label="Unreached, image search failure"/>
+  <int value="1" label="Success, text present"/>
+  <int value="2" label="Success, no text present"/>
+  <int value="3"
+      label="Failure, identity manager missing or no primary account"/>
+  <int value="4" label="Failure, access token authentication error"/>
+  <int value="5" label="Failure, empty access token"/>
+  <int value="6" label="Failure, missing VSR ID"/>
+  <int value="7" label="Failure, missing response body"/>
+  <int value="8" label="Failure, issues parsing QFMetadata"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/capture_mode/capture_mode_metrics.h:CaptureModeTextDetectionResult) -->
 
 <enum name="CaptureQuickAction">
   <int value="0" label="Edit file in backlight"/>

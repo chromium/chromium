@@ -6,8 +6,10 @@
 
 #include <utility>
 
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
@@ -246,9 +248,11 @@ void TestCaptureModeDelegate::SendLensWebRegionSearch(
     const bool is_standalone_session,
     ash::OnSearchUrlFetchedCallback search_callback,
     ash::OnTextDetectionComplete text_callback,
-    base::OnceCallback<void()> error_callback) {
+    ash::OnLensErrorCallback error_callback) {
   if (force_lens_web_error_) {
-    std::move(error_callback).Run();
+    std::move(error_callback)
+        .Run(ash::CaptureModeImageSearchResult::kFailureUnsuccessfulStatusCode,
+             ash::CaptureModeTextDetectionResult::kUnreached);
     return;
   }
 

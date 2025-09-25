@@ -103,6 +103,9 @@
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 
 namespace {
@@ -1233,6 +1236,7 @@ void CaptureModeController::PerformImageSearch(
   base::WeakPtr<BaseCaptureModeSession> image_search_token =
       capture_mode_session_->GetImageSearchToken();
   if (!image_search_token) {
+    VLOG(1) << "Image search token invalid before capturing image.";
     // In theory, this should only be possible if the capture mode session is
     // the null session, which should not be able to perform image searches.
     return;
@@ -2065,6 +2069,7 @@ void CaptureModeController::OnImageCapturedForSearch(
   // The capture parameters / region / session may have changed before
   // `jpeg_bytes` were received.
   if (!image_search_token) {
+    VLOG(1) << "Image search token invalid after capturing image.";
     return;
   }
   capture_mode_session_->OnPerformCaptureForSearchEnded(capture_type);
@@ -2130,9 +2135,9 @@ void CaptureModeController::OnImageCapturedForSearch(
                             weak_ptr_factory_.GetWeakPtr(),
                             image_search_token));
 
-  // Immediately show the search results panel, with a loading animation in
-  // place of the web contents. We will replace it once we receive the URL from
-  // the server.
+    // Immediately show the search results panel, with a loading animation in
+    // place of the web contents. We will replace it once we receive the URL
+    // from the server.
     ShowSearchResultsPanel();
 }
 
@@ -2162,8 +2167,17 @@ void CaptureModeController::OnTextDetectionComplete(
 void CaptureModeController::OnLensTextDetectionComplete(
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
     std::optional<std::string> detected_text) {
-  if (!image_search_token || !detected_text.has_value() ||
-      detected_text->empty()) {
+  bool text_present = detected_text.has_value() && !detected_text->empty();
+  RecordCaptureModeTextDetectionResult(
+      text_present ? CaptureModeTextDetectionResult::kSuccessTextPresent
+                   : CaptureModeTextDetectionResult::kSuccessNoTextPresent);
+
+  if (!image_search_token) {
+    VLOG(1) << "Image search token invalid after text detection completed.";
+    return;
+  }
+
+  if (!text_present) {
     return;
   }
 
@@ -2245,14 +2259,29 @@ void CaptureModeController::OnScannerActionsFetched(
 void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
                                                const gfx::ImageSkia& image,
                                                GURL url) {
+  RecordCaptureModeImageSearchResult(CaptureModeImageSearchResult::kSuccess);
   if (captured_region == user_capture_region_) {
     NavigateSearchResultsPanel(url);
   }
 }
 
 void CaptureModeController::OnLensWebError(
-    base::WeakPtr<BaseCaptureModeSession> image_search_token) {
-  CloseSearchResultsPanel();
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    CaptureModeImageSearchResult image_result,
+    CaptureModeTextDetectionResult text_result) {
+  // TODO: crbug.com/446249623 - Add separate error handling for text
+  // detection.
+  // If image search goes wrong, close the panel. Otherwise, even if there is
+  // a text error, don't close the panel. Record metrics except for successes,
+  // as those are recorded separately upon completion of the desired task.
+  if (image_result != CaptureModeImageSearchResult::kSuccess) {
+    RecordCaptureModeImageSearchResult(image_result);
+    CloseSearchResultsPanel();
+  }
+  if (text_result != CaptureModeTextDetectionResult::kSuccessNoTextPresent &&
+      text_result != CaptureModeTextDetectionResult::kSuccessTextPresent) {
+    RecordCaptureModeTextDetectionResult(text_result);
+  }
 
   // TODO: crbug.com/406072681 - Show an error message if the session is no
   // longer active, such as in the case of clicking the Search with Lens button

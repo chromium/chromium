@@ -131,7 +131,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       const bool is_standalone_session,
       ash::OnSearchUrlFetchedCallback search_callback,
       ash::OnTextDetectionComplete text_callback,
-      base::OnceCallback<void()> error_callback) override;
+      ash::OnLensErrorCallback error_callback) override;
   bool IsNetworkConnectionOffline() const override;
   void DeleteRemoteFile(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
@@ -147,16 +147,11 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       ash::VideoConferenceManagerAsh* video_conference_manager_ash);
 
  private:
-  // TODO(b/362363034): See if we can remove these. May be needed for text
-  // detection.
-  void HandleStartQueryResponse(std::vector<lens::OverlayObject> objects,
-                                lens::Text text,
-                                bool is_error);
-  void HandleInteractionURLResponse(
-      lens::proto::LensOverlayUrlResponse response);
-  void HandleSuggestInputsResponse(
-      lens::proto::LensOverlaySuggestInputs suggest_inputs);
-  void HandleThumbnailCreated(const std::string& thumbnail_bytes);
+  // The different purposes (origins) behind requesting a new access token.
+  enum class AccessTokenPurpose {
+    kImageSearch,
+    kTextDetection,
+  };
 
   // Called back by the Drive integration service when the quota usage is
   // retrieved.
@@ -187,9 +182,11 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Gets the OAuth2 access token for the active user's primary account, used
   // for making a Lens Web API POST request.
   void GetPrimaryAccountAccessToken(
-      base::RepeatingCallback<void(const std::string& access_token)> callback);
+      base::RepeatingCallback<void(const std::string& access_token)> callback,
+      AccessTokenPurpose purpose);
   void PrimaryAccountAccessTokenAvailable(
       base::RepeatingCallback<void(const std::string& access_token)> callback,
+      AccessTokenPurpose purpose,
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
@@ -243,7 +240,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
 
   // A callback that will be invoked if an error or unexpected behavior occurs
   // during image search or text detection.
-  base::OnceCallback<void()> on_error_callback_;
+  ash::OnLensErrorCallback on_error_callback_;
 
   // True when a capture mode session is currently active.
   bool is_session_active_ = false;

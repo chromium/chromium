@@ -1979,6 +1979,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.ImageSearchResult.{TabletOrClamshellMode}"
+    enum="CaptureModeImageSearchResult" expires_after="2026-09-17">
+  <owner>hewer@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
+  <summary>
+    Recorded whenever an image search completes using Sunfish. The recorded enum
+    value indicates success or various failures.
+  </summary>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
     units="connected cameras" expires_after="2026-05-21">
   <owner>minch@chromium.org</owner>
@@ -2196,6 +2208,19 @@ chromium-metrics-reviews@google.com.
     Recorded whenever the capture folder is switched to default downloads folder
     in {TabletOrClamshellMode}. The recorded enum value indicates the reason
     that leads to the switching.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.TextDetectionResult.{TabletOrClamshellMode}"
+    enum="CaptureModeTextDetectionResult" expires_after="2026-09-17">
+  <owner>hewer@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
+  <summary>
+    Recorded whenever text detection completes using Sunfish. The recorded enum
+    value indicates success with no text detected, success with text detected,
+    or various failures.
   </summary>
 </histogram>
 

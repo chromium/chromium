@@ -59,6 +59,8 @@ constexpr char kSearchResultsPanelEntryPointHistogramRootWord[] =
     "SearchResultsPanelEntryPoint";
 constexpr char kSearchResultsPanelShown[] = "SearchResultsPanelShown";
 constexpr char kSearchResultClickedRootWord[] = "SearchResultClicked";
+constexpr char kImageSearchResultRootWord[] = "ImageSearchResult";
+constexpr char kTextDetectionResultRootWord[] = "TextDetectionResult";
 
 void RecordCaptureModeRecordingDurationInternal(
     const std::string& histogram_name,
@@ -372,6 +374,23 @@ void RecordSearchResultClicked() {
                                                /*behavior=*/nullptr,
                                                /*append_ui_mode_suffix=*/true),
                             true);
+}
+
+void RecordCaptureModeImageSearchResult(CaptureModeImageSearchResult result) {
+  base::UmaHistogramEnumeration(
+      BuildHistogramName(kImageSearchResultRootWord,
+                         /*behavior=*/nullptr,
+                         /*append_ui_mode_suffix=*/true),
+      result);
+}
+
+void RecordCaptureModeTextDetectionResult(
+    CaptureModeTextDetectionResult result) {
+  base::UmaHistogramEnumeration(
+      BuildHistogramName(kTextDetectionResultRootWord,
+                         /*behavior=*/nullptr,
+                         /*append_ui_mode_suffix=*/true),
+      result);
 }
 
 std::string BuildHistogramName(const char* const root_word,
