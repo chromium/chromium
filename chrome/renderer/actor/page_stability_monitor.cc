@@ -118,6 +118,14 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
   // process). Also we intentionally don't observe
   // `DidFinishSameDocumentNavigation()` and just wait for page stability for
   // same-document navigations.
+
+  // As we may not clean up PageStabilityMonitor, this may happen after `kDone`.
+  if (state_ == State::kDone) {
+    return;
+  }
+
+  CHECK(journal_entry_);
+
   journal_entry_->Log(
       "DidCommitProvisionalLoad",
       JournalDetailsBuilder()
@@ -302,6 +310,10 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     case State::kDone: {
       CHECK(!is_stable_callback_);
+      // As we may not clean up PageStabilityMonitor, clean up here.
+      receiver_.reset();
+      paint_stability_monitor_.reset();
+      journal_entry_.reset();
       break;
     }
   }
@@ -439,6 +451,11 @@ void PageStabilityMonitor::Bind(
 }
 
 void PageStabilityMonitor::OnMojoDisconnected() {
+  if (!receiver_.is_bound()) {
+    return;
+  }
+
+  CHECK(journal_entry_);
   journal_entry_->Log("OnMojoDisconnected",
                       JournalDetailsBuilder().Add("state", state_).Build());
 }
