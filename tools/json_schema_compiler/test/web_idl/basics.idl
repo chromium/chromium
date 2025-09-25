@@ -127,6 +127,14 @@ dictionary ExampleType {
   sequence<boolean> booleanSequence;
 };
 
+dictionary UnionTypes {
+  (DOMString or long or boolean) stringLongOrBoolean;
+  (DOMString or EnumType) stringOrEnum;
+  (EnumType or DOMString)? optionalEnumOrString;
+  (DOMString or sequence<DOMString>)? optionalStringOrStringSequence;
+  (ExampleType or long) dictTypeOrLong;
+};
+
 // Enum description.
 enum EnumType {
   // Comment1.

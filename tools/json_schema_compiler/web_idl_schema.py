@@ -373,6 +373,10 @@ class Type():
       properties['items'] = ArrayType(type_details).Process()
     elif type_details.IsA('Any'):
       properties['type'] = 'any'
+    elif type_details.IsA('UnionType'):
+      properties['choices'] = [
+          Type(node).Process() for node in type_details.GetListOf('Type')
+      ]
     else:
       raise SchemaCompilerError('Unsupported type class when processing type.',
                                 type_details)

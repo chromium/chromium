@@ -580,7 +580,6 @@ class WebIdlSchemaTest(unittest.TestCase):
         schema['description'],
     )
 
-
   # TODO(crbug.com/340297705): This will eventually be relaxed when adding
   # support for shared types to the new parser.
   def testMissingBrowserInterfaceError(self):
@@ -984,6 +983,80 @@ class WebIdlSchemaTest(unittest.TestCase):
             },
             'isInstanceOf': 'Entry'
         }, instance_of_params[0])
+
+  # Tests various Union types on Dictionaries.
+  def testUnionTypes(self):
+    schema = self.idl_basics
+    union_dict = getType(schema, 'UnionTypes')
+
+    self.assertEqual(
+        {
+            'name':
+            'stringLongOrBoolean',
+            'choices': [
+                {
+                    'type': 'string'
+                },
+                {
+                    'type': 'integer'
+                },
+                {
+                    'type': 'boolean'
+                },
+            ],
+        }, union_dict['properties']['stringLongOrBoolean'])
+    self.assertEqual(
+        {
+            'name': 'stringOrEnum',
+            'choices': [
+                {
+                    'type': 'string'
+                },
+                {
+                    '$ref': 'EnumType'
+                },
+            ],
+        }, union_dict['properties']['stringOrEnum'])
+    self.assertEqual(
+        {
+            'name': 'optionalEnumOrString',
+            'optional': True,
+            'choices': [
+                {
+                    '$ref': 'EnumType'
+                },
+                {
+                    'type': 'string'
+                },
+            ],
+        }, union_dict['properties']['optionalEnumOrString'])
+    self.assertEqual(
+        {
+            'name':
+            'optionalStringOrStringSequence',
+            'optional':
+            True,
+            'choices': [
+                {
+                    'type': 'string'
+                },
+                {
+                    'type': 'array',
+                    'items': {
+                        'type': 'string'
+                    }
+                },
+            ],
+        }, union_dict['properties']['optionalStringOrStringSequence'])
+    self.assertEqual(
+        {
+            'name': 'dictTypeOrLong',
+            'choices': [{
+                '$ref': 'ExampleType'
+            }, {
+                'type': 'integer'
+            }]
+        }, union_dict['properties']['dictTypeOrLong'])
 
   # Tests 'ArrayBuffer' types on Dictionaries.
   def testArrayBufferTypes(self):
