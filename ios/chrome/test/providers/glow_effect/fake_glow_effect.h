@@ -11,6 +11,7 @@
 @interface FakeGlowEffectView : UIView <GlowEffect>
 
 @property(nonatomic, assign) BOOL glowAnimationInProgress;
+@property(nonatomic, assign) BOOL glowRotationInProgress;
 
 @end
 

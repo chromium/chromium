@@ -4,7 +4,13 @@
 
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 
+#import "base/cancelable_callback.h"
+#import "base/functional/bind.h"
+#import "base/location.h"
+#import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/bind_post_task.h"
+#import "base/time/time.h"
 #import "base/unguessable_token.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_input_item.h"
@@ -61,7 +67,7 @@ const CGFloat kGenericButtonHeight = 32.0f;
 /// The duration for the glow effect.
 const CGFloat kGlowEffectDuration = 1.0f;
 /// The width of the glow effect border.
-const CGFloat kGlowEffectWidth = 4.0f;
+const CGFloat kGlowEffectWidth = 40.0f;
 
 /// The top padding between the omnibox container and the mic button.
 const CGFloat kMicButtonTopPadding = 2.0f;
@@ -72,7 +78,7 @@ const CGFloat kMicButtonTrailingPadding = 5.0f;
 const CGFloat kFadeViewWidth = 30.0f;
 /// The duration for the AIM button animation.
 const CGFloat kAIMButtonAnimationDuration = 0.25f;
-}
+}  // namespace
 
 @interface AIMPrototypeViewController () <UITextViewDelegate,
                                           AIMInputItemCellDelegate,
@@ -120,6 +126,9 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   UIView* _omniboxContainer;
   /// A spacer view used in the stack view.
   UIView* _spacerView;
+
+  /// The cancellable callback for updating the glow effect.
+  base::CancelableOnceClosure _updateGlowCallback;
 }
 
 /// AIMPrototypeAnimationContextProvider
@@ -159,7 +168,8 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
     _glowEffectView.userInteractionEnabled = NO;
     [self.view insertSubview:_glowEffectView
                 belowSubview:_inputPlateContainerView];
-    AddSameConstraints(_inputPlateContainerView, _glowEffectView);
+    AddSameConstraintsWithInset(_inputPlateContainerView, _glowEffectView,
+                                kGlowEffectWidth);
   }
 
   _omniboxContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -531,15 +541,51 @@ const CGFloat kAIMButtonAnimationDuration = 0.25f;
   _AIModeEnabled = AIModeEnabled;
   [self updateAIMButtonAppearance];
   [self.mutator setAIModeEnabled:_AIModeEnabled];
+  [self triggerGlowEffect];
+}
 
-  if (_AIModeEnabled && _glowEffectView) {
-    [NSObject cancelPreviousPerformRequestsWithTarget:self
-                                             selector:@selector(stopGlowEffect)
-                                               object:nil];
+- (void)triggerGlowEffect {
+  if (!_glowEffectView) {
+    return;
+  }
+
+  // Cancel any previously scheduled updates.
+  _updateGlowCallback.Cancel();
+
+  if (_AIModeEnabled) {
+    // When turning on, ensure the glow is started. The view's state machine
+    // will prevent it from restarting if it's already active.
     [_glowEffectView startGlow];
-    [self performSelector:@selector(stopGlowEffect)
-               withObject:nil
-               afterDelay:kGlowEffectDuration];
+  } else if (_glowEffectView.glowState == GlowState::kStoppingRotation) {
+    // If the user toggles off while the rotation is already stopping, stop the
+    // glow immediately.
+    [_glowEffectView stopGlow];
+    return;
+  }
+
+  // Schedule the next state transition after the delay, regardless of whether
+  // the mode was turned on or off.
+  __weak __typeof__(self) weakSelf = self;
+  _updateGlowCallback.Reset(base::BindOnce(^{
+    AIMPrototypeViewController* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf updateGlow];
+  }));
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, _updateGlowCallback.callback(),
+      base::Seconds(kGlowEffectDuration));
+}
+
+/// Called after a delay to transition the glow effect to its next state.
+- (void)updateGlow {
+  if (self.AIModeEnabled) {
+    // If the mode is still enabled, stop the rotation but keep the glow.
+    [_glowEffectView stopRotation];
+  } else {
+    // If the mode has been disabled, stop the glow entirely.
+    [_glowEffectView stopGlow];
   }
 }
 

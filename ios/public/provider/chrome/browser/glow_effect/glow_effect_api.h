@@ -24,22 +24,30 @@ enum class GlowState {
 /// The duration of one full rotation of the glow effect.
 @property(nonatomic, assign) CFTimeInterval rotationSpeedDuration;
 
-// The duration of the glow fade-in and fade-out animation.
+/// The duration of the fade-in and fade-out animations.
 @property(nonatomic, assign) CFTimeInterval fadeAnimationDuration;
+
+/// The current state of the glow effect animation.
+@property(nonatomic, assign, readonly) GlowState glowState;
 
 /// Starts the glow effect, making it visible and beginning the rotation.
 - (void)startGlow;
 
-// Stops the glow animation.
+/// Stops the glow effect, fading it out and stopping any animations.
 - (void)stopGlow;
+
+/// Stops the rotation of the glow and stroke, hides the stroke, but leaves the
+/// glow effect visible at a fixed angle.
+- (void)stopRotation;
 
 @end
 
 namespace ios {
 namespace provider {
 
-// Creates and returns a view that applies a glow effect on its border. `frame`
-// is optional.
+// Creates and returns a view that applies a glow effect on its border. To apply
+// the effect on a view, constraint it with a negative inset of `borderWidth`.
+// `frame` is optional.
 // TODO(crbug.com/440074963): This is used in a prototype, it has not been UX
 // approved yet and should not be reused for now.
 UIView<GlowEffect>* CreateGlowEffect(CGRect frame,

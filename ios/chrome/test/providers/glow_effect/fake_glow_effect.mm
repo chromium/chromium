@@ -7,17 +7,24 @@
 #import "base/check.h"
 #import "ios/public/provider/chrome/browser/glow_effect/glow_effect_api.h"
 
-@implementation FakeGlowEffectView
+@implementation FakeGlowEffectView {
+  GlowState _glowState;
+}
 
 @synthesize rotationSpeedDuration = _rotationSpeedDuration;
 @synthesize fadeAnimationDuration = _fadeAnimationDuration;
+@synthesize glowState = _glowState;
 
 - (void)startGlow {
-  self.glowAnimationInProgress = YES;
+  _glowState = GlowState::kRunning;
 }
 
 - (void)stopGlow {
-  self.glowAnimationInProgress = NO;
+  _glowState = GlowState::kStopped;
+}
+
+- (void)stopRotation {
+  _glowState = GlowState::kStoppingRotation;
 }
 
 @end
