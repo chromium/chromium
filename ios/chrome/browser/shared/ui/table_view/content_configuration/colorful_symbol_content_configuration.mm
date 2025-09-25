@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/colorful_symbol_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_view.h"
 
 @implementation ColorfulSymbolContentConfiguration
 

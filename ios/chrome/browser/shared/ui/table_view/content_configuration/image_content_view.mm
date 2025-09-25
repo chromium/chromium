@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/image_content_view.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_view.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/image_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/image_content_configuration.h"
 
 @implementation ImageContentView {
   ImageContentConfiguration* _configuration;

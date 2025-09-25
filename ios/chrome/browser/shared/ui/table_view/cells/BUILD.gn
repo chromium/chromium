@@ -2,28 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("cells") {
+source_set("generic_cells") {
   sources = [
-    "colorful_symbol_content_configuration.h",
-    "colorful_symbol_content_configuration.mm",
-    "colorful_symbol_content_view.h",
-    "colorful_symbol_content_view.mm",
-    "image_content_configuration.h",
-    "image_content_configuration.mm",
-    "image_content_view.h",
-    "image_content_view.mm",
     "legacy_table_view_cell.h",
     "legacy_table_view_cell.mm",
+    "table_view_cell.h",
+    "table_view_cell.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("cells") {
+  sources = [
     "table_view_activity_indicator_header_footer_item.h",
     "table_view_activity_indicator_header_footer_item.mm",
     "table_view_attributed_string_header_footer_item.h",
     "table_view_attributed_string_header_footer_item.mm",
-    "table_view_cell.h",
-    "table_view_cell.mm",
-    "table_view_cell_content_configuration.h",
-    "table_view_cell_content_configuration.mm",
-    "table_view_cell_content_view.h",
-    "table_view_cell_content_view.mm",
     "table_view_detail_icon_item.h",
     "table_view_detail_icon_item.mm",
     "table_view_detail_text_item.h",
@@ -82,6 +81,7 @@ source_set("cells") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells/resources",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/resources",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
@@ -92,6 +92,8 @@ source_set("cells") {
     "//net",
     "//ui/base",
   ]
+
+  public_deps = [ ":generic_cells" ]
 }
 
 source_set("unit_tests") {
@@ -119,6 +121,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//net",
