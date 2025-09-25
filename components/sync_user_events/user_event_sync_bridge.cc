@@ -263,22 +263,18 @@ void UserEventSyncBridge::HandleGlobalIdChange(int64_t old_global_id,
                                                int64_t new_global_id) {
   DCHECK_NE(old_global_id, new_global_id);
 
-  // Store specifics in a temp vector while erasing, as |RecordUserEvent()| will
-  // insert new values into |in_flight_nav_linked_events_|. While insert should
-  // not invalidate a std::multimap's iterator, and the updated global_id should
-  // not be within our given range, this approach seems less error prone.
-  std::vector<std::unique_ptr<UserEventSpecifics>> affected;
-
-  auto [begin, end] = in_flight_nav_linked_events_.equal_range(old_global_id);
-  for (auto iter = begin; iter != end;) {
-    DCHECK_EQ(old_global_id, iter->second.navigation_id());
-    affected.emplace_back(std::make_unique<UserEventSpecifics>(iter->second));
-    iter = in_flight_nav_linked_events_.erase(iter);
-  }
-
-  for (std::unique_ptr<UserEventSpecifics>& specifics : affected) {
-    specifics->set_navigation_id(new_global_id);
-    RecordUserEvent(std::move(specifics));
+  // When a navigation's global_id is updated, we need to find all in-flight
+  // events that were associated with the old id and update them to the new id.
+  // This is accomplished by extracting the nodes from the multimap, updating
+  // the navigation_id, and re-recording the event.
+  auto range = in_flight_nav_linked_events_.equal_range(old_global_id);
+  for (auto it = range.first; it != range.second;) {
+    auto node = in_flight_nav_linked_events_.extract(it++);
+    CHECK(!node.empty());
+    CHECK_EQ(old_global_id, node.mapped().navigation_id());
+    node.mapped().set_navigation_id(new_global_id);
+    RecordUserEvent(
+        std::make_unique<UserEventSpecifics>(std::move(node.mapped())));
   }
 }
 
