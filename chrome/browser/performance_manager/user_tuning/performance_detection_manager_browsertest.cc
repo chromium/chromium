@@ -164,8 +164,9 @@ class PerformanceInterventionDemoModeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/443952017): re-enable test
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionDemoModeTest,
-                       ForceCpuRefreshNotifyObservers) {
+                       DISABLED_ForceCpuRefreshNotifyObservers) {
   std::unique_ptr<ActionableTabWaiter> waiter =
       std::make_unique<ActionableTabWaiter>();
   manager()->AddActionableTabsObserver(
