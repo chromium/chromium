@@ -177,6 +177,11 @@ class FaceGazeTestSupport {
       this.notifyCcTests_();
     }
   }
+
+  async stopWebCam() {
+    await this.getWebCamFaceLandmarker_().stopWebCamForTesting();
+    this.notifyCcTests_();
+  }
 }
 
 globalThis.faceGazeTestSupport = new FaceGazeTestSupport();

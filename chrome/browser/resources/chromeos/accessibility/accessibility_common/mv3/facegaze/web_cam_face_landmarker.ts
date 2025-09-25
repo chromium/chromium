@@ -151,6 +151,14 @@ export class WebCamFaceLandmarker {
       this.intervalID_ = null;
     }
   }
+
+  async stopWebCamForTesting(): Promise<void> {
+    await Messenger.send(OffscreenCommandType.FACEGAZE_WEBCAM_STOP_FOR_TEST);
+    if (this.intervalID_ !== null) {
+      clearInterval(this.intervalID_);
+      this.intervalID_ = null;
+    }
+  }
 }
 
 TestImportManager.exportForTesting(WebCamFaceLandmarker);

@@ -65,6 +65,9 @@ class TestSupport {
     Messenger.registerHandler(
         OffscreenCommandType.FACEGAZE_HAS_FACE_LANDMARKER_FOR_TEST,
         () => Promise.resolve(this.hasFaceLandmarker()));
+    Messenger.registerHandler(
+        OffscreenCommandType.FACEGAZE_WEBCAM_STOP_FOR_TEST,
+        () => this.stopForTest());
   }
 
   mockNoCamera_(): void {
@@ -125,6 +128,11 @@ class TestSupport {
   hasFaceLandmarker(): boolean {
     // @ts-ignore Private member access.
     return !!this.owner_.faceLandmarker_;
+  }
+
+  stopForTest(): void {
+    // @ts-ignore Private member access.
+    return this.owner_.stopImageCaptureTrack_();
   }
 }
 
@@ -288,22 +296,22 @@ class OffscreenWebCam {
 
   private stop_(): void {
     this.stopped_ = true;
+    this.stopImageCaptureTrack_();
+    this.faceLandmarker_ = null;
+  }
+
+  private onTrackEnded_(): void {
+    this.stopImageCaptureTrack_();
+    this.connectToWebCam_();
+  }
+
+  private stopImageCaptureTrack_(): void {
+    // Disconnect from the webcam by resetting `imageCapture_`.
     if (this.imageCapture_) {
       this.removeEventListeners_();
       this.imageCapture_.track.stop();
       this.imageCapture_ = undefined;
     }
-    this.faceLandmarker_ = null;
-  }
-
-  private onTrackEnded_(): void {
-    if (this.imageCapture_) {
-      // Tell MediaStreamTrack that we are no longer using this ended track.
-      this.imageCapture_.track.stop();
-      this.removeEventListeners_();
-    }
-    this.imageCapture_ = undefined;
-    this.connectToWebCam_();
   }
 
   private removeEventListeners_(): void {

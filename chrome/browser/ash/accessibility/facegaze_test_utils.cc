@@ -314,6 +314,12 @@ void FaceGazeTestUtils::EnableFaceGaze(const Config& config) {
     // The FaceLandmarker will be automatically initialized after the dialog has
     // been accepted.
     WaitForFaceLandmarker();
+    if (v3_manifest) {
+      // There can be issues during teardown of the webcam stack in manifest
+      // v3. Since the webcam is not actually used during these tests, we
+      // preemptively turn it off.
+      StopWebCam();
+    }
   }
 
   CancelMouseControllerInterval();
@@ -416,6 +422,11 @@ void FaceGazeTestUtils::CancelMouseControllerInterval() {
 
 void FaceGazeTestUtils::WaitForFaceLandmarker() {
   std::string script = "faceGazeTestSupport.waitForFaceLandmarker();";
+  ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::StopWebCam() {
+  std::string script = "faceGazeTestSupport.stopWebCam();";
   ExecuteAccessibilityCommonScript(script);
 }
 
