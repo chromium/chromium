@@ -73,8 +73,10 @@ export const ErrorResponseSchema = z.lazy(() =>
 );
 export const ResultDataSchema = z.lazy(() =>
   z.union([
+    BrowserResultSchema,
     BrowsingContextResultSchema,
-    EmptyResultSchema,
+    EmulationResultSchema,
+    InputResultSchema,
     NetworkResultSchema,
     ScriptResultSchema,
     SessionResultSchema,
@@ -156,9 +158,11 @@ export const SessionCommandSchema = z.lazy(() =>
 );
 export const SessionResultSchema = z.lazy(() =>
   z.union([
+    Session.EndResultSchema,
     Session.NewResultSchema,
     Session.StatusResultSchema,
     Session.SubscribeResultSchema,
+    Session.UnsubscribeResultSchema,
   ]),
 );
 export namespace Session {
@@ -362,6 +366,9 @@ export namespace Session {
   );
 }
 export namespace Session {
+  export const EndResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Session {
   export const SubscribeSchema = z.lazy(() =>
     z.object({
       method: z.literal('session.subscribe'),
@@ -392,6 +399,9 @@ export namespace Session {
     ]),
   );
 }
+export namespace Session {
+  export const UnsubscribeResultSchema = z.lazy(() => EmptyResultSchema);
+}
 export const BrowserCommandSchema = z.lazy(() =>
   z.union([
     Browser.CloseSchema,
@@ -405,8 +415,13 @@ export const BrowserCommandSchema = z.lazy(() =>
 );
 export const BrowserResultSchema = z.lazy(() =>
   z.union([
+    Browser.CloseResultSchema,
     Browser.CreateUserContextResultSchema,
+    Browser.GetClientWindowsResultSchema,
     Browser.GetUserContextsResultSchema,
+    Browser.RemoveUserContextResultSchema,
+    Browser.SetClientWindowStateResultSchema,
+    Browser.SetDownloadBehaviorResultSchema,
   ]),
 );
 export namespace Browser {
@@ -442,6 +457,9 @@ export namespace Browser {
       params: EmptyParamsSchema,
     }),
   );
+}
+export namespace Browser {
+  export const CloseResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Browser {
   export const CreateUserContextSchema = z.lazy(() =>
@@ -511,6 +529,9 @@ export namespace Browser {
   );
 }
 export namespace Browser {
+  export const RemoveUserContextResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Browser {
   export const SetClientWindowStateSchema = z.lazy(() =>
     z.object({
       method: z.literal('browser.setClientWindowState'),
@@ -548,6 +569,11 @@ export namespace Browser {
       x: JsIntSchema.optional(),
       y: JsIntSchema.optional(),
     }),
+  );
+}
+export namespace Browser {
+  export const SetClientWindowStateResultSchema = z.lazy(
+    () => Browser.ClientWindowInfoSchema,
   );
 }
 export namespace Browser {
@@ -589,6 +615,11 @@ export namespace Browser {
     }),
   );
 }
+export namespace Browser {
+  export const SetDownloadBehaviorResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
 export const BrowsingContextCommandSchema = z.lazy(() =>
   z.union([
     BrowsingContext.ActivateSchema,
@@ -607,12 +638,17 @@ export const BrowsingContextCommandSchema = z.lazy(() =>
 );
 export const BrowsingContextResultSchema = z.lazy(() =>
   z.union([
+    BrowsingContext.ActivateResultSchema,
     BrowsingContext.CaptureScreenshotResultSchema,
+    BrowsingContext.CloseResultSchema,
     BrowsingContext.CreateResultSchema,
     BrowsingContext.GetTreeResultSchema,
+    BrowsingContext.HandleUserPromptResultSchema,
     BrowsingContext.LocateNodesResultSchema,
     BrowsingContext.NavigateResultSchema,
     BrowsingContext.PrintResultSchema,
+    BrowsingContext.ReloadResultSchema,
+    BrowsingContext.SetViewportResultSchema,
     BrowsingContext.TraverseHistoryResultSchema,
   ]),
 );
@@ -763,6 +799,9 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
+  export const ActivateResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace BrowsingContext {
   export const CaptureScreenshotSchema = z.lazy(() =>
     z.object({
       method: z.literal('browsingContext.captureScreenshot'),
@@ -839,6 +878,9 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
+  export const CloseResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace BrowsingContext {
   export const CreateSchema = z.lazy(() =>
     z.object({
       method: z.literal('browsingContext.create'),
@@ -905,6 +947,9 @@ export namespace BrowsingContext {
       userText: z.string().optional(),
     }),
   );
+}
+export namespace BrowsingContext {
+  export const HandleUserPromptResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace BrowsingContext {
   export const LocateNodesSchema = z.lazy(() =>
@@ -1025,6 +1070,11 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
+  export const ReloadResultSchema = z.lazy(
+    () => BrowsingContext.NavigateResultSchema,
+  );
+}
+export namespace BrowsingContext {
   export const SetViewportSchema = z.lazy(() =>
     z.object({
       method: z.literal('browsingContext.setViewport'),
@@ -1051,6 +1101,9 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
+  export const SetViewportResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace BrowsingContext {
   export const TraverseHistorySchema = z.lazy(() =>
     z.object({
       method: z.literal('browsingContext.traverseHistory'),
@@ -1067,7 +1120,7 @@ export namespace BrowsingContext {
   );
 }
 export namespace BrowsingContext {
-  export const TraverseHistoryResultSchema = z.lazy(() => z.object({}));
+  export const TraverseHistoryResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace BrowsingContext {
   export const ContextCreatedSchema = z.lazy(() =>
@@ -1258,6 +1311,17 @@ export const EmulationCommandSchema = z.lazy(() =>
     Emulation.SetUserAgentOverrideSchema,
   ]),
 );
+export const EmulationResultSchema = z.lazy(() =>
+  z.union([
+    Emulation.SetForcedColorsModeThemeOverrideResultSchema,
+    Emulation.SetGeolocationOverrideResultSchema,
+    Emulation.SetLocaleOverrideResultSchema,
+    Emulation.SetScreenOrientationOverrideResultSchema,
+    Emulation.SetScriptingEnabledResultSchema,
+    Emulation.SetTimezoneOverrideResultSchema,
+    Emulation.SetUserAgentOverrideResultSchema,
+  ]),
+);
 export namespace Emulation {
   export const SetForcedColorsModeThemeOverrideSchema = z.lazy(() =>
     z.object({
@@ -1281,6 +1345,11 @@ export namespace Emulation {
 export namespace Emulation {
   export const ForcedColorsModeThemeSchema = z.lazy(() =>
     z.enum(['light', 'dark']),
+  );
+}
+export namespace Emulation {
+  export const SetForcedColorsModeThemeOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
   );
 }
 export namespace Emulation {
@@ -1341,6 +1410,11 @@ export namespace Emulation {
   );
 }
 export namespace Emulation {
+  export const SetGeolocationOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
   export const SetLocaleOverrideSchema = z.lazy(() =>
     z.object({
       method: z.literal('emulation.setLocaleOverride'),
@@ -1359,6 +1433,9 @@ export namespace Emulation {
       userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
+}
+export namespace Emulation {
+  export const SetLocaleOverrideResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Emulation {
   export const SetScreenOrientationOverrideSchema = z.lazy(() =>
@@ -1404,6 +1481,11 @@ export namespace Emulation {
   );
 }
 export namespace Emulation {
+  export const SetScreenOrientationOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
   export const SetUserAgentOverrideSchema = z.lazy(() =>
     z.object({
       method: z.literal('emulation.setUserAgentOverride'),
@@ -1421,6 +1503,11 @@ export namespace Emulation {
         .optional(),
       userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
+  );
+}
+export namespace Emulation {
+  export const SetUserAgentOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
   );
 }
 export namespace Emulation {
@@ -1444,6 +1531,11 @@ export namespace Emulation {
   );
 }
 export namespace Emulation {
+  export const SetScriptingEnabledResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
+export namespace Emulation {
   export const SetTimezoneOverrideSchema = z.lazy(() =>
     z.object({
       method: z.literal('emulation.setTimezoneOverride'),
@@ -1463,6 +1555,11 @@ export namespace Emulation {
     }),
   );
 }
+export namespace Emulation {
+  export const SetTimezoneOverrideResultSchema = z.lazy(
+    () => EmptyResultSchema,
+  );
+}
 export const NetworkCommandSchema = z.lazy(() =>
   z.union([
     Network.AddDataCollectorSchema,
@@ -1480,8 +1577,22 @@ export const NetworkCommandSchema = z.lazy(() =>
     Network.SetExtraHeadersSchema,
   ]),
 );
-export const NetworkResultSchema = z.lazy(
-  () => Network.AddInterceptResultSchema,
+export const NetworkResultSchema = z.lazy(() =>
+  z.union([
+    Network.AddDataCollectorResultSchema,
+    Network.AddInterceptResultSchema,
+    Network.ContinueRequestResultSchema,
+    Network.ContinueResponseResultSchema,
+    Network.ContinueWithAuthResultSchema,
+    Network.DisownDataResultSchema,
+    Network.FailRequestResultSchema,
+    Network.GetDataResultSchema,
+    Network.ProvideResponseResultSchema,
+    Network.RemoveDataCollectorResultSchema,
+    Network.RemoveInterceptResultSchema,
+    Network.SetCacheBehaviorResultSchema,
+    Network.SetExtraHeadersResultSchema,
+  ]),
 );
 export const NetworkEventSchema = z.lazy(() =>
   z.union([
@@ -1789,6 +1900,9 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const ContinueRequestResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Network {
   export const ContinueResponseSchema = z.lazy(() =>
     z.object({
       method: z.literal('network.continueResponse'),
@@ -1807,6 +1921,9 @@ export namespace Network {
       statusCode: JsUintSchema.optional(),
     }),
   );
+}
+export namespace Network {
+  export const ContinueResponseResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Network {
   export const ContinueWithAuthSchema = z.lazy(() =>
@@ -1846,6 +1963,9 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const ContinueWithAuthResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Network {
   export const DisownDataSchema = z.lazy(() =>
     z.object({
       method: z.literal('network.disownData'),
@@ -1863,6 +1983,9 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const DisownDataResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Network {
   export const FailRequestSchema = z.lazy(() =>
     z.object({
       method: z.literal('network.failRequest'),
@@ -1876,6 +1999,9 @@ export namespace Network {
       request: Network.RequestSchema,
     }),
   );
+}
+export namespace Network {
+  export const FailRequestResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Network {
   export const GetDataSchema = z.lazy(() =>
@@ -1923,6 +2049,9 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const ProvideResponseResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Network {
   export const RemoveDataCollectorSchema = z.lazy(() =>
     z.object({
       method: z.literal('network.removeDataCollector'),
@@ -1935,6 +2064,11 @@ export namespace Network {
     z.object({
       collector: Network.CollectorSchema,
     }),
+  );
+}
+export namespace Network {
+  export const RemoveDataCollectorResultSchema = z.lazy(
+    () => EmptyResultSchema,
   );
 }
 export namespace Network {
@@ -1951,6 +2085,9 @@ export namespace Network {
       intercept: Network.InterceptSchema,
     }),
   );
+}
+export namespace Network {
+  export const RemoveInterceptResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Network {
   export const SetCacheBehaviorSchema = z.lazy(() =>
@@ -1972,6 +2109,9 @@ export namespace Network {
   );
 }
 export namespace Network {
+  export const SetCacheBehaviorResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Network {
   export const SetExtraHeadersSchema = z.lazy(() =>
     z.object({
       method: z.literal('network.setExtraHeaders'),
@@ -1990,6 +2130,9 @@ export namespace Network {
       userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
+}
+export namespace Network {
+  export const SetExtraHeadersResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Network {
   export const AuthRequiredSchema = z.lazy(() =>
@@ -2089,9 +2232,11 @@ export const ScriptCommandSchema = z.lazy(() =>
 export const ScriptResultSchema = z.lazy(() =>
   z.union([
     Script.AddPreloadScriptResultSchema,
+    Script.CallFunctionResultSchema,
+    Script.DisownResultSchema,
     Script.EvaluateResultSchema,
     Script.GetRealmsResultSchema,
-    Script.CallFunctionResultSchema,
+    Script.RemovePreloadScriptResultSchema,
   ]),
 );
 export const ScriptEventSchema = z.lazy(() =>
@@ -2822,6 +2967,9 @@ export namespace Script {
   );
 }
 export namespace Script {
+  export const DisownResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Script {
   export const CallFunctionSchema = z.lazy(() =>
     z.object({
       method: z.literal('script.callFunction'),
@@ -2904,6 +3052,11 @@ export namespace Script {
     z.object({
       script: Script.PreloadScriptSchema,
     }),
+  );
+}
+export namespace Script {
+  export const RemovePreloadScriptResultSchema = z.lazy(
+    () => EmptyResultSchema,
   );
 }
 export namespace Script {
@@ -3170,6 +3323,13 @@ export const InputCommandSchema = z.lazy(() =>
     Input.SetFilesSchema,
   ]),
 );
+export const InputResultSchema = z.lazy(() =>
+  z.union([
+    Input.PerformActionsResultSchema,
+    Input.ReleaseActionsResultSchema,
+    Input.SetFilesResultSchema,
+  ]),
+);
 export const InputEventSchema = z.lazy(() => Input.FileDialogOpenedSchema);
 export namespace Input {
   export const ElementOriginSchema = z.lazy(() =>
@@ -3389,6 +3549,9 @@ export namespace Input {
   );
 }
 export namespace Input {
+  export const PerformActionsResultSchema = z.lazy(() => EmptyResultSchema);
+}
+export namespace Input {
   export const ReleaseActionsSchema = z.lazy(() =>
     z.object({
       method: z.literal('input.releaseActions'),
@@ -3402,6 +3565,9 @@ export namespace Input {
       context: BrowsingContext.BrowsingContextSchema,
     }),
   );
+}
+export namespace Input {
+  export const ReleaseActionsResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Input {
   export const SetFilesSchema = z.lazy(() =>
@@ -3419,6 +3585,9 @@ export namespace Input {
       files: z.array(z.string()),
     }),
   );
+}
+export namespace Input {
+  export const SetFilesResultSchema = z.lazy(() => EmptyResultSchema);
 }
 export namespace Input {
   export const FileDialogOpenedSchema = z.lazy(() =>
@@ -3440,8 +3609,11 @@ export namespace Input {
 export const WebExtensionCommandSchema = z.lazy(() =>
   z.union([WebExtension.InstallSchema, WebExtension.UninstallSchema]),
 );
-export const WebExtensionResultSchema = z.lazy(
-  () => WebExtension.InstallResultSchema,
+export const WebExtensionResultSchema = z.lazy(() =>
+  z.union([
+    WebExtension.InstallResultSchema,
+    WebExtension.UninstallResultSchema,
+  ]),
 );
 export namespace WebExtension {
   export const ExtensionSchema = z.lazy(() => z.string());
@@ -3515,4 +3687,7 @@ export namespace WebExtension {
       extension: WebExtension.ExtensionSchema,
     }),
   );
+}
+export namespace WebExtension {
+  export const UninstallResultSchema = z.lazy(() => EmptyResultSchema);
 }
