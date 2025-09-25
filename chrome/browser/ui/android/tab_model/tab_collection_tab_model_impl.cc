@@ -159,6 +159,7 @@ int TabCollectionTabModelImpl::AddTabRecursive(
     TabAndroid* tab_android,
     size_t index,
     const std::optional<base::Token>& token,
+    bool is_attaching_group,
     bool is_pinned) {
   CHECK(tab_android);
 
@@ -169,8 +170,17 @@ int TabCollectionTabModelImpl::AddTabRecursive(
                        index, tab_group_id, is_pinned);
 
   auto tab_interface_android = ToTabInterface(tab_android);
-  tab_strip_collection_->AddTabRecursive(std::move(tab_interface_android),
-                                         index, tab_group_id, is_pinned);
+
+  // When the tab is attaching a detached group we first add the tab to the
+  // collection and then move the tab to the group.
+  tab_strip_collection_->AddTabRecursive(
+      std::move(tab_interface_android), index,
+      is_attaching_group ? std::nullopt : tab_group_id, is_pinned);
+
+  if (is_attaching_group) {
+    tab_strip_collection_->MoveTabRecursive(index, index, *tab_group_id,
+                                            is_pinned);
+  }
   return base::checked_cast<int>(index);
 }
 

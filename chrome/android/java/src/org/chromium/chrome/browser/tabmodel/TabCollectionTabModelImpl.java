@@ -169,6 +169,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                                     tab,
                                     insertIndex,
                                     tabGroupId,
+                                    restoredTabGroup,
                                     tab.getIsPinned());
 
             if (restoredTabGroup) {
@@ -679,7 +680,9 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assert !(tabGroupId != null && tab.getIsPinned())
                 : "Pinned and grouped states are mutually exclusive.";
 
-        if (tabGroupId != null && !tabGroupExists(tabGroupId)) {
+        boolean createNewGroup = tabGroupId != null && !tabGroupExists(tabGroupId);
+        if (createNewGroup) {
+            assumeNonNull(tabGroupId);
             TabGroupVisualDataStore.migrateToTokenKeyedStorage(tab.getRootId(), tabGroupId);
             createDetachedTabGroup(tabGroupId);
         }
@@ -696,6 +699,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                                 tab,
                                 index,
                                 tabGroupId,
+                                createNewGroup,
                                 tab.getIsPinned());
 
         // When adding the first background tab make sure to select it.
@@ -2244,6 +2248,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 @JniType("TabAndroid*") Tab tab,
                 int index,
                 @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
+                boolean isAttachingGroup,
                 boolean isPinned);
 
         void removeTabRecursive(
