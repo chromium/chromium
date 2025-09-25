@@ -8435,6 +8435,12 @@ const char kEnableStandardBoundSessionRefreshQuotaDescription[] =
     "In production, standard Device Bound Session Credentials will feature a "
     "maximum rate of refreshes. This flag disables that quota in order to "
     "simplify manual testing.";
+const char kEnableStandardBoundSessionCredentialsFederatedSessionsName[] =
+    "Device Bound Session Credentials (Standard) - Federated Registrations";
+const char
+    kEnableStandardBoundSessionCredentialsFederatedSessionsDescription[] =
+        "Enables federated session registration for the official version of "
+        "Device Bound Session Credentials.";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kEnablePolicyPromotionBannerName[] =

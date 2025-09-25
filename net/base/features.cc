@@ -587,11 +587,6 @@ BASE_FEATURE_PARAM(bool,
                    &kDeviceBoundSessions,
                    "CheckSubdomainRegistration",
                    true);
-BASE_FEATURE_PARAM(bool,
-                   kDeviceBoundSessionsCheckFederatedRegistration,
-                   &kDeviceBoundSessions,
-                   "CheckFederatedRegistration",
-                   true);
 BASE_FEATURE_PARAM(int,
                    kDeviceBoundSessionsSchemaVersion,
                    &kDeviceBoundSessions,
@@ -599,6 +594,14 @@ BASE_FEATURE_PARAM(int,
                    1);
 BASE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDeviceBoundSessionsFederatedRegistration,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kDeviceBoundSessionsFederatedRegistrationCheckWellKnown,
+                   &kDeviceBoundSessionsFederatedRegistration,
+                   "CheckWellKnown",
+                   true);
 
 BASE_FEATURE(kSpdySessionForProxyAdditionalChecks,
              base::FEATURE_ENABLED_BY_DEFAULT);

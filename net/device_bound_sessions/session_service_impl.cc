@@ -139,6 +139,13 @@ void SessionServiceImpl::RegisterBoundSession(
   bool is_google_subdomain_for_histograms = IsSubdomainOf(
       registration_params.registration_endpoint().host_piece(), "google.com");
   if (registration_params.provider_session_id().has_value()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionsFederatedRegistration)) {
+      // Simply ignore headers with a provider_session_id if the flag
+      // isn't enabled.
+      return;
+    }
+
     base::expected<Session*, SessionError> provider_session_or_error =
         GetFederatedProviderSessionIfValid(registration_params);
     if (!provider_session_or_error.has_value()) {

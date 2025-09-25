@@ -4886,6 +4886,9 @@ extern const char kEnableStandardBoundSessionPersistenceName[];
 extern const char kEnableStandardBoundSessionPersistenceDescription[];
 extern const char kEnableStandardBoundSessionRefreshQuotaName[];
 extern const char kEnableStandardBoundSessionRefreshQuotaDescription[];
+extern const char kEnableStandardBoundSessionCredentialsFederatedSessionsName[];
+extern const char
+    kEnableStandardBoundSessionCredentialsFederatedSessionsDescription[];
 
 #if !BUILDFLAG(IS_ANDROID)
 extern const char kEnablePolicyPromotionBannerName[];

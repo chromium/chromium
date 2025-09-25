@@ -294,7 +294,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     key_id_ = key_id;
     provider_url_ = provider_url;
 
-    if (!features::kDeviceBoundSessionsCheckFederatedRegistration.Get()) {
+    if (!features::kDeviceBoundSessionsFederatedRegistrationCheckWellKnown
+             .Get()) {
       StartFetch(request_params.TakeChallenge(),
                  request_params.TakeAuthorization());
       // `this` may be deleted.
