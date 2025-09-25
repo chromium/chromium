@@ -15,7 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
@@ -84,16 +83,16 @@ class PageZoomBarMediator {
     }
 
     @VisibleForTesting
-    void handleDecreaseClicked(@Nullable Void unused) {
+    void handleDecreaseClicked() {
         handleIndexChanged(mManager.decrementZoomLevel());
     }
 
     @VisibleForTesting
-    void handleIncreaseClicked(@Nullable Void unused) {
+    void handleIncreaseClicked() {
         handleIndexChanged(mManager.incrementZoomLevel());
     }
 
-    void handleResetClicked(@Nullable Void unused) {
+    void handleResetClicked() {
         // Reset as if the user moved the bar to the default zoom value
         handleBarValueChanged(PageZoomUtils.convertZoomFactorToBarValue(mDefaultZoomFactor));
     }

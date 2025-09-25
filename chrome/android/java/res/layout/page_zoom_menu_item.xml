@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/AppMenuItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:descendantFocusability="afterDescendants">
+
+    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+        android:id="@+id/title"
+        style="@style/AppMenuItemTextViewWithCompoundDrawables"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/listItemHeight" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/zoom_out_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/page_zoom_decrease_zoom_button_text"
+        android:padding="@dimen/symbol_padding"
+        android:src="@drawable/ic_remove"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <TextView
+        android:id="@+id/zoom_percentage"
+        android:layout_width="@dimen/zoom_percentage_width"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="@dimen/zoom_percentage_padding"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/zoom_in_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/page_zoom_increase_zoom_button_text"
+        android:padding="@dimen/symbol_padding"
+        android:src="@drawable/ic_add"
+        app:tint="@color/default_icon_color_tint_list" />
+</LinearLayout>

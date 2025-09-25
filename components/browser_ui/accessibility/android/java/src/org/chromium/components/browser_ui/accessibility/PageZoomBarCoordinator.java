@@ -13,7 +13,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
-import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.LoadCommittedDetails;
@@ -41,8 +40,6 @@ public class PageZoomBarCoordinator {
 
     private @Nullable View mView;
 
-    private static @Nullable Boolean sShouldShowMenuItemForTesting;
-
     /**
      * @param delegate Used to interact with the coordinator.
      * @param manager The manager used to interact with the zoom functionality.
@@ -58,16 +55,6 @@ public class PageZoomBarCoordinator {
                         .build();
         mMediator = new PageZoomBarMediator(mModel, mManager, this::onViewInteraction);
         mDismissalCallback = () -> hide();
-    }
-
-    /**
-     * Returns true if the AppMenu item for Zoom should be displayed, false otherwise.
-     *
-     * @return boolean
-     */
-    public static boolean shouldShowMenuItem() {
-        if (sShouldShowMenuItemForTesting != null) return sShouldShowMenuItemForTesting;
-        return PageZoomUtils.shouldShowZoomMenuItem();
     }
 
     /**
@@ -175,19 +162,9 @@ public class PageZoomBarCoordinator {
         }
     }
 
-    /**
-     * Used for testing only, allows a mocked value for the {@link shouldShowMenuItem} method.
-     *
-     * @param isEnabled Should show the menu item or not.
-     */
-    public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
-        sShouldShowMenuItemForTesting = isEnabled;
-        ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = null);
-    }
-
     /** Used for testing only, resets the zoom level to 100%. */
     public void resetZoomForTesting() {
-        mMediator.handleResetClicked(null);
+        mMediator.handleResetClicked();
     }
 
     /** Handle when the user interacts with the view */

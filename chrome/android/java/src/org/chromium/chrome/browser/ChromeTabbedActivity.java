@@ -3409,7 +3409,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 getModalDialogManager(),
                 getSnackbarManager(),
                 mRootUiCoordinator.getIncognitoReauthControllerSupplier(),
-                mRootUiCoordinator.getReadAloudControllerSupplier());
+                mRootUiCoordinator.getReadAloudControllerSupplier(),
+                mRootUiCoordinator.getPageZoomManager());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {

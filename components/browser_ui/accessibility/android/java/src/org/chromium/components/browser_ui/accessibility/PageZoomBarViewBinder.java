@@ -48,7 +48,7 @@ class PageZoomBarViewBinder {
             view.findViewById(R.id.page_zoom_decrease_zoom_button)
                     .setOnClickListener(
                             v -> {
-                                model.get(PageZoomProperties.DECREASE_ZOOM_CALLBACK).onResult(null);
+                                model.get(PageZoomProperties.DECREASE_ZOOM_CALLBACK).run();
                                 model.get(PageZoomProperties.USER_INTERACTION_CALLBACK)
                                         .onResult(null);
                             });
@@ -56,7 +56,7 @@ class PageZoomBarViewBinder {
             view.findViewById(R.id.page_zoom_increase_zoom_button)
                     .setOnClickListener(
                             v -> {
-                                model.get(PageZoomProperties.INCREASE_ZOOM_CALLBACK).onResult(null);
+                                model.get(PageZoomProperties.INCREASE_ZOOM_CALLBACK).run();
                                 model.get(PageZoomProperties.USER_INTERACTION_CALLBACK)
                                         .onResult(null);
                             });
@@ -64,7 +64,7 @@ class PageZoomBarViewBinder {
             view.findViewById(R.id.page_zoom_reset_zoom_button)
                     .setOnClickListener(
                             v -> {
-                                model.get(PageZoomProperties.RESET_ZOOM_CALLBACK).onResult(null);
+                                model.get(PageZoomProperties.RESET_ZOOM_CALLBACK).run();
                                 model.get(PageZoomProperties.USER_INTERACTION_CALLBACK)
                                         .onResult(null);
                             });

@@ -10,7 +10,9 @@ import static org.chromium.content_public.browser.HostZoomMap.getSystemFontScale
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -61,6 +63,8 @@ public class PageZoomUtils {
     // The range of user-readable zoom values at which the bar should snap to the
     // default zoom value, (e.g. 0.03 = range of +/- 3%).
     private static final double DEFAULT_ZOOM_LEVEL_SNAP_RANGE = 0.03;
+
+    private static @Nullable Boolean sShouldShowMenuItemForTesting;
 
     /**
      * Bars have values 0 to 100 by default. For simplicity, we will keep these values and convert
@@ -231,6 +235,7 @@ public class PageZoomUtils {
      * @return boolean
      */
     public static boolean shouldShowZoomMenuItem() {
+        if (sShouldShowMenuItemForTesting != null) return sShouldShowMenuItemForTesting;
         // Always respect the user's choice if the user has set this in Accessibility Settings.
         if (hasUserSetShouldAlwaysShowZoomMenuItemOption()) {
             if (shouldAlwaysShowZoomMenuItem()) {
@@ -372,5 +377,17 @@ public class PageZoomUtils {
 
     private static double getDefaultZoomLevel(BrowserContextHandle context) {
         return HostZoomMap.getDefaultZoomLevel(context);
+    }
+
+    // Test-only methods.
+
+    /**
+     * Used for testing only, allows a mocked value for the {@link shouldShowMenuItem} method.
+     *
+     * @param isEnabled Should show the menu item or not.
+     */
+    public static void setShouldShowMenuItemForTesting(@Nullable Boolean isEnabled) {
+        sShouldShowMenuItemForTesting = isEnabled;
+        ResettersForTesting.register(() -> sShouldShowMenuItemForTesting = null);
     }
 }

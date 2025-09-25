@@ -91,7 +91,7 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
-        mMediator.handleDecreaseClicked(null);
+        mMediator.handleDecreaseClicked();
         verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 1.56, 1.56);
         Assert.assertEquals(
@@ -107,7 +107,7 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 126, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
-        mMediator.handleDecreaseClicked(null);
+        mMediator.handleDecreaseClicked();
         verify(mHostZoomMapMock, times(1).description(DECREASE_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 3.07, 2.18);
         Assert.assertEquals(
@@ -121,7 +121,7 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 100, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
-        mMediator.handleIncreaseClicked(null);
+        mMediator.handleIncreaseClicked();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 3.07, 3.07);
         Assert.assertEquals(
@@ -137,7 +137,7 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 65, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
-        mMediator.handleIncreaseClicked(null);
+        mMediator.handleIncreaseClicked();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 1.22, 2.66);
         Assert.assertEquals(
@@ -163,7 +163,7 @@ public class PageZoomBarMediatorUnitTest {
         // A single increase at this point should display the next closest zoom level of 150% (zoom
         // factor ~ 2.22) with respect to 137%, that is equivalent to a rendered value of 150*2.2
         // ~ 330% (zoom factor ~ 6.54).
-        mMediator.handleIncreaseClicked(null);
+        mMediator.handleIncreaseClicked();
         verify(mHostZoomMapMock, times(1).description(INCREASE_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 2.22, 6.54);
         Assert.assertEquals(
@@ -199,7 +199,7 @@ public class PageZoomBarMediatorUnitTest {
                 DECREASE_DISABLED_FAILURE, mModel.get(PageZoomProperties.DECREASE_ZOOM_ENABLED));
 
         // Verify that when zoom level changes from minimum, the decrease button is reenabled.
-        mMediator.handleIncreaseClicked(null);
+        mMediator.handleIncreaseClicked();
         Assert.assertTrue(
                 DECREASE_ENABLED_FAILURE, mModel.get(PageZoomProperties.DECREASE_ZOOM_ENABLED));
     }
@@ -215,7 +215,7 @@ public class PageZoomBarMediatorUnitTest {
                 INCREASE_DISABLED_FAILURE, mModel.get(PageZoomProperties.INCREASE_ZOOM_ENABLED));
 
         // Verify that when zoom level changes from maximum, the increase button is reenabled.
-        mMediator.handleDecreaseClicked(null);
+        mMediator.handleDecreaseClicked();
         Assert.assertTrue(
                 INCREASE_ENABLED_FAILURE, mModel.get(PageZoomProperties.INCREASE_ZOOM_ENABLED));
     }
@@ -229,7 +229,7 @@ public class PageZoomBarMediatorUnitTest {
         mMediator.pushProperties();
         Assert.assertEquals(
                 CURRENT_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
-        mMediator.handleResetClicked(null);
+        mMediator.handleResetClicked();
         // Ensure that setZoomLevel method is called with the correct params (0.0, 0.0)
         verify(mHostZoomMapMock, times(1).description(RESET_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 0.0, 0.0);
@@ -238,8 +238,8 @@ public class PageZoomBarMediatorUnitTest {
                 RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
 
         // Increase the zoom and ensure that zoom returns to default
-        mMediator.handleIncreaseClicked(null);
-        mMediator.handleResetClicked(null);
+        mMediator.handleIncreaseClicked();
+        mMediator.handleResetClicked();
         // Check that number of times setZoomLevel(0,0) is called has increased by 1
         verify(mHostZoomMapMock, times(2).description(RESET_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 0.0, 0.0);
@@ -247,8 +247,8 @@ public class PageZoomBarMediatorUnitTest {
                 RESET_ZOOM_FAILURE, 50, mModel.get(PageZoomProperties.CURRENT_BAR_VALUE));
 
         // Decrease the zoom and ensure that zoom returns to default
-        mMediator.handleDecreaseClicked(null);
-        mMediator.handleResetClicked(null);
+        mMediator.handleDecreaseClicked();
+        mMediator.handleResetClicked();
         verify(mHostZoomMapMock, times(3).description(RESET_ZOOM_FAILURE_NO_JNI))
                 .setZoomLevel(mWebContentsMock, 0.0, 0.0);
         Assert.assertEquals(

@@ -437,4 +437,9 @@ found in the LICENSE file.
 
     <!-- Tab Strip Reorder dimensions -->
     <dimen name="tab_strip_dragged_tab_shadow_thickness">8dp</dimen>
+
+    <!-- Page zoom menu item dimensions -->
+    <dimen name="symbol_padding">2dp</dimen>
+    <dimen name="zoom_percentage_padding">8dp</dimen>
+    <dimen name="zoom_percentage_width">56dp</dimen>
 </resources>

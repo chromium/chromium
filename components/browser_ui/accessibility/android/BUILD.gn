@@ -47,6 +47,8 @@ android_library("lib_java") {
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarViewBinder.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManager.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManagerDelegate.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMenuItemCoordinator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMenuItemMediator.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMetrics.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
@@ -125,6 +127,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomBarMediatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomManagerUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMenuItemMediatorUnitTest.java",
     "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtilsUnitTest.java",
   ]
 

@@ -448,6 +448,7 @@ if (is_android) {
       "//base:flagged_apis_java",
       "//chrome/browser/tabpersistence:java",
       "//chrome/browser/ui/android/edge_to_edge:factory_java",
+      "//components/browser_ui/accessibility/android:page_zoom_utils_java",
     ]
   }
 
@@ -1086,6 +1087,7 @@ if (is_android) {
 
     deps = [
       ":chrome_junit_tests_helper",
+      "//components/browser_ui/accessibility/android:page_zoom_utils_java",
       "//components/supervised_user/android:content_filters_observer_bridge_java",
     ]
   }
