@@ -80,10 +80,19 @@ std::optional<base::ByteCount> g_max_blob_size_override;
 
 // The maximum number of bytes that will be stored in a single SQLite BLOB
 // column. If a blob is larger than this, it will be chunked into multiple rows
-// in the `overflow_blob_chunks` table. Small value is here temporarily to cause
-// tests to exercise the chunking codepaths. Final value TBD.
+// in the `overflow_blob_chunks` table.
+//
+// This value is much smaller than the maximum size SQLite is able to handle
+// because:
+// 1. some operations such as VACUUM will read an entire row into memory, so
+// this cuts down on concurrent memory usage.
+// https://sqlite.org/forum/forumpost/756c1a1e4807217e?t=h
+// 2. SQLite docs assert without much explanation that applications "might do
+// well to lower the maximum string and blob length to something more in the
+// range of a few million if that is possible".
+// https://www.sqlite.org/limits.html
 base::ByteCount GetMaxBlobSize() {
-  return g_max_blob_size_override.value_or(base::KiB(25));
+  return g_max_blob_size_override.value_or(base::MiB(5));
 }
 
 // The separator used to join the strings when encoding an `IndexedDBKeyPath` of
@@ -238,21 +247,23 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       "(row_id INTEGER PRIMARY KEY,"
       // Corresponds to `IndexedDBExternalObject::ObjectType`.
       " object_type INTEGER NOT NULL,"
-      // This can be null if the blob is stored on disk, which will be the
-      // case for legacy blobs. It's also temporarily null while FSA handles are
-      // being serialized into a token (after which point, this holds the
-      // token). If there are more bytes than fit into a single SQLite BLOB
-      // (GetMaxBlobSize()), additional bytes will be stored in
-      // `overflow_blob_chunks` table.
-      " bytes BLOB,"
       // Null for FSA handles.
       " mime_type TEXT,"
       // Null for FSA handles. For blobs, this is the total size of the blob,
       // including overflow bytes.
       " size_bytes INTEGER,"
-      " file_name BLOB,"         // only for files
-      " last_modified INTEGER)"  // only for files
-  );
+      " file_name BLOB,"          // only for files
+      " last_modified INTEGER, "  // only for files
+      // NB: a large BLOB should be the last column when possible. See
+      // https://sqlite.org/forum/forumpost/756c1a1e4807217e?t=h
+      //
+      // This column is null if the blob is stored on disk, which will be the
+      // case for legacy blobs. It's also temporarily null while FSA handles are
+      // being serialized into a token (after which point, this holds the
+      // token). If there are more bytes than fit into a single SQLite BLOB
+      // (GetMaxBlobSize()), additional bytes will be stored in
+      // `overflow_blob_chunks` table.
+      " bytes BLOB)");
 
   // IndexedDB aims to support multi-GB blobs. SQLite does not support blobs
   // larger than a certain size, which is at most 2^31 - 1, and is by default
@@ -276,6 +287,8 @@ Status CreateSchema(sql::Database* db, std::u16string_view name) {
       // first *overflow chunk*. (0 theoretically refers to the non-overflow
       // bytes in the `blobs` table.)
       " chunk_index INTEGER NOT NULL,"
+      // NB: a large BLOB should be the last column when possible. See
+      // https://sqlite.org/forum/forumpost/756c1a1e4807217e?t=h
       " bytes BLOB NOT NULL)");
 
   // Blobs may be referenced by rows in `records` or by active connections to
