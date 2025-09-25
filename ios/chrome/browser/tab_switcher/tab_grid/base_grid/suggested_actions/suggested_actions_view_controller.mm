@@ -8,19 +8,22 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
+#import "base/format_macros.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 const CGFloat kEstimatedRowMaxHeight = 150;
@@ -45,7 +48,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @end
 
-@implementation SuggestedActionsViewController
+@implementation SuggestedActionsViewController {
+  TableViewImageItem* _searchHistoryItem;
+  // Hash of the current search string. Used to know if it updated since it was
+  // searched.
+  NSUInteger _currentSearchHash;
+}
 
 - (instancetype)initWithDelegate:
     (id<SuggestedActionsViewControllerDelegate>)delegate {
@@ -117,39 +125,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:searchWebItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
 
-  TableViewTabsSearchSuggestedHistoryItem* searchHistoryItem =
-      [[TableViewTabsSearchSuggestedHistoryItem alloc]
-          initWithType:ItemTypeSuggestedActionSearchHistory];
-  searchHistoryItem.textColor = actionsTextColor;
-  [model addItem:searchHistoryItem
+  _searchHistoryItem = [[TableViewImageItem alloc]
+      initWithType:ItemTypeSuggestedActionSearchHistory];
+  _searchHistoryItem.image = [[UIImage imageNamed:@"suggested_action_history"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  _searchHistoryItem.title = l10n_util::GetNSString(
+      IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY_UNKNOWN_RESULT_COUNT);
+  _searchHistoryItem.accessibilityIdentifier =
+      kTabGridSearchSuggestedHistoryItemId;
+  _searchHistoryItem.textColor = actionsTextColor;
+  [model addItem:_searchHistoryItem
       toSectionWithIdentifier:kSectionIdentifierSuggestedActions];
-}
 
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  ItemType itemType = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-
-  // Update the history search result count once available.
-  if (itemType == ItemTypeSuggestedActionSearchHistory &&
-      self.searchText.length) {
-    __weak TableViewTabsSearchSuggestedHistoryCell* weakCell =
-        base::apple::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
-            cell);
-    NSString* currentSearchText = self.searchText;
-    weakCell.searchTerm = currentSearchText;
-    [self.delegate suggestedActionsViewController:self
-           fetchHistoryResultsCountWithCompletion:^(size_t resultCount) {
-             if ([weakCell.searchTerm isEqualToString:currentSearchText]) {
-               [weakCell updateHistoryResultsCount:resultCount];
-             }
-           }];
-  }
-  return cell;
+  [self updateSearchHistoryText];
 }
 
 #pragma mark - UITableViewDelegate
@@ -174,8 +162,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Public
 
 - (void)setSearchText:(NSString*)searchText {
-  _searchText = searchText;
+  _searchText = [searchText copy];
+  _currentSearchHash = searchText.hash;
   [self.tableView reloadData];
+  [self updateSearchHistoryText];
 }
 
 - (CGFloat)contentHeight {
@@ -190,6 +180,39 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.allCellsLoaded = YES;
   }
   return self.tableView.contentSize.height;
+}
+
+#pragma mark - Private
+
+// Updates the text of the search history item based on the searched text.
+- (void)updateSearchHistoryText {
+  if (!_searchText || !_searchHistoryItem) {
+    return;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  NSUInteger requestedHash = _currentSearchHash;
+
+  [self.delegate suggestedActionsViewController:self
+         fetchHistoryResultsCountWithCompletion:^(size_t resultCount) {
+           [weakSelf fetchedHistoryResult:resultCount
+                             originalHash:requestedHash];
+         }];
+}
+
+// Called with the `results` of the number of history match for a search term
+// with `originalHash`.
+- (void)fetchedHistoryResult:(size_t)result
+                originalHash:(NSUInteger)originalHash {
+  if (!_searchHistoryItem || _currentSearchHash != originalHash) {
+    return;
+  }
+  NSString* matches = [NSString stringWithFormat:@"%" PRIuS, result];
+  _searchHistoryItem.title = l10n_util::GetNSStringF(
+      IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_HISTORY,
+      base::SysNSStringToUTF16(matches));
+
+  [self reconfigureCellsForItems:@[ _searchHistoryItem ]];
 }
 
 @end

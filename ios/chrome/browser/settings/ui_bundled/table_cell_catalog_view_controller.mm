@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_line_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -173,12 +172,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textImageItem.image =
       DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
   [model addItem:textImageItem toSectionWithIdentifier:SectionIdentifierText];
-
-  TableViewTabsSearchSuggestedHistoryItem* searchHistorySuggestedItem =
-      [[TableViewTabsSearchSuggestedHistoryItem alloc]
-          initWithType:ItemTypeSearchHistorySuggestedItem];
-  [model addItem:searchHistorySuggestedItem
-      toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewImageItem* textImageItem2 =
       [[TableViewImageItem alloc] initWithType:ItemTypeTextAccessoryImage];
@@ -829,11 +822,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [checkCell.infoButton addTarget:self
                              action:@selector(didTapCheckInfoButton:)
                    forControlEvents:UIControlEventTouchUpInside];
-  } else if (itemType == ItemTypeSearchHistorySuggestedItem) {
-    TableViewTabsSearchSuggestedHistoryCell* searchHistoryCell =
-        base::apple::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
-            cell);
-    [searchHistoryCell updateHistoryResultsCount:7];
   } else if (itemType == ItemTypeURLWithActivityIndicator) {
     TableViewURLCell* URLCell =
         base::apple::ObjCCastStrict<TableViewURLCell>(cell);

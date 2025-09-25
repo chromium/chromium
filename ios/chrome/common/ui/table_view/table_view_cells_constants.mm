@@ -26,8 +26,6 @@ const CGFloat kTopLargePadding = 60.;
 NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTableViewCellInfoButtonViewId =
     @"kTableViewCellInfoButtonViewId";
-NSString* const kTableViewTabsSearchSuggestedHistoryItemId =
-    @"kTableViewTabsSearchSuggestedHistoryItemId";
 
 NSString* const kTableViewURLCellFaviconBadgeViewID =
     @"TableViewURLCellFaviconBadgeView";

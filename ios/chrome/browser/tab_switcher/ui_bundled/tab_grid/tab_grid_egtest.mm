@@ -179,9 +179,8 @@ id<GREYMatcher> SearchOnWebSuggestedAction() {
 
 // Returns a matcher for the "Search history" suggested action.
 id<GREYMatcher> SearchHistorySuggestedAction() {
-  return grey_allOf(
-      grey_accessibilityID(kTableViewTabsSearchSuggestedHistoryItemId),
-      grey_sufficientlyVisible(), nil);
+  return grey_allOf(grey_accessibilityID(kTabGridSearchSuggestedHistoryItemId),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the "Search history (`matches_count` Found)" suggested

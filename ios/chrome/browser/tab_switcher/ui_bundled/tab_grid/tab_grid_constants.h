@@ -78,6 +78,9 @@ extern const CGFloat kTabGridSearchBarHeight;
 // The Search bar width ratio modifier for non-compact orientation.
 extern const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier;
 
+// The accessibility identifier of the history search result item.
+extern NSString* const kTabGridSearchSuggestedHistoryItemId;
+
 // Alpha of the background color of the toolbar.
 extern const CGFloat kToolbarBackgroundAlpha;
 

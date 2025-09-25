@@ -83,6 +83,9 @@ const CGFloat kTabGridSearchBarHeight = 44.0f;
 // The Search bar width ratio modifier for non-compact orientation.
 const CGFloat kTabGridSearchBarNonCompactWidthRatioModifier = 0.5f;
 
+NSString* const kTabGridSearchSuggestedHistoryItemId =
+    @"kTabGridSearchSuggestedHistoryItemId";
+
 // Intrinsic heights of the tab grid toolbars.
 const CGFloat kTabGridTopToolbarHeight = 52.0f;
 const CGFloat kTabGridBottomToolbarHeight = 44.0f;

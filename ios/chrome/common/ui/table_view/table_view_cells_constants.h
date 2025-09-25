@@ -67,9 +67,6 @@ extern NSString* const kMaskedPassword;
 // TableViewInfoButtonCell.
 extern NSString* const kTableViewCellInfoButtonViewId;
 
-// The accessibility identifier of the TableViewTabsSearchSuggestedHistoryItem.
-extern NSString* const kTableViewTabsSearchSuggestedHistoryItemId;
-
 // Accessibility identifier for the badge icon.
 extern NSString* const kTableViewURLCellFaviconBadgeViewID;
 
