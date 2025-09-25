@@ -112,6 +112,21 @@ std::strong_ordering HdrMetadataAgtm::operator<=>(
 }
 
 HDRMetadata::HDRMetadata() = default;
+
+HDRMetadata::HDRMetadata(const skhdr::Metadata& sk_hdr_metadata) {
+  skhdr::ContentLightLevelInformation clli;
+  if (sk_hdr_metadata.getContentLightLevelInformation(&clli)) {
+    cta_861_3.emplace(clli.fMaxCLL, clli.fMaxFALL);
+  }
+
+  skhdr::MasteringDisplayColorVolume mdcv;
+  if (sk_hdr_metadata.getMasteringDisplayColorVolume(&mdcv)) {
+    smpte_st_2086.emplace(mdcv.fDisplayPrimaries,
+                          mdcv.fMaximumDisplayMasteringLuminance,
+                          mdcv.fMinimumDisplayMasteringLuminance);
+  }
+}
+
 HDRMetadata::HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
                          const HdrMetadataCta861_3& cta_861_3)
     : smpte_st_2086(smpte_st_2086), cta_861_3(cta_861_3) {}

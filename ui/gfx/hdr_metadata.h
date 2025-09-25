@@ -11,6 +11,7 @@
 #include <string>
 
 #include "skia/ext/skcolorspace_primaries.h"
+#include "third_party/skia/include/private/SkHdrMetadata.h"
 #include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -153,6 +154,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   std::optional<HdrMetadataAgtm> agtm;
 
   HDRMetadata();
+  HDRMetadata(const skhdr::Metadata& sk_hdr_metadata);
   HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086,
               const HdrMetadataCta861_3& cta_861_3);
   explicit HDRMetadata(const HdrMetadataSmpteSt2086& smpte_st_2086);

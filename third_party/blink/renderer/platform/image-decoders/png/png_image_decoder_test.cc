@@ -1695,12 +1695,6 @@ TEST(PNGTests, HDRMetadata) {
   const std::optional<gfx::HDRMetadata> hdr_metadata =
       decoder->GetHDRMetadata();
 
-#if 1
-  // TODO(https://crbug.com/376550658): Add support for `cLLI` and `mDCV` chunks
-  // to Rust png.
-  ASSERT_FALSE(hdr_metadata);
-  GTEST_SKIP() << "SkPngRustCodec doesn't yet support cLLI nor mDCV chunks";
-#else
   ASSERT_TRUE(hdr_metadata);
 
   ASSERT_TRUE(hdr_metadata->cta_861_3);
@@ -1718,7 +1712,6 @@ TEST(PNGTests, HDRMetadata) {
   EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->primaries.fWY, .3290f);
   EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->luminance_max, 5000.f);
   EXPECT_FLOAT_EQ(hdr_metadata->smpte_st_2086->luminance_min, .01f);
-#endif
 }
 
 TEST(AnimatedPNGTests, TrnsMeansAlpha) {

@@ -101,6 +101,9 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
           if (const skcms_ICCProfile* profile = codec_->getICCProfile()) {
             SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
           }
+          if (codec_->getHdrMetadata() != skhdr::Metadata::MakeEmpty()) {
+            hdr_metadata_.emplace(codec_->getHdrMetadata());
+          }
         }
         segment_stream_ = segment_stream_ptr;
         orientation_ = static_cast<ImageOrientationEnum>(codec_->getOrigin());
@@ -119,6 +122,10 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
         return;
     }
   }
+}
+
+std::optional<gfx::HDRMetadata> SkiaImageDecoderBase::GetHDRMetadata() const {
+  return hdr_metadata_;
 }
 
 int SkiaImageDecoderBase::RepetitionCount() const {
