@@ -257,10 +257,13 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
 
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  waiter->Wait();
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -343,6 +346,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
   waiter->SetMainFrameAdRectsExpectation();
 
   GURL image_url =
@@ -399,10 +405,8 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  waiter->AddPageExpectation(page_load_metrics::AdsPageLoadMetricsTestWaiter::
-                                 TimingField::kFirstContentfulPaint);
-  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
-  waiter->Wait();
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
 
   // Open a new tab, which backgrounds the original web_contents.
   ui_test_utils::NavigateToURLWithDisposition(
@@ -478,10 +482,8 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  waiter->AddPageExpectation(page_load_metrics::AdsPageLoadMetricsTestWaiter::
-                                 TimingField::kFirstContentfulPaint);
-  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
-  waiter->Wait();
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
 
   int original_tab_index = browser()->tab_strip_model()->active_index();
 
@@ -562,10 +564,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  waiter->AddPageExpectation(page_load_metrics::AdsPageLoadMetricsTestWaiter::
-                                 TimingField::kFirstContentfulPaint);
-  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
-  waiter->Wait();
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
 
   waiter->SetMainFrameAdRectsExpectation();
 
@@ -708,6 +708,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->Wait();
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
   // Create a frame at 100,100 of size 200,200, with b.com as origin to not get
   // caught by restricted ad tagging.
   gfx::Rect large_rect = gfx::Rect(100, 100, 200, 200);
@@ -716,10 +719,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       web_contents,
       content::JsReplace(
           R"(
-          const p = document.createElement('p');
-          p.textContent = 'Trigger First Contentful Paint';
-          document.body.appendChild(p);
-
           let frame = createAdIframeAtRect(100, 100, 200, 200);
           frame.src = $1;
         )",
@@ -811,6 +810,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->Wait();
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
+
   // Create a frame of size 100,100 at 400,400, with b.com as origin to not get
   // caught by restricted ad tagging.
   gfx::Rect rect1 = gfx::Rect(400, 400, 100, 100);
@@ -818,10 +820,6 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   EXPECT_TRUE(
       ExecJs(web_contents,
              content::JsReplace(R"(
-          const p = document.createElement('p');
-          p.textContent = 'Trigger First Contentful Paint';
-          document.body.appendChild(p);
-
           let frame = createAdIframeAtRect(400, 400, 100, 100);
           frame.src = $1;
         )",

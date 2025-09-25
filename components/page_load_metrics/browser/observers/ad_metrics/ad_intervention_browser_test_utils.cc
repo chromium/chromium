@@ -58,13 +58,19 @@ int GetDocumentHeight(content::WebContents* web_contents) {
   return EvalJs(web_contents, "document.body.scrollHeight").ExtractInt();
 }
 
-void AddTextForFirstContentfulPaint(content::WebContents* web_contents) {
+void AddTextAndWaitForFirstContentfulPaint(content::WebContents* web_contents,
+                                           PageLoadMetricsTestWaiter* waiter) {
+  waiter->AddPageExpectation(
+      PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
+
   ASSERT_TRUE(ExecJs(web_contents, R"(
           const p = document.createElement('p');
           p.textContent = 'Trigger First Contentful Paint';
           p.style.position = 'fixed';
           document.body.appendChild(p);
         )"));
+
+  waiter->Wait();
 }
 
 void CreateAndWaitForIframeAtRect(content::WebContents* web_contents,

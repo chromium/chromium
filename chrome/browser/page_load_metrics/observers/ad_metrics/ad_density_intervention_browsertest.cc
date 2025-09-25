@@ -90,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::NavigateToURL(web_contents, url));
   waiter->Wait();
 
-  page_load_metrics::AddTextForFirstContentfulPaint(web_contents);
+  page_load_metrics::AddTextAndWaitForFirstContentfulPaint(web_contents,
+                                                           waiter.get());
 
   int document_width =
       EvalJs(web_contents, "document.body.scrollWidth").ExtractInt();
