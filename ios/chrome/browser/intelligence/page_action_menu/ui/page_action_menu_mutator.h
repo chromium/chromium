@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+// Page Menu Action Feature types.
+typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
+
 // The mutator for the page action menu.
 @protocol PageActionMenuMutator
 
@@ -21,6 +24,18 @@
 
 // Returns whether Reader mode is currently active.
 - (BOOL)isReaderModeActive;
+
+// Returns whether a page action menu feature is currently available.
+- (BOOL)isFeatureAvailable:(PageActionMenuFeatureType)featureType;
+
+// Returns the current translate language pair.
+- (NSString*)translateLanguagePair;
+
+// Returns the number of blocked popups.
+- (NSInteger)blockedPopupCount;
+
+// Returns the current site domain for permission context.
+- (NSString*)currentSiteDomain;
 
 @end
 

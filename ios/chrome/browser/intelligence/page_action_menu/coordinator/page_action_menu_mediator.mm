@@ -8,6 +8,7 @@
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
@@ -87,6 +88,7 @@
 }
 
 - (BOOL)isReaderModeAvailable {
+  // TODO(crbug.com/447371545): Migrate Reader Mode to the feature type system.
   if (!_readerModeTabHelper) {
     return NO;
   }
@@ -101,6 +103,40 @@
     return NO;
   }
   return _readerModeTabHelper->IsActive();
+}
+
+- (BOOL)isFeatureAvailable:(PageActionMenuFeatureType)featureType {
+  switch (featureType) {
+    case PageActionMenuTranslate:
+      // TODO(crbug.com/447143165): Implement translate detection logic.
+      return NO;
+    case PageActionMenuPopupBlocker:
+      // TODO(crbug.com/447143165): Implement popup blocker availability logic.
+      return NO;
+    case PageActionMenuCameraPermission:
+      // TODO(crbug.com/447143165): Implement camera permission availability
+      // check.
+      return NO;
+    case PageActionMenuMicrophonePermission:
+      // TODO(crbug.com/447143165): Implement microphone permission availability
+      // check.
+      return NO;
+  }
+}
+
+- (NSString*)translateLanguagePair {
+  // TODO(crbug.com/447143165): Return actual language pair.
+  return @"German to English";
+}
+
+- (NSInteger)blockedPopupCount {
+  // TODO(crbug.com/447143165): Return actual blocked popup count.
+  return 2;
+}
+
+- (NSString*)currentSiteDomain {
+  // TODO(crbug.com/447143165): Return actual current domain.
+  return @"foo.com";
 }
 
 #pragma mark - CRWWebStateObserver
