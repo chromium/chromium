@@ -279,7 +279,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
                            const void* pixels,
                            size_t row_bytes,
                            int x,
-                           int y);
+                           int y) = 0;
+  bool UnacceleratedWritePixels(const SkImageInfo& orig_info,
+                                const void* pixels,
+                                size_t row_bytes,
+                                int x,
+                                int y);
 
   virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
     NOTREACHED();
@@ -356,7 +361,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // decodes/uploads in the cache is invalidated only when the canvas contents
   // change.
   cc::PaintImage MakeImageSnapshot(FlushReason);
-  virtual void RasterRecord(cc::PaintRecord);
+  virtual void RasterRecord(cc::PaintRecord) = 0;
+  void UnacceleratedRasterRecord(cc::PaintRecord);
   void AcceleratedRasterRecord(cc::PaintRecord last_recording,
                                bool needs_clear,
                                gpu::Mailbox mailbox);
@@ -459,6 +465,12 @@ class PLATFORM_EXPORT CanvasResourceProviderBitmap
   scoped_refptr<StaticBitmapImage> Snapshot(
       FlushReason reason,
       ImageOrientation = ImageOrientationEnum::kDefault) override;
+  void RasterRecord(cc::PaintRecord last_recording) override;
+  bool WritePixels(const SkImageInfo& orig_info,
+                   const void* pixels,
+                   size_t row_bytes,
+                   int x,
+                   int y) override;
 
  private:
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {

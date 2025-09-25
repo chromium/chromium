@@ -164,6 +164,19 @@ sk_sp<SkSurface> CanvasResourceProviderBitmap::CreateSkSurface() const {
   return SkSurfaces::Raster(info, &props);
 }
 
+void CanvasResourceProviderBitmap::RasterRecord(
+    cc::PaintRecord last_recording) {
+  return UnacceleratedRasterRecord(last_recording);
+}
+
+bool CanvasResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
+                                               const void* pixels,
+                                               size_t row_bytes,
+                                               int x,
+                                               int y) {
+  return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
+}
+
 CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
     gfx::Size size,
     viz::SharedImageFormat format,
@@ -567,8 +580,7 @@ bool CanvasResourceProviderSharedImage::WritePixels(
     int x,
     int y) {
   if (!is_accelerated_) {
-    return CanvasResourceProvider::WritePixels(orig_info, pixels, row_bytes, x,
-                                               y);
+    return UnacceleratedWritePixels(orig_info, pixels, row_bytes, x, y);
   }
 
   TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::WritePixels");
@@ -863,7 +875,7 @@ scoped_refptr<StaticBitmapImage> CanvasResourceProviderSharedImage::Snapshot(
 void CanvasResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
-    CanvasResourceProvider::RasterRecord(std::move(last_recording));
+    UnacceleratedRasterRecord(std::move(last_recording));
     return;
   }
   WillDrawInternal(true);
@@ -1787,7 +1799,8 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   return recording;
 }
 
-void CanvasResourceProvider::RasterRecord(cc::PaintRecord last_recording) {
+void CanvasResourceProvider::UnacceleratedRasterRecord(
+    cc::PaintRecord last_recording) {
   CHECK(!IsAccelerated());
 
   EnsureSkiaCanvas();
@@ -1855,11 +1868,12 @@ void CanvasResourceProvider::NotifyGpuContextLostTask(
   }
 }
 
-bool CanvasResourceProvider::WritePixels(const SkImageInfo& orig_info,
-                                         const void* pixels,
-                                         size_t row_bytes,
-                                         int x,
-                                         int y) {
+bool CanvasResourceProvider::UnacceleratedWritePixels(
+    const SkImageInfo& orig_info,
+    const void* pixels,
+    size_t row_bytes,
+    int x,
+    int y) {
   TRACE_EVENT0("blink", "CanvasResourceProvider::WritePixels");
   CHECK(!IsAccelerated());
 
