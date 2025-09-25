@@ -9766,6 +9766,29 @@
             ]
         }
     ],
+    "EnableHangWatcherOnGpuProcess": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "gpu_process_compositor_thread_log_level": "2",
+                        "gpu_process_io_thread_log_level": "2",
+                        "gpu_process_main_thread_log_level": "2"
+                    },
+                    "enable_features": [
+                        "EnableHangWatcherOnGpuProcess"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableLazyLoadImageForInvisiblePage": [
         {
             "platforms": [
