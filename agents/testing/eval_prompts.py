@@ -471,19 +471,22 @@ def _fetch_sandbox_image() -> bool:
     with tempfile.TemporaryDirectory() as tmpdir:
         try:
             subprocess.run(
-                ['gemini', '--sandbox'],
-                input='',
+                ['gemini', '--sandbox', 'no-op'],
                 text=True,
                 check=True,
-                capture_output=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
                 cwd=tmpdir,
             )
             return True
         except subprocess.CalledProcessError as e:
+            output = ''
+            if e.stdout:
+                output += f'\noutput:\n{e.stdout}'
             logging.error(
                 'Failed to pre-fetch sandbox image: %s. This may be '
                 'because you are in an environment that does not support '
-                'sandboxing. Try running with --no-sandbox.', e)
+                'sandboxing. Try running with --no-sandbox.%s', e, output)
             return False
 
 
@@ -596,7 +599,7 @@ def _parse_args() -> argparse.Namespace:
                         help='Do not clean up the workdir after evaluation.')
     parser.add_argument(
         '--sandbox',
-        default=True,
+        default=False,
         action=argparse.BooleanOptionalAction,
         help='Use a sandbox for running gemini-cli. This should only be '
         'disabled for local testing.',

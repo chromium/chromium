@@ -1044,16 +1044,18 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertEqual(returncode, 1)
 
     def test_run_prompt_eval_tests_sandbox_prefetch_fails(self):
-        """Tests that _run_prompt_eval_tests exits if sandbox pre-fetch
-        fails."""
+        """Tests that _run_prompt_eval_tests exits and logs output if sandbox
+        pre-fetch fails."""
         self.args.sandbox = True
-        self.mock_subprocess_run.side_effect = subprocess.CalledProcessError(
-            returncode=1, cmd='gemini')
+        error = subprocess.CalledProcessError(returncode=1, cmd='gemini')
+        error.stdout = 'mocked output'
+        self.mock_subprocess_run.side_effect = error
 
         with self.assertLogs(level='ERROR') as cm:
             result = eval_prompts._run_prompt_eval_tests(self.args)
             self.assertEqual(result, 1)
             self.assertIn('Failed to pre-fetch sandbox image', cm.output[0])
+            self.assertIn('mocked output', cm.output[0])
 
     def test_run_prompt_eval_tests_with_sandbox_enabled(self):
         """Tests that _run_prompt_eval_tests calls pre-fetch and passes sandbox
@@ -1064,11 +1066,11 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         eval_prompts._run_prompt_eval_tests(self.args)
 
         self.mock_subprocess_run.assert_called_once_with(
-            ['gemini', '--sandbox'],
-            input='',
+            ['gemini', '--sandbox', 'no-op'],
             text=True,
             check=True,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             cwd=mock.ANY,
         )
         mock_promptfoo_instance = self.mock_setup_promptfoo.return_value
