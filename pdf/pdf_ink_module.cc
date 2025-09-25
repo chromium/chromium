@@ -1033,7 +1033,7 @@ bool PdfInkModule::FinishTextHighlight(const gfx::PointF& position,
   return true;
 }
 
-ink::Stroke PdfInkModule::GetHighlightStrokeFromSelectionRect(
+std::optional<ink::Stroke> PdfInkModule::GetHighlightStrokeFromSelectionRect(
     const gfx::RectF& selection_rect) {
   CHECK(is_text_highlighting());
 
@@ -1044,22 +1044,25 @@ ink::Stroke PdfInkModule::GetHighlightStrokeFromSelectionRect(
   ink::StrokeInput input = CreateInkStrokeInput(
       ink::StrokeInput::ToolType::kMouse, stroke_data.first_point,
       /*elapsed_time=*/base::TimeDelta());
-  auto result = batch.Append(input);
-  CHECK(result.ok()) << result.message();
+  if (!batch.Append(input).ok()) {
+    return std::nullopt;
+  }
 
   // Skip the second input point if it matches the first input point.
   if (stroke_data.first_point != stroke_data.second_point) {
     input = CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse,
                                  stroke_data.second_point,
                                  /*elapsed_time=*/base::TimeDelta());
-    result = batch.Append(input);
-    CHECK(result.ok()) << result.message();
+    if (!batch.Append(input).ok()) {
+      return std::nullopt;
+    }
   }
 
   // Make a copy of the ink brush to avoid modifying the drawing highlighter.
   ink::Brush ink_brush = highlighter_brush_.ink_brush();
-  result = ink_brush.SetSize(stroke_data.brush_size);
-  CHECK(result.ok()) << result.message();
+  if (!ink_brush.SetSize(stroke_data.brush_size).ok()) {
+    return std::nullopt;
+  }
   return ink::Stroke(ink_brush, batch);
 }
 
@@ -1109,8 +1112,11 @@ PdfInkModule::GetTextSelectionAsStrokes() {
     const gfx::Transform transform =
         client_->GetCanonicalToPdfTransform(page_index).GetCheckedInverse();
     for (const auto& selection_rect : selection_rects) {
-      page_result.push_back({GetHighlightStrokeFromSelectionRect(
-          transform.MapRect(selection_rect.AsGfxRectF()))});
+      std::optional<ink::Stroke> stroke = GetHighlightStrokeFromSelectionRect(
+          transform.MapRect(selection_rect.AsGfxRectF()));
+      if (stroke.has_value()) {
+        page_result.push_back(stroke.value());
+      }
     }
   }
   return result;

@@ -4285,6 +4285,32 @@ TEST_P(PdfInkModuleTextHighlightTest, CursorOnMouseMoveWhileBrushDrawing) {
   EXPECT_TRUE(ink_module().HandleInputEvent(mouse_up_event));
 }
 
+TEST_P(PdfInkModuleTextHighlightTest, IgnoreVerySmallTextSelection) {
+  EnableDrawAnnotationMode();
+  InitializeSimpleSinglePageBasicLayout();
+
+  SelectBrushTool(PdfInkBrush::Type::kHighlighter, kOrangeBrushParams);
+
+  static constexpr PdfRect kVerySmallSelectionRect(
+      kStartPointInsidePage0.x(), kStartPointInsidePage0.y(),
+      kStartPointInsidePage0.x() + 1.0f, kStartPointInsidePage0.y() + 0.001f);
+  PdfInkModuleClient::SelectionRectMap pdf_selection_map;
+  pdf_selection_map[0].push_back(kVerySmallSelectionRect);
+  EXPECT_CALL(client(), GetSelectionRectMap())
+      .WillRepeatedly(Return(pdf_selection_map));
+  SetTextAreaPoints({kStartPointInsidePage0, kEndPointInsidePage0});
+  ApplyStrokeWithMouseAtPoints(kStartPointInsidePage0, {kEndPointInsidePage0},
+                               kEndPointInsidePage0);
+
+  // The test case should not crash. Instead, the very small text selection
+  // simply gets ignored.
+  EXPECT_EQ(1, client().stroke_started_count());
+  EXPECT_EQ(1, client().modified_stroke_finished_count());
+  EXPECT_EQ(0, client().unmodified_stroke_finished_count());
+  EXPECT_TRUE(updated_ink_thumbnail_page_indices().empty());
+  EXPECT_TRUE(CollectVisibleStrokes().empty());
+}
+
 class PdfInkModuleTextHighlightMetricsTest
     : public PdfInkModuleMetricsTestBase,
       public PdfInkModuleTextHighlightTest {

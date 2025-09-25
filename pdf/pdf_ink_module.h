@@ -318,7 +318,8 @@ class PdfInkModule {
 
   // Returns a highlighter stroke that matches the position and size of
   // `selection_rect`. `selection_rect` is in canonical coordinates.
-  ink::Stroke GetHighlightStrokeFromSelectionRect(
+  // On failure, return std::nullopt.
+  std::optional<ink::Stroke> GetHighlightStrokeFromSelectionRect(
       const gfx::RectF& selection_rect);
 
   // Returns the data needed to create a text highlight stroke that covers
