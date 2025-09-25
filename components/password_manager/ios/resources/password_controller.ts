@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import type {AutofillFormData} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -48,7 +48,7 @@ const kFillResultForFailure: FillResult = {
  * @return Form data as a JSON string.
  */
 function findPasswordForms(): string {
-  const formDataList: AutofillFormData[] = [];
+  const formDataList: fillUtil.AutofillFormData[] = [];
   getPasswordFormDataList(formDataList);
   return gCrWebLegacy.stringify(formDataList);
 }
@@ -101,7 +101,7 @@ function findInputByFieldRendererID(
     return null;
   }
   for (const input of inputs) {
-    if (identifier.toString() === gCrWebLegacy.fill.getUniqueID(input)) {
+    if (identifier.toString() === fillUtil.getUniqueID(input)) {
       return input;
     }
   }
@@ -154,7 +154,7 @@ function getPasswordFormDataAsString(identifier: number): string {
  * @return {FillResult} The result of filling the password fields.
  */
 function fillPasswordForm(
-    formData: AutofillFormData, username: string,
+    formData: fillUtil.AutofillFormData, username: string,
     password: string): FillResult {
   const form = gCrWebLegacy.form.getFormElementFromRendererId(formData.renderer_id);
   if (form) {
@@ -291,7 +291,7 @@ function getPasswordInputElementForFill(
  * @return {FillResult} The result of filling the password fields.
  */
 function fillUsernameAndPassword(
-    inputs: HTMLInputElement[], formData: AutofillFormData, username: string,
+    inputs: HTMLInputElement[], formData: fillUtil.AutofillFormData, username: string,
     password: string): FillResult {
   const usernameRendererId: number = Number(formData.fields[0]!.renderer_id);
   let usernameInput;
@@ -343,7 +343,7 @@ function fillUsernameAndPassword(
  * (components/password_manager/core/common/password_manager_util.h).
  * @param form Object with the parsed form data.
  */
-function isRecognizedCredentialForm(form: AutofillFormData) {
+function isRecognizedCredentialForm(form: fillUtil.AutofillFormData) {
   return form.fields.some(
       field => field['autocomplete_attribute']?.includes('username') ||
           field['autocomplete_attribute']?.includes('webauthn') ||
@@ -356,7 +356,7 @@ function isRecognizedCredentialForm(form: AutofillFormData) {
  * @param formDataList A list that this function populates
  *     with descriptions of discovered forms.
  */
-function getPasswordFormDataList(formDataList: AutofillFormData[]) {
+function getPasswordFormDataList(formDataList: fillUtil.AutofillFormData[]) {
   const forms = document.forms;
   for (const form of forms) {
     const formData = getPasswordFormData(form);
@@ -398,8 +398,8 @@ function getPasswordFormDataFromUnownedElements(): object|null {
  * @return Object of data from formElement.
  */
 function getPasswordFormData(
-    formElement: HTMLFormElement): AutofillFormData|null {
-  const formData = {} as AutofillFormData;
+    formElement: HTMLFormElement): fillUtil.AutofillFormData|null {
+  const formData = {} as fillUtil.AutofillFormData;
   const ok = gCrWebLegacy.fill.webFormElementToFormData(
       window, formElement, /*formControlElement=*/ null, formData,
       /*field=*/ null);

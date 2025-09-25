@@ -73,9 +73,9 @@ function showBottomSheet(hasUserGesture: boolean): void {
   const msg = {
     'frameID': gCrWeb.getFrameId(),
     'formName': gCrWebLegacy.form.getFormIdentifier(form),
-    'formRendererID': gCrWebLegacy.fill.getUniqueID(form),
+    'formRendererID': fillUtil.getUniqueID(form),
     'fieldIdentifier': gCrWebLegacy.form.getFieldIdentifier(field),
-    'fieldRendererID': gCrWebLegacy.fill.getUniqueID(field),
+    'fieldRendererID': fillUtil.getUniqueID(field),
     'fieldType': fieldType,
     'type': 'focus',
     'value': fieldValue,

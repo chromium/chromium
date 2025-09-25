@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
@@ -201,7 +202,7 @@ __gCrWeb.autofill['fillActiveFormField'] = function(data) {
   const activeElement = document.activeElement;
   const fieldID = data['renderer_id'];
   if (typeof fieldID === 'undefined' ||
-      fieldID.toString() !== __gCrWeb.fill.getUniqueID(activeElement)) {
+      fieldID.toString() !== fillUtil.getUniqueID(activeElement)) {
     return false;
   }
   __gCrWeb.autofill.lastAutoFilledElement = activeElement;
@@ -309,7 +310,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
       }, _delay);
     })(element, fieldData.value, fieldData.section, delay);
     delay += __gCrWeb.autofill.delayBetweenFieldFillingMs;
-    filledElements[__gCrWeb.fill.getUniqueID(element)] = fieldData.value;
+    filledElements[fillUtil.getUniqueID(element)] = fieldData.value;
   }
 
   // After the last form fill event, re-extract the form and report back to the
@@ -391,7 +392,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
 
   let formField = null;
   for (let i = 0; i < controlElements.length; ++i) {
-    if (__gCrWeb.fill.getUniqueID(controlElements[i]) ===
+    if (fillUtil.getUniqueID(controlElements[i]) ===
         fieldUniqueID.toString()) {
       formField = controlElements[i];
       break;
@@ -431,7 +432,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
         }, _delay);
       })(element, value, delay);
       delay += __gCrWeb.autofill.delayBetweenFieldFillingMs;
-      clearedElements.push(__gCrWeb.fill.getUniqueID(element));
+      clearedElements.push(fillUtil.getUniqueID(element));
     }
   }
   return __gCrWeb.stringify(clearedElements);
@@ -646,7 +647,7 @@ __gCrWeb.autofill['fillPredictionData'] = function(data) {
       if (!__gCrWeb.fill.isAutofillableElement(element)) {
         continue;
       }
-      const elementID = __gCrWeb.fill.getUniqueID(element);
+      const elementID = fillUtil.getUniqueID(element);
       const value = formData[elementID];
       if (value) {
         element.placeholder = value;

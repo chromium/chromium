@@ -7,7 +7,7 @@
  */
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {getRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getRemoteFrameToken, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -428,7 +428,7 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
     return null;
   }
   for (const form of document.forms) {
-    if (identifier.toString() === gCrWebLegacy.fill.getUniqueID(form)) {
+    if (identifier.toString() === getUniqueID(form)) {
       return form;
     }
   }

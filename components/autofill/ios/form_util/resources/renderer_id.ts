@@ -39,7 +39,7 @@ gCrWebLegacy.fill.setUniqueIDIfNeeded = function(element: IndexableElement): voi
       const elementID = document[uniqueIDSymbol]!++;
       element[uniqueIDSymbol] = elementID;
 
-      //  Store a copy of the ID in the DOM. gCrWebLegacy.fill.getUniqueID will use
+      //  Store a copy of the ID in the DOM. Utility function getUniqueID will use
       //  the DOM copy when running in the page content world.
       element.setAttribute(
           fillConstants.UNIQUE_ID_ATTRIBUTE, elementID.toString());

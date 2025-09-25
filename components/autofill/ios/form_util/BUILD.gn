@@ -154,6 +154,15 @@ optimize_ts("fill_js") {
   ]
 }
 
+optimize_ts("fill_util_test_js") {
+  sources = [ "resources/fill_util_test.ts" ]
+
+  deps = [
+    ":fill_js_dependencies",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 optimize_ts("form_js") {
   sources = [ "resources/form.ts" ]
 
@@ -168,6 +177,7 @@ optimize_ts("form_js") {
 optimize_ts("form_handlers_js") {
   sources = [ "resources/form_handlers.ts" ]
   deps = [
+    "//components/autofill/ios/form_util:fill_js_dependencies",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -321,6 +331,7 @@ source_set("unit_tests") {
     ":autofill_renderer_id_feature",
     ":child_frame_registrar",
     ":fill_js",
+    ":fill_util_test_js",
     ":form_handler_feature",
     ":form_js",
     ":form_util",

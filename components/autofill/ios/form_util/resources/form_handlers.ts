@@ -11,6 +11,7 @@
 // Requires functions from fill.ts, form.ts, autofill_form_features.ts and
 // child_frame_registration_lib.ts.
 
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -166,8 +167,8 @@ function formActivity(evt: Event): void {
       target.tagName === 'FORM' ? target : (target as HTMLFormElement)['form'];
   const field = target.tagName === 'FORM' ? null : target;
 
-  const formRendererID = gCrWebLegacy.fill.getUniqueID(form);
-  const fieldRendererID = gCrWebLegacy.fill.getUniqueID(field);
+  const formRendererID = fillUtil.getUniqueID(form);
+  const fieldRendererID = fillUtil.getUniqueID(field);
 
   const fieldType = 'type' in target ? target.type : '';
   const fieldValue = 'value' in target ? target.value : '';
@@ -378,7 +379,7 @@ function findFormlessFieldsIds(elements: Element[]): string[] {
       .filter(
           e => gCrWebLegacy.fill.isAutofillableElement(e) &&
               !(e as HTMLInputElement).form)
-      .map(gCrWebLegacy.fill.getUniqueID);
+      .map(fillUtil.getUniqueID);
 }
 
 /**
@@ -454,7 +455,7 @@ function trackFormMutations(delay: number): void {
         } else {
           // Send the removed forms identifiers to the browser.
           const filteredFormIDs =
-              forms.map(form => gCrWebLegacy.fill.getUniqueID(form));
+              forms.map(form => fillUtil.getUniqueID(form));
           removedFormMessage = {
             'command': 'form.removal',
             'frameID': gCrWeb.getFrameId(),

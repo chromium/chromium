@@ -425,7 +425,7 @@ gCrWebLegacy.fill.webFormElementToFormData = function(
   form.name_attribute = formElement.getAttribute('name') || '';
   form.id_attribute = formElement.getAttribute('id') || '';
 
-  form.renderer_id = gCrWebLegacy.fill.getUniqueID(formElement);
+  form.renderer_id = fillUtil.getUniqueID(formElement);
 
   form.host_frame = frame.__gCrWeb.getFrameId();
 
@@ -484,7 +484,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
   field.name_attribute = element.getAttribute('name') || '';
   field.id_attribute = element.getAttribute('id') || '';
 
-  field.renderer_id = gCrWebLegacy.fill.getUniqueID(element);
+  field.renderer_id = fillUtil.getUniqueID(element);
 
   field.form_control_type = element.type;
   const autocompleteAttribute = element.getAttribute('autocomplete');

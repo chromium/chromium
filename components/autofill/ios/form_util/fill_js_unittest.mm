@@ -26,12 +26,21 @@
 
 namespace autofill {
 
+// Creates a JavaScriptFeature that injects fill util functions used in tests.
+web::JavaScriptFeature::FeatureScript GetFillTestScript() {
+  return web::JavaScriptFeature::FeatureScript::CreateWithFilename(
+      "fill_util_test",
+      web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+      web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames);
+}
+
 // Creates a dummy JavaScriptFeature for the page content world.
 // Used for running test scripts in the page content world.
 web::JavaScriptFeature* GetDummyPageContentWorldFeature() {
   static base::NoDestructor<web::JavaScriptFeature> dummy_feature(
       web::ContentWorld::kPageContentWorld,
-      /*feature_scripts=*/std::vector<web::JavaScriptFeature::FeatureScript>());
+      /*feature_scripts=*/std::vector<web::JavaScriptFeature::FeatureScript>(
+          {GetFillTestScript()}));
   return dummy_feature.get();
 }
 
@@ -40,7 +49,8 @@ web::JavaScriptFeature* GetDummyPageContentWorldFeature() {
 web::JavaScriptFeature* GetDummyIsolatedWorldFeature() {
   static base::NoDestructor<web::JavaScriptFeature> dummy_feature(
       web::ContentWorld::kIsolatedWorld,
-      /*feature_scripts=*/std::vector<web::JavaScriptFeature::FeatureScript>());
+      /*feature_scripts=*/std::vector<web::JavaScriptFeature::FeatureScript>(
+          {GetFillTestScript()}));
   return dummy_feature.get();
 }
 
@@ -88,7 +98,8 @@ class FillJsTest : public web::WebTestWithWebState {
   NSString* GetUniqueID(NSString* element_id, web::ContentWorld content_world) {
     NSString* script = [NSString
         stringWithFormat:
-            @"__gCrWeb.fill.getUniqueID(document.getElementById('%@'))",
+            @"__gCrWeb.getRegisteredApi('fill_test_api')."
+            @"getFunction('getUniqueID')(document.getElementById('%@'))",
             element_id];
 
     id result_id = web::test::ExecuteJavaScriptForFeatureAndReturnResult(
