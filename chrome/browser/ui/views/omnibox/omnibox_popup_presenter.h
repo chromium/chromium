@@ -48,6 +48,9 @@ class OmniboxPopupPresenter : public views::WebView,
   // Returns nullptr if handler is not ready.
   WebuiOmniboxHandler* GetHandler();
 
+  // views::View:
+  void AddedToWidget() override;
+
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
 

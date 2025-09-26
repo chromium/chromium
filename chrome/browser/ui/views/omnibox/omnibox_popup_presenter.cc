@@ -20,6 +20,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 
 OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                              OmniboxController* controller)
@@ -65,8 +66,8 @@ void OmniboxPopupPresenter::Show() {
 
     widget_->ShowInactive();
 
-    widget_->SetContentsView(std::make_unique<RoundedOmniboxResultsFrame>(
-        this, location_bar_view_, /*is_webui=*/true));
+    widget_->SetContentsView(
+        std::make_unique<RoundedOmniboxResultsFrame>(this, location_bar_view_));
     widget_->AddObserver(this);
 
     // On Show(), the widget height can not be 0 or else the compositor thinks
@@ -101,6 +102,16 @@ WebuiOmniboxHandler* OmniboxPopupPresenter::GetHandler() {
   return omnibox_popup_ui->handler();
 }
 
+void OmniboxPopupPresenter::AddedToWidget() {
+  views::WebView::AddedToWidget();
+  const float corner_radius =
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kOmniboxExpandedRadius);
+  gfx::RoundedCornersF rounded_corner_radii =
+      gfx::RoundedCornersF(0, 0, corner_radius, corner_radius);
+  holder()->SetCornerRadii(rounded_corner_radii);
+}
+
 void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
   if (widget == widget_) {
     widget_ = nullptr;
@@ -114,14 +125,7 @@ void OmniboxPopupPresenter::SetWidgetContentHeight(int content_height) {
     gfx::Rect widget_bounds = location_bar_view_->GetBoundsInScreen();
     widget_bounds.Inset(
         -RoundedOmniboxResultsFrame::GetLocationBarAlignmentInsets());
-
-    // TODO(crbug.com/40062053): Change max height according to max suggestion
-    //  count and calculated row height, or use a more general maximum value.
-    constexpr int kMaxHeight = 600;
-    widget_bounds.set_height(
-        widget_bounds.height() + std::min(kMaxHeight, content_height) +
-        views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::ShapeContextTokens::kOmniboxExpandedRadius));
+    widget_bounds.set_height(widget_bounds.height() + content_height);
     widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
     widget_->SetBounds(widget_bounds);
   }
