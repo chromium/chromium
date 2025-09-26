@@ -2326,7 +2326,7 @@ deps = {
     Var('chromium_git') + '/external/libaddressinput.git' + '@' + '2610f7b1043d6784ada41392fc9392d1ea09ea07',
 
   'src/third_party/libaom/source/libaom':
-    Var('aomedia_git') + '/aom.git' + '@' +  '4727f83546cc150adeac9e2558375f3da44215df',
+    Var('aomedia_git') + '/aom.git' + '@' +  'dcfc0bd1934130570d04597a3b75de0824dc434d',
 
   'src/third_party/crabbyavif/src':
     Var('chromium_git') + '/external/github.com/webmproject/CrabbyAvif.git' + '@' + Var('crabbyavif_revision'),
