@@ -78,17 +78,12 @@ class FakeGlicTabStripController : public FakeBaseTabStripController {
   std::unique_ptr<Browser> browser_;
 };
 
-class TabStripActionContainerTest : public ChromeViewsTestBase {
+class TabStripActionContainerTest : public ChromeViewsTestBase,
+                                    public ::testing::WithParamInterface<bool> {
  public:
   TabStripActionContainerTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
-            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
-  TabStripActionContainerTest(const TabStripActionContainerTest&) = delete;
-  TabStripActionContainerTest& operator=(const TabStripActionContainerTest&) =
-      delete;
-  ~TabStripActionContainerTest() override = default;
-
-  void SetUp() override {
+            gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {
 #if BUILDFLAG(ENABLE_GLIC)
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {
@@ -96,10 +91,19 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
             {features::kTabstripComboButton, {}},
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
-             {{features::kGlicActorUiTaskIconName, "true"}}},
+             {{features::kGlicActorUiTaskIconName, "true"},
+              {features::kGlicActorUiNudgeRedesign.name,
+               base::ToString(GetParam())}}},
         },
         {});
 #endif  // BUILDFLAG(ENABLE_GLIC)
+  }
+  TabStripActionContainerTest(const TabStripActionContainerTest&) = delete;
+  TabStripActionContainerTest& operator=(const TabStripActionContainerTest&) =
+      delete;
+  ~TabStripActionContainerTest() override = default;
+
+  void SetUp() override {
     ChromeViewsTestBase::SetUp();
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -156,6 +160,10 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
         glic_nudge_controller_.get());
   }
 
+  static std::string GetParamName(const ::testing::TestParamInfo<bool>& info) {
+    return info.param ? "NudgeRedesign" : "NoNudgeRedesign";
+  }
+
  protected:
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
   std::unique_ptr<TabStrip> tab_strip_;
@@ -181,21 +189,26 @@ class TabStripActionContainerTest : public ChromeViewsTestBase {
   gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         TabStripActionContainerTest,
+                         ::testing::Bool(),
+                         &TabStripActionContainerTest::GetParamName);
+
 #if BUILDFLAG(ENABLE_GLIC)
 // TODO(crbug.com/437141881): Fix flaky tests on Mac.
-TEST_F(TabStripActionContainerTest, GlicButtonDrawing) {
+TEST_P(TabStripActionContainerTest, GlicButtonDrawing) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   EXPECT_TRUE(tab_strip_action_container_->GetGlicButton());
 }
 
-TEST_F(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
+TEST_P(TabStripActionContainerTest, GlicButtonUnsupportedProfile) {
   BuildGlicContainer(/*use_otr_profile=*/true);
   EXPECT_FALSE(tab_strip_action_container_->GetGlicButton());
 }
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
-TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectly) {
+TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyAtConstruction) {
   BuildGlicContainer(/*use_otr_profile=*/false);
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
             tab_strip_action_container_->children()[0]);
@@ -225,19 +238,86 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectly) {
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
-TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWithProduct) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {
-          {features::kGlic, {}},
-          {features::kTabstripComboButton, {}},
-          {commerce::kProductSpecifications, {}},
-          {features::kGlicActor, {}},
-          {features::kGlicActorUi,
-           {{features::kGlicActorUiTaskIconName, "true"}}},
-      },
-      {});
+TEST_P(TabStripActionContainerTest, OrdersButtonsCorrectlyWhenShown) {
+  BuildGlicContainer(/*use_otr_profile=*/false);
 
+#if BUILDFLAG(ENABLE_GLIC)
+// TODO(crbug.com/437141881): Fix flaky tests on Mac.
+// Mac doesn't have a separator, so the children sizes are different.
+#if !BUILDFLAG(IS_MAC)
+
+  // Before `ShowGlicActorTaskIcon()` is called, `glic_button` is a direct
+  // child `tab_strip_action_container_`. When `ShowGlicActorTaskIcon()` is
+  // called, `glic_button` is moved from being a direct child of
+  // `tab_strip_action_container_` to being a child of
+  // `glic_actor_button_container()`.
+  tab_strip_action_container_->ShowGlicActorTaskIcon();
+  ASSERT_THAT(tab_strip_action_container_->children(), SizeIs(4));
+
+  ASSERT_EQ(tab_strip_action_container_->glic_actor_button_container(),
+            tab_strip_action_container_->children()[2]);
+
+  ASSERT_THAT(
+      tab_strip_action_container_->glic_actor_button_container()->children(),
+      SizeIs(2));
+
+  const bool nudge_redesign = GetParam();
+  // With redesign, the GlicButton is to the left of the GlicActorTaskIcon.
+  if (nudge_redesign) {
+    ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+              tab_strip_action_container_->glic_actor_button_container()
+                  ->children()[0]);
+    ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
+              tab_strip_action_container_->glic_actor_button_container()
+                  ->children()[1]);
+  } else {
+    ASSERT_EQ(tab_strip_action_container_->glic_actor_task_icon(),
+              tab_strip_action_container_->glic_actor_button_container()
+                  ->children()[0]);
+    ASSERT_EQ(tab_strip_action_container_->GetGlicButton(),
+              tab_strip_action_container_->glic_actor_button_container()
+                  ->children()[1]);
+  }
+#endif  // !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(ENABLE_GLIC)
+}
+
+#if BUILDFLAG(ENABLE_GLIC)
+TEST_P(TabStripActionContainerTest, GlicButtonUpdateLabel) {
+  BuildGlicContainer(/*use_otr_profile=*/false);
+  glic_nudge_controller_->UpdateNudgeLabel(
+      web_contents(), "TEST", /*activity=*/std::nullopt, base::NullCallback());
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
+}
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
+class TabStripActionContainerTestWithProduct
+    : public TabStripActionContainerTest {
+ public:
+  TabStripActionContainerTestWithProduct() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kGlic, {}},
+            {features::kTabstripComboButton, {}},
+            {commerce::kProductSpecifications, {}},
+            {features::kGlicActor, {}},
+            {features::kGlicActorUi,
+             {{features::kGlicActorUiTaskIconName, "true"},
+              {features::kGlicActorUiNudgeRedesign.name,
+               base::ToString(GetParam())}}},
+        },
+        {});
+  }
+  ~TabStripActionContainerTestWithProduct() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         TabStripActionContainerTestWithProduct,
+                         ::testing::Bool(),
+                         &TabStripActionContainerTest::GetParamName);
+
+TEST_P(TabStripActionContainerTestWithProduct, OrdersButtonsCorrectly) {
   BuildGlicContainer(/*use_otr_profile=*/false);
 
   ASSERT_EQ(tab_strip_action_container_->tab_declutter_button(),
@@ -270,12 +350,3 @@ TEST_F(TabStripActionContainerTest, OrdersButtonsCorrectlyWithProduct) {
 #endif  // !BUILDFLAG(IS_MAC)
 #endif  // BUILDFLAG(ENABLE_GLIC)
 }
-
-#if BUILDFLAG(ENABLE_GLIC)
-TEST_F(TabStripActionContainerTest, GlicButtonUpdateLabel) {
-  BuildGlicContainer(/*use_otr_profile=*/false);
-  glic_nudge_controller_->UpdateNudgeLabel(
-      web_contents(), "TEST", /*activity=*/std::nullopt, base::NullCallback());
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"TEST");
-}
-#endif  // BUILDFLAG(ENABLE_GLIC)

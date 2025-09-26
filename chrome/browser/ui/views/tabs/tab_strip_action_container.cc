@@ -470,16 +470,20 @@ void TabStripActionContainer::UpdateGlicActorButtonContainerBorders() {
   gfx::Insets glic_border;
   // GlicActorTaskIcon will only ever be shown alongside the GlicButton.
   if (glic_actor_task_icon_ && glic_actor_task_icon_->IsDrawn()) {
-    gfx::Insets task_icon_border =
-        gfx::Insets().set_left_right(kOutsideBorderAroundGlicButtons,
-                                     kInsideBorderAroundGlicButtons) +
-        border_insets_;
-    // If the GlicActorTaskIcon is also present, adjust the border on the
-    // GlicButton to allow the two buttons to sit closer together.
-    glic_border =
-        gfx::Insets().set_left_right(kInsideBorderAroundGlicButtons,
-                                     kOutsideBorderAroundGlicButtons) +
-        border_insets_;
+    gfx::Insets task_icon_border;
+    const gfx::Insets right_icon_border = gfx::Insets().set_left_right(
+        kInsideBorderAroundGlicButtons, kOutsideBorderAroundGlicButtons);
+    const gfx::Insets left_icon_border = gfx::Insets().set_left_right(
+        kOutsideBorderAroundGlicButtons, kInsideBorderAroundGlicButtons);
+    if (features::kGlicActorUiNudgeRedesign.Get()) {
+      task_icon_border = right_icon_border + border_insets_;
+      // If the GlicActorTaskIcon is also present, adjust the border on the
+      // GlicButton to allow the two buttons to sit closer together.
+      glic_border = left_icon_border + border_insets_;
+    } else {
+      task_icon_border = left_icon_border + border_insets_;
+      glic_border = right_icon_border + border_insets_;
+    }
     glic_actor_task_icon_->SetBorder(
         views::CreateEmptyBorder(task_icon_border));
   } else {
@@ -704,6 +708,12 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
   }
   glic_button_ =
       glic_actor_button_container_->AddChildView(std::move(glic_button_));
+  // When kGlicActorUiNudgeRedesign is enabled, the GlicButton should be to the
+  // left of the GlicActorTaskIcon.
+  if (features::kGlicActorUiNudgeRedesign.Get()) {
+    glic_actor_button_container_->ReorderChildView(glic_button_, 0u);
+  }
+
   glic_actor_button_container_->SetVisible(true);
   UpdateGlicActorButtonContainerBorders();
 #else
