@@ -72,7 +72,7 @@
 <translation id="1042248468362992359">핫스팟을 사용하려면 모바일 데이터에 연결하세요. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1043505821207197890">문제가 발생했습니다. Linux 부분 업그레이드만 진행할 수 있습니다. 자세한 정보는 로그를 검토하세요. 로그는 파일 &gt; 내 파일 &gt; <ph name="LOG_FILE" />에 저장되어 있습니다.</translation>
 <translation id="104385770822424034">작업 추가</translation>
-<translation id="1045487161760507186">Google 비밀번호 관리자에 저장되므로 비밀번호를 기억하지 않아도 됩니다.</translation>
+<translation id="1045487161760507186">비밀번호는 Google 비밀번호 관리자에 저장되므로 기억하지 않아도 됩니다.</translation>
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{비밀번호 1개를 이 기기의 <ph name="BRAND" />에 가져왔습니다.}other{비밀번호 {NUM_PASSWORDS}개를 이 기기의 <ph name="BRAND" />에 가져왔습니다.}}</translation>
 <translation id="1046572983040892965">창이 왼쪽 위로 이동함</translation>
 <translation id="104710386808485638">Linux를 다시 시작하시겠습니까?</translation>
@@ -2475,7 +2475,7 @@
 <translation id="2669241540496514785"><ph name="APP_NAME" /> 앱을 열 수 없음</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="2670102641511624474"><ph name="APP_NAME" />이(가) Chrome 탭을 공유합니다.</translation>
-<translation id="2670168377011445813">공개 정보 유출로 인해 노출된 비밀번호를 Chrome에서 발견하는 경우, Google 비밀번호 관리자는 사용자가 로그인 시 비밀번호를 변경하도록 제안할 수 있습니다. <ph name="BEGIN_LINK" />자동화된 비밀번호 변경에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="2670168377011445813">공개 정보 유출로 인해 노출된 비밀번호를 Chrome에서 발견하는 경우, Google 비밀번호 관리자는 사용자가 로그인 시 비밀번호를 변경하도록 제안할 수 있습니다. <ph name="BEGIN_LINK" />비밀번호 자동 변경에 대해 자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2670350619068134931">애니메이션 감소</translation>
 <translation id="2670403088701171361">사이트에서 클립보드에 저장된 텍스트 또는 이미지를 확인하도록 허용하지 않음</translation>
 <translation id="2671423594960767771">그룹 공유</translation>
