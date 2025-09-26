@@ -8867,24 +8867,6 @@
             ]
         }
     ],
-    "DisableGles2ForOopR": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "UseGles2ForOopR"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableInstanceLimitWithV2Switcher": [
         {
             "platforms": [

@@ -50,9 +50,6 @@ bool IsDeviceBlocked(std::string_view field, std::string_view block_list) {
 
 }  // namespace
 
-// Used to limit GL version to 2.0 for skia raster and compositing.
-BASE_FEATURE(kUseGles2ForOopR, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // More aggressive behavior for the shader cache: increase size, and do not
 // purge as much in case of memory pressure.
 BASE_FEATURE(kAggressiveShaderCacheLimits, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -431,7 +428,7 @@ bool UseGles2ForOopR() {
   if (gl::UsePassthroughCommandDecoder(base::CommandLine::ForCurrentProcess()))
     return true;
 #endif
-  return base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
+  return false;
 }
 
 bool IsUsingVulkan() {

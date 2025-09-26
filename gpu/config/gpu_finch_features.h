@@ -23,8 +23,6 @@ struct GpuFeatureInfo;
 
 namespace features {
 
-GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kUseGles2ForOopR);
-
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kAggressiveShaderCacheLimits);
