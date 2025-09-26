@@ -19,7 +19,6 @@
 #include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/public/browser/global_routing_id.h"
 #include "storage/browser/quota/quota_manager.h"
