@@ -142,16 +142,9 @@ OptimizationGuideKeyedService* LoginStateChecker::GetOptimizationService() {
 
 void LoginStateChecker::OnPageContentReceived(
     std::optional<optimization_guide::AIPageContentResult> content) {
+  CHECK(content);
   if (is_request_in_flight_) {
     cached_page_content_ = std::move(content);
-    return;
-  }
-
-  if (!content) {
-    LogMessage(client_,
-               SavePasswordProgressLogger::STRING_LOGIN_STATE_CHECK_NO_CONTENT);
-    // TODO(crbug.com/446140964): Retry capture instead of failing.
-    TerminateLoginChecks();
     return;
   }
 
@@ -215,6 +208,9 @@ void LoginStateChecker::OnExecutionResponseCallback(
   if (cached_page_content_.has_value() && !is_logged_in &&
       !ReachedAttemptsLimit()) {
     OnPageContentReceived(std::move(cached_page_content_));
+    // Clear the page content to ensure that this check doesn't pass next time,
+    // which would lead to a request with empty page content.
+    cached_page_content_ = std::nullopt;
   }
 
   result_check_callback_.Run(is_logged_in);
