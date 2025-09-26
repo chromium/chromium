@@ -30,10 +30,6 @@
 #include "cc/cc_export.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/tiles/image_decode_cache.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkYUVAInfo.h"
-#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 
 namespace viz {
 class RasterContextProvider;
