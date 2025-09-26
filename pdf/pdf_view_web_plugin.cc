@@ -1438,11 +1438,12 @@ void PdfViewWebPlugin::DocumentLoadComplete() {
       base::BindRepeating(&Client::PerformOcr, client_->GetWeakPtr()));
 #endif
 
+  pdf_host_->OnDocumentLoadComplete();
+
   if (!full_frame_)
     return;
 
   DidStopLoading();
-  pdf_host_->OnDocumentLoadComplete();
   pdf_host_->UpdateContentRestrictions(GetContentRestrictions());
 }
 
