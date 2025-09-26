@@ -1637,6 +1637,48 @@ TEST_P(ThreadPoolImplTest, UpdatePriorityFromBestEffortNoThreadPolicy) {
   }
 }
 
+// Verifies that a BEST_EFFORT task runs during FlushForTesting() even if a
+// BestEffortFence is active.
+TEST_P(ThreadPoolImplTest, BestEffortFenceLiftedForFlush) {
+  StartThreadPool();
+  TestWaitableEvent best_effort_task_ran;
+  thread_pool_->BeginBestEffortFence();
+
+  thread_pool_->PostDelayedTask(
+      FROM_HERE, {TaskPriority::BEST_EFFORT},
+      BindOnce(&TestWaitableEvent::Signal, Unretained(&best_effort_task_ran)),
+      base::TimeDelta());
+
+  // The task shouldn't run while the fence is up.
+  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  EXPECT_FALSE(best_effort_task_ran.IsSignaled());
+
+  // FlushForTesting() should run the task even with the fence.
+  thread_pool_->FlushForTesting();
+  EXPECT_TRUE(best_effort_task_ran.IsSignaled());
+}
+
+// Verifies that user visible tasks run during FlushForTesting() even if a fence
+// is active.
+TEST_P(ThreadPoolImplTest, FenceLiftedForFlush) {
+  StartThreadPool();
+  TestWaitableEvent task_ran;
+  thread_pool_->BeginFence();
+
+  thread_pool_->PostDelayedTask(
+      FROM_HERE, {TaskPriority::USER_VISIBLE},
+      BindOnce(&TestWaitableEvent::Signal, Unretained(&task_ran)),
+      base::TimeDelta());
+
+  // The task shouldn't run while the fence is up.
+  PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  EXPECT_FALSE(task_ran.IsSignaled());
+
+  // FlushForTesting() should run the task even with the fence.
+  thread_pool_->FlushForTesting();
+  EXPECT_TRUE(task_ran.IsSignaled());
+}
+
 INSTANTIATE_TEST_SUITE_P(All, ThreadPoolImplTest, ::testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(

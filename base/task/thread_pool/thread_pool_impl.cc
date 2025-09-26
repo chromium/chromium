@@ -166,7 +166,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   }
 
   // Update the CanRunPolicy based on |has_disable_best_effort_switch_|.
-  UpdateCanRunPolicy();
+  UpdateCanRunPolicy(CalculateCanRunPolicy());
 
   // Needs to happen after starting the service thread to get its task_runner().
   auto service_thread_task_runner = service_thread_.task_runner();
@@ -361,7 +361,7 @@ void ThreadPoolImpl::Shutdown() {
   // Allow all tasks to run. Done after initiating shutdown to ensure that non-
   // BLOCK_SHUTDOWN tasks don't get a chance to run and that BLOCK_SHUTDOWN
   // tasks run with a normal thread priority.
-  UpdateCanRunPolicy();
+  UpdateCanRunPolicy(CalculateCanRunPolicy());
 
   // Ensures that there are enough background worker to run BLOCK_SHUTDOWN
   // tasks.
@@ -379,7 +379,31 @@ void ThreadPoolImpl::Shutdown() {
 }
 
 void ThreadPoolImpl::FlushForTesting() {
+  // If BEST_EFFORT tasks can run it means all tasks can run.
+  const bool can_run_all =
+      task_tracker_->CanRunPriority(TaskPriority::BEST_EFFORT);
+
+  if (!can_run_all) {
+    // Calling `FlushForTesting` when not all tasks are allowed to run can only
+    // be done under `sequence_checker_`.
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Forcibly set the policy to allow running of all tasks. This does not
+    // affect the fence counts. This means that fences are effectively
+    // disregarded for the duration of flushing.
+    UpdateCanRunPolicy(CanRunPolicy::kAll);
+  }
+
   task_tracker_->FlushForTesting();
+
+  if (!can_run_all) {
+    // Calling `FlushForTesting` when not all tasks are allowed to run can only
+    // be done under `sequence_checker_`.
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Restore the policy to the previous state.
+    UpdateCanRunPolicy(CalculateCanRunPolicy());
+  }
 }
 
 void ThreadPoolImpl::FlushAsyncForTesting(OnceClosure flush_callback) {
@@ -414,27 +438,27 @@ void ThreadPoolImpl::JoinForTesting() {
 void ThreadPoolImpl::BeginFence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++num_fences_;
-  UpdateCanRunPolicy();
+  UpdateCanRunPolicy(CalculateCanRunPolicy());
 }
 
 void ThreadPoolImpl::EndFence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(num_fences_, 0);
   --num_fences_;
-  UpdateCanRunPolicy();
+  UpdateCanRunPolicy(CalculateCanRunPolicy());
 }
 
 void ThreadPoolImpl::BeginBestEffortFence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++num_best_effort_fences_;
-  UpdateCanRunPolicy();
+  UpdateCanRunPolicy(CalculateCanRunPolicy());
 }
 
 void ThreadPoolImpl::EndBestEffortFence() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(num_best_effort_fences_, 0);
   --num_best_effort_fences_;
-  UpdateCanRunPolicy();
+  UpdateCanRunPolicy(CalculateCanRunPolicy());
 }
 
 void ThreadPoolImpl::BeginFizzlingBlockShutdownTasks() {
@@ -605,22 +629,24 @@ ThreadGroup* ThreadPoolImpl::GetThreadGroupForTraits(const TaskTraits& traits) {
   return foreground_thread_group_.get();
 }
 
-void ThreadPoolImpl::UpdateCanRunPolicy() {
+CanRunPolicy ThreadPoolImpl::CalculateCanRunPolicy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  CanRunPolicy can_run_policy;
   if ((num_fences_ == 0 && num_best_effort_fences_ == 0 &&
        !has_disable_best_effort_switch_) ||
       task_tracker_->HasShutdownStarted()) {
-    can_run_policy = CanRunPolicy::kAll;
+    return CanRunPolicy::kAll;
   } else if (num_fences_ != 0) {
-    can_run_policy = CanRunPolicy::kNone;
+    return CanRunPolicy::kNone;
   } else {
     DCHECK(num_best_effort_fences_ > 0 || has_disable_best_effort_switch_);
-    can_run_policy = CanRunPolicy::kForegroundOnly;
+    return CanRunPolicy::kForegroundOnly;
   }
+}
 
+void ThreadPoolImpl::UpdateCanRunPolicy(CanRunPolicy can_run_policy) {
   task_tracker_->SetCanRunPolicy(can_run_policy);
+
   foreground_thread_group_->DidUpdateCanRunPolicy();
   if (utility_thread_group_) {
     utility_thread_group_->DidUpdateCanRunPolicy();
