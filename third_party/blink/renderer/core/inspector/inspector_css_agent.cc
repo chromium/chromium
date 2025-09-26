@@ -2120,6 +2120,12 @@ protocol::Response InspectorCSSAgent::getComputedStyleForNode(
         "Node is not an element and does not have a parent element");
   }
 
+  if (element->GetDocument().View() &&
+      element->GetDocument().View()->NeedsLayout()) {
+    element->GetDocument().UpdateStyleAndLayoutForNode(
+        element, DocumentUpdateReason::kInspector);
+  }
+
   TRACE_EVENT1("devtools", "InspectorCSSAgent::getComputedStyleForNode", "node",
                element->DebugName());
   auto* computed_style_info =
