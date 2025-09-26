@@ -180,7 +180,8 @@ CrostiniFeatures::CrostiniFeatures() = default;
 
 CrostiniFeatures::~CrostiniFeatures() = default;
 
-bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
+bool CrostiniFeatures::CouldBeAllowed(Profile* profile,
+                                      std::string* reason) const {
   if (!base::FeatureList::IsEnabled(features::kCrostini)) {
     VLOG(1) << "Crostini is not enabled in feature list.";
     // Prior to M105, the /dev/kvm check used the same reason string.
@@ -217,12 +218,13 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
   return true;
 }
 
-bool CrostiniFeatures::CouldBeAllowed(Profile* profile) {
+bool CrostiniFeatures::CouldBeAllowed(Profile* profile) const {
   std::string reason;
   return CouldBeAllowed(profile, &reason);
 }
 
-bool CrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
+bool CrostiniFeatures::IsAllowedNow(Profile* profile,
+                                    std::string* reason) const {
   if (!CouldBeAllowed(profile, reason)) {
     return false;
   }
@@ -259,23 +261,23 @@ bool CrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
   return true;
 }
 
-bool CrostiniFeatures::IsAllowedNow(Profile* profile) {
+bool CrostiniFeatures::IsAllowedNow(Profile* profile) const {
   std::string reason;
   return IsAllowedNow(profile, &reason);
 }
 
-bool CrostiniFeatures::IsEnabled(Profile* profile) {
+bool CrostiniFeatures::IsEnabled(Profile* profile) const {
   return g_crostini_features->IsAllowedNow(profile) &&
          profile->GetPrefs()->GetBoolean(crostini::prefs::kCrostiniEnabled);
 }
 
-bool CrostiniFeatures::IsExportImportUIAllowed(Profile* profile) {
+bool CrostiniFeatures::IsExportImportUIAllowed(Profile* profile) const {
   return g_crostini_features->IsAllowedNow(profile) &&
          profile->GetPrefs()->GetBoolean(
              crostini::prefs::kUserCrostiniExportImportUIAllowedByPolicy);
 }
 
-bool CrostiniFeatures::IsRootAccessAllowed(Profile* profile) {
+bool CrostiniFeatures::IsRootAccessAllowed(Profile* profile) const {
   if (base::FeatureList::IsEnabled(features::kCrostiniAdvancedAccessControls)) {
     return profile->GetPrefs()->GetBoolean(
         crostini::prefs::kUserCrostiniRootAccessAllowedByPolicy);
@@ -283,13 +285,13 @@ bool CrostiniFeatures::IsRootAccessAllowed(Profile* profile) {
   return true;
 }
 
-bool CrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) {
+bool CrostiniFeatures::IsContainerUpgradeUIAllowed(Profile* profile) const {
   return g_crostini_features->IsAllowedNow(profile);
 }
 
 void CrostiniFeatures::CanChangeAdbSideloading(
     Profile* profile,
-    CanChangeAdbSideloadingCallback callback) {
+    CanChangeAdbSideloadingCallback callback) const {
   // First rule out a child account as it is a special case - a child can be an
   // owner, but ADB sideloading is currently not supported for this case
   if (profile->IsChild()) {
@@ -331,7 +333,7 @@ void CrostiniFeatures::CanChangeAdbSideloading(
   std::move(callback).Run(true);
 }
 
-bool CrostiniFeatures::IsPortForwardingAllowed(Profile* profile) {
+bool CrostiniFeatures::IsPortForwardingAllowed(Profile* profile) const {
   if (!profile->GetPrefs()->GetBoolean(
           crostini::prefs::kCrostiniPortForwardingAllowedByPolicy)) {
     VLOG(1) << "kCrostiniPortForwardingAllowedByPolicy preference is false.";
@@ -358,7 +360,7 @@ bool CrostiniFeatures::IsBaguette(Profile* profile) const {
   return is_baguette;
 }
 
-bool CrostiniFeatures::IsMultiContainerAllowed(Profile* profile) {
+bool CrostiniFeatures::IsMultiContainerAllowed(Profile* profile) const {
   return g_crostini_features->IsAllowedNow(profile) &&
          base::FeatureList::IsEnabled(ash::features::kCrostiniMultiContainer);
 }
