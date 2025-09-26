@@ -1665,9 +1665,11 @@ const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZps[] = {
 };
 const FeatureEntry::FeatureParam kShowNextRealboxTall[] = {
     {"RealboxLayoutMode", ntp_composebox::kRealboxLayoutModeTall},
+    {"CyclingPlaceholders", "true"},
 };
 const FeatureEntry::FeatureParam kShowNextRealboxCompact[] = {
     {"RealboxLayoutMode", ntp_composebox::kRealboxLayoutModeCompact},
+    {"CyclingPlaceholders", "true"},
 };
 const FeatureEntry::FeatureParam kComposeboxShowContextMenuAndZpsMultiFile[] = {
     {"MaxNumFiles", "5"},
