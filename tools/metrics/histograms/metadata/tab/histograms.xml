@@ -2934,6 +2934,22 @@ chromium-metrics-reviews@google.com.
   <token key="SplitViewMenuSource" variants="SplitViewMenuSource"/>
 </histogram>
 
+<histogram name="Tabs.Startup.PinnedTabCount.{TabModelSelectorType}.{TabType}"
+    units="count" expires_after="2026-09-15">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    (Android only) Records the number of {TabType} pinned Tabs loaded on startup
+    per {TabModelSelectorType}.
+  </summary>
+  <token key="TabModelSelectorType" variants="TabModelSelectorType"/>
+  <token key="TabType">
+    <variant name="Incognito" summary="Incognito"/>
+    <variant name="Regular" summary="Regular"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.Startup.RestoreDuration.{TabModelSelectorType}"
     units="ms" expires_after="2026-02-15">
   <owner>ckitagawa@chromium.org</owner>

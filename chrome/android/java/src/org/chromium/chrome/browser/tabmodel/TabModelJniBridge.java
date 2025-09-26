@@ -577,6 +577,15 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             @JniType("base::Token") Token tabGroupId, Activity activity, int newIndex);
 
     @Override
+    public int getPinnedTabsCount() {
+        // The index of the first non-pinned tab is equivalent to the number of pinned tabs.
+        // For example, if there are 3 pinned tabs at indices 0, 1, and 2, the first non-pinned
+        // tab will be at index 3. If all tabs are pinned, this will return getCount(). If no
+        // tabs are pinned, this will return 0.
+        return findFirstNonPinnedTabIndex();
+    }
+
+    @Override
     public void setMuteSetting(List<Tab> tabs, boolean mute) {
         TabModelJniBridgeJni.get().setMuteSetting(mNativeTabModelJniBridge, tabs, mute);
     }

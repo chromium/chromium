@@ -1598,6 +1598,7 @@ public class TabPersistentStore {
 
             recordLegacyTabCountMetrics();
             recordTabCountMetrics();
+            recordPinnedTabCountMetrics();
             recordRestoreDuration();
             recordUniqueTabUrlMetrics();
             cleanUpPersistentData();
@@ -1649,6 +1650,15 @@ public class TabPersistentStore {
         RecordHistogram.recordCount1MHistogram(
                 "Tabs.Startup.TabCount2." + mClientTag + ".Incognito",
                 mTabModelSelector.getModel(true).getCount());
+    }
+
+    private void recordPinnedTabCountMetrics() {
+        RecordHistogram.recordCount1MHistogram(
+                "Tabs.Startup.PinnedTabCount." + mClientTag + ".Regular",
+                mTabModelSelector.getModel(false).getPinnedTabsCount());
+        RecordHistogram.recordCount1MHistogram(
+                "Tabs.Startup.PinnedTabCount." + mClientTag + ".Incognito",
+                mTabModelSelector.getModel(true).getPinnedTabsCount());
     }
 
     private void recordRestoreDuration() {

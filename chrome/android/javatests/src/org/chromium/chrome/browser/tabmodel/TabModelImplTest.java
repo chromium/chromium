@@ -1735,6 +1735,35 @@ public class TabModelImplTest {
                 });
     }
 
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void testGetPinnedTabsCount() {
+        createTabs(3);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+
+                    assertEquals(0, tabModel.getPinnedTabsCount());
+
+                    tabModel.pinTab(tab1.getId());
+                    assertEquals(1, tabModel.getPinnedTabsCount());
+
+                    tabModel.pinTab(tab2.getId());
+                    assertEquals(2, tabModel.getPinnedTabsCount());
+
+                    tabModel.unpinTab(tab1.getId());
+                    assertEquals(1, tabModel.getPinnedTabsCount());
+
+                    // Cleanup.
+                    tabModel.unpinTab(tab2.getId());
+                });
+    }
+
     private void assertMoveTabToIndex(
             int oldIndex, int newIndex, int expectedIndex, boolean movingInsideGroup) {
         Tab oldIndexTab = mTabModelJni.getTabAt(oldIndex);

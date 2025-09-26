@@ -206,6 +206,11 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      */
     int findFirstNonPinnedTabIndex();
 
+    /**
+     * @return The number of pinned tabs in this model.
+     */
+    int getPinnedTabsCount();
+
     /** Returns the native {@code SessionID} as returned by {@code tab_model.h:GetSessionId()}. */
     OptionalInt getNativeSessionIdForTesting();
 

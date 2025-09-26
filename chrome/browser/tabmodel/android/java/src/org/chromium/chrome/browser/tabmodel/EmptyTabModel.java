@@ -258,6 +258,11 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
+    public int getPinnedTabsCount() {
+        return 0;
+    }
+
+    @Override
     public OptionalInt getNativeSessionIdForTesting() {
         return OptionalInt.empty();
     }

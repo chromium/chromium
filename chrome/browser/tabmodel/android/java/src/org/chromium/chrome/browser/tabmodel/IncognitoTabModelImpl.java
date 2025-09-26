@@ -421,6 +421,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public int getPinnedTabsCount() {
+        return mDelegateModel.getPinnedTabsCount();
+    }
+
+    @Override
     public OptionalInt getNativeSessionIdForTesting() {
         return mDelegateModel.getNativeSessionIdForTesting();
     }
