@@ -5,6 +5,9 @@
 #include "chrome/browser/extensions/scoped_active_install.h"
 
 #include "chrome/browser/extensions/active_install_data.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

@@ -14,12 +14,15 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/extensions/extension_util_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 

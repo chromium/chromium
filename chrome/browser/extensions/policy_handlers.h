@@ -10,6 +10,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace policy {
 class PolicyMap;
