@@ -815,8 +815,7 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
   header_pin_button_->SetVisible(
       !profile->IsIncognitoProfile() && !profile->IsGuestSession() &&
       action_item->GetProperty(actions::kActionItemPinnableKey) ==
-          std::underlying_type_t<actions::ActionPinnableState>(
-              actions::ActionPinnableState::kPinnable));
+          static_cast<int>(actions::ActionPinnableState::kPinnable));
 
   if (!current_pinned_state) {
     // Show IPH for side panel pinning icon.
