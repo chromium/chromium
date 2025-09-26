@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -183,6 +184,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
@@ -800,7 +802,8 @@ BrowserView::BrowserView(Browser* browser)
             browser_->GetFeatures()
                 .tab_strip_service_feature()
                 ->GetTabStripService(),
-            browser_->GetFeatures().vertical_tab_strip_state_controller());
+            browser_->GetFeatures().vertical_tab_strip_state_controller(),
+            browser_->GetActions()->root_action_item());
     vertical_tab_strip_container_ =
         AddChildView(std::move(vertical_tab_strip_container));
   }
@@ -4884,39 +4887,43 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
   // Determine if the TabStrip exists and is capable of being clicked on. We
   // might be a popup window without a TabStrip.
   if (ShouldDrawTabStrip()) {
-    if (tabs::IsVerticalTabsFeatureEnabled()) {
+    if (tabs::IsVerticalTabsFeatureEnabled() &&
+        browser()
+            ->browser_window_features()
+            ->vertical_tab_strip_state_controller()
+            ->ShouldDisplayVerticalTabs()) {
       // See if the mouse pointer is within the bounds of the
       // VerticalTabStripRegionView.
-      // TODO(crbug.com/446182346): Handle mouse pointer logic within the
-      // VerticalTabStripRegionView
-      if (vertical_tab_strip_container_->bounds().Contains(
+      if (vertical_tab_strip_container_->IsPositionInWindowCaption(
               point_in_browser_view_coords)) {
         return HTCAPTION;
       }
-    }
-
-    // See if the mouse pointer is within the bounds of the TabStripRegionView.
-    gfx::Point test_point(point);
-    if (ConvertedHitTest(parent(), tab_strip_region_view_, &test_point)) {
-      if (tab_strip_region_view_->IsPositionInWindowCaption(test_point)) {
-        return HTCAPTION;
-      }
       return HTCLIENT;
-    }
+    } else {
+      // See if the mouse pointer is within the bounds of the
+      // TabStripRegionView.
+      gfx::Point test_point(point);
+      if (ConvertedHitTest(parent(), tab_strip_region_view_, &test_point)) {
+        if (tab_strip_region_view_->IsPositionInWindowCaption(test_point)) {
+          return HTCAPTION;
+        }
+        return HTCLIENT;
+      }
 
-    // The top few pixels of the TabStrip are a drop-shadow - as we're pretty
-    // starved of draggable area, let's give it to window dragging (this also
-    // makes sense visually).
-    // TODO(tluk): Investigate the impact removing this has on draggable area
-    // given the tab strip no longer uses shadows.
-    views::Widget* widget = GetWidget();
-    if (!(widget->IsMaximized() || widget->IsFullscreen()) &&
-        (point_in_browser_view_coords.y() <
-         (tab_strip_region_view_->y() + kTabShadowSize))) {
-      // We return HTNOWHERE as this is a signal to our containing
-      // NonClientView that it should figure out what the correct hit-test
-      // code is given the mouse position...
-      return HTNOWHERE;
+      // The top few pixels of the TabStrip are a drop-shadow - as we're pretty
+      // starved of draggable area, let's give it to window dragging (this also
+      // makes sense visually).
+      // TODO(tluk): Investigate the impact removing this has on draggable area
+      // given the tab strip no longer uses shadows.
+      views::Widget* widget = GetWidget();
+      if (!(widget->IsMaximized() || widget->IsFullscreen()) &&
+          (point_in_browser_view_coords.y() <
+           (tab_strip_region_view_->y() + kTabShadowSize))) {
+        // We return HTNOWHERE as this is a signal to our containing
+        // NonClientView that it should figure out what the correct hit-test
+        // code is given the mouse position...
+        return HTNOWHERE;
+      }
     }
   }
 

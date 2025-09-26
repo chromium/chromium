@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -34,7 +35,8 @@ constexpr int kRegionVerticalPadding = 5;
 
 VerticalTabStripRegionView::VerticalTabStripRegionView(
     tabs_api::TabStripService* service_register,
-    tabs::VerticalTabStripStateController* state_controller)
+    tabs::VerticalTabStripStateController* state_controller,
+    actions::ActionItem* root_action_item)
     : state_controller_(state_controller) {
   SetBackground(views::CreateSolidBackground(ui::kColorFrameActive));
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -51,7 +53,9 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
                                    views::MaximumFlexSizeRule::kPreferred));
 
   // Create child views.
-  top_button_container_ = AddChildView(std::make_unique<views::View>());
+  top_button_container_ =
+      AddChildView(std::make_unique<VerticalTabStripTopContainer>(
+          state_controller, root_action_item));
 
   top_button_separator_ = AddChildView(std::make_unique<views::Separator>());
   top_button_separator_->SetColorId(kColorTabDividerFrameActive);
@@ -89,6 +93,15 @@ void VerticalTabStripRegionView::Layout(PassKey) {
 
 void VerticalTabStripRegionView::OnResize(int resize_amount,
                                           bool done_resizing) {}
+
+bool VerticalTabStripRegionView::IsPositionInWindowCaption(
+    const gfx::Point& point) {
+  // TODO(crbug.com/439961435): Add logic once buttons are present
+  if (GetTopContainer()->bounds().Contains(point)) {
+    return true;
+  }
+  return false;
+}
 
 views::View* VerticalTabStripRegionView::SetTabStripView(
     std::unique_ptr<views::View> view) {

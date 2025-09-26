@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -67,7 +65,7 @@ class VerticalTabStripInteractiveUiTest : public InteractiveBrowserTest {
 #else
 #define MAYBE_VerifyTabsToTheSideButton VerifyTabsToTheSideButton
 #endif
-// This test checks that we can click the switch to vertical tab view button
+// This test checks that we can click the show tabs to the side button
 IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
                        MAYBE_VerifyTabsToTheSideButton) {
   browser()
@@ -81,12 +79,45 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
       WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       MoveMouseTo(kTabStripFrameGrabHandleElementId),
-      MayInvolveNativeContextMenu(ClickMouse(ui_controls::RIGHT)),
-      WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
-      SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT),
+          WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
+          SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId)),
       WaitForShow(kVerticalTabStripRegionElementId));
 
   EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
+}
+
+// TODO(crbug.com/441382208): Unable to programmatically click "show tabs on
+// top" in Windows
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_VerifyTabsToTheTopButton DISABLED_VerifyTabsToTheTopButton
+#else
+#define MAYBE_VerifyTabsToTheTopButton VerifyTabsToTheTopButton
+#endif
+// This test checks that we can click the show tabs at the top button
+IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
+                       MAYBE_VerifyTabsToTheTopButton) {
+  browser()
+      ->browser_window_features()
+      ->vertical_tab_strip_state_controller()
+      ->SetVerticalTabsEnabled(true);
+
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_HORIZONTAL_TAB));
+
+  RunScheduledLayouts();
+
+  RunTestSequence(
+      WaitForShow(kVerticalTabStripTopContainerElementId),
+      EnsurePresent(kVerticalTabStripTopContainerElementId),
+      MoveMouseTo(kVerticalTabStripTopContainerElementId),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT),
+          WaitForShow(SystemMenuModelBuilder::kToggleVerticalTabsElementId),
+          SelectMenuItem(SystemMenuModelBuilder::kToggleVerticalTabsElementId)),
+      WaitForShow(kTabStripFrameGrabHandleElementId));
+
+  EXPECT_TRUE(SystemMenuContainsStringId(IDS_SWITCH_TO_VERTICAL_TAB));
 }
 
 }  // namespace base::test

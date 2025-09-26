@@ -15,6 +15,7 @@
 class RootTabCollectionNode;
 class VerticalUnpinnedTabContainerView;
 class VerticalPinnedTabContainerView;
+class VerticalTabStripTopContainer;
 
 namespace tabs {
 class VerticalTabStripStateController;
@@ -41,7 +42,8 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
 
   explicit VerticalTabStripRegionView(
       tabs_api::TabStripService* service_register,
-      tabs::VerticalTabStripStateController* state_controller);
+      tabs::VerticalTabStripStateController* state_controller,
+      actions::ActionItem* root_action_item);
   VerticalTabStripRegionView(const VerticalTabStripRegionView&) = delete;
   VerticalTabStripRegionView& operator=(const VerticalTabStripRegionView&) =
       delete;
@@ -58,11 +60,17 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
     return tab_strip_view_->GetUnpinnedTabsContainerForTesting();
   }
 
+  VerticalTabStripTopContainer* GetTopContainer() {
+    return top_button_container_;
+  }
+
   // views::View:
   void Layout(PassKey) override;
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
+
+  bool IsPositionInWindowCaption(const gfx::Point& point);
 
  private:
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
@@ -70,7 +78,7 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
 
-  raw_ptr<views::View> top_button_container_ = nullptr;
+  raw_ptr<VerticalTabStripTopContainer> top_button_container_ = nullptr;
   raw_ptr<views::Separator> top_button_separator_ = nullptr;
   raw_ptr<VerticalTabStripView> tab_strip_view_ = nullptr;
   raw_ptr<views::View> segmented_button_ = nullptr;
