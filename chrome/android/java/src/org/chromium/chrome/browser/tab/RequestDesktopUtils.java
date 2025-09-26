@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.Display;
 
@@ -59,7 +60,10 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /** Utilities for requesting desktop sites support. */
 @NullMarked
@@ -67,6 +71,7 @@ public class RequestDesktopUtils {
     private static final String SITE_WILDCARD = "*";
     // Global defaults experiment constants.
     private static @Nullable DisplayMetrics sDisplayMetrics;
+    @VisibleForTesting static @Nullable Boolean sDesktopUAAllowedOnExternalDisplayForOem;
 
     static final double DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES = 10.0;
     static final int DEFAULT_GLOBAL_SETTING_DEFAULT_ON_SMALLEST_SCREEN_WIDTH_THRESHOLD_DP = 600;
@@ -462,7 +467,7 @@ public class RequestDesktopUtils {
         return abiStrings[0].toLowerCase(Locale.ROOT).contains("arm");
     }
 
-    private static boolean isOnExternalDisplay(Context context) {
+    static boolean isOnExternalDisplay(Context context) {
         Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
         return display.getDisplayId() != Display.DEFAULT_DISPLAY;
     }
@@ -472,11 +477,32 @@ public class RequestDesktopUtils {
         if (!isOnExternalDisplay(context)) {
             return false;
         }
+
+        // Do not enable on displays smaller than threshold.
         DisplayAndroid currentDisplay = DisplayAndroid.getNonMultiDisplay(context);
         double displaySizeInInches = DisplayUtil.getDisplaySizeInInches(currentDisplay);
         if (displaySizeInInches < DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES) {
             return false;
         }
+
+        // Do not enable on OEMs not allowlisted.
+        if (sDesktopUAAllowedOnExternalDisplayForOem == null) {
+            Set<String> allowlist = new HashSet<>();
+            String allowlistStr =
+                    ChromeFeatureList.getFieldTrialParamByFeature(
+                            ChromeFeatureList.DESKTOP_UA_ON_CONNECTED_DISPLAY,
+                            "ext_display_desktop_ua_oem_allowlist");
+            if (!TextUtils.isEmpty(allowlistStr)) {
+                Collections.addAll(allowlist, allowlistStr.split(","));
+            }
+            sDesktopUAAllowedOnExternalDisplayForOem =
+                    !allowlist.isEmpty()
+                            && allowlist.contains(Build.MANUFACTURER.toLowerCase(Locale.US));
+        }
+        if (!sDesktopUAAllowedOnExternalDisplayForOem) {
+            return false;
+        }
+
         return true;
     }
 }

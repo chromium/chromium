@@ -8655,6 +8655,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "ext_display_desktop_ua_oem_allowlist": "samsung"
+                    },
                     "enable_features": [
                         "DesktopUAOnConnectedDisplays"
                     ]
