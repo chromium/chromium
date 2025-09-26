@@ -24,7 +24,7 @@
 namespace ash::boca_receiver {
 namespace {
 
-constexpr std::string_view kUserIdentityKey = "userIdentity";
+constexpr std::string_view kUserIdentityKey = "user";
 constexpr std::string_view kDeviceInfoKey = "deviceInfo";
 constexpr std::string_view kDeviceIdKey = "deviceId";
 constexpr std::string_view kConnectionCodeKey = "connectionCode";

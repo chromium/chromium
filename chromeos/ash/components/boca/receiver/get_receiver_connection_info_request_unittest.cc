@@ -29,7 +29,7 @@ constexpr std::string_view kConnectionStatePair =
 constexpr std::string_view kConnectionDetailsPair =
     R"("connectionDetails": {
           "presenter": {
-            "userIdentity": {
+            "user": {
               "gaiaId": "presenter-gaia",
               "email": "presenter@email.com",
               "fullName": "Presenter Name",
@@ -40,7 +40,7 @@ constexpr std::string_view kConnectionDetailsPair =
             }
           },
           "initiator": {
-            "userIdentity": {
+            "user": {
               "gaiaId": "initiator-gaia",
               "email": "initiator@email.com",
               "fullName": "Initiator Name",

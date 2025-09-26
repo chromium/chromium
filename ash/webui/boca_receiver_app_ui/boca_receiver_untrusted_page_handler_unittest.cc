@@ -75,7 +75,7 @@ constexpr std::string_view kConnectionInfoTemplate =
         "connectionDetails": {
           $3
           "initiator": {
-            "userIdentity": {
+            "user": {
               "gaiaId": "$4",
               "email": "initiator@email.com",
               "fullName": "Initiator Name",
@@ -86,7 +86,7 @@ constexpr std::string_view kConnectionInfoTemplate =
             }
           },
           "presenter": {
-            "userIdentity": {
+            "user": {
               "gaiaId": "$5",
               "email": "presenter@email.com",
               "fullName": "Presenter Name",
