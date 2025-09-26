@@ -10945,6 +10945,21 @@
             ]
         }
     ],
+    "ForceMigrateSyncingUserToSignedIn": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ForceMigrateSyncingUserToSignedIn"
+                    ]
+                }
+            ]
+        }
+    ],
     "ForceOffTextAutosizing": [
         {
             "platforms": [
