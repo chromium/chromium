@@ -10973,6 +10973,8 @@ class AdAuctionServiceImplKAnonTest
       case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
         enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
         enabled_features.push_back(blink::features::kFledgeEnforceKAnonymity);
+        disabled_features.push_back(
+            features::kCookieDeprecationFacilitatedTesting);
         break;
       case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
         enabled_features.push_back(blink::features::kFledgeConsiderKAnonymity);
@@ -13162,7 +13164,7 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
           blink::features::kFledgeConsiderKAnonymity,
           blink::features::kFledgeEnforceKAnonymity,
       },
-      {});
+      {features::kCookieDeprecationFacilitatedTesting});
   ProvideKeys();
   NavigateAndCommit(kUrlA);
   url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
@@ -17904,7 +17906,8 @@ class AdAuctionServiceImplBAndAKAnonEnabledTest
             /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
                                   blink::features::kFledgeEnforceKAnonymity,
                                   features::kEnableBandAKAnonEnforcement},
-            /*disabled_features=*/{});
+            /*disabled_features=*/{
+                features::kCookieDeprecationFacilitatedTesting});
         break;
     }
   }

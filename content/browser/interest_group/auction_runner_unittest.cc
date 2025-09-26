@@ -25363,7 +25363,21 @@ class AuctionRunnerKAnonTest : public AuctionRunnerTest,
       : AuctionRunnerTest(
             /*should_enable_private_aggregation=*/true,
             kanon_mode()) {
-    feature_list_.InitAndEnableFeature(blink::features::kFledgeMultiBid);
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    switch (kanon_mode()) {
+      case auction_worklet::mojom::KAnonymityBidMode::kEnforce:
+      case auction_worklet::mojom::KAnonymityBidMode::kSimulate:
+        disabled_features.push_back(
+            features::kCookieDeprecationFacilitatedTesting);
+        break;
+      case auction_worklet::mojom::KAnonymityBidMode::kNone:
+        break;
+    }
+
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kFledgeMultiBid},
+        disabled_features);
   }
 
   using KAnonMode = auction_worklet::mojom::KAnonymityBidMode;
