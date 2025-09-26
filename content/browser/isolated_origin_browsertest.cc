@@ -3230,6 +3230,104 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                   .requires_origin_keyed_process());
 }
 
+// Verify that the global walk for OAC properly handles sandboxed origins.
+// See https://crbug.com/446157743.
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       ExistingSandboxedOrigin) {
+  // Navigate to a CSP sandboxed frame in the initial tab.
+  GURL sandboxed_url(https_server()->GetURL("isolated.foo.com",
+                                            "/sandbox_main_frame_csp.html"));
+  EXPECT_TRUE(NavigateToURL(shell()->web_contents(), sandboxed_url));
+
+  FrameTreeNode* tab1_root = web_contents()->GetPrimaryFrameTree().root();
+  SiteInstanceImpl* tab1_site_instance =
+      tab1_root->current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(tab1_site_instance->GetSiteInfo().is_sandboxed());
+
+  Shell* tab2 = CreateBrowser();
+
+  // Do a browser-initiated navigation of tab2 to the same origin, but isolate
+  // it this time. This should trigger a global walk and mark this origin as
+  // non-isolated in the first tab's BrowsingInstance.
+  GURL isolated_origin_url(
+      https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+  SetHeaderValue("?1");
+  EXPECT_TRUE(NavigateToURL(tab2, isolated_origin_url));
+
+  FrameTreeNode* tab2_root = static_cast<WebContentsImpl*>(tab2->web_contents())
+                                 ->GetPrimaryFrameTree()
+                                 .root();
+  SiteInstanceImpl* tab2_site_instance =
+      tab2_root->current_frame_host()->GetSiteInstance();
+  EXPECT_FALSE(tab2_site_instance->GetSiteInfo().is_sandboxed());
+
+  url::Origin isolated_origin = url::Origin::Create(isolated_origin_url);
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+
+  // Verify that `isolated origin` is in the non-isolated list for tab1's
+  // BrowsingInstance. We do this by requesting OAC opt-in for the origin, then
+  // verifying that it is denied by DetermineOriginAgentClusterIsolation.
+  EXPECT_FALSE(policy
+                   ->DetermineOriginAgentClusterIsolation(
+                       tab1_site_instance->GetIsolationContext(),
+                       isolated_origin, MakeOACIsolationState(true))
+                   .requires_origin_keyed_process());
+
+  // In contrast, `isolated_origin` in tab2 should be isolated.
+  EXPECT_TRUE(policy
+                  ->DetermineOriginAgentClusterIsolation(
+                      tab2_site_instance->GetIsolationContext(),
+                      isolated_origin, MakeOACIsolationState(false))
+                  .requires_origin_keyed_process());
+
+  // Verify that tab1's SiteInstance is site-keyed, whereas tab2's SiteInstance
+  // is origin-keyed.
+  EXPECT_FALSE(
+      tab1_site_instance->GetSiteInfo().agent_cluster_key().IsOriginKeyed());
+  EXPECT_TRUE(
+      tab2_site_instance->GetSiteInfo().agent_cluster_key().IsOriginKeyed());
+
+  // From the initial tab, create a popup with window.open() that navigates to a
+  // same-origin URL which requests OAC. The OAC request should be denied, and
+  // the popup should stay in the same SiteInstance as the opener, since the
+  // popup inherits the sandboxing.
+  Shell* tab3 = OpenPopup(shell(), isolated_origin_url, "foo");
+  EXPECT_TRUE(WaitForLoadStop(tab3->web_contents()));
+  FrameTreeNode* tab3_root = static_cast<WebContentsImpl*>(tab3->web_contents())
+                                 ->GetPrimaryFrameTree()
+                                 .root();
+  SiteInstanceImpl* tab3_site_instance =
+      tab3_root->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(tab1_site_instance, tab3_site_instance);
+  EXPECT_TRUE(tab3_site_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_FALSE(
+      tab3_site_instance->GetSiteInfo().agent_cluster_key().IsOriginKeyed());
+
+  // Ensure that a CanAccessOrigin() check in the original sandboxed tab doesn't
+  // lead to a renderer kill. To do this, navigate in the original tab, which
+  // triggers a CanAccessOrigin() to verify the initiator origin.
+  TestFrameNavigationObserver commit_observer(tab1_root);
+  EXPECT_TRUE(
+      ExecJs(tab1_root, JsReplace("location = $1", isolated_origin_url)));
+  commit_observer.WaitForCommit();
+
+  // This navigation was to a non-sandboxed URL that requests OAC, so sandboxing
+  // should no longer apply, and we should swap to a new SiteInstance. Because
+  // isolated.foo.com has been marked as non-isolated in tab1's
+  // BrowsingInstance, the OAC request should be denied, and the new
+  // SiteInstance should remain site-keyed. Theoretically, we could keep
+  // separate OAC states for non-sandboxed and sandboxed versions of the same
+  // origin and honor this OAC request, but this is not currently supported in
+  // per-BrowsingInstance OAC bookkeeping logic.
+  SiteInstanceImpl* tab1_new_site_instance =
+      tab1_root->current_frame_host()->GetSiteInstance();
+  EXPECT_NE(tab1_site_instance, tab1_new_site_instance);
+  EXPECT_FALSE(tab1_new_site_instance->GetSiteInfo().is_sandboxed());
+  EXPECT_FALSE(tab1_new_site_instance->GetSiteInfo()
+                   .agent_cluster_key()
+                   .IsOriginKeyed());
+}
+
 // Helper class to navigate a second tab to a specified URL that requests opt-in
 // origin isolation just before the first tab processes the next
 // DidCommitProvisionalLoad message.

@@ -238,8 +238,14 @@ void RegisterOriginsRecursive(NavigationEntryImpl::TreeNode* node,
     const url::Origin node_origin =
         node->frame_entry->committed_origin().value();
     SiteInstanceImpl* site_instance = node->frame_entry->site_instance();
-    if (site_instance && origin == node_origin)
+    // Sandboxed frame origins are treated as equivalent to their non-sandboxed
+    // precursors in the per-BrowsingInstance Origin-Agent-Cluster state, so it
+    // is important to compare and register precursors as well. See
+    // https://crbug.com/446157743.
+    if (site_instance && origin.GetTupleOrPrecursorTupleIfOpaque() ==
+                             node_origin.GetTupleOrPrecursorTupleIfOpaque()) {
       site_instance->RegisterAsDefaultOriginIsolation(node_origin);
+    }
   }
 
   for (auto& child : node->children)

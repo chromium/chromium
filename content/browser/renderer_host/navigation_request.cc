@@ -4088,8 +4088,10 @@ bool NavigationRequest::HasCommittingOrigin(const url::Origin& origin) {
   // isolation shouldn't need to care about that case because a previous
   // instance of the origin would already have determined its isolation status
   // in that BrowsingInstance.
-  // TODO(crbug.com/40092527): Use the computed origin here just to be
-  // safe.
+  // TODO(crbug.com/40092527): Use the computed origin here just to be safe.
+  // Note, however, that if this is done, we need to be careful to still match
+  // sandboxed frame origins, which GetURL() currently accomplishes "by
+  // accident" (see https://crbug.com/446157743).
   return origin == url::Origin::Create(GetURL());
 }
 

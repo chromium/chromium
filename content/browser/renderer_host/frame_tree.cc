@@ -909,8 +909,15 @@ void FrameTree::RegisterExistingOriginAsHavingDefaultIsolation(
   // BrowsingInstance of a bfcache RFH while it's in the cache.
   for (auto* frame_tree_node : SubtreeNodes(root())) {
     auto* frame_host = frame_tree_node->current_frame_host();
-    if (previously_visited_origin == frame_host->GetLastCommittedOrigin())
+    // Sandboxed frame origins are treated as equivalent to their non-sandboxed
+    // precursors in the per-BrowsingInstance Origin-Agent-Cluster state, so it
+    // is important to compare and register precursors as well. See
+    // https://crbug.com/446157743.
+    if (previously_visited_origin.GetTupleOrPrecursorTupleIfOpaque() ==
+        frame_host->GetLastCommittedOrigin()
+            .GetTupleOrPrecursorTupleIfOpaque()) {
       matching_site_instances.insert(frame_host->GetSiteInstance());
+    }
 
     if (frame_host->HasCommittingNavigationRequestForOrigin(
             previously_visited_origin, navigation_request_to_exclude)) {
