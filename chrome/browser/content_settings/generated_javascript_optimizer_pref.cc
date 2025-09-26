@@ -13,6 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
+using extensions::api::settings_private::Enforcement;
 using extensions::api::settings_private::PrefObject;
 using extensions::settings_private::SetPrefResult;
 
@@ -20,12 +21,9 @@ namespace content_settings {
 namespace {
 
 JavascriptOptimizerSetting ComputeJavascriptOptimizerSetting(
-    HostContentSettingsMap* host_content_settings_map,
+    ContentSetting default_content_setting,
     PrefService* pref_service) {
-  const auto content_setting =
-      host_content_settings_map->GetDefaultContentSetting(
-          ContentSettingsType::JAVASCRIPT_OPTIMIZER);
-  if (content_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
+  if (default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK) {
     return JavascriptOptimizerSetting::kBlocked;
   }
   return site_protection::AreV8OptimizationsDisabledOnUnfamiliarSites(
@@ -94,13 +92,26 @@ SetPrefResult GeneratedJavascriptOptimizerPref::SetPref(
 }
 
 PrefObject GeneratedJavascriptOptimizerPref::GetPrefObject() const {
+  content_settings::ProviderType content_setting_provider;
+  const auto default_content_setting =
+      host_content_settings_map_->GetDefaultContentSetting(
+          ContentSettingsType::JAVASCRIPT_OPTIMIZER, &content_setting_provider);
   JavascriptOptimizerSetting setting = ComputeJavascriptOptimizerSetting(
-      host_content_settings_map_, profile_->GetPrefs());
+      default_content_setting, profile_->GetPrefs());
 
   PrefObject pref_object;
   pref_object.key = kGeneratedJavascriptOptimizerPref;
   pref_object.type = extensions::api::settings_private::PrefType::kNumber;
   pref_object.value = base::Value(static_cast<int>(setting));
+
+  auto content_setting_source =
+      content_settings::GetSettingSourceFromProviderType(
+          content_setting_provider);
+  if (content_setting_source != content_settings::SettingSource::kUser) {
+    pref_object.enforcement = Enforcement::kEnforced;
+    GeneratedPref::ApplyControlledByFromContentSettingSource(
+        &pref_object, SettingSource::kPolicy);
+  }
   return pref_object;
 }
 
