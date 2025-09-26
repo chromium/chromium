@@ -36,6 +36,7 @@ class IncomingPasswordSharingInvitationDataTypeController
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   void OnPasswordSharingEnabledPolicyChanged();

@@ -96,4 +96,9 @@ void HistoryDeleteDirectivesDataTypeController::OnStateChanged(
   helper_.sync_service()->DataTypePreconditionChanged(type());
 }
 
+void HistoryDeleteDirectivesDataTypeController::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Nothing to be done, `this` will be destructed imminently.
+}
+
 }  // namespace history

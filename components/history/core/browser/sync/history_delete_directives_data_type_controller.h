@@ -51,6 +51,7 @@ class HistoryDeleteDirectivesDataTypeController
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   history::HistoryDataTypeControllerHelper helper_;

@@ -85,6 +85,10 @@ void PlusAddressDataTypeController::OnStateChanged(syncer::SyncService*) {
   }
 }
 
+void PlusAddressDataTypeController::OnSyncShutdown(syncer::SyncService*) {
+  // Nothing to be done, `this` will be destructed imminently.
+}
+
 void PlusAddressDataTypeController::RecreateManagedStatusFinder() {
   managed_status_finder_ = std::make_unique<signin::AccountManagedStatusFinder>(
       identity_manager_, sync_service_->GetAccountInfo(),

@@ -47,6 +47,7 @@ class AutofillWalletDataTypeController : public syncer::DataTypeController,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   // Callback for changes to the autofill pref.

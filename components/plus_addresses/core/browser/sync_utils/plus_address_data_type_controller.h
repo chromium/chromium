@@ -50,6 +50,7 @@ class PlusAddressDataTypeController : public syncer::DataTypeController,
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService*) override;
+  void OnSyncShutdown(syncer::SyncService*) override;
 
  private:
   void RecreateManagedStatusFinder();
