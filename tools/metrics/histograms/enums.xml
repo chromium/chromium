@@ -11297,6 +11297,7 @@ from previous Chrome versions.
   <int value="-1030513821" label="DetectedSourceLanguageOption:disabled"/>
   <int value="-1030243491" label="ScalableIphDebug:disabled"/>
   <int value="-1029920490" label="IdleTimeSpellChecking:enabled"/>
+  <int value="-1029870247" label="LockTopControlsOnLargeTabletsV2:enabled"/>
   <int value="-1028733699" label="MacViewsWebUIDialogs:disabled"/>
   <int value="-1028251580" label="GamepadPollingInterval:disabled"/>
   <int value="-1027941917" label="SnoopingProtection:enabled"/>
@@ -13567,6 +13568,7 @@ from previous Chrome versions.
   <int value="-204355195" label="secondary-ui-md"/>
   <int value="-203968600" label="SyncSupportSecondaryAccount:disabled"/>
   <int value="-203058505" label="QueryTilesSegmentation:disabled"/>
+  <int value="-202823508" label="LockTopControlsOnLargeTabletsV2:disabled"/>
   <int value="-202761528" label="FeedDynamicColors:enabled"/>
   <int value="-202371473" label="enable-optimization-guide-debug-logs"/>
   <int value="-202007318" label="AndroidAIAFetching:enabled"/>

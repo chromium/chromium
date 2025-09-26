@@ -1536,6 +1536,9 @@ extern const char kLinkedServicesSettingDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kLockTopControlsOnLargeTabletsName[];
 extern const char kLockTopControlsOnLargeTabletsDescription[];
+
+extern const char kLockTopControlsOnLargeTabletsV2Name[];
+extern const char kLockTopControlsOnLargeTabletsV2Description[];
 #endif
 
 extern const char kLogJsConsoleMessagesName[];

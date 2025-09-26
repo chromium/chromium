@@ -2616,6 +2616,12 @@ const char kLockTopControlsOnLargeTabletsName[] =
     "Lock top controls on tablets";
 const char kLockTopControlsOnLargeTabletsDescription[] =
     "Disalllow scrolling off the top browser controls on large tablets";
+
+const char kLockTopControlsOnLargeTabletsV2Name[] =
+    "Lock top controls on tablets - v2";
+const char kLockTopControlsOnLargeTabletsV2Description[] =
+    "Second version of the lock top controls on tablets feature to prevent "
+    "scrolling of top controls on large tablets.";
 #endif
 
 const char kLogJsConsoleMessagesName[] =
