@@ -856,7 +856,8 @@ void ResourceLoader::DidReceiveResponseInternal(
         mojom::WebFeature::kAuthorizationCoveredByWildcard);
   }
 
-  if (response.HttpHeaderField(http_names::kSecSessionRegistration)) {
+  if (response.HttpHeaderField(http_names::kSecSessionRegistration) ||
+      response.HttpHeaderField(http_names::kSecureSessionRegistration)) {
     fetcher_->GetUseCounter().CountUse(
         WebFeature::kDeviceBoundSessionRegistered);
   }

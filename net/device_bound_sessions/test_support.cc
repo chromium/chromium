@@ -10,6 +10,7 @@
 #include "base/base64url.h"
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/byte_conversions.h"
@@ -19,6 +20,7 @@
 #include "base/values.h"
 #include "crypto/evp.h"
 #include "crypto/signature_verifier.h"
+#include "net/base/features.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,7 +84,10 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     return response;
   } else if (request.relative_url == "/dbsc_required") {
     response->AddCustomHeader(
-        "Sec-Session-Registration",
+        base::FeatureList::IsEnabled(
+            net::features::kDeviceBoundSessionsOriginTrialFeedback)
+            ? "Secure-Session-Registration"
+            : "Sec-Session-Registration",
         "(RS256 "
         "ES256);challenge=\"challenge_value\";path=\"dbsc_register_session\"");
     response->set_content_type("text/html");
@@ -97,13 +102,14 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
             .Set("session_identifier", "session_id")
             .Set("refresh_url",
                  base_url.Resolve("/dbsc_refresh_session").spec())
-            .Set("scope",
-                 base::Value::Dict().Set("scope_specification",
-                                         base::Value::List().Append(
-                                             base::Value::Dict()
-                                                 .Set("type", "exclude")
-                                                 .Set("domain", base_url.host())
-                                                 .Set("path", "/favicon.ico"))))
+            .Set("scope", base::Value::Dict()
+                              .Set("include_site", false)
+                              .Set("scope_specification",
+                                   base::Value::List().Append(
+                                       base::Value::Dict()
+                                           .Set("type", "exclude")
+                                           .Set("domain", base_url.host())
+                                           .Set("path", "/favicon.ico"))))
             .Set("credentials",
                  base::Value::List().Append(
                      base::Value::Dict()
