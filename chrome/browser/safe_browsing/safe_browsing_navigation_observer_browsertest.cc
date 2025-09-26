@@ -2771,17 +2771,15 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
   ASSERT_TRUE(nav_list);
   EXPECT_EQ(3U, nav_list->NavigationEventsSize());
 
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   // Simulates back.
-  ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "window.history.back();"));
-  base::RunLoop().RunUntilIdle();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   // Simulates forward.
-  ASSERT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "window.history.forward();"));
-  base::RunLoop().RunUntilIdle();
+  web_contents->GetController().GoForward();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
 
   nav_list = navigation_event_list();
   ASSERT_TRUE(nav_list);
