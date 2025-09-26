@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-10-18">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
-  <owner>jinho.bang@samsung.com</owner>
+  <owner>zino@chromium.org</owner>
   <summary>
     The time taken between dispatching an AbortPaymentEvent to a Service Worker
     and receiving a message that it finished handling the event. Includes the
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-10-18">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
-  <owner>jinho.bang@samsung.com</owner>
+  <owner>zino@chromium.org</owner>
   <summary>
     The time taken between dispatching an CanMakePaymentEvent to a Service
     Worker and receiving a message that it finished handling the event. Includes
@@ -1316,7 +1316,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-08-25">
   <owner>rouslan@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
-  <owner>jinho.bang@samsung.com</owner>
+  <owner>zino@chromium.org</owner>
   <summary>
     The time taken between dispatching an PaymentRequestEvent to a Service
     Worker and receiving a message that it finished handling the event. Includes
