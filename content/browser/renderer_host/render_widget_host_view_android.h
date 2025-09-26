@@ -529,6 +529,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            GestureManagerListensToChildFrames);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAndroidTest, DisplayFeature);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAndroidFluidResizeBrowserTest,
+                           ResizeDefersSynchronizationToNextFrame);
 
   class ScreenStateChangeHandler {
    public:
@@ -828,6 +830,10 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   ScreenStateChangeHandler screen_state_change_handler_;
 
   std::optional<base::flat_set<ui::DomCode>> locked_keyboard_keys_;
+
+  // Used to schedule a single visual properties update on the next vsync tick
+  // to achieve fluid resizing.
+  bool visual_properties_update_pending_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewAndroid> weak_ptr_factory_{this};
 };
