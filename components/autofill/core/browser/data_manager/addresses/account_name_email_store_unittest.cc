@@ -85,6 +85,7 @@ class AccountNameEmailStoreTest : public testing::Test {
   signin::IdentityTestEnvironment& identity_test_env() {
     return identity_test_env_;
   }
+  syncer::TestSyncService& sync_service() { return sync_service_; }
 
  private:
   base::test::ScopedFeatureList feature_{
@@ -109,51 +110,80 @@ MATCHER_P2(IsCorrectAccountNameEmail, name_full, email, "") {
 }
 
 // Tests that a new `kAccountNameEmail` profile isn't created when an empty
-// `AccountInfo` is passed into the `UpdateOrCreateAccountNameEmail` method.
+// `AccountInfo` is passed into the `MaybeUpdateOrCreateAccountNameEmail`
+// method.
 TEST_F(AccountNameEmailStoreTest, EmptyAccountInfoCreation) {
-  account_name_email_store().UpdateOrCreateAccountNameEmail({});
+  account_name_email_store().MaybeUpdateOrCreateAccountNameEmail();
   EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 }
 
-// Tests that a new `kAccountNameEmail` profile isn't created when the
-// `full_name` field of passed in `AccountInfo` is empty.
+// Tests that a new kAccountNameEmail profile isn't created when the account
+// info misses the full_name.
 TEST_F(AccountNameEmailStoreTest, EmptyAccountNameCreation) {
-  AccountInfo info;
-  info.email = kTestEmailAddress1;
-  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
+  CreatePrimaryAccount(std::string(), kTestEmailAddress1);
   EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 }
 
-// Tests that the `UpdateOrCreateAccountNameEmail` method creates / updates
-// `kAccountNameEmail` with the correct info.
+// Tests that a new kAccountNameEmail profile isn't created when autofill is not
+// synced.
+TEST_F(AccountNameEmailStoreTest, AutofillNotSynced) {
+  sync_service().SetSignedOut();
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
+
+// Tests that a new kAccountNameEmail profile is removed if user disabled
+// autofill sync toggle.
+TEST_F(AccountNameEmailStoreTest, ProfileRemovedAfterSyncOff) {
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+
+  ASSERT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+
+  syncer::UserSelectableTypeSet selected_sync_types =
+      sync_service().GetUserSettings()->GetSelectedTypes();
+  selected_sync_types.Remove(syncer::UserSelectableType::kAutofill);
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, selected_sync_types);
+  sync_service().FireStateChanged();
+
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
+
+TEST_F(AccountNameEmailStoreTest, ProfileNotCreatedBeforeDataLoaded) {
+  sync_service().SetDownloadStatusFor(
+      {syncer::DataType::PRIORITY_PREFERENCES},
+      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
+
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
+
+// Tests that the created profile holds the correct data.
 TEST_F(AccountNameEmailStoreTest, SpecificInfoCreationUpdate) {
-  AccountInfo info;
-  info.full_name = kTestName1;
-  info.email = kTestEmailAddress1;
-
-  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
-
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
   EXPECT_THAT(address_data_manager().GetProfiles(),
               ElementsAre(IsCorrectAccountNameEmail(
                   base::UTF8ToUTF16(kTestName1),
                   base::UTF8ToUTF16(kTestEmailAddress1))));
 }
 
-// Tests that the `UpdateOrCreateAccountNameEmail` correctly updates the
+// Tests that the creating the profile correctly updates the
 // `kAutofillNameAndEmailProfileSignature` pref.
 TEST_F(AccountNameEmailStoreTest, HashPrefSaving) {
-  AccountInfo info;
-  info.full_name = kTestName1;
-  info.email = kTestEmailAddress1;
-  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
 
   EXPECT_EQ(
       pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
-      test_api(&account_name_email_store()).HashAccountInfo(info));
+      test_api(&account_name_email_store())
+          .HashAccountInfo(identity_manager().FindExtendedAccountInfo(
+              identity_manager().GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin))));
 }
 
-// Tests that the `UpdateOrCreateAccountNameEmail` returns early (does nothing)
-// when account info with the same hash as the stored one in pref was passed in.
+// Tests that no new profile is created if hashes match.
 TEST_F(AccountNameEmailStoreTest, EarlyReturnWhenHashesAreEqual) {
   AccountInfo info;
   info.full_name = kTestName1;
@@ -163,31 +193,23 @@ TEST_F(AccountNameEmailStoreTest, EarlyReturnWhenHashesAreEqual) {
       test_api(&account_name_email_store()).HashAccountInfo(info);
 
   pref_service().SetString(prefs::kAutofillNameAndEmailProfileSignature, hash);
-  account_name_email_store().UpdateOrCreateAccountNameEmail(info);
+  // Start profile creation after the hash is already set to the right value.
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
 
   EXPECT_EQ(hash, pref_service().GetString(
                       prefs::kAutofillNameAndEmailProfileSignature));
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 }
 
-// Tests that the `UpdateOrCreateAccountNameEmail` removes the Account Name
-// Email profile when updating.
+// Tests that old profile is removed when new primary account is used.
 TEST_F(AccountNameEmailStoreTest, RemovingProfile) {
-  AccountInfo info1;
-  info1.full_name = kTestName1;
-  info1.email = kTestEmailAddress1;
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  CreatePrimaryAccount(kTestName2, kTestEmailAddress2);
 
-  AccountInfo info2;
-  info2.full_name = kTestName2;
-  info2.email = kTestEmailAddress2;
-
-  account_name_email_store().UpdateOrCreateAccountNameEmail(info1);
-  account_name_email_store().UpdateOrCreateAccountNameEmail(info2);
-
-  EXPECT_THAT(
-      address_data_manager().GetProfiles(),
-      Contains(IsCorrectAccountNameEmail(base::UTF8ToUTF16(kTestName1),
-                                         base::UTF8ToUTF16(kTestEmailAddress1)))
-          .Times(0));
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName2),
+                  base::UTF8ToUTF16(kTestEmailAddress2))));
 }
 
 // Tests that the `OnExtendedAccountInfoUpdated` method will create the

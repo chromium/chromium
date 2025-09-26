@@ -17,12 +17,18 @@
 namespace autofill {
 
 // The kAccountNameEmail autofill profile is an un-syncable, locally stored,
-// profile generated automatically for every signed in user, unless they deleted
-// it or didn't use it. This profile is composed of 2 pieces of data:
+// profile generated automatically for the every signed in user with the
+// Autofill sync toggle enabled, unless they have deleted it or have not used
+// it.
+//
+// This profile is composed of 2 pieces of data:
 // - full name
 // - email
+// `kLegacyHierarchyCountryCode` is used to not reveal the country of this
+// profile.
+//
 // Keeping kAccountNameEmail profile's state up to date between the devices is
-// handled through syncable prefs. `AccountNameEmailStore` is a class
+// handled through priority prefs. `AccountNameEmailStore` is a class
 // responsible for accessing and modifying those prefs, as well as managing
 // (create, update, remove) kAccountNameEmail profile. In code
 // `AccountNameEmailStore` is owned by and has the same lifetime as
@@ -49,6 +55,12 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
 
   // syncer::SyncServiceObserver:
   void OnSyncShutdown(syncer::SyncService* sync) override;
+  void OnStateChanged(syncer::SyncService* sync_service) override;
+
+  // Checks that the necessary data is available and that the user has enabled
+  // autofill sync before updating/creating the kAccountNameEmail profile.
+  // This prevents premature update/create without all of the relevant data.
+  void MaybeUpdateOrCreateAccountNameEmail();
 
   // AddressDataManager::Observer:
   // Called when the address data of the `AddressDataManager` changes. If
@@ -57,19 +69,31 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // `kAutofillNameAndEmailProfileNotSelectedThreshold` + 1.
   void OnAddressDataChanged() override;
 
-  // Updates the `kAccountNameEmail` autofill profile with the newest signed-in
-  // account `info`. If the `kAccountNameEmail` profile doesn't exist, it is
-  // created.
-  void UpdateOrCreateAccountNameEmail(const AccountInfo& info);
-
   // Removes the `kAccountNameEmail` autofill profile if it exists.
   void RemoveAccountNameEmail();
 
  private:
   friend class AccountNameEmailStoreTestApi;
 
+  enum class ProfileUpdateBlockReason {
+    kSyncOff = 0,
+    kDataNotLoaded = 1,
+  };
+
+  // Updates the kAccountNameEmail autofill profile with the account `info`. If
+  // the kAccountNameEmail profile doesn't exist, it is created.
+  void UpdateOrCreateAccountNameEmail(const AccountInfo& info);
+
   // Hashes concatenated full_name and email_address delimited by |.
   std::string HashAccountInfo(const AccountInfo& info) const;
+
+  // Determines if the conditions for creating or updating the kAccountNameEmail
+  // profile are not met. The operation should be blocked if sync is disabled
+  // for Autofill or if sync is enabled but the necessary data has not yet been
+  // downloaded.
+  // Returns a blocking reason or nullopt if the operation shouldn't be blocked.
+  std::optional<ProfileUpdateBlockReason>
+  GetBlockAccountNameEmailUpdateReason();
 
   const raw_ref<AddressDataManager> address_data_manager_;
   const raw_ref<signin::IdentityManager> identity_manager_;

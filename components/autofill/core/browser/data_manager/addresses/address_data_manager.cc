@@ -178,21 +178,17 @@ void AddressDataManager::OnWebDataServiceRequestDone(
 
   if (!has_initial_load_finished_) {
     has_initial_load_finished_ = true;
-    // `UpdateOrCreateAccountNameEmail()` is responsible for creating or
-    // updating the `kAccountNameEmail` profile. This requires profiles from the
-    // database to be loaded, so any old `kAccountNameEmail` profile can be
-    // accessed. Updates to the account info are generally caught by an identity
-    // observer. But if the account info becomes available before the initial
-    // load has finished, the additional call here is necessary to apply these
-    // updates.
+    // `AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail()` is
+    // responsible for creating or updating the `kAccountNameEmail` profile.
+    // This requires profiles from the database to be loaded, so any old
+    // `kAccountNameEmail` profile can be accessed. Updates to the account info
+    // are generally caught by an identity observer. But if the account info
+    // becomes available before the initial load has finished, the additional
+    // call here is necessary to apply these updates.
     // TODO(crbug.com/356845298): Clean up after launch.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableSupportForNameAndEmail)) {
-      const std::optional<CoreAccountInfo>& core_info = GetPrimaryAccountInfo();
-      if (core_info.has_value()) {
-        account_name_email_store_->UpdateOrCreateAccountNameEmail(
-            identity_manager_->FindExtendedAccountInfo(core_info.value()));
-      }
+      account_name_email_store_->MaybeUpdateOrCreateAccountNameEmail();
     } else {
       // In case the feature got disabled the profile should be cleaned up.
       if (!GetProfilesByRecordType(

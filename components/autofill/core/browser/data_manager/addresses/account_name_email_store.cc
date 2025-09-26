@@ -14,7 +14,9 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace autofill {
 
@@ -55,13 +57,55 @@ void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
       (!primary_info->IsEmpty() && info.gaia != primary_info->gaia)) {
     return;
   }
-  UpdateOrCreateAccountNameEmail(info);
+  MaybeUpdateOrCreateAccountNameEmail();
 }
 
 void AccountNameEmailStore::OnSyncShutdown(syncer::SyncService*) {
   // Unreachable, since the service owning this instance is Shutdown() before
   // the SyncService.
   NOTREACHED();
+}
+
+void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
+  // Only autofill syncing users are eligible for the kAccountNameEmail
+  // profile. Having all relevant data loaded is crucial for correct execution.
+  // If the user doesn't have the autofill sync toggle enabled, try to remove
+  // the kAccountNameEmail profile.
+  std::optional<ProfileUpdateBlockReason> reason =
+      GetBlockAccountNameEmailUpdateReason();
+  if (!reason.has_value()) {
+    MaybeUpdateOrCreateAccountNameEmail();
+    return;
+  }
+  switch (reason.value()) {
+    case ProfileUpdateBlockReason::kSyncOff:
+      RemoveAccountNameEmail();
+      return;
+    case ProfileUpdateBlockReason::kDataNotLoaded:
+      // Defer call. When data is loaded, `OnStateChanged` will be called again,
+      // reattempting to create the profile.
+      return;
+  }
+}
+
+void AccountNameEmailStore::MaybeUpdateOrCreateAccountNameEmail() {
+  if (GetBlockAccountNameEmailUpdateReason().has_value()) {
+    return;
+  }
+
+  const std::optional<CoreAccountInfo>& core_info =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (!core_info.has_value()) {
+    return;
+  }
+
+  const std::optional<AccountInfo>& extended_info =
+      identity_manager_->FindExtendedAccountInfo(core_info.value());
+  if (!extended_info.has_value()) {
+    return;
+  }
+
+  UpdateOrCreateAccountNameEmail(extended_info.value());
 }
 
 void AccountNameEmailStore::OnAddressDataChanged() {
@@ -89,11 +133,23 @@ void AccountNameEmailStore::OnAddressDataChanged() {
   }
 }
 
+void AccountNameEmailStore::RemoveAccountNameEmail() {
+  const std::vector<const AutofillProfile*> account_name_email_profiles =
+      address_data_manager_->GetProfilesByRecordType(
+          AutofillProfile::RecordType::kAccountNameEmail);
+  if (account_name_email_profiles.empty()) {
+    return;
+  }
+  CHECK_EQ(1u, account_name_email_profiles.size());
+
+  address_data_manager_->RemoveProfile(account_name_email_profiles[0]->guid());
+}
+
 void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
     const AccountInfo& info) {
   // During signin the `OnExtendedAccountInfoUpdated` method might call this
   // method with an empty `info.full_name` since not all data arrives all at
-  // once and `AccountiInfo` is updated multiple times. The `kAccountNameEmail`
+  // once and `AccountInfo` is updated multiple times. The `kAccountNameEmail`
   // profile and hash signature require non-empty `full_name` value.
   if (info.IsEmpty() || info.full_name.empty()) {
     return;
@@ -132,22 +188,33 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
       prefs::kAutofillNameAndEmailProfileNotSelectedCounter, 0);
 }
 
-void AccountNameEmailStore::RemoveAccountNameEmail() {
-  const std::vector<const AutofillProfile*> account_name_email_profiles =
-      address_data_manager_->GetProfilesByRecordType(
-          AutofillProfile::RecordType::kAccountNameEmail);
-  if (account_name_email_profiles.empty()) {
-    return;
-  }
-  CHECK_EQ(1u, account_name_email_profiles.size());
-
-  address_data_manager_->RemoveProfile(account_name_email_profiles[0]->guid());
-}
-
 std::string AccountNameEmailStore::HashAccountInfo(
     const AccountInfo& info) const {
   return base::NumberToString(base::PersistentHash(
       base::StrCat({info.full_name, kSeparator, info.email})));
+}
+
+std::optional<AccountNameEmailStore::ProfileUpdateBlockReason>
+AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
+  if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kAutofill)) {
+    return ProfileUpdateBlockReason::kSyncOff;
+  }
+
+  if (address_data_manager_->IsAwaitingPendingAddressChanges()) {
+    return ProfileUpdateBlockReason::kDataNotLoaded;
+  }
+
+  switch (sync_service_->GetDownloadStatusFor(
+      syncer::DataType::PRIORITY_PREFERENCES)) {
+    case syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates:
+      return ProfileUpdateBlockReason::kDataNotLoaded;
+    case syncer::SyncService::DataTypeDownloadStatus::kUpToDate:
+    // If the download status is kError, it will likely not become
+    // available anytime soon.
+    case syncer::SyncService::DataTypeDownloadStatus::kError:
+      return std::nullopt;
+  }
 }
 
 }  // namespace autofill
