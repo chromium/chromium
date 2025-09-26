@@ -884,7 +884,7 @@ class ChromiumDepGraph {
         // The fetch_all.py normally fetches the latest version instead of the declared version in build.gradle. When
         // overrideLatest is set to true, the actual version resolved by gradle (based on what is declared in
         // build.gradle as well as the version other dependencies need) will be used.
-        Boolean overrideLatest
+        Boolean overrideLatest = true
         // When set, //third_party/android_deps/fetch_common.py will only versions that contain this string to be valid.
         // This variable is not used in groovy code.
         String versionFilter

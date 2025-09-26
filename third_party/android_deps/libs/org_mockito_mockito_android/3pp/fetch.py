@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='mockito-android',
                          file_ext='jar',
                          patch_version='cr2',
-                         version_override=None,
+                         version_override='5.19.0',
                          version_filter=None)
 
 if __name__ == '__main__':

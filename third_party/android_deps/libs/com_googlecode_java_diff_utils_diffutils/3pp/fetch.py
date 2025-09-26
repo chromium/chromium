@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='diffutils',
                          file_ext='jar',
                          patch_version='cr2',
-                         version_override=None,
+                         version_override='1.3.0',
                          version_filter=None)
 
 if __name__ == '__main__':
