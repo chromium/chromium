@@ -3188,7 +3188,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_android_support_support_annotations',
-              'version': 'version:2@28.0.0.cr1',
+              'version': 'version:2@28.0.0.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3199,7 +3199,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_android_tools_common',
-              'version': 'version:2@30.2.0-beta01.cr1',
+              'version': 'version:2@30.2.0-beta01.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3210,7 +3210,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_android_tools_layoutlib_layoutlib_api',
-              'version': 'version:2@30.2.0-beta01.cr1',
+              'version': 'version:2@30.2.0-beta01.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3221,7 +3221,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_android_tools_sdk_common',
-              'version': 'version:2@30.2.0-beta01.cr1',
+              'version': 'version:2@30.2.0-beta01.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3232,7 +3232,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework',
-              'version': 'version:2@4.0.0.cr1',
+              'version': 'version:2@4.0.0.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3243,7 +3243,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_googlecode_java_diff_utils_diffutils',
-              'version': 'version:2@1.3.0.cr1',
+              'version': 'version:2@1.3.0.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3254,7 +3254,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/com_squareup_javapoet',
-              'version': 'version:2@1.13.0.cr1',
+              'version': 'version:2@1.13.0.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3265,7 +3265,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/net_bytebuddy_byte_buddy',
-              'version': 'version:2@1.17.6.cr1',
+              'version': 'version:2@1.17.6.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3276,7 +3276,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/net_bytebuddy_byte_buddy_agent',
-              'version': 'version:2@1.17.6.cr1',
+              'version': 'version:2@1.17.6.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3287,7 +3287,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_ccil_cowan_tagsoup_tagsoup',
-              'version': 'version:2@1.2.1.cr1',
+              'version': 'version:2@1.2.1.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3298,7 +3298,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_checkerframework_checker_compat_qual',
-              'version': 'version:2@2.5.5.cr1',
+              'version': 'version:2@2.5.5.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3309,7 +3309,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_android_extensions_runtime',
-              'version': 'version:2@1.9.22.cr1',
+              'version': 'version:2@1.9.22.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3320,7 +3320,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime',
-              'version': 'version:2@1.9.22.cr1',
+              'version': 'version:2@1.9.22.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3331,7 +3331,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlinx_atomicfu_jvm',
-              'version': 'version:2@0.23.2.cr1',
+              'version': 'version:2@0.23.2.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3342,7 +3342,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava',
-              'version': 'version:2@1.8.1.cr1',
+              'version': 'version:2@1.8.1.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3353,7 +3353,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_jsoup_jsoup',
-              'version': 'version:2@1.15.1.cr1',
+              'version': 'version:2@1.15.1.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3364,7 +3364,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_mockito_mockito_android',
-              'version': 'version:2@5.19.0.cr1',
+              'version': 'version:2@5.19.0.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3375,7 +3375,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_mockito_mockito_core',
-              'version': 'version:2@5.19.0.cr1',
+              'version': 'version:2@5.19.0.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3386,7 +3386,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_mockito_mockito_subclass',
-              'version': 'version:2@5.19.0.cr1',
+              'version': 'version:2@5.19.0.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -3397,7 +3397,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_deps/libs/org_objenesis_objenesis',
-              'version': 'version:2@3.3.cr1',
+              'version': 'version:2@3.3.cr2',
           },
       ],
       'condition': 'checkout_android and non_git_source',
