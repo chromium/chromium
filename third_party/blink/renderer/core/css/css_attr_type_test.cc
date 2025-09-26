@@ -35,6 +35,14 @@ TEST_F(CSSAttrTypeTest, ConsumeRawStringType) {
   EXPECT_TRUE(valid_stream.AtEnd());
 }
 
+TEST_F(CSSAttrTypeTest, ConsumeNumberType) {
+  CSSParserTokenStream valid_stream("number");
+  std::optional<CSSAttrType> valid_type = CSSAttrType::Consume(valid_stream);
+  ASSERT_TRUE(valid_type.has_value());
+  EXPECT_TRUE(valid_type->IsNumber());
+  EXPECT_TRUE(valid_stream.AtEnd());
+}
+
 TEST_F(CSSAttrTypeTest, ConsumeInvalidType) {
   CSSParserTokenStream stream("invalid");
   std::optional<CSSAttrType> type = CSSAttrType::Consume(stream);

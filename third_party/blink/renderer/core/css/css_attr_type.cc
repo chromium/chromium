@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
@@ -28,6 +29,10 @@ std::optional<CSSPrimitiveValue::UnitType> ConsumeDimensionUnitType(
   }
   if (type != kIdentToken) {
     return std::nullopt;
+  }
+  if (stream.Peek().Value() == "number") {
+    stream.Consume();
+    return CSSPrimitiveValue::UnitType::kNumber;
   }
   CSSPrimitiveValue::UnitType unit =
       CSSPrimitiveValue::StringToUnitType(stream.Peek().Value());

@@ -62,6 +62,7 @@ const char* valid_attr_values[] = {
     "attr(p type(<color>#), red)",
     "attr(p px)",
     "attr(p raw-string)",
+    "attr(p number)",
     "attr(p type(<color>))",
     "attr(p type(<color> ))",
     "attr(p type( <color>))",

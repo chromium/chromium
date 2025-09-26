@@ -21,6 +21,9 @@ class CORE_EXPORT CSSAttrType {
   static CSSAttrType GetDefaultValue();
   bool IsSyntax() const { return syntax_.has_value(); }
   bool IsString() const { return is_string_; }
+  bool IsNumber() const {
+    return dimension_unit_ == CSSPrimitiveValue::UnitType::kNumber;
+  }
   bool IsDimensionUnit() const { return dimension_unit_.has_value(); }
 
  private:
