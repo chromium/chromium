@@ -8,6 +8,8 @@ source_set("host") {
   sources = [
     "gpu_disk_cache.cc",
     "gpu_disk_cache.h",
+    "persistent_cache_sandboxed_file_factory.cc",
+    "persistent_cache_sandboxed_file_factory.h",
   ]
 
   deps = [

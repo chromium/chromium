@@ -1,0 +1,87 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef GPU_IPC_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
+#define GPU_IPC_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
+
+#include <optional>
+#include <string>
+
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
+
+namespace gpu {
+
+struct PersistentCacheSandboxedFiles {
+  base::File db_file;
+  base::File journal_file;
+};
+
+// This class supports opening file handles in a persistent cache directory.
+// The handles can be forwarded to the GPU process to load & store blobs.
+//
+// The persistent cache files are versioned based on the browser's product
+// version. When a version change happens, the older versioned files will
+// be automatically deleted. TODO(crbug.com/399642827): This is a temporary
+// solution until PersistentCache supports max size limit and trimming.
+class PersistentCacheSandboxedFileFactory
+    : public base::RefCountedThreadSafe<PersistentCacheSandboxedFileFactory> {
+ public:
+  using CacheIdString = base::FilePath::StringType;
+
+  PersistentCacheSandboxedFileFactory(
+      const base::FilePath& cache_root_dir,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+
+  PersistentCacheSandboxedFileFactory(
+      const PersistentCacheSandboxedFileFactory&) = delete;
+  PersistentCacheSandboxedFileFactory& operator=(
+      const PersistentCacheSandboxedFileFactory&) = delete;
+
+  // Creates the persistent cache database and journal files.
+  // `cache_id` is used to uniquely identify the cache type (e.g.,
+  // 'dawngraphite'). `product` is the browser product string, used for
+  // versioning. Stale files from different versions are automatically deleted.
+  std::optional<PersistentCacheSandboxedFiles> CreateFiles(
+      const CacheIdString& cache_id,
+      const std::string& product);
+
+  using CreateFilesCallback =
+      base::OnceCallback<void(std::optional<PersistentCacheSandboxedFiles>)>;
+  // Similar to CreateFiles but will do asynchronously using
+  // background_task_runner_. The `callback` will be triggered on the current
+  // thread's task runner once the deletion is completed.
+  void CreateFilesAsync(const CacheIdString& cache_id,
+                        const std::string& product,
+                        CreateFilesCallback callback);
+
+  // Deletes the persistent cache files.
+  // `cache_id` is the unique identifier for the cache type.
+  // `product` is the browser product string, used to identify the specific
+  // version of the cache files to delete.
+  bool ClearFiles(const CacheIdString& cache_id, const std::string& product);
+
+  using ClearFilesCallback = base::OnceCallback<void(bool)>;
+  // Similar to ClearFiles but will do asynchronously using
+  // background_task_runner_. The `callback` will be triggered on the current
+  // thread's task runner once the deletion is completed.
+  void ClearFilesAsync(const CacheIdString& cache_id,
+                       const std::string& product,
+                       ClearFilesCallback callback);
+
+ private:
+  friend class base::RefCountedThreadSafe<PersistentCacheSandboxedFileFactory>;
+  ~PersistentCacheSandboxedFileFactory();
+
+  base::FilePath cache_root_dir_;
+  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+};
+
+}  // namespace gpu
+
+#endif  // GPU_IPC_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
