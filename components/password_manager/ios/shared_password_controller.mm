@@ -1111,12 +1111,13 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
       generationData->confirmation_password_renderer_id;
 
   __weak SharedPasswordController* weakSelf = self;
+  base::WeakPtr<web::WebFrame> weakFrame = frame->AsWeakPtr();
   auto generatedPasswordInjected = ^(BOOL success) {
     if (success) {
       [weakSelf onFilledPasswordForm:formIdentifier
                withGeneratedPassword:generatedPassword
                     passwordUniqueId:newPasswordUniqueId
-                             inFrame:frame];
+                             inFrame:weakFrame];
     }
     if (completionHandler) {
       completionHandler();
@@ -1134,7 +1135,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
 - (void)onFilledPasswordForm:(FormRendererId)formIdentifier
        withGeneratedPassword:(NSString*)generatedPassword
             passwordUniqueId:(FieldRendererId)newPasswordUniqueId
-                     inFrame:(web::WebFrame*)frame {
+                     inFrame:(base::WeakPtr<web::WebFrame>)weakFrame {
   __weak SharedPasswordController* weakSelf = self;
   auto passwordPresaved = ^(BOOL found, const autofill::FormData& form) {
     // If the form isn't found, it disappeared between the call to
@@ -1143,17 +1144,40 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
     if (!found)
       return;
 
-    [weakSelf presaveGeneratedPassword:generatedPassword
-                              formData:form
-                               inFrame:frame];
+    [weakSelf didExtractGeneratedPasswordForm:form
+                        withGeneratedPassword:generatedPassword
+                                newPasswordID:newPasswordUniqueId
+                                      inFrame:weakFrame];
   };
 
+  if (!weakFrame) {
+    return;
+  }
+
   [self.formHelper extractPasswordFormData:formIdentifier
-                                   inFrame:frame
+                                   inFrame:weakFrame.get()
                          completionHandler:passwordPresaved];
+}
+- (void)didExtractGeneratedPasswordForm:(const autofill::FormData&)form
+                  withGeneratedPassword:(NSString*)password
+                          newPasswordID:(FieldRendererId)newPasswordID
+                                inFrame:
+                                    (base::WeakPtr<web::WebFrame>)weakFrame {
+  web::WebFrame* frame = weakFrame.get();
+  if (!frame) {
+    return;
+  }
+  FieldGlobalId newPasswordGlobalId = {GetLocalFrameToken(frame),
+                                       newPasswordID};
+  if (!form.FindFieldByGlobalId(newPasswordGlobalId)) {
+    // The form that was filled with the generated password should contain the
+    // new password field that was intended to fill. Otherwise, we are in an
+    // undesired state hence abort presaving the generated password.
+    return;
+  }
+  [self presaveGeneratedPassword:password formData:form inFrame:frame];
   self.isPasswordGenerated = YES;
-  self.passwordGeneratedIdentifier = {GetLocalFrameToken(frame),
-                                      newPasswordUniqueId};
+  self.passwordGeneratedIdentifier = {GetLocalFrameToken(frame), newPasswordID};
 }
 
 - (void)presaveGeneratedPassword:(NSString*)generatedPassword

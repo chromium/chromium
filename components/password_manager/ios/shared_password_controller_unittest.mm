@@ -118,12 +118,26 @@ FormData CreateFormDataForRenderFrameHost(
   return form;
 }
 
+// Returns a LocalFrameToken that uniquely identifies the `frame`. Returns an
+// empty token if it can't be constructed (e.g. because the frame id isn't of
+// the right length).
+autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
+  return std::optional<autofill::LocalFrameToken>(
+             autofill::DeserializeJavaScriptFrameId(frame->GetFrameId()))
+      .value_or(autofill::LocalFrameToken());
+}
+
 // Creates a basic signup form with one username field and one password field.
-FormData CreateSignupForm() {
+// Set the optional `host_frame` in the form and fields. Uses the default empty
+// frame token if not provided.
+FormData CreateSignupForm(
+    autofill::LocalFrameToken host_frame = autofill::LocalFrameToken()) {
   FormData form_data = test_helpers::MakeSimpleFormData();
   form_data.set_renderer_id(autofill::test::MakeFormRendererId());
+  form_data.set_host_frame(host_frame);
   for (auto& field_data : test_api(form_data).fields()) {
     field_data.set_renderer_id(autofill::test::MakeFieldRendererId());
+    field_data.set_host_frame(host_frame);
   }
   test_api(form_data).fields().back().set_max_length(kMaxPasswordLength);
   return form_data;
@@ -793,7 +807,17 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
 TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
   base::HistogramTester histogram_tester;
 
-  FormData form_data = CreateSignupForm();
+  web_state_.SetCurrentURL(GURL(kTestURL));
+  web_state_.SetContentIsHTML(true);
+
+  // Set up the frame that hosts the new password form.
+  auto web_frame =
+      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
+                                /*is_main_frame=*/true, GURL(kTestURL));
+  web::FakeWebFrame* frame = web_frame.get();
+  AddWebFrame(std::move(web_frame));
+
+  FormData form_data = CreateSignupForm(GetLocalFrameToken(frame));
   autofill::FormRendererId form_id = form_data.renderer_id();
   autofill::FieldRendererId password_field_id =
       form_data.fields()[1].renderer_id();
@@ -804,16 +828,6 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
   autofill::PasswordFormGenerationData form_generation_data = {
       form_id, password_field_id, password_field_id};
   [controller_ formEligibleForGenerationFound:form_generation_data];
-
-  web_state_.SetCurrentURL(GURL(kTestURL));
-  web_state_.SetContentIsHTML(true);
-
-  // Set up the frame that hosts the new password form.
-  auto web_frame =
-      web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
-                                /*is_main_frame=*/true, GURL(kTestURL));
-  web::FakeWebFrame* frame = web_frame.get();
-  AddWebFrame(std::move(web_frame));
 
   // Show and accept password in the same loop.
   id decision_handler_arg =

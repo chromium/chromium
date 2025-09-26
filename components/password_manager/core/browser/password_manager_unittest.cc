@@ -1060,19 +1060,6 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
   const scoped_refptr<autofill::FieldDataManager> field_data_manager =
       base::MakeRefCounted<autofill::FieldDataManager>();
 
-  // Test when the user is changing the generated password, presaved credential
-  // is updated.
-  generated_password += u"1";
-  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
-                                    form_data.renderer_id(), generation_element,
-                                    generated_password);
-  task_environment_.RunUntilIdle();
-  EXPECT_THAT(store_->stored_passwords(),
-              ElementsAre(Pair(
-                  GetSignonRealm(form_data.url()),
-                  ElementsAre(FormUsernamePasswordAre(
-                      form_data.fields()[0].value(), generated_password)))));
-
   // Test when the user is changing the username, presaved credential is
   // updated.
   username += u"1";

@@ -437,8 +437,10 @@ class PasswordControllerTest : public PlatformTest {
     EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
       return block_was_called;
     }));
-    ASSERT_TRUE(
-        passwordController_.sharedPasswordController.isPasswordGenerated);
+
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+      return passwordController_.sharedPasswordController.isPasswordGenerated;
+    }));
   }
 
   void LoadHtml(NSString* html) {

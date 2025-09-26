@@ -722,7 +722,6 @@ void PasswordFormManager::SetGenerationPopupWasShown(
 
 void PasswordFormManager::SetGenerationElement(
     FieldRendererId generation_element) {
-  generation_element_ = generation_element;
   if (votes_uploader_.has_value()) {
     votes_uploader_->set_generation_element(generation_element);
   }
@@ -769,23 +768,11 @@ void PasswordFormManager::UpdateStateOnUserInput(
   modified_field->set_value(field_value);
   mutable_observed_form()->set_fields(std::move(fields));
 
-  if (!HasGeneratedPassword()) {
-    return;
+  if (HasGeneratedPassword()) {
+    // Update the presaved password form in the case the username has changed.
+    PresaveGeneratedPasswordInternal(
+        *observed_form(), password_save_manager_->GetGeneratedPassword());
   }
-
-  SCOPED_CRASH_KEY_NUMBER("Bug40072712", "pmf_genElemId",
-                          generation_element_.value());
-
-  // Update the presaved password form. Even if generated password was not
-  // modified, the user might have modified the username.
-  std::u16string generated_password =
-      password_save_manager_->GetGeneratedPassword();
-  CHECK(!generated_password.empty());
-  if (generation_element_ == field_id) {
-    generated_password = field_value;
-    CHECK(!generated_password.empty());
-  }
-  PresaveGeneratedPasswordInternal(*observed_form(), generated_password);
 }
 
 void PasswordFormManager::SetDriver(

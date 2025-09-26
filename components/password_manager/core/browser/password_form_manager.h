@@ -518,9 +518,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // In that case we should schedule a Save() call, when FormFecher is ready.
   bool should_schedule_save_for_later_ = false;
 
-  // A password field that is used for generation.
-  autofill::FieldRendererId generation_element_;
-
   // For generating timing metrics on retrieving server-side predictions.
   std::unique_ptr<base::ElapsedTimer> server_side_predictions_timer_;
 
