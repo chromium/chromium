@@ -179,7 +179,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
                            base::OnceClosure complete);
 
   void InterceptWithCookieHeader(
-      AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
       std::string cookie);
 
   // Applies the `AwOriginMatchedHeaders` that match the current
@@ -391,7 +390,6 @@ InterceptedRequest::~InterceptedRequest() {
 }
 
 void InterceptedRequest::InterceptWithCookieHeader(
-    AwContentsIoThreadClient::ShouldInterceptRequestResponseCallback callback,
     std::string cookie) {
   if (cookie != "") {
     request_.headers.SetHeader(net::HttpRequestHeaders::kCookie, cookie);
@@ -405,7 +403,9 @@ void InterceptedRequest::InterceptWithCookieHeader(
     // before network request is intercepted (i.e. if that's possible and
     // whether it can result in any issues).
     io_thread_client->ShouldInterceptRequestAsync(
-        AwWebResourceRequest(request_), std::move(callback));
+        AwWebResourceRequest(request_),
+        base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
+                       weak_factory_.GetWeakPtr()));
   } else {
     SendNoIntercept();
   }
@@ -496,13 +496,7 @@ void InterceptedRequest::Restart() {
                                  request_.referrer.spec());
     }
 
-    auto done = base::BindOnce(
-        &InterceptedRequest::InterceptWithCookieHeader,
-        weak_factory_.GetWeakPtr(),
-        base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
-                       weak_factory_.GetWeakPtr()));
-
-    if (get_cookie_header_.has_value() && io_thread_client &&
+    if (get_cookie_header_.has_value() &&
         io_thread_client->ShouldAcceptCookies(
             io_thread_client_call_duration_)) {
       bool accept_third_party_cookies =
@@ -510,9 +504,14 @@ void InterceptedRequest::Restart() {
               io_thread_client_call_duration_);
 
       std::move(get_cookie_header_)
-          ->Run(accept_third_party_cookies, request_, std::move(done));
+          ->Run(accept_third_party_cookies, request_,
+                base::BindOnce(&InterceptedRequest::InterceptWithCookieHeader,
+                               weak_factory_.GetWeakPtr()));
     } else {
-      std::move(done).Run("");
+      io_thread_client->ShouldInterceptRequestAsync(
+          AwWebResourceRequest(request_),
+          base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
+                         weak_factory_.GetWeakPtr()));
     }
   }
 }
