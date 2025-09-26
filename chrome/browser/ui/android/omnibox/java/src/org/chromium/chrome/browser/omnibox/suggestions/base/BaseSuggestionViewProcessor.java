@@ -280,9 +280,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                             new Action(
                                     OmniboxDrawableState.forSmallIconWithIncognitoVariant(
                                             mContext,
-                                            action.icon.iconRes,
-                                            action.icon.incognitoIconRes,
-                                            /* allowTint= */ false),
+                                            action.icon.buttonIconRes,
+                                            action.icon.incognitoButtonIconRes,
+                                            action.icon.tintWithTextColor),
                                     action.accessibilityHint,
                                     null,
                                     () -> {

@@ -345,6 +345,7 @@ android_resources("java_resources") {
     "java/res/drawable/south_east_24dp.xml",
     "java/res/drawable/south_west_24dp.xml",
     "java/res/drawable/switch_to_tab.xml",
+    "java/res/drawable/tab.xml",
     "java/res/drawable/trending_up_black_24dp.xml",
     "java/res/layout-sw600dp/location_bar.xml",
     "java/res/layout/location_bar.xml",

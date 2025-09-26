@@ -22,7 +22,7 @@ import org.chromium.components.omnibox.action.OmniboxPedalId;
 @NullMarked
 public class OmniboxPedal extends OmniboxAction {
     @VisibleForTesting
-    static final ChipIcon DINO_GAME_ICON = new ChipIcon(R.drawable.action_dino_game, true);
+    static final ActionIcon DINO_GAME_ICON = new ActionIcon(R.drawable.action_dino_game, true);
 
     /** The type of the underlying pedal. */
     public final @OmniboxPedalId int pedalId;

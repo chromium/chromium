@@ -22,8 +22,8 @@ import java.net.URISyntaxException;
 /** Omnibox action for showing the Action in Suggest UI. */
 @NullMarked
 public class OmniboxActionInSuggest extends OmniboxAction {
-    /** Map of {@link SuggestTemplateInfo.TemplateAction.ActionType} to {@link ChipIcon}. */
-    private static final SparseArray<ChipIcon> ICON_MAP = createIconMap();
+    /** Map of {@link SuggestTemplateInfo.TemplateAction.ActionType} to {@link ActionIcon}. */
+    private static final SparseArray<ActionIcon> ICON_MAP = createIconMap();
 
     /** The details about the underlying action. */
     public final /* SuggestTemplateInfo.TemplateAction.ActionType */ int actionType;
@@ -60,25 +60,33 @@ public class OmniboxActionInSuggest extends OmniboxAction {
         return (OmniboxActionInSuggest) action;
     }
 
-    /** Returns a map of ActionType to ChipIcon. */
-    private static SparseArray<ChipIcon> createIconMap() {
-        var map = new SparseArray<ChipIcon>();
+    /** Returns a map of ActionType to ActionIcon. */
+    private static SparseArray<ActionIcon> createIconMap() {
+        var map = new SparseArray<ActionIcon>();
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
-                new ChipIcon(R.drawable.action_call, true));
+                new ActionIcon(R.drawable.action_call, true));
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE,
-                new ChipIcon(R.drawable.action_directions, true));
+                new ActionIcon(R.drawable.action_directions, true));
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
-                new ChipIcon(R.drawable.action_reviews, true));
+                new ActionIcon(R.drawable.action_reviews, true));
         map.put(
                 SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
-                new ChipIcon(
+                new ActionIcon(
+                        org.chromium.chrome.browser.omnibox.R.drawable.search_spark_rainbow,
                         org.chromium.chrome.browser.omnibox.R.drawable.search_spark_rainbow,
                         org.chromium.chrome.browser.omnibox.R.drawable
                                 .search_spark_rainbow_incognito,
                         false));
+        map.put(
+                SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE,
+                new ActionIcon(
+                        org.chromium.chrome.browser.omnibox.R.drawable.tab,
+                        org.chromium.chrome.browser.omnibox.R.drawable.switch_to_tab,
+                        org.chromium.chrome.browser.omnibox.R.drawable.switch_to_tab,
+                        true));
         return map;
     }
 

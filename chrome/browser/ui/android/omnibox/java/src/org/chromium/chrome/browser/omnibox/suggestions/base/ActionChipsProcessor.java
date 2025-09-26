@@ -55,7 +55,7 @@ public class ActionChipsProcessor {
                             .with(
                                     ChipProperties.CLICK_HANDLER,
                                     m -> executeAction(action, position))
-                            .with(ChipProperties.ICON, action.icon.iconRes)
+                            .with(ChipProperties.ICON, action.icon.chipIconRes)
                             .with(ChipProperties.APPLY_ICON_TINT, action.icon.tintWithTextColor)
                             .with(
                                     ChipProperties.PRIMARY_TEXT_APPEARANCE,

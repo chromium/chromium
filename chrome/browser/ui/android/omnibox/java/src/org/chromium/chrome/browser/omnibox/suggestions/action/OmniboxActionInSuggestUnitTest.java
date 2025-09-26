@@ -49,7 +49,8 @@ public class OmniboxActionInSuggestUnitTest {
                     SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE,
                     SuggestTemplateInfo.TemplateAction.ActionType.DIRECTIONS_VALUE,
                     SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
-                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE);
+                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_AIM_VALUE,
+                    SuggestTemplateInfo.TemplateAction.ActionType.CHROME_TAB_SWITCH_VALUE);
     private static final SuggestTemplateInfo.TemplateAction EMPTY_INFO =
             SuggestTemplateInfo.TemplateAction.getDefaultInstance();
 
