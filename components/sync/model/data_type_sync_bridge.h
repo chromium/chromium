@@ -249,9 +249,7 @@ class DataTypeSyncBridge {
   // Returns true if the provided `entity_data` is valid. This method should be
   // implemented by the bridges and can be used to validate the incoming remote
   // updates.
-  // TODO(crbug.com/40677711): Mark this method as pure virtual to force all the
-  // bridges to implement this.
-  virtual bool IsEntityDataValid(const EntityData& entity_data) const;
+  virtual bool IsEntityDataValid(const EntityData& entity_data) const = 0;
 
   // Needs to be informed about any model change occurring via Delete() and
   // Put(). The changing metadata should be stored to persistent storage
