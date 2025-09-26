@@ -221,12 +221,12 @@ bool LayoutImage::NeedsLayoutOnNaturalSizeChange() const {
 }
 
 ResourcePriority LayoutImage::ComputeResourcePriority() const {
-  speculative_decode_parameters_.cached_resource_priority =
-      LayoutReplaced::ComputeResourcePriority();
-  return speculative_decode_parameters_.cached_resource_priority;
+  speculative_decode_parameters_.cached_resource_priority.emplace(
+      LayoutReplaced::ComputeResourcePriority());
+  return speculative_decode_parameters_.cached_resource_priority.value();
 }
 
-ResourcePriority LayoutImage::CachedResourcePriority() const {
+std::optional<ResourcePriority> LayoutImage::CachedResourcePriority() const {
   return speculative_decode_parameters_.cached_resource_priority;
 }
 

@@ -1495,7 +1495,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       }
       if (resource->GetType() == ResourceType::kImage &&
           resource->GetContentStatus() == ResourceStatus::kCached &&
-          base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
+          base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes) &&
+          resource->IsAboveSpeculativeDecodeSizeThreshold()) {
         speculative_decode_candidate_images_.insert(resource);
         StartSpeculativeImageDecodes();
       }
@@ -2529,7 +2530,8 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     resource->Finish(response_end, freezable_task_runner_.get());
     if (resource->GetType() == ResourceType::kImage &&
         resource->GetContentStatus() == ResourceStatus::kCached &&
-        base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes)) {
+        base::FeatureList::IsEnabled(features::kSpeculativeImageDecodes) &&
+        resource->IsAboveSpeculativeDecodeSizeThreshold()) {
       speculative_decode_candidate_images_.insert(resource);
       StartSpeculativeImageDecodes();
     }
@@ -2825,9 +2827,9 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
   }
   speculative_decode_candidate_images_.erase_if(
       [](const WeakMember<Resource>& resource) -> bool {
-        return resource->PriorityFromObservers().first.visibility ==
-                   ResourcePriority::kNotVisible ||
-               !resource->IsAboveSpeculativeDecodeSizeThreshold();
+        return resource->PriorityFromObservers()
+                   .first.value_or(ResourcePriority())
+                   .visibility == ResourcePriority::kNotVisible;
       });
   StartSpeculativeImageDecodes();
 
@@ -2844,7 +2846,8 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
 
     resource->UpdateResourceInfoFromObservers();
     auto priorities = resource->PriorityFromObservers();
-    ResourcePriority resource_priority = priorities.first;
+    ResourcePriority resource_priority =
+        priorities.first.value_or(ResourcePriority());
     ResourceLoadPriority computed_load_priority = ComputeLoadPriority(
         ResourceType::kImage, resource->GetResourceRequest(),
         resource_priority.visibility, FetchParameters::DeferOption::kNoDefer,
@@ -2854,7 +2857,7 @@ void ResourceFetcher::UpdateImagePrioritiesAndSpeculativeDecodes() {
         resource_priority.is_lcp_resource);
 
     ResourcePriority resource_priority_excluding_image_loader =
-        priorities.second;
+        priorities.second.value_or(ResourcePriority());
     ResourceLoadPriority computed_load_priority_excluding_image_loader =
         ComputeLoadPriority(
             ResourceType::kImage, resource->GetResourceRequest(),
@@ -3239,16 +3242,18 @@ void ResourceFetcher::StartSpeculativeImageDecodes() {
   HeapVector<Member<Resource>> candidate_vector(
       speculative_decode_candidate_images_);
   for (Resource* resource : candidate_vector) {
-    // If the img element doesn't have extrinsic sizing, and we haven't yet run
-    // layout with the image's intrinsic sizing available, then we risk decoding
-    // at the wrong resolution. Skip the image for now until layout has a chance
-    // to run.
-    if (!resource->HasNonDegenerateContentSize()) {
+    // We may not have computed a priority yet, either because we have never run
+    // layout on the img element, or because we ran layout but skipped the
+    // computation because the intrinsic size was not available and the layout
+    // size was below the size threshold (see
+    // HTMLImageElement::DidFinishLayout). In that case, postpone making a
+    // decision about this candidate until the next layout runs.
+    std::optional<ResourcePriority> priority =
+        resource->PriorityFromObservers().first;
+    if (!priority.has_value()) {
       continue;
     }
-    const ResourcePriority& priority = resource->PriorityFromObservers().first;
-    if (priority.visibility == ResourcePriority::kVisible &&
-        resource->IsAboveSpeculativeDecodeSizeThreshold()) {
+    if (priority->visibility == ResourcePriority::kVisible) {
       Context().StartSpeculativeImageDecode(resource);
     }
     speculative_decode_candidate_images_.erase(resource);

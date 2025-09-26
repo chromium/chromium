@@ -770,16 +770,26 @@ void HTMLImageElement::DidFinishLayout() {
       // Populate cached values for speculative decode parameters.
       // ComputeResourcePriority is expensive; only call it if the image is big
       // enough to qualify for speculative decode.
-      if (layout_image->ComputeSpeculativeDecodeSize()
-              .GetCheckedArea()
-              .ValueOrDefault(0) >=
-          ImageResource::kSpeculativeDecodeMinImageSize) {
+      bool should_compute_priority = false;
+      gfx::Size layout_size = layout_image->ComputeSpeculativeDecodeSize();
+      ImageResourceContent* content = GetImageLoader().GetContent();
+      if (content && content->IsSizeAvailable()) {
+        should_compute_priority =
+            ImageResource::IsAboveSpeculativeDecodeSizeThreshold(
+                content->GetImage()->Size());
+      } else {
+        // Intrinsic size isn't available, so use the layout size as an
+        // approximation.
+        should_compute_priority =
+            ImageResource::IsAboveSpeculativeDecodeSizeThreshold(layout_size);
+      }
+      if (should_compute_priority) {
         layout_image->ComputeResourcePriority();
         layout_image->ComputeSpeculativeDecodeQuality();
       }
       // Once the image has a source, ResourceFetcher will take over the
       // updates.
-      if (GetImageLoader().GetContent()) {
+      if (content) {
         GetDocument().View()->UnregisterFromLifecycleNotifications(this);
       }
     }
