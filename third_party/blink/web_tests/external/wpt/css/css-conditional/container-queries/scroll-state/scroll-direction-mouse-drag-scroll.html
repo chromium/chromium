@@ -13,19 +13,24 @@
     width: 200px;
     height: 200px;
     container-type: scroll-state;
-    overflow-y: scroll;
+    overflow: scroll;
   }
   #filler {
     height: 600px;
+    width: 600px;
   }
   #target {
     --none: no;
+    --x: no;
     --y: no;
     @container scroll-state(direction: none) {
       --none: yes;
     }
     @container scroll-state(direction: y) {
       --y: yes;
+    }
+    @container scroll-state(direction: x) {
+      --x: yes;
     }
   }
 </style>
@@ -49,7 +54,15 @@
   }
 
   promise_test(async t => {
-    // Scrollbar position top right of element
+    // Skip test on platforms that do not have a visible scrollbar (e.g.
+    // overlay scrollbar).
+    const scrollbar_width = scroller.offsetWidth - scroller.clientWidth;
+    if (scrollbar_width == 0) {
+      return;
+    }
+    assert_equals(scroller.scrollTop, 0);
+
+    // Vertical scrollbar position top right
     const start_pos = {
       x: 200,
       y: 30,
@@ -58,9 +71,36 @@
 
     await drag_scrollbar(start_pos, end_pos);
     await waitForAnimationFrames(2);
+
+    assert_not_equals(scroller.scrollTop, 0);
     assert_equals(getComputedStyle(target).getPropertyValue("--none"), "yes");
     assert_equals(getComputedStyle(target).getPropertyValue("--y"), "no");
 
-  }, "Mouse drag scroll");
+  }, "Vertical scrollbar drag scroll");
+
+  promise_test(async t => {
+    // Skip test on platforms that do not have a visible scrollbar (e.g.
+    // overlay scrollbar).
+    const scrollbar_height = scroller.offsetHeight - scroller.clientHeight;
+    if (scrollbar_height == 0) {
+      return;
+    }
+    assert_equals(scroller.scrollLeft, 0);
+
+    // Horizontal scrollbar position bottom left
+    const start_pos = {
+      x: 30,
+      y: 200,
+    };
+    const end_pos = { x: 200, y: 200 };
+
+    await drag_scrollbar(start_pos, end_pos);
+    await waitForAnimationFrames(2);
+
+    assert_not_equals(scroller.scrollLeft, 0);
+    assert_equals(getComputedStyle(target).getPropertyValue("--none"), "yes");
+    assert_equals(getComputedStyle(target).getPropertyValue("--x"), "no");
+
+  }, "Horizontal scrollbar drag scroll");
 
 </script>

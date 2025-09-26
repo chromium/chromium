@@ -1137,11 +1137,9 @@ void InputHandler::UpdateLastLatchedScrollSourceType() {
   if (has_scrolled_by_wheel_ || has_scrolled_by_touch_ ||
       has_scrolled_by_precisiontouchpad_ || has_scrolled_by_scrollbar_ ||
       has_pinch_zoomed_) {
-    // TODO(crbug.com/414556050): Need to distinguish between different types of
-    // scrollbar scrolls. For example: scrollbar dragging should be absolute
-    // scrolls, while pressing arrow buttons or scrollbar track clicks should be
-    // relative scrolls.
-    // https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
+    // On the compositor we set all scrollbar scrolls as relatives, the correct
+    // type for scrollbar scrolls is computed in
+    // `ScrollableArea::DidCompositorScroll`.
     last_latched_scroll_source_type_ = ScrollSourceType::kRelativeScroll;
     return;
   }

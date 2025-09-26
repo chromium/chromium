@@ -1164,6 +1164,21 @@ void ScrollableArea::DidCompositorScroll(const gfx::PointF& position,
       ExistingProgrammaticScrollAnimator()) {
     source_type = ExistingProgrammaticScrollAnimator()->GetScrollSourceType();
   }
+
+  bool vertical_scrollbar_thumb_pressed =
+      VerticalScrollbar() && VerticalScrollbar()->PressedPart() == kThumbPart;
+  bool horizontal_scrollbar_thumb_pressed =
+      HorizontalScrollbar() &&
+      HorizontalScrollbar()->PressedPart() == kThumbPart;
+  if (source_type == cc::ScrollSourceType::kRelativeScroll &&
+      (vertical_scrollbar_thumb_pressed ||
+       horizontal_scrollbar_thumb_pressed)) {
+    // Manipulating the scrollbar “thumb” explicitly should be an absolute
+    // scroll https://drafts.csswg.org/css-scroll-snap-1/#scroll-types.
+    // TODO(crbug.com/414556050): This should be ideally done on the compositor.
+    source_type = cc::ScrollSourceType::kAbsoluteScroll;
+  }
+
   SetScrollOffset(new_offset, mojom::blink::ScrollType::kCompositor,
                   source_type, mojom::blink::ScrollBehavior::kInstant,
                   ScrollCallback(), targeted_scroll);
