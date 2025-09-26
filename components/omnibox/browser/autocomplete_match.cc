@@ -666,7 +666,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::FEATURED_ENTERPRISE_SEARCH:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       if (turl && turl->CreatedByEnterpriseSearchAggregatorPolicy()) {
-        return vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
+        return base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+                   ? vector_icons::kGoogleAgentspaceMonochromeLogo25Icon
+                   : vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
       }
 #endif
       return omnibox::kPageChromeRefreshIcon;

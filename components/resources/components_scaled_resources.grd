@@ -30,6 +30,7 @@
       <structure type="chrome_scaled_image" name="IDR_SAD_PLUGIN" file="sadplugin.png" />
       <if expr="_google_chrome">
         <structure type="chrome_scaled_image" name="IDR_GOOGLE_AGENTSPACE_LOGO" file="google_chrome/google_agentspace_logo.png" />
+        <structure type="chrome_scaled_image" name="IDR_GOOGLE_AGENTSPACE_LOGO_25" file="google_chrome/google_agentspace_logo_25.png" />
       </if>
     </structures>
   </release>

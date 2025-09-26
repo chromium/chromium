@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/variations_client.h"
@@ -107,6 +108,8 @@ constexpr char kGoogleCalendarIconResourceName[] =
     "//resources/cr_components/searchbox/icons/calendar.svg";
 constexpr char kGoogleAgentspaceIconResourceName[] =
     "//resources/cr_components/searchbox/icons/google_agentspace_logo.svg";
+constexpr char kGoogleAgentspace25IconResourceName[] =
+    "//resources/cr_components/searchbox/icons/google_agentspace_logo_25.svg";
 const char* kGoogleGIconResourceName =
     "//resources/cr_components/searchbox/icons/google_g.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] =
@@ -118,6 +121,9 @@ constexpr char kGoogleLensMonochromeLogoIcon[] =
 constexpr char kGoogleAgentspaceMonochromeLogoIcon[] =
     "//resources/cr_components/searchbox/icons/"
     "google_agentspace_monochrome_logo.svg";
+constexpr char kGoogleAgentspaceMonochromeLogo25Icon[] =
+    "//resources/cr_components/searchbox/icons/"
+    "google_agentspace_monochrome_logo_25.svg";
 #endif
 const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
 const char* kIncognitoIconResourceName =
@@ -484,7 +490,9 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (icon.name == vector_icons::kGoogleAgentspaceMonochromeLogoIcon.name) {
-    return kGoogleAgentspaceMonochromeLogoIcon;
+    return base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+               ? kGoogleAgentspaceMonochromeLogo25Icon
+               : kGoogleAgentspaceMonochromeLogoIcon;
   } else if (icon.name == vector_icons::kGoogleCalendarIcon.name) {
     return kGoogleCalendarIconResourceName;
   } else if (icon.name == vector_icons::kGoogleGLogoMonochromeIcon.name) {
@@ -600,7 +608,10 @@ SearchboxHandler::CreateAutocompleteMatches(
         AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
       mojom_match->is_enterprise_search_aggregator_people_type = true;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      mojom_match->icon_path = kGoogleAgentspaceIconResourceName;
+      mojom_match->icon_path =
+          base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+              ? kGoogleAgentspace25IconResourceName
+              : kGoogleAgentspaceIconResourceName;
 #endif
     }
     mojom_match->icon_url = match.icon_url;

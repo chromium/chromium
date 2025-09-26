@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
@@ -127,7 +128,9 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
              template_url->policy_origin() ==
                  TemplateURLData::PolicyOrigin::kSearchAggregator) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    vector_icon = &vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
+    vector_icon = base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+                      ? &vector_icons::kGoogleAgentspaceMonochromeLogo25Icon
+                      : &vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
 #endif
   }
 

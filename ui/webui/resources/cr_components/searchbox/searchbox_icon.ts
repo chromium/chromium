@@ -314,6 +314,7 @@ export class SearchboxIconElement extends CrLitElement {
       'drive_slides',
       'drive_video',
       'google_agentspace_logo',
+      'google_agentspace_logo_25',
       'google_g',
       'google_g_gradient',
       'note',

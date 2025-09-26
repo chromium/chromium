@@ -132,6 +132,7 @@ BASE_DECLARE_FEATURE(kOmniboxShortcutsAndroid);
 
 // Enterprise search aggregators features.
 BASE_DECLARE_FEATURE(kEnableSearchAggregatorPolicy);
+BASE_DECLARE_FEATURE(kUseAgentspace25Logo);
 
 // Site search allow user override feature.
 BASE_DECLARE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy);

@@ -524,13 +524,23 @@ gfx::Image OmniboxEditModel::GetAgentspaceIcon(bool dark_mode) const {
   if (dark_mode) {
     // For dark mode, per Agentspace branding, use `SK_ColorWhite` over the
     // monochrome logo.
-    return controller_->client()->GetSizedIcon(
-        vector_icons::kGoogleAgentspaceMonochromeLogoIcon, SK_ColorWHITE);
+    return base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+               ? controller_->client()->GetSizedIcon(
+                     vector_icons::kGoogleAgentspaceMonochromeLogo25Icon,
+                     SK_ColorWHITE)
+               : controller_->client()->GetSizedIcon(
+                     vector_icons::kGoogleAgentspaceMonochromeLogoIcon,
+                     SK_ColorWHITE);
   } else {
-    return controller_->client()->GetSizedIcon(
-        ui::ResourceBundle::GetSharedInstance()
-            .GetImageNamed(IDR_GOOGLE_AGENTSPACE_LOGO)
-            .ToSkBitmap());
+    return base::FeatureList::IsEnabled(omnibox::kUseAgentspace25Logo)
+               ? controller_->client()->GetSizedIcon(
+                     ui::ResourceBundle::GetSharedInstance()
+                         .GetImageNamed(IDR_GOOGLE_AGENTSPACE_LOGO_25)
+                         .ToSkBitmap())
+               : controller_->client()->GetSizedIcon(
+                     ui::ResourceBundle::GetSharedInstance()
+                         .GetImageNamed(IDR_GOOGLE_AGENTSPACE_LOGO)
+                         .ToSkBitmap());
   }
 #else
   return gfx::Image();
