@@ -42,6 +42,6 @@ interface SVGTextContentElement : SVGGraphicsElement {
     [HighEntropy, Measure, RaisesException] SVGPoint getEndPositionOfChar(unsigned long charnum);
     [HighEntropy, Measure, RaisesException] SVGRect getExtentOfChar(unsigned long charnum);
     [RaisesException] float getRotationOfChar(unsigned long charnum);
-    [RaisesException] long getCharNumAtPosition(optional DOMPointInit point = {});
+    long getCharNumAtPosition(optional DOMPointInit point = {});
     [RaisesException] void selectSubString(unsigned long charnum, unsigned long nchars);
 };

@@ -230,9 +230,7 @@ float SVGTextContentElement::getRotationOfChar(
   return 0.0f;
 }
 
-int SVGTextContentElement::getCharNumAtPosition(
-    DOMPointInit* point,
-    ExceptionState& exception_state) {
+int SVGTextContentElement::getCharNumAtPosition(const DOMPointInit* point) {
   // If either of the x or y properties on point are infinite or NaN, then the
   // method must return -1.
   if (!std::isfinite(point->x()) || !std::isfinite(point->y())) {
