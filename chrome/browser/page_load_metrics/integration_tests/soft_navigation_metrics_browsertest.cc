@@ -346,6 +346,15 @@ class SoftNavigationTest : public MetricIntegrationTest,
     return cls;
   }
 
+  void VerifySoftNavigationCount(int64_t expected_count) {
+    int64_t soft_navigation_count;
+    bool extract_soft_navigation_count = ExtractUKMPageLoadMetric(
+        ukm_recorder(), ukm::builders::PageLoad::kSoftNavigationCountName,
+        &soft_navigation_count);
+    EXPECT_TRUE(extract_soft_navigation_count);
+    EXPECT_EQ(soft_navigation_count, expected_count);
+  }
+
   std::string JsSnippetGetSoftLcpStartTimes() {
     return R"(
       (() => {
@@ -497,6 +506,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   // Navigate to about:blank (untracked) to ensure all UKM are recorded.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
+  VerifySoftNavigationCount(/*expected_count=*/2);
+
   VerifySoftNavIdsAndSoftLcpStartTimes(
       soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
 
@@ -603,6 +614,8 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
 
   // Navigate to about:blank (untracked) to ensure all UKM are recorded.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  VerifySoftNavigationCount(/*expected_count=*/2);
 
   VerifySoftNavIdsAndSoftLcpStartTimes(
       soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
