@@ -106,6 +106,13 @@ void HistorySyncSessionDurationsMetricsRecorder::OnStateChanged(
   history_sync_status_ = new_history_sync_status;
 }
 
+void HistorySyncSessionDurationsMetricsRecorder::OnSyncShutdown(
+    SyncService* sync) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
 HistorySyncSessionDurationsMetricsRecorder::HistorySyncStatus
 HistorySyncSessionDurationsMetricsRecorder::DetermineHistorySyncStatus() const {
   if (!sync_service_ ||

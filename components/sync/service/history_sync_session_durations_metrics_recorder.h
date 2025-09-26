@@ -38,6 +38,7 @@ class HistorySyncSessionDurationsMetricsRecorder
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(SyncService* sync) override;
+  void OnSyncShutdown(SyncService* sync) override;
 
  private:
   enum class HistorySyncStatus {

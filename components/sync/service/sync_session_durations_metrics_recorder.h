@@ -54,6 +54,7 @@ class SyncSessionDurationsMetricsRecorder
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(

@@ -182,6 +182,12 @@ void SyncSessionDurationsMetricsRecorder::OnStateChanged(SyncService* sync) {
   HandleSyncAndAccountChange();
 }
 
+void SyncSessionDurationsMetricsRecorder::OnSyncShutdown(SyncService* sync) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
 void SyncSessionDurationsMetricsRecorder::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   DVLOG(1) << __func__;

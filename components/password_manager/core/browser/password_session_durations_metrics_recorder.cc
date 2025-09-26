@@ -82,6 +82,13 @@ void PasswordSessionDurationsMetricsRecorder::OnStateChanged(
   CheckForUserStateChange();
 }
 
+void PasswordSessionDurationsMetricsRecorder::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
 void PasswordSessionDurationsMetricsRecorder::CheckForUserStateChange() {
   features_util::PasswordAccountStorageUserState new_user_state =
       features_util::ComputePasswordAccountStorageUserState(sync_service_);
