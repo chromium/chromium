@@ -2962,43 +2962,51 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
         {{features::kPdfInk2TextHighlighting.name, "true"}});
   }
 
+  void TearDown() override {
+    // Reset `engine_` before PDFium gets uninitialized.
+    engine_.reset();
+    PDFiumDrawSelectionTestBase::TearDown();
+  }
+
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    if (engine_) {
+      // Plugin size chosen so all pages of the document are visible.
+      engine_->PluginSizeUpdated({1024, 4096});
+      engine_->SetCaretBrowsingEnabled(true);
+    }
+    return engine_.get();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<PDFiumEngine> engine_;
+  TestClient client_;
 };
 
 TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  engine->PluginSizeUpdated({500, 500});
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+
+  engine->SetCaretBrowsingEnabled(false);
 
   constexpr gfx::Size kHelloWorldExpectedVisiblePageSize{266, 266};
   DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
                           kHelloWorldExpectedVisiblePageSize);
 
-  engine->SetCaretBrowsingEnabled(false);
-  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
-                          kHelloWorldExpectedVisiblePageSize);
-
   engine->SetCaretBrowsingEnabled(true);
+
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
                                               "hello_world_caret.png");
-
-  engine->SetCaretBrowsingEnabled(false);
-  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
-                          kHelloWorldExpectedVisiblePageSize);
 }
 
 TEST_P(PDFiumEngineCaretTest, DrawOnGeometryChange) {
-  TestClient client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  engine->SetCaretBrowsingEnabled(true);
-  engine->PluginSizeUpdated({500, 500});
 
   engine->ScrolledToXPosition(20);
 
@@ -3012,13 +3020,8 @@ TEST_P(PDFiumEngineCaretTest, DrawOnGeometryChange) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextClick) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  engine->SetCaretBrowsingEnabled(true);
-  engine->PluginSizeUpdated({500, 500});
 
   // The "b" in "Goodbye, world!".
   EXPECT_TRUE(engine->HandleInputEvent(
@@ -3036,13 +3039,9 @@ TEST_P(PDFiumEngineCaretTest, TextClick) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextClickSyntheticWhitespace) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("text_synthetic_whitespace.pdf"));
+  PDFiumEngine* engine =
+      CreateEngine(FILE_PATH_LITERAL("text_synthetic_whitespace.pdf"));
   ASSERT_TRUE(engine);
-
-  engine->SetCaretBrowsingEnabled(true);
-  engine->PluginSizeUpdated({500, 500});
 
   // The synthetic whitespace with an empty screen rect.
   EXPECT_TRUE(engine->HandleInputEvent(
@@ -3053,14 +3052,9 @@ TEST_P(PDFiumEngineCaretTest, TextClickSyntheticWhitespace) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
+  PDFiumEngine* engine = CreateEngine(
+      FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
   ASSERT_TRUE(engine);
-
-  engine->SetCaretBrowsingEnabled(true);
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // First page. The first "l" in "Hello, world!".
   EXPECT_TRUE(engine->HandleInputEvent(
@@ -3078,13 +3072,8 @@ TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextSelectAndMove) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  engine->SetCaretBrowsingEnabled(true);
-  engine->PluginSizeUpdated({500, 500});
 
   engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
 
