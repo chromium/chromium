@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -18,7 +19,6 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabArchiveSettings.Observer;
 
@@ -56,9 +56,11 @@ public class TabArchiveSettingsTest {
         assertEquals(
                 TabArchiveSettings.DEFAULT_ARCHIVE_TIME_HOURS,
                 mSettings.getArchiveTimeDeltaHours());
-        assertEquals(
-                ChromeFeatureList.sAndroidTabDeclutterAutoDelete.isEnabled(),
-                mSettings.isAutoDeleteEnabled());
+        // Auto-delete is disabled until the user has seen the promo or enables it manually.
+        assertFalse(mSettings.isAutoDeleteEnabled());
+        // Mock the user enabling auto-delete manually, and verify the settings are updated.
+        mSettings.setAutoDeleteEnabled(true);
+        assertTrue(mSettings.isAutoDeleteEnabled());
         assertEquals(AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT, mSettings.getAutoDeleteTimeDeltaHours());
         assertEquals(
                 TabArchiveSettings.DEFAULT_MAX_SIMULTANEOUS_ARCHIVES,

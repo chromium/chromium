@@ -1012,21 +1012,6 @@
             ]
         }
     ],
-    "AndroidTabDeclutterAutoDeletePromo": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidTabDeclutterAutoDelete"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidTabDeclutterPerformanceImprovements": [
         {
             "platforms": [
