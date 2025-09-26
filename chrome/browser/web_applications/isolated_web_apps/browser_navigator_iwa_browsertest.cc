@@ -225,9 +225,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
   {
     // Eliminate all prompts/guards along the way.
     ExternalProtocolHandler::PermitLaunchUrl();
-    ExternalProtocolHandler::SetBlockState("meow", url_info2_->origin(),
-                                           ExternalProtocolHandler::DONT_BLOCK,
-                                           profile());
     base::test::TestFuture<void> future;
     web_app::WebAppProvider::GetForWebApps(profile())
         ->scheduler()

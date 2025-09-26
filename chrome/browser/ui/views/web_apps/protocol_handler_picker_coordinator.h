@@ -1,0 +1,71 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_PICKER_COORDINATOR_H_
+#define CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_PICKER_COORDINATOR_H_
+
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
+#include "content/public/browser/web_contents_user_data.h"
+#include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+namespace web_app {
+
+// This class manages the UI flow for picking a web app to handle a protocol
+// request. Its lifetime is tied to the WebContents it's attached to.
+class ProtocolHandlerPickerCoordinator
+    : public content::WebContentsUserData<ProtocolHandlerPickerCoordinator> {
+ public:
+  ~ProtocolHandlerPickerCoordinator() override;
+
+  void ShowPicker(const GURL& protocol_url,
+                  const std::vector<std::string>& app_ids,
+                  const std::optional<url::Origin>& initiating_origin);
+
+ private:
+  friend class content::WebContentsUserData<ProtocolHandlerPickerCoordinator>;
+
+  explicit ProtocolHandlerPickerCoordinator(content::WebContents* web_contents);
+
+  void GatherAppData(const GURL& protocol_url,
+                     const std::vector<std::string>& app_ids,
+                     const std::optional<url::Origin>& initiating_origin);
+  void ShowPickerWithEntries(
+      const GURL& protocol_url,
+      const std::optional<url::Origin>& initiating_origin,
+      ProtocolHandlerPickerDialogEntries app_entries);
+  void OnPickerClosed(const GURL& protocol_url,
+                      std::optional<ProtocolHandlerPickerDialogResult> result);
+  bool HasOpenDialogWidget() const;
+
+  const raw_ptr<apps::AppServiceProxy> proxy_;
+
+  // Owns the currently opened dialog for this tab.
+  std::unique_ptr<views::Widget> dialog_;
+
+  base::WeakPtrFactory<ProtocolHandlerPickerCoordinator> weak_factory_{this};
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+// If there's a preferred app among `app_ids` for handling `protocol_url`,
+// launches this app directly; otherwise shows the protocol handler picker
+// dialog.
+void LaunchProtocolUrlInPreferredApp(
+    content::WebContents* web_contents,
+    const GURL& protocol_url,
+    const std::vector<std::string>& app_ids,
+    const std::optional<url::Origin>& initiator_origin);
+
+}  // namespace web_app
+
+#endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_PROTOCOL_HANDLER_PICKER_COORDINATOR_H_
