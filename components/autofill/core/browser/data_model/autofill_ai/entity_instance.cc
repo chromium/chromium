@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -33,18 +34,20 @@ std::u16string NormalizeEntityValue(const AttributeInstance& attribute) {
       attribute.GetRawInfo(attribute.type().field_type()));
 }
 
-std::u16string Format(std::u16string s,
-                      base::optional_ref<const std::u16string> format_string) {
-  if (!format_string) {
+std::u16string Format(
+    std::u16string s,
+    base::optional_ref<const AutofillFormatString> format_string) {
+  // TODO(crbug.com/446883719): Support more format string types.
+  if (!format_string || format_string->type != FormatString_Type_AFFIX) {
     return s;
   }
 
   // We parse the leading minus here rather than using `base::StringToInt()` to
   // avoid mixing signed and unsigned integers as this easily leads to
   // undefined behavior.
-  std::u16string_view format = *format_string;
+  std::u16string_view format = format_string->value;
   bool suffix = false;
-  if (format_string->starts_with(u"-")) {
+  if (format.starts_with(u"-")) {
     format = format.substr(1);
     suffix = true;
   }
@@ -90,7 +93,7 @@ AttributeInstance::~AttributeInstance() = default;
 std::u16string AttributeInstance::GetInfo(
     FieldType field_type,
     const std::string& app_locale,
-    base::optional_ref<const std::u16string> format_string) const {
+    base::optional_ref<const AutofillFormatString> format_string) const {
   field_type = GetNormalizedFieldType(field_type);
   return std::visit(
       absl::Overload{[&](const CountryInfo& country) {
@@ -100,7 +103,7 @@ std::u16string AttributeInstance::GetInfo(
                        // TODO(crbug.com/396325496): Consider falling back
                        // to a locale-specific format by relying on
                        // `app_locale`.
-                       return date.GetDate(format_string ? *format_string
+                       return date.GetDate(format_string ? format_string->value
                                                          : u"YYYY-MM-DD");
                      },
                      [&](const NameInfo&) { return GetRawInfo(field_type); },
@@ -148,11 +151,12 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
       info_);
 }
 
-void AttributeInstance::SetInfo(FieldType field_type,
-                                const std::u16string& value,
-                                const std::string& app_locale,
-                                std::u16string_view format_string,
-                                VerificationStatus status) {
+void AttributeInstance::SetInfo(
+    FieldType field_type,
+    const std::u16string& value,
+    const std::string& app_locale,
+    base::optional_ref<const AutofillFormatString> format_string,
+    VerificationStatus status) {
   field_type = GetNormalizedFieldType(field_type);
   std::visit(
       absl::Overload{
@@ -167,7 +171,12 @@ void AttributeInstance::SetInfo(FieldType field_type,
               country = CountryInfo();
             }
           },
-          [&](DateInfo& date) { date.SetDate(value, format_string); },
+          [&](DateInfo& date) {
+            date.SetDate(value, format_string && format_string->type ==
+                                                     FormatString_Type_DATE
+                                    ? format_string->value
+                                    : u"");
+          },
           [&](NameInfo& name) {
             if (!name.GetSupportedTypes().contains(field_type)) {
               return;

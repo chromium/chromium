@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -24,16 +25,13 @@ constexpr char kAppLocaleUS[] = "en-US";
 
 struct GetInfoParams {
   std::string app_locale = "";
-  const char16_t* format_string = nullptr;
+  std::optional<AutofillFormatString> format_string;
 };
 
 std::u16string GetInfo(const AttributeInstance& a,
                        FieldType field_type,
                        GetInfoParams params = {}) {
-  return a.GetInfo(field_type, params.app_locale,
-                   params.format_string
-                       ? std::optional(std::u16string(params.format_string))
-                       : std::nullopt);
+  return a.GetInfo(field_type, params.app_locale, params.format_string);
 }
 
 TEST(AutofillEntityInstanceTest, Attributes) {
@@ -58,13 +56,13 @@ TEST(AutofillEntityInstanceTest, Attributes) {
 TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
   AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"John Doe",
-                        /*app_locale=*/"", /*format_string=*/u"",
+                        /*app_locale=*/"", /*format_string=*/std::nullopt,
                         VerificationStatus::kObserved);
   passport_name.FinalizeInfo();
 
   AttributeInstance passport_number((AttributeType(kPassportNumber)));
   passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
-                          /*app_locale=*/"", /*format_string=*/u"",
+                          /*app_locale=*/"", /*format_string=*/std::nullopt,
                           VerificationStatus::kObserved);
 
   EXPECT_EQ(GetInfo(passport_name, NAME_FULL), u"John Doe");
@@ -82,7 +80,7 @@ TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
 TEST(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
   AttributeInstance passport_country((AttributeType(kPassportCountry)));
   passport_country.SetInfo(PASSPORT_ISSUING_COUNTRY, u"SE",
-                           /*app_locale=*/"", /*format_string=*/u"",
+                           /*app_locale=*/"", /*format_string=*/std::nullopt,
                            VerificationStatus::kObserved);
 
   EXPECT_EQ(GetInfo(passport_country, PASSPORT_ISSUING_COUNTRY,
@@ -109,7 +107,7 @@ TEST(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
 TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
   AttributeInstance passport_name((AttributeType(kPassportName)));
   passport_name.SetInfo(NAME_FULL, u"Some Name",
-                        /*app_locale=*/"", /*format_string=*/u"",
+                        /*app_locale=*/"", /*format_string=*/std::nullopt,
                         VerificationStatus::kObserved);
   passport_name.FinalizeInfo();
 
@@ -121,34 +119,44 @@ TEST(AutofillEntityInstanceTest, Attributes_StructuredName) {
 
 // Tests that AttributeInstance honors the affix formats.
 TEST(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
+  auto from_affix = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_AFFIX);
+  };
+
   AttributeInstance passport_number((AttributeType(kPassportNumber)));
   passport_number.SetInfo(PASSPORT_NUMBER, u"LR0123456",
-                          /*app_locale=*/"", /*format_string=*/u"",
+                          /*app_locale=*/"", /*format_string=*/std::nullopt,
                           VerificationStatus::kObserved);
   EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER), u"LR0123456");
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER, {.format_string = u"0"}),
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                    {.format_string = from_affix(u"0")}),
             u"LR0123456");
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER, {.format_string = u"4"}),
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                    {.format_string = from_affix(u"4")}),
             u"LR01");
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER, {.format_string = u"-4"}),
+  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
+                    {.format_string = from_affix(u"-4")}),
             u"3456");
   EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
-                    {.format_string =
-                         base::NumberToString16(std::numeric_limits<int>::min())
-                             .c_str()}),
+                    {.format_string = from_affix(base::NumberToString16(
+                         std::numeric_limits<int>::min()))}),
             u"LR0123456");
 }
 
 // Tests that AttributeInstance appropriately manages dates.
 TEST(AutofillEntityInstanceTest, Attributes_Date) {
+  auto from_date = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_DATE);
+  };
+
   AttributeInstance passport_name((AttributeType(kPassportIssueDate)));
   passport_name.SetInfo(PASSPORT_ISSUE_DATE, u"2001-02-03",
-                        /*app_locale=*/"", /*format_string=*/u"YYYY-MM-DD",
+                        /*app_locale=*/"", from_date(u"YYYY-MM-DD"),
                         VerificationStatus::kNoStatus);
 
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE), u"2001-02-03");
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE,
-                    {.format_string = u"DD/MM/YYYY"}),
+                    {.format_string = from_date(u"DD/MM/YYYY")}),
             u"03/02/2001");
 }
 

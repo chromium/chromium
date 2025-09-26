@@ -55,15 +55,15 @@ optimization_guide::proto::AutofillAiEntityType GetEntityType(
 }
 
 optimization_guide::proto::FormatStringSource GetFormatStringSource(
-    AutofillField::FormatStringSource format_string_source) {
+    AutofillFormatStringSource format_string_source) {
   switch (format_string_source) {
-    case AutofillField::FormatStringSource::kUnset:
+    case AutofillFormatStringSource::kUnset:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_UNSET;
-    case AutofillField::FormatStringSource::kHeuristics:
+    case AutofillFormatStringSource::kHeuristics:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_HEURISTICS;
-    case AutofillField::FormatStringSource::kModelResult:
+    case AutofillFormatStringSource::kModelResult:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_ML_MODEL;
-    case AutofillField::FormatStringSource::kServer:
+    case AutofillFormatStringSource::kServer:
       return optimization_guide::proto::FORMAT_STRING_SOURCE_SERVER;
   }
   NOTREACHED();

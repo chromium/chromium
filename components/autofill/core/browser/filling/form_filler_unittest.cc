@@ -1588,8 +1588,9 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   auto set_format_string = [&](size_t field_index,
                                std::string_view format_string) {
     form_structure->fields()[field_index]->set_format_string_unless_overruled(
-        base::UTF8ToUTF16(format_string),
-        AutofillField::FormatStringSource::kServer);
+        AutofillFormatString(base::UTF8ToUTF16(format_string),
+                             FormatString_Type_DATE),
+        AutofillFormatStringSource::kServer);
   };
   set_server_type(0, PASSPORT_NUMBER);
   set_server_type(1, NAME_FIRST);

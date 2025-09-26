@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -864,7 +865,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_NewInfo) {
       existing_entity_without_expiry_dates, AttributeType(kPassportNumber)));
   form->field(1)->set_value(u"01/02/20");
   form->field(1)->set_format_string_unless_overruled(
-      u"DD/MM/YY", AutofillField::FormatStringSource::kServer);
+      AutofillFormatString(u"DD/MM/YY", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
 
   std::optional<EntityInstance> new_entity;
   std::optional<EntityInstance> old_entity;
@@ -911,7 +913,8 @@ TEST_F(AutofillAiManagerImportFormTest, UpdateEntity_UpdateInfo) {
   // Set a new expiry date value, different from the one currently stored.
   form->field(1)->set_value(u"01/02/20");
   form->field(1)->set_format_string_unless_overruled(
-      u"DD/MM/YY", AutofillField::FormatStringSource::kServer);
+      AutofillFormatString(u"DD/MM/YY", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
 
   std::optional<EntityInstance> new_entity;
   std::optional<EntityInstance> old_entity;
@@ -969,7 +972,8 @@ TEST_F(AutofillAiManagerImportFormTest,
   // Issue date.
   form->field(2)->set_value(u"01/02/16");
   form->field(2)->set_format_string_unless_overruled(
-      u"DD/MM/YY", AutofillField::FormatStringSource::kServer);
+      AutofillFormatString(u"DD/MM/YY", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
 
   // Since the current entity instance is read only, no prompt should be shown.
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);

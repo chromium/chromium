@@ -39,6 +39,7 @@ namespace autofill {
 // Entity instances are loaded from a webdata table and exposed through
 // EntityDataManager.
 class AttributeInstance;
+struct AutofillFormatString;
 class EntityInstance;
 class EntityTable;
 
@@ -94,7 +95,7 @@ class AttributeInstance final {
   std::u16string GetInfo(
       FieldType field_type,
       const std::string& app_locale,
-      base::optional_ref<const std::u16string> format_string) const;
+      base::optional_ref<const AutofillFormatString> format_string) const;
 
   // Same as `GetInfo` but returns the value as stored with no formatting
   // whatsoever.
@@ -114,15 +115,19 @@ class AttributeInstance final {
   // See GetInfo() for the meaning of `field_type`.
   //
   // Currently, the `format_string` only matters for dates. Dates are updated
-  // incrementally, e.g., SetInfo(..., u"16", ..., u"DD", ...) only changes the
-  // day and does not reset the month or year. If `value` doesn't fully match
-  // the `format_string`, the function is a no-op, e.g.,
-  // SetInfo(..., u"16/12/2022", ..., u"DD", ...) is a no-op.
+  // incrementally, e.g.,
+  //   SetInfo(..., u"16", ...,
+  //           AutofillFormatString::FromDateFormat(u"DD"), ...);
+  // only changes the day and does not reset the month or year. If `value`
+  // doesn't fully match the `format_string`, e.g.
+  //   SetInfo(..., u"16/12/2022", ...,
+  //           AutofillFormatString::FromDateFormat(u"DD"), ...);
+  // the function is a no-op.
   // See AutofillField::format_string() for the grammar of format strings.
   void SetInfo(FieldType field_type,
                const std::u16string& value,
                const std::string& app_locale,
-               std::u16string_view format_string,
+               base::optional_ref<const AutofillFormatString> format_string,
                VerificationStatus status);
 
   // Similar to SetInfo() but without canonicalization: It does not accept

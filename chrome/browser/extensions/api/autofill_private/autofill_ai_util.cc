@@ -17,6 +17,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/autofill_private.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -35,6 +36,7 @@ namespace {
 using autofill::AttributeInstance;
 using autofill::AttributeType;
 using autofill::AttributeTypeName;
+using autofill::AutofillFormatString;
 using autofill::EntityInstance;
 using autofill::EntityType;
 using autofill::EntityTypeName;
@@ -210,16 +212,21 @@ std::optional<EntityInstance> PrivateApiEntityInstanceToEntityInstance(
         return std::nullopt;
       }
 
-      attribute_instance.SetInfo(attribute_instance.type().field_type(),
-                                 base::UTF8ToUTF16(date->month), app_locale,
-                                 u"M",
-                                 autofill::VerificationStatus::kUserVerified);
-      attribute_instance.SetInfo(attribute_instance.type().field_type(),
-                                 base::UTF8ToUTF16(date->day), app_locale, u"D",
-                                 autofill::VerificationStatus::kUserVerified);
+      attribute_instance.SetInfo(
+          attribute_instance.type().field_type(),
+          base::UTF8ToUTF16(date->month), app_locale,
+          AutofillFormatString(u"M", autofill::FormatString_Type_DATE),
+          autofill::VerificationStatus::kUserVerified);
+      attribute_instance.SetInfo(
+          attribute_instance.type().field_type(), base::UTF8ToUTF16(date->day),
+          app_locale,
+          AutofillFormatString(u"D", autofill::FormatString_Type_DATE),
+          autofill::VerificationStatus::kUserVerified);
       attribute_instance.SetInfo(
           attribute_instance.type().field_type(), base::UTF8ToUTF16(date->year),
-          app_locale, u"YYYY", autofill::VerificationStatus::kUserVerified);
+          app_locale,
+          AutofillFormatString(u"YYYY", autofill::FormatString_Type_DATE),
+          autofill::VerificationStatus::kUserVerified);
     } else {
       if (!private_api_attribute_instance.value.as_string.has_value()) {
         return std::nullopt;
@@ -273,14 +280,20 @@ autofill_private::EntityInstance EntityInstanceToPrivateApiEntityInstance(
       autofill::FieldType field_type = attribute_instance.type().field_type();
       base::DictValue date_value;
       date_value.SetByDottedPath(
-          "month", base::UTF16ToUTF8(attribute_instance.GetInfo(
-                       field_type, app_locale, std::u16string(u"M"))));
+          "month",
+          base::UTF16ToUTF8(attribute_instance.GetInfo(
+              field_type, app_locale,
+              AutofillFormatString(u"M", autofill::FormatString_Type_DATE))));
       date_value.SetByDottedPath(
-          "day", base::UTF16ToUTF8(attribute_instance.GetInfo(
-                     field_type, app_locale, std::u16string(u"D"))));
+          "day",
+          base::UTF16ToUTF8(attribute_instance.GetInfo(
+              field_type, app_locale,
+              AutofillFormatString(u"D", autofill::FormatString_Type_DATE))));
       date_value.SetByDottedPath(
           "year", base::UTF16ToUTF8(attribute_instance.GetInfo(
-                      field_type, app_locale, std::u16string(u"YYYY"))));
+                      field_type, app_locale,
+                      AutofillFormatString(u"YYYY",
+                                           autofill::FormatString_Type_DATE))));
       autofill_private::AttributeInstance::Value::Populate(
           base::Value(std::move(date_value)),
           private_api_attribute_instances.back().value);

@@ -90,10 +90,12 @@ std::optional<std::u16string> GetValueForDateSelect(
     return std::nullopt;
   }
 
-  auto get_part = [&](const std::u16string& format_string, uint32_t min = 0,
+  auto get_part = [&](std::u16string format_string, uint32_t min = 0,
                       uint32_t max =
                           std::numeric_limits<uint32_t>::max()) -> uint32_t {
-    std::u16string s = attribute.GetInfo(type, app_locale, format_string);
+    std::u16string s = attribute.GetInfo(
+        type, app_locale,
+        AutofillFormatString(std::move(format_string), FormatString_Type_DATE));
     unsigned int i = 0;
     return base::StringToUint(s, &i) && min <= i && i <= max
                ? i

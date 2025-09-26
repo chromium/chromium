@@ -48,7 +48,7 @@ bool AttributesMeetImportConstraints(EntityType entity_type,
 
 struct ValueAndFormatString {
   std::u16string value;
-  std::u16string format_string;
+  AutofillFormatString format_string;
 };
 
 // Returns the value and format string of `field` for import by Autofill AI.
@@ -58,9 +58,9 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field,
       !field.IsSelectElement()) {
     std::u16string value = field.value_for_import();
     base::TrimWhitespace(value, base::TRIM_ALL, &value);
-    return {
-        .value = std::move(value),
-        .format_string = field.format_string() ? *field.format_string() : u""};
+    return {.value = std::move(value),
+            .format_string = field.format_string() ? *field.format_string()
+                                                   : AutofillFormatString()};
   }
 
   auto get_value = [&](DatePartRange range) {
@@ -77,13 +77,19 @@ ValueAndFormatString GetValueAndFormatString(const AutofillField& field,
     }
     return std::u16string();
   };
+
+  auto make_date_format = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_DATE);
+  };
+
   std::u16string value;
   if (!(value = get_value(GetYearRange(field.options()))).empty()) {
-    return {.value = std::move(value), .format_string = u"YYYY"};
+    return {.value = std::move(value),
+            .format_string = make_date_format(u"YYYY")};
   } else if (!(value = get_value(GetMonthRange(field.options()))).empty()) {
-    return {.value = std::move(value), .format_string = u"M"};
+    return {.value = std::move(value), .format_string = make_date_format(u"M")};
   } else if (!(value = get_value(GetDayRange(field.options()))).empty()) {
-    return {.value = std::move(value), .format_string = u"D"};
+    return {.value = std::move(value), .format_string = make_date_format(u"D")};
   }
   return {};
 }
@@ -139,7 +145,8 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
         // Do not import entities that have an attribute whose value is a proper
         // prefix or suffix.
         if (IsAffixFormatStringEnabledForType(field_type) &&
-            data_util::IsValidAffixFormat(value.format_string,
+            value.format_string.type == FormatString_Type_AFFIX &&
+            data_util::IsValidAffixFormat(value.format_string.value,
                                           /*exclude_full_value=*/true)) {
           if (auto it = section_to_entity_types_attributes.find(section);
               it != section_to_entity_types_attributes.end()) {
@@ -207,7 +214,10 @@ std::optional<std::u16string> MaybeGetLocalizedDate(
     int part = 0;
     // The app_locale is irrelevant for dates.
     bool success = base::StringToInt(
-        attribute.GetInfo(field_type, /*app_locale=*/"", format), &part);
+        attribute.GetInfo(
+            field_type, /*app_locale=*/"",
+            AutofillFormatString(std::move(format), FormatString_Type_DATE)),
+        &part);
     return success ? part : 0;
   };
   base::Time time;

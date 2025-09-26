@@ -7873,9 +7873,9 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel, CacheResultUsed) {
   EXPECT_THAT(fs->field(3)->Type().GetAutofillAiTypes(),
               ElementsAre(PASSPORT_ISSUE_DATE));
   ASSERT_TRUE(fs->field(3)->format_string().has_value());
-  EXPECT_EQ(fs->field(3)->format_string().value(), u"D.M.YYYY");
+  EXPECT_EQ(fs->field(3)->format_string()->value, u"D.M.YYYY");
   EXPECT_EQ(fs->field(3)->format_string_source(),
-            AutofillField::FormatStringSource::kModelResult);
+            AutofillFormatStringSource::kModelResult);
 }
 
 // Tests that if the form has at least one existing AutofillAI prediction, then

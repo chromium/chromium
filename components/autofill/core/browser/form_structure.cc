@@ -268,9 +268,9 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
         it != field_to_attribute_types.end()) {
       annotated_field.attribute_types = AttributeTypesToString(it->second);
     }
-    if (base::optional_ref<const std::u16string> format_string =
+    if (base::optional_ref<const AutofillFormatString> format_string =
             field->format_string()) {
-      annotated_field.format_string = base::UTF16ToUTF8(*format_string);
+      annotated_field.format_string = base::UTF16ToUTF8(format_string->value);
     }
     annotated_field.html_type = FieldTypeToStringView(field->html_type());
     annotated_field.overall_type = [&] {
@@ -436,7 +436,7 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     field->set_previously_autofilled(cached_field->previously_autofilled());
     field->set_did_trigger_suggestions(cached_field->did_trigger_suggestions());
     field->set_was_focused(cached_field->was_focused());
-    if (base::optional_ref<const std::u16string> format_string =
+    if (base::optional_ref<const AutofillFormatString> format_string =
             cached_field->format_string()) {
       field->set_format_string_unless_overruled(
           *format_string, cached_field->format_string_source());
@@ -829,25 +829,25 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
       buffer << Tr{} << "Autofill AI AttributeTypes:"
              << AttributeTypesToString(it->second);
     }
-    if (base::optional_ref<const std::u16string> format_string =
+    if (base::optional_ref<const AutofillFormatString> format_string =
             field->format_string()) {
       std::string_view source;
       switch (field->format_string_source()) {
-        case AutofillField::FormatStringSource::kUnset:
+        case AutofillFormatStringSource::kUnset:
           source = "unset";
           break;
-        case AutofillField::FormatStringSource::kHeuristics:
+        case AutofillFormatStringSource::kHeuristics:
           source = "heuristic";
           break;
-        case AutofillField::FormatStringSource::kModelResult:
+        case AutofillFormatStringSource::kModelResult:
           source = "model";
           break;
-        case AutofillField::FormatStringSource::kServer:
+        case AutofillFormatStringSource::kServer:
           source = "server";
           break;
       }
       buffer << Tr{} << "Format string:"
-             << base::StrCat({"\"", base::UTF16ToUTF8(*format_string),
+             << base::StrCat({"\"", base::UTF16ToUTF8(format_string->value),
                               "\" from ", source});
     }
     buffer << Tr{} << "Section:" << field->section();

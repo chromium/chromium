@@ -565,7 +565,8 @@ class GetFillValueForEntityTest_Date : public GetFillValueForEntityTest {
 TEST_F(GetFillValueForEntityTest_Date, FillingDateValueIntoTextInput) {
   auto field = CreateInput(FormControlType::kInputText);
   field->set_format_string_unless_overruled(
-      u"DD/MM/YYYY", AutofillField::FormatStringSource::kServer);
+      AutofillFormatString(u"DD/MM/YYYY", FormatString_Type_DATE),
+      AutofillFormatStringSource::kServer);
   EXPECT_EQ(
       GetFillValueForEntity(passport(), field, mojom::ActionPersistence::kFill,
                             /*app_locale=*/"",

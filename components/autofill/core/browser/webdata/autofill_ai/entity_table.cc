@@ -96,10 +96,13 @@ void HandleTestSwitchesIfNeeded(sql::Database* db, EntityTable& table) {
                                std::u16string value) -> AttributeInstance {
       auto type = AttributeType(type_name);
       auto instance = AttributeInstance(AttributeType(type));
-      instance.SetInfo(instance.type().field_type(), value, /*app_locale=*/"",
-                       /*format_string=*/
-                       IsDateFieldType(type.field_type()) ? u"YYYY-MM-DD" : u"",
-                       VerificationStatus::kNoStatus);
+      instance.SetInfo(
+          instance.type().field_type(), value, /*app_locale=*/"",
+          /*format_string=*/
+          IsDateFieldType(type.field_type())
+              ? AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE)
+              : base::optional_ref<const AutofillFormatString>(),
+          VerificationStatus::kNoStatus);
       return instance;
     };
 

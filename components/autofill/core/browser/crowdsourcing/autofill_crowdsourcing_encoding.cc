@@ -1058,9 +1058,11 @@ void ProcessServerPredictionsQueryResponse(
           case FormatString_Type_DATE:
           case FormatString_Type_FLIGHT_NUMBER:
             field->set_format_string_unless_overruled(
-                base::UTF8ToUTF16(
-                    field_suggestion->format_string().format_string()),
-                AutofillField::FormatStringSource::kServer);
+                AutofillFormatString(
+                    base::UTF8ToUTF16(
+                        field_suggestion->format_string().format_string()),
+                    field_suggestion->format_string().type()),
+                AutofillFormatStringSource::kServer);
             break;
         }
       }
