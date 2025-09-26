@@ -15,7 +15,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class GURL;
 class PrefService;
@@ -24,6 +23,10 @@ class PrefChangeRegistrar;
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace commerce {
 

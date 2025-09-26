@@ -8,6 +8,7 @@
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace commerce {
 
