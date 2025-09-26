@@ -2247,11 +2247,13 @@ targets.binaries.generated_script(
 targets.binaries.generated_script(
     name = "telemetry_gpu_integration_test",
     label = "//chrome/test:telemetry_gpu_integration_test",
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
     name = "telemetry_gpu_integration_test_android_chrome",
     label = "//chrome/test:telemetry_gpu_integration_test_android_chrome",
+    module_scheme = "flat",
 )
 
 targets.binaries.script(
@@ -2263,6 +2265,7 @@ targets.binaries.script(
     args = [
         "../../content/test/gpu/run_gpu_integration_test.py",
     ],
+    module_scheme = "flat",
 )
 
 targets.binaries.script(
@@ -2276,6 +2279,7 @@ targets.binaries.script(
         "--logs-dir",
         "${ISOLATED_OUTDIR}",
     ],
+    module_scheme = "flat",
 )
 
 targets.binaries.script(
@@ -2289,6 +2293,7 @@ targets.binaries.script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "flat",
 )
 
 # This isolate is used by
