@@ -203,6 +203,7 @@ void HttpStreamPool::Job::OnStreamReady(
     return;
   }
 
+  result_ = OK;
   negotiated_protocol_ = negotiated_protocol;
   attempt_manager_->group()
       ->http_network_session()
