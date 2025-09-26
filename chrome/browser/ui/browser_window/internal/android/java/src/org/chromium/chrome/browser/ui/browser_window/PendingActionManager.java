@@ -7,6 +7,7 @@ import android.graphics.Rect;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -96,6 +97,12 @@ final class PendingActionManager {
             case PendingAction.SHOW:
                 requestShow();
                 break;
+            case PendingAction.SHOW_INACTIVE:
+                requestShowInactive();
+                break;
+            case PendingAction.ACTIVATE:
+                requestActivate();
+                break;
             default:
                 requestGlobalOverrideAction(action);
         }
@@ -121,13 +128,55 @@ final class PendingActionManager {
             mPendingActions[1] = PendingAction.NONE;
 
             // Retain higher precedence primary action and ignore SHOW.
-            if (mPendingActions[0] == PendingAction.MAXIMIZE
+            if (mPendingActions[0] == PendingAction.CLOSE
+                    || mPendingActions[0] == PendingAction.MAXIMIZE
                     || mPendingActions[0] == PendingAction.RESTORE
                     || mPendingActions[0] == PendingAction.SET_BOUNDS) {
                 return;
             }
+
             // Override lower precedence primary action.
             mPendingActions[0] = PendingAction.SHOW;
+        }
+    }
+
+    private void requestShowInactive() {
+        synchronized (mPendingActionsLock) {
+            // Clear lower precedence primary action.
+            if (mPendingActions[0] == PendingAction.SHOW
+                    || mPendingActions[0] == PendingAction.HIDE
+                    || mPendingActions[0] == PendingAction.ACTIVATE
+                    || mPendingActions[0] == PendingAction.DEACTIVATE
+                    || mPendingActions[0] == PendingAction.MINIMIZE) {
+                mPendingActions[0] = PendingAction.NONE;
+            }
+
+            // Retain higher precedence action and ignore SHOW_INACTIVE.
+            if (mPendingActions[0] == PendingAction.CLOSE) {
+                return;
+            }
+
+            // Run SHOW_INACTIVE along with one of the other higher precedence primary actions.
+            mPendingActions[1] = PendingAction.SHOW_INACTIVE;
+        }
+    }
+
+    private void requestActivate() {
+        synchronized (mPendingActionsLock) {
+            // Clear lower precedence secondary action.
+            mPendingActions[1] = PendingAction.NONE;
+
+            // Retain higher precedence primary action and ignore ACTIVATE.
+            if (mPendingActions[0] == PendingAction.SHOW
+                    || mPendingActions[0] == PendingAction.CLOSE
+                    || mPendingActions[0] == PendingAction.MAXIMIZE
+                    || mPendingActions[0] == PendingAction.RESTORE
+                    || mPendingActions[0] == PendingAction.SET_BOUNDS) {
+                return;
+            }
+
+            // Override lower precedence primary action.
+            mPendingActions[0] = PendingAction.ACTIVATE;
         }
     }
 
@@ -147,7 +196,8 @@ final class PendingActionManager {
         }
     }
 
-    private static boolean isPrimaryAction(@PendingAction int action) {
+    @VisibleForTesting
+    static boolean isPrimaryAction(@PendingAction int action) {
         return action != PendingAction.SHOW_INACTIVE && action != PendingAction.DEACTIVATE;
     }
 
