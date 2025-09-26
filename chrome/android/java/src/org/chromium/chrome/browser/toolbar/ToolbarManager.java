@@ -1495,6 +1495,11 @@ public class ToolbarManager
                     public void didBackForwardTransitionAnimationChange(Tab tab) {
                         onBackForwardTransitionAnimationChange();
                     }
+
+                    @Override
+                    public void onContentViewScrollingStateChanged(boolean scrolling) {
+                        mToolbar.onContentViewScrollingStateChanged(scrolling);
+                    }
                 };
 
         mCurrentTabModelObserver =

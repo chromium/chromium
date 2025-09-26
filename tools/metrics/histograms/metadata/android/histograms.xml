@@ -5754,6 +5754,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Toolbar.StaleCapturedUrlOnScroll" enum="Boolean"
+    expires_after="2026-09-24">
+  <owner>peilinwang@google.com</owner>
+  <owner>clank-performance-team@google.com</owner>
+  <summary>
+    Whether or not we have a capture with an out of date url when starting a
+    scroll. This means that we're showing an older url that's different from the
+    url of the current page. This histogram is recorded every time
+    onContentViewScrollingStateChanged(true) gets called with browser controls
+    unlocked.
+  </summary>
+</histogram>
+
 <histogram name="Android.ToolbarPosition.PositionAtStartup"
     enum="ToolbarPosition" expires_after="2026-01-27">
   <owner>pnoland@chromium.org</owner>

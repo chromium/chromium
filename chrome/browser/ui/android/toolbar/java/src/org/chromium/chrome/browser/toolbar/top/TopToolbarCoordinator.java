@@ -807,4 +807,8 @@ public class TopToolbarCoordinator implements Toolbar {
     public boolean containsKeyboardFocus() {
         return mToolbarLayout.getFocusedChild() != null;
     }
+
+    public void onContentViewScrollingStateChanged(boolean scrolling) {
+        mControlContainer.onContentViewScrollingStateChanged(scrolling);
+    }
 }

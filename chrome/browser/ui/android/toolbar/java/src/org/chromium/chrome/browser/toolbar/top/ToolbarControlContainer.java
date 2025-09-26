@@ -209,6 +209,11 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         ((ToolbarViewResourceAdapter) getToolbarResourceAdapter()).onPageLoadStopped();
     }
 
+    public void onContentViewScrollingStateChanged(boolean scrolling) {
+        ((ToolbarViewResourceAdapter) getToolbarResourceAdapter())
+                .onContentViewScrollingStateChanged(scrolling);
+    }
+
     @Override
     public void setCompositorBackgroundInitialized() {
         mIsCompositorInitialized = true;
@@ -405,7 +410,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 isVisible,
                 layoutStateProviderSupplier,
                 fullscreenManager,
-                () -> mMidVisibilityToggle);
+                () -> mMidVisibilityToggle,
+                toolbarDataProvider);
 
         mToolbarView = toolbarView;
         assert mToolbarView != null;
@@ -522,7 +528,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 BooleanSupplier isVisible,
                 OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
                 FullscreenManager fullscreenManager,
-                BooleanSupplier isMidVisibilityToggle) {
+                BooleanSupplier isMidVisibilityToggle,
+                ToolbarDataProvider toolbarDataProvider) {
             mIsMidVisibilityToggle = isMidVisibilityToggle;
             ToolbarViewResourceAdapter adapter =
                     ((ToolbarViewResourceAdapter) getResourceAdapter());
@@ -534,7 +541,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     browserStateBrowserControlsVisibilityDelegate,
                     isVisible,
                     layoutStateProviderSupplier,
-                    fullscreenManager);
+                    fullscreenManager,
+                    toolbarDataProvider);
         }
 
         @Override
@@ -594,6 +602,10 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
 
         private boolean mNeedCaptureAfterPageLoad;
 
+        private ToolbarDataProvider mToolbarDataProvider;
+
+        private CharSequence mMostRecentlyCapturedUrl;
+
         /** Builds the resource adapter for the toolbar. */
         public ToolbarViewResourceAdapter(View toolbarContainer) {
             super(toolbarContainer);
@@ -624,7 +636,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                         browserStateBrowserControlsVisibilityDelegate,
                 BooleanSupplier controlContainerIsVisibleSupplier,
                 OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-                FullscreenManager fullscreenManager) {
+                FullscreenManager fullscreenManager,
+                ToolbarDataProvider toolbarDataProvider) {
             assert mToolbar == null;
             mToolbar = toolbar;
 
@@ -643,6 +656,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             layoutStateProviderSupplier.onAvailable(
                     (layoutStateProvider) -> mLayoutStateProvider = layoutStateProvider);
             mFullscreenManager = fullscreenManager;
+            mToolbarDataProvider = toolbarDataProvider;
+            mMostRecentlyCapturedUrl = "";
         }
 
         @Override
@@ -749,6 +764,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         @Override
         public void onCaptureEnd() {
             mToolbar.setTextureCaptureMode(false);
+            mMostRecentlyCapturedUrl = mToolbarDataProvider.getUrlBarData().displayText;
         }
 
         @Override
@@ -779,6 +795,20 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 mNeedCaptureAfterPageLoad = true;
                 onResourceRequested();
                 mNeedCaptureAfterPageLoad = false;
+            }
+        }
+
+        public void onContentViewScrollingStateChanged(boolean scrolling) {
+            if (scrolling
+                    && mControlsToken == TokenHolder.INVALID_TOKEN
+                    && !mConstraintsObserver.areControlsLocked()) {
+                boolean isCaptureStale =
+                        !mToolbarDataProvider
+                                .getUrlBarData()
+                                .displayText
+                                .equals(mMostRecentlyCapturedUrl);
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.Toolbar.StaleCapturedUrlOnScroll", isCaptureStale);
             }
         }
 
@@ -820,6 +850,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     && super.isDirty()
                     && mControlContainerIsVisibleSupplier.getAsBoolean()) {
                 CaptureReadinessResult captureReadinessResult = mToolbar.isReadyForTextureCapture();
+                CaptureReadinessResult.logCaptureReasonFromResult(captureReadinessResult);
                 if (ToolbarFeatures.shouldRecordSuppressionMetrics()) {
                     RecordHistogram.recordEnumeratedHistogram(
                             "Android.TopToolbar.InMotionStage",
