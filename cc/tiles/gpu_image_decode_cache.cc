@@ -369,22 +369,6 @@ bool DrawAndScaleImageYUV(
   return true;
 }
 
-// Takes ownership of the backing texture of an SkImage. This allows us to
-// delete this texture under Skia (via discardable).
-// TODO(crbug.com/391648152): Remove this method entirely, as it is no longer
-// relevant post-OOP-C.
-sk_sp<SkImage> TakeOwnershipOfSkImageBacking(GrDirectContext* context,
-                                             sk_sp<SkImage> image) {
-  // If the image is not texture backed, it has no backing, just return it.
-  if (!image->isTextureBacked()) {
-    return image;
-  }
-
-  // It is not possible to fulfill this operation post-OOP-C as `context` is
-  // always nullptr.
-  return nullptr;
-}
-
 // We use this below, instead of just a std::unique_ptr, so that we can run
 // a Finch experiment to check the impact of not using discardable memory on the
 // GPU decode path.
@@ -2587,103 +2571,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
   if (!image_entry.IsValid())
     return;
   InsertTransferCacheEntry(image_entry, image_data);
-}
-
-// TODO(crbug.com/391648152): Confirm that this entire method can now be
-// eliminated and do so.
-void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
-    const DrawImage& draw_image,
-    ImageData* image_data,
-    sk_sp<SkImage> uploaded_image,
-    skgpu::Mipmapped image_needs_mips,
-    sk_sp<SkColorSpace> decoded_color_space,
-    sk_sp<SkColorSpace> color_space) {
-  DCHECK(image_data->info.yuva.has_value());
-
-  // Grab a reference to our decoded image. For the kCpu path, we will use
-  // this directly as our "uploaded" data. This path only supports tri-planar
-  // YUV with no alpha.
-  DCHECK_EQ(image_data->info.yuva->yuvaInfo().planeConfig(),
-            SkYUVAInfo::PlaneConfig::kY_U_V);
-  sk_sp<SkImage> uploaded_y_image =
-      image_data->decode.image(0, AuxImage::kDefault);
-  sk_sp<SkImage> uploaded_u_image =
-      image_data->decode.image(1, AuxImage::kDefault);
-  sk_sp<SkImage> uploaded_v_image =
-      image_data->decode.image(2, AuxImage::kDefault);
-
-  // Prevent image_data from being deleted while lock is not held.
-  scoped_refptr<ImageData> image_data_holder(image_data);
-
-  // At-raster may have decoded this while we were unlocked. If so, ignore our
-  // result.
-  if (image_data->HasUploadedData()) {
-    if (uploaded_image) {
-      DCHECK(uploaded_y_image);
-      DCHECK(uploaded_u_image);
-      DCHECK(uploaded_v_image);
-    }
-    return;
-  }
-
-  // TODO(crbug.com/41329554): |uploaded_image| is sometimes null in certain
-  // context-lost situations, so it is handled with an early out.
-  if (!uploaded_image || !uploaded_y_image || !uploaded_u_image ||
-      !uploaded_v_image) {
-    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
-    return;
-  }
-
-  uploaded_y_image = TakeOwnershipOfSkImageBacking(context_->GrContext(),
-                                                   std::move(uploaded_y_image));
-  uploaded_u_image = TakeOwnershipOfSkImageBacking(context_->GrContext(),
-                                                   std::move(uploaded_u_image));
-  uploaded_v_image = TakeOwnershipOfSkImageBacking(context_->GrContext(),
-                                                   std::move(uploaded_v_image));
-
-  image_data->upload.SetImage(std::move(uploaded_image),
-                              image_data->info.yuva.has_value());
-  image_data->upload.SetYuvImage(std::move(uploaded_y_image),
-                                 std::move(uploaded_u_image),
-                                 std::move(uploaded_v_image));
-}
-
-// TODO(crbug.com/391648152): Confirm that this entire method can now be
-// eliminated and do so.
-void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
-    const DrawImage& draw_image,
-    ImageData* image_data,
-    sk_sp<SkImage> uploaded_image,
-    skgpu::Mipmapped image_needs_mips,
-    sk_sp<SkColorSpace> color_space) {
-  DCHECK(!image_data->info.yuva.has_value());
-
-  // Prevent image_data from being deleted while lock is not held.
-  scoped_refptr<ImageData> image_data_holder(image_data);
-
-  // RGBX decoding is below.
-
-  // At-raster may have decoded this while we were unlocked. If so, ignore our
-  // result.
-  if (image_data->upload.image()) {
-    return;
-  }
-
-  // Take ownership of any GL texture backing for the SkImage. This allows
-  // us to use the image with the discardable system.
-  if (uploaded_image) {
-    uploaded_image = TakeOwnershipOfSkImageBacking(context_->GrContext(),
-                                                   std::move(uploaded_image));
-  }
-
-  // TODO(crbug.com/41329554): uploaded_image is sometimes null in certain
-  // context-lost situations.
-  if (!uploaded_image) {
-    DLOG(WARNING) << "TODO(crbug.com/41329554): Context was lost. Early out.";
-    return;
-  }
-
-  image_data->upload.SetImage(std::move(uploaded_image));
 }
 
 scoped_refptr<GpuImageDecodeCache::ImageData>

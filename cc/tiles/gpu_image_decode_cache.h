@@ -843,19 +843,6 @@ class CC_EXPORT GpuImageDecodeCache
       sk_sp<SkColorSpace> decoded_target_colorspace,
       const std::optional<gfx::HDRMetadata>& hdr_metadata,
       sk_sp<SkColorSpace> target_color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void UploadImageIfNecessary_GpuCpu_YUVA(
-      const DrawImage& draw_image,
-      ImageData* image_data,
-      sk_sp<SkImage> uploaded_image,
-      skgpu::Mipmapped image_needs_mips,
-      sk_sp<SkColorSpace> decoded_target_colorspace,
-      sk_sp<SkColorSpace> color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void UploadImageIfNecessary_GpuCpu_RGBA(const DrawImage& draw_image,
-                                          ImageData* image_data,
-                                          sk_sp<SkImage> uploaded_image,
-                                          skgpu::Mipmapped image_needs_mips,
-                                          sk_sp<SkColorSpace> color_space)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Flush pending operations on context_->GrContext() for each element of
   // |yuv_images| and then clear the vector.
