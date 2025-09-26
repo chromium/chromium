@@ -7,15 +7,7 @@
 #include "base/feature_list.h"
 
 namespace page_load_metrics::features {
-
-// Reduce the number of `DidObserveNewFeatureUsage` calls. crbug.com/404425954
-// for more details.
-BASE_FEATURE(kDidObserveNewFeatureUsageImprovement,
+// Reduce the number of observer calls. crbug.com/40442595 for more details.
+BASE_FEATURE(kMetricsRenderFrameObserverImprovement,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Reduce the number of `DidObserveSubresourceLoad` calls. crbug.com/404425954
-// for more details.
-BASE_FEATURE(kDidObserveSubresourceLoadImprovement,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace page_load_metrics::features
