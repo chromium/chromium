@@ -1873,6 +1873,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//testing:test_env_py_unittests",
+        "module_scheme": "single",
         "name": "test_env_py_unittests",
         "resultdb": {
           "enable": true

@@ -3745,6 +3745,7 @@
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
         "module_name": "//build/private_code_test:private_code_failure_test",
+        "module_scheme": "single",
         "name": "private_code_failure_test",
         "resultdb": {
           "enable": true,

@@ -1958,6 +1958,7 @@ targets.binaries.generated_script(
             "--smoke-test-mode",
         ],
     ),
+    module_scheme = "flat",
 )
 
 targets.binaries.generated_script(
@@ -2034,6 +2035,7 @@ targets.binaries.generated_script(
     label = "//build/private_code_test:private_code_failure_test",
     # All references have been moved to starlark
     skip_usage_check = True,
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
@@ -2351,6 +2353,7 @@ targets.binaries.generated_script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "single",
 )
 
 targets.binaries.console_test_launcher(
