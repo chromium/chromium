@@ -16,10 +16,6 @@ MockBnplManager::MockBnplManager(
           [this](const AutofillSuggestionTriggerSource trigger_source) {
             BnplManager::NotifyOfSuggestionGeneration(trigger_source);
           });
-
-  ON_CALL(*this, IsEligibleForBnpl).WillByDefault([this]() {
-    return BnplManager::IsEligibleForBnpl();
-  });
 }
 
 MockBnplManager::~MockBnplManager() = default;

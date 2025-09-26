@@ -147,19 +147,10 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
   }
 
   if (!has_logged_suggestions_shown_on_bnpl_eligible_merchant_ &&
-      IsEligibleForBnpl()) {
+      payments::BnplManager::IsEligibleForBnpl(owner_->client())) {
     LogBnplFormEvent(BnplFormEvent::kSuggestionsShown);
     has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = true;
   }
-}
-
-bool CreditCardFormEventLogger::IsEligibleForBnpl() {
-  payments::BnplManager* bnpl_manager = owner_->GetPaymentsBnplManager();
-  if (!bnpl_manager) {
-    return false;
-  }
-
-  return bnpl_manager->IsEligibleForBnpl();
 }
 
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(

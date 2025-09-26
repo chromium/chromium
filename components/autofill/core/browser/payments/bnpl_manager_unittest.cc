@@ -1335,7 +1335,7 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_NoAutofillOptimizationGuideDecider) {
 
   autofill_client().ResetAutofillOptimizationGuideDecider();
 
-  EXPECT_FALSE(bnpl_manager_->IsEligibleForBnpl());
+  EXPECT_FALSE(BnplManager::IsEligibleForBnpl(autofill_client()));
 }
 
 // Tests that `IsEligibleForBnpl()` returns false if the client is in an
@@ -1349,11 +1349,11 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_OffTheRecord) {
                           /*price_higher_bound_in_micros=*/2'000'000'000,
                           IssuerId::kBnplZip);
 
-  EXPECT_TRUE(bnpl_manager_->IsEligibleForBnpl());
+  EXPECT_TRUE(BnplManager::IsEligibleForBnpl(autofill_client()));
 
   autofill_client().set_is_off_the_record(true);
 
-  EXPECT_FALSE(bnpl_manager_->IsEligibleForBnpl());
+  EXPECT_FALSE(BnplManager::IsEligibleForBnpl(autofill_client()));
 }
 
 // Tests that `IsEligibleForBnpl()` returns false if if the current visiting
@@ -1372,7 +1372,7 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_UrlNotSupported) {
           IsUrlEligibleForBnplIssuer)
       .WillByDefault(Return(false));
 
-  EXPECT_FALSE(bnpl_manager_->IsEligibleForBnpl());
+  EXPECT_FALSE(BnplManager::IsEligibleForBnpl(autofill_client()));
 }
 
 // Tests that when the current visiting url is only supported by one of the
@@ -1395,7 +1395,7 @@ TEST_F(BnplManagerTest, IsEligibleForBnpl_UrlSupportedByOneIssuer) {
           IsUrlEligibleForBnplIssuer(IssuerId::kBnplZip, _))
       .WillByDefault(Return(true));
 
-  EXPECT_TRUE(bnpl_manager_->IsEligibleForBnpl());
+  EXPECT_TRUE(BnplManager::IsEligibleForBnpl(autofill_client()));
 }
 
 // Tests that update suggestions callback will not be called if the amount

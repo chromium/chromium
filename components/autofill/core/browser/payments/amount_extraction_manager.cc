@@ -235,8 +235,7 @@ AmountExtractionManager::CheckEligibilityForFeaturesRequiringAmountExtraction()
   // Check eligibility of BNPL feature.
   if constexpr (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
                 BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)) {
-    if (BnplManager* bnpl_manager = autofill_manager_->GetPaymentsBnplManager();
-        bnpl_manager && bnpl_manager->IsEligibleForBnpl()) {
+    if (BnplManager::IsEligibleForBnpl(autofill_manager_->client())) {
       eligible_features.insert(EligibleFeature::kBnpl);
     }
   }

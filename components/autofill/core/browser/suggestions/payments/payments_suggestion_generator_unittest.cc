@@ -1972,7 +1972,9 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
        GetCreditCardSuggestionsForTouchToFill_BnplSuggestionAdded) {
   payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
 
-  ON_CALL(*autofill_manager().GetPaymentsBnplManager(), IsEligibleForBnpl())
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(true));
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
@@ -1999,7 +2001,9 @@ TEST_F(
     GetCreditCardSuggestionsForTouchToFill_BnplSuggestionNotAdded_BnplNotEligible) {
   payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
 
-  ON_CALL(*autofill_manager().GetPaymentsBnplManager(), IsEligibleForBnpl())
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(false));
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
@@ -2020,7 +2024,9 @@ TEST_F(
 
   payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
 
-  ON_CALL(*autofill_manager().GetPaymentsBnplManager(), IsEligibleForBnpl())
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
       .WillByDefault(testing::Return(true));
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
