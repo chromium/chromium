@@ -75,7 +75,8 @@ void GlicSidePanelCoordinator::CreateAndRegisterEntry() {
       SidePanelEntry::Key(SidePanelEntry::Id::kGlic),
       base::BindRepeating(&GlicSidePanelCoordinator::CreateView,
                           base::Unretained(this)),
-      /*default_content_width_callback=*/base::NullCallback());
+      base::BindRepeating(&GlicSidePanelCoordinator::GetPreferredWidth,
+                          base::Unretained(this)));
   entry->set_should_show_header(false);
   entry->set_should_show_ephemerally_in_toolbar(false);
   entry->AddObserver(this);
@@ -149,6 +150,10 @@ void GlicSidePanelCoordinator::SetContentsView(
 
   glic_container_tracker_.view()->RemoveAllChildViews();
   glic_container_tracker_.view()->AddChildView(std::move(contents_view));
+}
+
+int GlicSidePanelCoordinator::GetPreferredWidth() {
+  return features::kGlicSidePanelMinWidth.Get();
 }
 
 void GlicSidePanelCoordinator::AddObserver(StateObserver* observer) {

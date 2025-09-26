@@ -52,6 +52,10 @@ class GlicSidePanelCoordinator : public SidePanelEntryObserver {
   // Set the content to display in the Glic side panel.
   void SetContentsView(std::unique_ptr<views::View> contents_view);
 
+  // Returns preferred side panel width. Not guaranteed to be used if user
+  // manually set a different width.
+  int GetPreferredWidth();
+
  protected:
   // Called when the Glic enabled status changes for `profile_`.
   void OnGlicEnabledChanged();

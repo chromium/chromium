@@ -386,6 +386,10 @@ BASE_FEATURE(kGlicDetached, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Glic feature uses multiple instances or not.
 BASE_FEATURE(kGlicMultiInstance, base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls desired min width for the side panel. Not guaranteed to be respected
+// if user manually resizes.
+const base::FeatureParam<int> kGlicSidePanelMinWidth{
+    &kGlicMultiInstance, "glic-side-panel-min-width", 384};
 
 // Controls whether the Glic feature's z order changes based on the webclient
 // mode.
