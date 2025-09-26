@@ -948,6 +948,15 @@ TEST_F(LensOverlayUrlBuilderTest, ExtractTimeInSecondsFromQueryIfExists) {
                 GURL("https://www.youtube.com/watch?v=test&t=10s")),
             base::Seconds(10));
   EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=10")),
+            base::Seconds(10));
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=1s")),
+            base::Seconds(1));
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=1")),
+            base::Seconds(1));
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
                 GURL("https://www.youtube.com/watch?v=test&t=60s")),
             base::Seconds(60));
   EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
@@ -955,9 +964,6 @@ TEST_F(LensOverlayUrlBuilderTest, ExtractTimeInSecondsFromQueryIfExists) {
             std::nullopt);
   EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
                 GURL("https://www.youtube.com/watch?v=test&t=s")),
-            std::nullopt);
-  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
-                GURL("https://www.youtube.com/watch?v=test&t=10")),
             std::nullopt);
   EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
                 GURL("https://www.youtube.com/watch?v=test&t=abcs")),

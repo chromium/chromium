@@ -591,19 +591,17 @@ std::optional<base::TimeDelta> ExtractTimeInSecondsFromQueryIfExists(
     return {};
   }
 
-  // The t_string will end in "s" to denote seconds so it must be at least 2
-  // chars long.
-  if (t_string.length() <= 1) {
+  // Make sure that the t= parameter is not empty.
+  if (!t_string.length()) {
     return {};
   }
 
-  // The t_string will end in "s" to denote seconds.
-  if (t_string.back() != kVideoTimestampSecondsCharacter) {
-    return {};
+  // The t_string may end in "s" to denote seconds.
+  if (t_string.back() == kVideoTimestampSecondsCharacter) {
+    // Pop the last "s" from the string so it can parse correctly.
+    t_string.pop_back();
   }
 
-  // Pop the last "s" from the string so it can parse correctly.
-  t_string.pop_back();
   unsigned int t = 0;
   if (!base::StringToUint(t_string, &t)) {
     return {};
