@@ -667,8 +667,9 @@ bool DoesDeviceSupportAmbientColor() {
 }
 
 bool IsTouchCalibrationAvailable() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kEnableTouchCalibrationSetting) &&
+  return (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kEnableTouchCalibrationSetting) ||
+          features::IsTouchscreenCalibrationEnabled()) &&
          display::HasExternalTouchscreenDevice();
 }
 
