@@ -167,7 +167,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
         base::BindRepeating(&ReturnNullPtrAsJpecDecoder));
 #else
     device_client_ = std::make_unique<VideoCaptureDeviceClient>(
-        std::move(controller), buffer_pool, media::VideoEffectsContext());
+        std::move(controller), buffer_pool);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 };

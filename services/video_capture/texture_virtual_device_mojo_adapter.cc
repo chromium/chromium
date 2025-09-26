@@ -136,8 +136,7 @@ void TextureVirtualDeviceMojoAdapter::Start(
 
 void TextureVirtualDeviceMojoAdapter::StartInProcess(
     const media::VideoCaptureParams& requested_settings,
-    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler,
-    media::VideoEffectsContext context) {
+    const base::WeakPtr<media::VideoFrameReceiver>& frame_handler) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   video_frame_handler_in_process_ = std::move(frame_handler);
   video_frame_handler_in_process_->OnStarted();

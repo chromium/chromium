@@ -393,7 +393,7 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
                               receiver_on_io_thread)));
 #else
   return std::make_unique<media::VideoCaptureDeviceClient>(
-      std::move(receiver), std::move(buffer_pool), std::nullopt);
+      std::move(receiver), std::move(buffer_pool));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

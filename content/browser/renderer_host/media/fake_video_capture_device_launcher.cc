@@ -112,7 +112,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
-      std::move(buffer_pool), std::nullopt);
+      std::move(buffer_pool));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   device->AllocateAndStart(params, std::move(device_client));
   auto launched_device =

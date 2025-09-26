@@ -46,7 +46,6 @@ source_set("mocks") {
 
   public_deps = [
     "//services/video_capture/public/mojom",
-    "//services/video_effects/buildflags",
     "//testing/gmock",
   ]
 }

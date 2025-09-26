@@ -200,7 +200,7 @@ class VideoCaptureControllerTest
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
-        buffer_pool_, std::nullopt);
+        buffer_pool_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 

@@ -6,7 +6,6 @@ import("//build/config/apple/mobile_config.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/media_options.gni")
-import("//services/video_effects/args.gni")
 import("//testing/test.gni")
 import("//third_party/webrtc/webrtc.gni")
 
@@ -161,18 +160,10 @@ component("capture_lib") {
     "//media/mojo/mojom",
     "//services/service_manager/public/cpp",
     "//services/video_capture/public/mojom",
-    "//services/video_effects/buildflags",
     "//third_party/libyuv",
     "//ui/display",
     "//ui/gfx",
   ]
-
-  if (enable_video_effects) {
-    sources += [
-      "video/video_capture_effects_processor.cc",
-      "video/video_capture_effects_processor.h",
-    ]
-  }
 
   if (is_android) {
     public_deps += [ "video/android" ]
@@ -481,10 +472,6 @@ test("capture_unittests") {
     "video_capture_types_unittest.cc",
   ]
 
-  if (enable_video_effects) {
-    sources += [ "video/video_capture_effects_processor_unittest.cc" ]
-  }
-
   data = [ "//media/test/data/bear.mjpeg" ]
 
   deps = [
@@ -499,19 +486,11 @@ test("capture_unittests") {
     "//media/capture/mojom:image_capture_types",
     "//mojo/core/embedder",
     "//services/video_capture/public/mojom",
-    "//services/video_effects/buildflags",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
     "//ui/gfx:test_support",
   ]
-
-  if (enable_video_effects) {
-    deps += [
-      "//components/viz/test:test_support",
-      "//services/video_effects/test:test_support",
-    ]
-  }
 
   if (is_linux) {
     sources += [

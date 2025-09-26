@@ -25,10 +25,7 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
   ]
 
-  public_deps = [
-    "//media/capture/mojom:video_effects_manager",
-    "//sandbox/policy/mojom",
-  ]
+  public_deps = [ "//sandbox/policy/mojom" ]
 
   if (is_chromeos) {
     deps += [

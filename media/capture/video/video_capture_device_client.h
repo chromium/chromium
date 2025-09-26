@@ -39,20 +39,6 @@ using VideoCaptureJpegDecoderFactoryCB =
 CAPTURE_EXPORT BASE_DECLARE_FEATURE(kFallbackToSharedMemoryIfNotNv12OnMac);
 #endif
 
-// Structure used to inject dependencies required for the
-// `VideoCaptureDeviceClient` to apply video effects.
-class CAPTURE_EXPORT VideoEffectsContext {
- public:
-  VideoEffectsContext();
-  ~VideoEffectsContext();
-
-  VideoEffectsContext(const VideoEffectsContext& other) = delete;
-  VideoEffectsContext& operator=(VideoEffectsContext& other) = delete;
-
-  VideoEffectsContext(VideoEffectsContext&& other);
-  VideoEffectsContext& operator=(VideoEffectsContext&& other);
-};
-
 // Implementation of VideoCaptureDevice::Client that uses a buffer pool
 // to provide buffers and converts incoming data to the I420 format for
 // consumption by a given VideoFrameReceiver. If
@@ -76,10 +62,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
       VideoCaptureJpegDecoderFactoryCB jpeg_decoder_factory_callback);
 #else
-  VideoCaptureDeviceClient(
-      std::unique_ptr<VideoFrameReceiver> receiver,
-      scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-      std::optional<VideoEffectsContext> video_effects_context);
+  VideoCaptureDeviceClient(std::unique_ptr<VideoFrameReceiver> receiver,
+                           scoped_refptr<VideoCaptureBufferPool> buffer_pool);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   VideoCaptureDeviceClient(const VideoCaptureDeviceClient&) = delete;

@@ -139,9 +139,8 @@ void VideoSourceImpl::OnCreateDeviceResponse(
       scoped_trace->AddStep("StartDevice");
 
     // Device was created successfully.
-    auto context = media::VideoEffectsContext();
     info.device->StartInProcess(device_start_settings_,
-                                broadcaster_.GetWeakPtr(), std::move(context));
+                                broadcaster_.GetWeakPtr());
     UmaHistogramTimes("Media.VideoCapture.StartSourceSuccessLatency",
                       base::TimeTicks::Now() - device_startup_start_time_);
     device_status_ = DeviceStatus::kStarted;

@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 
 namespace media {
 
@@ -42,17 +41,6 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // micro-freeze in the renderer or the gpu service.
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
     max_buffer_count = 10;
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
-    // We may need 2x as many buffers if video effects are going to be applied
-    // to account for the fact that each captured video frame will have
-    // additional buffer allocated for post-processing result.
-    // TODO(crbug.com//375229156): Make pool size dependant on whether there is
-    // an effects processor in use.
-    max_buffer_count = max_buffer_count * 2;
   }
 #endif
 

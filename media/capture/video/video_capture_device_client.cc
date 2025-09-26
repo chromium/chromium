@@ -289,14 +289,6 @@ class BufferPoolBufferHandleProvider
   const int buffer_id_;
 };
 
-VideoEffectsContext::VideoEffectsContext() = default;
-
-VideoEffectsContext::VideoEffectsContext(VideoEffectsContext&& other) = default;
-VideoEffectsContext& VideoEffectsContext::operator=(
-    VideoEffectsContext&& other) = default;
-
-VideoEffectsContext::~VideoEffectsContext() = default;
-
 #if BUILDFLAG(IS_CHROMEOS)
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     std::unique_ptr<VideoFrameReceiver> receiver,
@@ -314,8 +306,7 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
 #else
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     std::unique_ptr<VideoFrameReceiver> receiver,
-    scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-    std::optional<VideoEffectsContext> video_effects_context)
+    scoped_refptr<VideoCaptureBufferPool> buffer_pool)
     : receiver_(std::move(receiver)),
       buffer_pool_(std::move(buffer_pool)),
       last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN) {}

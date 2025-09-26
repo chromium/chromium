@@ -48,15 +48,12 @@ source_set("lib") {
     "//services/video_capture/public/cpp",
     "//services/video_capture/public/mojom",
     "//services/video_capture/public/mojom:constants",
-    "//services/video_effects/buildflags",
-    "//services/video_effects/public/mojom",
     "//services/viz/public/cpp/gpu",
   ]
 
   deps = [
     "//media/capture:capture_lib",
     "//media/capture:capture_switches",
-    "//services/video_effects/buildflags",
   ]
 
   if (is_chromeos) {
