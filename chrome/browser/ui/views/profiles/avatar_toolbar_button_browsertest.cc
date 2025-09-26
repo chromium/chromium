@@ -394,7 +394,6 @@ class AvatarToolbarButtonBaseBrowserTest {
     delay_resets_.push_back(
         signin_ui_util::
             CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting());
-    ClearSyncOptinPromoIfEnabled(avatar);
     return account_info;
   }
 
