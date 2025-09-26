@@ -34,18 +34,12 @@ std::u16string NormalizeEntityValue(const AttributeInstance& attribute) {
       attribute.GetRawInfo(attribute.type().field_type()));
 }
 
-std::u16string Format(
-    std::u16string s,
-    base::optional_ref<const AutofillFormatString> format_string) {
-  // TODO(crbug.com/446883719): Support more format string types.
-  if (!format_string || format_string->type != FormatString_Type_AFFIX) {
-    return s;
-  }
-
+// Returns `s` in the demanded `format`. See `data_util::IsValidDateFormat` for
+// the valid `format` values.
+std::u16string FormatAffix(std::u16string s, std::u16string_view format) {
   // We parse the leading minus here rather than using `base::StringToInt()` to
   // avoid mixing signed and unsigned integers as this easily leads to
   // undefined behavior.
-  std::u16string_view format = format_string->value;
   bool suffix = false;
   if (format.starts_with(u"-")) {
     format = format.substr(1);
@@ -61,6 +55,44 @@ std::u16string Format(
     s = std::move(s).substr(offset < s.size() ? offset : 0);
   } else if (offset > 0) {
     s = std::move(s).substr(0, offset);
+  }
+  return s;
+}
+
+// Returns `s` in the demanded `format`. See
+// `data_util::IsValidFlightNumberFormat` for the valid `format` values.
+std::u16string FormatFlightNumber(std::u16string s,
+                                  std::u16string_view format) {
+  // Invalid flight number - do not attempt to format.
+  if (s.size() < 3) {
+    return s;
+  }
+
+  // The airline designator corresponds to the first two characters.
+  if (format == u"A") {
+    return s.substr(0, 2);
+  }
+  // The number is the remainder of the string.
+  if (format == u"N") {
+    return s.substr(2);
+  }
+  return s;
+}
+
+std::u16string Format(
+    std::u16string s,
+    base::optional_ref<const AutofillFormatString> format_string) {
+  if (!format_string) {
+    return s;
+  }
+
+  switch (format_string->type) {
+    case FormatString_Type_AFFIX:
+      return FormatAffix(std::move(s), format_string->value);
+    case FormatString_Type_FLIGHT_NUMBER:
+      return FormatFlightNumber(std::move(s), format_string->value);
+    case FormatString_Type_DATE:
+      break;
   }
   return s;
 }

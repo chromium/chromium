@@ -9,6 +9,7 @@
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -158,6 +159,57 @@ TEST(AutofillEntityInstanceTest, Attributes_Date) {
   EXPECT_EQ(GetInfo(passport_name, PASSPORT_ISSUE_DATE,
                     {.format_string = from_date(u"DD/MM/YYYY")}),
             u"03/02/2001");
+}
+
+// Tests that formatting flight numbers works correctly.
+TEST(AutofillEntityInstanceTest, AttributesFlightFormat) {
+  auto from_flight_number = [](std::u16string fs) {
+    return AutofillFormatString(std::move(fs), FormatString_Type_FLIGHT_NUMBER);
+  };
+
+  {
+    AttributeInstance flight_number(
+        (AttributeType(kFlightReservationFlightNumber)));
+    flight_number.SetInfo(
+        FLIGHT_RESERVATION_FLIGHT_NUMBER, u"LH89", /*app_locale*/ "",
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER),
+              u"LH89");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"A")}),
+              u"LH");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"N")}),
+              u"89");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"F")}),
+              u"LH89");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"")}),
+              u"LH89");
+  }
+
+  {
+    // A mal-formed flight number.
+    AttributeInstance flight_number(
+        (AttributeType(kFlightReservationFlightNumber)));
+    flight_number.SetInfo(
+        FLIGHT_RESERVATION_FLIGHT_NUMBER, u"AA", /*app_locale*/ "",
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER), u"AA");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"A")}),
+              u"AA");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"N")}),
+              u"AA");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"F")}),
+              u"AA");
+    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
+                      {.format_string = from_flight_number(u"F")}),
+              u"AA");
+  }
 }
 
 TEST(AutofillEntityInstanceTest,
