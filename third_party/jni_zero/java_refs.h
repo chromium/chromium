@@ -17,9 +17,7 @@
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/logging.h"
 
-#if !defined(JNI_ZERO_ENABLE_COMPAT_API) && defined(WEBRTC_ANDROID)
-#define JNI_ZERO_ENABLE_COMPAT_API 1
-#else
+#if !defined(JNI_ZERO_ENABLE_COMPAT_API)
 #define JNI_ZERO_ENABLE_COMPAT_API 0
 #endif
 
