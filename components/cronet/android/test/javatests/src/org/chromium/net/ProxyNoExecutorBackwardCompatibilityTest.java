@@ -563,6 +563,79 @@ public class ProxyNoExecutorBackwardCompatibilityTest {
             reason =
                     "This feature flag has not reached platform Cronet yet. Fallback provides no"
                             + " ProxyOptions support.")
+    // Mockito#when implementation makes use of java.util.Map#computeIfAbsent, which is available
+    // starting from Nougat/API level 24.
+    @RequiresMinAndroidApi(Build.VERSION_CODES.N)
+    public void testProxyAuthChallenge_urlRequestFails() {
+        var requestHandler =
+                new NativeTestServer.HandleRequestCallback() {
+                    @Override
+                    public NativeTestServer.RawHttpResponse handleRequest(
+                            NativeTestServer.HttpRequest httpRequest) {
+                        return NativeTestServer.RawHttpResponse.createFromHeaders(
+                                Arrays.asList(
+                                        "HTTP/1.1 407 Proxy Authentication Required",
+                                        "Proxy-Authenticate: Basic realm=\"MyRealm1\""));
+                    }
+                };
+        mNativeTestServer.registerRequestHandler(requestHandler);
+        mNativeTestServer.start();
+
+        Proxy.Callback proxyCallback =
+                Mockito.mock(Proxy.Callback.class, Mockito.CALLS_REAL_METHODS);
+        doAnswer(
+                        invocation -> {
+                            Proxy.Callback.Request request = invocation.getArgument(0);
+                            request.proceed(Collections.emptyList());
+                            return null;
+                        })
+                .when(proxyCallback)
+                .onBeforeTunnelRequest(any());
+        Mockito.doReturn(true).when(proxyCallback).onTunnelHeadersReceived(any(), anyInt());
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) -> {
+                            builder.enableHttpCache(
+                                    CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024);
+                            builder.setProxyOptions(
+                                    new ProxyOptions(
+                                            Arrays.asList(
+                                                    new Proxy(
+                                                            /* scheme= */ Proxy.HTTP,
+                                                            /* host= */ "localhost",
+                                                            /* port= */ mNativeTestServer.getPort(),
+                                                            /* callback= */ proxyCallback))));
+                        });
+        ExperimentalCronetEngine cronetEngine = mTestRule.getTestFramework().startEngine();
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest.Builder urlRequestBuilder =
+                cronetEngine.newUrlRequestBuilder(
+                        "https://test-hostname/test-path", callback, callback.getExecutor());
+        urlRequestBuilder.build().start();
+        callback.blockForDone();
+        Mockito.verify(proxyCallback, times(1)).onBeforeTunnelRequest(any());
+        Mockito.verify(proxyCallback, times(1)).onTunnelHeadersReceived(any(), anyInt());
+        // TODO(https://crbug.com/447574602): Consider supporting authentication challenges in
+        // Cronet. Currently, whenever Cronet encounters a 401/407 we rely on developers to retry
+        // the request after adding an Authentication/Proxy-Authentication header. If this turns out
+        // to be too cumbersome, we should consider providing an ad-hoc abstraction to handle these
+        // (similarly to how //net provides net::HttpAuthController).
+        assertThat(callback.mError).isNotNull();
+        assertThat(callback.mError).isInstanceOf(NetworkException.class);
+        NetworkException networkException = (NetworkException) callback.mError;
+        assertThat(networkException.getErrorCode()).isEqualTo(NetworkException.ERROR_OTHER);
+        assertThat(networkException.getCronetInternalErrorCode())
+                .isEqualTo(NetError.ERR_TUNNEL_CONNECTION_FAILED);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM, CronetImplementation.FALLBACK},
+            reason =
+                    "This feature flag has not reached platform Cronet yet. Fallback provides no"
+                            + " ProxyOptions support.")
     // Mockito#verify implementations makes use of java.util.stream.Stream, which is available
     // starting from Nougat/API level 24.
     @RequiresMinAndroidApi(Build.VERSION_CODES.N)
