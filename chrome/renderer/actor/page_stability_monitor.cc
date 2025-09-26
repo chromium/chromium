@@ -380,7 +380,6 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kNavigationCommitted}},
           {State::kStartMonitoring, {
               State::kWaitForNavigation,
-              State::kPaintStabilityReached,
               State::kWaitForNetworkIdle,
               State::kWaitForMainThreadIdle}},
           {State::kWaitForNavigation, {
