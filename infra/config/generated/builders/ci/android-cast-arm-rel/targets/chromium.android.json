@@ -20,6 +20,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chromecast/media/cma/backend/android:cast_android_cma_backend_unittests/",
         "name": "cast_android_cma_backend_unittests",
         "resultdb": {
           "enable": true,
@@ -53,6 +54,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chromecast/media/cma/backend:cast_audio_backend_unittests/",
         "name": "cast_audio_backend_unittests",
         "resultdb": {
           "enable": true,
@@ -86,6 +88,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chromecast/base:cast_base_unittests/",
         "name": "cast_base_unittests",
         "resultdb": {
           "enable": true,
@@ -119,6 +122,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chromecast/cast_core:cast_cast_core_unittests/",
         "name": "cast_cast_core_unittests",
         "resultdb": {
           "enable": true,
@@ -152,6 +156,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chromecast/media:cast_media_unittests/",
         "name": "cast_media_unittests",
         "resultdb": {
           "enable": true,
@@ -185,6 +190,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//media/cast:cast_unittests/",
         "name": "cast_unittests",
         "resultdb": {
           "enable": true,
@@ -210,6 +216,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//base:base_junit_tests/",
         "name": "base_junit_tests",
         "resultdb": {
           "enable": true,
@@ -231,6 +238,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chromecast/base:cast_base_junit_tests/",
         "name": "cast_base_junit_tests",
         "resultdb": {
           "enable": true,
@@ -252,6 +260,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chromecast/browser/android:cast_shell_junit_tests/",
         "name": "cast_shell_junit_tests",
         "resultdb": {
           "enable": true,
@@ -273,6 +282,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//content/public/android:content_junit_tests/",
         "name": "content_junit_tests",
         "resultdb": {
           "enable": true,
@@ -294,6 +304,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//net/android:net_junit_tests/",
         "name": "net_junit_tests",
         "resultdb": {
           "enable": true,

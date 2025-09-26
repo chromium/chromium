@@ -19,6 +19,7 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//components/cronet/android:cronet_sizes/",
         "name": "cronet_sizes",
         "resultdb": {
           "enable": true,

@@ -18,6 +18,7 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk/",
         "name": "chrome_public_test_apk_tablet",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
