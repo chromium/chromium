@@ -9819,10 +9819,6 @@ bool Element::PseudoElementStylesAffectCounters() const {
     return true;
   }
 
-  if (!style->HasAnyPseudoElementStyles()) {
-    return false;
-  }
-
   for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
     if (pseudo_element->GetComputedStyle()->GetCounterDirectives()) {
       return true;

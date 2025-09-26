@@ -412,6 +412,13 @@ void PseudoElement::Dispose() {
   DCHECK(!nextSibling());
   DCHECK(!previousSibling());
 
+  if (const ComputedStyle* style = GetComputedStyle()) {
+    if (style->GetCounterDirectives() || style->ContainsStyle() ||
+        PseudoElementStylesAffectCounters()) {
+      GetDocument().GetStyleEngine().MarkCountersDirty();
+    }
+  }
+
   DetachLayoutTree();
   Element* parent = ParentOrShadowHostElement();
   GetDocument().AdoptIfNeeded(*this);
