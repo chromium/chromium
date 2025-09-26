@@ -181,6 +181,8 @@ public class ToolbarTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest
+    // TODO(crbug.com/447525636): Re-enable tests.
     public void testControlContainerTopMarginWhenBookmarkBarIsEnabledOnPhone() {
         testControlContainerTopMargin(/* expectBookmarkBar= */ false);
     }
