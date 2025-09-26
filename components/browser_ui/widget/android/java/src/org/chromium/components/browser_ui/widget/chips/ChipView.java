@@ -70,6 +70,7 @@ public class ChipView extends LinearLayout {
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
     private final LoadingView mLoadingView;
+    private final @Px int mTextStartPadding;
     private final @StyleRes int mSecondaryTextAppearanceId;
     private final boolean mTextAlignStart;
     private final int mEndIconWidth;
@@ -191,8 +192,7 @@ public class ChipView extends LinearLayout {
                                 .getDimensionPixelSize(
                                         R.dimen.chip_text_multiline_vertical_padding));
         mTextAlignStart = a.getBoolean(R.styleable.ChipView_textAlignStart, false);
-        @Px
-        int textStartPadding =
+        mTextStartPadding =
                 a.getDimensionPixelSize(
                         R.styleable.ChipView_primaryTextStartPadding,
                         getResources()
@@ -253,7 +253,7 @@ public class ChipView extends LinearLayout {
             mPrimaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         }
         mPrimaryText.setPaddingRelative(
-                textStartPadding,
+                mTextStartPadding,
                 mPrimaryText.getPaddingTop(),
                 mPrimaryText.getPaddingEnd(),
                 mPrimaryText.getPaddingBottom());
@@ -468,6 +468,13 @@ public class ChipView extends LinearLayout {
                 if (mTextAlignStart) {
                     mSecondaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
                 }
+                // Align secondary text view with the primary text view if they are stacked
+                // vertically.
+                mSecondaryText.setPaddingRelative(
+                        mTextStartPadding,
+                        mSecondaryText.getPaddingTop(),
+                        mSecondaryText.getPaddingEnd(),
+                        mSecondaryText.getPaddingBottom());
                 mTextViewsWrapper.addView(mSecondaryText);
             } else {
                 addView(mSecondaryText);

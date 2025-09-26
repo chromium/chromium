@@ -12,7 +12,7 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_height">48dp</dimen>
     <dimen name="keyboard_accessory_height_redesign">64dp</dimen>
     <dimen name="keyboard_accessory_chip_min_height_redesign">64dp</dimen>
-    <dimen name="keyboard_accessory_chip_corner_radius_redesign">16dp</dimen>
+    <dimen name="keyboard_accessory_chip_corner_radius_redesign">8dp</dimen>
     <dimen name="keyboard_accessory_chip_home_and_work_start_padding">12dp</dimen>
     <dimen name="keyboard_accessory_top_inset_overlap">4dp</dimen>
     <dimen name="keyboard_accessory_dismiss_button_end_padding">10dp</dimen>
@@ -26,6 +26,9 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_sheet_top_margin">16dp</dimen>
     <dimen name="keyboard_accessory_sheet_bottom_margin">8dp</dimen>
     <dimen name="keyboard_accessory_suggestion_padding">16dp</dimen>
+    <dimen name="keyboard_accessory_chip_start_padding_redesign">6dp</dimen>
+    <dimen name="keyboard_accessory_chip_end_padding_redesign">12dp</dimen>
+    <dimen name="keyboard_accessory_text_start_padding_redesign">6dp</dimen>
     <dimen name="keyboard_accessory_suggestion_offset">12dp</dimen>
     <dimen name="keyboard_accessory_suggestion_height">48dp</dimen>
     <dimen name="keyboard_accessory_scroll_shadow_width">80dp</dimen>
