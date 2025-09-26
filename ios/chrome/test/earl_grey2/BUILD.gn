@@ -193,6 +193,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/bring_android_tabs/ui_bundled:eg2_tests",
     "//ios/chrome/browser/browser_view/test:eg2_tests",
     "//ios/chrome/browser/bubble/ui_bundled:eg2_tests",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/app_bundle_promo/test:eg2_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo:eg2_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check:eg2_tests",
     "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:eg2_tests",
