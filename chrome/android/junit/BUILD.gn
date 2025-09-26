@@ -829,6 +829,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/notifications/NotificationSuspenderUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/NotificationTriggerBackgroundTaskTest.java",
       "src/org/chromium/chrome/browser/notifications/NotificationTriggerSchedulerTest.java",
+      "src/org/chromium/chrome/browser/notifications/tips/TipsPromoCoordinatorUnitTest.java",
     ]
 
     deps = [ ":chrome_junit_tests_helper" ]

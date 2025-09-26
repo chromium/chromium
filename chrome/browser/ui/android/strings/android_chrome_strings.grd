@@ -7042,6 +7042,26 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_READER_MODE_MENU_IPH" desc="In-product help shown to inform the user that reading mode is always available in the app menu.">
         Reading mode is always available here
       </message>
+
+      <!-- Tips notifications -->
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Content description of the Tips Promo bottom sheet informing the user on feature background and how to turn it on.">
+        Tips notifications feature promo and usage steps bottom sheet
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_CLOSED_CONTENT_DESCRIPTION" desc="Content description of the Tips Promo bottom sheet when closed.">
+        Tips notifications promo closed
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_HALF_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Tips Promo bottom sheet when opened at half height.">
+        Tips notifications promo opened at half height
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FULL_HEIGHT_CONTENT_DESCRIPTION" desc="Content description of the Tips Promo bottom sheet when opened at full height.">
+        Tips notifications promo opened at full height
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT" desc="Button text for the Tips Promo bottom sheet to go to the settings page.">
+        Go to settings
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_NEGATIVE_BUTTON_TEXT" desc="Button text for the Tips Promo bottom sheet to go to an education page on the tip feature usage.">
+        Show me how
+      </message>
     </messages>
   </release>
 </grit>

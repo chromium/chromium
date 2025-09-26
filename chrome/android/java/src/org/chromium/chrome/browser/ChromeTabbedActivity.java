@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.INVALID_TIPS_NOTIFICATION_FEATURE_TYPE;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 import static org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlocker.IS_INCOGNITO_SELECTED;
 
@@ -171,6 +172,7 @@ import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
+import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -638,6 +640,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
     private XrSceneCoreSessionInitializer mXrSceneCoreSessionInitializer;
     private @SupportedProfileType int mSupportedProfileType = SupportedProfileType.UNSET;
 
+    private TipsPromoCoordinator mTipsPromoCoordinator;
+
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
         mIntentHandlingTimeMs = SystemClock.uptimeMillis();
@@ -777,9 +781,10 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     String message =
                             String.format(
                                     """
-                                            VIEW intent sent to .Main activity alias was not dispatched. \
-                                            PLEASE report the following info to crbug.com/789732: \
-                                            "%s". Use --%s flag to disable this check.""",
+                                    VIEW intent sent to .Main activity alias was not dispatched. \
+                                    PLEASE report the following info to crbug.com/789732: \
+                                    "%s". Use --%s flag to disable this check.\
+                                    """,
                                     intentInfo, ChromeSwitches.DONT_CRASH_ON_VIEW_MAIN_INTENTS);
                     throw new IllegalStateException(message);
                 }
@@ -2511,6 +2516,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
         boolean fromAppWidget =
                 IntentUtils.safeGetBooleanExtra(
                         intent, IntentHandler.EXTRA_INVOKED_FROM_APP_WIDGET, false);
+        int fromTipsNotifications =
+                IntentUtils.safeGetIntExtra(
+                        intent,
+                        IntentHandler.EXTRA_TIPS_NOTIFICATION_FEATURE_TYPE,
+                        INVALID_TIPS_NOTIFICATION_FEATURE_TYPE);
         boolean focus = false;
 
         // TODO(crbug.com/418106849): We should use regular tab model in case the url
@@ -2640,6 +2650,12 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 }
 
                 resultTab = launchIntent(loadUrlParams, externalAppId, true, intent);
+                if (fromTipsNotifications != INVALID_TIPS_NOTIFICATION_FEATURE_TYPE) {
+                    mTipsPromoCoordinator =
+                            new TipsPromoCoordinator(
+                                    this, mRootUiCoordinator.getBottomSheetController());
+                    mTipsPromoCoordinator.showBottomSheet();
+                }
                 break;
             case TabOpenType.OPEN_NEW_INCOGNITO_TAB:
                 if (!TextUtils.equals(externalAppId, getPackageName())) {
@@ -4450,6 +4466,11 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         if (mXrSceneCoreSessionInitializer != null) {
             mXrSceneCoreSessionInitializer.destroy();
+        }
+
+        if (mTipsPromoCoordinator != null) {
+            mTipsPromoCoordinator.destroy();
+            mTipsPromoCoordinator = null;
         }
 
         super.onDestroyInternal();
