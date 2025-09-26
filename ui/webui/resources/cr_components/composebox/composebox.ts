@@ -401,7 +401,7 @@ export class ComposeboxElement extends I18nMixinLit
 
   private computeShowDropdown_() {
     // Don't show dropdown if there's no results.
-    if (!this.result_?.matches?.length) {
+    if (!this.result_?.matches.length) {
       return false;
     }
 
@@ -806,7 +806,7 @@ export class ComposeboxElement extends I18nMixinLit
       return;
     }
     this.result_ = result;
-    const hasMatches = this.result_?.matches?.length > 0;
+    const hasMatches = this.result_.matches.length > 0;
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     // Zero suggest matches are not allowed to be default. Therefore, this
     // makes sure zero suggest results aren't focused when they are returned.
