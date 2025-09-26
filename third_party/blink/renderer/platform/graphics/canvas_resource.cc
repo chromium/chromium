@@ -103,13 +103,6 @@ gpu::webgpu::WebGPUInterface* CanvasResource::WebGPUInterface() const {
   return ContextProviderWrapper()->ContextProvider().WebGPUInterface();
 }
 
-void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  if (sync_token.HasData()) {
-    if (auto* interface_base = InterfaceBase())
-      interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  }
-}
-
 static void ReleaseFrameResources(
     scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
@@ -521,6 +514,15 @@ void CanvasResourceSharedImage::UploadSoftwareRenderingResults(
       GetClientSharedImage()->BackingWasExternallyUpdated(gpu::SyncToken());
 }
 
+void CanvasResourceSharedImage::WaitSyncToken(
+    const gpu::SyncToken& sync_token) {
+  if (sync_token.HasData()) {
+    if (auto* interface_base = InterfaceBase()) {
+      interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    }
+  }
+}
+
 const gpu::SyncToken CanvasResourceSharedImage::GetSyncToken() {
   if (GetClientSharedImage()->is_software()) {
     // This class doesn't currently have a way of verifying the sync token
@@ -665,6 +667,14 @@ scoped_refptr<StaticBitmapImage> ExternalCanvasResource::Bitmap() {
   return image;
 }
 
+void ExternalCanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {
+  if (sync_token.HasData()) {
+    if (auto* interface_base = InterfaceBase()) {
+      interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    }
+  }
+}
+
 const gpu::SyncToken ExternalCanvasResource::GetSyncToken() {
   // This method is expected to be used both in WebGL and WebGPU, that's why it
   // uses InterfaceBase.
@@ -785,6 +795,14 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
 const scoped_refptr<gpu::ClientSharedImage>&
 CanvasResourceSwapChain::GetClientSharedImage() const {
   return front_buffer_shared_image_;
+}
+
+void CanvasResourceSwapChain::WaitSyncToken(const gpu::SyncToken& sync_token) {
+  if (sync_token.HasData()) {
+    if (auto* interface_base = InterfaceBase()) {
+      interface_base->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    }
+  }
 }
 
 const gpu::SyncToken CanvasResourceSwapChain::GetSyncToken() {

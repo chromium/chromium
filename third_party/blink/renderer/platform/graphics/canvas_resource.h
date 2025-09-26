@@ -115,7 +115,7 @@ class PLATFORM_EXPORT CanvasResource
 
   // Issues a wait for this sync token on the context used by this resource for
   // rendering.
-  void WaitSyncToken(const gpu::SyncToken&);
+  virtual void WaitSyncToken(const gpu::SyncToken&) = 0;
 
   bool OriginClean() const { return is_origin_clean_; }
   void SetOriginClean(bool flag) { is_origin_clean_ = flag; }
@@ -214,6 +214,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   void Transfer() final;
 
+  void WaitSyncToken(const gpu::SyncToken&) override;
   const gpu::SyncToken GetSyncToken() override;
 
   void NotifyResourceLost() final;
@@ -320,6 +321,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       const final {
     return client_si_;
   }
+  void WaitSyncToken(const gpu::SyncToken&) override;
   const gpu::SyncToken GetSyncToken() override;
 
   scoped_refptr<StaticBitmapImage> Bitmap() override;
@@ -384,6 +386,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
   void PresentSwapChain();
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage()
       const override;
+  void WaitSyncToken(const gpu::SyncToken&) override;
   const gpu::SyncToken GetSyncToken() override;
 
  private:
