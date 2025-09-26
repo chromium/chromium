@@ -3823,6 +3823,11 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingPDF) {
                   .content_data(0)
                   .stored_chunk_options()
                   .read_stored_chunks());
+  EXPECT_FALSE(page_content_request.payload()
+                   .content()
+                   .content_data(0)
+                   .stored_chunk_options()
+                   .is_read_retry());
   EXPECT_EQ(2, query_controller.num_upload_chunk_requests_sent());
 
   // Check interaction request is correct.
@@ -4170,6 +4175,11 @@ TEST_F(LensOverlayQueryControllerTest,
                   .content_data(0)
                   .stored_chunk_options()
                   .read_stored_chunks());
+  EXPECT_TRUE(page_content_request.payload()
+                  .content()
+                  .content_data(0)
+                  .stored_chunk_options()
+                  .is_read_retry());
   EXPECT_EQ(2, query_controller.num_upload_chunk_requests_sent());
 
   // Check interaction request is correct.
@@ -4353,6 +4363,11 @@ TEST_F(LensOverlayQueryControllerTest,
                   .content_data(0)
                   .stored_chunk_options()
                   .read_stored_chunks());
+  EXPECT_TRUE(page_content_request.payload()
+                  .content()
+                  .content_data(0)
+                  .stored_chunk_options()
+                  .is_read_retry());
 
   // Verify that one chunk was resent.
   EXPECT_EQ(3, query_controller.num_upload_chunk_requests_sent());
@@ -4525,6 +4540,11 @@ TEST_F(LensOverlayQueryControllerTest, UploadChunkingHTML) {
                    .content_data(0)
                    .stored_chunk_options()
                    .read_stored_chunks());
+  EXPECT_FALSE(page_content_request.payload()
+                   .content()
+                   .content_data(0)
+                   .stored_chunk_options()
+                   .is_read_retry());
   EXPECT_EQ(0, query_controller.num_upload_chunk_requests_sent());
 
   // Check interaction request is correct.
