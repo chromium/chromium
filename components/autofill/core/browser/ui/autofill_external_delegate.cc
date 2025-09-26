@@ -552,10 +552,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case SuggestionType::kAddressEntry:
     case SuggestionType::kCreditCardEntry:
     case SuggestionType::kDevtoolsTestAddressEntry:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, /*metadata=*/std::nullopt,
-          /*is_preview=*/true,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      AutofillForm(suggestion.type, suggestion.payload,
+                   /*metadata=*/std::nullopt,
+                   /*is_preview=*/true,
+                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kAutocompleteEntry:
       manager_->FillOrPreviewField(mojom::ActionPersistence::kPreview,
@@ -603,10 +603,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       }
       break;
     case SuggestionType::kVirtualCreditCardEntry:
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, /*metadata=*/std::nullopt,
-          /*is_preview=*/true,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      AutofillForm(suggestion.type, suggestion.payload,
+                   /*metadata=*/std::nullopt,
+                   /*is_preview=*/true,
+                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kFillAutofillAi:
       if (EntityDataManager* edm = manager_->client().GetEntityDataManager()) {
@@ -1141,7 +1141,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   }
 }
 
-void AutofillExternalDelegate::FillAutofillFormData(
+void AutofillExternalDelegate::AutofillForm(
     SuggestionType type,
     const Suggestion::Payload& payload,
     std::optional<SuggestionMetadata> metadata,
@@ -1248,10 +1248,9 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
         manager_->client().TriggerPlusAddressUserPerceptionSurvey(
             plus_addresses::hats::SurveyType::kDidChooseEmailOverPlusAddress);
       }
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, metadata,
-          /*is_preview=*/false,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      AutofillForm(suggestion.type, suggestion.payload, metadata,
+                   /*is_preview=*/false,
+                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     }
     case SuggestionType::kAddressFieldByFieldFilling:
@@ -1271,10 +1270,9 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
       CHECK(profile);
       autofill_metrics::OnDevtoolsTestAddressesAccepted(
           profile->GetInfo(ADDRESS_HOME_COUNTRY, "en-US"));
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, metadata,
-          /*is_preview=*/false,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      AutofillForm(suggestion.type, suggestion.payload, metadata,
+                   /*is_preview=*/false,
+                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     }
     default:
@@ -1304,19 +1302,18 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       autofill_metrics::LogSuggestionAcceptedIndex(
           metadata.row, FillingProduct::kCreditCard,
           manager_->client().IsOffTheRecord());
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, metadata,
-          /*is_preview=*/false,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      AutofillForm(suggestion.type, suggestion.payload, metadata,
+                   /*is_preview=*/false,
+                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kVirtualCreditCardEntry:
       // There can be multiple virtual credit cards that all rely on
       // SuggestionType::kVirtualCreditCardEntry as a `type`.
       // In this case, the payload contains the backend id, which is a GUID
       // that identifies the actually chosen credit card.
-      FillAutofillFormData(
-          suggestion.type, suggestion.payload, metadata, /*is_preview=*/false,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_));
+      AutofillForm(suggestion.type, suggestion.payload, metadata,
+                   /*is_preview=*/false,
+                   TriggerSourceFromSuggestionTriggerSource(trigger_source_));
       break;
     case SuggestionType::kIbanEntry:
       // User chooses an IBAN suggestion and if it is a local IBAN, full IBAN

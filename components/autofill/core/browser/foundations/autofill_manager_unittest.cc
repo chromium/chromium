@@ -346,8 +346,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterSelectControlSelectionChanged).Times(0);
   EXPECT_CALL(observer, OnBeforeSelectFieldOptionsDidChange).Times(0);
   EXPECT_CALL(observer, OnAfterSelectFieldOptionsDidChange).Times(0);
-  EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData).Times(0);
-  EXPECT_CALL(observer, OnAfterDidFillAutofillFormData).Times(0);
+  EXPECT_CALL(observer, OnBeforeDidAutofillForm).Times(0);
+  EXPECT_CALL(observer, OnAfterDidAutofillForm).Times(0);
   EXPECT_CALL(observer, OnBeforeAskForValuesToFill).Times(0);
   EXPECT_CALL(observer, OnAfterAskForValuesToFill).Times(0);
   EXPECT_CALL(observer, OnBeforeFocusOnFormField).Times(0);
@@ -365,8 +365,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
       .Times(AtLeast(0))
       .WillRepeatedly(Return(true));
   EXPECT_CALL(autofill_manager(), OnFocusOnNonFormFieldImpl).Times(AtLeast(0));
-  EXPECT_CALL(autofill_manager(), OnDidFillAutofillFormDataImpl)
-      .Times(AtLeast(0));
+  EXPECT_CALL(autofill_manager(), OnDidAutofillFormImpl).Times(AtLeast(0));
   EXPECT_CALL(autofill_manager(), OnDidEndTextFieldEditingImpl)
       .Times(AtLeast(0));
   EXPECT_CALL(autofill_manager(), OnSelectFieldOptionsDidChangeImpl)
@@ -488,10 +487,10 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
 
   {
     base::RunLoop run_loop;
-    EXPECT_CALL(observer, OnBeforeDidFillAutofillFormData(m, f));
-    EXPECT_CALL(observer, OnAfterDidFillAutofillFormData(m, f))
+    EXPECT_CALL(observer, OnBeforeDidAutofillForm(m, f));
+    EXPECT_CALL(observer, OnAfterDidAutofillForm(m, f))
         .WillOnce(RunClosure(run_loop.QuitClosure()));
-    autofill_manager().OnDidFillAutofillFormData(form, {});
+    autofill_manager().OnDidAutofillForm(form, {});
     std::move(run_loop).Run();
   }
 

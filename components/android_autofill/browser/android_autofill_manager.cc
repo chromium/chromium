@@ -143,11 +143,11 @@ void AndroidAutofillManager::OnFocusOnNonFormFieldImpl() {
     provider->OnFocusOnNonFormField(this);
 }
 
-void AndroidAutofillManager::OnDidFillAutofillFormDataImpl(
+void AndroidAutofillManager::OnDidAutofillFormImpl(
     const FormData& form,
     const base::TimeTicks timestamp) {
   if (auto* provider = GetAutofillProvider())
-    provider->OnDidFillAutofillFormData(this, form, timestamp);
+    provider->OnDidAutofillForm(this, form, timestamp);
 }
 
 void AndroidAutofillManager::OnHidePopupImpl() {

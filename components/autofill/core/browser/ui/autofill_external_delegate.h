@@ -195,11 +195,11 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate {
   // If `is_preview` is true then this is just a preview to show the user what
   // would be selected and if `is_preview` is false then the user has selected
   // this data.
-  void FillAutofillFormData(SuggestionType type,
-                            const Suggestion::Payload& payload,
-                            std::optional<SuggestionMetadata> metadata,
-                            bool is_preview,
-                            AutofillTriggerSource trigger_source);
+  void AutofillForm(SuggestionType type,
+                    const Suggestion::Payload& payload,
+                    std::optional<SuggestionMetadata> metadata,
+                    bool is_preview,
+                    AutofillTriggerSource trigger_source);
 
   // Previews the value from `profile` specified in the `suggestion`.
   void PreviewAddressFieldByFieldFillingSuggestion(

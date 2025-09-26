@@ -163,10 +163,10 @@ class AutofillManager
     virtual void OnAfterSelectFieldOptionsDidChange(AutofillManager& manager,
                                                     FormGlobalId form) {}
 
-    virtual void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
-                                                 FormGlobalId form) {}
-    virtual void OnAfterDidFillAutofillFormData(AutofillManager& manager,
-                                                FormGlobalId form) {}
+    virtual void OnBeforeDidAutofillForm(AutofillManager& manager,
+                                         FormGlobalId form) {}
+    virtual void OnAfterDidAutofillForm(AutofillManager& manager,
+                                        FormGlobalId form) {}
 
     virtual void OnBeforeJavaScriptChangedAutofilledValue(
         AutofillManager& manager,
@@ -204,7 +204,7 @@ class AutofillManager
     // value; the corresponding `AutofillField` contains the field type
     // information. The field values come from `filling_payload`.
     // TODO(crbug.com/40280003): Consider removing the event in favor of
-    // OnAfterDidFillAutofillFormData(), which is fired by the renderer.
+    // OnAfterDidAutofillForm(), which is fired by the renderer.
     // TODO(crbug.com/40227071): Consider removing `action_persistence` as the
     // preview signal is only used for testing.
     virtual void OnFillOrPreviewForm(
@@ -270,8 +270,8 @@ class AutofillManager
   virtual void OnCaretMovedInFormField(const FormData& form,
                                        const FieldGlobalId& field_id,
                                        const gfx::Rect& caret_bounds);
-  virtual void OnDidFillAutofillFormData(const FormData& form,
-                                         const base::TimeTicks timestamp);
+  virtual void OnDidAutofillForm(const FormData& form,
+                                 const base::TimeTicks timestamp);
   virtual void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FieldGlobalId& field_id,
@@ -406,9 +406,8 @@ class AutofillManager
       const gfx::Rect& caret_bounds,
       AutofillSuggestionTriggerSource trigger_source,
       std::optional<PasswordSuggestionRequest> password_request) = 0;
-  virtual void OnDidFillAutofillFormDataImpl(
-      const FormData& form,
-      const base::TimeTicks timestamp) = 0;
+  virtual void OnDidAutofillFormImpl(const FormData& form,
+                                     const base::TimeTicks timestamp) = 0;
   virtual void OnHidePopupImpl() = 0;
   virtual void OnJavaScriptChangedAutofilledValueImpl(
       const FormData& form,

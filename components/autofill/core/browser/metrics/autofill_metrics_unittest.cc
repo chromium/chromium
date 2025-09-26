@@ -1964,7 +1964,7 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
                                      ->second->form_parsed_timestamp();
 
     FormData autofilled_form = test::AsAutofilled(filled_form);
-    FillAutofillFormData(autofilled_form, parse_time + base::Microseconds(5));
+    AutofillForm(autofilled_form, parse_time + base::Microseconds(5));
     task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(autofilled_form);
 
@@ -1997,7 +1997,7 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
                                      ->second->form_parsed_timestamp();
 
     FormData mixed_filled_form = test::AsAutofilled(filled_form);
-    FillAutofillFormData(mixed_filled_form, parse_time + base::Microseconds(5));
+    AutofillForm(mixed_filled_form, parse_time + base::Microseconds(5));
     SimulateUserChangedField(mixed_filled_form,
                              mixed_filled_form.fields().front(),
                              parse_time + base::Microseconds(3));
@@ -2032,7 +2032,7 @@ TEST_F(AutofillMetricsTest, MAYBE_FormFillDuration) {
     SeeForm(test::WithoutValues(second_form));
 
     FormData mixed_filled_form = test::AsAutofilled(filled_form);
-    FillAutofillFormData(mixed_filled_form, parse_time + base::Microseconds(5));
+    AutofillForm(mixed_filled_form, parse_time + base::Microseconds(5));
     SimulateUserChangedField(mixed_filled_form,
                              mixed_filled_form.fields().front(),
                              parse_time + base::Microseconds(3));
@@ -2762,7 +2762,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
                                      .form_structures()
                                      .begin()
                                      ->second->form_parsed_timestamp();
-    FillAutofillFormData(form, parse_time + base::Microseconds(5));
+    AutofillForm(form, parse_time + base::Microseconds(5));
     SimulateUserChangedField(form, form.fields().front(),
                              parse_time + base::Microseconds(3));
     task_environment_.FastForwardBy(base::Microseconds(17));

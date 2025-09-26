@@ -776,7 +776,7 @@ public class AutofillProvider {
     }
 
     @CalledByNative
-    protected void onDidFillAutofillFormData() {
+    protected void onDidAutofillForm() {
         // The changes were caused by the autofill service autofill form,
         // notified it about the result.
         forceNotifyFormValues();

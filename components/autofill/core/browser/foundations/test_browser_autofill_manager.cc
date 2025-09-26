@@ -117,10 +117,10 @@ void TestBrowserAutofillManager::OnFocusOnFormField(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::OnDidFillAutofillFormData(
+void TestBrowserAutofillManager::OnDidAutofillForm(
     const FormData& form,
     const base::TimeTicks timestamp) {
-  AutofillManager::OnDidFillAutofillFormData(form, timestamp);
+  AutofillManager::OnDidAutofillForm(form, timestamp);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

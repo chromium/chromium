@@ -215,19 +215,16 @@ LanguageCode AutofillManager::GetCurrentPageLanguage() {
   return LanguageCode(language_state->current_language());
 }
 
-void AutofillManager::OnDidFillAutofillFormData(
-    const FormData& form,
-    const base::TimeTicks timestamp) {
+void AutofillManager::OnDidAutofillForm(const FormData& form,
+                                        const base::TimeTicks timestamp) {
   if (!IsValidFormData(form)) {
     return;
   }
-  NotifyObservers(&Observer::OnBeforeDidFillAutofillFormData, form.global_id());
+  NotifyObservers(&Observer::OnBeforeDidAutofillForm, form.global_id());
   ParseFormAsync(
-      form,
-      ParsingCallback(&AutofillManager::OnDidFillAutofillFormDataImpl,
-                      timestamp)
-          .Then(NotifyObserversCallback(
-              &Observer::OnAfterDidFillAutofillFormData, form.global_id())));
+      form, ParsingCallback(&AutofillManager::OnDidAutofillFormImpl, timestamp)
+                .Then(NotifyObserversCallback(&Observer::OnAfterDidAutofillForm,
+                                              form.global_id())));
 }
 
 void AutofillManager::OnFormSubmitted(const FormData& form,

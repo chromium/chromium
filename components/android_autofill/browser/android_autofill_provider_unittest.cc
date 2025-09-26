@@ -227,7 +227,7 @@ class MockAndroidAutofillProviderBridge : public AndroidAutofillProviderBridge {
               (override));
   MOCK_METHOD(void, OnTextFieldDidScroll, (const FieldInfo&), (override));
   MOCK_METHOD(void, OnFormSubmitted, (mojom::SubmissionSource), (override));
-  MOCK_METHOD(void, OnDidFillAutofillFormData, (), (override));
+  MOCK_METHOD(void, OnDidAutofillForm, (), (override));
   MOCK_METHOD(void, CancelSession, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
 };

@@ -322,10 +322,10 @@ class TestAutofillManager : public BrowserAutofillManager {
     BrowserAutofillManager::OnFormsSeen(updated_forms, removed_forms);
   }
 
-  void OnDidFillAutofillFormData(const FormData& form,
-                                 base::TimeTicks timestamp) override {
+  void OnDidAutofillForm(const FormData& form,
+                         base::TimeTicks timestamp) override {
     filled_forms_.push_back(form);
-    BrowserAutofillManager::OnDidFillAutofillFormData(form, timestamp);
+    BrowserAutofillManager::OnDidAutofillForm(form, timestamp);
   }
 
   void OnFormSubmitted(const FormData& form,
@@ -387,7 +387,7 @@ class TestAutofillManager : public BrowserAutofillManager {
 
   TestAutofillManagerWaiter did_fill_forms_waiter_{
       *this,
-      {AutofillManagerEvent::kDidFillAutofillFormData}};
+      {AutofillManagerEvent::kDidAutofillForm}};
 
   TestAutofillManagerWaiter did_submit_forms_waiter_{
       *this,

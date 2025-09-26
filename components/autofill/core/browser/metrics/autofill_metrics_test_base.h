@@ -202,9 +202,8 @@ class AutofillMetricsBaseTest
     }
   }
 
-  void FillAutofillFormData(const FormData& form,
-                            base::TimeTicks timestamp = {}) {
-    autofill_manager().OnDidFillAutofillFormData(form, timestamp);
+  void AutofillForm(const FormData& form, base::TimeTicks timestamp = {}) {
+    autofill_manager().OnDidAutofillForm(form, timestamp);
   }
 
   void SeeForm(const FormData& form) {

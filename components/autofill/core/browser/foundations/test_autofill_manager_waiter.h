@@ -35,7 +35,7 @@ enum class AutofillManagerEvent {
   kSelectFieldOptionsDidChange,
   kAskForValuesToFill,
   kFocusOnFormField,
-  kDidFillAutofillFormData,
+  kDidAutofillForm,
   kJavaScriptChangedAutofilledValue,
   kFormSubmitted,
   kLoadedServerPredictions,
@@ -230,10 +230,10 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                FormGlobalId form,
                                FieldGlobalId field) override;
 
-  void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
-                                       FormGlobalId form) override;
-  void OnAfterDidFillAutofillFormData(AutofillManager& manager,
-                                      FormGlobalId form) override;
+  void OnBeforeDidAutofillForm(AutofillManager& manager,
+                               FormGlobalId form) override;
+  void OnAfterDidAutofillForm(AutofillManager& manager,
+                              FormGlobalId form) override;
 
   void OnBeforeJavaScriptChangedAutofilledValue(AutofillManager& manager,
                                                 FormGlobalId form,
@@ -485,13 +485,13 @@ class TestAutofillManagerSingleEventWaiter {
                                  FieldGlobalId field) override {
       MaybeQuit(&Observer::OnAfterFocusOnFormField, manager, form, field);
     }
-    void OnBeforeDidFillAutofillFormData(AutofillManager& manager,
-                                         FormGlobalId form) override {
-      MaybeQuit(&Observer::OnBeforeDidFillAutofillFormData, manager, form);
+    void OnBeforeDidAutofillForm(AutofillManager& manager,
+                                 FormGlobalId form) override {
+      MaybeQuit(&Observer::OnBeforeDidAutofillForm, manager, form);
     }
-    void OnAfterDidFillAutofillFormData(AutofillManager& manager,
-                                        FormGlobalId form) override {
-      MaybeQuit(&Observer::OnAfterDidFillAutofillFormData, manager, form);
+    void OnAfterDidAutofillForm(AutofillManager& manager,
+                                FormGlobalId form) override {
+      MaybeQuit(&Observer::OnAfterDidAutofillForm, manager, form);
     }
     void OnBeforeJavaScriptChangedAutofilledValue(
         AutofillManager& manager,

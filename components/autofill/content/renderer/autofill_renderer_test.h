@@ -92,7 +92,7 @@ class MockAutofillDriver : public mojom::AutofillDriver {
               (const FormData& form, FieldRendererId field_id),
               (override));
   MOCK_METHOD(void,
-              DidFillAutofillFormData,
+              DidAutofillForm,
               (const FormData& form, base::TimeTicks timestamp),
               (override));
   MOCK_METHOD(void, DidEndTextFieldEditing, (), (override));

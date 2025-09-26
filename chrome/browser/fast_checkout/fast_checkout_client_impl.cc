@@ -555,7 +555,7 @@ void FastCheckoutClientImpl::OnFullCardRequestFailed(
   }
 }
 
-void FastCheckoutClientImpl::OnAfterDidFillAutofillFormData(
+void FastCheckoutClientImpl::OnAfterDidAutofillForm(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id) {
   if (!IsFilling()) {
@@ -573,9 +573,9 @@ void FastCheckoutClientImpl::UpdateFillingStates() {
     const auto& [form_signature, form_type] = form_id;
     if (form_type == autofill::FormType::kAddressForm &&
         filling_state == FillingState::kFilling) {
-      // Assume that if `OnAfterDidFillAutofillFormData()` is called while
-      // `this` is in filling mode and there's an address form in `kFilling`
-      // state that it got filled.
+      // Assume that if `OnAfterDidAutofillForm()` is called while `this` is in
+      // filling mode and there's an address form in `kFilling` state that it
+      // got filled.
       filling_state = FillingState::kFilled;
       A11yAnnounce(form_signature, /*is_credit_card_form=*/false);
     } else if (form_type == autofill::FormType::kCreditCardForm) {
@@ -587,10 +587,10 @@ void FastCheckoutClientImpl::UpdateFillingStates() {
         // form is both an address and a credit card form.
         continue;
       } else if (filling_state == FillingState::kFilling) {
-        // Assume that if `OnAfterDidFillAutofillFormData()` is called while
-        // `this` is in filling mode and there's a credit card form in
-        // `kFilling` state - while no address form of the same signature is in
-        // `kFilling` state - that it got filled.
+        // Assume that if `OnAfterDidAutofillForm()` is called while `this` is
+        // in filling mode and there's a credit card form in `kFilling` state -
+        // while no address form of the same signature is in `kFilling` state -
+        // that it got filled.
         filling_state = FillingState::kFilled;
         A11yAnnounce(form_signature, /*is_credit_card_form=*/true);
       }

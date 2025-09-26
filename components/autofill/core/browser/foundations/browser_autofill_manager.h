@@ -232,8 +232,8 @@ class BrowserAutofillManager : public AutofillManager {
   void OnFocusOnNonFormFieldImpl() override;
   void OnFocusOnFormFieldImpl(const FormData& form,
                               const FieldGlobalId& field_id) override;
-  void OnDidFillAutofillFormDataImpl(const FormData& form,
-                                     const base::TimeTicks timestamp) override;
+  void OnDidAutofillFormImpl(const FormData& form,
+                             const base::TimeTicks timestamp) override;
   void OnDidEndTextFieldEditingImpl() override;
   void OnHidePopupImpl() override;
   void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override;

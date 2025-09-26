@@ -539,10 +539,9 @@ void AndroidAutofillProvider::MaybeFireFormFieldDidChange(
   bridge_->OnFormFieldDidChange(field_info);
 }
 
-void AndroidAutofillProvider::OnDidFillAutofillFormData(
-    AndroidAutofillManager* manager,
-    const FormData& form,
-    base::TimeTicks timestamp) {
+void AndroidAutofillProvider::OnDidAutofillForm(AndroidAutofillManager* manager,
+                                                const FormData& form,
+                                                base::TimeTicks timestamp) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (manager != manager_.get() || !IsIdOfLinkedForm(form.global_id())) {
     return;
@@ -550,7 +549,7 @@ void AndroidAutofillProvider::OnDidFillAutofillFormData(
   // TODO(crbug.com/40760916): Investigate passing the actually filled fields,
   // in case the passed fields to be filled are different from the fields that
   // were actually filled.
-  bridge_->OnDidFillAutofillFormData();
+  bridge_->OnDidAutofillForm();
 }
 
 void AndroidAutofillProvider::OnHidePopup(AndroidAutofillManager* manager) {

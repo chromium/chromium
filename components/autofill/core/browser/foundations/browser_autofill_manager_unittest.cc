@@ -1229,7 +1229,7 @@ class BrowserAutofillManagerTest
 
   // TODO(crbug.com/40227071): Have separate functions for profile and credit
   // card filling.
-  void FillAutofillFormData(
+  void AutofillForm(
       const FormData& form,
       const FormFieldData& field,
       std::string guid,
@@ -1254,7 +1254,7 @@ class BrowserAutofillManagerTest
 
   // Fakes an autofill of `input_form` and returns the `FormData` with the
   // filled values.
-  FormData FillAutofillFormDataAndGetResults(
+  FormData AutofillFormAndGetResults(
       const FormData& input_form,
       const FormFieldData& input_field,
       std::string guid,
@@ -1272,7 +1272,7 @@ class BrowserAutofillManagerTest
           return base::MakeFlatSet<FieldGlobalId>(data, {},
                                                   &FormFieldData::global_id);
         });
-    FillAutofillFormData(input_form, input_field, guid, trigger_source);
+    AutofillForm(input_form, input_field, guid, trigger_source);
     FormData result_form = input_form;
     // Copy the filled data into the form.
     for (FormFieldData& field : test_api(result_form).fields()) {
@@ -3914,7 +3914,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
 
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
   ExpectFilledAddressFormElvis(response_data, false);
   AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
 
@@ -3949,7 +3949,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
   const std::map<std::string, std::string> expected_field_filling_stats_data = {
       {"Accepted fields", base::NumberToString(n_fields)},
       {"Corrected to same type", "0"},
@@ -3988,7 +3988,7 @@ TEST_F(
   FormsSeen({form});
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
 
   EXPECT_CALL(autofill_client(), TriggerUserPerceptionOfAutofillSurvey)
       .Times(0);
@@ -4019,8 +4019,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // Fill the form.
-  FormData response_data = FillAutofillFormDataAndGetResults(
-      form, *form.fields().begin(), MakeGuid(4));
+  FormData response_data =
+      AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(4));
 
   const std::map<std::string, std::string> expected_field_filling_stats_data = {
       {"Accepted fields", base::NumberToString(n_fields)},
@@ -4073,9 +4073,9 @@ TEST_F(BrowserAutofillManagerTest, FormEvents_NotifiesSaveAndFillManager) {
       personal_data().payments_data_manager().GetCreditCardByGUID(card.guid());
   ASSERT_TRUE(pdm_card);
 
-  FormData filled_form = FillAutofillFormDataAndGetResults(
-      form, form.fields()[0], pdm_card->guid(),
-      AutofillTriggerSource::kCreditCardSaveAndFill);
+  FormData filled_form =
+      AutofillFormAndGetResults(form, form.fields()[0], pdm_card->guid(),
+                                AutofillTriggerSource::kCreditCardSaveAndFill);
   FormSubmitted(filled_form);
 }
 
@@ -4173,7 +4173,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
 
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
   ExpectFilledAddressFormElvis(response_data, false);
 
   // Simulate form submission.
@@ -4250,8 +4250,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   AutofillProfile profile1 = FillDataToAutofillProfile(address_fill_data);
   profile1.set_guid(MakeGuid(100));
   personal_data().address_data_manager().AddProfile(profile1);
-  FormData response_data = FillAutofillFormDataAndGetResults(
-      form, *form.fields().begin(), MakeGuid(100));
+  FormData response_data =
+      AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(100));
 
   TestAddressFillData expected_address_fill_data = address_fill_data;
   expected_address_fill_data.last = "Jackson";
@@ -4352,15 +4352,15 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
   AutofillProfile profile1 = FillDataToAutofillProfile(address_fill_data);
   profile1.set_guid(MakeGuid(100));
   personal_data().address_data_manager().AddProfile(profile1);
-  FormData response_data = FillAutofillFormDataAndGetResults(
-      form, *form.fields().begin(), MakeGuid(100));
+  FormData response_data =
+      AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(100));
 
   TestAddressFillData expected_address_fill_data = address_fill_data;
   ExpectFilledForm(response_data, expected_address_fill_data,
                    /*card_fill_data=*/std::nullopt);
 
   // Refill the address data with all the field values.
-  response_data = FillAutofillFormDataAndGetResults(
+  response_data = AutofillFormAndGetResults(
       response_data, *response_data.fields().begin(), MakeGuid(1));
 
   expected_address_fill_data.first = "Elvis";
@@ -4468,7 +4468,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
 
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
   ExpectFilledAddressFormElvis(response_data, false);
 
   FormFieldData& field = test_api(form).field(0);
@@ -4547,8 +4547,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 
   // Fill the form by triggering the suggestion from "Name on Card" field.
-  FormData response_data = FillAutofillFormDataAndGetResults(
-      form, *form.fields().begin(), MakeGuid(4));
+  FormData response_data =
+      AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(4));
   ExpectFilledCreditCardFormElvis(response_data, /*has_address_fields=*/false);
 
   // Simulate form submission.
@@ -5424,7 +5424,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
 
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, *addr1_field, kElvisProfileGuid);
+      AutofillFormAndGetResults(form, *addr1_field, kElvisProfileGuid);
   // Set the address field's value back to the default value.
   test_api(response_data).field(3).set_value(u"Enter your address");
 
@@ -5458,7 +5458,7 @@ void DoTestFormSubmittedControlWithDefaultValue(
   test->FormsSeen({form});
 
   // Fill the form.
-  FormData response_data = test->FillAutofillFormDataAndGetResults(
+  FormData response_data = test->AutofillFormAndGetResults(
       form, form.fields()[3], kElvisProfileGuid);
 
   AutofillProfile profile =
@@ -5503,7 +5503,7 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
   test->FormsSeen({form});
 
   // Fill the form.
-  FormData response_data = test->FillAutofillFormDataAndGetResults(
+  FormData response_data = test->AutofillFormAndGetResults(
       form, form.fields()[3], kElvisProfileGuid);
 
   // Value of country code field should have been saved.
@@ -5697,7 +5697,7 @@ TEST_F(BrowserAutofillManagerTest,
 
 // Test that unfocusing a filled form sends an upload with types matching the
 // fields.
-TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
+TEST_F(BrowserAutofillManagerTest, OnDidAutofillFormAndUnfocus_Upload) {
   // Set up our form data (empty).
   FormData form;
   form.set_name(u"MyForm");
@@ -5738,7 +5738,7 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
   test_api(form).field(0).set_value(u"Elvis");
   test_api(form).field(1).set_value(u"Presley");
   test_api(form).field(2).set_value(u"theking@gmail.com");
-  autofill_manager().OnDidFillAutofillFormData(form, base::TimeTicks::Now());
+  autofill_manager().OnDidAutofillForm(form, base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
   autofill_manager().OnFocusOnNonFormField();
@@ -7706,7 +7706,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
   ExpectFilledAddressFormElvis(response_data, false);
   AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
 
@@ -7732,7 +7732,7 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi,
 
   // Fill the form.
   FormData response_data =
-      FillAutofillFormDataAndGetResults(form, form.fields()[0], MakeGuid(1));
+      AutofillFormAndGetResults(form, form.fields()[0], MakeGuid(1));
   ExpectFilledAddressFormElvis(response_data, false);
   AutofillProfile filled_profile = *adm.GetProfileByGUID(MakeGuid(1));
 
@@ -8254,8 +8254,8 @@ class BrowserAutofillManagerClearFieldTest : public BrowserAutofillManagerTest {
     FormsSeen({form});
 
     // Simulate filling and store the data to be filled in `fill_data_`.
-    fill_data_ = FillAutofillFormDataAndGetResults(form, *form.fields().begin(),
-                                                   MakeGuid(4));
+    fill_data_ =
+        AutofillFormAndGetResults(form, *form.fields().begin(), MakeGuid(4));
     ASSERT_EQ(3u, fill_data_.fields().size());
     ExpectFilledField("Name on Card", "nameoncard", "Elvis Presley",
                       FormControlType::kInputText, fill_data_.fields()[0]);
@@ -8530,7 +8530,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   FastForwardBy(base::Hours(1));
   const base::Time hour_later = base::Time::Now();
 
-  FillAutofillFormData(form, form.fields()[0], pdm_profile->guid());
+  AutofillForm(form, form.fields()[0], pdm_profile->guid());
   EXPECT_EQ(2U, pdm_profile->usage_history().use_count());
   EXPECT_LE(hour_later, pdm_profile->usage_history().use_date());
 }
@@ -8554,8 +8554,8 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
                                     {.role = ADDRESS_HOME_LINE1},
                                     {.role = ADDRESS_HOME_COUNTRY}}});
   FormsSeen({form});
-  FormData filled_form = FillAutofillFormDataAndGetResults(
-      form, form.fields()[0], pdm_profile->guid());
+  FormData filled_form =
+      AutofillFormAndGetResults(form, form.fields()[0], pdm_profile->guid());
 
   // Expect that no observations for any of the form's types were collected yet.
   FormStructure* form_structure =
@@ -8652,7 +8652,7 @@ TEST_F(BrowserAutofillManagerTest,
 
     FormsSeen({form});
 
-    FormData filled_form = FillAutofillFormDataAndGetResults(
+    FormData filled_form = AutofillFormAndGetResults(
         form, form.fields()[0],
         is_credit_card_form ? MakeGuid(4) : kElvisProfileGuid);
 

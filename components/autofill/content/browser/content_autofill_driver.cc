@@ -628,11 +628,10 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& form,
       AutofillDriverRouter::RoutedCallback<>(focus_no_longer_on_form));
 }
 
-void ContentAutofillDriver::DidFillAutofillFormData(const FormData& form,
-                                                    base::TimeTicks timestamp) {
-  RouteToManager(*this, router(),
-                 &AutofillDriverRouter::DidFillAutofillFormData,
-                 &AutofillManager::OnDidFillAutofillFormData, form, timestamp);
+void ContentAutofillDriver::DidAutofillForm(const FormData& form,
+                                            base::TimeTicks timestamp) {
+  RouteToManager(*this, router(), &AutofillDriverRouter::DidAutofillForm,
+                 &AutofillManager::OnDidAutofillForm, form, timestamp);
 }
 
 void ContentAutofillDriver::DidEndTextFieldEditing() {

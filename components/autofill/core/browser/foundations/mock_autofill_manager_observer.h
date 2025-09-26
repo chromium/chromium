@@ -81,11 +81,11 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
               (override));
 
   MOCK_METHOD(void,
-              OnBeforeDidFillAutofillFormData,
+              OnBeforeDidAutofillForm,
               (AutofillManager&, FormGlobalId),
               (override));
   MOCK_METHOD(void,
-              OnAfterDidFillAutofillFormData,
+              OnAfterDidAutofillForm,
               (AutofillManager&, FormGlobalId),
               (override));
 

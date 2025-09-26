@@ -43,8 +43,8 @@ class AndroidAutofillManager : public AutofillManager,
 
   void OnFocusOnNonFormFieldImpl() override;
 
-  void OnDidFillAutofillFormDataImpl(const FormData& form,
-                                     const base::TimeTicks timestamp) override;
+  void OnDidAutofillFormImpl(const FormData& form,
+                             const base::TimeTicks timestamp) override;
 
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;

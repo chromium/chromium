@@ -74,8 +74,8 @@ class FastCheckoutClientImpl
   // autofill::AutofillManager::Observer:
   void OnAfterLoadedServerPredictions(
       autofill::AutofillManager& manager) override;
-  void OnAfterDidFillAutofillFormData(autofill::AutofillManager& manager,
-                                      autofill::FormGlobalId form_id) override;
+  void OnAfterDidAutofillForm(autofill::AutofillManager& manager,
+                              autofill::FormGlobalId form_id) override;
   void OnAutofillManagerStateChanged(
       autofill::AutofillManager& manager,
       autofill::AutofillManager::LifecycleState old_state,
@@ -134,7 +134,7 @@ class FastCheckoutClientImpl
                            OnAfterLoadedServerPredictions_FillsForms);
   FRIEND_TEST_ALL_PREFIXES(
       DISABLED_FastCheckoutClientImplTest,
-      OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops);
+      OnAfterDidAutofillForm_SetsFillingFormsToFilledAndStops);
   FRIEND_TEST_ALL_PREFIXES(
       DISABLED_FastCheckoutClientImplTest,
       OnFullCardRequestSucceeded_InvokesCreditCardFormFill);

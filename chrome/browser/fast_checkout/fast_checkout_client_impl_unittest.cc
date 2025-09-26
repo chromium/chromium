@@ -814,7 +814,7 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
 }
 
 TEST_F(DISABLED_FastCheckoutClientImplTest,
-       OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops) {
+       OnAfterDidAutofillForm_SetsFillingFormsToFilledAndStops) {
   autofill::FormStructure* address_form =
       test_api(*autofill_manager()).AddSeenFormStructure(SetUpAddressForm());
   autofill::FormStructure* credit_card_form =
@@ -856,8 +856,8 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
                             autofill::FormType::kCreditCardForm),
                        FastCheckoutClientImpl::FillingState::kFilling)));
 
-  fast_checkout_client()->OnAfterDidFillAutofillFormData(
-      *autofill_manager(), credit_card_form->global_id());
+  fast_checkout_client()->OnAfterDidAutofillForm(*autofill_manager(),
+                                                 credit_card_form->global_id());
 
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
   EXPECT_EQ(fast_checkout_client()->fast_checkout_ui_state_,
@@ -1035,9 +1035,8 @@ TEST_F(DISABLED_FastCheckoutClientImplTest,
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(
-    DISABLED_FastCheckoutClientImplTest,
-    OnAfterDidFillAutofillFormData_AddressForm_MakesAddressFormA11yAnnouncement) {
+TEST_F(DISABLED_FastCheckoutClientImplTest,
+       OnAfterDidAutofillForm_AddressForm_MakesAddressFormA11yAnnouncement) {
   autofill::FormStructure* address_form =
       test_api(*autofill_manager()).AddSeenFormStructure(SetUpAddressForm());
   StartRunAndSelectOptions({address_form->form_signature()});
@@ -1045,14 +1044,13 @@ TEST_F(
       kAutofillProfileLabel + u" address form filled.";
 
   EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
-  fast_checkout_client()->OnAfterDidFillAutofillFormData(
-      *autofill_manager(), address_form->global_id());
+  fast_checkout_client()->OnAfterDidAutofillForm(*autofill_manager(),
+                                                 address_form->global_id());
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-TEST_F(
-    DISABLED_FastCheckoutClientImplTest,
-    OnAfterDidFillAutofillFormData_EmailForm_MakesEmailFormA11yAnnouncement) {
+TEST_F(DISABLED_FastCheckoutClientImplTest,
+       OnAfterDidAutofillForm_EmailForm_MakesEmailFormA11yAnnouncement) {
   autofill::FormStructure* address_form =
       test_api(*autofill_manager()).AddSeenFormStructure(SetUpAddressForm());
   address_form->field(0)->set_heuristic_type(
@@ -1061,14 +1059,14 @@ TEST_F(
   std::u16string announcement_text = u"Email filled.";
 
   EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
-  fast_checkout_client()->OnAfterDidFillAutofillFormData(
-      *autofill_manager(), address_form->global_id());
+  fast_checkout_client()->OnAfterDidAutofillForm(*autofill_manager(),
+                                                 address_form->global_id());
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
 TEST_F(
     DISABLED_FastCheckoutClientImplTest,
-    OnAfterDidFillAutofillFormData_CreditCardForm_MakesCreditCardFormA11yAnnouncement) {
+    OnAfterDidAutofillForm_CreditCardForm_MakesCreditCardFormA11yAnnouncement) {
   autofill::FormStructure* credit_card_form =
       test_api(*autofill_manager()).AddSeenFormStructure(SetUpCreditCardForm());
   auto [autofill_profile, credit_card] =
@@ -1083,8 +1081,8 @@ TEST_F(
   std::u16string announcement_text = kCreditCardNickname + u" filled.";
 
   EXPECT_CALL(*accessibility_service(), Announce(announcement_text));
-  fast_checkout_client()->OnAfterDidFillAutofillFormData(
-      *autofill_manager(), credit_card_form->global_id());
+  fast_checkout_client()->OnAfterDidAutofillForm(*autofill_manager(),
+                                                 credit_card_form->global_id());
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 

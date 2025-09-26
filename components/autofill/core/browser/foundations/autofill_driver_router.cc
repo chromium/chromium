@@ -419,7 +419,7 @@ void AutofillDriverRouter::FocusOnFormField(
   callback(CHECK_DEREF(target), browser_form, field_id);
 }
 
-void AutofillDriverRouter::DidFillAutofillFormData(
+void AutofillDriverRouter::DidAutofillForm(
     RoutedCallback<const FormData&, base::TimeTicks> callback,
     AutofillDriver& source,
     FormData form,

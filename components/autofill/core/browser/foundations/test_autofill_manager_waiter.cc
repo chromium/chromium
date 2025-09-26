@@ -232,16 +232,15 @@ void TestAutofillManagerWaiter::OnAfterFocusOnFormField(
   OnAfter(Event::kFocusOnFormField);
 }
 
-void TestAutofillManagerWaiter::OnBeforeDidFillAutofillFormData(
+void TestAutofillManagerWaiter::OnBeforeDidAutofillForm(
     AutofillManager& manager,
     FormGlobalId form) {
-  OnBefore(Event::kDidFillAutofillFormData);
+  OnBefore(Event::kDidAutofillForm);
 }
 
-void TestAutofillManagerWaiter::OnAfterDidFillAutofillFormData(
-    AutofillManager& manager,
-    FormGlobalId form) {
-  OnAfter(Event::kDidFillAutofillFormData);
+void TestAutofillManagerWaiter::OnAfterDidAutofillForm(AutofillManager& manager,
+                                                       FormGlobalId form) {
+  OnAfter(Event::kDidAutofillForm);
 }
 
 void TestAutofillManagerWaiter::OnBeforeJavaScriptChangedAutofilledValue(

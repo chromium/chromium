@@ -64,8 +64,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       std::optional<PasswordSuggestionRequest> password_request) override;
   void OnFocusOnFormField(const FormData& form,
                           const FieldGlobalId& field_id) override;
-  void OnDidFillAutofillFormData(const FormData& form,
-                                 const base::TimeTicks timestamp) override;
+  void OnDidAutofillForm(const FormData& form,
+                         const base::TimeTicks timestamp) override;
   void OnJavaScriptChangedAutofilledValue(
       const FormData& form,
       const FieldGlobalId& field_id,

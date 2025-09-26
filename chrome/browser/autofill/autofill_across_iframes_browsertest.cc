@@ -119,7 +119,7 @@ class TestAutofillManager : public BrowserAutofillManager {
  private:
   TestAutofillManagerWaiter did_autofill_{
       *this,
-      {AutofillManagerEvent::kDidFillAutofillFormData}};
+      {AutofillManagerEvent::kDidAutofillForm}};
   TestAutofillManagerWaiter form_submitted_{
       *this,
       {AutofillManagerEvent::kFormSubmitted}};
@@ -538,10 +538,10 @@ class AutofillAcrossIframesTest_Dynamic : public AutofillAcrossIframesTest {
     TestAutofillManager& manager = main_autofill_manager();
     FillCard(main_frame(), form, trigger_field);
     // Now, after FillCard(), the form gets filled in the renderer (which
-    // triggers three OnDidFillAutofillFormData() events) and then changes.
+    // triggers three OnDidAutofillForm() events) and then changes.
     // The change triggers an OnFormsSeen() event, followed by a form
     // re-extraction and re-fill. The only newly filled field in the refill is
-    // the CVC field, which triggers another OnDidFillAutofillFormData() event.
+    // the CVC field, which triggers another OnDidAutofillForm() event.
     EXPECT_TRUE(manager.WaitForAutofill(3 + 1));
     form =
         manager.form_structures().find(form.global_id())->second->ToFormData();

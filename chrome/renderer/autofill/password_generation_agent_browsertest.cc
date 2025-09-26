@@ -127,8 +127,8 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void FocusOnFormField(const FormData& form,
                         FieldRendererId field_id) override {}
 
-  void DidFillAutofillFormData(const FormData& form,
-                               base::TimeTicks timestamp) override {}
+  void DidAutofillForm(const FormData& form,
+                       base::TimeTicks timestamp) override {}
 
   void DidEndTextFieldEditing() override {}
 
