@@ -106,6 +106,11 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
   if (offset < cursor.Current().TextEndOffset()) {
     cursor_inline_size = ComputeCharacterWidthAtOffset(
         cursor, offset - cursor.Current().TextStartOffset(), style);
+    // Fall back to 1ch.
+    if (cursor_inline_size == LayoutUnit()) {
+      cursor_inline_size =
+          LayoutUnit(style.GetFont()->PrimaryFont()->AvgCharWidth());
+    }
   } else {
     // If the next fragment is text, we need to get the width and height of
     // the first visible character in this fragment.
@@ -121,6 +126,10 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
           {style_next.GetWritingMode(), ResolvedDirection(next)},
           next.Current().Size());
       cursor_inline_size = ComputeCharacterWidthAtOffset(next, 0, style_next);
+      if (cursor_inline_size == LayoutUnit()) {
+        cursor_inline_size =
+            LayoutUnit(style_next.GetFont()->PrimaryFont()->AvgCharWidth());
+      }
       cursor_block_size =
           converter_next.ToLogical(next.Current().Size()).block_size;
       switch (style.GetWritingMode()) {
@@ -139,16 +148,11 @@ LogicalRect ComputeNextCharacterLogicalRect(const InlineCursor& cursor,
           break;
       }
     } else {
-      // If there is no visible character after the insertion point, the UA must
-      // render the caret after the last visible character.
-      cursor_inline_size = ComputeCharacterWidthAtOffset(
-          cursor, offset - cursor.Current().TextStartOffset() - 1, style);
-    }
+      // The width of the block and underscore carets should be 1ch if
+      // this information is impractical to determine.
+      cursor_inline_size =
+          LayoutUnit(style.GetFont()->PrimaryFont()->AvgCharWidth());
   }
-  // When the inline size is zero, e.g. in the case that character is
-  // "&ZeroWidthSpace;", the inline size falls back to bar width.
-  if (cursor_inline_size == LayoutUnit()) {
-    cursor_inline_size = caret_width;
   }
   caret_rect.offset.block_offset = cursor_block_offset;
 

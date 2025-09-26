@@ -37,6 +37,8 @@
     <div id="hair" contenteditable>X&#x200a;X</div>
     <!-- zero width space -->
     <div id="zero" contenteditable>X&ZeroWidthSpace;X</div>
+    <!-- zero width space in the following segment-->
+    <div id="zeroNext" contenteditable>X<span>&ZeroWidthSpace;X></span></div>
   </div>
 </body>
 <script>
@@ -82,10 +84,15 @@
     const hairWidth = getCaretRectWidth(hair);
     assert_approx_equals(emWidth / 6, hairWidth, 1);
 
-    // zero - fall back to bar width.
+    // zero - fall back to 1ch width.
     const zero = document.getElementById("zero").firstChild;
     const zeroWidth = getCaretRectWidth(zero);
-    assert_equals(1, zeroWidth);
+    assert_equals(10, zeroWidth);
+    
+    // The following segment starts with a zero space character.
+    const zeroNext = document.getElementById("zeroNext").firstChild;
+    const nextWidth = getCaretRectWidth(zeroNext);
+    assert_equals(10, zeroWidth);
   }, "caret-shape block width respects the space stylings");
 </script>
 </body>
