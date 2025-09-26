@@ -78,7 +78,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -102,10 +101,6 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 #endif
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 using AttributionReportType =
     content::ContentBrowserClient::AttributionReportingOsRegistrar;
@@ -1814,20 +1809,6 @@ bool ContentBrowserClient::UseOutermostMainFrameOrEmbedderForSubCaptureTargets()
     const {
   return false;
 }
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-void ContentBrowserClient::BindReadonlyVideoEffectsManager(
-    const std::string& device_id,
-    BrowserContext* browser_context,
-    mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager) {}
-
-void ContentBrowserClient::BindVideoEffectsProcessor(
-    const std::string& device_id,
-    BrowserContext* browser_context,
-    mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor) {}
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 void ContentBrowserClient::PreferenceRankAudioDeviceInfos(
     BrowserContext* browser_context,

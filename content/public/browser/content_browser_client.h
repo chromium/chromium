@@ -80,7 +80,6 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "services/network/public/mojom/web_transport.mojom-forward.h"
 #include "services/network/public/mojom/websocket.mojom-forward.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -104,11 +103,6 @@
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "content/public/browser/posix_file_descriptor_info.h"
 #endif
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "media/capture/mojom/video_effects_manager.mojom.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom-forward.h"
@@ -3106,24 +3100,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // powerful feature, and is likely only appropriate on embedded systems
   // where the Web application is trusted.
   virtual bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const;
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  // Allows the embedder to correlate backend media services with profile-keyed
-  // effect settings.
-  virtual void BindReadonlyVideoEffectsManager(
-      const std::string& device_id,
-      BrowserContext* browser_context,
-      mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
-          readonly_video_effects_manager);
-
-  // Allows the embedder to correlate backend media services with profile-keyed
-  // effect settings.
-  virtual void BindVideoEffectsProcessor(
-      const std::string& device_id,
-      BrowserContext* browser_context,
-      mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor);
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   // Re-order audio device `infos` based on user preference. The ordering will
   // be from most preferred to least preferred.

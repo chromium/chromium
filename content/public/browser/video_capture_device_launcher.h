@@ -13,7 +13,6 @@
 #include "base/token.h"
 #include "content/common/content_export.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_frame_receiver.h"

@@ -50,15 +50,9 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_info.mojom.h"
 #include "ui/base/clipboard/clipboard_metadata.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "media/capture/mojom/video_effects_manager.mojom-forward.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 class ChromeContentBrowserClientParts;
 class PrefRegistrySimple;
@@ -1080,20 +1074,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void SetIsMinimalMode(bool minimal) override;
 
   bool UseOutermostMainFrameOrEmbedderForSubCaptureTargets() const override;
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  void BindReadonlyVideoEffectsManager(
-      const std::string& device_id,
-      content::BrowserContext* browser_context,
-      mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
-          readonly_video_effects_manager) override;
-
-  void BindVideoEffectsProcessor(
-      const std::string& device_id,
-      content::BrowserContext* browser_context,
-      mojo::PendingReceiver<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor) override;
-#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   void PreferenceRankAudioDeviceInfos(
       content::BrowserContext* browser_context,

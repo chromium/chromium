@@ -94,7 +94,6 @@
 #include "net/test/test_data_directory.h"
 #include "pdf/buildflags.h"
 #include "services/network/test/test_network_context.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -127,14 +126,6 @@
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "media/capture/mojom/video_effects_manager.mojom.h"
-#include "services/video_effects/public/cpp/video_effects_service_host.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#include "services/video_effects/public/mojom/video_effects_service.mojom.h"
-#include "services/video_effects/test/fake_video_effects_service.h"
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -815,44 +806,6 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
       &chrome_certificate_manager, &profile_));
 #endif
 }
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-TEST_F(ChromeContentBrowserClientTest, BindReadonlyVideoEffectsManager) {
-  TestChromeContentBrowserClient test_content_browser_client;
-  mojo::Remote<media::mojom::ReadonlyVideoEffectsManager> video_effects_manager;
-  test_content_browser_client.BindReadonlyVideoEffectsManager(
-      "test_device_id", &profile_,
-      video_effects_manager.BindNewPipeAndPassReceiver());
-
-  base::test::TestFuture<media::mojom::VideoEffectsConfigurationPtr>
-      configuration_future;
-  video_effects_manager->GetConfiguration(configuration_future.GetCallback());
-  // The actual value isn't that important here. What matters is that getting a
-  // result means that the plumbing worked.
-  EXPECT_FALSE(configuration_future.Get().is_null());
-}
-
-TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsProcessor) {
-  mojo::Remote<video_effects::mojom::VideoEffectsService> service;
-  video_effects::FakeVideoEffectsService fake_effects_service(
-      service.BindNewPipeAndPassReceiver());
-  auto service_reset =
-      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
-
-  base::test::TestFuture<void> effects_processor_future =
-      fake_effects_service.GetEffectsProcessorCreationFuture();
-
-  TestChromeContentBrowserClient test_content_browser_client;
-  mojo::Remote<video_effects::mojom::VideoEffectsProcessor>
-      video_effects_processor;
-  test_content_browser_client.BindVideoEffectsProcessor(
-      "test_device_id", &profile_,
-      video_effects_processor.BindNewPipeAndPassReceiver());
-
-  EXPECT_TRUE(effects_processor_future.Wait());
-  EXPECT_TRUE(video_effects_processor.is_connected());
-}
-#endif  // !BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
 TEST_F(ChromeContentBrowserClientTest, PreferenceRankAudioDeviceInfos) {
   blink::WebMediaDeviceInfoArray infos{

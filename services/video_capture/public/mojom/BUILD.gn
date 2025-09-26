@@ -21,7 +21,6 @@ mojom("mojom") {
     "//media/capture/mojom:image_capture",
     "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
-    "//services/video_effects/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
 

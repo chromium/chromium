@@ -38,12 +38,7 @@
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 namespace {
 
@@ -77,28 +72,10 @@ class VideoCaptureManager::CaptureDeviceStartRequest {
   const base::UnguessableToken& session_id() const { return session_id_; }
   media::VideoCaptureParams params() const { return params_; }
 
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>&&
-  TakeVideoEffectsProcessor() {
-    return std::move(video_effects_processor_);
-  }
-#endif
-
-  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>&&
-  TakeReadonlyVideoEffectsManager() {
-    return std::move(readonly_video_effects_manager_);
-  }
-
  private:
   const scoped_refptr<VideoCaptureController> controller_;
   const base::UnguessableToken session_id_;
   const media::VideoCaptureParams params_;
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-      video_effects_processor_;
-#endif
-  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-      readonly_video_effects_manager_;
 };
 
 VideoCaptureManager::CaptureDeviceStartRequest::CaptureDeviceStartRequest(
