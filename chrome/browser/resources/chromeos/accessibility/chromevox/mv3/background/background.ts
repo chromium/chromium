@@ -154,6 +154,9 @@ export class Background extends ChromeVoxState {
     ChromeVoxState.resolveReadyPromise_();
     ChromeVoxState.instance.onIntroduceChromeVox();
     OffscreenBridge.chromeVoxReady();
+
+    // Tell the browser that ChromeVox is ready to begin handling key events.
+    chrome.accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling();
   }
 
   static async maybeCreateOffscreenDocument_() {

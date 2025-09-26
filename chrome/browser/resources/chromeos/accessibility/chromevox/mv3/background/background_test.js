@@ -3510,6 +3510,13 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'EarconPlayback', async function() {
 AX_TEST_F(
     'ChromeVoxBackgroundTest', 'MixedNavWithRangeInvalidation',
     async function() {
+      // Swap in a mock for this function. In normal circumstances, the browser
+      // will have a queue of pending events when this function is called.
+      // However, this invariant is invalidated in this test suite since we are
+      // calling directly into the BackgroundKeyboardHandler key handlers.
+      chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent =
+          (id, propagate) => {};
+
       const mockFeedback = this.createMockFeedback();
       const site = `
     <p>Start</p>

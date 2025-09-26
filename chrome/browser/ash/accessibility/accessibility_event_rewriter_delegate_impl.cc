@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/event_handler_common.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
@@ -21,6 +22,8 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace ash {
 namespace {
@@ -91,6 +94,51 @@ void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVox(
 
   // Forward the event to ChromeVox's background page.
   ForwardKeyToExtension(*(event->AsKeyEvent()), host);
+}
+
+void AccessibilityEventRewriterDelegateImpl::DispatchKeyEventToChromeVoxMv3(
+    unsigned int id,
+    std::unique_ptr<ui::Event> event) {
+  CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
+  CHECK(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  CHECK(event->IsKeyEvent());
+  extensions::EventRouter* event_router =
+      extensions::EventRouter::Get(AccessibilityManager::Get()->profile());
+  CHECK(event_router);
+
+  // Transform the ui::KeyEvent into an accessibility_private::KeyboardEvent.
+  const ui::KeyEvent* key_event = event->AsKeyEvent();
+  extensions::api::accessibility_private::KeyboardEvent keyboard_event;
+  keyboard_event.id = id;
+  keyboard_event.alt_key = key_event->IsAltDown();
+  keyboard_event.code =
+      ui::KeycodeConverter::DomCodeToCodeString(key_event->code());
+  keyboard_event.ctrl_key = key_event->IsControlDown();
+  keyboard_event.key =
+      ui::KeycodeConverter::DomKeyToKeyString(key_event->GetDomKey());
+  keyboard_event.key_code = key_event->key_code();
+  keyboard_event.meta_key = key_event->IsCommandDown();
+  keyboard_event.repeat = key_event->is_repeat();
+  keyboard_event.shift_key = key_event->IsShiftDown();
+
+  // Build the extension event.
+  base::Value::List event_args;
+  event_args.Append(keyboard_event.ToValue());
+  std::unique_ptr<extensions::Event> extension_event;
+  if (key_event->type() == ui::EventType::kKeyPressed) {
+    extension_event = std::make_unique<extensions::Event>(
+        extensions::events::ACCESSIBILITY_PRIVATE_ON_KEY_DOWN,
+        extensions::api::accessibility_private::OnKeyDown::kEventName,
+        std::move(event_args));
+  } else {
+    extension_event = std::make_unique<extensions::Event>(
+        extensions::events::ACCESSIBILITY_PRIVATE_ON_KEY_UP,
+        extensions::api::accessibility_private::OnKeyUp::kEventName,
+        std::move(event_args));
+  }
+
+  event_router->DispatchEventWithLazyListener(
+      extension_misc::kChromeVoxExtensionId, std::move(extension_event));
 }
 
 void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(

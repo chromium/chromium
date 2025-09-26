@@ -776,6 +776,8 @@ Called by update_extension_histograms.py.-->
   <int value="568" label="PDF_VIEWER_PRIVATE_ON_SAVE_TO_DRIVE_PROGRESS"/>
   <int value="569" label="SIDE_PANEL_ON_OPENED"/>
   <int value="570" label="SIDE_PANEL_ON_CLOSED"/>
+  <int value="571" label="ACCESSIBILITY_PRIVATE_ON_KEY_DOWN"/>
+  <int value="572" label="ACCESSIBILITY_PRIVATE_ON_KEY_UP"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->
@@ -2837,6 +2839,10 @@ Called by update_extension_histograms.py.-->
   <int value="1946" label="SIDEPANEL_GETLAYOUT"/>
   <int value="1947" label="SIDEPANEL_CLOSE"/>
   <int value="1948" label="DEVELOPERPRIVATE_SHOWSITESETTINGS"/>
+  <int value="1949"
+      label="ACCESSIBILITY_PRIVATE_PROCESSPENDINGSPOKENFEEDBACKEVENT"/>
+  <int value="1950"
+      label="ACCESSIBILITY_PRIVATE_ENABLESPOKENFEEDBACKMV3KEYHANDLING"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

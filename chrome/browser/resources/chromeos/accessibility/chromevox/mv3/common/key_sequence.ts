@@ -218,17 +218,7 @@ export class KeySequence {
    * @param keyEvent The keyEvent or event-shaped object to extract from.
    */
   private extractKey_(keyEvent: EventLikeObject): void {
-    let keyCode;
-    // TODO (rshearer): This is temporary until we find a library that can
-    // convert between ASCII charcodes and keycodes.
-    if (keyEvent.type === 'keypress' && keyEvent.keyCode >= 97 &&
-        keyEvent.keyCode <= 122) {
-      // Alphabetic keypress. Convert to the upper case ASCII code.
-      keyCode = keyEvent.keyCode - 32;
-    } else if (keyEvent.type === 'keypress') {
-      keyCode = KEY_PRESS_CODE[keyEvent.keyCode];
-    }
-    this.keys.keyCode.push(keyCode || keyEvent.keyCode);
+    this.keys.keyCode.push(keyEvent.keyCode);
 
     for (const prop in this.keys) {
       if (prop !== 'keyCode') {
@@ -576,19 +566,5 @@ export class KeySequence {
 function newEventLikeObject(): EventLikeObject {
   return Object.assign({}, {type: '', keyCode: 0});
 }
-
-// TODO(dtseng): This is incomplete; pull once we have appropriate libs.
-/** Maps a keypress keycode to a keydown or keyup keycode. */
-const KEY_PRESS_CODE: Record<number, number> = {
-  39: 222,
-  44: 188,
-  45: 189,
-  46: 190,
-  47: 191,
-  59: 186,
-  91: 219,
-  92: 220,
-  93: 221,
-};
 
 TestImportManager.exportForTesting(KeySequence);

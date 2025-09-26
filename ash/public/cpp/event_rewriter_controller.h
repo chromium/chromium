@@ -54,6 +54,13 @@ class ASH_EXPORT EventRewriterController {
   // Sends mouse events to accessibility component extensions when true.
   virtual void SetSendMouseEvents(bool value) = 0;
 
+  // Either propagates or cancels a stored key event for ChromeVox in mv3.
+  virtual void ProcessPendingSpokenFeedbackEvent(unsigned int id,
+                                                 bool propagate) = 0;
+
+  // Enables or disables key event handling for the ChromeVox in mv3.
+  virtual void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled) = 0;
+
  protected:
   virtual ~EventRewriterController() {}
 };

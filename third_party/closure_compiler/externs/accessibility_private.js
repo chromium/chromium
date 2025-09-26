@@ -26,6 +26,23 @@ chrome.accessibilityPrivate = {};
 chrome.accessibilityPrivate.AlertInfo;
 
 /**
+ * An object that resembles a web KeyboardEvent object, with the addition of a
+ * unique ID property.
+ * @typedef {{
+ *   id: number,
+ *   altKey: boolean,
+ *   code: string,
+ *   ctrlKey: boolean,
+ *   key: string,
+ *   keyCode: number,
+ *   metaKey: boolean,
+ *   repeat: boolean,
+ *   shiftKey: boolean
+ * }}
+ */
+chrome.accessibilityPrivate.KeyboardEvent;
+
+/**
  * Bounding rectangle in global screen coordinates.
  * @typedef {{
  *   left: number,
@@ -826,6 +843,19 @@ chrome.accessibilityPrivate.updateFaceGazeBubble = function(text, isWarning) {};
 chrome.accessibilityPrivate.enableDragEventRewriter = function(enabled) {};
 
 /**
+ * Used by the ChromeVox extension to enable key handling for the Manifest V3
+ * version of the extension.
+ */
+chrome.accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling = function() {};
+
+/**
+ * Used by the ChromeVox extension to process a pending spoken feedback event.
+ * @param {number} id The ID of the key event.
+ * @param {boolean} propagate Whether or not to propagate the key.
+ */
+chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent = function(id, propagate) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */
@@ -953,3 +983,15 @@ chrome.accessibilityPrivate.onToggleDictation;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onToggleGestureInfoForSettings;
+
+/**
+ * Fired when a key is pressed.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onKeyDown;
+
+/**
+ * Fired when a key is released.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onKeyUp;

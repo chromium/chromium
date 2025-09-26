@@ -5,13 +5,11 @@
 /**
  * @fileoverview ChromeVox keyboard handler.
  */
-import {BridgeHelper} from '/common/bridge_helper.js';
 import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-import {BridgeConstants} from '../../common/bridge_constants.js';
 import {EventSourceType} from '../../common/event_source_type.js';
-import type {InternalKeyEvent} from '../../common/internal_key_event.js'
+import {InternalKeyEvent} from '../../common/internal_key_event.js'
 import {ChromeVoxKbHandler} from '../../common/keyboard_handler.js';
 import {Msgs} from '../../common/msgs.js';
 import {QueueMode} from '../../common/tts_types.js';
@@ -22,9 +20,6 @@ import {ForcedActionPath} from '../forced_action_path.js';
 import {MathHandler} from '../math_handler.js';
 import {Output} from '../output/output.js';
 import {ChromeVoxPrefs} from '../prefs.js';
-
-const TARGET = BridgeConstants.BackgroundKeyboardHandler.TARGET;
-const Action = BridgeConstants.BackgroundKeyboardHandler.Action;
 
 /**
  * Internal pass through mode state (see usage below).
@@ -54,13 +49,10 @@ export class BackgroundKeyboardHandler {
     this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
     this.passedThroughKeyDowns_ = new Set();
 
-    BridgeHelper.registerHandler(
-        TARGET, Action.ON_KEY_DOWN,
-        (internalEvent: InternalKeyEvent) => this.onKeyDown_(internalEvent));
-    BridgeHelper.registerHandler(
-        TARGET, Action.ON_KEY_UP,
-        (internalEvent: InternalKeyEvent) => this.onKeyUp_(internalEvent));
-
+    chrome.accessibilityPrivate.onKeyDown.addListener(
+        event => this.onKeyDown_(event));
+    chrome.accessibilityPrivate.onKeyUp.addListener(
+        event => this.onKeyUp_(event));
     chrome.accessibilityPrivate.setKeyboardListener(
         true, ChromeVoxPrefs.isStickyPrefOn);
   }
@@ -78,11 +70,11 @@ export class BackgroundKeyboardHandler {
   }
 
   /**
-   * Handles key down events.
-   * The return value has no effect since we ignore it in
-   *     AccessibilityEventRewriter::RewriteEventForChromeVox.
+   * Handles custom key down events and sends the result (whether the event
+   * should propagate or not) to the browser.
    */
-  private onKeyDown_(evt: InternalKeyEvent): boolean {
+  private onKeyDown_(event: chrome.accessibilityPrivate.KeyboardEvent): void {
+    const evt = new InternalKeyEvent(event);
     EventSource.set(EventSourceType.STANDARD_KEYBOARD);
     evt.stickyMode = ChromeVoxPrefs.isStickyModeOn();
 
@@ -96,7 +88,7 @@ export class BackgroundKeyboardHandler {
 
     if (BackgroundKeyboardHandler.passThroughModeEnabled_) {
       this.passedThroughKeyDowns_.add(evt.keyCode);
-      return false;
+      return;
     }
 
     Output.forceModeForNextSpeechUtterance(QueueMode.FLUSH);
@@ -115,7 +107,10 @@ export class BackgroundKeyboardHandler {
       stopPropagation = true;
       this.eatenKeyDowns_.add(evt.keyCode);
     }
-    return stopPropagation;
+
+    // Send result to the browser.
+    chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent(
+        /*id=*/ evt.id, /*propagate=*/ !stopPropagation);
   }
 
   /** Returns true if the key should continue propagation. */
@@ -148,8 +143,12 @@ export class BackgroundKeyboardHandler {
     return Boolean(evt.metaKey) || evt.keyCode === KeyCode['SEARCH'];
   }
 
-  /** Returns true if the key event should stop propagating. */
-  private onKeyUp_(evt: InternalKeyEvent): boolean {
+  /**
+   * Handles custom key up events and sends the result (whether the event
+   * should propagate or not) to the browser.
+   */
+  private onKeyUp_(event: chrome.accessibilityPrivate.KeyboardEvent): void {
+    const evt = new InternalKeyEvent(event);
     let stopPropagation = false;
     if (this.eatenKeyDowns_.has(evt.keyCode)) {
       stopPropagation = true;
@@ -179,7 +178,10 @@ export class BackgroundKeyboardHandler {
         this.passThroughState_ = KeyboardPassThroughState.NO_PASS_THROUGH;
       }
     }
-    return stopPropagation;
+
+    // Send result to the browser.
+    chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent(
+        /*id=*/ evt.id, /*propagate=*/ !stopPropagation);
   }
 }
 

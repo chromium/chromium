@@ -395,6 +395,19 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateProcessPendingSpokenFeedbackEventFunction::Run() {
+  CHECK_EQ(extension_misc::kChromeVoxExtensionId, extension_id());
+  std::optional<
+      accessibility_private::ProcessPendingSpokenFeedbackEvent::Params>
+      params = accessibility_private::ProcessPendingSpokenFeedbackEvent::
+          Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  ash::EventRewriterController::Get()->ProcessPendingSpokenFeedbackEvent(
+      params->id, params->propagate);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction::Run() {
   std::optional<
       accessibility_private::HandleScrollableBoundsForPointFound::Params>
@@ -1041,6 +1054,14 @@ AccessibilityPrivateSetSelectToSpeakStateFunction::Run() {
   auto* accessibility_manager = AccessibilityManager::Get();
   accessibility_manager->SetSelectToSpeakState(state);
 
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateEnableSpokenFeedbackMv3KeyHandlingFunction::Run() {
+  CHECK_EQ(extension_misc::kChromeVoxExtensionId, extension_id());
+  ash::EventRewriterController::Get()->SetSpokenFeedbackMv3KeyHandlingEnabled(
+      true);
   return RespondNow(NoArguments());
 }
 

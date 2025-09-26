@@ -13,7 +13,11 @@
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -39,7 +43,42 @@ ui::InputDeviceType GetInputDeviceType(
     return ui::INPUT_DEVICE_UNKNOWN;
   }
 }
+
+#if !defined(NDEBUG)
+void MaybeLogEventDispatchError(
+    const ui::Event* event,
+    const ui::EventRewriter::Continuation& continuation,
+    const ui::EventDispatchDetails& details) {
+  const char* failure_reason = nullptr;
+  if (details.dispatcher_destroyed) {
+    failure_reason = "destroyed dispatcher";
+  } else if (details.target_destroyed) {
+    failure_reason = "destroyed target";
+  } else if (continuation.WasInvalidated()) {
+    failure_reason = "destroyed source";
+  } else {
+    failure_reason = "no prior rewrite";
+  }
+
+  if (failure_reason) {
+    VLOG(0) << "Undispatched key " << event->AsKeyEvent()->key_code()
+            << " due to " << failure_reason << ".";
+  }
+}
+#endif
+
 }  // namespace
+
+AccessibilityEventRewriter::PendingEventInfo::PendingEventInfo(
+    unsigned int id,
+    std::unique_ptr<ui::Event> event,
+    ui::EventRewriter::Continuation continuation) {
+  this->id = id;
+  this->event = std::move(event);
+  this->continuation = std::move(continuation);
+}
+
+AccessibilityEventRewriter::PendingEventInfo::~PendingEventInfo() = default;
 
 AccessibilityEventRewriter::AccessibilityEventRewriter(
     ui::EventRewriterAsh* event_rewriter_ash,
@@ -59,27 +98,49 @@ AccessibilityEventRewriter::~AccessibilityEventRewriter() {
 void AccessibilityEventRewriter::OnUnhandledSpokenFeedbackEvent(
     std::unique_ptr<ui::Event> event) const {
   DCHECK(event->IsKeyEvent()) << "Unexpected unhandled event type";
+  if (::features::IsAccessibilityManifestV3EnabledForChromeVox()) {
+    // Unhandled events regularly come back in manifest v3 because DOM key
+    // events are only handled if the menu or learn mode are active.
+    return;
+  }
+
   // Send the event to the continuation for the most recent event rewritten by
   // ChromeVox, (that is, through its EventSource). Under the assumption that a
   // single AccessibilityEventRewriter is not registered to multiple
   // EventSources, this will be the same as this event's original source.
-  const char* failure_reason = nullptr;
   if (chromevox_continuation_) {
-    ui::EventDispatchDetails details =
-        SendEvent(chromevox_continuation_, event.get());
-    if (details.dispatcher_destroyed)
-      failure_reason = "destroyed dispatcher";
-    else if (details.target_destroyed)
-      failure_reason = "destroyed target";
-  } else if (chromevox_continuation_.WasInvalidated()) {
-    failure_reason = "destroyed source";
-  } else {
-    failure_reason = "no prior rewrite";
+    SendEventHelper(chromevox_continuation_, event.get());
   }
-  if (failure_reason) {
-    VLOG(0) << "Undispatched key " << event->AsKeyEvent()->key_code()
-            << " due to " << failure_reason << ".";
+}
+
+void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
+    unsigned int id,
+    bool propagate) {
+  // This method is only allowed for ChromeVox in manifest v3.
+  CHECK(Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
+  CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
+  CHECK(chromevox_mv3_key_handling_enabled_);
+  CHECK(!pending_key_events_.empty());
+
+  const auto& pending_event_info = pending_key_events_.front();
+  CHECK_EQ(id, pending_event_info.id);
+  if (propagate) {
+    SendEventHelper(pending_event_info.continuation,
+                    pending_event_info.event.get());
   }
+
+  pending_key_events_.pop();
+}
+
+void AccessibilityEventRewriter::SendEventHelper(
+    const ui::EventRewriter::Continuation continuation,
+    const ui::Event* event) const {
+#if !defined(NDEBUG)
+  ui::EventDispatchDetails details = SendEvent(continuation, event);
+  MaybeLogEventDispatchError(event, continuation, details);
+#else
+  std::ignore = SendEvent(continuation, event);
+#endif
 }
 
 void AccessibilityEventRewriter::SetKeyCodesForSwitchAccessCommand(
@@ -114,6 +175,31 @@ void AccessibilityEventRewriter::SetKeyCodesForSwitchAccessCommand(
   // Switch Access).
 }
 
+void AccessibilityEventRewriter::SetSpokenFeedbackMv3KeyHandlingEnabled(
+    bool enabled) {
+  CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
+  if (chromevox_mv3_key_handling_enabled_ == enabled) {
+    return;
+  }
+
+  if (enabled) {
+    // Ensure we are starting with a clean state.
+    CHECK_EQ(0u, next_pending_event_id_);
+    CHECK(pending_key_events_.empty());
+  } else {
+    // Post a task to propagate all pending events. We can't immediately
+    // propagate them here because there is a chance that the front-most event
+    // is still in-use; this happens if ChromeVox is disabled with the keyboard
+    // accelerator.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents,
+            GetWeakPtr()));
+  }
+  chromevox_mv3_key_handling_enabled_ = enabled;
+}
+
 bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     const ui::Event& event,
     const Continuation continuation) {
@@ -122,6 +208,11 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
 
   if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled() ||
       !event.IsKeyEvent()) {
+    return false;
+  }
+
+  if (::features::IsAccessibilityManifestV3EnabledForChromeVox() &&
+      !chromevox_mv3_key_handling_enabled_) {
     return false;
   }
 
@@ -156,6 +247,39 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     if (remapped_key_code != ui::VKEY_UNKNOWN) {
       rewritten_key_event->set_key_code(remapped_key_code);
     }
+  }
+
+  if (::features::IsAccessibilityManifestV3EnabledForChromeVox() &&
+      chromevox_mv3_key_handling_enabled_) {
+    if (pending_key_events_.size() >= kMaxPendingEvents) {
+      std::ostringstream errorStream;
+      errorStream
+          << "AccessibilityEventRewriter: dropping key event due to full "
+             "queue"
+          << rewritten_key_event->ToString();
+      LOG(ERROR) << errorStream.str();
+      static auto* const crash_key = base::debug::AllocateCrashKeyString(
+          "chromevox_mv3_key_events", base::debug::CrashKeySize::Size1024);
+      base::debug::SetCrashKeyString(crash_key, errorStream.str());
+      base::debug::DumpWithoutCrashing();
+      return true;
+    }
+
+    pending_key_events_.emplace(next_pending_event_id_,
+                                rewritten_key_event->Clone(), continuation);
+    // Forward the key event to the ChromeVox service worker.
+    delegate_->DispatchKeyEventToChromeVoxMv3(next_pending_event_id_,
+                                              rewritten_key_event->Clone());
+    // Forward the key event to other ChromeVox extension contexts, like learn
+    // mode and the panel.
+    delegate_->DispatchKeyEventToChromeVox(rewritten_key_event->Clone(), true);
+
+    ++next_pending_event_id_;
+
+    // Key events in manifest v3 are always captured initially. If the extension
+    // decides the key event should propagate, it will be propagated in
+    // `ProcessPendingSpokenFeedbackEvent`.
+    return true;
   }
 
   bool capture = chromevox_capture_all_keys_;
@@ -364,6 +488,17 @@ void AccessibilityEventRewriter::InputMethodChanged(
     bool show_message) {
   try_rewriting_positional_keys_for_chromevox_ =
       manager->ArePositionalShortcutsUsedByCurrentInputMethod();
+}
+
+void AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents() {
+  while (!pending_key_events_.empty()) {
+    const auto& pending_event_info = pending_key_events_.front();
+    SendEventHelper(pending_event_info.continuation,
+                    pending_event_info.event.get());
+    pending_key_events_.pop();
+  }
+
+  next_pending_event_id_ = 0;
 }
 
 }  // namespace ash

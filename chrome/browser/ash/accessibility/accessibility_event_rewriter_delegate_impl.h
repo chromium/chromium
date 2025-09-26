@@ -33,6 +33,9 @@ class AccessibilityEventRewriterDelegateImpl
   // AccessibilityEventRewriterDelegate:
   void DispatchKeyEventToChromeVox(std::unique_ptr<ui::Event> event,
                                    bool capture) override;
+  void DispatchKeyEventToChromeVoxMv3(
+      unsigned int id,
+      std::unique_ptr<ui::Event> event) override;
   void DispatchMouseEvent(std::unique_ptr<ui::Event> event) override;
   void SendSwitchAccessCommand(SwitchAccessCommand command) override;
   void SendPointScanPoint(const gfx::PointF& point) override;

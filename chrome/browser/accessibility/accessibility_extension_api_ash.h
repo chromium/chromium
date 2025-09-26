@@ -136,6 +136,18 @@ class AccessibilityPrivateHandleScrollableBoundsForPointFoundFunction
       ACCESSIBILITY_PRIVATE_HANDLESCROLLABLEBOUNDSFORPOINTFOUND)
 };
 
+// API function that is called by the ChromeVox extension to process a pending
+// key event.
+class AccessibilityPrivateProcessPendingSpokenFeedbackEventFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateProcessPendingSpokenFeedbackEventFunction() override =
+      default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION(
+      "accessibilityPrivate.processPendingSpokenFeedbackEvent",
+      ACCESSIBILITY_PRIVATE_PROCESSPENDINGSPOKENFEEDBACKEVENT)
+};
+
 // API function that initiates a download of the FaceGaze assets DLC and
 // responds with the file bytes via a callback.
 class AccessibilityPrivateInstallFaceGazeAssetsFunction
@@ -334,6 +346,18 @@ class AccessibilityPrivateSetSelectToSpeakStateFunction
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setSelectToSpeakState",
                              ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKSTATE)
+};
+
+// API function that is called by the ChromeVox extension to enable
+// key handling for the Manifest V3 version of the extension.
+class AccessibilityPrivateEnableSpokenFeedbackMv3KeyHandlingFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateEnableSpokenFeedbackMv3KeyHandlingFunction() override =
+      default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION(
+      "accessibilityPrivate.enableSpokenFeedbackMv3KeyHandling",
+      ACCESSIBILITY_PRIVATE_ENABLESPOKENFEEDBACKMV3KEYHANDLING)
 };
 
 // API function that opens or closes the virtual keyboard.

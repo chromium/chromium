@@ -228,6 +228,19 @@ void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
   accessibility_event_rewriter_->set_send_mouse_events(value);
 }
 
+void EventRewriterControllerImpl::ProcessPendingSpokenFeedbackEvent(
+    unsigned int id,
+    bool propagate) {
+  accessibility_event_rewriter_->ProcessPendingSpokenFeedbackEvent(id,
+                                                                   propagate);
+}
+
+void EventRewriterControllerImpl::SetSpokenFeedbackMv3KeyHandlingEnabled(
+    bool enabled) {
+  accessibility_event_rewriter_->SetSpokenFeedbackMv3KeyHandlingEnabled(
+      enabled);
+}
+
 void EventRewriterControllerImpl::SetAltDownRemappingEnabled(bool enabled) {
   if (event_rewriter_ash_) {
     event_rewriter_ash_->set_alt_down_remapping_enabled(enabled);
