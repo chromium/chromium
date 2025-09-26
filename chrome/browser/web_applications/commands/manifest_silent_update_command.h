@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
@@ -38,6 +39,8 @@ enum class ManifestSilentUpdateCommandStage {
   kFetchingNewManifestData,
   kLoadingExistingManifestData,
   kAcquiringAppLock,
+  kConstructingWebAppInfo,
+  kLoadingExistingAndNewManifestIcons,
   kComparingManifestData,
   kFinalizingSilentManifestChanges,
   kWritingPendingUpdateIconBitmapsToDisk,
@@ -58,8 +61,11 @@ enum class ManifestSilentUpdateCheckResult {
   kInvalidManifest = 10,
   kInvalidPendingUpdateInfo = 11,
   kUserNavigated = 12,
-  kMaxValue = kUserNavigated,
+  kManifestToWebAppInstallInfoError = 13,
+  kMaxValue = kManifestToWebAppInstallInfoError,
 };
+
+bool IsAppUpdated(ManifestSilentUpdateCheckResult result);
 
 // Declare the logging operator before the command declaration, so the templated
 // completion method can use it to log the result.
@@ -104,6 +110,21 @@ class ManifestSilentUpdateCommand
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
 
  private:
+  struct WebAppComparison {
+    bool name_equality = false;
+    bool primary_icons_equality = false;
+    bool shortcut_menu_item_infos_equality = false;
+    bool other_fields_equality = false;
+
+    bool HasNoChanges() const;
+    bool IsNameChangeOnly() const;
+    bool IsSecuritySensitiveChangesOnly() const;
+    base::Value::Dict ToDict() const;
+  };
+  static WebAppComparison CompareWebApps(
+      const WebApp& existing_web_app,
+      const WebAppInstallInfo& new_install_info);
+
   void SetStage(ManifestSilentUpdateCommandStage stage);
 
   void OnManifestFetchedAcquireAppLock(
@@ -125,7 +146,10 @@ class ManifestSilentUpdateCommand
       const webapps::AppId& app_id,
       webapps::InstallResultCode code);
 
+  void WritePendingUpdateInfoThenComplete(proto::PendingUpdateInfo);
+
   void CompleteCommandAndSelfDestruct(
+      base::Location location,
       ManifestSilentUpdateCheckResult check_result);
 
   bool IsWebContentsDestroyed();
@@ -155,18 +179,17 @@ class ManifestSilentUpdateCommand
 
   base::WeakPtr<content::WebContents> web_contents_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
-  std::optional<apps::IconInfo> new_manifest_trusted_icon_metadata_;
-  std::optional<apps::IconInfo> existing_manifest_trusted_icon_metadata_;
 
   // Temporary variables stored here while the update check progresses
   // asynchronously.
   std::unique_ptr<WebAppInstallInfo> new_install_info_;
+  bool is_trusted_install_ = false;
+  WebAppComparison web_app_diff_;
   IconBitmaps existing_manifest_icon_bitmaps_;
   IconBitmaps existing_trusted_icon_bitmaps_;
   IconBitmaps pending_trusted_icon_bitmaps_;
   IconBitmaps pending_manifest_icon_bitmaps_;
   ShortcutsMenuIconBitmaps existing_shortcuts_menu_icon_bitmaps_;
-  bool has_icon_url_changed_ = false;
   bool silent_update_required_ = false;
   bool pending_updated_added_ = false;
 

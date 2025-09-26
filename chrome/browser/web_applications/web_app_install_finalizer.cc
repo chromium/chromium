@@ -599,6 +599,9 @@ void WebAppInstallFinalizer::OnOriginAssociationValidatedForUpdate(
 
   // Only trusted installs like policy or preinstalled apps are allowed to
   // overwrite their trusted icons with manifest provided ones.
+  // TODO(http://crbug.com/447607762): Move the logic for
+  // `should_consider_manifest_icons_as_trusted` into the creation of the
+  // WebAppInstallInfo, to remove the need for this here.
   bool add_manifest_icons_to_trusted_icons =
       web_app->IsPolicyInstalledApp() || web_app->IsPreinstalledApp();
 

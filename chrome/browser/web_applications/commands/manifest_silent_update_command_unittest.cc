@@ -222,7 +222,7 @@ TEST_F(ManifestSilentUpdateCommandTest, StartUrlUpdatedSilently) {
                   /*count=*/1)));
 }
 
-TEST_F(ManifestSilentUpdateCommandTest, InvalidStartUrlAppNotUpdated) {
+TEST_F(ManifestSilentUpdateCommandTest, EmptyStartUpdated) {
   SetupBasicInstallablePageState();
   webapps::AppId app_id = test::InstallForWebContents(
       profile(), web_contents(),
@@ -235,6 +235,7 @@ TEST_F(ManifestSilentUpdateCommandTest, InvalidStartUrlAppNotUpdated) {
   page_state.error_code =
       webapps::InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
 
+  // The document url matches the start_url, so it should resolve just fine.
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
             ManifestSilentUpdateCheckResult::kInvalidManifest);
   EXPECT_FALSE(AppHasPendingUpdateInfo(app_id));
@@ -1059,26 +1060,33 @@ TEST_F(ManifestSilentUpdateCommandTest, VerifyNoManifestIconsAppUpToDate) {
       profile(), web_contents(),
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
-  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+  auto icon_infos = provider().registrar_unsafe().GetAppIconInfos(app_id);
+  ASSERT_EQ(icon_infos.size(), 1u);
+  EXPECT_EQ(icon_infos.front().url,
             GURL("https://example.com/path/def_icon.png"));
-  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
 
   auto& new_manifest = GetPageManifest();
   new_manifest->icons = {};
+  // Note: The InstallableParams options should cause this error to return if
+  // there are no icons, but the testing dependency faking isn't quite set up
+  // for this yet to happen automatically. So set this manually on the fake.
+  web_contents_manager().GetOrCreatePageState(app_url()).error_code =
+      webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
-            ManifestSilentUpdateCheckResult::kAppUpToDate);
+            ManifestSilentUpdateCheckResult::kInvalidManifest);
 
-  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
-
-  // Verify existing icon is in the web app.
-  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+  // No icon changes.
+  icon_infos = provider().registrar_unsafe().GetAppIconInfos(app_id);
+  ASSERT_EQ(icon_infos.size(), 1u);
+  EXPECT_EQ(icon_infos.front().url,
             GURL("https://example.com/path/def_icon.png"));
 
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(
           "Webapp.Update.ManifestSilentUpdateCheckResult"),
-      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kAppUpToDate,
+      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kInvalidManifest,
                               /*count=*/1)));
 }
 
@@ -1097,29 +1105,28 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   auto& new_manifest = GetPageManifest();
   new_manifest->icons = {};
+  // Note: The InstallableParams options should cause this error to return if
+  // there are no icons, but the testing dependency faking isn't quite set up
+  // for this yet to happen automatically. So set this manually on the fake.
+  web_contents_manager().GetOrCreatePageState(app_url()).error_code =
+      webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
   const GURL new_start_url("https://www.foo.bar/new_scope/new_basic.html");
   new_manifest->start_url = new_start_url;
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
-            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+            ManifestSilentUpdateCheckResult::kInvalidManifest);
 
   ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
 
-  // Verify existing icon is in the web app.
-  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
-            GURL("https://example.com/path/def_icon.png"));
-  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
-            new_start_url);
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
-              BucketsAre(base::Bucket(
-                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
-                  /*count=*/1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kInvalidManifest,
+                              /*count=*/1)));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest,
-       NoManifestIconsAndAppNameChangedPendingUpdateInfoSaved) {
+       NoManifestIconsAndAppNameChangedNoUpdate) {
   SetupBasicInstallablePageState();
   webapps::AppId app_id = test::InstallForWebContents(
       profile(), web_contents(),
@@ -1135,27 +1142,22 @@ TEST_F(ManifestSilentUpdateCommandTest,
 
   auto& new_manifest = GetPageManifest();
   new_manifest->icons = {};
+  // Note: The InstallableParams options should cause this error to return if
+  // there are no icons, but the testing dependency faking isn't quite set up
+  // for this yet to happen automatically. So set this manually on the fake.
+  web_contents_manager().GetOrCreatePageState(app_url()).error_code =
+      webapps::InstallableStatusCode::NO_ICON_AVAILABLE;
   new_manifest->name = u"New Name";
 
   EXPECT_EQ(RunManifestUpdateAndGetResult(),
-            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+            ManifestSilentUpdateCheckResult::kInvalidManifest);
 
-  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
-  std::optional<proto::PendingUpdateInfo> pending_update_info =
-      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
-  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
-  EXPECT_TRUE(pending_update_info->has_name());
-  EXPECT_EQ(pending_update_info->name(), base::UTF16ToUTF8(u"New Name"));
-
-  // Verify existing icon is in the web app.
-  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
-            GURL("https://example.com/path/def_icon.png"));
-
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
-              BucketsAre(base::Bucket(
-                  ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate,
-                  /*count=*/1)));
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(base::Bucket(ManifestSilentUpdateCheckResult::kInvalidManifest,
+                              /*count=*/1)));
 }
 
 class ManifestSilentUpdateCommandExternalAppsTest

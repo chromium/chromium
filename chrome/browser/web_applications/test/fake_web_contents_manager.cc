@@ -23,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "url/url_constants.h"
 
 namespace web_app {
@@ -298,11 +299,13 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
     manifest->manifest_url = page.manifest_url;
     if (manifest->start_url.is_empty()) {
       manifest->start_url = url;
+      manifest->has_valid_specified_start_url = false;
     } else {
       manifest->has_valid_specified_start_url = true;
     }
     if (manifest->id.is_empty()) {
       manifest->id = manifest->start_url.GetWithoutRef();
+      manifest->has_custom_id = false;
     } else {
       manifest->has_custom_id = true;
     }
@@ -416,6 +419,9 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
     const GURL& manifest_url,
     const GURL& start_url,
     std::u16string_view name) {
+  const GURL kIconUrl = GURL("https://www.example.com/icon.png");
+  constexpr int kIconSize = 144;
+
   FakePageState& install_page_state = GetOrCreatePageState(install_url);
   install_page_state.url_load_result =
       webapps::WebAppUrlLoaderResult::kUrlLoaded;
@@ -428,13 +434,22 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
 
   install_page_state.manifest_before_default_processing =
       blink::mojom::Manifest::New();
-  install_page_state.manifest_before_default_processing->id =
-      start_url.GetWithoutRef();
-  install_page_state.manifest_before_default_processing->start_url = start_url;
-  install_page_state.manifest_before_default_processing->display =
-      blink::mojom::DisplayMode::kStandalone;
-  install_page_state.manifest_before_default_processing->name = name;
-  install_page_state.manifest_before_default_processing->short_name = name;
+  blink::mojom::Manifest& manifest =
+      *install_page_state.manifest_before_default_processing;
+  manifest.id = start_url.GetWithoutRef();
+  manifest.start_url = start_url;
+  manifest.display = blink::mojom::DisplayMode::kStandalone;
+  manifest.name = name;
+  manifest.short_name = name;
+  blink::Manifest::ImageResource icon;
+  icon.src = kIconUrl;
+  icon.sizes = {{kIconSize, kIconSize}};
+  icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+  manifest.icons = {icon};
+
+  // Set icons in content.
+  GetOrCreateIconState(kIconUrl).bitmaps = {
+      gfx::test::CreateBitmap(kIconSize, SK_ColorBLUE)};
 
   return GenerateAppId(/*manifest_id_path=*/std::nullopt, start_url);
 }

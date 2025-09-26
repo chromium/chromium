@@ -359,6 +359,7 @@ void ManifestUpdateManager::OnManifestSilentUpdateComplete(
     case ManifestSilentUpdateCheckResult::kInvalidManifest:
     case ManifestSilentUpdateCheckResult::kInvalidPendingUpdateInfo:
     case ManifestSilentUpdateCheckResult::kUserNavigated:
+    case ManifestSilentUpdateCheckResult::kManifestToWebAppInstallInfoError:
       update_silent_or_pending = false;
       break;
     case ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate:

@@ -841,6 +841,8 @@ void SetWebAppProductIconFields(
     web_app.SetTrustedIcons(web_app_info.trusted_icons);
   }
 
+  // TODO(http://crbug.com/447607762): Move this logic into the creation of the
+  // WebAppInstallInfo, to remove the need for this here.
   IconBitmaps trusted_icon_bitmaps_to_store =
       should_consider_manifest_icons_as_trusted
           ? web_app_info.icon_bitmaps

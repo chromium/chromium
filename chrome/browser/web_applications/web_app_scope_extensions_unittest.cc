@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
@@ -14,8 +15,10 @@
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_scope.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -27,7 +30,12 @@ namespace {
 
 class WebAppScopeExtensionsTest : public WebAppTest {
  public:
-  WebAppScopeExtensionsTest() = default;
+  WebAppScopeExtensionsTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kWebAppPredictableAppUpdating,
+                              features::kWebAppUsePrimaryIcon},
+        /*disabled_features=*/{});
+  }
   ~WebAppScopeExtensionsTest() override = default;
 
   void SetUp() override {
@@ -42,21 +50,19 @@ class WebAppScopeExtensionsTest : public WebAppTest {
 
  protected:
   webapps::AppId InstallWebAppWithScope(const GURL& scope) {
-    std::unique_ptr<WebAppInstallInfo> web_app_info =
-        WebAppInstallInfo::CreateForTesting(scope);
-    web_app_info->title = u"Basic app name";
-    return test::InstallWebApp(profile(), std::move(web_app_info));
+    SetupPageNoScopeExtensions(scope);
+    return test::InstallForWebContents(
+        profile(), web_contents(),
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   }
 
   webapps::AppId InstallWebAppWithScopeExtensions(
       const GURL& scope,
-      const std::vector<ScopeExtensionInfo>& scope_extensions) {
-    std::unique_ptr<WebAppInstallInfo> web_app_info =
-        WebAppInstallInfo::CreateForTesting(scope);
-    web_app_info->title = u"Basic app name";
-    web_app_info->scope_extensions = base::flat_set<ScopeExtensionInfo>(
-        scope_extensions.begin(), scope_extensions.end());
-    return test::InstallWebApp(profile(), std::move(web_app_info));
+      std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions) {
+    SetupPageWithScopeExtensions(scope, std::move(scope_extensions));
+    return test::InstallForWebContents(
+        profile(), web_contents(),
+        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   }
 
   FakeWebContentsManager& web_contents_manager() {
@@ -82,6 +88,9 @@ class WebAppScopeExtensionsTest : public WebAppTest {
   }
 
   WebAppRegistrar& registrar() { return fake_provider().registrar_unsafe(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnReinstall) {
@@ -94,13 +103,14 @@ TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnReinstall) {
       &fake_provider().registrar_unsafe());
   base::test::TestFuture<const webapps::AppId&, const WebAppScope&> future;
   adapter.SetWebAppEffectiveScopeChangedDelegate(future.GetRepeatingCallback());
-  const std::vector<ScopeExtensionInfo> scope_extensions = {
-      ScopeExtensionInfo::CreateForOrigin(
-          url::Origin::Create(GURL("https://example.org"))),
-      ScopeExtensionInfo::CreateForOrigin(
-          url::Origin::Create(GURL("https://example.net")),
-          /*has_origin_wildcard=*/true)};
-  InstallWebAppWithScopeExtensions(scope, scope_extensions);
+  std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions;
+  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
+      url::Origin::Create(GURL("https://example.org")),
+      /*has_origin_wildcard=*/false));
+  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
+      url::Origin::Create(GURL("https://example.net")),
+      /*has_origin_wildcard=*/true));
+  InstallWebAppWithScopeExtensions(scope, std::move(scope_extensions));
 
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(app_id, future.Get<webapps::AppId>());
@@ -154,14 +164,15 @@ TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnAddedUpdate) {
 
 TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnRemovedUpdate) {
   const GURL scope("https://example.com/");
-  const std::vector<ScopeExtensionInfo> scope_extensions = {
-      ScopeExtensionInfo::CreateForOrigin(
-          url::Origin::Create(GURL("https://example.org"))),
-      ScopeExtensionInfo::CreateForOrigin(
-          url::Origin::Create(GURL("https://example.net")),
-          /*has_origin_wildcard=*/true)};
+  std::vector<blink::mojom::ManifestScopeExtensionPtr> scope_extensions;
+  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
+      url::Origin::Create(GURL("https://example.org")),
+      /*has_origin_wildcard=*/false));
+  scope_extensions.push_back(blink::mojom::ManifestScopeExtension::New(
+      url::Origin::Create(GURL("https://example.net")),
+      /*has_origin_wildcard=*/true));
   const webapps::AppId app_id =
-      InstallWebAppWithScopeExtensions(scope, scope_extensions);
+      InstallWebAppWithScopeExtensions(scope, std::move(scope_extensions));
 
   // Update the app with no extensions, and verify that the scope observer
   // is notified.

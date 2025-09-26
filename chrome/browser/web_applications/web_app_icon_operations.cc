@@ -202,14 +202,22 @@ std::string IconUrlWithSize::ToString() const {
                             size.ToString().c_str());
 }
 
-IconUrlSizeSet GetValidIconUrlsToDownload(
-    const WebAppInstallInfo& web_app_info) {
+IconUrlSizeSet GetValidIconUrlsToDownload(const WebAppInstallInfo& web_app_info,
+                                          IconUrlExtractionOptions options) {
   std::vector<IconUrlWithSize> icon_urls_with_sizes;
 
-  base::Extend(icon_urls_with_sizes, GetAppIconUrls(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
-  base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));
+  if (options.product_icons) {
+    base::Extend(icon_urls_with_sizes, GetAppIconUrls(web_app_info));
+  }
+  if (options.shortcut_menu_item_icons) {
+    base::Extend(icon_urls_with_sizes, GetShortcutMenuIcons(web_app_info));
+  }
+  if (options.file_handling_icons) {
+    base::Extend(icon_urls_with_sizes, GetFileHandlingIcons(web_app_info));
+  }
+  if (options.home_tab_icons) {
+    base::Extend(icon_urls_with_sizes, GetHomeTabIcons(web_app_info));
+  }
 
   return RemoveDuplicates(std::move(icon_urls_with_sizes));
 }

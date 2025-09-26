@@ -182,7 +182,8 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
         /*enabled_features=*/
         {{features::kPageActionsMigration,
           {{features::kPageActionsMigrationZoom.name, "true"}}},
-         {features::kWebAppPredictableAppUpdating, {}}},
+         {features::kWebAppPredictableAppUpdating, {}},
+         {features::kWebAppUsePrimaryIcon, {}}},
         /*disabled_features=*/{});
   }
 

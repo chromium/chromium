@@ -114,6 +114,9 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
 void CreateWebAppInstallTabHelpers(content::WebContents* web_contents);
 
 // Updates |web_app| using |web_app_info|
+// TODO(http://crbug.com/447607762): Move the logic for
+// `should_consider_manifest_icons_as_trusted` into the creation of the
+// WebAppInstallInfo, to remove the need for this here.
 void SetWebAppManifestFields(
     const WebAppInstallInfo& web_app_info,
     WebApp& web_app,

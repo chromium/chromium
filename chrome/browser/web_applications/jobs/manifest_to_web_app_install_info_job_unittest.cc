@@ -13,7 +13,9 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/buildflag.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
@@ -42,6 +44,7 @@
 #include "third_party/liburlpattern/part.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/test/sk_gmock_support.h"
 #include "url/origin.h"
 
 namespace web_app {
@@ -254,8 +257,8 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, BasicFieldsPopulated) {
   EXPECT_EQ(1u, web_app_info->manifest_icons.size());
   EXPECT_EQ(icon_url_.spec(), web_app_info->manifest_icons[0].url);
   EXPECT_TRUE(base::Contains(web_app_info->icon_bitmaps.any, kIconSize));
-  gfx::test::AreBitmapsEqual(GetBasicIconBitmap(),
-                             web_app_info->icon_bitmaps.any[kIconSize]);
+  EXPECT_THAT(web_app_info->icon_bitmaps.any[kIconSize],
+              gfx::test::EqualsBitmap(GetBasicIconBitmap()));
 
   // Check file handlers were updated.
   ASSERT_EQ(1u, web_app_info->file_handlers.size());
@@ -363,15 +366,15 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, IconParsingCorrectly) {
 
   // Verify icon bitmaps populated correctly.
   EXPECT_TRUE(base::Contains(web_app_info->icon_bitmaps.maskable, kIconSize));
-  gfx::test::AreBitmapsEqual(GetBasicIconBitmap(),
-                             web_app_info->icon_bitmaps.maskable[kIconSize]);
+  EXPECT_THAT(web_app_info->icon_bitmaps.maskable[kIconSize],
+              gfx::test::EqualsBitmap(GetBasicIconBitmap()));
   EXPECT_TRUE(base::Contains(web_app_info->icon_bitmaps.any, kIconSize));
-  gfx::test::AreBitmapsEqual(GetBasicIconBitmap(),
-                             web_app_info->icon_bitmaps.any[kIconSize]);
+  EXPECT_THAT(web_app_info->icon_bitmaps.any[kIconSize],
+              gfx::test::EqualsBitmap(GetBasicIconBitmap()));
   EXPECT_TRUE(
       base::Contains(web_app_info->icon_bitmaps.monochrome, monochrome_size));
-  gfx::test::AreBitmapsEqual(
-      monochrome_icon, web_app_info->icon_bitmaps.maskable[monochrome_size]);
+  EXPECT_THAT(web_app_info->icon_bitmaps.monochrome[monochrome_size],
+              gfx::test::EqualsBitmap(monochrome_icon));
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, ShareTarget) {
@@ -454,9 +457,9 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, ShortcutItems) {
   EXPECT_FALSE(web_app_info->shortcuts_menu_icon_bitmaps.empty());
   EXPECT_TRUE(base::Contains(web_app_info->shortcuts_menu_icon_bitmaps[0].any,
                              shortcut_icon_size));
-  gfx::test::AreBitmapsEqual(
-      shortcut_bitmap,
-      web_app_info->shortcuts_menu_icon_bitmaps[0].any[shortcut_icon_size]);
+  EXPECT_THAT(
+      web_app_info->shortcuts_menu_icon_bitmaps[0].any[shortcut_icon_size],
+      gfx::test::EqualsBitmap(shortcut_bitmap));
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, Translations) {
@@ -598,11 +601,10 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, HomeTabAndFileHandlingIcons) {
       base::Contains(web_app_info->other_icon_bitmaps, tab_strip_icon_url));
   EXPECT_TRUE(
       base::Contains(web_app_info->other_icon_bitmaps, file_handler_icon_url));
-  gfx::test::AreBitmapsEqual(
-      tab_strip_icon, web_app_info->other_icon_bitmaps[tab_strip_icon_url][0]);
-  gfx::test::AreBitmapsEqual(
-      file_handler_icon,
-      web_app_info->other_icon_bitmaps[file_handler_icon_url][0]);
+  EXPECT_THAT(web_app_info->other_icon_bitmaps[tab_strip_icon_url][0],
+              gfx::test::EqualsBitmap(tab_strip_icon));
+  EXPECT_THAT(web_app_info->other_icon_bitmaps[file_handler_icon_url][0],
+              gfx::test::EqualsBitmap(file_handler_icon));
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, TabIconsLargeSizeIgnored) {
@@ -889,11 +891,7 @@ TEST_F(ManifestToWebAppInstallInfoJobTest,
   ASSERT_EQ(expected_icon_metadata, web_app_info->icons_with_size_any);
 }
 
-// Verifies that if `bypass_primary_icon_download` is set, then the main product
-// icons from the `icons` field of the manifest are skipped during metadata
-// population and bitmap downloading (or subsequent generations). Only icons
-// populated due to other use-cases, like file handling, is populated correctly.
-TEST_F(ManifestToWebAppInstallInfoJobTest, MainIconsNotPopulated) {
+TEST_F(ManifestToWebAppInstallInfoJobTest, DeferIconFetching) {
   base::test::ScopedFeatureList feature_list(
       blink::features::kFileHandlingIcons);
   WebAppFileHandlerManager::SetIconsSupportedByOsForTesting(true);
@@ -901,42 +899,70 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, MainIconsNotPopulated) {
   // This manifest already has a default icon of size 64 populated that is blue
   // in color.
   SetupBasicPageState();
-  auto& manifest = GetPageManifest();
+  blink::mojom::ManifestPtr& manifest = GetPageManifest();
 
-  // Set up file handler metadata with icons in the manifest and the web
+  // Set up shortcut menu item metadata with icons in the manifest and the web
   // contents.
-  GURL file_handler_icon_url("http://www.foo.bar/file_handler/icon.png");
-  int file_handler_size = 32;
-  auto handler = blink::mojom::ManifestFileHandler::New();
-  handler->action = GURL("http://www.foo.bar/open-files");
-  handler->accept[u"image/png"].push_back(u".png");
-  handler->name = u"Images";
-  blink::Manifest::ImageResource file_icon;
-  file_icon.src = file_handler_icon_url;
-  file_icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
-  file_icon.sizes.emplace_back(file_handler_size, file_handler_size);
-  handler->icons.push_back(file_icon);
-  manifest->file_handlers.push_back(std::move(handler));
+  GURL shortcut_icon_url("http://www.foo.bar/shortcut_icon/icon.png");
+  int shortcut_size = 32;
+  blink::Manifest::ImageResource shortcut_icon;
+  shortcut_icon.src = shortcut_icon_url;
+  shortcut_icon.purpose = {Purpose::ANY, Purpose::MONOCHROME};
+  shortcut_icon.sizes.emplace_back(shortcut_size, shortcut_size);
+  blink::Manifest::ShortcutItem shortcut;
+  shortcut.name = u"Shortcut";
+  shortcut.url = GURL("http://www.foo.bar/shortcut/");
+  shortcut.icons = {shortcut_icon};
+  manifest->shortcuts.push_back(shortcut);
 
-  SkBitmap file_handler_icon =
-      gfx::test::CreateBitmap(file_handler_size, SK_ColorRED);
-  web_contents_manager().GetOrCreateIconState(file_handler_icon_url).bitmaps = {
-      file_handler_icon};
+  SkBitmap shortcut_icon_bitmap =
+      gfx::test::CreateBitmap(shortcut_size, SK_ColorRED);
+  auto& shortcut_icon_state =
+      web_contents_manager().GetOrCreateIconState(shortcut_icon_url);
+  shortcut_icon_state.bitmaps = {shortcut_icon_bitmap};
 
-  // Verify product icon metadata and bitmaps are both not populated.
+  // Verify no icons are downloaded.
+  base::Value::Dict debug_data;
+  base::test::TestFuture<std::unique_ptr<WebAppInstallInfo>> future;
+  std::unique_ptr<WebAppDataRetriever> retriever =
+      provider().web_contents_manager().CreateDataRetriever();
   WebAppInstallInfoConstructOptions options;
-  options.skip_primary_icon_download = true;
-  auto web_app_info = GetWebAppInstallInfoFromJob(*manifest, options);
-  ASSERT_TRUE(web_app_info->icon_bitmaps.empty());
-  EXPECT_TRUE(web_app_info->manifest_icons.empty());
+  options.defer_icon_fetching = true;
+  auto job = ManifestToWebAppInstallInfoJob::CreateAndStart(
+      *manifest, *retriever.get(), /*background_installation=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      web_contents()->GetWeakPtr(), [](IconUrlSizeSet&) {}, debug_data,
+      future.GetCallback(), options);
+  ASSERT_TRUE(future.Wait(base::RunLoop::Type::kNestableTasksAllowed));
 
-  // Verify file handler icons are properly populated.
-  EXPECT_EQ(1u, web_app_info->other_icon_bitmaps.size());
-  EXPECT_TRUE(
-      base::Contains(web_app_info->other_icon_bitmaps, file_handler_icon_url));
-  gfx::test::AreBitmapsEqual(
-      file_handler_icon,
-      web_app_info->other_icon_bitmaps[file_handler_icon_url][0]);
+  std::unique_ptr<WebAppInstallInfo> web_app_info = future.Take();
+  EXPECT_TRUE(web_app_info->icon_bitmaps.empty());
+  EXPECT_TRUE(web_app_info->trusted_icon_bitmaps.empty());
+  EXPECT_TRUE(web_app_info->other_icon_bitmaps.empty());
+
+  // Verify that the product icon is fetched, but the shortcut icon isn't.
+  bool product_icon_fetched = false;
+  bool shortcut_icon_fetched = false;
+  shortcut_icon_state.on_icon_fetched =
+      base::BindLambdaForTesting([&]() { shortcut_icon_fetched = true; });
+  web_contents_manager().GetOrCreateIconState(icon_url_).on_icon_fetched =
+      base::BindLambdaForTesting([&]() { product_icon_fetched = true; });
+
+  base::test::TestFuture<void> icons_fetched;
+  job->FetchIcons(*web_app_info, *web_contents(), icons_fetched.GetCallback(),
+                  /*icon_url_modifications=*/std::nullopt,
+                  {.shortcut_menu_item_icons = false});
+  ASSERT_TRUE(icons_fetched.Wait(base::RunLoop::Type::kNestableTasksAllowed));
+
+  EXPECT_TRUE(product_icon_fetched);
+  EXPECT_FALSE(shortcut_icon_fetched);
+
+  ASSERT_TRUE(!web_app_info->trusted_icons.empty());
+  EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[kIconSize],
+              gfx::test::EqualsBitmap(GetBasicIconBitmap()));
+  ASSERT_TRUE(!web_app_info->icon_bitmaps.empty());
+  EXPECT_THAT(web_app_info->icon_bitmaps.any[kIconSize],
+              gfx::test::EqualsBitmap(GetBasicIconBitmap()));
 }
 
 // Unit-tests verifying the trusted icon behavior.
@@ -961,6 +987,7 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, ChooseLargestIconAny) {
       gfx::test::CreateBitmap(larger_icon_size, SK_ColorGREEN);
   const GURL largest_icon_url{"https://www.foo.bar/icon_largest.png"};
   const int largest_icon_size = 512;
+
   const SkBitmap largest_icon =
       gfx::test::CreateBitmap(largest_icon_size, SK_ColorBLUE);
 
@@ -1009,8 +1036,8 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, ChooseLargestIconAny) {
   EXPECT_TRUE(web_app_info->trusted_icon_bitmaps.maskable.empty());
 
   // Verify expected bitmap chosen of proper size.
-  gfx::test::AreBitmapsEqual(largest_icon,
-                             web_app_info->trusted_icon_bitmaps.any[512]);
+  EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[512],
+              gfx::test::EqualsBitmap(largest_icon));
 
   // Verify bitmaps populated properly for `any` icons.
   for (const auto& icon_data : web_app_info->trusted_icon_bitmaps.any) {
@@ -1067,8 +1094,8 @@ TEST_F(ManifestToWebAppInstallInfoTrustedIconTest,
   // Verify that the larger icon is chosen an all platforms, even though there
   // is a larger maskable icon, because it's size is not greater than 256.
   EXPECT_TRUE(web_app_info->trusted_icon_bitmaps.maskable.empty());
-  gfx::test::AreBitmapsEqual(larger_icon,
-                             web_app_info->trusted_icon_bitmaps.any[96]);
+  EXPECT_THAT(web_app_info->trusted_icon_bitmaps.any[96],
+              gfx::test::EqualsBitmap(larger_icon));
 }
 
 // Choose same icon, to be used as `maskable` or `any` depending on whichever OS

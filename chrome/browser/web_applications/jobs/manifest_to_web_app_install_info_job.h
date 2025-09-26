@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_JOBS_MANIFEST_TO_WEB_APP_INSTALL_INFO_JOB_H_
 
 #include <memory>
+#include <optional>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -52,9 +55,9 @@ struct WebAppInstallInfoConstructOptions {
   // Used to force override the name from a different `WebAppInstallInfo`
   // instance.
   bool force_override_name = false;
-  // Used to bypass downloading primary manifest icons, to be used by the
-  // manifest update process.
-  bool skip_primary_icon_download = false;
+  // Defers all icon fetching, to be done later via
+  // ManifestToWebAppInstallInfoJob::FetchIcons.
+  bool defer_icon_fetching = false;
 };
 
 // The role of this job is to take a `blink::mojom::Manifest`, parse it,
@@ -68,7 +71,9 @@ class ManifestToWebAppInstallInfoJob {
   // Starts the job to parse the manifest fields, fetch icons, and then load
   // them onto the `install_info_`.
   // `icon_url_modifications` is applied to make modifications to the list of
-  // icon urls that need to be downloaded.
+  // icon urls that need to be downloaded, but must be specified again if
+  // `FetchIcons` is called later (via `defer_icon_fetching` being specified
+  // above in the options).
   static std::unique_ptr<ManifestToWebAppInstallInfoJob> CreateAndStart(
       const blink::mojom::Manifest& manifest,
       WebAppDataRetriever& data_retriever,
@@ -84,6 +89,25 @@ class ManifestToWebAppInstallInfoJob {
 
   base::Value::Dict GetManifestToWebAppInfoGenerationErrors();
 
+  // Manually fetch icons, for use when the
+  // `WebAppInstallInfoConstructOptions::defer_icon_fetching` option is set to
+  // `true`. After the `CreateAndStart` completes, call this function to fetches
+  // all icons for the `install_info`, respecting the given `icon_url_options`.
+  // The `callback` will always be called asynchronously.
+  //
+  // Invariants:
+  // - The WebAppInstallInfoConstructOptions set at construction still apply
+  //   here.
+  // - This will CHECK-fail if called before the callback given to
+  //   `CreateAndStart` has been called.
+  // - This will CHECK-fail if `defer_icon_fetching` was `false`.
+  void FetchIcons(WebAppInstallInfo& install_info,
+                  content::WebContents& web_contents,
+                  base::OnceClosure callback,
+                  std::optional<base::FunctionRef<void(IconUrlSizeSet&)>>
+                      icon_url_modifications = std::nullopt,
+                  IconUrlExtractionOptions icon_url_options = {});
+
  private:
   ManifestToWebAppInstallInfoJob(
       const blink::mojom::Manifest& manifest,
@@ -95,9 +119,19 @@ class ManifestToWebAppInstallInfoJob {
       WebAppInstallInfoConstructOptions options,
       std::optional<WebAppInstallInfo> fallback_info);
 
+  // This accessor will use the `install_info_` or the
+  // `install_info_for_icon_fetch_`, allowing the delayed icon fetch to pass a
+  // raw pointer instead of an unique ptr.
+  WebAppInstallInfo& install_info();
+
   void Start(base::WeakPtr<content::WebContents> web_contents,
              base::FunctionRef<void(IconUrlSizeSet&)> icon_url_modifications);
   void ParseManifestAndPopulateInfo();
+  void FetchIconsInternal(
+      content::WebContents& web_contents,
+      std::optional<base::FunctionRef<void(IconUrlSizeSet&)>>
+          icon_url_modifications,
+      IconUrlExtractionOptions icon_url_options);
   void OnIconsFetchedGetInstallInfo(
       IconsDownloadedResult result,
       IconsMap icons_map,
@@ -105,13 +139,15 @@ class ManifestToWebAppInstallInfoJob {
   void CompleteJobAndRunCallback();
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
+  raw_ptr<WebAppInstallInfo> install_info_for_icon_fetch_ = nullptr;
   blink::mojom::ManifestPtr manifest_;
-  base::raw_ref<WebAppDataRetriever> data_retriever_;
-  InstallErrorLogEntry install_error_log_entry_;
-  base::raw_ref<base::Value::Dict> debug_data_;
+  raw_ref<WebAppDataRetriever> data_retriever_;
   WebAppInstallInfoCreationCallback creation_callback_;
   WebAppInstallInfoConstructOptions options_;
   std::optional<WebAppInstallInfo> fallback_info_;
+
+  InstallErrorLogEntry install_error_log_entry_;
+  raw_ref<base::Value::Dict> debug_data_;
 
   base::WeakPtrFactory<ManifestToWebAppInstallInfoJob> weak_ptr_factory_{this};
 };
