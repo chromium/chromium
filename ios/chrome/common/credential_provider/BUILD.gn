@@ -70,11 +70,11 @@ source_set("unit_tests") {
   sources = [
     "archivable_credential_store_unittest.mm",
     "archivable_credential_unittest.mm",
-    "as_credential_identity_categories_unittests.mm",
+    "as_credential_identity_categories_unittest.mm",
     "credential_store_util_unittest.mm",
-    "memory_credential_store_unittests.mm",
-    "multi_store_credential_store_unittests.mm",
-    "user_defaults_credential_store_unittests.mm",
+    "memory_credential_store_unittest.mm",
+    "multi_store_credential_store_unittest.mm",
+    "user_defaults_credential_store_unittest.mm",
   ]
   deps = [
     ":credential_provider",

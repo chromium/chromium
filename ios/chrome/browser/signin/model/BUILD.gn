@@ -456,13 +456,13 @@ source_set("unit_tests") {
     "authentication_service_unittest.mm",
     "chrome_account_manager_service_unittest.mm",
     "device_accounts_provider_impl_unittest.mm",
-    "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
+    "gaia_auth_fetcher_ios_ns_url_session_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
     "pattern_account_restriction_unittest.mm",
     "resized_avatar_cache_unittest.mm",
     "signin_profile_info_updater_unittest.mm",
     "signin_util_unittest.mm",
-    "system_account_updater_unittests.mm",
+    "system_account_updater_unittest.mm",
     "system_identity_manager_unittest.mm",
   ]
   deps = [

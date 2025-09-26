@@ -34,7 +34,7 @@ source_set("client") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "reminder_notification_client_unittests.mm" ]
+  sources = [ "reminder_notification_client_unittest.mm" ]
   deps = [
     ":client",
     "//base",
