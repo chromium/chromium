@@ -9,9 +9,7 @@ load("@builtin//struct.star", "module")
 load("./platform.star", "platform")
 
 def __step_config(ctx, step_config):
-    # TODO: crbug.com/447224649, crbug.com/447175273 - Disable remote temporarily to
-    # avoid the RBE's Ubuntu issue.
-    remote_run = False
+    remote_run = True  # Turn this to False when you do file access trace.
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
         if gn_args.get("target_cpu", "").strip('"') == "x86":
