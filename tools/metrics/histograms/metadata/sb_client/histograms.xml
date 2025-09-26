@@ -1055,6 +1055,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram
+    name="SBClientPhishing.PreClassificationCheckCancelActor{RequestType}"
+    enum="ClientSideDetectionType" expires_after="2026-09-25">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the cancelling actor of type ClientSideDetectionType when there is a
+    current preclassification check being done by {RequestType}. This is logged
+    whenever an active preclassification check is cancelled.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
 <histogram name="SBClientPhishing.PreClassificationCheckResult{RequestType}"
     enum="SBClientDetectionPreClassificationCheckResult"
     expires_after="2026-01-30">

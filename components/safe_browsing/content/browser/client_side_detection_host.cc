@@ -366,6 +366,17 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     }
   }
 
+  void Cancel(ClientSideDetectionType request_type) {
+    // We should only log if the callback has not been answered yet.
+    if (ShouldClassifyForPhishing()) {
+      base::UmaHistogramExactLinear(
+          "SBClientPhishing.PreClassificationCheckCancelActor." +
+              GetRequestTypeName(phishing_detection_request_type_),
+          request_type, ClientSideDetectionType_MAX + 1);
+    }
+    Cancel();
+  }
+
   void Cancel() {
     DontClassifyForPhishing(PreClassificationCheckResult::NO_CLASSIFY_CANCEL);
     // Just to make sure we don't do anything bad we reset all these
@@ -789,22 +800,12 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
+
   // Cancel any pending classification request.
+  // TODO(b/447359124): Support multiple classifications on the same page.
   if (classification_request_.get()) {
-    classification_request_->Cancel();
+    classification_request_->Cancel(request_type);
   }
-
-  // Cancel any ongoing on device sessions.
-  bool did_reset_session = intelligent_scan_delegate_->ResetOnDeviceSession();
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification",
-      did_reset_session);
-
-  // If we navigate away and there currently is a pending phishing report
-  // request we have to cancel it to make sure we don't display an interstitial
-  // for the wrong page.  Note that this won't cancel the server ping back but
-  // only cancel the showing of the interstitial.
-  weak_factory_.InvalidateWeakPtrs();
 
   if (!csd_service_) {
     return;
@@ -838,6 +839,12 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
   // DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // If we navigate away and there currently is a pending phishing report
+  // request we have to cancel it to make sure we don't display an
+  // interstitial for the wrong page.  Note that this won't cancel the server
+  // ping back but only cancel the showing of the interstitial.
+  weak_factory_.InvalidateWeakPtrs();
 
   trigger_model_request_sent_as_force_request_ = false;
   MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
@@ -1011,6 +1018,12 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   }
 
   if (should_classify) {
+    // Cancel any ongoing on device sessions.
+    bool did_reset_session = intelligent_scan_delegate_->ResetOnDeviceSession();
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification",
+        did_reset_session);
+
     content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
     phishing_detector_.reset();

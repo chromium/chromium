@@ -103,6 +103,9 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="KEYBOARD_LOCK_REQUESTED"/>
   <int value="5" label="POINTER_LOCK_REQUESTED"/>
   <int value="6" label="VIBRATION_API"/>
+  <int value="7" label="FULLSCREEN_API"/>
+  <int value="8" label="CLIPBOARD_COPY_API"/>
+  <int value="9" label="CREDIT_CARD_FORM"/>
 </enum>
 
 <enum name="ClientSidePhishingImageEmbeddingResult">

@@ -1168,6 +1168,47 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
   fake_phishing_detector_.CheckMessage(&url2);
 }
 
+TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckCancelActor) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  base::HistogramTester histogram_tester;
+
+  // Although we'll navigate to url1 and keep loading, we will not complete the
+  // preclassification check and continue loading, so that url2 can cancel it.
+  GURL url1("http://host1.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url1, false);
+  NavigateAndKeepLoading(web_contents(), url1);
+
+  GURL url2("http://host2.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url2, false);
+  NavigateAndKeepLoading(web_contents(), url2);
+
+  // Navigating to a second page will cancel the preclassification check of the
+  // first page.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckCancelActor.TriggerModel",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  // Keyboard lock request incoming, which triggers preclassification checks,
+  // meaning it will cancel the TriggerModel preclassification check result from
+  // url2.
+  ExpectPreClassificationChecks(url2, &kFalse, &kFalse, nullptr, nullptr,
+                                &kFalse);
+
+  csd_host_->KeyboardLockRequested();
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckCancelActor.TriggerModel",
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_CANCEL, 2);
+}
+
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckPrivateIpAddress) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
