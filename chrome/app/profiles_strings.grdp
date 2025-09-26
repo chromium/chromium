@@ -968,6 +968,10 @@
       desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Save your bookmarks, passwords, and more with sync'. The tone should be informative.">
       Back up data
     </message>
+    <message name="IDS_FRE_BACKUP_CARD_TITLE_V2"
+      desc="This string is the headline in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. This card's headline means that users can back up their data (like bookmarks, history, passwords, settings) so that the data can't get lost if a device malfunctions. The headline is followed by the body text 'Save your bookmarks, passwords, and more with sync'. The tone should be informative.">
+      Back up your stuff
+    </message>
     <message name="IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION"
       desc="This is the body text in one of three cards that represent the top benefits for why a user should sign in to Chrome with a Google Account. The cards appear on a full-page screen when the user launches Chrome for the first time. The body is preceded by the headline 'Back up data'. This card's body means that users can back up their data (like bookmarks, history, settings) so that the data can't get lost if a device malfunctions. Translate 'bookmarks' according to https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=59c31bb . Translate 'and more' so that it conveys that there are additional similar items that are not listed. The tone should be informative.">
       Save your bookmarks and more with sync
@@ -1147,21 +1151,26 @@
     </message>
 
     <!-- History Sync Opt-in Desktop -->
-    <!-- TODO(crbug.com/406751006): Finalize the strings and make them translateable. -->
-    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_TITLE" desc="">
+    <message name="IDS_HISTORY_SYNC_OPT_IN_TITLE" desc="Title of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
       Save time, type less
     </message>
-    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_SUBTITLE" desc="">
-      To quickly get back to sites you've visited, sync your tabs and history
+    <message name="IDS_HISTORY_SYNC_OPT_IN_SUBTITLE" desc="Subtitle of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
+      To quickly get back to sites you’ve visited, sync your history and tabs
     </message>
-    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION" desc="">
+    <message name="IDS_HISTORY_SYNC_OPT_IN_SUBTITLE_WITH_EMAIL" desc="Subtitle of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups. Also includes the user's email.">
+      To quickly get back to sites you’ve visited, sync your history and tabs to <ph name="USER_EMAIL_ADDRESS">$2<ex>john.doe@example.com</ex></ph>
+    </message>
+    <message name="IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION" desc="Description of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
       You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
     </message>
-    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON" desc="">
-      Yes, I'm in
+    <message name="IDS_HISTORY_SYNC_OPT_IN_ACCEPT_BUTTON" desc="Accept button of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
+      Yes, I’m in
     </message>
-    <message translateable="false" name="IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON" desc="">
+    <message name="IDS_HISTORY_SYNC_OPT_IN_REJECT_BUTTON" desc="Decline button of the history sync opt in screen which offers the user to turn on the data types history, tabs, and saved tab groups.">
       No thanks
+    </message>
+    <message name="IDS_HISTORY_SYNC_DISABLED_ERROR_DESCRIPTION" desc="Message that is shown in an error dialog when a user tries to sign in to use a service that requires history sync opt in (e.g. sharing/joining tab groups), but sync is disabled.">
+      Your organization turned off saving history and tabs in your Google Account
     </message>
     <!-- History Sync Opt-in Expansion Pill Desktop -->
     <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
