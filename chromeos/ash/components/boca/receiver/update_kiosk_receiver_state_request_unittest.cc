@@ -107,7 +107,7 @@ TEST(UpdateKioskReceiverStateRequestTest, GetRequestType) {
   UpdateKioskReceiverStateRequest request(
       kReceiverId, kConnectionId, ::boca::ReceiverConnectionState::CONNECTED,
       base::DoNothing());
-  EXPECT_EQ(request.GetRequestType(), google_apis::HttpRequestMethod::kPost);
+  EXPECT_EQ(request.GetRequestType(), google_apis::HttpRequestMethod::kPatch);
 }
 
 }  // namespace

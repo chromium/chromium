@@ -69,7 +69,7 @@ void UpdateKioskReceiverStateRequest::OnError(google_apis::ApiErrorCode error) {
 
 google_apis::HttpRequestMethod UpdateKioskReceiverStateRequest::GetRequestType()
     const {
-  return google_apis::HttpRequestMethod::kPost;
+  return google_apis::HttpRequestMethod::kPatch;
 }
 
 }  // namespace ash::boca_receiver
