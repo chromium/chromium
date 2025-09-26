@@ -3242,4 +3242,7 @@ IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
   // Verify metrics.
   EXPECT_EQ(1, samples->TotalCount());
   EXPECT_EQ(1, samples->GetCount(static_cast<int>(PromptResult::kAllowOnce)));
+  CheckPromptResultUkmRecorded(web_contents->GetLastCommittedURL(),
+                               UkmEntry::kBrowserInitiatedName,
+                               PromptResult::kAllowOnce);
 }

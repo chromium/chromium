@@ -13679,8 +13679,17 @@ be describing additional metrics about the same event.
     picture-in-picture window without responding to the prompt, or when we
     decide to not show the prompt at all. When the prompt is shown, this records
     their selection (or &quot;Ignored&quot; if they did not select an option).
-    When the prompt is not shown, records why it was not shown.
+    When the prompt is not shown, records why it was not shown. Note that
+    although &quot;Not shown because incognito&quot; is part of the
+    MediaAutoPictureInPicturePromptResult enum, UKMs are not collected in
+    incognito.
   </summary>
+  <metric name="BrowserInitiated" enum="MediaAutoPictureInPicturePromptResult">
+    <summary>
+      Prompt result for entering picture in picture automatically due to browser
+      initiated auto picture in picture.
+    </summary>
+  </metric>
   <metric name="MediaPlayback" enum="MediaAutoPictureInPicturePromptResult">
     <summary>
       Prompt result for entering picture in picture automatically due to

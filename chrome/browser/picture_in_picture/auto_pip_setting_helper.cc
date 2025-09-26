@@ -235,6 +235,7 @@ void AutoPipSettingHelper::RecordResult(
           "Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2."
           "BrowserInitiated.PromptResultV2",
           result);
+      RecordUkms(auto_pip_reason, source_id, result);
       break;
   }
 }
@@ -266,8 +267,11 @@ void AutoPipSettingHelper::RecordUkms(
               .Record(ukm_recorder);
       break;
     case media::PictureInPictureEventsInfo::AutoPipReason::kBrowserInitiated:
-      // TODO(crbug.com/408502322): Add UKM support for browser initiated
-      // auto-pip.
+      ukm::builders::
+          Media_AutoPictureInPicture_EnterPictureInPicture_AutomaticReason_PromptResultV2(
+              source_id.value())
+              .SetBrowserInitiated(static_cast<uintmax_t>(result))
+              .Record(ukm_recorder);
       break;
   }
 }
