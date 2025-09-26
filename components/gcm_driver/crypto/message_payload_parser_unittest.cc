@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,13 +48,11 @@ static_assert(std::size(kValidMessage) == 104,
 
 // Creates an std::string for the |kValidMessage| constant.
 std::string CreateMessageString() {
-  std::string result(kValidMessage.size(), 0x0);
-  base::as_writable_byte_span(result).copy_from_nonoverlapping(kValidMessage);
-  return result;
+  return std::string(base::as_string_view(kValidMessage));
 }
 
 TEST(MessagePayloadParserTest, ValidMessage) {
-  MessagePayloadParser parser(CreateMessageString());
+  MessagePayloadParser parser(base::as_string_view(kValidMessage));
   ASSERT_TRUE(parser.IsValid());
 
   base::span<const uint8_t> salt = base::span(kValidMessage).first(kSaltSize);
@@ -82,10 +81,8 @@ TEST(MessagePayloadParserTest, ValidMessage) {
 }
 
 TEST(MessagePayloadParserTest, MinimumMessageSize) {
-  std::string message = CreateMessageString();
-  message.resize(std::size(kValidMessage) / 2);
-
-  MessagePayloadParser parser(message);
+  MessagePayloadParser parser(
+      base::as_string_view(kValidMessage).substr(0u, kValidMessage.size() / 2));
   EXPECT_FALSE(parser.IsValid());
   EXPECT_EQ(parser.GetFailureReason(),
             GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH);
