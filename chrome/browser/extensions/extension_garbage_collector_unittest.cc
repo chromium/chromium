@@ -12,7 +12,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -21,6 +21,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -142,7 +143,8 @@ TEST_F(ExtensionGarbageCollectorUnitTest, NoCleanupDuringInstall) {
   service_->Init();
 
   // Simulate a CRX installation.
-  InstallTracker::Get(profile_.get())->OnBeginCrxInstall(kExtensionId);
+  InstallTrackerFactory::GetForBrowserContext(profile_.get())
+      ->OnBeginCrxInstall(kExtensionId);
 
   GarbageCollectExtensions();
 
@@ -152,7 +154,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, NoCleanupDuringInstall) {
   ASSERT_TRUE(base::PathExists(extension_dir));
 
   // Finish CRX installation and re-run garbage collection.
-  InstallTracker::Get(profile_.get())
+  InstallTrackerFactory::GetForBrowserContext(profile_.get())
       ->OnFinishCrxInstall(base::FilePath(), kExtensionId, nullptr, false);
   GarbageCollectExtensions();
 

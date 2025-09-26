@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/install_tracker.h"
+#include "extensions/browser/install_tracker.h"
 
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
-#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
@@ -37,11 +36,6 @@ InstallTracker::InstallTracker(content::BrowserContext* browser_context,
 }
 
 InstallTracker::~InstallTracker() = default;
-
-// static
-InstallTracker* InstallTracker::Get(content::BrowserContext* context) {
-  return InstallTrackerFactory::GetForBrowserContext(context);
-}
 
 void InstallTracker::AddObserver(InstallObserver* observer) {
   observers_.AddObserver(observer);

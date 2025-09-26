@@ -28,8 +28,6 @@ source_set("extensions") {
   # TODO(https://crbug.com/356905053): When files support being built on
   # desktop android, move them here, outside the if (enable_extensions) block.
   sources = [
-    "active_install_data.cc",
-    "active_install_data.h",
     "activity_log/activity_action_constants.cc",
     "activity_log/activity_action_constants.h",
     "activity_log/activity_actions.cc",
@@ -379,14 +377,10 @@ source_set("extensions") {
     "forced_extensions/install_stage_tracker_factory.h",
     "install_approval.cc",
     "install_approval.h",
-    "install_observer.cc",
-    "install_observer.h",
     "install_prompt_permissions.cc",
     "install_prompt_permissions.h",
     "install_signer.cc",
     "install_signer.h",
-    "install_tracker.cc",
-    "install_tracker.h",
     "install_tracker_factory.cc",
     "install_tracker_factory.h",
     "install_verifier.cc",
@@ -440,8 +434,6 @@ source_set("extensions") {
     "profile_util.h",
     "safe_browsing_verdict_handler.cc",
     "safe_browsing_verdict_handler.h",
-    "scoped_active_install.cc",
-    "scoped_active_install.h",
     "settings_api_helpers.cc",
     "settings_api_helpers.h",
     "shared_module_service.cc",

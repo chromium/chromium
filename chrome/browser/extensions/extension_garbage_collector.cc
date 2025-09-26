@@ -24,7 +24,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
@@ -35,6 +35,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -144,7 +145,7 @@ ExtensionGarbageCollector::ExtensionGarbageCollector(
                      weak_factory_.GetWeakPtr()),
       kGarbageCollectStartupDelay);
 
-  InstallTracker::Get(context_)->AddObserver(this);
+  InstallTrackerFactory::GetForBrowserContext(context_)->AddObserver(this);
 }
 
 ExtensionGarbageCollector::~ExtensionGarbageCollector() = default;
@@ -156,7 +157,7 @@ ExtensionGarbageCollector* ExtensionGarbageCollector::Get(
 }
 
 void ExtensionGarbageCollector::Shutdown() {
-  InstallTracker::Get(context_)->RemoveObserver(this);
+  InstallTrackerFactory::GetForBrowserContext(context_)->RemoveObserver(this);
 }
 
 void ExtensionGarbageCollector::GarbageCollectExtensionsForTest() {

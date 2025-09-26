@@ -42,7 +42,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/chrome_app_delegate.h"
 #include "chrome/common/chrome_switches.h"
@@ -64,6 +64,7 @@
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/test_event_router.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -250,7 +251,7 @@ class TestKioskLoaderVisitor
     extension_registrar_->OnExtensionInstalled(
         extension, syncer::StringOrdinal::CreateInitialOrdinal(),
         extensions::kInstallFlagInstallImmediately);
-    extensions::InstallTracker::Get(browser_context_)
+    extensions::InstallTrackerFactory::GetForBrowserContext(browser_context_)
         ->OnFinishCrxInstall(base::FilePath(), extension->id(), extension,
                              true);
     return true;
@@ -270,7 +271,7 @@ class TestKioskLoaderVisitor
 
     pending_crx_files_.erase(extension_id);
     pending_update_urls_.erase(extension_id);
-    extensions::InstallTracker::Get(browser_context_)
+    extensions::InstallTrackerFactory::GetForBrowserContext(browser_context_)
         ->OnFinishCrxInstall(base::FilePath(), extension_id, nullptr, false);
     pending_extension_manager->Remove(extension_id);
     return true;
@@ -295,7 +296,7 @@ class TestKioskLoaderVisitor
     }
 
     pending_crx_files_.insert(info.extension_id);
-    extensions::InstallTracker::Get(browser_context_)
+    extensions::InstallTrackerFactory::GetForBrowserContext(browser_context_)
         ->OnBeginCrxInstall(info.extension_id);
     return true;
   }
@@ -316,7 +317,7 @@ class TestKioskLoaderVisitor
     }
 
     pending_update_urls_.insert(info.extension_id);
-    extensions::InstallTracker::Get(browser_context_)
+    extensions::InstallTrackerFactory::GetForBrowserContext(browser_context_)
         ->OnBeginCrxInstall(info.extension_id);
     return true;
   }

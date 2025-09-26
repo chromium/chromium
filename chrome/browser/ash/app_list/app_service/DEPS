@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/extensions/chrome_app_icon.h",
   "+chrome/browser/extensions/context_menu_matcher.h",
   "+chrome/browser/extensions/install_tracker_factory.h",
-  "+chrome/browser/extensions/install_tracker.h",
   "+chrome/browser/extensions/menu_manager.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",

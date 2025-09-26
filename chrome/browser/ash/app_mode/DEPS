@@ -36,7 +36,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_special_storage_policy.h",
   "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",
-  "+chrome/browser/extensions/install_tracker.h",
+  "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/updater/extension_updater.h",
   "+chrome/browser/extensions/updater/extension_updater_factory.h",
   "+chrome/browser/extensions/webstore_data_fetcher_delegate.h",

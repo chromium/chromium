@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_SCOPED_ACTIVE_INSTALL_H_
-#define CHROME_BROWSER_EXTENSIONS_SCOPED_ACTIVE_INSTALL_H_
+#ifndef EXTENSIONS_BROWSER_SCOPED_ACTIVE_INSTALL_H_
+#define EXTENSIONS_BROWSER_SCOPED_ACTIVE_INSTALL_H_
 
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/install_observer.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "extensions/browser/install_observer.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -55,4 +55,4 @@ class ScopedActiveInstall : public InstallObserver {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_SCOPED_ACTIVE_INSTALL_H_
+#endif  // EXTENSIONS_BROWSER_SCOPED_ACTIVE_INSTALL_H_

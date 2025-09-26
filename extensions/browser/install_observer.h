@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_OBSERVER_H_
-#define CHROME_BROWSER_EXTENSIONS_INSTALL_OBSERVER_H_
+#ifndef EXTENSIONS_BROWSER_INSTALL_OBSERVER_H_
+#define EXTENSIONS_BROWSER_INSTALL_OBSERVER_H_
 
 #include <optional>
 #include <string>
@@ -26,11 +26,11 @@ namespace extensions {
 
 class Extension;
 
-// An InstallObserver observes extension installation events coming from an InstallTracker.
-// Since extension installs are scoped to a single Profile (represented here as a
-// BrowserContext), InstallTrackers are as well. Instances of InstallObserver are passed the
-// appropriate BrowserContext so that a single InstallObserver can observe multiple
-// InstallTrackers.
+// An InstallObserver observes extension installation events coming from an
+// InstallTracker. Since extension installs are scoped to a single Profile
+// (represented here as a BrowserContext), InstallTrackers are as well.
+// Instances of InstallObserver are passed the appropriate BrowserContext so
+// that a single InstallObserver can observe multiple InstallTrackers.
 class InstallObserver {
  public:
   struct ExtensionInstallParams {
@@ -97,4 +97,4 @@ class InstallObserver {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_INSTALL_OBSERVER_H_
+#endif  // EXTENSIONS_BROWSER_INSTALL_OBSERVER_H_

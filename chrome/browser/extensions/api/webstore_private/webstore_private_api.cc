@@ -33,10 +33,9 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_approval.h"
-#include "chrome/browser/extensions/install_tracker.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
-#include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
@@ -64,6 +63,8 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/install_tracker.h"
+#include "extensions/browser/scoped_active_install.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
@@ -445,7 +446,8 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
     }
   }
 
-  InstallTracker* tracker = InstallTracker::Get(browser_context());
+  InstallTracker* tracker =
+      InstallTrackerFactory::GetForBrowserContext(browser_context());
   DCHECK(tracker);
   bool is_installed =
       ExtensionRegistry::Get(browser_context())
@@ -1022,7 +1024,8 @@ WebstorePrivateCompleteInstallFunction::Run() {
   }
 
   scoped_active_install_ = std::make_unique<ScopedActiveInstall>(
-      InstallTracker::Get(browser_context()), params->expected_id);
+      InstallTrackerFactory::GetForBrowserContext(browser_context()),
+      params->expected_id);
 
   // Balanced in OnExtensionInstallSuccess() or OnExtensionInstallFailure().
   AddRef();

@@ -2,28 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/install_tracker.h"
+#include "extensions/browser/install_tracker.h"
 
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/extensions/active_install_data.h"
-#include "chrome/browser/extensions/scoped_active_install.h"
-#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "extensions/browser/active_install_data.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_test.h"
+#include "extensions/browser/scoped_active_install.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using extensions::ActiveInstallData;
-using extensions::Extension;
-using extensions::ExtensionRegistry;
-using extensions::InstallTracker;
-using extensions::InstallObserver;
-using extensions::ScopedActiveInstall;
+namespace extensions {
 
 namespace {
 
@@ -41,17 +37,24 @@ scoped_refptr<const Extension> CreateDummyExtension(const std::string& id) {
 
 }  // namespace
 
-class InstallTrackerTest : public testing::Test {
+class InstallTrackerTest : public ExtensionsTest {
  public:
-  InstallTrackerTest() {
-    profile_ = std::make_unique<TestingProfile>();
-    tracker_ = base::WrapUnique(new InstallTracker(profile_.get(), nullptr));
+  InstallTrackerTest() = default;
+
+  void SetUp() override {
+    ExtensionsTest::SetUp();
+
+    tracker_ = base::WrapUnique(new InstallTracker(browser_context(), nullptr));
+  }
+
+  void TearDown() override {
+    tracker_.reset();
+    ExtensionsTest::TearDown();
   }
 
   ~InstallTrackerTest() override = default;
 
  protected:
-  Profile* profile() { return profile_.get(); }
   InstallTracker* tracker() { return tracker_.get(); }
 
   void VerifyInstallData(const ActiveInstallData& original,
@@ -60,8 +63,6 @@ class InstallTrackerTest : public testing::Test {
     EXPECT_EQ(original.percent_downloaded, retrieved.percent_downloaded);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<InstallTracker> tracker_;
 };
 
@@ -198,10 +199,12 @@ TEST_F(InstallTrackerTest, ExtensionInstalledEvent) {
   scoped_refptr<const Extension> extension =
       CreateDummyExtension(kExtensionId1);
   ASSERT_TRUE(extension.get());
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
   ASSERT_TRUE(registry);
   registry->AddEnabled(extension);
   registry->TriggerOnInstalled(extension.get(), false);
 
   EXPECT_FALSE(tracker_->GetActiveInstall(kExtensionId1));
 }
+
+}  // namespace extensions

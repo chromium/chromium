@@ -16,9 +16,9 @@
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher_update_checker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
-#include "chrome/browser/extensions/install_observer.h"
-#include "chrome/browser/extensions/install_tracker.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
+#include "extensions/browser/install_observer.h"
+#include "extensions/browser/install_tracker.h"
 #include "extensions/common/extension_id.h"
 
 class Profile;

@@ -36,7 +36,6 @@ include_rules = [
   "+chrome/browser/extensions/extension_ui_util.h",
   "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/extensions/install_tracker_factory.h",
-  "+chrome/browser/extensions/install_tracker.h",
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/extensions/menu_manager_factory.h",
   "+chrome/browser/extensions/menu_manager.h",

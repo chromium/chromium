@@ -14,6 +14,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
@@ -290,7 +291,7 @@ AppsStatusChangeChecker::AppsStatusChangeChecker()
     prefs->AddObserver(this);
 
     install_tracker_observation_.AddObservation(
-        extensions::InstallTracker::Get(profile));
+        extensions::InstallTrackerFactory::GetForBrowserContext(profile));
   }
 }
 

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/scoped_active_install.h"
+#include "extensions/browser/scoped_active_install.h"
 
-#include "chrome/browser/extensions/active_install_data.h"
+#include "extensions/browser/active_install_data.h"
 #include "extensions/buildflags/buildflags.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));

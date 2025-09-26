@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_ACTIVE_INSTALL_DATA_H_
-#define CHROME_BROWSER_EXTENSIONS_ACTIVE_INSTALL_DATA_H_
+#ifndef EXTENSIONS_BROWSER_ACTIVE_INSTALL_DATA_H_
+#define EXTENSIONS_BROWSER_ACTIVE_INSTALL_DATA_H_
 
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
@@ -23,4 +23,4 @@ struct ActiveInstallData {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_ACTIVE_INSTALL_DATA_H_
+#endif  // EXTENSIONS_BROWSER_ACTIVE_INSTALL_DATA_H_

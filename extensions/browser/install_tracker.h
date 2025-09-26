@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_INSTALL_TRACKER_H_
-#define CHROME_BROWSER_EXTENSIONS_INSTALL_TRACKER_H_
+#ifndef EXTENSIONS_BROWSER_INSTALL_TRACKER_H_
+#define EXTENSIONS_BROWSER_INSTALL_TRACKER_H_
 
 #include <map>
 #include <optional>
@@ -11,12 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/active_install_data.h"
-#include "chrome/browser/extensions/install_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "extensions/browser/active_install_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/install_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -44,8 +44,6 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   InstallTracker& operator=(const InstallTracker&) = delete;
 
   ~InstallTracker() override;
-
-  static InstallTracker* Get(content::BrowserContext* context);
 
   void AddObserver(InstallObserver* observer);
   void RemoveObserver(InstallObserver* observer);
@@ -112,4 +110,4 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_INSTALL_TRACKER_H_
+#endif  // EXTENSIONS_BROWSER_INSTALL_TRACKER_H_
