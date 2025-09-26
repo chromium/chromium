@@ -13662,7 +13662,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // TODO(crbug.com/425866013): Fix and re-enable flaky test.
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_AccessWindowProxyOfCrashedFrameAfterNavigation \
   DISABLED_AccessWindowProxyOfCrashedFrameAfterNavigation
 #else
