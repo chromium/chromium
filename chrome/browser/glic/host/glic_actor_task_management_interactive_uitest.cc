@@ -18,15 +18,14 @@ namespace apc = ::optimization_guide::proto;
 using apc::ClickAction;
 using MultiStep = GlicActorUiTest::MultiStep;
 
-class GlicActorTaskManagementToolUiTest : public GlicActorUiTest {
+class GlicActorTaskManagementUiTest : public GlicActorUiTest {
  public:
   // Note that CloseTab does not actually wait for the tab to close, as that is
   // done asynchronously.
   MultiStep CloseTab(ui::ElementIdentifier tab);
 };
 
-MultiStep GlicActorTaskManagementToolUiTest::CloseTab(
-    ui::ElementIdentifier tab) {
+MultiStep GlicActorTaskManagementUiTest::CloseTab(ui::ElementIdentifier tab) {
   return InAnyContext(WithElement(tab, [this](ui::TrackedElement* el) {
                         content::WebContents* contents =
                             AsInstrumentedWebContents(el)->web_contents();
@@ -35,7 +34,7 @@ MultiStep GlicActorTaskManagementToolUiTest::CloseTab(
 }
 
 // Ensure that a task can be stopped and that further actions fail.
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, StopActorTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -58,8 +57,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, StopActorTask) {
 }
 
 // Tests that closing a tab that's being acted on stops the associated task.
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
-                       StopActorTaskOnTabClose) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopActorTaskOnTabClose) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   const GURL task_url =
@@ -77,8 +75,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
 }
 
 // Ensure that a task can be started after a previous task was stopped.
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
-                       StopThenStartActTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, StopThenStartActTask) {
   constexpr std::string_view kClickableButtonLabel = "clickable";
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabId);
@@ -112,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
 }
 
 // Ensure that a task can be paused and that further actions fail.
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, PauseActorTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, PauseActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -140,8 +137,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, PauseActorTask) {
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
-                       PauseThenStopActorTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, PauseThenStopActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -170,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        PauseAlreadyPausedActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
@@ -196,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        PauseThenResumeActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
@@ -227,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        ResumeActorTaskWithoutATask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
@@ -249,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        ResumeActorTaskWhenAlreadyResumed) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
@@ -263,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                   ResumeActorTask(UpdatedContextOptions(), false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
                        ActuationSucceedsOnBackgroundTabAfterPauseAndResume) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
@@ -298,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, CreateTaskWithTitle) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, CreateTaskWithTitle) {
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   const std::string task_title = "My test title";
@@ -314,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, CreateTaskWithTitle) {
                       task_title, "Task has title"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, CreateTaskNoTitle) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, CreateTaskNoTitle) {
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 
