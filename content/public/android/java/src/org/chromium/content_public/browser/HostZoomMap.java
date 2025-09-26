@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.HostZoomMapImpl;
 
@@ -140,5 +141,31 @@ public class HostZoomMap {
 
     public static void setShouldAdjustForOSLevelForTesting(boolean shouldAdjustForOSLevel) {
         HostZoomMapImpl.setShouldAdjustForOSLevelForTesting(shouldAdjustForOSLevel);
+    }
+
+    /**
+     * Creates a zoom level observer for the given browser context. Ensure that the observer is
+     * removed when it is no longer needed. Otherwise this will leak the callback.
+     *
+     * @param browserContextHandle The BrowserContextHandle to observe.
+     * @param callback The callback to be invoked when the zoom level changes.
+     * @return The key for the native subscription object or -1 if the observer failed to be
+     *     created. This can happen if the browser context is destroyed before the observer is
+     *     created.
+     */
+    public static long addZoomLevelObserver(
+            BrowserContextHandle browserContextHandle, Callback<SiteZoomInfo> callback) {
+        return HostZoomMapImpl.addZoomLevelObserver(browserContextHandle, callback);
+    }
+
+    /**
+     * Destroys the zoom level observer.
+     *
+     * @param browserContextHandle The BrowserContextHandle to observe.
+     * @param subscriptionKey The key for the native subscription object.
+     */
+    public static void removeZoomLevelObserver(
+            BrowserContextHandle browserContextHandle, long subscriptionKey) {
+        HostZoomMapImpl.removeZoomLevelObserver(browserContextHandle, subscriptionKey);
     }
 }

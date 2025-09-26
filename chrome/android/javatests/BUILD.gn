@@ -1509,6 +1509,7 @@ android_library("chrome_test_java_various") {
     "src/org/chromium/chrome/browser/history/HistoryTest.java",
     "src/org/chromium/chrome/browser/homepage/HomepagePolicyIntegrationTest.java",
     "src/org/chromium/chrome/browser/homepage/settings/HomepageSettingsRenderTest.java",
+    "src/org/chromium/chrome/browser/host_zoom/HostZoomListenerTest.java",
     "src/org/chromium/chrome/browser/identity_disc/IdentityDiscControllerTest.java",
     "src/org/chromium/chrome/browser/infobar/InfoBarContainerTest.java",
     "src/org/chromium/chrome/browser/init/ChromeBrowserInitializerTest.java",

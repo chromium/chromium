@@ -32,7 +32,13 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <jni.h>
+
+#include "base/android/callback_android.h"
+#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/jni_utils.h"
+#include "base/android/scoped_java_ref.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -162,9 +168,12 @@ void HostZoomMap::SendErrorPageZoomLevelRefresh(WebContents* web_contents) {
 }
 
 HostZoomMapImpl::HostZoomMapImpl()
-    : default_zoom_level_(0.0),
-      clock_(base::DefaultClock::GetInstance()) {
+    : default_zoom_level_(0.0), clock_(base::DefaultClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_ANDROID)
+  jni_callbacks_subscription_ = AddZoomLevelChangedCallback(base::BindRepeating(
+      &HostZoomMapImpl::NotifyJniObservers, base::Unretained(this)));
+#endif
 }
 
 void HostZoomMapImpl::CopyFrom(HostZoomMap* copy_interface) {
@@ -726,6 +735,81 @@ JNI_HostZoomMapImpl_GetAllHostZoomLevels(
   }
 
   return ret;
+}
+
+void HostZoomMapImpl::NotifyJniObservers(
+    const HostZoomMap::ZoomLevelChange& change) {
+  if (jni_callbacks_.empty()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto site_zoom_info = Java_HostZoomMapImpl_buildSiteZoomInfo(
+      env, change.host, change.zoom_level);
+
+  for (const auto& it : jni_callbacks_) {
+    base::android::RunObjectCallbackAndroid(it.second, site_zoom_info);
+  }
+}
+
+jlong JNI_HostZoomMapImpl_AddZoomLevelObserver(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_browser_context_handle,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BrowserContext* browser_context =
+      BrowserContextFromJavaHandle(j_browser_context_handle);
+
+  if (!browser_context) {
+    return -1;
+  }
+
+  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
+      HostZoomMap::GetDefaultForBrowserContext(browser_context));
+
+  return host_zoom_map->AddJniZoomLevelObserver(env, j_callback);
+}
+
+jlong HostZoomMapImpl::AddJniZoomLevelObserver(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  int64_t key = next_jni_subscription_key_++;
+  jni_callbacks_[key] = base::android::ScopedJavaGlobalRef<jobject>(j_callback);
+
+  return key;
+}
+
+void JNI_HostZoomMapImpl_RemoveZoomLevelObserver(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_browser_context_handle,
+    jlong subscription_key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (subscription_key == -1) {
+    // This is a special value that indicates that the observer was never
+    // created.
+    return;
+  }
+
+  BrowserContext* browser_context =
+      BrowserContextFromJavaHandle(j_browser_context_handle);
+
+  if (!browser_context) {
+    return;
+  }
+
+  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
+      HostZoomMap::GetDefaultForBrowserContext(browser_context));
+
+  host_zoom_map->RemoveJniZoomLevelObserver(subscription_key);
+}
+
+void HostZoomMapImpl::RemoveJniZoomLevelObserver(jlong subscription_key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(1u, jni_callbacks_.erase(subscription_key));
 }
 #endif
 

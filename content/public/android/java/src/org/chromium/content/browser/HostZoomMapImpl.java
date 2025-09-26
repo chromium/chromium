@@ -14,6 +14,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -156,6 +157,29 @@ public class HostZoomMapImpl {
         return MathUtils.roundTwoDecimalPlaces(adjustedFactor);
     }
 
+    /**
+     * Add a callback to be notified when the zoom level changes.
+     *
+     * @param browserContextHandle BrowserContextHandle to get the HostZoomMap object.
+     * @param callback Callback to be notified when the zoom level changes.
+     * @return The key for the native subscription object.
+     */
+    public static long addZoomLevelObserver(
+            BrowserContextHandle browserContextHandle, Callback<SiteZoomInfo> callback) {
+        return HostZoomMapImplJni.get().addZoomLevelObserver(browserContextHandle, callback);
+    }
+
+    /**
+     * Remove a callback to be notified when the zoom level changes.
+     *
+     * @param browserContextHandle BrowserContextHandle to get the HostZoomMap object.
+     * @param subscriptionKey The key for the native subscription object.
+     */
+    public static void removeZoomLevelObserver(
+            BrowserContextHandle browserContextHandle, long subscriptionKey) {
+        HostZoomMapImplJni.get().removeZoomLevelObserver(browserContextHandle, subscriptionKey);
+    }
+
     @CalledByNativeForTesting
     public static void setSystemFontScaleForTesting(float scale) {
         var oldValue = getSystemFontScale();
@@ -184,5 +208,9 @@ public class HostZoomMapImpl {
         SiteZoomInfo[] getAllHostZoomLevels(BrowserContextHandle context);
 
         void setZoomLevelForHost(BrowserContextHandle context, String host, double level);
+
+        long addZoomLevelObserver(BrowserContextHandle context, Callback<SiteZoomInfo> callback);
+
+        void removeZoomLevelObserver(BrowserContextHandle context, long subscriptionPtr);
     }
 }
