@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_DATA_SHARING_MIGRATION_PUBLIC_MIGRATABLE_SYNC_SERVICE_H_
 #define COMPONENTS_DATA_SHARING_MIGRATION_PUBLIC_MIGRATABLE_SYNC_SERVICE_H_
 
-namespace base {
-class Uuid;
-}  // namespace base
+#include "base/observer_list_types.h"
+#include "components/data_sharing/migration/public/context_id.h"
+
+namespace data_sharing {
 
 // The primary interface for a feature service that can participate in the
 // client-side sharing migration framework. It defines the commands that the
@@ -17,15 +18,15 @@ class Uuid;
 // user-facing feature (e.g., Tab Groups, Bookmarks). The service is responsible
 // for managing the migration of all underlying sync data types associated with
 // that feature as a single, cohesive unit.
-class MigratableSyncService {
+class MigratableSyncService : public base::CheckedObserver {
  public:
-  virtual ~MigratableSyncService() = default;
+  ~MigratableSyncService() override = default;
 
   // Called by the coordinator to instruct the service to stage a migration.
   // The service should copy private data, convert it, and write it to the
   // shared bridge. The success of this operation would be communicated to
   // coordinator by the underlying bridge/mediator layers.
-  virtual void StageMigration(const base::Uuid& context_id) = 0;
+  virtual void StageMigration(const ContextId& context_id) = 0;
 
   // Called by the coordinator to instruct the service to commit a migration.
   // The service should promote the staged shared data to the feature model
@@ -36,7 +37,7 @@ class MigratableSyncService {
   // `IsPromotionReady()` has returned true for this service. Failures during
   // staging are handled by the underlying bridges (e.g., via retries), and
   // the service will not be considered "ready" until staging succeeds.
-  virtual void CommitMigration(const base::Uuid& context_id) = 0;
+  virtual void CommitMigration(const ContextId& context_id) = 0;
 
   // Called by the coordinator to check if the service has received the
   // minimum viable set of shared data to complete a migration.
@@ -46,5 +47,7 @@ class MigratableSyncService {
   // not a continuous loop.
   virtual bool IsPromotionReady() const = 0;
 };
+
+}  // namespace data_sharing
 
 #endif  // COMPONENTS_DATA_SHARING_MIGRATION_PUBLIC_MIGRATABLE_SYNC_SERVICE_H_

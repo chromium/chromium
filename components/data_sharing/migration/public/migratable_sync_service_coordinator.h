@@ -9,6 +9,8 @@
 
 namespace data_sharing {
 
+class MigratableSyncService;
+
 // A KeyedService that orchestrates the entire migration process of sync
 // entities between private and shared states. It ensures data consistency, and
 // tracks the state of any in-flight operations.
@@ -22,6 +24,10 @@ class MigratableSyncServiceCoordinator : public KeyedService {
       delete;
   MigratableSyncServiceCoordinator& operator=(
       const MigratableSyncServiceCoordinator&) = delete;
+
+  // Called by feature services on startup to register themselves for migration.
+  virtual void RegisterService(MigratableSyncService* service) = 0;
+  virtual void UnregisterService(MigratableSyncService* service) = 0;
 };
 
 }  // namespace data_sharing
