@@ -1234,8 +1234,8 @@ base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToOrigin(
 
   return tracker->PostTaskAndReplyWithResult(
       backend_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&HistoryBackend::GetDailyVisitsToHost, history_backend_,
-                     origin.GetURL(), begin_time, end_time),
+      base::BindOnce(&HistoryBackend::GetDailyVisitsToOrigin, history_backend_,
+                     origin, begin_time, end_time),
       std::move(callback));
 }
 

@@ -1422,8 +1422,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentPorts) {
   EXPECT_EQ(last_visit, begin_time + base::Minutes(1));
 }
 
-// TODO(crbug.com/40940281): Test is failing.
-TEST_F(VisitDatabaseTest, DISABLED_GetDailyVisitsToHostWithVisits) {
+TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_WithVisits) {
   base::Time begin_time = base::Time::Now();
   base::Time end_time = begin_time + base::Days(10);
 
@@ -1452,7 +1451,7 @@ TEST_F(VisitDatabaseTest, DISABLED_GetDailyVisitsToHostWithVisits) {
   for (int i = 0; i < 5; ++i) {
     add_visit(GURL("https://foo.com/bar"), day2_time);
   }
-  // These aren't visits, different scheme/host/port.
+  // These visits are for different origins (different scheme / host / port).
   add_visit(GURL("http://foo.com/bar"), day2_time);
   add_visit(GURL("https://fun.foo.com"), day2_time);
   add_visit(GURL("https://foo.com:123/bar"), day2_time);
@@ -1460,14 +1459,14 @@ TEST_F(VisitDatabaseTest, DISABLED_GetDailyVisitsToHostWithVisits) {
   // One visit after end_time.
   add_visit(GURL("https://foo.com/bar"), end_time + base::Seconds(1));
 
-  DailyVisitsResult result =
-      GetDailyVisitsToHost(GURL("https://foo.com"), begin_time, end_time);
+  DailyVisitsResult result = GetDailyVisitsToOrigin(
+      url::Origin::Create(GURL("https://foo.com")), begin_time, end_time);
   EXPECT_TRUE(result.success);
   EXPECT_EQ(2, result.days_with_visits);
   EXPECT_EQ(7, result.total_visits);
 }
 
-TEST_F(VisitDatabaseTest, GetDailyVisitsToHostNoVisits) {
+TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_NoVisits) {
   base::Time begin_time = base::Time::Now();
   base::Time end_time = begin_time + base::Days(10);
 
@@ -1481,8 +1480,9 @@ TEST_F(VisitDatabaseTest, GetDailyVisitsToHostNoVisits) {
                0};
   AddVisit(&row, SOURCE_BROWSED);
 
-  DailyVisitsResult result = GetDailyVisitsToHost(
-      GURL("https://www.chromium.org"), begin_time, end_time);
+  DailyVisitsResult result = GetDailyVisitsToOrigin(
+      url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
+      end_time);
   EXPECT_TRUE(result.success);
   EXPECT_EQ(0, result.days_with_visits);
   EXPECT_EQ(0, result.total_visits);

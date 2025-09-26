@@ -255,11 +255,11 @@ class VisitDatabase {
                             VisitQuery404sPolicy policy_for_404_visits,
                             base::Time* last_visit);
 
-  // Gets counts for total visits and days visited for pages matching `host`'s
-  // scheme, port, and host. Counts only user-visible visits.
-  DailyVisitsResult GetDailyVisitsToHost(const GURL& host,
-                                         base::Time begin_time,
-                                         base::Time end_time);
+  // Gets counts for total visits and days visited for pages matching `origin`.
+  // Counts only user-visible visits.
+  DailyVisitsResult GetDailyVisitsToOrigin(const url::Origin& origin,
+                                           base::Time begin_time,
+                                           base::Time end_time);
 
   // Get the time of the first item in our database.
   bool GetStartDate(base::Time* first_visit);

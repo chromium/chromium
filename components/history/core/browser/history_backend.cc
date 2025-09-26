@@ -2163,13 +2163,14 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(
           last_visit};
 }
 
-DailyVisitsResult HistoryBackend::GetDailyVisitsToHost(const GURL& host,
-                                                       base::Time begin_time,
-                                                       base::Time end_time) {
+DailyVisitsResult HistoryBackend::GetDailyVisitsToOrigin(
+    const url::Origin& origin,
+    base::Time begin_time,
+    base::Time end_time) {
   if (!db_) {
     return {};
   }
-  return db_->GetDailyVisitsToHost(host, begin_time, end_time);
+  return db_->GetDailyVisitsToOrigin(origin, begin_time, end_time);
 }
 
 // Keyword visits --------------------------------------------------------------

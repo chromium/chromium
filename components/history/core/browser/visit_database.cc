@@ -1215,15 +1215,18 @@ bool VisitDatabase::GetLastVisitToOrigin(
   return true;
 }
 
-DailyVisitsResult VisitDatabase::GetDailyVisitsToHost(const GURL& host,
-                                                      base::Time begin_time,
-                                                      base::Time end_time) {
+DailyVisitsResult VisitDatabase::GetDailyVisitsToOrigin(
+    const url::Origin& origin,
+    base::Time begin_time,
+    base::Time end_time) {
   DailyVisitsResult result;
-  if (!host.is_valid() || !host.SchemeIsHTTPOrHTTPS()) {
+  if (origin.opaque() || !(origin.scheme() == url::kHttpScheme ||
+                           origin.scheme() == url::kHttpsScheme)) {
     return result;
   }
 
-  std::pair<std::string, std::string> host_bounds = GetOriginSearchBounds(host);
+  std::pair<std::string, std::string> host_bounds =
+      GetOriginSearchBounds(origin.GetURL());
 
   sql::Statement statement(GetDB().GetCachedStatement(
       // clang-format off
