@@ -95,7 +95,7 @@ template("proto_extras") {
   }
   _generate_ostream = true
   if (defined(invoker.omit_stream_operators) &&
-      !invoker.omit_stream_operators) {
+      invoker.omit_stream_operators) {
     _generate_ostream = false
   }
   _generate_equality = true
