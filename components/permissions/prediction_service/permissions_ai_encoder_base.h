@@ -40,7 +40,6 @@ class PermissionsAiEncoderBase
                   const ModelInput& input) override = 0;
   std::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
-  base::TaskPriority GetModelLoadingTaskPriority() const override;
 
   RequestType request_type() const { return request_type_; }
   std::array<float, 4>& relevance_thresholds() { return relevance_thresholds_; }

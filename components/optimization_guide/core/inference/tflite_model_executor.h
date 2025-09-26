@@ -97,23 +97,21 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   }
 
   // Should be called on the same sequence as the ctor, but once called |this|
-  // must only be used from the |execution_task_runner| thread/sequence.
+  // must only be used from the |model_task_runner| thread/sequence.
   void InitializeAndMoveToExecutionThread(
       std::optional<base::TimeDelta> model_inference_timeout,
       proto::OptimizationTarget optimization_target,
-      scoped_refptr<base::SequencedTaskRunner> execution_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       scoped_refptr<base::SequencedTaskRunner> reply_task_runner) override {
-    DCHECK(!execution_task_runner_);
+    DCHECK(!model_task_runner_);
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK_NE(optimization_target,
               proto::OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN);
 
     DETACH_FROM_SEQUENCE(sequence_checker_);
     optimization_target_ = optimization_target;
-    execution_task_runner_ = execution_task_runner;
+    model_task_runner_ = model_task_runner;
     reply_task_runner_ = reply_task_runner;
-    model_loading_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), GetModelLoadingTaskPriority()});
 
     if (features::IsModelExecutionWatchdogEnabled()) {
       // The sequence |watchdog_sequence| is used to run watchdog's task. The
@@ -135,8 +133,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // memory when `should_preload_model_` is set.
   void UpdateModelFile(
       base::optional_ref<const base::FilePath> file_path) override {
-    DCHECK(execution_task_runner_ &&
-           execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_ &&
+           model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     TRACE_EVENT("optimization_guide", "TFLiteModelExecutor::UpdateModelFile",
@@ -178,7 +176,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // constructed TFLite graph.
   void SetShouldUnloadModelOnComplete(
       bool should_unload_model_on_complete) override {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     should_unload_model_on_complete_ = should_unload_model_on_complete;
   }
@@ -194,7 +192,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // memory used by the browser by the size of the model file and the
   // constructed TFLite graph.
   void SetShouldPreloadModel(bool should_preload_model) override {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     should_preload_model_ = should_preload_model;
   }
@@ -202,7 +200,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // Clears the loaded model from memory if it is loaded. Safe to call when the
   // model is already unloaded, and becomes a no-op.
   void UnloadModel() override {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     loaded_model_.reset();
@@ -237,7 +235,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       base::TimeTicks start_time,
       ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs)
       override {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(reply_task_runner_);
 
@@ -258,7 +256,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   std::vector<std::optional<OutputType>> SendForBatchExecutionSync(
       ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs)
       override {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     std::vector<std::optional<OutputType>> outputs;
@@ -285,7 +283,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   }
 
   // IMPORTANT: These WeakPointers must only be dereferenced on the
-  // |execution_task_runner| thread.
+  // |model_task_runner| thread.
   base::WeakPtr<TFLiteModelExecutor> GetWeakPtrForExecutionThread() {
     return execution_sequence_weak_ptr_factory_.GetWeakPtr();
   }
@@ -330,7 +328,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   // model file loaded in memory on the model execution thread.
   void LoadModelFile(
       base::OnceCallback<void(ExecutionStatus)> model_loaded_callback) {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     UnloadModel();
@@ -345,13 +343,13 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
 
     // Run the slower model loading file I/O task on the background thread to
     // avoid blocking the main thread, e.g., the UI thread.
-    model_loading_task_runner_->PostTaskAndReplyWithResult(
+    model_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         // Anomynous model file loading function to be called on the background
         // thread, which returns the memory-mapped model file or nullptr if
         // failed to load.
         base::BindOnce(&TFLiteModelExecutor::OpenModelFile, model_file_path_,
-                       optimization_target_, model_loading_task_runner_),
+                       optimization_target_, model_task_runner_),
         base::BindOnce(&TFLiteModelExecutor::OnModelFileLoadedInMemory,
                        GetWeakPtrForExecutionThread(),
                        std::move(model_loaded_callback)));
@@ -392,7 +390,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   void OnModelFileLoadedInMemory(
       base::OnceCallback<void(ExecutionStatus)> model_loaded_callback,
       base::expected<FileDeleteOnTaskRunner, ExecutionStatus> model_fb) {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     // If |model_fb_| is going to be replaced below, it needs to be deleted on a
@@ -426,7 +424,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   void LoadModelFileAndBatchExecute(
       BatchExecutionCallback callback_on_complete,
       ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs) {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!loaded_model_) {
@@ -444,7 +442,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   void BatchExecuteLoadedModel(
       ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs,
       std::vector<std::optional<OutputType>>* outputs) {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(loaded_model_);
 
@@ -503,7 +501,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       BatchExecutionCallback callback_on_complete,
       ModelExecutor<OutputType, InputType>::ConstRefInputVector inputs,
       ExecutionStatus execution_status) {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     std::vector<std::optional<OutputType>> outputs;
@@ -534,7 +532,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   }
 
   void OnExecutionComplete() {
-    DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
+    DCHECK(model_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (should_unload_model_on_complete_) {
       UnloadModel();
@@ -564,15 +562,12 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
   std::unique_ptr<ModelExecutionTimeoutWatchdog, base::OnTaskRunnerDeleter>
       watchdog_;
 
-  // Main thread for model execution. For synchronous model execution, this
-  // needs to be the same caller thread.
-  scoped_refptr<base::SequencedTaskRunner> execution_task_runner_;
+  // Main thread for model loading and execution. For synchronous model
+  // execution, this needs to be the same caller thread.
+  scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
 
   // Arbitrary thread for running reply tasks.
   scoped_refptr<base::SequencedTaskRunner> reply_task_runner_;
-
-  // Background thread for model loading file I/O.
-  scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner_;
 
   // The time that the model was last executed. Logged in metrics for the second
   // and following runs.

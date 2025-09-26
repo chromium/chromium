@@ -82,12 +82,6 @@ PermissionsAiEncoderBase<EncoderInput>::Postprocess(
   return PermissionRequestRelevance::kVeryHigh;
 }
 
-template <typename EncoderInput>
-base::TaskPriority
-PermissionsAiEncoderBase<EncoderInput>::GetModelLoadingTaskPriority() const {
-  return base::TaskPriority::USER_VISIBLE;
-}
-
 // Template instantiation for the Aiv3/Aiv4 model handlers.
 template class PermissionsAiEncoderBase<const PermissionsAiv3ExecutorInput&>;
 template class PermissionsAiEncoderBase<const PermissionsAiv4ExecutorInput&>;
