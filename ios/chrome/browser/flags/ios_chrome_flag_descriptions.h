@@ -628,9 +628,6 @@ extern const char kLinkedServicesSettingIosDescription[];
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
 
-extern const char kMagicStackName[];
-extern const char kMagicStackDescription[];
-
 extern const char kMobilePromoOnDesktopName[];
 extern const char kMobilePromoOnDesktopDescription[];
 

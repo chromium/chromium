@@ -686,9 +686,6 @@ bool IsLiquidGlassEffectEnabled() {
   return false;
 }
 
-// Feature disabled by default.
-BASE_FEATURE(kMagicStack, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabResumption, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A parameter to indicate whether the native UI is enabled for the discover

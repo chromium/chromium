@@ -678,9 +678,6 @@ bool IsContentPushNotificationsSetUpListRegistrationOnly();
 // false otherwise.
 bool IsLiquidGlassEffectEnabled();
 
-// Feature for the Magic Stack.
-BASE_DECLARE_FEATURE(kMagicStack);
-
 // Feature that enables tab resumption.
 BASE_DECLARE_FEATURE(kTabResumption);
 

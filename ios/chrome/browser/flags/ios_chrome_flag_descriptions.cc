@@ -404,11 +404,6 @@ const char kEnableFamilyLinkControlsDescription[] =
     "Enables parental controls from Family Link on supervised accounts "
     "signed-in to Chrome.";
 
-extern const char kMagicStackName[] = "Enable Magic Stack";
-extern const char kMagicStackDescription[] =
-    "When enabled, a Magic Stack will be shown in the Home surface displaying "
-    "a variety of modules.";
-
 const char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
 const char kMobilePromoOnDesktopDescription[] =
     "When enabled, shows a mobile promo on the desktop new tab page.";
