@@ -18892,36 +18892,9 @@
             ],
             "experiments": [
                 {
-                    "name": "5ms",
-                    "params": {
-                        "hover_dwell_time": "5ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerHeuristics"
-                    ]
-                },
-                {
-                    "name": "10ms",
+                    "name": "Enabled",
                     "params": {
                         "hover_dwell_time": "10ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerHeuristics"
-                    ]
-                },
-                {
-                    "name": "20ms",
-                    "params": {
-                        "hover_dwell_time": "20ms"
-                    },
-                    "enable_features": [
-                        "PreloadingEagerHeuristics"
-                    ]
-                },
-                {
-                    "name": "35ms",
-                    "params": {
-                        "hover_dwell_time": "35ms"
                     },
                     "enable_features": [
                         "PreloadingEagerHeuristics"
