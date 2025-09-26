@@ -28,7 +28,7 @@
 namespace net {
 
 // When enabled, query HTTPS RR first.
-BASE_FEATURE(kPrioritizeHttpsResourceRecord, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrioritizeHttpsResourceRecord, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
