@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.url_constants;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -24,7 +26,7 @@ public class UrlConstantResolverFactory {
     // Prevent instantiation.
     private UrlConstantResolverFactory() {}
 
-    public UrlConstantResolver getForProfile(@Nullable Profile profile) {
+    public static UrlConstantResolver getForProfile(@Nullable Profile profile) {
         if (sResolverForTesting != null) {
             return sResolverForTesting;
         }
@@ -97,5 +99,11 @@ public class UrlConstantResolverFactory {
     public static void setForTesting(UrlConstantResolver resolver) {
         sResolverForTesting = resolver;
         ResettersForTesting.register(() -> sResolverForTesting = null);
+    }
+
+    @VisibleForTesting
+    public static void resetResolvers() {
+        sOriginalResolver = null;
+        sIncognitoResolver = null;
     }
 }

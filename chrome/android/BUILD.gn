@@ -1184,6 +1184,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/messages/android:junit",
       "//chrome/browser/ui/plus_addresses/android:junit",
       "//chrome/browser/uid/android:junit",
+      "//chrome/browser/url_constants/android:junit",
       "//chrome/browser/usb/android:junit",
       "//chrome/browser/user_education:junit",
       "//chrome/browser/util:junit_tests",

@@ -215,6 +215,7 @@ if (is_android) {
       "//chrome/browser/ui/android/toolbar:java",
       "//chrome/browser/ui/messages/android:java",
       "//chrome/browser/uid/android:java",
+      "//chrome/browser/url_constants/android:java",
       "//chrome/browser/user_education:java",
       "//chrome/browser/util:java",
       "//chrome/browser/version:java",
