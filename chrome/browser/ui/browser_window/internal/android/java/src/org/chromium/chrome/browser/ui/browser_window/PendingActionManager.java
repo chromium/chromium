@@ -77,8 +77,7 @@ final class PendingActionManager {
      * requested) or after a primary action.
      */
     @GuardedBy("mPendingActionsLock")
-    private final @PendingAction int[] mPendingActions =
-            new int[] {PendingAction.NONE, PendingAction.NONE};
+    private final @PendingAction int[] mPendingActions = {PendingAction.NONE, PendingAction.NONE};
 
     /** Tracks the size a window should have when it's fully initialized. */
     @GuardedBy("mPendingActionsLock")
@@ -93,7 +92,6 @@ final class PendingActionManager {
     void requestAction(@PendingAction int action) {
         assert action != PendingAction.SET_BOUNDS : "Use requestSetBounds() and provide a Rect.";
         switch (action) {
-                // TODO (crbug.com/444743739): Support all other actions.
             case PendingAction.SHOW:
                 requestShow();
                 break;
@@ -103,8 +101,18 @@ final class PendingActionManager {
             case PendingAction.ACTIVATE:
                 requestActivate();
                 break;
-            default:
+            case PendingAction.DEACTIVATE:
+                requestDeactivate();
+                break;
+            case PendingAction.HIDE:
+            case PendingAction.CLOSE:
+            case PendingAction.MAXIMIZE:
+            case PendingAction.MINIMIZE:
+            case PendingAction.RESTORE:
                 requestGlobalOverrideAction(action);
+                break;
+            default:
+                assert false : "Unsupported pending action.";
         }
     }
 
@@ -180,6 +188,27 @@ final class PendingActionManager {
         }
     }
 
+    private void requestDeactivate() {
+        synchronized (mPendingActionsLock) {
+            // Clear lower precedence primary action.
+            if (mPendingActions[0] == PendingAction.SHOW
+                    || mPendingActions[0] == PendingAction.ACTIVATE) {
+                mPendingActions[0] = PendingAction.NONE;
+            }
+
+            // Retain higher precedence action and ignore DEACTIVATE.
+            if (mPendingActions[0] == PendingAction.HIDE
+                    || mPendingActions[0] == PendingAction.CLOSE
+                    || mPendingActions[0] == PendingAction.MINIMIZE
+                    || mPendingActions[1] == PendingAction.SHOW_INACTIVE) {
+                return;
+            }
+
+            // Run DEACTIVATE along with one of the other higher precedence primary actions.
+            mPendingActions[1] = PendingAction.DEACTIVATE;
+        }
+    }
+
     /**
      * Adds {@code action} as a new primary action request, or replaces an older primary action
      * request with {@code action}, and clears any secondary action requests.
@@ -205,16 +234,6 @@ final class PendingActionManager {
     int[] getPendingActionsForTesting() {
         synchronized (mPendingActionsLock) {
             return mPendingActions;
-        }
-    }
-
-    void setActionForTesting(@PendingAction int action) {
-        synchronized (mPendingActionsLock) {
-            if (isPrimaryAction(action)) {
-                mPendingActions[0] = action;
-            } else {
-                mPendingActions[1] = action;
-            }
         }
     }
 

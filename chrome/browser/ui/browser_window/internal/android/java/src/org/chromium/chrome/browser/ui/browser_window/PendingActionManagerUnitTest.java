@@ -21,6 +21,34 @@ import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.Pendin
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PendingActionManagerUnitTest {
+    private static final @PendingAction int[] ALL_ACTIONS = {
+        PendingAction.SHOW,
+        PendingAction.HIDE,
+        PendingAction.SHOW_INACTIVE,
+        PendingAction.CLOSE,
+        PendingAction.ACTIVATE,
+        PendingAction.DEACTIVATE,
+        PendingAction.MAXIMIZE,
+        PendingAction.MINIMIZE,
+        PendingAction.RESTORE,
+        PendingAction.SET_BOUNDS
+    };
+
+    private static final @PendingAction int[] NO_INPUT_GLOBAL_OVERRIDE_ACTIONS = {
+        PendingAction.HIDE,
+        PendingAction.CLOSE,
+        PendingAction.MAXIMIZE,
+        PendingAction.MINIMIZE,
+        PendingAction.RESTORE
+    };
+
+    private static final @PendingAction int[] SECONDARY_ACTIONS = {
+        PendingAction.SHOW_INACTIVE, PendingAction.DEACTIVATE
+    };
+
+    private static final Rect TEST_SET_BOUNDS_INPUT_1 = new Rect(0, 0, 100, 100);
+    private static final Rect TEST_SET_BOUNDS_INPUT_2 = new Rect(0, 0, 200, 200);
+
     private PendingActionManager mManager;
 
     @Before
@@ -45,14 +73,13 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testRequestShow_afterSingleLowerPrecedenceAction_clearsActionAndAddsShow() {
         @PendingAction
-        int[] lowerPrecedenceActions =
-                new int[] {
-                    PendingAction.HIDE,
-                    PendingAction.SHOW_INACTIVE,
-                    PendingAction.ACTIVATE,
-                    PendingAction.DEACTIVATE,
-                    PendingAction.MINIMIZE
-                };
+        int[] lowerPrecedenceActions = {
+            PendingAction.HIDE,
+            PendingAction.SHOW_INACTIVE,
+            PendingAction.ACTIVATE,
+            PendingAction.DEACTIVATE,
+            PendingAction.MINIMIZE
+        };
 
         doTestActionOverridesLowerPrecedenceAction(PendingAction.SHOW, lowerPrecedenceActions);
     }
@@ -63,13 +90,12 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testRequestShow_afterSingleHigherPrecedenceAction_ignoresShowAndRetainsOther() {
         @PendingAction
-        int[] higherPrecedenceActions =
-                new int[] {
-                    PendingAction.CLOSE,
-                    PendingAction.MAXIMIZE,
-                    PendingAction.RESTORE,
-                    PendingAction.SET_BOUNDS
-                };
+        int[] higherPrecedenceActions = {
+            PendingAction.CLOSE,
+            PendingAction.MAXIMIZE,
+            PendingAction.RESTORE,
+            PendingAction.SET_BOUNDS
+        };
 
         doTestActionRetainsHigherPrecedenceAction(PendingAction.SHOW, higherPrecedenceActions);
     }
@@ -80,25 +106,13 @@ public class PendingActionManagerUnitTest {
     @Test
     public void
             testRequestShow_afterTwoPendingActions_withHigherPrecedencePrimaryAction_retainsOtherPrimaryActionOnly() {
-        @PendingAction
-        int[] secondaryActions = new int[] {PendingAction.SHOW_INACTIVE, PendingAction.DEACTIVATE};
-        @PendingAction
-        int[] higherPrecedenceActions =
-                new int[] {PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS};
-
-        for (@PendingAction int secondaryAction : secondaryActions) {
-            mManager.setActionForTesting(secondaryAction);
-            doTestActionRetainsHigherPrecedenceAction(PendingAction.SHOW, higherPrecedenceActions);
-        }
+        doTestActionRequestedAfterTwoPendingActions(PendingAction.SHOW);
     }
 
     @Test
     public void testRequestSetBounds_withNonEmptyBounds_noPriorPendingActions_addsSetBoundsOnly() {
-        // Arrange.
-        Rect bounds = new Rect(0, 0, 100, 100);
-
         // Act.
-        mManager.requestSetBounds(bounds);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
 
         // Assert.
         var pendingActions = mManager.getPendingActionsForTesting();
@@ -107,7 +121,10 @@ public class PendingActionManagerUnitTest {
                 PendingAction.SET_BOUNDS,
                 pendingActions[0]);
         assertEquals("Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
-        assertEquals("Bounds should be saved.", bounds, mManager.getPendingBoundsForTesting());
+        assertEquals(
+                "Bounds should be saved.",
+                TEST_SET_BOUNDS_INPUT_1,
+                mManager.getPendingBoundsForTesting());
     }
 
     @Test
@@ -124,13 +141,9 @@ public class PendingActionManagerUnitTest {
 
     @Test
     public void testRequestSetBounds_duplicateRequestOverridesBounds() {
-        // Arrange.
-        Rect bounds1 = new Rect(0, 0, 100, 100);
-        Rect bounds2 = new Rect(0, 0, 200, 200);
-
         // Act.
-        mManager.requestSetBounds(bounds1);
-        mManager.requestSetBounds(bounds2);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+        mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_2);
 
         // Assert.
         var pendingActions = mManager.getPendingActionsForTesting();
@@ -139,27 +152,33 @@ public class PendingActionManagerUnitTest {
                 PendingAction.SET_BOUNDS,
                 pendingActions[0]);
         assertEquals("Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
-        assertEquals("Bounds should be updated.", bounds2, mManager.getPendingBoundsForTesting());
+        assertEquals(
+                "Bounds should be updated.",
+                TEST_SET_BOUNDS_INPUT_2,
+                mManager.getPendingBoundsForTesting());
     }
 
     @Test
     public void testRequestSetBounds_afterSinglePendingAction_addsSetBoundsOnly() {
-        Rect bounds = new Rect(0, 0, 100, 100);
         @PendingAction
-        int[] lowerPrecedenceActions =
-                new int[] {
-                    PendingAction.SHOW,
-                    PendingAction.HIDE,
-                    PendingAction.SHOW_INACTIVE,
-                    PendingAction.CLOSE,
-                    PendingAction.ACTIVATE,
-                    PendingAction.DEACTIVATE,
-                    PendingAction.MINIMIZE,
-                    PendingAction.MAXIMIZE,
-                    PendingAction.RESTORE,
-                };
+        int[] lowerPrecedenceActions = {
+            PendingAction.SHOW,
+            PendingAction.HIDE,
+            PendingAction.SHOW_INACTIVE,
+            PendingAction.CLOSE,
+            PendingAction.ACTIVATE,
+            PendingAction.DEACTIVATE,
+            PendingAction.MINIMIZE,
+            PendingAction.MAXIMIZE,
+            PendingAction.RESTORE,
+        };
         doTestActionOverridesLowerPrecedenceAction(
-                PendingAction.SET_BOUNDS, lowerPrecedenceActions, bounds);
+                PendingAction.SET_BOUNDS, lowerPrecedenceActions, TEST_SET_BOUNDS_INPUT_1);
+    }
+
+    @Test
+    public void testRequestSetBounds_afterTwoPendingActions_addsNewerBounds() {
+        doTestGlobalOverrideActionRequestedAfterTwoPendingActions(PendingAction.SET_BOUNDS);
     }
 
     @Test
@@ -183,14 +202,13 @@ public class PendingActionManagerUnitTest {
     public void
             testRequestShowInactive_afterSingleLowerPrecedenceAction_clearsActionAndAddsShowInactive() {
         @PendingAction
-        int[] lowerPrecedenceActions =
-                new int[] {
-                    PendingAction.SHOW,
-                    PendingAction.HIDE,
-                    PendingAction.ACTIVATE,
-                    PendingAction.DEACTIVATE,
-                    PendingAction.MINIMIZE
-                };
+        int[] lowerPrecedenceActions = {
+            PendingAction.SHOW,
+            PendingAction.HIDE,
+            PendingAction.ACTIVATE,
+            PendingAction.DEACTIVATE,
+            PendingAction.MINIMIZE
+        };
 
         doTestActionOverridesLowerPrecedenceAction(
                 PendingAction.SHOW_INACTIVE, lowerPrecedenceActions);
@@ -199,7 +217,7 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testRequestShowInactive_afterClose_ignoresShowInactive() {
         // Arrange.
-        mManager.setActionForTesting(PendingAction.CLOSE);
+        mManager.requestAction(PendingAction.CLOSE);
 
         // Act.
         mManager.requestAction(PendingAction.SHOW_INACTIVE);
@@ -216,8 +234,9 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testRequestShowInactive_afterSingleHigherPrecedenceAction_addsBothActions() {
         @PendingAction
-        int[] higherPrecedenceActions =
-                new int[] {PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS};
+        int[] higherPrecedenceActions = {
+            PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS
+        };
 
         doTestActionRetainsHigherPrecedenceAction(
                 PendingAction.SHOW_INACTIVE, higherPrecedenceActions);
@@ -241,13 +260,12 @@ public class PendingActionManagerUnitTest {
     @Test
     public void testRequestActivate_afterSingleLowerPrecedenceAction_clearsActionAndAddsActivate() {
         @PendingAction
-        int[] lowerPrecedenceActions =
-                new int[] {
-                    PendingAction.HIDE,
-                    PendingAction.SHOW_INACTIVE,
-                    PendingAction.DEACTIVATE,
-                    PendingAction.MINIMIZE
-                };
+        int[] lowerPrecedenceActions = {
+            PendingAction.HIDE,
+            PendingAction.SHOW_INACTIVE,
+            PendingAction.DEACTIVATE,
+            PendingAction.MINIMIZE
+        };
 
         doTestActionOverridesLowerPrecedenceAction(PendingAction.ACTIVATE, lowerPrecedenceActions);
     }
@@ -259,14 +277,13 @@ public class PendingActionManagerUnitTest {
     public void
             testRequestActivate_afterSingleHigherPrecedenceAction_ignoresActivateAndRetainsOther() {
         @PendingAction
-        int[] higherPrecedenceActions =
-                new int[] {
-                    PendingAction.SHOW,
-                    PendingAction.CLOSE,
-                    PendingAction.MAXIMIZE,
-                    PendingAction.RESTORE,
-                    PendingAction.SET_BOUNDS
-                };
+        int[] higherPrecedenceActions = {
+            PendingAction.SHOW,
+            PendingAction.CLOSE,
+            PendingAction.MAXIMIZE,
+            PendingAction.RESTORE,
+            PendingAction.SET_BOUNDS
+        };
 
         doTestActionRetainsHigherPrecedenceAction(PendingAction.ACTIVATE, higherPrecedenceActions);
     }
@@ -277,16 +294,127 @@ public class PendingActionManagerUnitTest {
     @Test
     public void
             testRequestActivate_afterTwoPendingActions_withHigherPrecedencePrimaryAction_retainsOtherPrimaryActionOnly() {
-        @PendingAction
-        int[] secondaryActions = new int[] {PendingAction.SHOW_INACTIVE, PendingAction.DEACTIVATE};
-        @PendingAction
-        int[] higherPrecedenceActions =
-                new int[] {PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS};
+        doTestActionRequestedAfterTwoPendingActions(PendingAction.ACTIVATE);
+    }
 
-        for (@PendingAction int secondaryAction : secondaryActions) {
-            mManager.setActionForTesting(secondaryAction);
-            doTestActionRetainsHigherPrecedenceAction(
-                    PendingAction.ACTIVATE, higherPrecedenceActions);
+    @Test
+    public void testRequestDeactivate_noPriorPendingActions_addsDeactivateOnly() {
+        // Act.
+        mManager.requestAction(PendingAction.DEACTIVATE);
+
+        // Assert.
+        var pendingActions = mManager.getPendingActionsForTesting();
+        assertEquals(
+                "Secondary action should be DEACTIVATE.",
+                PendingAction.DEACTIVATE,
+                pendingActions[1]);
+        assertEquals("Primary action should be NONE.", PendingAction.NONE, pendingActions[0]);
+    }
+
+    // Examples:
+    // Request: SHOW->DEACTIVATE, Result: DEACTIVATE.
+    // Request: ACTIVATE->DEACTIVATE, Result: DEACTIVATE.
+    @Test
+    public void
+            testRequestDeactivate_afterSingleLowerPrecedenceAction_clearsActionAndAddsDeactivate() {
+        @PendingAction int[] lowerPrecedenceActions = {PendingAction.SHOW, PendingAction.ACTIVATE};
+
+        doTestActionOverridesLowerPrecedenceAction(
+                PendingAction.DEACTIVATE, lowerPrecedenceActions);
+    }
+
+    // Examples:
+    // Request: SET_BOUNDS->DEACTIVATE, Result: SET_BOUNDS->DEACTIVATE.
+    // Request: MAXIMIZE->DEACTIVATE, Result: MAXIMIZE->DEACTIVATE.
+    @Test
+    public void testRequestDeactivate_afterSingleHigherPrecedenceAction_initiatesBothActions() {
+        @PendingAction
+        int[] higherPrecedenceActions = {
+            PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS
+        };
+
+        doTestActionRetainsHigherPrecedenceAction(
+                PendingAction.DEACTIVATE, higherPrecedenceActions);
+    }
+
+    // Examples:
+    // Request: CLOSE->DEACTIVATE, Result: CLOSE.
+    // Request: MINIMIZE->DEACTIVATE, Result: MINIMIZE.
+    @Test
+    public void
+            testRequestDeactivate_afterSingleHigherPrecedenceAction_ignoresDeactivateAndRetainsOther() {
+        @PendingAction
+        int[] higherPrecedencePrimaryActions = {
+            PendingAction.HIDE, PendingAction.CLOSE, PendingAction.MINIMIZE
+        };
+
+        for (@PendingAction int higherPrecedenceAction : higherPrecedencePrimaryActions) {
+            // Arrange.
+            mManager.requestAction(higherPrecedenceAction);
+
+            // Act.
+            mManager.requestAction(PendingAction.DEACTIVATE);
+
+            // Assert.
+            var pendingActions = mManager.getPendingActionsForTesting();
+            assertEquals(
+                    "Primary action should be " + higherPrecedenceAction + ".",
+                    higherPrecedenceAction,
+                    pendingActions[0]);
+            assertEquals("Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
+        }
+    }
+
+    @Test
+    public void testRequestDeactivate_afterShowInactive_ignoresDeactivate() {
+        // Arrange.
+        mManager.requestAction(PendingAction.SHOW_INACTIVE);
+
+        // Act.
+        mManager.requestAction(PendingAction.DEACTIVATE);
+
+        // Assert.
+        var pendingActions = mManager.getPendingActionsForTesting();
+        assertEquals(
+                "Secondary action should be SHOW_INACTIVE.",
+                PendingAction.SHOW_INACTIVE,
+                pendingActions[1]);
+    }
+
+    @Test
+    public void testRequestGlobalOverrideAction_noPriorPendingActions_addsSingleAction() {
+        for (@PendingAction int action : NO_INPUT_GLOBAL_OVERRIDE_ACTIONS) {
+            // Arrange.
+            mManager.clearPendingActionsForTesting();
+
+            // Act.
+            mManager.requestAction(action);
+
+            // Assert.
+            var pendingActions = mManager.getPendingActionsForTesting();
+            assertEquals("Primary action should be " + action + ".", action, pendingActions[0]);
+            assertEquals("Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
+            assertNull("Bounds should be cleared.", mManager.getPendingBoundsForTesting());
+        }
+    }
+
+    // Examples:
+    // Request: MAXIMIZE->MINIMIZE, Result: MINIMIZE.
+    // Request: DEACTIVATE->MAXIMIZE, Result: MAXIMIZE.
+    @Test
+    public void testRequestGlobalOverrideAction_afterSingleAction_overridesPriorAction() {
+        for (@PendingAction int action : NO_INPUT_GLOBAL_OVERRIDE_ACTIONS) {
+            doTestActionOverridesLowerPrecedenceAction(action, ALL_ACTIONS);
+        }
+    }
+
+    // Examples:
+    // Request: MAXIMIZE->DEACTIVATE->MINIMIZE, Result: MINIMIZE.
+    // Request: SET_BOUNDS->SHOW_INACTIVE->CLOSE, Result: CLOSE.
+    @Test
+    public void testRequestGlobalOverrideAction_afterTwoPendingActions_overridesBothActions() {
+        for (@PendingAction int globalOverrideAction : NO_INPUT_GLOBAL_OVERRIDE_ACTIONS) {
+            doTestGlobalOverrideActionRequestedAfterTwoPendingActions(globalOverrideAction);
         }
     }
 
@@ -299,9 +427,15 @@ public class PendingActionManagerUnitTest {
     private void doTestActionOverridesLowerPrecedenceAction(
             @PendingAction int action, @PendingAction int[] lowerPrecedenceActions, Rect bounds) {
         for (@PendingAction int lowerPrecedenceAction : lowerPrecedenceActions) {
+            if (lowerPrecedenceAction == action) continue;
+
             // Arrange.
             mManager.clearPendingActionsForTesting();
-            mManager.setActionForTesting(lowerPrecedenceAction);
+            if (lowerPrecedenceAction == PendingAction.SET_BOUNDS) {
+                mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+            } else {
+                mManager.requestAction(lowerPrecedenceAction);
+            }
 
             // Act.
             if (action == PendingAction.SET_BOUNDS) {
@@ -334,25 +468,107 @@ public class PendingActionManagerUnitTest {
             @PendingAction int action, @PendingAction int[] higherPrecedenceActions) {
         for (@PendingAction int higherPrecedenceAction : higherPrecedenceActions) {
             // Arrange.
-            mManager.setActionForTesting(higherPrecedenceAction);
+            if (higherPrecedenceAction == PendingAction.SET_BOUNDS) {
+                mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+            } else {
+                mManager.requestAction(higherPrecedenceAction);
+            }
 
             // Act.
             mManager.requestAction(action);
 
             // Assert.
             var pendingActions = mManager.getPendingActionsForTesting();
+            assertEquals(
+                    "Primary action should be " + higherPrecedenceAction + ".",
+                    higherPrecedenceAction,
+                    pendingActions[0]);
             if (PendingActionManager.isPrimaryAction(action)) {
-                assertEquals(
-                        "Action should be ignored.", higherPrecedenceAction, pendingActions[0]);
                 assertEquals(
                         "Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
             } else {
                 assertEquals(
-                        "Primary action should be " + higherPrecedenceAction + ".",
-                        higherPrecedenceAction,
+                        "Secondary action should be " + action + ".", action, pendingActions[1]);
+            }
+        }
+    }
+
+    // This tests a request for a primary, non-global override action after primary and secondary
+    // actions already exist. In this scenario, only the older primary action will be acknowledged.
+    private void doTestActionRequestedAfterTwoPendingActions(@PendingAction int action) {
+        @PendingAction
+        int[] priorPrimaryActions = {
+            PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS
+        };
+
+        for (@PendingAction int priorSecondaryAction : SECONDARY_ACTIONS) {
+            for (@PendingAction int primaryAction : priorPrimaryActions) {
+                // Arrange.
+                if (primaryAction == PendingAction.SET_BOUNDS) {
+                    mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                } else {
+                    mManager.requestAction(primaryAction);
+                }
+                mManager.requestAction(priorSecondaryAction);
+
+                // Act.
+                mManager.requestAction(action);
+
+                // Assert.
+                var pendingActions = mManager.getPendingActionsForTesting();
+                assertEquals(
+                        "Primary action should be " + primaryAction + ".",
+                        primaryAction,
                         pendingActions[0]);
                 assertEquals(
-                        "Secondary action should be " + action + ".", action, pendingActions[1]);
+                        "Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
+                if (primaryAction == PendingAction.SET_BOUNDS) {
+                    assertEquals(
+                            "Bounds should be preserved.",
+                            TEST_SET_BOUNDS_INPUT_1,
+                            mManager.getPendingBoundsForTesting());
+                }
+            }
+        }
+    }
+
+    // This tests a request for a global override action after primary and secondary actions
+    // already exist. In this scenario, only the third request will be acknowledged.
+    private void doTestGlobalOverrideActionRequestedAfterTwoPendingActions(
+            @PendingAction int action) {
+        @PendingAction
+        int[] priorPrimaryActions = {
+            PendingAction.MAXIMIZE, PendingAction.RESTORE, PendingAction.SET_BOUNDS
+        };
+
+        for (@PendingAction int priorSecondaryAction : SECONDARY_ACTIONS) {
+            for (@PendingAction int priorPrimaryAction : priorPrimaryActions) {
+                // Arrange.
+                if (priorPrimaryAction == PendingAction.SET_BOUNDS) {
+                    mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_1);
+                } else {
+                    mManager.requestAction(priorPrimaryAction);
+                }
+                mManager.requestAction(priorSecondaryAction);
+
+                // Act.
+                if (action == PendingAction.SET_BOUNDS) {
+                    mManager.requestSetBounds(TEST_SET_BOUNDS_INPUT_2);
+                } else {
+                    mManager.requestAction(action);
+                }
+
+                // Assert.
+                var pendingActions = mManager.getPendingActionsForTesting();
+                assertEquals("Primary action should be " + action + ".", action, pendingActions[0]);
+                assertEquals(
+                        "Secondary action should be NONE.", PendingAction.NONE, pendingActions[1]);
+                if (action == PendingAction.SET_BOUNDS) {
+                    assertEquals(
+                            "Bounds should be saved.",
+                            TEST_SET_BOUNDS_INPUT_2,
+                            mManager.getPendingBoundsForTesting());
+                }
             }
         }
     }
