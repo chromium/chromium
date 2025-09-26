@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 StatusIcon::StatusIcon() = default;

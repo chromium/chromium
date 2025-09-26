@@ -45,7 +45,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -53,6 +52,7 @@
 #endif
 
 class GURL;
+class SkBitmap;
 
 namespace network {
 class PermissionsPolicy;

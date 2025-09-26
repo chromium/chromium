@@ -20,6 +20,7 @@
 #include "components/grit/components_scaled_resources.h"
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 #include "ui/gfx/paint_vector_icon.h"
 

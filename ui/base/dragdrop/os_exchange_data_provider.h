@@ -27,7 +27,12 @@
 
 #if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/image/image_skia.h"
+#endif
+
+#if defined(USE_AURA) || BUILDFLAG(IS_APPLE)
+namespace gfx {
+class ImageSkia;
+}
 #endif
 
 namespace ui {

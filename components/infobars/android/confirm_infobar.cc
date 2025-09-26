@@ -12,6 +12,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/infobars/android/jni_headers/ConfirmInfoBar_jni.h"

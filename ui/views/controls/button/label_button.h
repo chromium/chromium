@@ -17,7 +17,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_image_container.h"
 #include "ui/views/controls/button/label_button_label.h"
@@ -34,6 +33,10 @@
 
 namespace actions {
 class ActionItem;
+}
+
+namespace gfx {
+class ImageSkia;
 }
 
 namespace views {

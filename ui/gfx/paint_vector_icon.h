@@ -9,11 +9,11 @@
 #include "base/memory/raw_ref.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
 
 class Canvas;
+class ImageSkia;
 struct VectorIcon;
 
 // Describes an instance of an icon: an icon definition and a set of drawing

@@ -20,6 +20,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

@@ -18,7 +18,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace base {
 class FilePath;
@@ -26,6 +25,7 @@ class FilePath;
 
 namespace gfx {
 class Image;
+class ImageSkia;
 }
 
 class Profile;

@@ -20,7 +20,6 @@
 #include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_text_property_value.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/text_constants.h"
 
@@ -33,6 +32,8 @@ namespace gfx {
 class Rect;
 class RectF;
 class FontList;
+class ImageSkia;
+class ImageSkiaRep;
 class Point;
 class PointF;
 class Size;

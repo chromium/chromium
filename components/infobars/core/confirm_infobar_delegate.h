@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
