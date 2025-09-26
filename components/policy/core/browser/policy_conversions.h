@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_BROWSER_POLICY_CONVERSIONS_H_
 #define COMPONENTS_POLICY_CORE_BROWSER_POLICY_CONVERSIONS_H_
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -17,6 +18,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -24,19 +26,32 @@ namespace policy {
 
 class PolicyConversionsClient;
 
-extern const POLICY_EXPORT webui::LocalizedString
-    kPolicySources[POLICY_SOURCE_COUNT];
+inline constexpr auto kPolicySources =
+    std::array<webui::LocalizedString, POLICY_SOURCE_COUNT>({
+        {"sourceEnterpriseDefault", IDS_POLICY_SOURCE_ENTERPRISE_DEFAULT},
+        {"commandLine", IDS_POLICY_SOURCE_COMMAND_LINE},
+        {"cloud", IDS_POLICY_SOURCE_CLOUD},
+        {"sourceActiveDirectory", IDS_POLICY_SOURCE_ACTIVE_DIRECTORY},
+        {"sourceDeviceLocalAccountOverrideDeprecated",
+         IDS_POLICY_SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE},
+        {"platform", IDS_POLICY_SOURCE_PLATFORM},
+        {"priorityCloud", IDS_POLICY_SOURCE_CLOUD},
+        {"merged", IDS_POLICY_SOURCE_MERGED},
+        {"cloud_from_ash", IDS_POLICY_SOURCE_CLOUD_FROM_ASH},
+        {"restrictedManagedGuestSessionOverride",
+         IDS_POLICY_SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE},
+    });
 
-extern const POLICY_EXPORT char kIdKey[];
-extern const POLICY_EXPORT char kNameKey[];
-extern const POLICY_EXPORT char kPoliciesKey[];
-extern const POLICY_EXPORT char kPolicyNamesKey[];
-extern const POLICY_EXPORT char kChromePoliciesId[];
-extern const POLICY_EXPORT char kChromePoliciesName[];
+inline constexpr char kIdKey[] = "id";
+inline constexpr char kNameKey[] = "name";
+inline constexpr char kPoliciesKey[] = "policies";
+inline constexpr char kPolicyNamesKey[] = "policyNames";
+inline constexpr char kChromePoliciesId[] = "chrome";
+inline constexpr char kChromePoliciesName[] = "Chrome Policies";
 
 #if !BUILDFLAG(IS_CHROMEOS)
-extern const POLICY_EXPORT char kPrecedencePoliciesId[];
-extern const POLICY_EXPORT char kPrecedencePoliciesName[];
+inline constexpr char kPrecedencePoliciesId[] = "precedence";
+inline constexpr char kPrecedencePoliciesName[] = "Policy Precedence";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // A convenience class to retrieve all policies values.

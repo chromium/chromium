@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -275,7 +274,7 @@ Value::Dict PolicyConversionsClient::GetPolicyValue(
                            : "mandatory");
     value.Set("source", policy.IsDefaultValue()
                             ? "sourceDefault"
-                            : UNSAFE_TODO(kPolicySources[policy.source]).name);
+                            : kPolicySources[policy.source].name);
   } else {
     value.Set("scope", policy.scope);
     value.Set("level", policy.level);
