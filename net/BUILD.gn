@@ -1817,6 +1817,7 @@ component("net") {
       "disk_cache/sql/cache_entry_key.h",
       "disk_cache/sql/exclusive_operation_coordinator.cc",
       "disk_cache/sql/exclusive_operation_coordinator.h",
+      "disk_cache/sql/indexed_pair_set.h",
       "disk_cache/sql/sql_backend_constants.h",
       "disk_cache/sql/sql_backend_impl.cc",
       "disk_cache/sql/sql_backend_impl.h",
@@ -3499,6 +3500,7 @@ target(_test_target_type, "net_unittests") {
     sources += [
       "disk_cache/sql/cache_entry_key_unittest.cc",
       "disk_cache/sql/exclusive_operation_coordinator_unittest.cc",
+      "disk_cache/sql/indexed_pair_set_unittest.cc",
       "disk_cache/sql/sql_backend_impl_unittest.cc",
       "disk_cache/sql/sql_persistent_store_unittest.cc",
     ]
