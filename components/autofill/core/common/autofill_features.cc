@@ -204,6 +204,12 @@ const base::FeatureParam<bool> kAutofillAiServerModelUseCacheResults{
 BASE_FEATURE(kAutofillAiVoteForFormatStringsForAffixes,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, votes for the format of flight number fields are uploaded. For
+// example, if there is a flight number "LH89" on file, a submitted value of
+// "89" on a field with type `FLIGHT_RESERVATION_FLIGHT_NUMBER` uploads "N".
+BASE_FEATURE(kAutofillAiVoteForFormatStringsForFlightNumbers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the second iteration AutofillAI.
 BASE_FEATURE(kAutofillAiWithDataSchema,
              IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT

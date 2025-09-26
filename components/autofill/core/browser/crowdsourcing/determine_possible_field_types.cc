@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -280,7 +281,8 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (const FieldType field_type : attribute.type().field_subtypes()) {
         const std::u16string& value_on_file =
-            attribute.GetInfo(field_type, app_locale, std::nullopt);
+            normalization::NormalizeForComparison(
+                attribute.GetInfo(field_type, app_locale, std::nullopt));
 
         // Test if `value_in_field` and `value_on_file` match.
         bool full_match =
@@ -291,6 +293,11 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
               base::FeatureList::IsEnabled(
                   features::kAutofillAiVoteForFormatStringsForAffixes)) {
             pt.formats.emplace(FormatString_Type_AFFIX, u"0");
+          }
+          if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
+              base::FeatureList::IsEnabled(
+                  features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
+            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"F");
           }
         }
 
@@ -314,6 +321,20 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
                 FormatString_Type_AFFIX,
                 base::NumberToString16(
                     -1 * static_cast<int>(value_in_field.size())));
+          }
+        }
+
+        if (field_type == FLIGHT_RESERVATION_FLIGHT_NUMBER &&
+            base::FeatureList::IsEnabled(
+                features::kAutofillAiVoteForFormatStringsForFlightNumbers)) {
+          if (value_in_field.size() == 2 &&
+              value_on_file.starts_with(value_in_field)) {
+            pt.types.insert(field_type);
+            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"A");
+          } else if (value_on_file.size() > 3 &&
+                     value_on_file.substr(2) == value_in_field) {
+            pt.types.insert(field_type);
+            pt.formats.emplace(FormatString_Type_FLIGHT_NUMBER, u"N");
           }
         }
       }

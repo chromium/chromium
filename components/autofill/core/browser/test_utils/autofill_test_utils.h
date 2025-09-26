@@ -466,9 +466,9 @@ EntityInstance GetRedressNumberEntityInstance(
 
 template <typename = void>
 struct FlightReservationOptionsT {
-  const char16_t* flight_number = u"987654321";
+  const char16_t* flight_number = u"AA123";
   const char16_t* ticket_number = u"123123456";
-  const char16_t* confirmation_code = u"0123";
+  const char16_t* confirmation_code = u"AB4KW5";
   const char16_t* name = u"John Doe";
   const char16_t* departure_airport = u"MUC";
   const char16_t* arrival_airport = u"BEY";
