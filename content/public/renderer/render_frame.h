@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/byte_count.h"
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/buildflags.h"
@@ -22,6 +23,8 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/frame/triggering_event_info.mojom-shared.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -230,6 +233,15 @@ class CONTENT_EXPORT RenderFrame :
   using SubresourceLoadCallback =
       base::RepeatingCallback<void(const blink::SubresourceLoadMetrics&)>;
   virtual void SetSubresourceLoadCallback(SubresourceLoadCallback callback) = 0;
+
+  using LoadFromMemoryCacheCallback =
+      base::RepeatingCallback<void(const GURL& response_url,
+                                   int request_id,
+                                   base::ByteCount encoded_body_length,
+                                   const std::string& mime_type,
+                                   bool from_archive)>;
+  virtual void SetLoadFromMemoryCacheCallback(
+      LoadFromMemoryCacheCallback callback) = 0;
 
  protected:
   ~RenderFrame() override {}

@@ -121,6 +121,11 @@ MetricsRenderFrameObserver::MetricsRenderFrameObserver(
     render_frame->SetSubresourceLoadCallback(base::BindRepeating(
         &MetricsRenderFrameObserver::DidObserveSubresourceLoad,
         weak_factory_.GetWeakPtr()));
+    // If the optimization is enabled, `DidLoadResourceFromMemoryCache()` will
+    // be called as a callback instead of the observer interface.
+    render_frame->SetLoadFromMemoryCacheCallback(base::BindRepeating(
+        &MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache,
+        weak_factory_.GetWeakPtr()));
   }
 }
 

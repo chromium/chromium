@@ -4529,11 +4529,18 @@ void RenderFrameImpl::FinalizeRequestInternal(
 void RenderFrameImpl::DidLoadResourceFromMemoryCache(
     const blink::WebURLRequest& request,
     const blink::WebURLResponse& response) {
-  for (auto& observer : observers_) {
-    observer.DidLoadResourceFromMemoryCache(
+  if (load_from_memory_cache_callback_) {
+    load_from_memory_cache_callback_.Run(
         request.Url(), response.RequestId(),
         base::ByteCount(response.EncodedBodyLength()),
         response.MimeType().Utf8(), response.FromArchive());
+  } else {
+    for (auto& observer : observers_) {
+      observer.DidLoadResourceFromMemoryCache(
+          request.Url(), response.RequestId(),
+          base::ByteCount(response.EncodedBodyLength()),
+          response.MimeType().Utf8(), response.FromArchive());
+    }
   }
 }
 
@@ -4624,6 +4631,11 @@ void RenderFrameImpl::SetNewFeatureUsageCallback(
 void RenderFrameImpl::SetSubresourceLoadCallback(
     SubresourceLoadCallback callback) {
   subresource_load_callback_ = std::move(callback);
+}
+
+void RenderFrameImpl::SetLoadFromMemoryCacheCallback(
+    LoadFromMemoryCacheCallback callback) {
+  load_from_memory_cache_callback_ = std::move(callback);
 }
 
 void RenderFrameImpl::DidObserveNewFeatureUsage(
