@@ -637,6 +637,17 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
+    // Re-process challenge headers now that a session exists so that cached
+    // challenges work for the registration case as well.
+    auto challenge_params =
+        device_bound_sessions::SessionChallengeParam::CreateIfValid(
+            fetcher_endpoint_, headers);
+    for (const SessionChallengeParam& challenge_param : challenge_params) {
+      if (challenge_param.session_id() == *(*session_or_error)->id()) {
+        (*session_or_error)->set_cached_challenge(challenge_param.challenge());
+      }
+    }
+
     // The registration endpoint is required to be same-site with the
     // session. Therefore we don't need any FirstPartySetMetadata.
     if (base::FeatureList::IsEnabled(

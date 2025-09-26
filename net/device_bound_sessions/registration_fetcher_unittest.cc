@@ -2263,6 +2263,37 @@ TEST_F(RegistrationTest, EmptyResponse) {
   EXPECT_TRUE(out_session.is_no_session_config_change());
 }
 
+TEST_F(RegistrationTest, SetChallengeOnRegistration) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  server_.RegisterRequestHandler(
+      base::BindRepeating([](const test_server::HttpRequest& request)
+                              -> std::unique_ptr<test_server::HttpResponse> {
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        response->set_code(HTTP_OK);
+        response->AddCustomHeader(GetSessionChallengeHeaderName(),
+                                  R"("test_challenge";id="session_id")");
+        response->set_content_type("application/json");
+        response->set_content(kBasicValidJson);
+        return response;
+      }));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  auto param = GetBasicParam();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+  EXPECT_EQ(out_session.session().cached_challenge(), "test_challenge");
+}
+
 TEST_F(RegistrationTestWithOriginTrialFeedback,
        RegistrationBySubdomain_Success) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
