@@ -112,7 +112,8 @@ void AutofillMetricsBaseTest::InitAutofillClient() {
   WithTestAutofillClientDriverManager::InitAutofillClient();
   autofill_client().SetPrefs(test::PrefServiceForTesting());
   autofill_client().set_payments_autofill_client(
-      std::make_unique<MockPaymentsAutofillClient>(&autofill_client()));
+      std::make_unique<NiceMock<MockPaymentsAutofillClient>>(
+          &autofill_client()));
 }
 
 void AutofillMetricsBaseTest::SetUpHelper() {

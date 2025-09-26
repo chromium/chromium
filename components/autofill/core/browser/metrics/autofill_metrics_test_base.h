@@ -92,10 +92,10 @@ class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
   void Reset() override;
 };
 
-class AutofillMetricsBaseTest
-    : public WithTestAutofillClientDriverManager<TestAutofillClient,
-                                                 MockAutofillDriver,
-                                                 TestBrowserAutofillManager> {
+class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
+                                    TestAutofillClient,
+                                    ::testing::NiceMock<MockAutofillDriver>,
+                                    TestBrowserAutofillManager> {
  public:
   AutofillMetricsBaseTest();
   virtual ~AutofillMetricsBaseTest();
