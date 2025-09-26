@@ -65,7 +65,8 @@ int main(int argc, char* argv[]) {
     std::string error_message;
     for (int i = 0; i < iterations; ++i) {
       auto start = base::ThreadTicks::Now();
-      auto v = base::JSONReader::ReadAndReturnValueWithError(src);
+      auto v = base::JSONReader::ReadAndReturnValueWithError(
+          src, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       auto end = base::ThreadTicks::Now();
       int64_t iteration_time = (end - start).InMicroseconds();
       total_time += iteration_time;

@@ -734,7 +734,8 @@ TEST(JSONReaderTest, ReadFromFile) {
   ASSERT_TRUE(ReadFileToString(path.AppendASCII("bom_feff.json"), &input));
 
   EXPECT_THAT(
-      JSONReader::ReadAndReturnValueWithError(input),
+      JSONReader::ReadAndReturnValueWithError(input,
+                                              JSON_PARSE_CHROMIUM_EXTENSIONS),
       base::test::ValueIs(::testing::Property(&base::Value::is_dict, true)));
 }
 
@@ -828,7 +829,8 @@ TEST(JSONReaderTest, InvalidSanity) {
 
   for (size_t i = 0; i < std::size(kInvalidJson); ++i) {
     LOG(INFO) << "Sanity test " << i << ": <" << kInvalidJson[i] << ">";
-    auto root = JSONReader::ReadAndReturnValueWithError(kInvalidJson[i]);
+    auto root = JSONReader::ReadAndReturnValueWithError(
+        kInvalidJson[i], JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_FALSE(root.has_value());
     EXPECT_NE("", root.error().message);
   }
@@ -837,7 +839,8 @@ TEST(JSONReaderTest, InvalidSanity) {
 TEST(JSONReaderTest, IllegalTrailingNull) {
   const auto json = std::to_array<char>({'"', 'n', 'u', 'l', 'l', '"', '\0'});
   std::string json_string(json.data(), sizeof(json));
-  auto root = JSONReader::ReadAndReturnValueWithError(json_string);
+  auto root = JSONReader::ReadAndReturnValueWithError(
+      json_string, JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_FALSE(root.has_value());
   EXPECT_NE("", root.error().message);
 }
@@ -861,7 +864,8 @@ TEST(JSONReaderTest, ASCIIControlCodes) {
   {
     // Replace the \r with a disallowed \f, and require parsing to fail:
     const char json[] = "\"a\fn\nc\"";
-    auto root = JSONReader::ReadAndReturnValueWithError(json);
+    auto root = JSONReader::ReadAndReturnValueWithError(
+        json, JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_FALSE(root.has_value());
     EXPECT_NE("", root.error().message);
   }

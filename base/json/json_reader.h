@@ -126,9 +126,7 @@ class BASE_EXPORT JSONReader {
   // expected value. Otherwise, it returns an Error instance, populated with a
   // formatted error message, an error code, and the error location if
   // appropriate as the error value of the expected type.
-  static Result ReadAndReturnValueWithError(
-      std::string_view json,
-      int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
+  static Result ReadAndReturnValueWithError(std::string_view json, int options);
 };
 
 }  // namespace base
