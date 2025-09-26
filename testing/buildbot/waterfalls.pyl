@@ -1115,6 +1115,9 @@
         'os_type': 'ios',
       },
       'optimization_guide-linux': {
+        'additional_compile_targets': [
+          'ondevice_model_benchmark'
+        ],
         'mixins': [
           'chrome-intelligence-swarming-pool',
           'linux-jammy',

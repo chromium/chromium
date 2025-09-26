@@ -1204,6 +1204,9 @@
     ]
   },
   "optimization_guide-linux": {
+    "additional_compile_targets": [
+      "ondevice_model_benchmark"
+    ],
     "gtest_tests": [
       {
         "args": [
