@@ -538,6 +538,7 @@ gpu.try_.optional_tests_builder(
     os = os.WINDOWS_DEFAULT,
     ssd = builders.with_expiration(True, expiration = 5 * time.minute),
     free_space = None,
+    alerts_enabled = False,
     contact_team_email = "chrome-gpu-infra@google.com",
     # default is 6 in _gpu_optional_tests_builder()
     execution_timeout = 5 * time.hour,
