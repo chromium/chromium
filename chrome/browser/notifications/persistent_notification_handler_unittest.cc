@@ -721,3 +721,37 @@ TEST_F(
                                       suspicious_score);
 }
 #endif
+
+class PersistentNotificationHandlerWithAutoRevokeSuspiciousNotificationTest
+    : public PersistentNotificationHandlerTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kAutoRevokeSuspiciousNotification}, {});
+  }
+};
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PersistentNotificationHandlerWithAutoRevokeSuspiciousNotificationTest,
+       RecordShowOriginal) {
+  GURL origin(kExampleOrigin);
+  std::unique_ptr<NotificationHandler> handler =
+      std::make_unique<PersistentNotificationHandler>();
+
+  handler->OnShowOriginalNotification(origin, "dummy-notification-id",
+                                      profile_.get());
+
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_.get());
+  base::Value::Dict show_original_setting =
+      hcsm->GetWebsiteSetting(
+              origin, GURL(),
+              ContentSettingsType::SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL)
+          .GetDict()
+          .Clone();
+  ASSERT_EQ(1U, show_original_setting.size());
+  ASSERT_TRUE(
+      show_original_setting
+          .FindBool(safe_browsing::kSuspiciousNotificationShowOriginalKey)
+          .value_or(false));
+}
+#endif
