@@ -737,11 +737,6 @@ public class ReaderModeManagerTest {
         watcher.assertExpected();
     }
 
-    /**
-     * @param index The index of the entry.
-     * @param url The URL the entry represents.
-     * @return A new {@link NavigationEntry}.
-     */
     private NavigationEntry createNavigationEntry(int index, GURL url) {
         return new NavigationEntry(
                 index, url, url, url, "", null, 0, 0, /* isInitialEntry= */ false);

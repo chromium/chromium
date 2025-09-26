@@ -139,7 +139,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
 
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
-                        "DomDistiller.Android.EntryPoint", EntryPoint.TOOLBAR_BUTTON);
+                        "DomDistiller.Android.EntryPoint.CCT", EntryPoint.TOOLBAR_BUTTON);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     originalTab
@@ -147,9 +147,9 @@ public class ReaderModeTest implements CustomMainActivityStart {
                             .getUserData(ReaderModeManager.USER_DATA_KEY)
                             .activateReaderMode(EntryPoint.TOOLBAR_BUTTON);
                 });
-        watcher.assertExpected();
 
         CustomTabActivity customTabActivity = waitForCustomTabActivity();
+        watcher.assertExpected();
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(customTabActivity.getActivityTab(), notNullValue()));
         @NonNull

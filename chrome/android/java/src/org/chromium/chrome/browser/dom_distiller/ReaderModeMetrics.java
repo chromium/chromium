@@ -11,6 +11,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPointTabType;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -100,10 +101,32 @@ public class ReaderModeMetrics {
      * Record the entry-point when reader mode is activated.
      *
      * @param entryPoint The {@link EntryPoint} from which reader mode was activated.
+     * @param entryPointTabType The {@link EntryPointTabType} of the tab when reader mode was
+     *     activated.
      */
-    public static void recordReaderModeEntryPoint(@EntryPoint int entryPoint) {
+    public static void recordReaderModeEntryPoint(
+            @EntryPoint int entryPoint, @EntryPointTabType int entryPointTabType) {
+        String tabTypeString = "";
+        switch (entryPointTabType) {
+            case ReaderModeManager.EntryPointTabType.REGULAR_TAB:
+                tabTypeString = "Regular";
+                break;
+            case ReaderModeManager.EntryPointTabType.CUSTOM_TAB:
+                tabTypeString = "CCT";
+                break;
+            case ReaderModeManager.EntryPointTabType.INCOGNITO_TAB:
+                tabTypeString = "Incognito";
+                break;
+            case ReaderModeManager.EntryPointTabType.INCOGNITO_CUSTOM_TAB:
+                tabTypeString = "IncognitoCCT";
+                break;
+            default:
+                assert false : "Invalid entry point tab type provided: " + entryPointTabType;
+        }
         RecordHistogram.recordEnumeratedHistogram(
-                "DomDistiller.Android.EntryPoint", entryPoint, EntryPoint.MAX_VALUE);
+                "DomDistiller.Android.EntryPoint." + tabTypeString,
+                entryPoint,
+                EntryPoint.MAX_VALUE);
     }
 
     /** Record when a user enters Reading Mode. */

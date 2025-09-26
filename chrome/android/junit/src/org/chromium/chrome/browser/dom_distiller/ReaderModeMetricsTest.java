@@ -16,6 +16,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPoint;
+import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.EntryPointTabType;
 import org.chromium.dom_distiller.mojom.FontFamily;
 import org.chromium.dom_distiller.mojom.Theme;
 
@@ -107,12 +108,52 @@ public class ReaderModeMetricsTest {
 
     @Test
     @SmallTest
-    public void testRecordReaderModeEntryPoint() {
+    public void testRecordReaderModeEntryPoint_Regular() {
         HistogramWatcher histograms =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord("DomDistiller.Android.EntryPoint", EntryPoint.APP_MENU)
+                        .expectIntRecord(
+                                "DomDistiller.Android.EntryPoint.Regular", EntryPoint.APP_MENU)
                         .build();
-        ReaderModeMetrics.recordReaderModeEntryPoint(EntryPoint.APP_MENU);
+        ReaderModeMetrics.recordReaderModeEntryPoint(
+                EntryPoint.APP_MENU, EntryPointTabType.REGULAR_TAB);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordReaderModeEntryPoint_CCT() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("DomDistiller.Android.EntryPoint.CCT", EntryPoint.APP_MENU)
+                        .build();
+        ReaderModeMetrics.recordReaderModeEntryPoint(
+                EntryPoint.APP_MENU, EntryPointTabType.CUSTOM_TAB);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordReaderModeEntryPoint_Incognito() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "DomDistiller.Android.EntryPoint.Incognito", EntryPoint.APP_MENU)
+                        .build();
+        ReaderModeMetrics.recordReaderModeEntryPoint(
+                EntryPoint.APP_MENU, EntryPointTabType.INCOGNITO_TAB);
+        histograms.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testRecordReaderModeEntryPoint_IncognitoCCT() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "DomDistiller.Android.EntryPoint.IncognitoCCT", EntryPoint.APP_MENU)
+                        .build();
+        ReaderModeMetrics.recordReaderModeEntryPoint(
+                EntryPoint.APP_MENU, EntryPointTabType.INCOGNITO_CUSTOM_TAB);
         histograms.assertExpected();
     }
 
