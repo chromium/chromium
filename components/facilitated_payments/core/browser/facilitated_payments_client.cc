@@ -26,38 +26,6 @@ FacilitatedPaymentsClient::FacilitatedPaymentsClient()
 
 FacilitatedPaymentsClient::~FacilitatedPaymentsClient() = default;
 
-void FacilitatedPaymentsClient::ShowPixPaymentPrompt(
-    base::span<const autofill::BankAccount> bank_account_suggestions,
-    base::OnceCallback<void(int64_t)> on_payment_account_selected) {}
-
-void FacilitatedPaymentsClient::ShowPaymentLinkPrompt(
-    base::span<const autofill::Ewallet> ewallet_suggestions,
-    std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-    base::OnceCallback<void(SelectedFopData)> on_fop_selected) {}
-
-void FacilitatedPaymentsClient::ShowProgressScreen() {}
-
-void FacilitatedPaymentsClient::ShowErrorScreen() {}
-
-void FacilitatedPaymentsClient::DismissPrompt() {}
-
-void FacilitatedPaymentsClient::SetUiEventListener(
-    base::RepeatingCallback<void(UiEvent)> ui_event_listener) {}
-
-void FacilitatedPaymentsClient::InitPixAccountLinkingFlow(
-    const url::Origin& pix_payment_page_origin) {
-  pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt(
-      pix_payment_page_origin);
-}
-
-void FacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(
-    base::OnceCallback<void()> on_accepted,
-    base::OnceCallback<void()> on_declined) {}
-
-bool FacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {
-  return false;
-}
-
 void FacilitatedPaymentsClient::SetPixAccountLinkingManagerForTesting(
     std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager) {
   pix_account_linking_manager_ = std::move(pix_account_linking_manager);

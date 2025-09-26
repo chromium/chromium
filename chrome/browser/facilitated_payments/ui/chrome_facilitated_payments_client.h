@@ -107,6 +107,8 @@ class ChromeFacilitatedPaymentsClient
       base::RepeatingCallback<void(payments::facilitated::UiEvent)>
           ui_event_listener) final;
   strike_database::StrikeDatabase* GetStrikeDatabase() final;
+  void InitPixAccountLinkingFlow(
+      const url::Origin& pix_payment_page_origin) final;
   void ShowPixAccountLinkingPrompt(
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) final;

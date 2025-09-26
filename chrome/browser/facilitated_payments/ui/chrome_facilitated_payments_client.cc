@@ -27,6 +27,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/network_api/multiple_request_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -198,6 +199,12 @@ ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
   }
 
   return autofill::StrikeDatabaseFactory::GetForProfile(profile);
+}
+
+void ChromeFacilitatedPaymentsClient::InitPixAccountLinkingFlow(
+    const url::Origin& pix_payment_page_origin) {
+  pix_account_linking_manager_->MaybeShowPixAccountLinkingPrompt(
+      pix_payment_page_origin);
 }
 
 void ChromeFacilitatedPaymentsClient::ShowPixAccountLinkingPrompt(

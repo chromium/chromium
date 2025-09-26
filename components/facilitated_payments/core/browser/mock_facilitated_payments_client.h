@@ -83,6 +83,11 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));
   MOCK_METHOD(void, DismissPrompt, (), (override));
+  MOCK_METHOD(void,
+              SetUiEventListener,
+              (base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+                   ui_event_listener),
+              (override));
   MOCK_METHOD(strike_database::StrikeDatabase*,
               GetStrikeDatabase,
               (),

@@ -43,7 +43,6 @@ class PixAccountLinkingManager;
 class FacilitatedPaymentsNetworkInterface;
 class MultipleRequestFacilitatedPaymentsNetworkInterface;
 
-// TODO: b/350661525 - Make all methods pure virtual.
 // A cross-platform client interface for showing UI for non-form based FOPs.
 class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
  public:
@@ -107,7 +106,7 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // the instrument id of the bank account selected by the user for payment.
   virtual void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
-      base::OnceCallback<void(int64_t)> on_payment_account_selected);
+      base::OnceCallback<void(int64_t)> on_payment_account_selected) = 0;
 
   // Shows the user's payment options and prompts to pay. `ewallet_suggestions`
   // is the list of eWallets to be shown to the user for payment.
@@ -118,45 +117,43 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-      base::OnceCallback<void(SelectedFopData)> on_fop_selected);
+      base::OnceCallback<void(SelectedFopData)> on_fop_selected) = 0;
 
   // Shows a progress bar while users wait for server response after selecting a
   // payment account.
-  virtual void ShowProgressScreen();
+  virtual void ShowProgressScreen() = 0;
 
   // Shows an error message if Chrome isn't able to complete transaction after
   // the user has selected a payment account.
-  virtual void ShowErrorScreen();
+  virtual void ShowErrorScreen() = 0;
 
   // Closes the bottom sheet.
-  virtual void DismissPrompt();
+  virtual void DismissPrompt() = 0;
 
   // Enables features to pass a callback to listen to UI events.
   virtual void SetUiEventListener(
-      base::RepeatingCallback<void(UiEvent)> ui_event_listener);
+      base::RepeatingCallback<void(UiEvent)> ui_event_listener) = 0;
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.
   virtual strike_database::StrikeDatabase* GetStrikeDatabase() = 0;
 
-  // Virtual so it can be overridden in tests.
   virtual void InitPixAccountLinkingFlow(
-      const url::Origin& pix_payment_page_origin);
+      const url::Origin& pix_payment_page_origin) = 0;
 
-  // Shows the PIX account linking prompt. Virtual so it can be overridden in
-  // tests.
+  // Shows the PIX account linking prompt.
   virtual void ShowPixAccountLinkingPrompt(
       base::OnceCallback<void()> on_accepted,
-      base::OnceCallback<void()> on_declined);
+      base::OnceCallback<void()> on_declined) = 0;
 
   // Check whether the device has the screenlock or biometric set up which is
   // required for Pix account linking in Wallet.
-  virtual bool HasScreenlockOrBiometricSetup();
+  virtual bool HasScreenlockOrBiometricSetup() = 0;
 
   void SetPixAccountLinkingManagerForTesting(
       std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager);
 
- private:
+ protected:
   std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager_;
 };
 
