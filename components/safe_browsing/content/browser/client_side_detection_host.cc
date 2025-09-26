@@ -918,9 +918,7 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) ||
-      !base::FeatureList::IsEnabled(
-          kClientSideDetectionKeyboardPointerLockRequest)) {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
   }
 
@@ -932,9 +930,7 @@ void ClientSideDetectionHost::KeyboardLockRequested() {
 }
 
 void ClientSideDetectionHost::PointerLockRequested() {
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) ||
-      !base::FeatureList::IsEnabled(
-          kClientSideDetectionKeyboardPointerLockRequest)) {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return;
   }
 

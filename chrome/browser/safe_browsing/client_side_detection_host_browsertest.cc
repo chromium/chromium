@@ -319,10 +319,6 @@ class ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest
 
   std::string client_side_model() { return flatbuffer_model_str_; }
 
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kClientSideDetectionKeyboardPointerLockRequest};
-
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   std::string flatbuffer_model_str_;
@@ -578,9 +574,7 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     KeyboardLockTriggersPreclassificationCheck) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
-      !base::FeatureList::IsEnabled(
-          kClientSideDetectionKeyboardPointerLockRequest)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
@@ -626,9 +620,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     PointerLockTriggersPreClassificationCheck) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
-      !base::FeatureList::IsEnabled(
-          kClientSideDetectionKeyboardPointerLockRequest)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
   SetWebContentsGrantedSilentPointerLockPermission();
@@ -674,9 +666,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     KeyboardLockClassificationTriggersCSPPPing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
-      !base::FeatureList::IsEnabled(
-          kClientSideDetectionKeyboardPointerLockRequest)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 
@@ -748,9 +738,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     PointerLockClassificationTriggersCSPPPing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
-      !base::FeatureList::IsEnabled(
-          kClientSideDetectionKeyboardPointerLockRequest)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
 

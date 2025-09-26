@@ -61,10 +61,6 @@ extern const base::FeatureParam<double> kCsdCreditCardFormSampleRate;
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
 
-// Expand CSPP beyond phishing and trigger when keyboard or pointer lock request
-// occurs on the page.
-BASE_DECLARE_FEATURE(kClientSideDetectionKeyboardPointerLockRequest);
-
 // Killswitch for client side phishing detection. Since client side models are
 // run on a large fraction of navigations, crashes due to the model are very
 // impactful, even if only a small fraction of users have a bad version of the

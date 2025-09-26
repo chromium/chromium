@@ -75,9 +75,6 @@ const base::FeatureParam<double> kCsdCreditCardFormSampleRate{
 BASE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionKeyboardPointerLockRequest,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClientSideDetectionKillswitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
@@ -347,7 +344,6 @@ base::Value::List GetFeatureStatusList() {
       // keep-sorted start
       &kAutoRevokeSuspiciousNotification,
       &kClientSideDetectionForcedLlamaRedirectChainKillswitch,
-      &kClientSideDetectionKeyboardPointerLockRequest,
       &kClientSideDetectionKillswitch,
       &kClientSideDetectionRedirectChainKillswitch,
       &kCreateNotificationsAcceptedClientSafeBrowsingReports,
