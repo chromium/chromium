@@ -603,7 +603,6 @@ class CC_EXPORT GpuImageDecodeCache
               bool speculative_decode,
               base::span<ImageInfo, kAuxImageCount> image_info);
 
-    bool IsGpuOrTransferCache() const;
     bool HasUploadedData() const;
     void ValidateBudgeted() const;
 

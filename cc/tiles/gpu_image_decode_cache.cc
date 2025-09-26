@@ -1078,11 +1078,6 @@ GpuImageDecodeCache::ImageData::~ImageData() {
   speculative_decode_usage_stats_.reset();
 }
 
-// TODO(crbug.com/391648152): Remove this method and clean up code.
-bool GpuImageDecodeCache::ImageData::IsGpuOrTransferCache() const {
-  return true;
-}
-
 bool GpuImageDecodeCache::ImageData::HasUploadedData() const {
   return !!upload.transfer_cache_id();
 }
@@ -2104,8 +2099,7 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
 
   // If we have no refs on an uploaded image, it should be unlocked. Do this
   // before any attempts to delete the image.
-  if (image_data->IsGpuOrTransferCache() && image_data->upload.ref_count == 0 &&
-      image_data->upload.is_locked()) {
+  if (image_data->upload.ref_count == 0 && image_data->upload.is_locked()) {
     UnlockImage(image_data);
   }
 
