@@ -197,8 +197,8 @@ void ClientTagBasedDataTypeProcessor::ModelReadyToSync(
     std::unique_ptr<MetadataBatch> batch) {
   TRACE_EVENT0("sync", "ClientTagBasedDataTypeProcessor::ModelReadyToSync");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DUMP_WILL_BE_CHECK(!entity_tracker_);
-  DUMP_WILL_BE_CHECK(!model_ready_to_sync_);
+  CHECK(!entity_tracker_);
+  CHECK(!model_ready_to_sync_);
 
   model_ready_to_sync_ = true;
 
@@ -224,14 +224,14 @@ void ClientTagBasedDataTypeProcessor::ModelReadyToSync(
       // If initial sync isn't done, there must be no entity metadata (if there
       // was, ClearPersistedMetadataIfInvalid() would've detected the
       // inconsistency).
-      DUMP_WILL_BE_CHECK(batch->GetAllMetadata().empty());
+      CHECK(batch->GetAllMetadata().empty());
     }
   }
   // Whether metadata was actually cleared or not, any pending clear has now
   // been processed.
   pending_clear_metadata_ = false;
 
-  DUMP_WILL_BE_CHECK(model_ready_to_sync_);
+  CHECK(model_ready_to_sync_);
   ConnectIfReady();
 }
 
@@ -253,7 +253,7 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
   if (!model_ready_to_sync_) {
     return;
   }
-  DUMP_WILL_BE_CHECK(!pending_clear_metadata_);
+  CHECK(!pending_clear_metadata_);
 
   ClearPersistedMetadataIfInconsistentWithActivationRequest();
 
@@ -281,7 +281,7 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
           sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_UNNECESSARY);
       OnFullUpdateReceived(data_type_state, UpdateResponseDataList(),
                            /*gc_directive=*/std::nullopt);
-      DUMP_WILL_BE_CHECK(entity_tracker_);
+      CHECK(entity_tracker_);
     } else {
       activation_response->data_type_state = data_type_state;
     }
@@ -291,8 +291,8 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
     activation_response->data_type_state = entity_tracker_->data_type_state();
   }
 
-  DUMP_WILL_BE_CHECK_EQ(activation_response->data_type_state.cache_guid(),
-                        activation_request_.cache_guid);
+  CHECK_EQ(activation_response->data_type_state.cache_guid(),
+           activation_request_.cache_guid);
 
   activation_response->type_processor =
       std::make_unique<DataTypeProcessorProxy>(
