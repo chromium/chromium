@@ -10,6 +10,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/strings/grit/components_strings.h"
@@ -98,6 +99,21 @@ std::u16string GetBnplIssuerSelectionOptionText(
               eligible_price_range->price_upper_bound / 1'000'000.0)));
   }
   NOTREACHED();
+}
+
+TextWithLink GetBnplUiFooterText() {
+  TextWithLink text_with_link;
+  std::u16string payments_settings_link_text = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT);
+  size_t offset = 0;
+  text_with_link.text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION,
+      payments_settings_link_text, &offset);
+
+  text_with_link.offset =
+      gfx::Range(offset, offset + payments_settings_link_text.length());
+
+  return text_with_link;
 }
 
 }  // namespace autofill::payments

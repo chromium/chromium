@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -11,6 +12,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill::payments {
+
+namespace {
+constexpr std::string_view kPaymentSettingsLinkText = "payment settings";
+}  // namespace
 
 struct EligibleBnplIssuerParams {
   BnplIssuer::IssuerId issuer_id;
@@ -157,6 +162,19 @@ TEST(BnplUtilTest,
       l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
           u"$100.00"));
+}
+
+TEST(BnplUtilTest, GetBnplUiFooterText) {
+  size_t offset = 0;
+  std::u16string text = l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION,
+      base::UTF8ToUTF16(kPaymentSettingsLinkText), &offset);
+
+  EXPECT_THAT(
+      GetBnplUiFooterText(),
+      testing::FieldsAre(
+          text,
+          gfx::Range(offset, offset + kPaymentSettingsLinkText.length())));
 }
 
 }  // namespace autofill::payments

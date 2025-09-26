@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "ui/gfx/range/range.h"
 
 namespace autofill::payments {
 
@@ -45,11 +46,20 @@ struct BnplIssuerContext {
       BnplIssuerEligibilityForPage::kUndefined;
 };
 
+// Contains a string of text and the location of a substring for a link.
+struct TextWithLink {
+  std::u16string text;
+  gfx::Range offset;
+};
+
 // Returns the selection option text for a given BNPL issuer.
 std::u16string GetBnplIssuerSelectionOptionText(
     BnplIssuer::IssuerId issuer_id,
     const std::string& app_locale,
     base::span<const BnplIssuerContext> issuer_contexts);
+
+// Returns the footer text to be displayed in a BNPL flow.
+TextWithLink GetBnplUiFooterText();
 
 }  // namespace autofill::payments
 

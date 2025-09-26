@@ -8,17 +8,11 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
-#include "ui/gfx/range/range.h"
 
 namespace autofill::payments {
 
 struct BnplIssuerContext;
-
-// Contains a string of text and the location of a substring for a link.
-struct TextWithLink {
-  std::u16string text;
-  gfx::Range offset;
-};
+struct TextWithLink;
 
 // Interface that exposes controller functionality to the
 // SelectBnplIssuerDialogView.

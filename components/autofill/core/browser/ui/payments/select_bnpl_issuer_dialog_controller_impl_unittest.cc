@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
@@ -15,18 +14,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::UTF8ToUTF16;
-using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
-using std::u16string;
-using testing::FieldsAre;
 namespace autofill::payments {
 
 using IssuerId = autofill::BnplIssuer::IssuerId;
-
-namespace {
-constexpr std::string_view kPaymentSettingsLinkText = "payment settings";
-}  // namespace
 
 class SelectBnplIssuerDialogControllerImplTest : public testing::Test {
  public:
@@ -85,15 +76,8 @@ TEST_F(SelectBnplIssuerDialogControllerImplTest, GetSelectionOptionText) {
 
 TEST_F(SelectBnplIssuerDialogControllerImplTest, GetLinkText) {
   InitController();
-  size_t offset = 0;
-  u16string text = GetStringFUTF16(
-      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION,
-      UTF8ToUTF16(kPaymentSettingsLinkText), &offset);
 
-  EXPECT_THAT(
-      controller_->GetLinkText(),
-      FieldsAre(text, gfx::Range(offset,
-                                 offset + kPaymentSettingsLinkText.length())));
+  EXPECT_FALSE(controller_->GetLinkText().text.empty());
 }
 
 }  // namespace autofill::payments

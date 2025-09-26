@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller_impl.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
@@ -19,7 +18,6 @@ using IssuerId = autofill::BnplIssuer::IssuerId;
 using ::autofill::autofill_metrics::LogBnplIssuerSelection;
 using ::autofill::autofill_metrics::LogSelectBnplIssuerDialogResult;
 using ::autofill::autofill_metrics::SelectBnplIssuerDialogResult;
-using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using std::u16string;
 
@@ -87,21 +85,12 @@ u16string SelectBnplIssuerDialogControllerImpl::GetSelectionOptionText(
                                           GetIssuerContexts());
 }
 
+// TODO(crbug.com/430575808): Remove `GetLinkText` and instead use
+// `GetBnplUiFooterText`.
 // TODO(crbug.com/405187652) Check if we want the selection dialog footer to
 // have multiple lines when the text doesn't fit into one line.
 TextWithLink SelectBnplIssuerDialogControllerImpl::GetLinkText() const {
-  TextWithLink text_with_link;
-  std::u16string payments_settings_link_text = GetStringUTF16(
-      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT);
-  size_t offset = 0;
-  text_with_link.text = GetStringFUTF16(
-      IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION,
-      payments_settings_link_text, &offset);
-
-  text_with_link.offset =
-      gfx::Range(offset, offset + payments_settings_link_text.length());
-
-  return text_with_link;
+  return GetBnplUiFooterText();
 }
 
 }  // namespace autofill::payments
