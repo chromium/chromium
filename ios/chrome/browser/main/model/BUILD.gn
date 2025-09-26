@@ -34,6 +34,7 @@ source_set("model") {
     "//ios/chrome/browser/infobars/model/overlays/browser_agent:browser_agent_util",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/persist_tab_context/model",
     "//ios/chrome/browser/intents/model:user_activity_browser_agent",
     "//ios/chrome/browser/lens/model",
     "//ios/chrome/browser/metrics/model",
