@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -505,6 +506,15 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
     testing::Mock::VerifyAndClearExpectations(lens_searchbox_client_.get());
+  }
+  {
+    SCOPED_TRACE("Icon override");
+
+    const char search_icon[] = "//resources/images/icon_search.svg";
+    const std::string& svg_name = handler_->AutocompleteIconToResourceName(
+        omnibox::kSubdirectoryArrowRightIcon);
+
+    EXPECT_EQ(svg_name, search_icon);
   }
 }
 

@@ -13,6 +13,7 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -123,6 +124,18 @@ LensSearchboxHandler::LensSearchboxHandler(
 }
 
 LensSearchboxHandler::~LensSearchboxHandler() = default;
+
+std::string LensSearchboxHandler::AutocompleteIconToResourceName(
+    const gfx::VectorIcon& icon) {
+  // The default icon for contextual suggestions is the subdirectory arrow right
+  // icon. For the Lens searchbox, we want to stay consistent with the search
+  // loupe instead.
+  if (icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
+    return searchbox_internal::kSearchIconResourceName;
+  }
+
+  return SearchboxHandler::AutocompleteIconToResourceName(icon);
+}
 
 void LensSearchboxHandler::SetPage(
     mojo::PendingRemote<searchbox::mojom::Page> pending_page) {

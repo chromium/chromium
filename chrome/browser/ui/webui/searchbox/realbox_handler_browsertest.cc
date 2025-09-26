@@ -62,110 +62,6 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
-namespace {
-
-class BrowserTestWithParam : public InProcessBrowserTest,
-                             public testing::WithParamInterface<bool> {
- public:
-  BrowserTestWithParam() = default;
-  BrowserTestWithParam(const BrowserTestWithParam&) = delete;
-  BrowserTestWithParam& operator=(const BrowserTestWithParam&) = delete;
-  ~BrowserTestWithParam() override = default;
-};
-
-}  // namespace
-
-INSTANTIATE_TEST_SUITE_P(All, BrowserTestWithParam, testing::Bool());
-
-// Tests that all Omnibox match vector icons map to an equivalent SVG for use in
-// the NTP Realbox.
-IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, MatchVectorIcons) {
-  for (int type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
-       type != AutocompleteMatchType::NUM_TYPES; type++) {
-    AutocompleteMatch match;
-    match.type = static_cast<AutocompleteMatchType::Type>(type);
-    if (match.type == AutocompleteMatchType::STARTER_PACK) {
-      // All STARTER_PACK suggestions should have non-empty vector icons.
-      for (int starter_pack_id = template_url_starter_pack_data::kBookmarks;
-           starter_pack_id != template_url_starter_pack_data::kMaxStarterPackId;
-           starter_pack_id++) {
-        TemplateURLData turl_data;
-        turl_data.starter_pack_id = starter_pack_id;
-        TemplateURL turl(turl_data);
-        const gfx::VectorIcon& vector_icon =
-            match.GetVectorIcon(/*is_bookmark=*/false, &turl);
-        const std::string& svg_name =
-            SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
-        EXPECT_FALSE(svg_name.empty());
-      }
-    } else {
-      const bool is_bookmark = BrowserTestWithParam::GetParam();
-      const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
-      const std::string& svg_name =
-          SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
-      if (vector_icon.is_empty()) {
-        // An empty resource name is effectively a blank icon.
-        EXPECT_TRUE(svg_name.empty());
-      } else if (is_bookmark) {
-        EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
-      } else {
-        EXPECT_FALSE(svg_name.empty());
-      }
-    }
-  }
-}
-
-// Tests that all Omnibox Answer vector icons map to an equivalent SVG for use
-// in the NTP Realbox.
-IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, AnswerVectorIcons) {
-  for (int answer_type = omnibox::ANSWER_TYPE_DICTIONARY;
-       answer_type != omnibox::AnswerType_ARRAYSIZE; answer_type++) {
-    AutocompleteMatch match;
-    match.answer_type = static_cast<omnibox::AnswerType>(answer_type);
-    const bool is_bookmark = BrowserTestWithParam::GetParam();
-    const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
-    const std::string& svg_name =
-        SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
-    if (is_bookmark) {
-      EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
-    } else {
-      EXPECT_FALSE(svg_name.empty());
-      EXPECT_NE("search.svg", svg_name);
-    }
-  }
-}
-
-// Tests that all Omnibox Pedal vector icons map to an equivalent SVG for use in
-// the NTP Realbox.
-IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, PedalVectorIcons) {
-  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals =
-      GetPedalImplementations(/*incognito=*/true, /*guest=*/false,
-                              /*testing=*/true);
-  for (auto const& it : pedals) {
-    const scoped_refptr<OmniboxPedal> pedal = it.second;
-    const gfx::VectorIcon& vector_icon = pedal->GetVectorIcon();
-    const std::string& svg_name =
-        SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
-    EXPECT_FALSE(svg_name.empty());
-  }
-}
-
-// Tests that all Omnibox Action vector icons map to an equivalent SVG for use
-// in the NTP Realbox.
-IN_PROC_BROWSER_TEST_P(BrowserTestWithParam, ActionVectorIcons) {
-  std::vector<scoped_refptr<OmniboxAction>> actions = {
-      base::MakeRefCounted<history_clusters::HistoryClustersAction>(
-          "test", history::ClusterKeywordData()),
-      base::MakeRefCounted<TabSwitchAction>(GURL("test")),
-  };
-  for (auto const& action : actions) {
-    const gfx::VectorIcon& vector_icon = action->GetVectorIcon();
-    const std::string& svg_name =
-        SearchboxHandler::AutocompleteIconToResourceName(vector_icon);
-    EXPECT_FALSE(svg_name.empty());
-  }
-}
-
 // A sink instance that allows Realbox to make IPC without failing DCHECK.
 class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
  public:
@@ -322,7 +218,8 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithoutSearchStatsBrowserTest,
                                        browser()->profile(), prerender_url));
 }
 
-class RealboxHandlerTest : public InProcessBrowserTest {
+class RealboxHandlerTest : public InProcessBrowserTest,
+                           public testing::WithParamInterface<bool> {
  public:
   RealboxHandlerTest() = default;
 
@@ -413,4 +310,95 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
 
   testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
   testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, RealboxHandlerTest, testing::Bool());
+
+// Tests that all Omnibox Pedal vector icons map to an equivalent SVG for use in
+// the NTP Realbox.
+IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, PedalVectorIcons) {
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals =
+      GetPedalImplementations(/*incognito=*/true, /*guest=*/false,
+                              /*testing=*/true);
+  for (auto const& it : pedals) {
+    const scoped_refptr<OmniboxPedal> pedal = it.second;
+    const gfx::VectorIcon& vector_icon = pedal->GetVectorIcon();
+    const std::string& svg_name =
+        handler_->AutocompleteIconToResourceName(vector_icon);
+    EXPECT_FALSE(svg_name.empty());
+  }
+}
+
+// Tests that all Omnibox Action vector icons map to an equivalent SVG for use
+// in the NTP Realbox.
+IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, ActionVectorIcons) {
+  std::vector<scoped_refptr<OmniboxAction>> actions = {
+      base::MakeRefCounted<history_clusters::HistoryClustersAction>(
+          "test", history::ClusterKeywordData()),
+      base::MakeRefCounted<TabSwitchAction>(GURL("test")),
+  };
+  for (auto const& action : actions) {
+    const gfx::VectorIcon& vector_icon = action->GetVectorIcon();
+    const std::string& svg_name =
+        handler_->AutocompleteIconToResourceName(vector_icon);
+    EXPECT_FALSE(svg_name.empty());
+  }
+}
+
+// Tests that all Omnibox match vector icons map to an equivalent SVG for use in
+// the NTP Realbox.
+IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, MatchVectorIcons) {
+  for (int type = AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+       type != AutocompleteMatchType::NUM_TYPES; type++) {
+    AutocompleteMatch match;
+    match.type = static_cast<AutocompleteMatchType::Type>(type);
+    if (match.type == AutocompleteMatchType::STARTER_PACK) {
+      // All STARTER_PACK suggestions should have non-empty vector icons.
+      for (int starter_pack_id = template_url_starter_pack_data::kBookmarks;
+           starter_pack_id != template_url_starter_pack_data::kMaxStarterPackId;
+           starter_pack_id++) {
+        TemplateURLData turl_data;
+        turl_data.starter_pack_id = starter_pack_id;
+        TemplateURL turl(turl_data);
+        const gfx::VectorIcon& vector_icon =
+            match.GetVectorIcon(/*is_bookmark=*/false, &turl);
+        const std::string& svg_name =
+            handler_->AutocompleteIconToResourceName(vector_icon);
+        EXPECT_FALSE(svg_name.empty());
+      }
+    } else {
+      const bool is_bookmark = RealboxHandlerTest::GetParam();
+      const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
+      const std::string& svg_name =
+          handler_->AutocompleteIconToResourceName(vector_icon);
+      if (vector_icon.is_empty()) {
+        // An empty resource name is effectively a blank icon.
+        EXPECT_TRUE(svg_name.empty());
+      } else if (is_bookmark) {
+        EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
+      } else {
+        EXPECT_FALSE(svg_name.empty());
+      }
+    }
+  }
+}
+
+// Tests that all Omnibox Answer vector icons map to an equivalent SVG for use
+// in the NTP Realbox.
+IN_PROC_BROWSER_TEST_P(RealboxHandlerTest, AnswerVectorIcons) {
+  for (int answer_type = omnibox::ANSWER_TYPE_DICTIONARY;
+       answer_type != omnibox::AnswerType_ARRAYSIZE; answer_type++) {
+    AutocompleteMatch match;
+    match.answer_type = static_cast<omnibox::AnswerType>(answer_type);
+    const bool is_bookmark = RealboxHandlerTest::GetParam();
+    const gfx::VectorIcon& vector_icon = match.GetVectorIcon(is_bookmark);
+    const std::string& svg_name =
+        handler_->AutocompleteIconToResourceName(vector_icon);
+    if (is_bookmark) {
+      EXPECT_EQ("//resources/images/icon_bookmark.svg", svg_name);
+    } else {
+      EXPECT_FALSE(svg_name.empty());
+      EXPECT_NE("search.svg", svg_name);
+    }
+  }
 }

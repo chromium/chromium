@@ -27,6 +27,12 @@ class WebContents;
 class WebUIDataSource;
 }  // namespace content
 
+namespace searchbox_internal {
+// Internal constants for icon resource paths shared by SearchboxHandler and its
+// subclasses.
+extern const char* kSearchIconResourceName;
+}  // namespace searchbox_internal
+
 // Base class for browser-side handlers that handle bi-directional communication
 // with WebUI search boxes.
 class SearchboxHandler : public searchbox::mojom::PageHandler,
@@ -42,7 +48,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.
-  static std::string AutocompleteIconToResourceName(
+  virtual std::string AutocompleteIconToResourceName(
       const gfx::VectorIcon& icon);
 
   // Returns true if the page remote is bound and ready to receive calls.
@@ -127,6 +133,26 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   std::atomic<bool> page_set_;
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
+
+ private:
+  std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
+      const AutocompleteResult& result,
+      const OmniboxEditModel* edit_model,
+      bookmarks::BookmarkModel* bookmark_model,
+      const omnibox::GroupConfigMap& suggestion_groups_map,
+      const TemplateURLService* turl_service);
+  base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
+  CreateSuggestionGroupsMap(
+      const AutocompleteResult& result,
+      const PrefService* prefs,
+      const omnibox::GroupConfigMap& suggestion_groups_map);
+  searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
+      const std::u16string& input,
+      const AutocompleteResult& result,
+      const OmniboxEditModel* edit_model,
+      bookmarks::BookmarkModel* bookmark_model,
+      const PrefService* prefs,
+      const TemplateURLService* turl_service);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
