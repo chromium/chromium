@@ -59,14 +59,6 @@ def dawn_win_builderless_builder(*, name, **kwargs):
         **kwargs
     )
 
-def dawn_win_builderful_builder(*, name, **kwargs):
-    return try_.builder(
-        name = name,
-        builderless = False,
-        os = os.WINDOWS_ANY,
-        **kwargs
-    )
-
 try_.builder(
     name = "dawn-chromium-presubmit",
     branch_selector = [
@@ -329,15 +321,15 @@ dawn_win_builderless_builder(
     ),
 )
 
-try_.builder(
+dawn_win_builderless_builder(
     name = "dawn-win11-arm64-deps-rel",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     mirrors = [
         "ci/Dawn Win11 arm64 DEPS Builder",
     ],
     gn_args = "ci/Dawn Win11 arm64 DEPS Builder",
-    os = os.WINDOWS_ANY,
     main_list_view = "try",
+    max_concurrent_builds = 5,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
@@ -702,12 +694,13 @@ dawn_win_builderless_builder(
     ),
 )
 
-dawn_win_builderful_builder(
+dawn_win_builderless_builder(
     name = "win11-arm64-dawn-rel",
     mirrors = [
         "ci/Dawn Win11 arm64 Builder",
     ],
     gn_args = "ci/Dawn Win11 arm64 Builder",
+    max_concurrent_builds = 6,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
