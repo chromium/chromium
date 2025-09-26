@@ -53,8 +53,9 @@ void MaybeEmitNamedNumber(StringBuilder& builder,
   if (builder.length() > 1) {
     builder.Append(", ");
   }
+  builder.Append("\"");
   builder.Append(name);
-  builder.Append(": ");
+  builder.Append("\": ");
   builder.AppendNumber(value);
 }
 
@@ -69,8 +70,9 @@ void MaybeEmitNamedString(StringBuilder& builder,
   if (builder.length() > 1) {
     builder.Append(", ");
   }
+  builder.Append("\"");
   builder.Append(name);
-  builder.Append(": ");
+  builder.Append("\": ");
   builder.Append(value);
 }
 
@@ -84,8 +86,9 @@ void MaybeEmitNamedBoolean(StringBuilder& builder,
   if (builder.length() > 1) {
     builder.Append(", ");
   }
+  builder.Append("\"");
   builder.Append(name);
-  builder.Append(": ");
+  builder.Append("\": ");
   if (value) {
     builder.Append("true");
   } else {
@@ -163,7 +166,7 @@ const String MediaConstraintsPrivate::ToString() const {
       if (builder.length() > 1) {
         builder.Append(", ");
       }
-      builder.Append("advanced: [");
+      builder.Append("\"advanced\": [");
       bool first = true;
       for (const auto& constraint_set : Advanced()) {
         if (!first) {
@@ -371,7 +374,7 @@ String StringConstraint::ToString() const {
   StringBuilder builder;
   builder.Append('{');
   if (!ideal_.empty()) {
-    builder.Append("ideal: [");
+    builder.Append("\"ideal\": [");
     bool first = true;
     for (const auto& iter : ideal_) {
       if (!first) {
@@ -388,7 +391,7 @@ String StringConstraint::ToString() const {
     if (builder.length() > 1) {
       builder.Append(", ");
     }
-    builder.Append("exact: [");
+    builder.Append("\"exact\": [");
     bool first = true;
     for (const auto& iter : exact_) {
       if (!first) {
@@ -607,8 +610,9 @@ String MediaTrackConstraintSetPlatform::ToString() const {
       if (!first) {
         builder.Append(", ");
       }
+      builder.Append("\"");
       builder.Append(constraint->GetName());
-      builder.Append(": ");
+      builder.Append("\": ");
       builder.Append(constraint->ToString());
       first = false;
     }
