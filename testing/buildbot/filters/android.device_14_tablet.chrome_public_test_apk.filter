@@ -1,9 +1,6 @@
 # crbug.com/355057773
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.*
 
-# crbug.com/350393662
--org.chromium.chrome.browser.searchwidget.SearchActivityTest.*
-
 # crbug.com/376095153
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
 

@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.view.ViewGroup;
@@ -292,6 +293,9 @@ public class ToolbarPhoneTest {
     @DisableFeatures({
         ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     })
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "crbug.com/351025374")
     public void testToolbarColorSameAsSuggestionColorWhenFocus_activeColorOmnibox() {
         LocationBarCoordinator locationBarCoordinator =
                 (LocationBarCoordinator) mToolbar.getLocationBar();

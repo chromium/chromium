@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHe
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 
 import android.app.Activity;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -40,6 +41,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -246,6 +248,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "crbug.com/377939398")
     public void testMouseClicksConsumedByAccessoryBar()
             throws ExecutionException, TimeoutException, InterruptedException {
         mHelper.startAtTestPage(/* isRtl= */ false);
@@ -262,6 +267,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "crbug.com/377939398")
     public void testPressingBackButtonHidesAccessoryWithAutofillSuggestions()
             throws TimeoutException, ExecutionException {
         startAtTestPage(MultiWindowKeyboard::new);
