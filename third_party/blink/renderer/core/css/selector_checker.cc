@@ -2229,13 +2229,12 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       PseudoId pseudo_id_to_check =
           element.IsPseudoElement() ? element.GetPseudoId() : context.pseudo_id;
       if (IsTransitionPseudoElement(pseudo_id_to_check)) {
-        DCHECK(element.IsDocumentElement() && context.pseudo_id ||
+        ViewTransition* transition =
+            ViewTransitionUtils::GetTransition(element);
+        CHECK(transition);
+        DCHECK((transition->Scope() == &element && context.pseudo_id) ||
                element.IsPseudoElement());
         DCHECK(context.pseudo_argument || element.IsPseudoElement());
-
-        auto* transition =
-            ViewTransitionUtils::GetTransition(element.GetDocument());
-        DCHECK(transition);
         const AtomicString& pseudo_argument = element.IsPseudoElement()
                                                   ? element.GetPseudoArgument()
                                                   : *context.pseudo_argument;
@@ -3117,13 +3116,17 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoViewTransitionNew: {
       const PseudoId selector_pseudo_id =
           CSSSelector::GetPseudoId(selector.GetPseudoType());
-      if (element.IsDocumentElement() && context.pseudo_id == kPseudoIdNone) {
-        // We don't strictly need to use dynamic_pseudo since we don't rely on
-        // SetHasPseudoElementStyle but we need to return a match to invalidate
-        // the originating element and set dynamic_pseudo to avoid collecting
-        // it as a matched rule in ElementRuleCollector.
-        result.dynamic_pseudo = selector_pseudo_id;
-        return true;
+      if (context.pseudo_id == kPseudoIdNone) {
+        ViewTransition* transition =
+            ViewTransitionUtils::GetTransition(element);
+        if (transition && transition->Scope() == &element) {
+          // We don't strictly need to use dynamic_pseudo since we don't rely on
+          // SetHasPseudoElementStyle but we need to return a match to
+          // invalidate the originating element and set dynamic_pseudo to avoid
+          // collecting it as a matched rule in ElementRuleCollector.
+          result.dynamic_pseudo = selector_pseudo_id;
+          return true;
+        }
       }
 
       // Here, and below, the IsPseudoElement check is for a new pseudo-element
