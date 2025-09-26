@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -82,6 +83,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.util.XrUtils;
 
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -247,6 +249,73 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         initializeMotionEvent();
     }
 
+    private void initializeLayoutManagerTablet(
+            int standardTabCount,
+            int incognitoTabCount,
+            int standardIndexSelected,
+            int incognitoIndexSelected,
+            boolean incognitoSelected) {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+
+        mDpToPx = context.getResources().getDisplayMetrics().density;
+
+        mTabModelSelector =
+                new MockTabModelSelector(
+                        ProfileManager.getLastUsedRegularProfile(),
+                        ProfileManager.getLastUsedRegularProfile().getPrimaryOtrProfile(true),
+                        standardTabCount,
+                        incognitoTabCount,
+                        this);
+        if (standardIndexSelected != TabModel.INVALID_TAB_INDEX) {
+            TabModelUtils.setIndex(mTabModelSelector.getModel(false), standardIndexSelected);
+        }
+        if (incognitoIndexSelected != TabModel.INVALID_TAB_INDEX) {
+            TabModelUtils.setIndex(mTabModelSelector.getModel(true), incognitoIndexSelected);
+        }
+        mTabModelSelector.selectModel(incognitoSelected);
+        Assert.assertNotNull(
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
+
+        LayoutManagerHost layoutManagerHost = new MockLayoutHost(context);
+        TabContentManager tabContentManager =
+                new TabContentManager(context, null, false, null, mTabWindowManager);
+        tabContentManager.initWithNative();
+
+        // Build a fake content container
+        FrameLayout parentContainer = new FrameLayout(context);
+        FrameLayout container = new FrameLayout(context);
+        parentContainer.addView(container);
+
+        ObservableSupplierImpl<TabContentManager> tabContentManagerSupplier =
+                new ObservableSupplierImpl<>();
+
+        mTabSwitcherSupplier = new OneshotSupplierImpl();
+        mManager =
+                new LayoutManagerChrome(
+                        layoutManagerHost,
+                        container,
+                        mTabSwitcherSupplier,
+                        mTabModelSelectorSupplier,
+                        tabContentManagerSupplier,
+                        () -> mTopUiThemeColorProvider,
+                        mHubLayoutDependencyHolder);
+
+        tabContentManagerSupplier.set(tabContentManager);
+        mManagerPhone = null;
+        CompositorAnimationHandler.setTestingMode(true);
+        mManager.init(
+                mTabModelSelector,
+                null,
+                null,
+                null,
+                mTopUiThemeColorProvider,
+                new ObservableSupplierImpl<>(0));
+        initializeMotionEvent();
+    }
+
     @Test
     @SmallTest
     @Feature({"Android-TabSwitcher"})
@@ -367,6 +436,75 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         initializeLayoutManagerPhone(0, 2, TabModel.INVALID_TAB_INDEX, 0, true);
         Assert.assertEquals(0, mTabModelSelector.getModel(true).index());
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Android-TabSwitcher"})
+    @UiThreadTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    public void testNoShowLayoutCallOnLastTabClosed_Xr() {
+        XrUtils.setXrDeviceForTesting(true);
+        initializeLayoutManagerTablet(1, 0, 0, TabModel.INVALID_TAB_INDEX, false);
+
+        // Verify the initial layout is BROWSING.
+        Assert.assertEquals(
+                "Wrong initial layout",
+                LayoutType.BROWSING,
+                mManager.getActiveLayout().getLayoutType());
+        Assert.assertEquals(
+                "Wrong initial tab count", 1, mTabModelSelector.getCurrentModel().getCount());
+
+        // Close the last tab.
+        Tab tabToClose = mTabModelSelector.getCurrentTab();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModelSelector
+                            .getCurrentModel()
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tabToClose).build(),
+                                    /* allowDialog= */ false);
+                });
+        // On non-XR devices, the layout will be switched to TAB_SWITCHER when the last tab is
+        // closed. However, on XR devices, the layout should remain BROWSING.
+        Assert.assertEquals(
+                "Tab switcher should not be shown on an XR device when last tab is closed.",
+                LayoutType.BROWSING,
+                mManager.getActiveLayout().getLayoutType());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Android-TabSwitcher"})
+    @UiThreadTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    public void testNoShowLayoutOnAllTabsClosed_Xr() {
+        XrUtils.setXrDeviceForTesting(true);
+        initializeLayoutManagerTablet(2, 0, 0, TabModel.INVALID_TAB_INDEX, false);
+
+        // Verify the initial layout is BROWSING.
+        Assert.assertEquals(
+                "Wrong initial layout",
+                LayoutType.BROWSING,
+                mManager.getActiveLayout().getLayoutType());
+        Assert.assertEquals(
+                "Wrong initial tab count", 2, mTabModelSelector.getCurrentModel().getCount());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModelSelector
+                            .getCurrentModel()
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
+                });
+
+        Assert.assertEquals(
+                "Tab switcher should not be shown on an XR device when all tabs are closed.",
+                LayoutType.BROWSING,
+                mManager.getActiveLayout().getLayoutType());
     }
 
     @Test
@@ -655,6 +793,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @After
     public void tearDown() {
         setAccessibilityEnabledForTesting(null);
+        XrUtils.setXrDeviceForTesting(null);
     }
 
     private void launchedChromeAndEnterTabSwitcher() {
