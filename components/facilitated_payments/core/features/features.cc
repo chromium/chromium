@@ -22,6 +22,9 @@ BASE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist,
 // their Pix accounts to Google Wallet.
 BASE_FEATURE(kEnablePixAccountLinking, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, static qr code will be supported for pix pay flow.
+BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will offer to pay with eWallet accounts if a payment
 // link is detected.
 BASE_FEATURE(kEwalletPayments, base::FEATURE_ENABLED_BY_DEFAULT);

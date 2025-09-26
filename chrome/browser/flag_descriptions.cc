@@ -1474,6 +1474,11 @@ const char kEnablePixPaymentsInLandscapeModeDescription[] =
     "When enabled, users using their devices in landscape mode also will be "
     "offered to pay using their Pix accounts. Users using their devices in "
     "portrait mode are always offered to pay using their Pix accounts.";
+
+const char kEnableStaticQrCodeForPixName[] = "Enable Static Qr Code For Pix";
+const char kEnableStaticQrCodeForPixDescription[] =
+    "When enabled, pix pay flow will be triggered when users click the copy "
+    "button of static qr code.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kDesktopPWAsAdditionalWindowingControlsName[] =

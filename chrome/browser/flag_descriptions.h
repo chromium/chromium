@@ -838,6 +838,9 @@ extern const char kEnablePixAccountLinkingDescription[];
 
 extern const char kEnablePixPaymentsInLandscapeModeName[];
 extern const char kEnablePixPaymentsInLandscapeModeDescription[];
+
+extern const char kEnableStaticQrCodeForPixName[];
+extern const char kEnableStaticQrCodeForPixDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kDesktopPWAsAdditionalWindowingControlsName[];

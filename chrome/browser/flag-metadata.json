@@ -4483,6 +4483,11 @@
     "owners": [ "hanxi@chromium.org", "clank-start@chromium.org" ],
     "expiry_milestone": 150
   },
+    {
+    "name": "enable-static-qr-code-for-pix",
+    "owners": [ "longsheng@google.com", "siashah@google.com", "chrome-payments-team@google.com", "payments-autofill-team@google.com" ],
+    "expiry_milestone": 145
+  },
   {
     "name": "enable-suspend-to-disk",
     "owners": [ "bgeffon@chromium.org", "mka@chromium.org", "chromeos-power@google.com" ],

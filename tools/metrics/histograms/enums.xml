@@ -18663,6 +18663,7 @@ from previous Chrome versions.
   <int value="1605398303" label="MacSystemMediaPermissionsInfoUI:enabled"/>
   <int value="1605611615" label="enable-webrtc-srtp-aes-gcm"/>
   <int value="1605929915" label="PasswordManualFallbackAvailable:enabled"/>
+  <int value="1607360072" label="EnableStaticQrCodeForPix:disabled"/>
   <int value="1607484807" label="AutofillEnableSupportForLandmark:enabled"/>
   <int value="1607541874" label="SettingsLandingPageRedesign:enabled"/>
   <int value="1609059016" label="CupsIppPrintingBackend:enabled"/>
@@ -19304,6 +19305,7 @@ from previous Chrome versions.
   <int value="1825854118" label="AutofillGranularFillingAvailable:enabled"/>
   <int value="1825940786" label="ChromeHomePromo:disabled"/>
   <int value="1827369558" label="AndroidPayIntegrationV1:disabled"/>
+  <int value="1828502021" label="EnableStaticQrCodeForPix:enabled"/>
   <int value="1828660283" label="enable-webfonts-intervention-trigger"/>
   <int value="1829231569" label="ShelfLauncherNudge:enabled"/>
   <int value="1829252358"
