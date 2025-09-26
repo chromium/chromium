@@ -166,7 +166,7 @@ TEST(IPCTest, CrossCallStrPacking) {
 
   CrossCallReturn answer;
   IpcTag tag1 = IpcTag::PING1;
-  const wchar_t* text = L"98765 - 43210";
+  std::wstring_view text = L"98765 - 43210";
   std::wstring copied_text;
   CrossCallParamsEx* actual_params;
 
@@ -175,12 +175,12 @@ TEST(IPCTest, CrossCallStrPacking) {
   EXPECT_EQ(1u, actual_params->GetParamsCount());
   EXPECT_EQ(tag1, actual_params->GetTag());
   EXPECT_TRUE(actual_params->GetParameterStr(0, &copied_text));
-  EXPECT_STREQ(text, copied_text.c_str());
+  EXPECT_EQ(text, copied_text);
   copied_text.clear();
 
   // Check with an empty string.
   IpcTag tag2 = IpcTag::PING2;
-  const wchar_t* null_text = nullptr;
+  std::wstring_view null_text;
   CrossCall(client, tag2, null_text, &answer);
   actual_params = reinterpret_cast<CrossCallParamsEx*>(client.GetBuffer());
   EXPECT_EQ(1u, actual_params->GetParamsCount());
@@ -211,20 +211,20 @@ TEST(IPCTest, CrossCallStrPacking) {
   EXPECT_TRUE(actual_params->GetParameterStr(0, &copied_text));
   EXPECT_TRUE(copied_text.empty());
   EXPECT_TRUE(actual_params->GetParameterStr(1, &copied_text));
-  EXPECT_STREQ(text, copied_text.c_str());
+  EXPECT_EQ(text, copied_text);
 
   param_size = 1;
   std::wstring copied_text_p0, copied_text_p2;
 
-  const wchar_t* text2 = L"AeFG";
+  std::wstring_view text2 = L"AeFG";
   CrossCall(client, tag1, text2, null_text, text, &answer);
   actual_params = reinterpret_cast<CrossCallParamsEx*>(client.GetBuffer());
   EXPECT_EQ(3u, actual_params->GetParamsCount());
   EXPECT_EQ(tag1, actual_params->GetTag());
   EXPECT_TRUE(actual_params->GetParameterStr(0, &copied_text_p0));
-  EXPECT_STREQ(text2, copied_text_p0.c_str());
+  EXPECT_EQ(text2, copied_text_p0);
   EXPECT_TRUE(actual_params->GetParameterStr(2, &copied_text_p2));
-  EXPECT_STREQ(text, copied_text_p2.c_str());
+  EXPECT_EQ(text, copied_text_p2);
   type = INVALID_TYPE;
   param_addr = actual_params->GetRawParameter(1, &param_size, &type);
   EXPECT_TRUE(param_addr);
@@ -245,7 +245,7 @@ TEST(IPCTest, CrossCallIntPacking) {
 
   IpcTag tag1 = IpcTag::PING1;
   IpcTag tag2 = IpcTag::PING2;
-  const wchar_t* text = L"godzilla";
+  std::wstring_view text = L"godzilla";
   CrossCallParamsEx* actual_params;
 
   char* mem = reinterpret_cast<char*>(client_control);

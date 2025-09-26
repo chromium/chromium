@@ -115,7 +115,8 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     CrossCallReturn answer = {0};
     // The following call must match in the parameters with
     // FilesystemDispatcher::ProcessNtCreateFile.
-    ResultCode code = CrossCall(ipc, IpcTag::NTCREATEFILE, name.get(),
+    ResultCode code = CrossCall(ipc, IpcTag::NTCREATEFILE,
+                                std::wstring_view(name.get(), name_len),
                                 attributes, desired_access, file_attributes,
                                 sharing, disposition, options, &answer);
     if (SBOX_ALL_OK != code) {
@@ -181,8 +182,9 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTOPENFILE, name.get(), attributes,
-                                desired_access, sharing, options, &answer);
+    ResultCode code = CrossCall(
+        ipc, IpcTag::NTOPENFILE, std::wstring_view(name.get(), name_len),
+        attributes, desired_access, sharing, options, &answer);
     if (SBOX_ALL_OK != code)
       break;
 
@@ -238,7 +240,8 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
                                  sizeof(FILE_BASIC_INFORMATION));
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE, name.get(),
+    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE,
+                                std::wstring_view(name.get(), name_len),
                                 attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
@@ -289,7 +292,8 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code = CrossCall(ipc, IpcTag::NTQUERYFULLATTRIBUTESFILE,
-                                name.get(), attributes, file_info, &answer);
+                                std::wstring_view(name.get(), name_len),
+                                attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
       break;
