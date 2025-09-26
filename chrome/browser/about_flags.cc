@@ -10615,14 +10615,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kProfilesReordering)},
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"enable-history-sync-optin-expansion-pill",
-     flag_descriptions::kEnableHistorySyncOptinExpansionPillName,
-     flag_descriptions::kEnableHistorySyncOptinExpansionPillDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kEnableHistorySyncOptinExpansionPill)},
-#endif
-
 #if BUILDFLAG(IS_WIN)
     {"avatar-button-sync-promo", flag_descriptions::kAvatarButtonSyncPromoName,
      flag_descriptions::kAvatarButtonSyncPromoDescription, kOsWin,

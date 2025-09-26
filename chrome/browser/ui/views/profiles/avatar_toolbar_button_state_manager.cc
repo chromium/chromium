@@ -931,11 +931,13 @@ class HistorySyncOptinCoordinator
   }
 
   bool ShouldProfileShowPromo() const {
-    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
-      return signin_util::ShouldShowAvatarSyncPromo(&profile_.get());
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      return signin_util::ShouldShowHistorySyncOptinScreen(profile_.get());
     }
 
-    return signin_util::ShouldShowHistorySyncOptinScreen(profile_.get());
+    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+    return signin_util::ShouldShowAvatarSyncPromo(&profile_.get());
   }
 
   void Trigger(signin_metrics::AccessPoint access_point) {
@@ -1026,11 +1028,13 @@ class HistorySyncOptinStateProvider : public StateProvider {
   bool IsActive() const override { return coordinator_->triggered(); }
 
   std::u16string GetText() const override {
-    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
-      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
+    if (base::FeatureList::IsEnabled(
+            syncer::kReplaceSyncPromosWithSignInPromos)) {
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
     }
 
-    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
+    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
   }
 
   void Init() override {
@@ -1785,7 +1789,7 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (base::FeatureList::IsEnabled(
-            switches::kEnableHistorySyncOptinExpansionPill) ||
+            syncer::kReplaceSyncPromosWithSignInPromos) ||
         switches::IsAvatarSyncPromoFeatureEnabled()) {
       auto history_sync_optin_state_provider =
           std::make_unique<HistorySyncOptinStateProvider>(

@@ -185,12 +185,6 @@ BASE_FEATURE(kEnableErrorBadgeOnIdentityDisc,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-// Enables the History Sync Opt-in expansion pill on Desktop.
-BASE_FEATURE(kEnableHistorySyncOptinExpansionPill,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kEnableIdentityInAuthError, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif

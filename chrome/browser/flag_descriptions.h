@@ -4867,9 +4867,6 @@ extern const char kProfilesReorderingDescription[];
 extern const char kEnableChromeRefreshTokenBindingName[];
 extern const char kEnableChromeRefreshTokenBindingDescription[];
 
-extern const char kEnableHistorySyncOptinExpansionPillName[];
-extern const char kEnableHistorySyncOptinExpansionPillDescription[];
-
 extern const char kEnableOAuthMultiloginCookiesBindingName[];
 extern const char kEnableOAuthMultiloginCookiesBindingDescription[];
 

@@ -467,16 +467,22 @@ bool SyncPromoIdentityPillManager::ShouldShowPromo() const {
   }
 
   SigninPrefs signin_prefs(pref_service_.get());
-  const int show_count =
-      switches::IsAvatarSyncPromoFeatureEnabled()
-          ? signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia)
-          : signin_prefs.GetHistorySyncPromoIdentityPillShownCount(
-                account.gaia);
-  const int used_count =
-      switches::IsAvatarSyncPromoFeatureEnabled()
-          ? signin_prefs.GetSyncPromoIdentityPillUsedCount(account.gaia)
-          : signin_prefs.GetHistorySyncPromoIdentityPillUsedCount(account.gaia);
-  return show_count < max_shown_count_ && used_count < max_used_count_;
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    const int show_count =
+        signin_prefs.GetHistorySyncPromoIdentityPillShownCount(account.gaia);
+    const int used_count =
+        signin_prefs.GetHistorySyncPromoIdentityPillUsedCount(account.gaia);
+    return show_count < max_shown_count_ && used_count < max_used_count_;
+  }
+
+  CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+  const int sync_show_count =
+      signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia);
+  const int sync_used_count =
+      signin_prefs.GetSyncPromoIdentityPillUsedCount(account.gaia);
+  return sync_show_count < max_shown_count_ &&
+         sync_used_count < max_used_count_;
 }
 
 void SyncPromoIdentityPillManager::RecordPromoShown() {
@@ -488,10 +494,13 @@ void SyncPromoIdentityPillManager::RecordPromoShown() {
   }
 
   SigninPrefs signin_prefs(pref_service_.get());
-  switches::IsAvatarSyncPromoFeatureEnabled()
-      ? signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia)
-      : signin_prefs.IncrementHistorySyncPromoIdentityPillShownCount(
-            account.gaia);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    signin_prefs.IncrementHistorySyncPromoIdentityPillShownCount(account.gaia);
+    return;
+  }
+  CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia);
 }
 
 void SyncPromoIdentityPillManager::RecordPromoUsed() {
@@ -501,11 +510,15 @@ void SyncPromoIdentityPillManager::RecordPromoUsed() {
     // promo should be shown only for signed in users).
     return;
   }
+
   SigninPrefs signin_prefs(pref_service_.get());
-  switches::IsAvatarSyncPromoFeatureEnabled()
-      ? signin_prefs.IncrementSyncPromoIdentityPillUsedCount(account.gaia)
-      : signin_prefs.IncrementHistorySyncPromoIdentityPillUsedCount(
-            account.gaia);
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    signin_prefs.IncrementHistorySyncPromoIdentityPillUsedCount(account.gaia);
+    return;
+  }
+  CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+  signin_prefs.IncrementSyncPromoIdentityPillUsedCount(account.gaia);
 }
 
 bool SyncPromoIdentityPillManager::ArePromotionsEnabled() const {

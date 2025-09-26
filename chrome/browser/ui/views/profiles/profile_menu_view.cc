@@ -164,34 +164,32 @@ std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
 }
 
 std::u16string GetSyncPromoDescription(std::string_view email) {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return l10n_util::GetStringFUTF16(
+        IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
+        base::UTF8ToUTF16(email));
+  }
+
   if (switches::IsAvatarSyncPromoFeatureEnabled()) {
     return l10n_util::GetStringUTF16(
         IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO);
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(
-          switches::kEnableHistorySyncOptinExpansionPill)) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
-        base::UTF8ToUTF16(email));
-  }
-#endif
   return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
 }
 
 std::u16string GetSyncPromoButtonLabel() {
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    return l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
+  }
+
   if (switches::IsAvatarSyncPromoFeatureEnabled()) {
     return l10n_util::GetStringUTF16(
         IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO);
   }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(
-          switches::kEnableHistorySyncOptinExpansionPill)) {
-    return l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
-  }
-#endif
   return l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
 }
 

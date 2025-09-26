@@ -254,7 +254,7 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
         .pixel_test_param = {.test_suffix = "HistorySyncOptinExperiment"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
         .extra_features_and_params =
-            {{switches::kEnableHistorySyncOptinExpansionPill, {}}},
+            {{syncer::kReplaceSyncPromosWithSignInPromos, {}}},
     },
     {
         .pixel_test_param = {.test_suffix = "BatchUploadPromoSingleLocalData"},
@@ -271,8 +271,14 @@ const ProfileMenuViewPixelTestParam kPixelTestParams[] = {
     {
         .pixel_test_param = {.test_suffix = "AvatarSyncPromo"},
         .signin_status = SigninStatusPixelTestParam::kSignedInNoSync,
+        // `switches::kAvatarButtonSyncPromoForTesting` and
+        // `syncer::kReplaceSyncPromosWithSignInPromos` are not compatible and
+        // cannot be activated at the same time, as
+        // `syncer::kReplaceSyncPromosWithSignInPromos` would override the
+        // behavior. Explicitly disable in this case.
         .extra_features_and_params =
             {{switches::kAvatarButtonSyncPromoForTesting, {}}},
+        .disabled_features = {syncer::kReplaceSyncPromosWithSignInPromos},
     },
     {
         .pixel_test_param = {.test_suffix = "SignedIn_HistorySyncEnabled"},
@@ -296,10 +302,6 @@ class ProfileMenuViewPixelTest
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     // 1. Get default-disabled features.
     // Disabled by default but may be overridden by `extra_features_and_params`.
-    // `switches::kAvatarButtonSyncPromoForTesting` and
-    // `switches::kEnableHistorySyncOptinExpansionPill` are not compatible and
-    // cannot be activated at the same time. Params should ensure that one of
-    // the two (or none) are activated at the right time.
     base::flat_set<base::test::FeatureRef> disabled_features_set = {
 #if BUILDFLAG(IS_WIN)
         // The real flag is always disabled for simplicity, it is actually being
@@ -308,8 +310,12 @@ class ProfileMenuViewPixelTest
         // those tests should remain (with the testing flag).
         switches::kAvatarButtonSyncPromo,
 #endif
-        switches::kAvatarButtonSyncPromoForTesting,
-        switches::kEnableHistorySyncOptinExpansionPill};
+        // This feature is disabled by default as it is not compatible with
+        // `syncer::kReplaceSyncPromosWithSignInPromos` (enabled by default in
+        // the test suite). If this feature needs to be enabled, then
+        // `syncer::kReplaceSyncPromosWithSignInPromos` should explicitly be
+        // disabled as well.
+        switches::kAvatarButtonSyncPromoForTesting};
 
     // 2. Remove params-enabled features from the default-disabled set.
     for (const auto& [feature, _] : GetParam().extra_features_and_params) {

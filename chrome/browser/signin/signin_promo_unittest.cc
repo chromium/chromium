@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/to_string.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
@@ -753,6 +754,9 @@ class SyncPromoIdentityPillManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_environment_;
   TestingPrefServiceSimple pref_service_;
+
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
 };
 
 TEST_F(SyncPromoIdentityPillManagerTest, MaxShownCount) {
