@@ -6,13 +6,16 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/byte_count.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -1748,10 +1751,8 @@ enum class ReduceTransferSizeUpdatedIPCTestCase {
 
 // This test harness does not start the test server and allows
 // ControllableHttpResponses to be declared.
-class AdsPageLoadMetricsObserverResourceBrowserTest
-    : public subresource_filter::SubresourceFilterBrowserTest,
-      public ::testing::WithParamInterface<
-          ReduceTransferSizeUpdatedIPCTestCase> {
+class AdsPageLoadMetricsObserverResourceBrowserTestBase
+    : public subresource_filter::SubresourceFilterBrowserTest {
  public:
   static std::string DescribeParams(
       const testing::TestParamInfo<ReduceTransferSizeUpdatedIPCTestCase>&
@@ -1764,7 +1765,8 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
     }
   }
 
-  AdsPageLoadMetricsObserverResourceBrowserTest() {
+  explicit AdsPageLoadMetricsObserverResourceBrowserTestBase(
+      ReduceTransferSizeUpdatedIPCTestCase reduce) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{subresource_filter::kAdTagging, {}},
          {subresource_filter::kAdsInterventionsEnforced, {}},
@@ -1775,7 +1777,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
          {heavy_ad_intervention::features::kHeavyAdPrivacyMitigations,
           {{"host-threshold", "3"}}}},
         {});
-    if (IsReduceTransferSizeUpdatedIPCEnabled()) {
+    if (reduce == ReduceTransferSizeUpdatedIPCTestCase::kEnabled) {
       reduce_ipc_feature_list_.InitAndEnableFeature(
           network::features::kReduceTransferSizeUpdatedIPC);
     } else {
@@ -1784,7 +1786,7 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
     }
   }
 
-  ~AdsPageLoadMetricsObserverResourceBrowserTest() override = default;
+  ~AdsPageLoadMetricsObserverResourceBrowserTestBase() override = default;
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(
@@ -1848,12 +1850,17 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
   }
 
  private:
-  bool IsReduceTransferSizeUpdatedIPCEnabled() const {
-    return GetParam() == ReduceTransferSizeUpdatedIPCTestCase::kEnabled;
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::ScopedFeatureList reduce_ipc_feature_list_;
+};
+
+class AdsPageLoadMetricsObserverResourceBrowserTest
+    : public AdsPageLoadMetricsObserverResourceBrowserTestBase,
+      public ::testing::WithParamInterface<
+          ReduceTransferSizeUpdatedIPCTestCase> {
+ public:
+  AdsPageLoadMetricsObserverResourceBrowserTest()
+      : AdsPageLoadMetricsObserverResourceBrowserTestBase(GetParam()) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3160,3 +3167,147 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverPrerenderingBrowserTest,
       0u,
       histogram_tester.GetTotalCountsForPrefix("PageLoad.Clients.Ads.").size());
 }
+
+struct SurfaceTestCase {
+  const char* name;
+  const char* script;
+};
+
+class AdsPageLoadMetricsObserverSurfaceBrowserTest
+    : public AdsPageLoadMetricsObserverResourceBrowserTestBase,
+      public ::testing::WithParamInterface<std::tuple<SurfaceTestCase, bool>> {
+ public:
+  AdsPageLoadMetricsObserverSurfaceBrowserTest()
+      : AdsPageLoadMetricsObserverResourceBrowserTestBase(
+            ReduceTransferSizeUpdatedIPCTestCase::kDisabled) {}
+};
+
+// The ad script requests an image via various methods. We
+// check to make sure that regardless of method, the image is still tagged as an
+// ad. This is basically ensuring that the top-of-stack frame check works in
+// each scenario.
+IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverSurfaceBrowserTest,
+                       DetectedAsAd) {
+  SetRulesetWithRules(
+      {subresource_filter::testing::CreateSuffixRule("ad_script.js")});
+
+  auto main_html_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/mock_page.html",
+          /*relative_url_is_prefix=*/true);
+
+  auto ad_script_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/ad_script.js",
+          /*relative_url_is_prefix=*/true);
+
+  auto image_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/image.gif",
+          /*relative_url_is_prefix=*/true);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto waiter = CreateAdsPageLoadMetricsTestWaiter();
+
+  browser()->OpenURL(
+      content::OpenURLParams(embedded_test_server()->GetURL("/mock_page.html"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
+
+  main_html_response->WaitForRequest();
+  main_html_response->Send(page_load_metrics::kHttpOkResponseHeader);
+  main_html_response->Send(
+      "<html><body></body><script src=\"ad_script.js\"></script></html>");
+  main_html_response->Done();
+
+  const char* script_format = std::get<0>(GetParam()).script;
+  const bool lambda = std::get<1>(GetParam());
+
+  std::string script;
+
+  // Either load the image from an ad-script-defined function
+  // or from an ad-script-created lambda.
+  if (lambda) {
+    script = base::ReplaceStringPlaceholders(
+        script_format,
+        {R"SCRIPT((() => document.createElement("img").src = "image.gif"))SCRIPT"},
+        /*offsets=*/nullptr);
+  } else {
+    script =
+        R"SCRIPT(function loadImg() { document.createElement("img").src = "image.gif"; })SCRIPT";
+
+    script += base::ReplaceStringPlaceholders(script_format, {"top.loadImg"},
+                                              /*offsets=*/nullptr);
+  }
+
+  ad_script_response->WaitForRequest();
+  ad_script_response->Send(page_load_metrics::kHttpOkResponseHeader);
+  ad_script_response->Send(script);
+  ad_script_response->Done();
+
+  image_response->WaitForRequest();
+  image_response->Send(page_load_metrics::kHttpOkResponseHeader);
+  image_response->Done();
+
+  // Two subresources should have been reported as ads.
+  waiter->AddMinimumAdResourceExpectation(2);
+  waiter->Wait();
+}
+
+constexpr SurfaceTestCase kSurfaceTestCases[] = {
+    {"direct_call", "$1();"},
+    {"setTimeout", "setTimeout($1, 1);"},
+    {"event_handler", R"SCRIPT(
+      const i = document.createElement("img");
+      i.onerror = $1;
+      i.src = "http://";
+    )SCRIPT"},
+    {"postMessage", R"SCRIPT(
+      window.onmessage = $1;
+      window.postMessage("", "*");
+    )SCRIPT"},
+    {"eval", "eval('$1();');"},
+    {"promise_constructor", "new Promise($1);"},
+    {"promise_resolve", "Promise.resolve().then($1);"},
+    {"promise_reject", "Promise.reject().catch($1);"},
+    {"queueMicrotask", "queueMicrotask($1);"},
+    {"dynamic_script_tag", R"SCRIPT(
+      const s = document.createElement("script");
+      s.innerText = '$1();';
+      document.body.appendChild(s);
+    )SCRIPT"},
+    {"dynamic_script_tag_data", R"SCRIPT(
+      const s = document.createElement("script");
+      s.src = 'data:text/javascript,$1();';
+      document.body.appendChild(s);
+    )SCRIPT"},
+    {"dynamic_frame", R"SCRIPT(
+      const i = document.createElement("iframe");
+      i.srcdoc = '<script>$1();</script>';
+      document.body.appendChild(i);
+    )SCRIPT"},
+    {"requestIdleCallback", "requestIdleCallback($1);"},
+    {"requestAnimationFrame", "requestAnimationFrame($1);"},
+    {"dynamic_script_tag_blob", R"SCRIPT(
+      const b = new Blob(['$1();'], {
+        type: "text/javascript",
+      });
+      const s = document.createElement("script");
+      s.src = URL.createObjectURL(b);
+      document.body.appendChild(s);
+    )SCRIPT"},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AdsPageLoadMetricsObserverSurfaceBrowserTest,
+    ::testing::Combine(::testing::ValuesIn(kSurfaceTestCases),
+                       ::testing::Bool()),
+    [](const ::testing::TestParamInfo<std::tuple<SurfaceTestCase, bool>>&
+           info) {
+      return base::StrCat({std::get<0>(info.param).name,
+                           std::get<1>(info.param) ? "_lambda" : "_func"});
+    });
