@@ -346,12 +346,8 @@ class SoftNavigationTest : public MetricIntegrationTest,
     return cls;
   }
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-std::string JsSnippetGetSoftLcpStartTimes() {
-  return R"(
+  std::string JsSnippetGetSoftLcpStartTimes() {
+    return R"(
       (() => {
         const observer = new PerformanceObserver(() => {});
         observer.observe({type: 'interaction-contentful-paint', buffered: true,
@@ -365,73 +361,101 @@ std::string JsSnippetGetSoftLcpStartTimes() {
         return Array.from(startTimeByNavigationId.values());
       })();
     )";
-}
-
-void VerifySoftNavIdsAndSoftLcpStartTimes(
-    ukm::TestAutoSetUkmRecorder& ukm_recorder,
-    bool soft_nav_heuristics_enabled,
-    const base::Value::List& soft_nav_lcp_list,
-    uint32_t expected_soft_nav_count) {
-
-  // Soft navigation start times.
-  auto source_id_to_start_time = GetSoftNavigationMetrics(
-      ukm_recorder, ukm::builders::SoftNavigation::kStartTimeName);
-  EXPECT_EQ(source_id_to_start_time.size(), expected_soft_nav_count);
-
-  // Soft navigation ids.
-  auto source_id_to_navigation_id = GetSoftNavigationMetrics(
-      ukm_recorder, ukm::builders::SoftNavigation::kNavigationIdName);
-  EXPECT_EQ(source_id_to_navigation_id.size(), expected_soft_nav_count);
-
-
-  // Soft navigation LCP.
-  auto source_id_to_lcp = GetSoftNavigationMetrics(
-      ukm_recorder,
-      ukm::builders::SoftNavigation::kPaintTiming_LargestContentfulPaintName);
-  EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
-
-  std::vector<ukm::SourceId> source_ids;
-  std::vector<double> soft_nav_start_times;
-  for (const auto& [source_id, start_time] : source_id_to_start_time) {
-    source_ids.push_back(source_id);
-    soft_nav_start_times.push_back(start_time);
   }
 
-  // Verify that the soft navigation start times are sorted and unique.
-  EXPECT_EQ(source_ids.size(), expected_soft_nav_count);
+  void VerifySoftNavIdsAndSoftLcpStartTimes(
+      const base::Value::List& soft_nav_lcp_list,
+      uint32_t expected_soft_nav_count) {
+    bool soft_nav_heuristics_enabled = GetParam();
 
-  EXPECT_EQ(soft_nav_start_times.size(), expected_soft_nav_count);
-  EXPECT_TRUE(
-      std::is_sorted(soft_nav_start_times.begin(), soft_nav_start_times.end()));
-  auto it = std::adjacent_find(soft_nav_start_times.begin(),
-                               soft_nav_start_times.end());
-  if (it != soft_nav_start_times.end()) {
-    FAIL() << "start times are not unique: " << *it << " at index "
-           << std::distance(soft_nav_start_times.begin(), it);
-  }
-  EXPECT_EQ(it, soft_nav_start_times.end());
-  auto last =
-      std::unique(soft_nav_start_times.begin(), soft_nav_start_times.end());
-  EXPECT_EQ(last, soft_nav_start_times.end());
+    // Soft navigation start times.
+    auto source_id_to_start_time = GetSoftNavigationMetrics(
+        ukm_recorder(), ukm::builders::SoftNavigation::kStartTimeName);
+    EXPECT_EQ(source_id_to_start_time.size(), expected_soft_nav_count);
 
+    // Soft navigation ids.
+    auto source_id_to_navigation_id = GetSoftNavigationMetrics(
+        ukm_recorder(), ukm::builders::SoftNavigation::kNavigationIdName);
+    EXPECT_EQ(source_id_to_navigation_id.size(), expected_soft_nav_count);
 
-  EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
-  std::vector<double> soft_nav_lcp;
-  for (const auto& [source_id, lcp] : source_id_to_lcp) {
-    soft_nav_lcp.push_back(lcp);
-  }
+    // Soft navigation LCP.
+    auto source_id_to_lcp = GetSoftNavigationMetrics(
+        ukm_recorder(),
+        ukm::builders::SoftNavigation::kPaintTiming_LargestContentfulPaintName);
+    EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
 
-  // If the SoftNavigationHeuristics flag is enabled, we verify exact values
-  // in UKM against the web exposed values.
-  if (soft_nav_heuristics_enabled) {
-    EXPECT_EQ(soft_nav_lcp_list.size(), expected_soft_nav_count);
-    for (uint32_t i = 0; i < soft_nav_lcp_list.size(); ++i) {
-      SCOPED_TRACE(base::StringPrintf("soft_nav_lcp_list[%d]", i));
-      double expected_lcp = soft_nav_lcp[i] + soft_nav_start_times[i];
-      EXPECT_NEAR(soft_nav_lcp_list[i].GetDouble(), expected_lcp, 6);
+    std::vector<ukm::SourceId> source_ids;
+    std::vector<double> soft_nav_start_times;
+    for (const auto& [source_id, start_time] : source_id_to_start_time) {
+      source_ids.push_back(source_id);
+      soft_nav_start_times.push_back(start_time);
     }
+
+    // Verify that the soft navigation start times are sorted and unique.
+    EXPECT_EQ(source_ids.size(), expected_soft_nav_count);
+
+    EXPECT_EQ(soft_nav_start_times.size(), expected_soft_nav_count);
+    EXPECT_TRUE(std::is_sorted(soft_nav_start_times.begin(),
+                               soft_nav_start_times.end()));
+    auto it = std::adjacent_find(soft_nav_start_times.begin(),
+                                 soft_nav_start_times.end());
+    if (it != soft_nav_start_times.end()) {
+      FAIL() << "start times are not unique: " << *it << " at index "
+             << std::distance(soft_nav_start_times.begin(), it);
+    }
+    EXPECT_EQ(it, soft_nav_start_times.end());
+    auto last =
+        std::unique(soft_nav_start_times.begin(), soft_nav_start_times.end());
+    EXPECT_EQ(last, soft_nav_start_times.end());
+
+    EXPECT_EQ(source_id_to_lcp.size(), expected_soft_nav_count);
+    std::vector<double> soft_nav_lcp;
+    for (const auto& [source_id, lcp] : source_id_to_lcp) {
+      soft_nav_lcp.push_back(lcp);
+    }
+
+    // If the SoftNavigationHeuristics flag is enabled, we verify exact values
+    // in UKM against the web exposed values.
+    if (soft_nav_heuristics_enabled) {
+      EXPECT_EQ(soft_nav_lcp_list.size(), expected_soft_nav_count);
+      for (uint32_t i = 0; i < soft_nav_lcp_list.size(); ++i) {
+        SCOPED_TRACE(base::StringPrintf("soft_nav_lcp_list[%d]", i));
+        double expected_lcp = soft_nav_lcp[i] + soft_nav_start_times[i];
+        EXPECT_NEAR(soft_nav_lcp_list[i].GetDouble(), expected_lcp, 6);
+      }
+    }
+
+    // Also check the hard navigation LCP, and the LCP before the first soft
+    // navigation.
+    int64_t lcp;
+    bool extract_lcp = ExtractUKMPageLoadMetric(
+        ukm_recorder(),
+        ukm::builders::PageLoad::
+            kPaintTiming_NavigationToLargestContentfulPaint2Name,
+        &lcp);
+    EXPECT_TRUE(extract_lcp);
+    EXPECT_GT(lcp, 0);
+    // The hard navigation LCP should be smaller than the first soft navigation
+    // start time, since the soft nav implies that there was an interaction.
+    EXPECT_LT(lcp, soft_nav_start_times[0]);
+    // The LCP before the first soft navigation should be the same as the hard
+    // navigation LCP. The only difference is that it gets recorded as soon as
+    // the first soft navigation is detected, and therefore it's less
+    // susceptible to be missing, as 'regular' LCP is only recorded once the
+    // page load is complete.
+    int64_t lcp_before_first_soft_nav;
+    bool extract_lcp_before_first_soft_nav = ExtractUKMPageLoadMetric(
+        ukm_recorder(),
+        ukm::builders::PageLoad::
+            kPaintTimingBeforeSoftNavigation_NavigationToLargestContentfulPaint2Name,  // NOLINT
+        &lcp_before_first_soft_nav);
+    EXPECT_TRUE(extract_lcp_before_first_soft_nav);
+    EXPECT_EQ(lcp_before_first_soft_nav, lcp);
   }
-}
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // This test focuses on measuring the image LCP of a soft navigation in UKM.
 IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
@@ -474,7 +498,6 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   VerifySoftNavIdsAndSoftLcpStartTimes(
-      ukm_recorder(), /*soft_nav_heuristics_enabled=*/GetParam(),
       soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
 
   // Verify 2 LCP discovery time timings are reported.
@@ -582,7 +605,6 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   VerifySoftNavIdsAndSoftLcpStartTimes(
-      ukm_recorder(), /*soft_nav_heuristics_enabled=*/GetParam(),
       soft_nav_lcp_list, /*expected_soft_nav_count=*/2);
 
   // Verify LCP types.

@@ -751,6 +751,23 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
 }
 
 void UkmPageLoadMetricsObserver::
+    RecordLargestContentfulPaintBeforeSoftNavigation() {
+  ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
+  const page_load_metrics::ContentfulPaintTimingInfo& largest_contentful_paint =
+      GetCoreWebVitalsLcpTimingInfo();
+  if (largest_contentful_paint.ContainsValidTime() &&
+      WasStartedInForegroundOptionalEventInForeground(
+          largest_contentful_paint.Time(), GetDelegate())) {
+    builder
+        .SetPaintTimingBeforeSoftNavigation_NavigationToLargestContentfulPaint2(
+            largest_contentful_paint.Time().value().InMilliseconds());
+        PAGE_LOAD_HISTOGRAM("PageLoad.BeforeSoftNavigation.LargestContentfulPaint2",
+                        largest_contentful_paint.Time().value());
+  }
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame() {
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   const page_load_metrics::ResponsivenessMetricsNormalization&
@@ -818,6 +835,7 @@ void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
   // soft_navigation_interval_responsiveness_metrics_normalization_ as INP
   // before soft nav.
   if (current_soft_navigation_metrics->count == 0) {
+    RecordLargestContentfulPaintBeforeSoftNavigation();
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
     RecordLayoutShiftBeforeSoftNavigationForMainFrame();
   } else if (current_soft_navigation_metrics->count !=

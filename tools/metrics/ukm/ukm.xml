@@ -18458,6 +18458,13 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric
+      name="PaintTimingBeforeSoftNavigation.NavigationToLargestContentfulPaint2">
+    <summary>
+      Similar to PaintTiming.NavigationToLargestContentfulPaint2, except that it
+      is recorded before the first soft navigation.
+    </summary>
+  </metric>
   <metric name="ParseTiming.NavigationToParseStart">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation

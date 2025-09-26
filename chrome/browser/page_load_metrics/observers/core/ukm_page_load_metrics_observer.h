@@ -175,6 +175,8 @@ class UkmPageLoadMetricsObserver
       ukm::SourceId ukm_source_id,
       page_load_metrics::mojom::SoftNavigationMetrics& soft_navigation_metrics);
 
+  void RecordLargestContentfulPaintBeforeSoftNavigation();
+
   void RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
 
   void RecordLayoutShiftBeforeSoftNavigationForMainFrame();

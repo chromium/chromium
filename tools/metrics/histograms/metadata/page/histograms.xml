@@ -497,6 +497,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.BeforeSoftNavigation.LargestContentfulPaint2"
+    units="ms" expires_after="2026-05-20">
+  <owner>sullivan@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>johannes@chromium.org</owner>
+  <summary>
+    Measures the largest contentful paint (https://web.dev/lcp) that has
+    happened prior to any soft navigation.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Clients.Ads.AdClick.EtldPlusOneHistoryQueryCount2"
     units="count" expires_after="2026-02-05">
   <owner>zhouzj@google.com</owner>
