@@ -192,8 +192,6 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
       ClientSideDetectionFeatureCache::FromWebContents(web_contents_);
   if (feature_cache_map) {
     if (password_protection_service()->IsExtendedReporting() &&
-        base::FeatureList::IsEnabled(
-            kClientSideDetectionDebuggingMetadataCache) &&
         trigger_type() == LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
       LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
           feature_cache_map->GetDebuggingMetadataForURL(main_frame_url());

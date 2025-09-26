@@ -1434,10 +1434,7 @@ TEST_F(ClientSideDetectionHostTest,
     GTEST_SKIP();
   }
 
-  std::vector<base::test::FeatureRef> enabled_features = {};
-  enabled_features.push_back(kClientSideDetectionDebuggingMetadataCache);
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-  SetFeatures(enabled_features, {});
 
   ClientPhishingRequest* verdict_from_cache = nullptr;
   LoginReputationClientRequest::DebuggingMetadata* debugging_metadata = nullptr;

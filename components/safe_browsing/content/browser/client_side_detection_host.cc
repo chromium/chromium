@@ -403,9 +403,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       // Track the first reason why we stopped classifying for phishing.
       RecordPreClassificationCheckResultWithAndWithoutSuffix(
           reason, phishing_detection_request_type_);
-      if (base::FeatureList::IsEnabled(
-              kClientSideDetectionDebuggingMetadataCache) &&
-          host_ && host_->delegate_->GetPrefs() &&
+      if (host_ && host_->delegate_->GetPrefs() &&
           IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs()) &&
           // Cancelation happens when the WebContents is destroyed, but we
           // cannot access ClientSideDetectionFeatureCache at that time.
@@ -594,9 +592,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       RecordPreClassificationCheckResultWithAndWithoutSuffix(
           PreClassificationCheckResult::CLASSIFY,
           phishing_detection_request_type_);
-      if (base::FeatureList::IsEnabled(
-              kClientSideDetectionDebuggingMetadataCache) &&
-          host_ && host_->delegate_->GetPrefs() &&
+      if (host_ && host_->delegate_->GetPrefs() &&
           IsEnhancedProtectionEnabled(*host_->delegate_->GetPrefs())) {
         ClientSideDetectionFeatureCache::CreateForWebContents(web_contents_);
         ClientSideDetectionFeatureCache* feature_cache_map =
@@ -1069,8 +1065,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
       "SBClientPhishing.PhishingDetectorResult." + request_type_name, result);
 
   if (feature_cache_map &&
-      base::FeatureList::IsEnabled(
-          kClientSideDetectionDebuggingMetadataCache) &&
       IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     feature_cache_map->GetOrCreateDebuggingMetadataForURL(current_url_)
         ->set_phishing_detector_result(GetPhishingDetectorResult(result));
@@ -1082,8 +1076,6 @@ void ClientSideDetectionHost::PhishingDetectionDone(
         "SBClientPhishing.BrowserReadyOnClassifierNotReady",
         is_model_available);
   } else if (feature_cache_map &&
-             base::FeatureList::IsEnabled(
-                 kClientSideDetectionDebuggingMetadataCache) &&
              IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     // We should only add this if the classifier is ready, because then we have
     // the trigger model version in the model class.
@@ -1279,9 +1271,7 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
       "SBClientPhishing.ClientSideDetectionTypeRequest",
       verdict->client_side_detection_type(), ClientSideDetectionType_MAX + 1);
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionDebuggingMetadataCache) &&
-      IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
     ClientSideDetectionFeatureCache* feature_cache_map =
         ClientSideDetectionFeatureCache::FromWebContents(web_contents());
@@ -1553,9 +1543,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
         is_phishing);
   }
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionDebuggingMetadataCache) &&
-      IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       response_code.has_value()) {
     ClientSideDetectionFeatureCache::CreateForWebContents(web_contents());
     ClientSideDetectionFeatureCache* feature_cache_map =

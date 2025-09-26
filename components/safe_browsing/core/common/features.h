@@ -58,8 +58,6 @@ extern const base::FeatureParam<double> kCsdCreditCardFormHCAcceptanceRate;
 // Sets the percentage of credit card forms that trigger a CSD ping.
 extern const base::FeatureParam<double> kCsdCreditCardFormSampleRate;
 
-BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
-
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
 

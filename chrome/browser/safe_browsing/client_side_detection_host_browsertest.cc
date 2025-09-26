@@ -235,13 +235,10 @@ class ClientSideDetectionHostPrerenderBrowserTest
   ClientSideDetectionHostPrerenderBrowserTest() {
     if (GetParam()) {
       scoped_feature_list_.InitWithFeatures(
-          {kClientSideDetectionDebuggingMetadataCache,
-           kClientSideDetectionOnlyExtractVisualFeatures},
-          {});
+          {kClientSideDetectionOnlyExtractVisualFeatures}, {});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          {kClientSideDetectionDebuggingMetadataCache},
-          {kClientSideDetectionOnlyExtractVisualFeatures});
+          {}, {kClientSideDetectionOnlyExtractVisualFeatures});
     }
     prerender_helper_ = std::make_unique<content::test::PrerenderTestHelper>(
         base::BindRepeating(
