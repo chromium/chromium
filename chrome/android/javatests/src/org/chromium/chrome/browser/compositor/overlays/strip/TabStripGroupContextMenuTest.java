@@ -36,7 +36,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -56,22 +55,15 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /** Instrumentation tests for tab strip group title long-press menu popup */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -97,7 +89,7 @@ public class TabStripGroupContextMenuTest {
     @Before
     public void setUp() throws Exception {
         mStripLayoutHelper =
-                TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
+                TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         mModalDialogManager = mActivityTestRule.getActivity().getModalDialogManager();
     }
 
@@ -126,7 +118,9 @@ public class TabStripGroupContextMenuTest {
         showMenu();
 
         // Assert there are 2 grouped tabs.
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(false);
+        TabGroupModelFilter tabGroupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> tabGroupModelFilter.getTabCountForGroup(mTabGroupId));
@@ -152,7 +146,9 @@ public class TabStripGroupContextMenuTest {
         showMenu();
 
         // Assert there are 2 grouped tabs.
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(false);
+        TabGroupModelFilter tabGroupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> tabGroupModelFilter.getTabCountForGroup(mTabGroupId));
@@ -193,7 +189,9 @@ public class TabStripGroupContextMenuTest {
         onView(withText(R.string.tab_grid_dialog_toolbar_delete_group)).check(doesNotExist());
 
         // Assert there are 2 grouped tabs.
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(true);
+        TabGroupModelFilter tabGroupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ true);
         int tabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> tabGroupModelFilter.getTabCountForGroup(mTabGroupId));
@@ -230,7 +228,9 @@ public class TabStripGroupContextMenuTest {
         showMenu();
 
         // Assert there are 2 grouped tabs.
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(false);
+        TabGroupModelFilter tabGroupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> tabGroupModelFilter.getTabCountForGroup(mTabGroupId));
@@ -274,7 +274,9 @@ public class TabStripGroupContextMenuTest {
         onView(withText(R.string.tab_grid_dialog_toolbar_delete_group)).check(doesNotExist());
 
         // Assert there are 2 grouped tabs.
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(true);
+        TabGroupModelFilter tabGroupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ true);
         int tabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> tabGroupModelFilter.getTabCountForGroup(mTabGroupId));
@@ -315,7 +317,9 @@ public class TabStripGroupContextMenuTest {
         showMenu();
 
         // Assert there are 2 grouped tabs.
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(false);
+        TabGroupModelFilter tabGroupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
         int tabCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> tabGroupModelFilter.getTabCountForGroup(mTabGroupId));
@@ -378,7 +382,9 @@ public class TabStripGroupContextMenuTest {
         // Prepare standard state and show menu.
         prepareStandardState();
         showMenu();
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(false);
+        TabGroupModelFilter tabGroupModelFilter =
+                TabStripTestUtils.getTabGroupModelFilter(
+                        mActivityTestRule.getActivity(), /* isIncognito= */ false);
 
         // Verify the default grey color is selected.
         @TabGroupColorId
@@ -436,62 +442,23 @@ public class TabStripGroupContextMenuTest {
     }
 
     private void prepareStandardState() {
-        // 1. Create 2 more normal new tabs, for a total 3 normal tabs.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-
-        // 2. Assert the normal tab strip is selected and there are 3 normal tabs in total.
-        assertFalse(
-                "Expected normal strip to be selected",
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        assertEquals(
-                "There should be three tabs present",
-                3,
-                getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
-
-        // 3. Create tab group with 2 tabs.
-        groupFirstTwoTabs(/* isIncognito= */ false);
+        TabStripTestUtils.createTabs(
+                mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 3);
+        TabStripTestUtils.createTabGroup(
+                mActivityTestRule.getActivity(),
+                /* isIncognito= */ false,
+                /* firstIndex= */ 0,
+                /* secondIndex= */ 1);
     }
 
     private void prepareIncognitoState() {
-        // 1. create 3 incognito tabs
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
+        TabStripTestUtils.createTabs(
+                mActivityTestRule.getActivity(), /* isIncognito= */ true, /* numOfTabs= */ 3);
+        TabStripTestUtils.createTabGroup(
                 mActivityTestRule.getActivity(),
-                /* incognito= */ true,
-                /* waitForNtpLoad= */ true);
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                /* incognito= */ true,
-                /* waitForNtpLoad= */ true);
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                /* incognito= */ true,
-                /* waitForNtpLoad= */ true);
-
-        // 2. Assert the incognito tab strip is selected and there are 3 incognito tabs in total.
-        Assert.assertTrue(
-                "Expected incognito strip to be selected",
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        assertEquals(
-                "There are 3 incognito tabs present",
-                3,
-                getTabCountOnUiThread(mActivityTestRule.getActivity().getCurrentTabModel()));
-
-        // 3. Create an incognito tab group with 2 tabs.
-        groupFirstTwoTabs(/* isIncognito= */ true);
-    }
-
-    private TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito) {
-        return mActivityTestRule
-                .getActivity()
-                .getTabModelSelector()
-                .getTabGroupModelFilterProvider()
-                .getTabGroupModelFilter(isIncognito);
+                /* isIncognito= */ true,
+                /* firstIndex= */ 0,
+                /* secondIndex= */ 1);
     }
 
     private void verifyModalDialog(boolean shouldShow) {
@@ -501,36 +468,9 @@ public class TabStripGroupContextMenuTest {
                 });
     }
 
-    private void groupFirstTwoTabs(boolean isIncognito) {
-        // Assert the correct strip is selected.
-        Assert.assertEquals(
-                "The wrong strip is selected",
-                isIncognito,
-                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-
-        // Group the first two tabs.
-        List<Tab> tabGroup =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                new ArrayList<>(
-                                        Arrays.asList(
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getCurrentTabModel()
-                                                        .getTabAt(0),
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getCurrentTabModel()
-                                                        .getTabAt(1))));
-        TabUiTestHelper.createTabGroup(mActivityTestRule.getActivity(), isIncognito, tabGroup);
-        mStripLayoutHelper =
-                TabStripUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
-        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
-        assertTrue(
-                "First view should be a group title.", views[0] instanceof StripLayoutGroupTitle);
-    }
-
     private void showMenu() {
+        mStripLayoutHelper =
+                TabStripTestUtils.getActiveStripLayoutHelper(mActivityTestRule.getActivity());
         StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
         assertTrue(
                 "First view should be a group title.", views[0] instanceof StripLayoutGroupTitle);
