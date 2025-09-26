@@ -1191,8 +1191,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   // Used by subclasses (e.g. implemented by downstream embedders) to add
   // their own extra part objects.
-  // TODO: This should receive unique_ptr<ChromeContentBrowserClientParts>.
-  void AddExtraPart(ChromeContentBrowserClientParts* part);
+  void AddExtraPart(std::unique_ptr<ChromeContentBrowserClientParts> part);
 
   // Exposed for tests to perform dependency injection.
   virtual std::unique_ptr<HttpAuthCoordinator> CreateHttpAuthCoordinator();

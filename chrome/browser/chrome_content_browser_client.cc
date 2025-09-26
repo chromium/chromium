@@ -7138,8 +7138,8 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
 }
 
 void ChromeContentBrowserClient::AddExtraPart(
-    ChromeContentBrowserClientParts* part) {
-  extra_parts_.push_back(base::WrapUnique(part));
+    std::unique_ptr<ChromeContentBrowserClientParts> part) {
+  extra_parts_.push_back(std::move(part));
 }
 
 std::unique_ptr<HttpAuthCoordinator>
@@ -8696,8 +8696,7 @@ void ChromeContentBrowserClient::SetSamplingProfiler(
 
 void ChromeContentBrowserClient::AddExtraPartForTesting(
     std::unique_ptr<ChromeContentBrowserClientParts> part) {
-  // AddExtraPart takes ownership of a raw pointer.
-  AddExtraPart(part.release());
+  AddExtraPart(std::move(part));
 }
 
 bool ChromeContentBrowserClient::ShouldDispatchPagehideDuringCommit(
