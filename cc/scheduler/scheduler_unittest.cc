@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -54,6 +55,9 @@
 
 namespace cc {
 namespace {
+
+using testing::Bool;
+using testing::Combine;
 
 base::TimeDelta kSlowDuration = base::Seconds(1);
 base::TimeDelta kFastDuration = base::Milliseconds(1);
@@ -373,20 +377,37 @@ class SchedulerTestTaskRunner : public base::TestMockTimeTaskRunner {
   base::circular_deque<base::TestPendingTask> tasks_to_requeue_;
 };
 
-class SchedulerTest : public testing::Test,
-                      public testing::WithParamInterface<bool> {
+class SchedulerTest
+    : public testing::Test,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   SchedulerTest()
       : task_runner_(base::MakeRefCounted<SchedulerTestTaskRunner>()),
         fake_external_begin_frame_source_(nullptr),
         tracker_collection_(false) {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kNoCompositorFrameAcks);
+    std::vector<base::test::FeatureRef> enabled;
+    std::vector<base::test::FeatureRef> disabled;
+    if (std::get<0>(GetParam())) {
+      enabled.push_back(features::kNoCompositorFrameAcks);
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kNoCompositorFrameAcks);
+      disabled.push_back(features::kNoCompositorFrameAcks);
     }
+
+    if (std::get<1>(GetParam())) {
+      enabled.push_back(features::kThrottleMainFrameTo60Hz);
+    } else {
+      disabled.push_back(features::kThrottleMainFrameTo60Hz);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled, disabled);
+  }
+
+  static std::string GetTestName(
+      testing::TestParamInfo<std::tuple<bool, bool>> info) {
+    std::string first =
+        std::get<0>(info.param) ? "NoCompositorFrameAck" : "CompositorFrameAck";
+    std::string second = std::get<1>(info.param) ? "Throttled" : "NotThrottled";
+    return first + "_" + second;
   }
 
   ~SchedulerTest() override { client_->set_scheduler(nullptr); }
@@ -4186,11 +4207,14 @@ TEST_P(SchedulerTest, ProactiveThrottling) {
 
   // No throttling by default.
   base::TimeDelta interval = base::Hertz(120);
-  EXPECT_TRUE(
-      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
   SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
-  EXPECT_TRUE(
-      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+  if (base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz)) {
+    EXPECT_GT(scheduler_->state_machine().MainFrameThrottledInterval(),
+              base::Hertz(120));
+  } else {
+    EXPECT_TRUE(
+        scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+  }
 
   scheduler_->SetShouldThrottleFrameRate(true);
 
@@ -4227,9 +4251,10 @@ TEST_P(SchedulerTest, SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
   EXPECT_NO_ACTION();
 }
 
-INSTANTIATE_TEST_SUITE_P(, SchedulerTest, testing::Bool(), [](auto& info) {
-  return info.param ? "NoCompositorFrameAck" : "CompositorFrameAck";
-});
+INSTANTIATE_TEST_SUITE_P(,
+                         SchedulerTest,
+                         Combine(Bool(), Bool()),
+                         &SchedulerTest::GetTestName);
 
 }  // namespace
 }  // namespace cc
