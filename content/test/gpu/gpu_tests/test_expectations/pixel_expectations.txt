@@ -364,7 +364,8 @@ crbug.com/415830130 [ android android-webview-instrumentation ] Pixel_RenderPass
 [ mac apple release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
 
 # Context recovery can be slow on these devices.
-[ win11 qualcomm-0x41333430 ] Pixel_Video_Context_Loss_MP4 [ Slow ]
+# On Win11 Adreno 690 it can also not have a context lost recorded.
+crbug.com/447600149 [ win11 qualcomm-0x41333430 ] Pixel_Video_Context_Loss_MP4 [ Failure ]
 
 # Long-running test, can flakily time out on old/slow hardware.
 [ mac arch-x86_64 amd-0x679e ] Pixel_ReflectedDiv [ Slow ]
