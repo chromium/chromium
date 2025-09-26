@@ -42,6 +42,8 @@ class DesktopFrame;
 
 namespace ash::boca {
 
+class ScreenPresenterFactory;
+class StudentScreenPresenter;
 // TODO(crbug.com/399923859): Remove `mojom::Page` implementation.
 class BocaAppHandler : public mojom::PageHandler,
                        public mojom::Page,
@@ -56,6 +58,7 @@ class BocaAppHandler : public mojom::PageHandler,
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
       OnTaskSystemWebAppManager* system_web_app_manager,
       SessionClientImpl* session_client_impl,
+      std::unique_ptr<ScreenPresenterFactory> presenter_factory,
       bool is_producer);
 
   BocaAppHandler(const BocaAppHandler&) = delete;
@@ -120,6 +123,11 @@ class BocaAppHandler : public mojom::PageHandler,
       GetSpeechRecognitionInstallationStatusCallback callback) override;
   void StartSpotlight(const std::string& crd_connection_code,
                       StartSpotlightCallback callback) override;
+  void PresentStudentScreen(mojom::IdentityPtr student,
+                            const std::string& receiver_id,
+                            PresentStudentScreenCallback callback) override;
+  void StopPresentingStudentScreen(
+      StopPresentingStudentScreenCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -152,6 +160,7 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnLocalCaptionClosed() override;
   void OnSodaStatusUpdate(BocaSessionManager::SodaStatus status) override;
   void OnSessionCaptionClosed(bool is_error) override;
+  void OnReceiverInvalidation() override;
 
   // Receives a `webrtc::Desktopframe` and an `SkBitmap` containing the 2D-array
   // representation of the frame. `SkBitmap` requires the caller to keep the
@@ -254,6 +263,10 @@ class BocaAppHandler : public mojom::PageHandler,
 
   void SetAccountImage(user_manager::User* user);
 
+  // TODO(crbug.com/399923859): remove only the override keyword when the
+  // inheritance from `mojom::Page` is removed.
+  void OnPresentStudentScreenEnded() override;
+
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
   std::string base_url_;
@@ -278,6 +291,8 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<PrefService> pref_service_;
   mojom::CaptionConfigPtr producer_current_session_caption_config_;
   raw_ptr<BocaSessionManager> session_manager_;
+  std::unique_ptr<ScreenPresenterFactory> presenter_factory_;
+  std::unique_ptr<StudentScreenPresenter> student_screen_presenter_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

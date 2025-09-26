@@ -252,7 +252,8 @@ class BocaSessionManager
       base::OnceCallback<void(bool)> on_token_uploaded_cb) override;
   void OnInvalidationReceived(const std::string& payload) override;
 
-  std::optional<std::string> GetStudentActiveDeviceId(
+  // virtual for testing.
+  virtual std::optional<std::string> GetStudentActiveDeviceId(
       std::string_view student_id);
 
   base::ObserverList<Observer>& observers() { return observers_; }
