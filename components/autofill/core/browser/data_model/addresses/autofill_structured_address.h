@@ -27,6 +27,10 @@ class HouseNumberNode : public AddressComponent {
  public:
   explicit HouseNumberNode(SubcomponentsList children);
   ~HouseNumberNode() override;
+
+  std::u16string GetValueForComparison(
+      const std::u16string& value,
+      const AddressCountryCode& common_country_code) const override;
 };
 
 // Contains the specific location in the street (e.g. street name and house

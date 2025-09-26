@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -46,6 +47,18 @@ HouseNumberNode::HouseNumberNode(SubcomponentsList children)
                        MergeMode::kDefault) {}
 
 HouseNumberNode::~HouseNumberNode() = default;
+
+std::u16string HouseNumberNode::GetValueForComparison(
+    const std::u16string& value,
+    const AddressCountryCode& common_country_code) const {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillAddressDiscardWhitespaceInHouseNumber)) {
+    return normalization::NormalizeForComparison(
+        value, normalization::WhitespaceSpec::kDiscard, common_country_code);
+  } else {
+    return AddressComponent::GetValueForComparison(value, common_country_code);
+  }
+}
 
 FloorNode::FloorNode(SubcomponentsList children)
     : AddressComponent(ADDRESS_HOME_FLOOR,
