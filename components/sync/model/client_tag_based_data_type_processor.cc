@@ -203,7 +203,10 @@ void ClientTagBasedDataTypeProcessor::ModelReadyToSync(
     return;
   }
 
-  if (ClearPersistedMetadataIfInvalid(*batch)) {
+  if (ShouldClearPersistedMetadata(*batch)) {
+    ClearAllProvidedMetadataAndResetState(batch->GetAllMetadata());
+    // Not having `entity_tracker_` results in doing the initial sync again.
+    CHECK(!entity_tracker_);
     DLOG(ERROR) << "The persisted metadata was invalid and was cleared for "
                 << DataTypeToDebugString(type_) << ". Start over fresh.";
   } else {
@@ -220,6 +223,9 @@ void ClientTagBasedDataTypeProcessor::ModelReadyToSync(
       DUMP_WILL_BE_CHECK(batch->GetAllMetadata().empty());
     }
   }
+  // Whether metadata was actually cleared or not, any pending clear has now
+  // been processed.
+  pending_clear_metadata_ = false;
 
   DUMP_WILL_BE_CHECK(model_ready_to_sync_);
   ConnectIfReady();
@@ -1406,8 +1412,8 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
   std::move(callback).Run(std::move(all_nodes));
 }
 
-bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
-    const MetadataBatch& metadata) {
+bool ClientTagBasedDataTypeProcessor::ShouldClearPersistedMetadata(
+    const MetadataBatch& metadata) const {
   // The entity tracker must not have been created before the metadata was
   // validated.
   CHECK(!entity_tracker_);
@@ -1419,18 +1425,17 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
   // If so, clear the metadata from storage (using the bridge's
   // ApplyDisableSyncChanges()).
   if (pending_clear_metadata_) {
-    pending_clear_metadata_ = false;
     // Avoid calling the bridge if there's nothing to clear.
     if (data_type_state.ByteSizeLong() > 0 || !metadata_map.empty()) {
       LogClearMetadataWhileStoppedHistogram(type_, /*is_delayed_call=*/true);
       // This will incur an I/O operation by asking the bridge to clear the
       // metadata in storage.
-      ClearAllProvidedMetadataAndResetState(metadata_map);
-      // Not having `entity_tracker_` results in doing the initial sync again.
-      CHECK(!entity_tracker_);
+      // Note: The caller is responsible for resetting `pending_clear_metadata_`
+      // after clearing.
       return true;
     }
-    // Else: There was nothing to clear.
+    // Else: There was nothing to clear (so also no need to do the other
+    // validity checks).
     return false;
   }
 
@@ -1439,9 +1444,6 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
   if (!IsInitialSyncAtLeastPartiallyDone(
           data_type_state.initial_sync_state()) &&
       !metadata_map.empty()) {
-    ClearAllProvidedMetadataAndResetState(metadata_map);
-    // Not having `entity_tracker_` results in doing the initial sync again.
-    CHECK(!entity_tracker_);
     return true;
   }
 
@@ -1456,9 +1458,6 @@ bool ClientTagBasedDataTypeProcessor::ClearPersistedMetadataIfInvalid(
           DataTypeHistogramValue(type_));
     }
 
-    ClearAllProvidedMetadataAndResetState(metadata_map);
-    // Not having `entity_tracker_` results in doing the initial sync again.
-    CHECK(!entity_tracker_);
     return true;
   }
 

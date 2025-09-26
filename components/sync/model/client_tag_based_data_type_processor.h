@@ -260,10 +260,9 @@ class ClientTagBasedDataTypeProcessor : public DataTypeProcessor,
   // if it is invalid.
   void ClearPersistedMetadataIfInconsistentWithActivationRequest();
 
-  // Verifies that the passed-in metadata (DataTypeState plus entity metadata)
-  // is valid, and clears it (incl. the persisted data) if not. Returns whether
-  // the metadata was cleared.
-  bool ClearPersistedMetadataIfInvalid(const MetadataBatch& metadata);
+  // Returns whether the passed-in metadata should be cleared due to (a) being
+  // invalid, or (b) `pending_clear_metadata_`.
+  bool ShouldClearPersistedMetadata(const MetadataBatch& metadata) const;
 
   // Reports error and records a metric about `site` where the error occurred.
   void ReportErrorImpl(const ModelError& error, ErrorSite site);
