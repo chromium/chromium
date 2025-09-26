@@ -142,14 +142,7 @@ bool IsSystemCursorSizeSupported() {
 BASE_FEATURE(kSystemKeyboardLock, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables GPU rasterization for all UI drawing (where not blocklisted).
-BASE_FEATURE(kUiGpuRasterization,
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(IS_WIN)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kUiGpuRasterization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsUiGpuRasterizationEnabled() {
   return base::FeatureList::IsEnabled(kUiGpuRasterization);
