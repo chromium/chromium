@@ -20,6 +20,7 @@
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_json_utils.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/url_fetcher.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -184,6 +185,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   RegistrationFetcherImpl(
       const GURL& fetcher_endpoint,
       std::optional<std::string> session_identifier,
+      SessionService& session_service,
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
@@ -191,6 +193,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       const std::optional<url::Origin>& original_request_initiator)
       : fetcher_endpoint_(fetcher_endpoint),
         session_identifier_(std::move(session_identifier)),
+        session_service_(session_service),
         key_service_(key_service),
         context_(context),
         isolation_info_(isolation_info),
@@ -519,20 +522,43 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     }
   }
 
-  void OnChallengeNeeded(
-      std::optional<std::vector<SessionChallengeParam>> challenge_params) {
-    if (!challenge_params || challenge_params->empty()) {
-      RunCallback(RegistrationResult(
-          SessionError{SessionError::ErrorType::kInvalidChallenge}));
-      // `this` may be deleted.
-      return;
-    }
+  void OnChallengeNeeded() {
+    if (base::FeatureList::IsEnabled(
+            features::kDeviceBoundSessionsOriginTrialFeedback)) {
+      if (!session_identifier_.has_value()) {
+        RunCallback(RegistrationResult(
+            SessionError{SessionError::ErrorType::kPersistentHttpError}));
+        // `this` may be deleted.
+        return;
+      }
+      const Session* session = session_service_->GetSession(SessionKey{
+          SchemefulSite(fetcher_endpoint_), Session::Id(*session_identifier_)});
+      if (!session || !session->cached_challenge().has_value()) {
+        RunCallback(RegistrationResult(
+            SessionError{SessionError::ErrorType::kInvalidChallenge}));
+        // `this` may be deleted.
+        return;
+      }
 
-    // TODO(crbug.com/438783634): Log if there is more than one challenge
-    // TODO(crbug.com/438783634): Handle if session identifiers don't match
-    const std::string& challenge = (*challenge_params)[0].challenge();
-    StartFetch(challenge, std::nullopt);
-    // `this` may be deleted.
+      StartFetch(*session->cached_challenge(), std::nullopt);
+      // `this` may be deleted.
+    } else {
+      auto challenge_params =
+          device_bound_sessions::SessionChallengeParam::CreateIfValid(
+              fetcher_endpoint_, url_fetcher_->request().response_headers());
+      if (challenge_params.empty()) {
+        RunCallback(RegistrationResult(
+            SessionError{SessionError::ErrorType::kInvalidChallenge}));
+        // `this` may be deleted.
+        return;
+      }
+
+      // TODO(crbug.com/438783634): Log if there is more than one challenge
+      // TODO(crbug.com/438783634): Handle if session identifiers don't match
+      const std::string& challenge = challenge_params[0].challenge();
+      StartFetch(challenge, std::nullopt);
+      // `this` may be deleted.
+    }
   }
 
   void OnRequestComplete() {
@@ -558,10 +584,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         (!base::FeatureList::IsEnabled(
              features::kDeviceBoundSessionsOriginTrialFeedback) &&
          response_code == 401)) {
-      auto challenge_params =
-          device_bound_sessions::SessionChallengeParam::CreateIfValid(
-              fetcher_endpoint_, headers);
-      OnChallengeNeeded(std::move(challenge_params));
+      OnChallengeNeeded();
       // `this` may be deleted.
       return;
     }
@@ -747,6 +770,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   GURL fetcher_endpoint_;
   // Populated iff this is a refresh request (not a registration request).
   std::optional<std::string> session_identifier_;
+  const raw_ref<SessionService> session_service_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   std::optional<unexportable_keys::UnexportableKeyId> key_id_;
   raw_ptr<const URLRequestContext> context_;
@@ -773,6 +797,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 // static
 std::unique_ptr<RegistrationFetcher> RegistrationFetcher::CreateFetcher(
     RegistrationRequestParam& request_params,
+    SessionService& session_service,
     unexportable_keys::UnexportableKeyService& key_service,
     const URLRequestContext* context,
     const IsolationInfo& isolation_info,
@@ -780,8 +805,8 @@ std::unique_ptr<RegistrationFetcher> RegistrationFetcher::CreateFetcher(
     const std::optional<url::Origin>& original_request_initiator) {
   return std::make_unique<RegistrationFetcherImpl>(
       request_params.TakeRegistrationEndpoint(),
-      request_params.TakeSessionIdentifier(), key_service, context,
-      isolation_info, net_log_source, original_request_initiator);
+      request_params.TakeSessionIdentifier(), session_service, key_service,
+      context, isolation_info, net_log_source, original_request_initiator);
 }
 
 void RegistrationFetcher::SetFetcherForTesting(FetcherType* func) {

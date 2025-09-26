@@ -103,7 +103,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   base::ScopedClosureRunner AddObserver(
       const GURL& url,
       base::RepeatingCallback<void(const SessionAccess&)> callback) override;
-  Session* GetSession(const SessionKey& session_key) const;
+  const Session* GetSession(const SessionKey& session_key) const override;
+
+  // The `SessionService` implementation has a const-qualified accessor
+  // for sessions. This overload allows for non-const access as well.
+  Session* GetSession(const SessionKey& session_key);
 
  private:
   friend class SessionServiceImplWithStoreTest;

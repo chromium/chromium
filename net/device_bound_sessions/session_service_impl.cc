@@ -172,8 +172,9 @@ void SessionServiceImpl::RegisterBoundSession(
           std::move(registration_params));
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          request_params, key_service_.get(), context_.get(), isolation_info,
-          net_log_source_for_registration, original_request_initiator);
+          request_params, *this, key_service_.get(), context_.get(),
+          isolation_info, net_log_source_for_registration,
+          original_request_initiator);
   RegistrationFetcher* fetcher_raw = fetcher.get();
   registration_fetchers_.insert(std::move(fetcher));
 
@@ -512,12 +513,17 @@ void SessionServiceImpl::DeleteSessionAndNotify(
   DeleteSessionAndNotifyInternal(reason, it, per_request_callback);
 }
 
-Session* SessionServiceImpl::GetSession(const SessionKey& session_key) const {
+const Session* SessionServiceImpl::GetSession(
+    const SessionKey& session_key) const {
   auto it = unpartitioned_sessions_.find(session_key);
   if (it != unpartitioned_sessions_.end()) {
     return it->second.get();
   }
   return nullptr;
+}
+
+Session* SessionServiceImpl::GetSession(const SessionKey& session_key) {
+  return const_cast<Session*>(std::as_const(*this).GetSession(session_key));
 }
 
 void SessionServiceImpl::AddSession(const SchemefulSite& site,
@@ -738,7 +744,7 @@ void SessionServiceImpl::RefreshSessionInternal(
       request->device_bound_session_access_callback(), session_key);
   std::unique_ptr<RegistrationFetcher> fetcher =
       RegistrationFetcher::CreateFetcher(
-          registration_param, key_service_.get(), context_.get(),
+          registration_param, *this, key_service_.get(), context_.get(),
           request->isolation_info(), net_log_source_for_refresh,
           request->initiator());
   RegistrationFetcher* fetcher_raw = fetcher.get();

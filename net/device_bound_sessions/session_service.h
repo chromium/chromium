@@ -165,6 +165,9 @@ class NET_EXPORT SessionService {
       const GURL& url,
       base::RepeatingCallback<void(const SessionAccess&)> callback) = 0;
 
+  // Get a session by key, or `nullptr` if no such session exists.
+  virtual const Session* GetSession(const SessionKey& session_key) const = 0;
+
  protected:
   SessionService() = default;
 };

@@ -31,6 +31,7 @@ class UnexportableKeyService;
 
 namespace net::device_bound_sessions {
 
+class SessionService;
 class RegistrationRequestParam;
 
 // This class creates a new unexportable key, creates a registration JWT and
@@ -51,6 +52,7 @@ class NET_EXPORT RegistrationFetcher {
   // Creates a fetcher that can be used to do registration or refresh.
   static std::unique_ptr<RegistrationFetcher> CreateFetcher(
       RegistrationRequestParam& request_params,
+      SessionService& session_service,
       unexportable_keys::UnexportableKeyService& key_service,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
