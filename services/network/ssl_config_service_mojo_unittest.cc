@@ -540,5 +540,15 @@ TEST_F(NetworkServiceSSLConfigServiceTest,
             expected_key_shares);
 }
 
+TEST_F(NetworkServiceSSLConfigServiceTest, Tls13CipherPreferAes256) {
+  net::SSLContextConfig expected_net_config;
+  expected_net_config.tls13_cipher_prefer_aes_256 = true;
+
+  mojom::SSLConfigPtr mojo_config = mojom::SSLConfig::New();
+  mojo_config->tls13_cipher_prefer_aes_256 = true;
+
+  RunConversionTests(*mojo_config, expected_net_config);
+}
+
 }  // namespace
 }  // namespace network

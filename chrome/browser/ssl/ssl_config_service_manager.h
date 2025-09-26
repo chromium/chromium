@@ -75,6 +75,7 @@ class SSLConfigServiceManager {
 #endif
   BooleanPrefMember ech_enabled_;
   StringPrefMember key_exchange_compliance_;
+  StringPrefMember tls13_cipher_compliance_;
 
   // The cached list of disabled SSL cipher suites.
   std::vector<uint16_t> disabled_cipher_suites_;

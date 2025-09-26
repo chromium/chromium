@@ -1,0 +1,44 @@
+caption: Prefer specific encryption cipher algorithms for TLS
+desc: |-
+  This policy configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to order its preferred encryption ciphers in TLS 1.3 to reflect a preference for algorithms that have been approved by a specific compliance regime.
+
+  Setting this policy does not guarantee that any specific algorithms will be negotiated.
+
+  This policy exists to allow server operators who wish to support clients with and without compliance requirements to differentiate between those clients, and only use certain non-default algorithms with increased cryptographic strength for those explicitly configured to prefer them.
+
+  Setting the policy to '<ph name="CNSA_NAME">cnsa</ph>' configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to prefer ciphers required for compliance with the Commercial National Security Algorithm Suite versions 1.0 and 2.0 (CNSA 1.0 and 2.0).
+
+  Not setting the policy, or setting it to '<ph name="DEFAULT_NAME">default</ph>', configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to use its default ciphers.
+
+  Setting this policy is not required for security. The default cryptography used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> is strong enough to withstand a brute force attack using the entire power of the Sun.
+
+  Setting this policy will cause <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to be slower when accessing websites.
+
+  This policy only affects TLS 1.3 and QUIC; it does not affect earlier versions of TLS.
+
+example_value: cnsa
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Prefer ciphers satisfying the requirements of CNSA 1.0 and 2.0
+  name: CNSA
+  value: cnsa
+- caption: Use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s default cipher order
+  name: Default
+  value: default
+owners:
+- file://crypto/OWNERS
+- trusty-transport@chromium.org
+future_on:
+- android
+- chrome.*
+- chrome_os
+schema:
+  enum:
+  - cnsa
+  - default
+  type: string
+tags:
+- system-security
+type: string-enum

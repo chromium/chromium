@@ -403,3 +403,43 @@ TEST_F(SSLConfigServiceManagerTest, PrefsPreservedAfterTrustAnchorIDsUpdated) {
       testing::UnorderedElementsAre(std::vector<uint8_t>({0x01, 0x01})));
   EXPECT_TRUE(observed_configs_[0]->rev_checking_required_local_anchors);
 }
+
+TEST_F(SSLConfigServiceManagerTest, KeyExchangeCompliancePrefCnsa) {
+  scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
+
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  EXPECT_EQ(initial_config_->named_groups_preset,
+            network::mojom::SSLNamedGroupsPreset::kDefault);
+
+  local_state.SetManagedPref(prefs::kPreferSlowKexAlgorithms,
+                             std::make_unique<base::Value>("cnsa2"));
+
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+
+  EXPECT_EQ(observed_configs_[0]->named_groups_preset,
+            network::mojom::SSLNamedGroupsPreset::kCnsa2);
+}
+
+TEST_F(SSLConfigServiceManagerTest, Tls13CiphersCompliancePrefCnsa) {
+  scoped_refptr<TestingPrefStore> local_state_store(new TestingPrefStore());
+
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  EXPECT_FALSE(initial_config_->tls13_cipher_prefer_aes_256);
+
+  local_state.SetManagedPref(prefs::kPreferSlowCiphers,
+                             std::make_unique<base::Value>("cnsa"));
+
+  ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
+
+  EXPECT_TRUE(observed_configs_[0]->tls13_cipher_prefer_aes_256);
+}

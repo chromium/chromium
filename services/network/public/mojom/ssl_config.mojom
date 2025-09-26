@@ -60,6 +60,10 @@ struct SSLConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   array<uint16> disabled_cipher_suites;
 
+  // This configures a compliance policy that sets cipher preferences for
+  // TLS 1.3 to prefer AES-256-GCM over AES-128-GCM over ChaCha20-Poly1305.
+  bool tls13_cipher_prefer_aes_256 = false;
+
   // Patterns for matching hostnames to determine when to allow connection
   // coalescing when client certificates are also in use. Patterns follow
   // the rules for host matching from the URL Blocklist filter format:

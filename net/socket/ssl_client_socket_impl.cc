@@ -852,6 +852,14 @@ int SSLClientSocketImpl::Init() {
     return ERR_UNEXPECTED;
   }
 
+  // The compliance policy must be the last thing configured in order to have
+  // defined behavior.
+  if (context_->config().tls13_cipher_prefer_aes_256 &&
+      !SSL_set_compliance_policy(ssl_.get(),
+                                 ssl_compliance_policy_cnsa_202407)) {
+    return ERR_UNEXPECTED;
+  }
+
   return OK;
 }
 

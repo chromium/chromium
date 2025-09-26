@@ -67,6 +67,10 @@ struct NET_EXPORT SSLContextConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   std::vector<uint16_t> disabled_cipher_suites;
 
+  // This configures a compliance policy that sets the cipher order for
+  // TLS 1.3 to prefer AES-256-GCM over AES-128-GCM over ChaCha20-Poly1305.
+  bool tls13_cipher_prefer_aes_256 = false;
+
   // Ordered list of NamedGroups that are supported, used to configure
   // supported_groups and key_share. Set to `kDefaultSSLSupportedGroups` by
   // default.

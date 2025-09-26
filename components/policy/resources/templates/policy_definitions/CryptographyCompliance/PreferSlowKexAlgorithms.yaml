@@ -8,7 +8,7 @@ desc: |-
 
   Setting the policy to '<ph name="CNSA2_NAME">cnsa2</ph>' configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to prefer key exchange methods required for compliance with the Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
 
-  Not setting the policy configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to use its default key exchange methods.
+  Not setting the policy, or setting it to '<ph name="DEFAULT_NAME">default</ph>', configures <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to use its default key exchange methods.
 
   If this policy is set to a value that would configure <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to prefer a post-quantum key agreement algorithm but <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME">PostQuantumKeyAgreementEnabled</ph> is Disabled, the setting of <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME">PostQuantumKeyAgreementEnabled</ph> takes precedence.
 
@@ -26,6 +26,9 @@ items:
 - caption: Prefer key exchange methods satisfying the requirements of CNSA 2.0
   name: CNSA2.0
   value: cnsa2
+- caption: Use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s default supported groups
+  name: Default
+  value: default
 owners:
 - file://crypto/OWNERS
 - trusty-transport@chromium.org
@@ -36,6 +39,7 @@ future_on:
 schema:
   enum:
   - cnsa2
+  - default
   type: string
 tags:
 - system-security

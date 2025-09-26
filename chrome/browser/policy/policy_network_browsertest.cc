@@ -5,9 +5,11 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -35,6 +37,7 @@
 #include "net/test/test_doh_server.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "third_party/boringssl/src/include/openssl/tls1.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -307,6 +310,75 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest,
   EXPECT_FALSE(
       GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled).value());
   LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+}
+
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowCiphersPolicy) {
+  // Cipher names in the order expected for CNSA.
+  const auto kExpectedCipherNamesWithPolicy = std::to_array<const char*>(
+      {"TLS_AES_256_GCM_SHA384", "TLS_AES_128_GCM_SHA256",
+       "TLS_CHACHA20_POLY1305_SHA256"});
+
+  net::SSLServerConfig ssl_config;
+  ssl_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  // Make the test server only accept the expected TLS 1.3 ciphers in the order
+  // specified by the policy, or otherwise reject the handshake.
+  ssl_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        // Each cipher is encoded as a two-byte, big-endian integer.
+        CHECK(client_hello->cipher_suites_len % 2 == 0);
+        // SAFETY: BoringSSL API guarantees that `client_hello->cipher_suites`
+        // and `client_hello->ciphers_suites_len` describe a valid span.
+        auto cipher_suites_reader = base::SpanReader{UNSAFE_BUFFERS(base::span{
+            client_hello->cipher_suites, client_hello->cipher_suites_len})};
+        uint16_t value;
+        std::vector<std::string> cipher_names;
+        while (cipher_suites_reader.ReadU16BigEndian(value)) {
+          // Skip values we don't recognize as any TLS 1.3 cipher.
+          const SSL_CIPHER* cipher = SSL_get_cipher_by_value(value);
+          if (!cipher || SSL_CIPHER_get_min_version(cipher) != TLS1_3_VERSION) {
+            continue;
+          }
+          cipher_names.emplace_back(SSL_CIPHER_standard_name(cipher));
+        }
+        return !std::ranges::search(cipher_names,
+                                    kExpectedCipherNamesWithPolicy)
+                    .empty();
+      });
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Should fail to load a page from the test server because the default
+  // cipher order doesn't match and the test server rejects the handshake.
+  EXPECT_EQ(GetManagedStringPref(prefs::kPreferSlowCiphers), std::nullopt);
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+
+  // Set the policy to cnsa to prefer the TLS 1.3 ciphers in the expected order.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("cnsa"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now succeed.
+  EXPECT_EQ(GetManagedStringPref(prefs::kPreferSlowCiphers), "cnsa");
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Set the policy to an unrecognized value; this falls back to the defaults.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("bogus"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now fail.
+  EXPECT_EQ(GetManagedStringPref(prefs::kPreferSlowCiphers), "bogus");
+  result = LoadPage("/title2.html");
   EXPECT_FALSE(result.success);
 }
 

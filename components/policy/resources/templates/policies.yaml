@@ -1396,6 +1396,7 @@ policies:
   1395: ExtensionForceInstallWithNonMalwareViolationsEnabled
   1396: CacheEncryptionEnabled
   1397: SilentPrintingEnabled
+  1398: PreferSlowCiphers
 atomic_groups:
   1: Homepage
   2: RemoteAccess

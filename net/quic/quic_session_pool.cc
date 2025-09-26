@@ -552,6 +552,9 @@ QuicSessionPool::QuicCryptoClientConfigOwner::QuicCryptoClientConfigOwner(
           .GetSupportedGroups());
   // TODO(crbug.com/445967223): Also set client key shares. This depends on
   // changes in QUICHE.
+  // TODO(crbug.com/445967223): Also set the SSL compliance policy to prefer
+  // AES-256-GCM iff the SSLContextConfig specifies that. This requires plumbing
+  // in QUICHE.
 }
 QuicSessionPool::QuicCryptoClientConfigOwner::~QuicCryptoClientConfigOwner() {
   DCHECK_EQ(num_refs_, 0);

@@ -35,6 +35,8 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   DCHECK_LE(net_config.version_min, net_config.version_max);
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
+  net_config.tls13_cipher_prefer_aes_256 =
+      mojo_config->tls13_cipher_prefer_aes_256;
   net_config.ech_enabled = mojo_config->ech_enabled;
 
   // Translate the configuration options related to named groups.

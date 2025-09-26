@@ -96,6 +96,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -109,6 +110,8 @@ using net::test::IsOk;
 using testing::_;
 using testing::Bool;
 using testing::Combine;
+using testing::ElementsAreArray;
+using testing::Not;
 using testing::Return;
 using testing::Values;
 using testing::ValuesIn;
@@ -6475,6 +6478,69 @@ TEST_F(SSLClientSocketTest, PostQuantumKeyExchange) {
     } else {
       EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
     }
+  }
+}
+
+// Test that the compliance policy that reorders the cipher preference for TLS
+// 1.3 can be configured.
+TEST_F(SSLClientSocketTest, Tls13CipherPreferAes256) {
+  std::vector<std::string> cipher_names;
+  SSLServerConfig server_config;
+  server_config.version_min = SSL_PROTOCOL_VERSION_TLS1_3;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  // Set a callback that copies the ordered list of TLS 1.3 cipher names out of
+  // the ClientHello.
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        cipher_names.clear();
+        // Each cipher is encoded as a two-byte, big-endian integer.
+        CHECK(client_hello->cipher_suites_len % 2 == 0);
+        // SAFETY: BoringSSL API guarantees that `client_hello->cipher_suites`
+        // and `client_hello->ciphers_suites_len` describe a valid span.
+        auto cipher_suites_reader = base::SpanReader{UNSAFE_BUFFERS(base::span{
+            client_hello->cipher_suites, client_hello->cipher_suites_len})};
+        uint16_t value;
+        while (cipher_suites_reader.ReadU16BigEndian(value)) {
+          // Skip values we don't recognize as any TLS 1.3 cipher.
+          const SSL_CIPHER* cipher = SSL_get_cipher_by_value(value);
+          if (!cipher || SSL_CIPHER_get_min_version(cipher) != TLS1_3_VERSION) {
+            continue;
+          }
+          cipher_names.emplace_back(SSL_CIPHER_standard_name(cipher));
+        }
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // The compliance policy prefers AES-256-GCM over AES-128-GCM over anything
+  // else.
+  const auto kExpectedCipherNamesWithPolicy = std::to_array<const char*>(
+      {"TLS_AES_256_GCM_SHA384", "TLS_AES_128_GCM_SHA256",
+       "TLS_CHACHA20_POLY1305_SHA256"});
+
+  SSLContextConfig config;
+  config.version_min = SSL_PROTOCOL_VERSION_TLS1_3;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  {
+    // Compliance policy not configured. The default list differs from the
+    // expected ciphers under the policy.
+    config.tls13_cipher_prefer_aes_256 = false;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    int rv;
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_THAT(cipher_names,
+                Not(ElementsAreArray(kExpectedCipherNamesWithPolicy)));
+  }
+  {
+    // Compliance policy configured. Resulting ciphers should match expectation.
+    config.tls13_cipher_prefer_aes_256 = true;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    int rv;
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_THAT(cipher_names, ElementsAreArray(kExpectedCipherNamesWithPolicy));
   }
 }
 
