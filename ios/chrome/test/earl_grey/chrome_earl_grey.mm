@@ -1319,7 +1319,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
   std::string jsonRepresentation = base::SysNSStringToUTF8(result.result);
   base::JSONReader::Result jsonValue =
-      base::JSONReader::ReadAndReturnValueWithError(jsonRepresentation);
+      base::JSONReader::ReadAndReturnValueWithError(
+          jsonRepresentation, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   NSString* message = nil;
   if (!jsonValue.has_value()) {
