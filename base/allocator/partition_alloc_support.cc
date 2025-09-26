@@ -1097,8 +1097,6 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
 
   const bool eventually_zero_freed_memory = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocEventuallyZeroFreedMemory);
-  const bool fewer_memory_regions = base::FeatureList::IsEnabled(
-      base::features::kPartitionAllocFewerMemoryRegions);
 
   bool enable_memory_tagging = false;
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
@@ -1196,8 +1194,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       scheduler_loop_quarantine_global_config,
       scheduler_loop_quarantine_thread_local_config,
       scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
-      allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory),
-      allocator_shim::FewerMemoryRegions(fewer_memory_regions));
+      allocator_shim::EventuallyZeroFreedMemory(eventually_zero_freed_memory));
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to

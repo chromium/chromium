@@ -165,6 +165,18 @@ constexpr bool kUseLazyCommit = true;
 constexpr bool kUseLazyCommit = false;
 #endif
 
+// See the comment in PartitionBucket::SlotSpanCommittedSize(). This should not
+// be enabled on Windows (because it increases committed memory, which is a
+// limited system-wide resource on this platform). It has been evaluated on
+// macOS, where it yielded no beenefit (nor any real downside).
+constexpr bool kUseFewerMemoryRegions =
+#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
+    PA_BUILDFLAG(IS_CHROMEOS)
+    true;
+#else
+    false;
+#endif
+
 // On these platforms, lock all the partitions before fork(), and unlock after.
 // This may be required on more platforms in the future.
 #define PA_CONFIG_HAS_ATFORK_HANDLER()                 \

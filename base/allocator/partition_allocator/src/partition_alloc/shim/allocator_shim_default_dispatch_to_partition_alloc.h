@@ -198,7 +198,6 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
       partition_alloc::internal::SchedulerLoopQuarantineConfig();
 
   auto eventually_zero_freed_memory = EventuallyZeroFreedMemory(false);
-  auto fewer_memory_regions = FewerMemoryRegions(false);
 
   ConfigurePartitions(
       enable_brp, brp_extra_extras_size, enable_memory_tagging,
@@ -206,7 +205,7 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
       scheduler_loop_quarantine_global_config,
       scheduler_loop_quarantine_thread_local_config,
       scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
-      eventually_zero_freed_memory, fewer_memory_regions);
+      eventually_zero_freed_memory);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

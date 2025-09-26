@@ -140,14 +140,6 @@ constinit const FeatureParam<std::string>
 BASE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory,
              FEATURE_DISABLED_BY_DEFAULT);
 
-// Evaluated and positive stability and peformance-wise on Linux-based systems,
-// disabled elsewhere (for now). Does not apply to Windows.
-BASE_FEATURE(kPartitionAllocFewerMemoryRegions,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-             FEATURE_ENABLED_BY_DEFAULT);
-#else
-             FEATURE_DISABLED_BY_DEFAULT);
-#endif
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 BASE_FEATURE(kPartitionAllocBackupRefPtr,
@@ -216,7 +208,7 @@ constexpr FeatureParam<MemtagMode>::Option kMemtagModeOptions[] = {
     {MemtagMode::kSync, "sync"},
     {MemtagMode::kAsync, "async"}};
 
-// Note: Do not use the prepared macro as of no need for a local cache.
+// Note: Do not use the prepared muacro as of no need for a local cache.
 constinit const FeatureParam<MemtagMode> kMemtagModeParam{
     &kPartitionAllocMemoryTagging, "memtag-mode",
 #if PA_BUILDFLAG(USE_FULL_MTE)

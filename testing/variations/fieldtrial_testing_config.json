@@ -17358,21 +17358,6 @@
             ]
         }
     ],
-    "PartitionAllocFewerMemoryRegionsMac": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PartitionAllocFewerMemoryRegions"
-                    ]
-                }
-            ]
-        }
-    ],
     "PartitionAllocLargeThreadCacheSizeAndroid": [
         {
             "platforms": [

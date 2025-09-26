@@ -106,10 +106,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // fragmented super pages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory);
 
-// Whether to make PartitionAlloc use fewer memory regions. This matters on
-// Linux-based systems, where there is a per-process limit that we hit in some
-// cases. See the comment in PartitionBucket::SlotSpanCOmmitedSize() for detail.
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocFewerMemoryRegions);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 using BackupRefPtrEnabledProcesses = internal::PAFeatureEnabledProcesses;

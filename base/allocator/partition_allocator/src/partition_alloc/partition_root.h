@@ -196,17 +196,6 @@ struct PartitionOptions {
   // compression ratio of freed memory inside partially allocated pages (due to
   // fragmentation).
   EnableToggle eventually_zero_freed_memory = kDisabled;
-  // Linux-based systems have a limited per-process VMA limit, be more
-  // conservative there. This matches the feature setting in
-  // partition_alloc_features.cc, but not all clients use Chromium's feature
-  // system to configure PartitionAlloc.
-  EnableToggle fewer_memory_regions =
-#if PA_BUILDFLAG(IS_LINUX) || PA_BUILDFLAG(IS_ANDROID) || \
-    PA_BUILDFLAG(IS_CHROMEOS)
-      kEnabled;
-#else
-      kDisabled;
-#endif
 
   struct {
     EnableToggle enabled = kDisabled;
@@ -279,7 +268,6 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     bool eventually_zero_freed_memory = false;
     internal::SchedulerLoopQuarantineConfig
         scheduler_loop_quarantine_thread_local_config;
-    bool fewer_memory_regions = false;
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
     bool memory_tagging_enabled_ = false;
     bool use_random_memory_tagging_ = false;

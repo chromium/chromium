@@ -390,7 +390,6 @@ class PartitionAllocTest
   PartitionOptions GetCommonPartitionOptions() {
     PartitionOptions opts;
     opts.eventually_zero_freed_memory = PartitionOptions::kEnabled;
-    opts.fewer_memory_regions = PartitionOptions::kDisabled;
     opts.scheduler_loop_quarantine_global_config = {
         .branch_capacity_in_bytes = std::numeric_limits<size_t>::max(),
         .leak_on_destruction = true,
@@ -3933,9 +3932,13 @@ TEST_P(PartitionAllocTest, ZapOnFree) {
     PA_BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
-  auto* root = allocator.root();
-  ASSERT_FALSE(root->settings.fewer_memory_regions);
+  // There is inaccessible space only when this setting is not enabled,
+  // otherwise we extend the region to use fewer memory regions.
+  if (kUseFewerMemoryRegions) {
+    GTEST_SKIP();
+  }
 
+  auto* root = allocator.root();
   // Look for an allocation size that matches a bucket which doesn't fill its
   // last PartitionPage.  Scan through allocation sizes rather than buckets, as
   // depending on the bucket distribution, some buckets may not be active.
@@ -3987,9 +3990,8 @@ TEST_P(PartitionAllocTest, InaccessibleRegionAfterSlotSpans) {
 }
 
 TEST_P(PartitionAllocTest, FewerMemoryRegions) {
+  static_assert(kUseFewerMemoryRegions);
   auto* root = allocator.root();
-  ASSERT_FALSE(root->settings.fewer_memory_regions);
-  root->settings.fewer_memory_regions = true;
 
   // Look for an allocation size that matches a bucket which doesn't fill its
   // last PartitionPage.  Scan through allocation sizes rather than buckets, as

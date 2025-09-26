@@ -1042,8 +1042,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
     settings.eventually_zero_freed_memory =
         opts.eventually_zero_freed_memory == PartitionOptions::kEnabled;
-    settings.fewer_memory_regions =
-        opts.fewer_memory_regions == PartitionOptions::kEnabled;
 
     scheduler_loop_quarantine.Configure(
         scheduler_loop_quarantine_root,
