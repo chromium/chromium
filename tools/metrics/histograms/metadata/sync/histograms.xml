@@ -500,6 +500,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.ClearMetadataDueToEmptyStorageKey" enum="SyncDataTypes"
+    expires_after="2026-03-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records when a data type's metadata is cleared due to empty/missing storage
+    keys in the persisted metadata. This will result in a re-download of all
+    data of this type.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ClearMetadataWhileStopped{ClearTime}"
     enum="SyncDataTypes" expires_after="2026-05-13">
   <owner>ankushkush@google.com</owner>

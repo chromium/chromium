@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -45,6 +46,9 @@
 
 namespace syncer {
 namespace {
+
+BASE_FEATURE(kSyncClearMetadataOnEmptyStorageKeys,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kErrorSiteHistogramPrefix[] = "Sync.DataTypeErrorSite.";
 
@@ -1459,6 +1463,17 @@ bool ClientTagBasedDataTypeProcessor::ShouldClearPersistedMetadata(
     }
 
     return true;
+  }
+
+  // Check that there are no empty/missing storage keys.
+  if (base::FeatureList::IsEnabled(kSyncClearMetadataOnEmptyStorageKeys)) {
+    for (const auto& [storage_key, _] : metadata_map) {
+      if (storage_key.empty()) {
+        base::UmaHistogramEnumeration("Sync.ClearMetadataDueToEmptyStorageKey",
+                                      DataTypeHistogramValue(type_));
+        return true;
+      }
+    }
   }
 
   return false;

@@ -2941,6 +2941,47 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       /*expected_count=*/2);
 }
 
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldResetForMissingStorageKey) {
+  base::HistogramTester histogram_tester;
+
+  const syncer::ClientTagHash kClientTagHash1 =
+      ClientTagHash::FromUnhashed(GetDataType(), "tag1");
+  const syncer::ClientTagHash kClientTagHash2 =
+      ClientTagHash::FromUnhashed(GetDataType(), "tag2");
+  const syncer::ClientTagHash kClientTagHash3 =
+      ClientTagHash::FromUnhashed(GetDataType(), "tag3");
+  sync_pb::EntityMetadata entity_metadata1;
+  entity_metadata1.set_client_tag_hash(kClientTagHash1.value());
+  entity_metadata1.set_creation_time(0);
+  sync_pb::EntityMetadata entity_metadata2;
+  entity_metadata2.set_client_tag_hash(kClientTagHash2.value());
+  entity_metadata2.set_creation_time(0);
+  sync_pb::EntityMetadata entity_metadata3;
+  entity_metadata3.set_client_tag_hash(kClientTagHash3.value());
+  entity_metadata3.set_creation_time(0);
+
+  db()->PutMetadata(kKey1, std::move(entity_metadata1));
+  // One of the storage keys is empty!
+  db()->PutMetadata("", std::move(entity_metadata2));
+  db()->PutMetadata(kKey3, std::move(entity_metadata3));
+
+  InitializeToReadyState();
+
+  // With a missing storage key, metadata should have been cleared.
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, ProcessorEntityCount());
+  EXPECT_FALSE(type_processor()->IsTrackingMetadata());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ClearMetadataDueToEmptyStorageKey",
+      /*sample=*/DataTypeHistogramValue(GetDataType()),
+      /*expected_bucket_count=*/1);
+
+  // Initial update.
+  worker()->UpdateFromServer();
+  EXPECT_TRUE(type_processor()->IsTrackingMetadata());
+}
+
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldNotProcessInvalidRemoteIncrementalUpdate) {
   // To ensure the update is not ignored because of empty storage key.

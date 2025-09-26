@@ -58,7 +58,8 @@ class TestMetadataChangeList : public MetadataChangeList {
   }
 
   void ClearMetadata(const std::string& storage_key) override {
-    DCHECK(!storage_key.empty());
+    // Note: `storage_key` usually shouldn't be empty here, but some tests
+    // exercise invalid-data scenarios where it is empty.
     db_->RemoveMetadata(storage_key);
   }
 
