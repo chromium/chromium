@@ -56,14 +56,10 @@ PathBuilder SVGPolyElement::AsPathFromPoints() const {
   if (points_value->IsEmpty())
     return builder;
 
-  auto it = points_value->begin();
-  auto it_end = points_value->end();
-  DCHECK(it != it_end);
-  builder.MoveTo((*it)->Value());
-  ++it;
-
-  for (; it != it_end; ++it)
-    builder.LineTo((*it)->Value());
+  builder.MoveTo(points_value->at(0)->Value());
+  for (uint32_t i = 1; i < points_value->length(); ++i) {
+    builder.LineTo(points_value->at(i)->Value());
+  }
 
   return builder;
 }
