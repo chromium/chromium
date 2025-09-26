@@ -917,10 +917,10 @@ void ClientTagBasedDataTypeProcessor::OnUpdateReceived(
     UpdateResponseDataList updates,
     std::optional<sync_pb::GarbageCollectionDirective> gc_directive) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DUMP_WILL_BE_CHECK(model_ready_to_sync_);
-  DUMP_WILL_BE_CHECK(IsConnected());
-  DUMP_WILL_BE_CHECK(!model_error_);
-  DUMP_WILL_BE_CHECK(!data_type_state.progress_marker().has_gc_directive());
+  CHECK(model_ready_to_sync_);
+  CHECK(IsConnected());
+  CHECK(!model_error_);
+  CHECK(!data_type_state.progress_marker().has_gc_directive());
 
   // Use base::debug::Alias() to ensure that crash dumps in reports include
   // DataType.
@@ -963,9 +963,11 @@ void ClientTagBasedDataTypeProcessor::OnUpdateReceived(
                                  activation_request_.configuration_start_time);
   }
 
-  DUMP_WILL_BE_CHECK(entity_tracker_);
+  CHECK(entity_tracker_);
   // If there were entities with empty storage keys, they should have been
   // updated by bridge as part of ApplyIncrementalSyncChanges.
+  // TODO(crbug.com/339260002): This check used to trigger sometimes; verify
+  // whether it still does after crrev.com/c/6979865.
   DUMP_WILL_BE_CHECK(entity_tracker_->AllStorageKeysPopulated());
   // There may be new reasons to commit by the time this function is done.
   NudgeForCommitIfNeeded();
