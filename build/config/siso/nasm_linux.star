@@ -13,9 +13,7 @@ def __filegroups(ctx):
 __handlers = {}
 
 def __step_config(ctx, step_config):
-    # TODO: crbug.com/447224649, crbug.com/447175273 - Disable remote temporarily to
-    # avoid the RBE's Ubuntu issue.
-    remote_run = False
+    remote_run = True  # Turn this to False when you do file access trace.
     rules = []
     for toolchain in ["", "clang_x64"]:
         nasm_path = path.join(toolchain, "nasm")
