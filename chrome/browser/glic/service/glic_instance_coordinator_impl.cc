@@ -79,7 +79,9 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
   }
 
   auto* helper = GlicInstanceHelper::From(tab);
-  CHECK(helper);
+  if (!helper) {
+    return nullptr;
+  }
 
   auto instance_id = helper->GetInstanceId();
   if (instance_id.has_value()) {
