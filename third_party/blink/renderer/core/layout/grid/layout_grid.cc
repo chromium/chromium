@@ -257,7 +257,9 @@ Vector<LayoutUnit, 1> LayoutGrid::CollectTrackSizesForComputedStyle(
 Vector<LayoutUnit> LayoutGrid::GridTrackPositions(
     GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  return ComputeExpandedPositions(LayoutData(), track_direction);
+  return ComputeExpandedPositions(track_direction == kForColumns
+                                      ? LayoutData()->Columns()
+                                      : LayoutData()->Rows());
 }
 
 // static
@@ -299,15 +301,8 @@ Vector<LayoutUnit> LayoutGrid::ComputeTrackSizeRepeaterForRange(
 
 // static
 Vector<LayoutUnit> LayoutGrid::ComputeExpandedPositions(
-    const GridLayoutData* grid_layout_data,
-    GridTrackSizingDirection track_direction) {
+    const GridLayoutTrackCollection& track_collection) {
   Vector<LayoutUnit> expanded_positions;
-  if (!grid_layout_data)
-    return expanded_positions;
-
-  const auto& track_collection = (track_direction == kForColumns)
-                                     ? grid_layout_data->Columns()
-                                     : grid_layout_data->Rows();
 
   // |EndLineOfImplicitGrid| is equivalent to the total track count.
   expanded_positions.ReserveInitialCapacity(std::min<wtf_size_t>(

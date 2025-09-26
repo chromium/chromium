@@ -1984,7 +1984,7 @@ class GapAccumulator {
   // See third_party/blink/renderer/core/layout/gap/README.md for more.
   void BuildMainGaps(const GridLayoutData& layout_data) {
     const Vector<LayoutUnit> row_tracks =
-        LayoutGrid::ComputeExpandedPositions(&layout_data, kForRows);
+        LayoutGrid::ComputeExpandedPositions(layout_data.Rows());
     row_gutter_size_ = layout_data.Rows().GutterSize();
     wtf_size_t row_track_count = row_tracks.size();
 
@@ -2008,7 +2008,7 @@ class GapAccumulator {
 
   void BuildCrossGaps(const GridLayoutData& layout_data) {
     const Vector<LayoutUnit> col_tracks =
-        LayoutGrid::ComputeExpandedPositions(&layout_data, kForColumns);
+        LayoutGrid::ComputeExpandedPositions(layout_data.Columns());
     col_gutter_size_ = layout_data.Columns().GutterSize();
     wtf_size_t col_track_count = col_tracks.size();
 

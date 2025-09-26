@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/masonry/masonry_running_positions.h"
 
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 
 namespace blink {
@@ -164,20 +165,23 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
 
   EligibleTrackOpeningPath highest_eligible_track_opening_result;
 
-  // Find the highest eligible opening iterating from the auto-placement cursor
-  // to the end of the tracks, then looping around from the first track to the
-  // auto-placement cursor. This gives priority to openings right after the
-  // auto-placement cursor.
+  // Find the highest eligible opening iterating from the start of the tracks if
+  // the item is auto-placed, otherwise from the author-specified track.
   GridSpan item_span = masonry_item.is_auto_placed
                            ? GridSpan::TranslatedDefiniteGridSpan(0, span_size)
                            : initial_span;
 
   while (item_span.EndLine() <= running_positions_.size()) {
+    // If the item we are attempting to place has a user-specified
+    // position that doesn't match the current span, there is no reason to
+    // continue iterating through the rest of the spans.
+    if (!masonry_item.is_auto_placed && item_span != initial_span) {
+      break;
+    }
+
     // If the used track size of the item doesn't match the total track size of
-    // the span OR if the item we are attempting to place has a user-specified
-    // position that doesn't match the current span, move onto the next span.
-    if (CalculateUsedTrackSize(item_span) != used_track_size ||
-        (!masonry_item.is_auto_placed && item_span != initial_span)) {
+    // the span, move on to the next span.
+    if (CalculateUsedTrackSize(item_span) != used_track_size) {
       ++item_span;
       continue;
     }
@@ -279,23 +283,20 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
   return highest_eligible_track_opening_result.start_position;
 }
 
-// TODO(celestepan): Add method GridLayoutTrackCollection to query for
-// individual track sizes and call that here instead; that should allow us to
-// avoid the creation of a temporary `GridItemData`, as this is not good
-// performance-wise.
 void MasonryRunningPositions::CalculateAndCacheTrackSizes(
     const GridLayoutTrackCollection& track_collection) {
-  track_collection_openings_.resize(track_collection.EndLineOfImplicitGrid());
-  auto* item = MakeGarbageCollected<GridItemData>();
-  LayoutUnit start_offset;
-  GridSpan span = GridSpan::TranslatedDefiniteGridSpan(0, 1);
+  Vector<LayoutUnit> line_positions =
+      LayoutGrid::ComputeExpandedPositions(track_collection);
+  track_collection_sizes_.resize(track_collection.EndLineOfImplicitGrid());
+  // The number of lines should be one more than the number of tracks.
+  CHECK_EQ(line_positions.size(), track_collection_sizes_.size() + 1);
 
-  for (; span.StartLine() < running_positions_.size(); ++span) {
-    item->resolved_position.SetSpan(span, track_collection.Direction());
-    item->ComputeSetIndices(track_collection);
-    track_collection_sizes_.emplace_back(
-        item->CalculateAvailableSize(track_collection, &start_offset));
-    item->ResetPlacementIndices();
+  // TODO(celestepan): Account for gutter size when calculating track sizes.
+  //
+  // `line_positions` contains the offset of each line; the space between the
+  // adjacent lines is equivalent to the size of the tracks.
+  for (wtf_size_t i = 0; i < track_collection_sizes_.size(); ++i) {
+    track_collection_sizes_[i] = line_positions[i + 1] - line_positions[i];
   }
 }
 

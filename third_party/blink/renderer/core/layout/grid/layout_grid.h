@@ -24,14 +24,15 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   }
 
   // Helper functions to help with getting expanded positions when needed.
-  // These helpers are currently used for DevTools, ComputedStyles and Gap
-  // Decorations.
+  // These helpers are currently used for DevTools, ComputedStyles, Masonry and
+  // Gap Decorations.
   static Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
       const GridLayoutTrackCollection& track_collection,
       wtf_size_t range_index);
+  // TODO(celestepan): Look into if it may be worth caching the results of this
+  // considering it is used in so many places.
   static Vector<LayoutUnit> ComputeExpandedPositions(
-      const GridLayoutData* grid_layout_data,
-      GridTrackSizingDirection track_direction);
+      const GridLayoutTrackCollection& track_collection);
 
   // Helper functions shared between LayoutGrid and LayoutMasonry.
   static const GridLayoutData* GetGridLayoutDataFromFragments(

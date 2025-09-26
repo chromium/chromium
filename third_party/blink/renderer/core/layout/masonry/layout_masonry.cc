@@ -25,7 +25,9 @@ Vector<LayoutUnit> LayoutMasonry::GridTrackPositions(
   if (track_direction != masonry_track_sizing_direction_) {
     return {};
   }
-  return LayoutGrid::ComputeExpandedPositions(LayoutData(), track_direction);
+  return LayoutGrid::ComputeExpandedPositions(track_direction == kForColumns
+                                                  ? LayoutData()->Columns()
+                                                  : LayoutData()->Rows());
 }
 
 LayoutUnit LayoutMasonry::GridGap(
