@@ -721,18 +721,6 @@ class CC_EXPORT GpuImageDecodeCache
   void GenerateDarkModeFilter(const DrawImage& draw_image,
                               ImageData* image_data)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  sk_sp<SkImage> CreateImageFromYUVATexturesInternal(
-      const SkImage* uploaded_y_image,
-      const SkImage* uploaded_u_image,
-      const SkImage* uploaded_v_image,
-      const int image_width,
-      const int image_height,
-      const SkYUVAInfo::PlaneConfig yuva_plane_config,
-      const SkYUVAInfo::Subsampling yuva_subsampling,
-      const SkYUVColorSpace yuva_color_space,
-      sk_sp<SkColorSpace> target_color_space,
-      sk_sp<SkColorSpace> decoded_color_space) const
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   scoped_refptr<GpuImageDecodeCache::ImageData> CreateImageData(
       const DrawImage& image,

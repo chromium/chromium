@@ -3081,50 +3081,6 @@ void GpuImageDecodeCache::CheckContextLockAcquiredIfNecessary() {
   context_->GetLock()->AssertAcquired();
 }
 
-sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
-    const SkImage* uploaded_y_image,
-    const SkImage* uploaded_u_image,
-    const SkImage* uploaded_v_image,
-    const int image_width,
-    const int image_height,
-    const SkYUVAInfo::PlaneConfig yuva_plane_config,
-    const SkYUVAInfo::Subsampling yuva_subsampling,
-    const SkYUVColorSpace yuv_color_space,
-    sk_sp<SkColorSpace> target_color_space,
-    sk_sp<SkColorSpace> decoded_color_space) const {
-  DCHECK(uploaded_y_image);
-  DCHECK(uploaded_u_image);
-  DCHECK(uploaded_v_image);
-  SkYUVAInfo yuva_info({image_width, image_height}, yuva_plane_config,
-                       yuva_subsampling, yuv_color_space);
-  GrBackendTexture yuv_textures[3]{};
-  CHECK(SkImages::GetBackendTextureFromImage(uploaded_y_image, &yuv_textures[0],
-                                             false));
-  CHECK(SkImages::GetBackendTextureFromImage(uploaded_u_image, &yuv_textures[1],
-                                             false));
-  CHECK(SkImages::GetBackendTextureFromImage(uploaded_v_image, &yuv_textures[2],
-                                             false));
-  GrYUVABackendTextures yuva_backend_textures(yuva_info, yuv_textures,
-                                              kTopLeft_GrSurfaceOrigin);
-  DCHECK(yuva_backend_textures.isValid());
-
-  if (target_color_space && SkColorSpace::Equals(target_color_space.get(),
-                                                 decoded_color_space.get())) {
-    target_color_space = nullptr;
-  }
-
-  GrDirectContext* gr_context = context_->GrContext();
-  CHECK(gr_context);
-  sk_sp<SkImage> yuva_image = SkImages::TextureFromYUVATextures(
-      gr_context, yuva_backend_textures, std::move(decoded_color_space));
-  if (target_color_space && yuva_image) {
-    return yuva_image->makeColorSpace(gr_context->asRecorder(),
-                                      target_color_space, {});
-  }
-
-  return yuva_image;
-}
-
 // static
 scoped_refptr<TileTask> GpuImageDecodeCache::GetTaskFromMapForClientId(
     const ClientId client_id,
