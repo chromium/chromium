@@ -322,6 +322,7 @@ const StaticOobeScreenId kResumablePostLoginScreens[] = {
 };
 
 const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
+    AppLaunchSplashScreenView::kScreenId,
     EnableAdbSideloadingScreenView::kScreenId,
     EnableDebuggingScreenView::kScreenId,
     ManagementTransitionScreenView::kScreenId,
