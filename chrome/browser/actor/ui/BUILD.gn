@@ -111,6 +111,7 @@ source_set("dom_node_geometry") {
   ]
   deps = [
     "//chrome/browser/actor:types",
+    "//chrome/common:chrome_features",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }

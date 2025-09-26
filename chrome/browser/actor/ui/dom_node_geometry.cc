@@ -7,6 +7,7 @@
 #include <absl/container/flat_hash_map.h>
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 namespace actor::ui {
@@ -54,6 +55,10 @@ NodeGeomMap BuildNodeMap(const DocumentIdentifier& doc_id,
 std::optional<gfx::Point> GetDomNodePointFromApc(
     const optimization_guide::proto::AnnotatedPageContent& apc,
     const DomNode& node) {
+  if (!features::kGlicActorUiOverlayMagicCursor.Get()) {
+    // Disabled unless Magic Cursor is on to improve latency.
+    return std::nullopt;
+  }
   if (!apc.has_main_frame_data() ||
       !apc.main_frame_data().has_document_identifier()) {
     UmaHistogramEnumeration(kDomNodeResultHistogram,

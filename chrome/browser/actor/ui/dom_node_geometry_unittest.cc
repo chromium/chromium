@@ -5,6 +5,8 @@
 #include "chrome/browser/actor/ui/dom_node_geometry.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -23,6 +25,13 @@ constexpr char kDomNodeResultHistogram[] =
 constexpr char kArbiraryDocId[] = "4D7AF36711F7531ACB55F32BC7C6242E";
 
 class ActorUiDomNodeGeometryTest : public testing::Test {
+ public:
+  ActorUiDomNodeGeometryTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActorUi,
+        {{features::kGlicActorUiOverlayMagicCursorName, "true"}});
+  }
+
  protected:
   FrameData BuildMainFrameData(std::string doc_id) const {
     FrameData fd;
@@ -36,6 +45,7 @@ class ActorUiDomNodeGeometryTest : public testing::Test {
     return apc;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 

@@ -6,9 +6,11 @@
 
 #include "base/files/file_path.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -76,7 +78,11 @@ MATCHER_P(IsEqualToTrimmed, expected, "") {
 
 class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
  public:
-  ActorUiDomNodeGeometryBrowserTest() = default;
+  ActorUiDomNodeGeometryBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicActorUi,
+        {{features::kGlicActorUiOverlayMagicCursorName, "true"}});
+  }
   ~ActorUiDomNodeGeometryBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -188,6 +194,7 @@ class ActorUiDomNodeGeometryBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ViewSkiaGoldPixelDiff> pixel_diff_;
   AnnotatedPageContent apc_;
   AriaToDomNodeMap aria_label_to_dom_node_;
