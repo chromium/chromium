@@ -187,6 +187,11 @@ std::unique_ptr<views::FrameView> WebUIBubbleDialogView::CreateFrameView(
 }
 
 void WebUIBubbleDialogView::ShowUI() {
+  if (!contents_wrapper_) {
+    // This widget is closing and/or being destroyed.
+    CHECK(!GetWidget() || GetWidget()->IsClosed());
+    return;
+  }
   DCHECK(GetWidget());
   GetWidget()->Show();
   web_view_->GetWebContents()->Focus();
