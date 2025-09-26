@@ -82,6 +82,8 @@ class XRWebGLLayer final : public XRLayer, public XRWebGLLayerClient {
   void OnFrameEnd() override;
   void OnResize() override;
 
+  XRLayerType LayerType() const override;
+
   void Trace(Visitor*) const override;
 
  private:

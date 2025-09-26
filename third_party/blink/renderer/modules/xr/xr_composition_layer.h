@@ -16,12 +16,14 @@ namespace blink {
 
 class V8XRLayerLayout;
 class XRGraphicsBinding;
+class XRLayerDrawingContext;
 
 class XRCompositionLayer : public XRLayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRCompositionLayer(XRGraphicsBinding* binding);
+  XRCompositionLayer(XRGraphicsBinding* binding,
+                     XRLayerDrawingContext* drawing_context);
   ~XRCompositionLayer() override = default;
 
   XRGraphicsBinding* binding() const { return binding_.Get(); }
@@ -38,11 +40,17 @@ class XRCompositionLayer : public XRLayer {
   bool needsRedraw() const;
   void destroy() const;
 
-  void Trace(Visitor*) const override;
+  uint16_t textureWidth() const;
+  uint16_t textureHeight() const;
+  uint16_t textureArrayLength() const;
 
-  virtual uint16_t textureWidth() const = 0;
-  virtual uint16_t textureHeight() const = 0;
-  virtual uint16_t textureArrayLength() const = 0;
+  void OnFrameStart() override;
+  void OnFrameEnd() override;
+  void OnResize() override {}
+
+  XRLayerDrawingContext* drawing_context() { return drawing_context_; }
+
+  void Trace(Visitor*) const override;
 
  protected:
   void SetNeedsRedraw(bool needsRedraw);
@@ -59,6 +67,8 @@ class XRCompositionLayer : public XRLayer {
   float opacity_{1.0};
   uint16_t mip_levels_{1};
   bool needs_redraw_{false};
+
+  Member<XRLayerDrawingContext> drawing_context_;
 };
 
 }  // namespace blink

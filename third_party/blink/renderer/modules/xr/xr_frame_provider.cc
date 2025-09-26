@@ -20,16 +20,16 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_binding.h"
-#include "third_party/blink/renderer/modules/xr/xr_gpu_projection_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer_client.h"
-#include "third_party/blink/renderer/modules/xr/xr_webgl_projection_layer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "ui/display/display.h"
@@ -640,11 +640,24 @@ double XRFrameProvider::UpdateImmersiveFrameTime(
   return high_res_now_ms;
 }
 
+void XRFrameProvider::SubmitCompositionLayer(XRCompositionLayer* layer) {
+  CHECK(layer);
+  CHECK(layer->drawing_context());
+
+  if (layer->drawing_context()->GraphicsApi() ==
+      XRGraphicsBinding::Api::kWebGL) {
+    auto* drawing_context =
+        static_cast<XRWebGLDrawingContext*>(layer->drawing_context());
+    SubmitWebGLLayer(drawing_context, drawing_context->TextureWasQueried());
+  } else {
+    SubmitWebGPULayer(layer);
+  }
+}
+
 void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayerClient* layer_client,
                                        bool was_changed) {
   CHECK(layer_client);
   CHECK(immersive_session_);
-
   const XRLayer* layer = layer_client->layer();
   CHECK(layer);
 
@@ -759,8 +772,7 @@ void XRFrameProvider::UpdateWebGLLayerViewports(XRWebGLLayer* layer) {
       frame_id_, left_coords, right_coords, gfx::Size(width, height));
 }
 
-void XRFrameProvider::SubmitWebGPULayer(XRGPUProjectionLayer* layer,
-                                        bool was_queried) {
+void XRFrameProvider::SubmitWebGPULayer(XRCompositionLayer* layer) {
   CHECK(layer);
   CHECK(immersive_session_);
   CHECK_EQ(layer->session(), immersive_session_);
@@ -769,11 +781,18 @@ void XRFrameProvider::SubmitWebGPULayer(XRGPUProjectionLayer* layer,
     return;
   }
 
+  // A static_cast is safe here because the drawing context type was already
+  // checked by SubmitCompositionLayer.
+  auto* drawing_context =
+      static_cast<XRGPUDrawingContext*>(layer->drawing_context());
+  CHECK(drawing_context);
+
+  bool was_queried = drawing_context->TextureWasQueried();
+
   TRACE_EVENT1("gpu", "XRFrameProvider::SubmitWebGPULayer", "frame", frame_id_);
   DVLOG(3) << __func__ << ": frame=" << frame_id_;
 
-  XRGPUBinding* webgpu_binding = static_cast<XRGPUBinding*>(layer->binding());
-  GPUDevice* device = webgpu_binding->device();
+  GPUDevice* device = drawing_context->device();
 
   if (frame_id_ < 0) {
     // There is no valid frame_id_, and the browser side is not currently

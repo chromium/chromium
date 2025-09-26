@@ -21,9 +21,12 @@ class XREquirectLayer : public XRShapedLayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XREquirectLayer(const XREquirectLayerInit* init,
-                           XRGraphicsBinding* binding);
+  XREquirectLayer(const XREquirectLayerInit* init,
+                  XRGraphicsBinding* binding,
+                  XRLayerDrawingContext* drawing_context);
   ~XREquirectLayer() override = default;
+
+  XRLayerType LayerType() const override;
 
   XRRigidTransform* transform() const { return transform_.Get(); }
   void setTransform(XRRigidTransform* value);

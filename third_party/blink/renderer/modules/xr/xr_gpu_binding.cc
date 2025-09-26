@@ -14,10 +14,11 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
-#include "third_party/blink/renderer/modules/xr/xr_gpu_projection_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_sub_image.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_texture_array_swap_chain.h"
+#include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
@@ -160,8 +161,10 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
         MakeGarbageCollected<XRGPUStaticSwapChain>(device_, depth_stencil_desc);
   }
 
-  return MakeGarbageCollected<XRGPUProjectionLayer>(this, wrapped_swap_chain,
-                                                    depth_stencil_swap_chain);
+  auto* drawing_context = MakeGarbageCollected<XRGPUDrawingContext>(
+      this, wrapped_swap_chain, depth_stencil_swap_chain);
+
+  return MakeGarbageCollected<XRProjectionLayer>(this, drawing_context);
 }
 
 XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
@@ -181,21 +184,24 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
     return nullptr;
   }
 
-  XRGPUProjectionLayer* gpu_layer = static_cast<XRGPUProjectionLayer*>(layer);
+  // The layer passed the OwnsLayer check, confirming it can only contain
+  // a GPU drawing context. This makes the static_cast safe.
+  XRGPUDrawingContext* drawing_context =
+      static_cast<XRGPUDrawingContext*>(layer->drawing_context());
 
-  GPUTexture* color_texture =
-      gpu_layer->color_swap_chain()->GetCurrentTexture();
+  XRGPUSwapChain* color_swap_chain = drawing_context->color_swap_chain();
+  GPUTexture* color_texture = color_swap_chain->GetCurrentTexture();
 
   GPUTexture* depth_stencil_texture = nullptr;
   XRGPUSwapChain* depth_stencil_swap_chain =
-      gpu_layer->depth_stencil_swap_chain();
+      drawing_context->depth_stencil_swap_chain();
   if (depth_stencil_swap_chain) {
     depth_stencil_texture = depth_stencil_swap_chain->GetCurrentTexture();
   }
 
   XRViewData* viewData = view->ViewData();
   if (viewData->ApplyViewportScaleForFrame()) {
-    gpu_layer->MarkViewportUpdated();
+    layer->SetModified(true);
   }
 
   gfx::Rect viewport = GetViewportForView(layer, viewData);

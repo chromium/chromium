@@ -15,7 +15,9 @@ class XRGraphicsBinding;
 
 class XRShapedLayer : public XRCompositionLayer {
  public:
-  explicit XRShapedLayer(const XRLayerInit* init, XRGraphicsBinding* binding);
+  XRShapedLayer(const XRLayerInit* init,
+                XRGraphicsBinding* binding,
+                XRLayerDrawingContext* drawing_context);
   ~XRShapedLayer() override = default;
 
   // onredraw event handler
@@ -28,10 +30,6 @@ class XRShapedLayer : public XRCompositionLayer {
   // xr layer init parameters
   bool isStatic() const { return is_static_; }
   bool clearOnAccess() const { return clear_on_access_; }
-
-  uint16_t textureWidth() const override;
-  uint16_t textureHeight() const override;
-  uint16_t textureArrayLength() const override { return 1; }
 
   // TODO(crbug.com/443963000): Initialize mojom backend.
   bool InitializeLayer() const;

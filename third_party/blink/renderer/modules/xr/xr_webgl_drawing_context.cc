@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/xr/xr_webgl_projection_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_gpu_projection_layer_init.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
@@ -15,69 +15,71 @@
 
 namespace blink {
 
-XRWebGLProjectionLayer::XRWebGLProjectionLayer(
+XRWebGLDrawingContext::XRWebGLDrawingContext(
     XRWebGLBinding* binding,
     XRWebGLSwapChain* color_swap_chain,
     XRWebGLSwapChain* depth_stencil_swap_chain)
-    : XRProjectionLayer(binding),
-      webgl_context_(binding->context()),
+    : webgl_context_(binding->context()),
       color_swap_chain_(color_swap_chain),
       depth_stencil_swap_chain_(depth_stencil_swap_chain) {
   CHECK(color_swap_chain_);
-  color_swap_chain_->SetLayer(this);
+}
+
+enum XRGraphicsBinding::Api XRWebGLDrawingContext::GraphicsApi() const {
+  return XRGraphicsBinding::Api::kWebGL;
+}
+
+void XRWebGLDrawingContext::SetCompositionLayer(XRCompositionLayer* layer) {
+  color_swap_chain_->SetLayer(layer);
   if (depth_stencil_swap_chain_) {
-    depth_stencil_swap_chain_->SetLayer(this);
+    depth_stencil_swap_chain_->SetLayer(layer);
   }
 }
 
-uint16_t XRWebGLProjectionLayer::textureWidth() const {
+uint16_t XRWebGLDrawingContext::TextureWidth() const {
   return color_swap_chain_->descriptor().width;
 }
 
-uint16_t XRWebGLProjectionLayer::textureHeight() const {
+uint16_t XRWebGLDrawingContext::TextureHeight() const {
   return color_swap_chain_->descriptor().height;
 }
 
-uint16_t XRWebGLProjectionLayer::textureArrayLength() const {
+uint16_t XRWebGLDrawingContext::TextureArrayLength() const {
   return color_swap_chain_->descriptor().layers;
 }
 
-void XRWebGLProjectionLayer::OnFrameStart() {
+bool XRWebGLDrawingContext::TextureWasQueried() const {
+  return color_swap_chain_->texture_was_queried();
+}
+
+void XRWebGLDrawingContext::OnFrameStart() {
   color_swap_chain_->OnFrameStart();
   if (depth_stencil_swap_chain_) {
     depth_stencil_swap_chain_->OnFrameStart();
   }
 }
 
-void XRWebGLProjectionLayer::OnFrameEnd() {
+void XRWebGLDrawingContext::OnFrameEnd() {
   color_swap_chain_->OnFrameEnd();
   if (depth_stencil_swap_chain_) {
     depth_stencil_swap_chain_->OnFrameEnd();
   }
+}
 
-  XRFrameProvider* frame_provider = session()->xr()->frameProvider();
-
-  if (viewport_updated_) {
-    frame_provider->UpdateLayerViewports(this);
-    viewport_updated_ = false;
-  }
-
-  frame_provider->SubmitWebGLLayer(this,
-                                   color_swap_chain_->texture_was_queried());
+const XRLayer* XRWebGLDrawingContext::layer() const {
+  return color_swap_chain_->layer();
 }
 
 scoped_refptr<StaticBitmapImage>
-XRWebGLProjectionLayer::TransferToStaticBitmapImage() {
+XRWebGLDrawingContext::TransferToStaticBitmapImage() {
   return color_swap_chain_->TransferToStaticBitmapImage();
 }
 
-void XRWebGLProjectionLayer::OnResize() {}
-
-void XRWebGLProjectionLayer::Trace(Visitor* visitor) const {
+void XRWebGLDrawingContext::Trace(Visitor* visitor) const {
   visitor->Trace(webgl_context_);
   visitor->Trace(color_swap_chain_);
   visitor->Trace(depth_stencil_swap_chain_);
-  XRProjectionLayer::Trace(visitor);
+  XRLayerDrawingContext::Trace(visitor);
 }
 
 }  // namespace blink

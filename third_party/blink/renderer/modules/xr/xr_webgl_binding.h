@@ -98,6 +98,8 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   GLenum InternalFormatForLayerFormat(GLenum format);
   GLenum TypeForLayerFormat(GLenum format);
 
+  XRWebGLSwapChain* CreateColorSwapchain(GLenum layer_format,
+                                         gfx::Size layer_size);
   XRWebGLSwapChain* GetSwapchainForLayer(XRCompositionLayer* layer);
 
   Member<WebGLRenderingContextBase> webgl_context_;

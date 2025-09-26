@@ -10,8 +10,9 @@
 
 namespace blink {
 XRCylinderLayer::XRCylinderLayer(const XRCylinderLayerInit* init,
-                                 XRGraphicsBinding* binding)
-    : XRShapedLayer(init, binding),
+                                 XRGraphicsBinding* binding,
+                                 XRLayerDrawingContext* drawing_context)
+    : XRShapedLayer(init, binding, drawing_context),
       radius_(init->radius()),
       central_angle_(init->centralAngle()),
       aspect_ratio_(init->aspectRatio()) {
@@ -23,25 +24,29 @@ XRCylinderLayer::XRCylinderLayer(const XRCylinderLayerInit* init,
   }
 }
 
+XRLayerType XRCylinderLayer::LayerType() const {
+  return XRLayerType::kCylinderLayer;
+}
+
 void XRCylinderLayer::setRadius(float radius) {
   radius_ = radius;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XRCylinderLayer::setCentralAngle(float central_angle) {
   central_angle_ = central_angle;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XRCylinderLayer::setAspectRatio(float aspect_ratio) {
   aspect_ratio_ = aspect_ratio;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XRCylinderLayer::setTransform(XRRigidTransform* value) {
   if (transform_ != value) {
     transform_ = value;
-    OnUpdateLayerData();
+    SetModified(true);
   }
 }
 

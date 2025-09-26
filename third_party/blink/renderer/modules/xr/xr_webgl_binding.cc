@@ -29,8 +29,8 @@
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_buffer_swap_chain.h"
+#include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
-#include "third_party/blink/renderer/modules/xr/xr_webgl_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_sub_image.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_texture_array_swap_chain.h"
@@ -105,6 +105,29 @@ bool XRWebGLBinding::usesDepthValues() const {
   return false;
 }
 
+XRWebGLSwapChain* XRWebGLBinding::CreateColorSwapchain(GLenum layer_format,
+                                                       gfx::Size texture_size) {
+  XRWebGLSwapChain::Descriptor color_desc = {};
+  color_desc.format = FormatForLayerFormat(layer_format);
+  color_desc.internal_format = InternalFormatForLayerFormat(layer_format);
+  color_desc.type = TypeForLayerFormat(layer_format);
+  color_desc.attachment_target = GL_COLOR_ATTACHMENT0;
+  color_desc.width = static_cast<uint32_t>(texture_size.width());
+  color_desc.height = static_cast<uint32_t>(texture_size.height());
+  color_desc.layers = 1;
+
+  XRWebGLSwapChain* color_swap_chain;
+  if (session()->xr()->frameProvider()->DrawingIntoSharedBuffer()) {
+    color_swap_chain = MakeGarbageCollected<XRWebGLSharedImageSwapChain>(
+        webgl_context_, color_desc, webgl2_);
+  } else {
+    color_swap_chain = MakeGarbageCollected<XRWebGLDrawingBufferSwapChain>(
+        webgl_context_, color_desc, webgl2_);
+  }
+
+  return color_swap_chain;
+}
+
 XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
     const XRProjectionLayerInit* init,
     ExceptionState& exception_state) {
@@ -153,24 +176,8 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
 
   gfx::Size texture_size = gfx::ToFlooredSize(scaled_size);
 
-  XRWebGLSwapChain::Descriptor color_desc = {};
-  color_desc.format = FormatForLayerFormat(init->colorFormat());
-  color_desc.internal_format =
-      InternalFormatForLayerFormat(init->colorFormat());
-  color_desc.type = TypeForLayerFormat(init->colorFormat());
-  color_desc.attachment_target = GL_COLOR_ATTACHMENT0;
-  color_desc.width = static_cast<uint32_t>(texture_size.width());
-  color_desc.height = static_cast<uint32_t>(texture_size.height());
-  color_desc.layers = 1;
-
-  XRWebGLSwapChain* color_swap_chain;
-  if (session()->xr()->frameProvider()->DrawingIntoSharedBuffer()) {
-    color_swap_chain = MakeGarbageCollected<XRWebGLSharedImageSwapChain>(
-        webgl_context_, color_desc, webgl2_);
-  } else {
-    color_swap_chain = MakeGarbageCollected<XRWebGLDrawingBufferSwapChain>(
-        webgl_context_, color_desc, webgl2_);
-  }
+  XRWebGLSwapChain* color_swap_chain =
+      CreateColorSwapchain(init->colorFormat(), texture_size);
 
   if (is_texture_array) {
     // If a texture-array was requested, create a texture array wrapper for the
@@ -207,8 +214,10 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
         webgl_context_, depth_stencil_desc, webgl2_);
   }
 
-  return MakeGarbageCollected<XRWebGLProjectionLayer>(this, color_swap_chain,
-                                                      depth_stencil_swap_chain);
+  auto* drawing_context = MakeGarbageCollected<XRWebGLDrawingContext>(
+      this, color_swap_chain, depth_stencil_swap_chain);
+
+  return MakeGarbageCollected<XRProjectionLayer>(this, drawing_context);
 }
 
 XRQuadLayer* XRWebGLBinding::createQuadLayer(const XRQuadLayerInit* init,
@@ -286,22 +295,21 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
     return nullptr;
   }
 
-  // Because we have validated that this is a layer owned by this binding we
-  // know that it is a XRWebGLProjectionLayer, because that's the only type of
-  // projection layer that this class returns.
-  XRWebGLProjectionLayer* gl_layer =
-      static_cast<XRWebGLProjectionLayer*>(layer);
-
   XRViewData* viewData = view->ViewData();
   if (viewData->ApplyViewportScaleForFrame()) {
-    gl_layer->MarkViewportUpdated();
+    layer->SetModified(true);
   }
 
   gfx::Rect viewport = GetViewportForView(layer, viewData);
 
+  // The layer passed the OwnsLayer check, confirming it can only contain
+  // a WebGL drawing context. This makes the static_cast safe.
+  auto* drawing_context =
+      static_cast<XRWebGLDrawingContext*>(layer->drawing_context());
+
   return MakeGarbageCollected<XRWebGLSubImage>(
-      viewport, viewData->index(), gl_layer->color_swap_chain(),
-      gl_layer->depth_stencil_swap_chain(), nullptr);
+      viewport, viewData->index(), drawing_context->color_swap_chain(),
+      drawing_context->depth_stencil_swap_chain(), nullptr);
 }
 
 XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,

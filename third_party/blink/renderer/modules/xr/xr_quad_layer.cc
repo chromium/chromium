@@ -14,8 +14,9 @@
 namespace blink {
 
 XRQuadLayer::XRQuadLayer(const XRQuadLayerInit* init,
-                         XRGraphicsBinding* binding)
-    : XRShapedLayer(init, binding),
+                         XRGraphicsBinding* binding,
+                         XRLayerDrawingContext* drawing_context)
+    : XRShapedLayer(init, binding, drawing_context),
       width_(init->width()),
       height_(init->height()) {
   if (init->hasTransform()) {
@@ -26,20 +27,24 @@ XRQuadLayer::XRQuadLayer(const XRQuadLayerInit* init,
   }
 }
 
+XRLayerType XRQuadLayer::LayerType() const {
+  return XRLayerType::kQuadLayer;
+}
+
 void XRQuadLayer::setWidth(float width) {
   width_ = width;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XRQuadLayer::setHeight(float height) {
   height_ = height;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XRQuadLayer::setTransform(XRRigidTransform* value) {
   if (transform_ != value) {
     transform_ = value;
-    OnUpdateLayerData();
+    SetModified(true);
   }
 }
 

@@ -182,6 +182,10 @@ XRWebGLLayer::~XRWebGLLayer() {
   }
 }
 
+XRLayerType XRWebGLLayer::LayerType() const {
+  return XRLayerType::kWebGLLayer;
+}
+
 uint32_t XRWebGLLayer::framebufferWidth() const {
   if (drawing_buffer_) {
     return drawing_buffer_->size().width();

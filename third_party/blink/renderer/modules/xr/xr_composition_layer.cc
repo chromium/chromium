@@ -6,13 +6,24 @@
 
 #include "base/notimplemented.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_layer_layout.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_drawing_context.h"
+#include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_swap_chain.h"
+#include "third_party/blink/renderer/modules/xr/xr_system.h"
 
 namespace blink {
 
-XRCompositionLayer::XRCompositionLayer(XRGraphicsBinding* binding)
-    : XRLayer(binding->session()), binding_(binding) {}
+XRCompositionLayer::XRCompositionLayer(XRGraphicsBinding* binding,
+                                       XRLayerDrawingContext* drawing_context)
+    : XRLayer(binding->session()),
+      binding_(binding),
+      drawing_context_(drawing_context) {
+  CHECK(drawing_context_);
+  drawing_context_->SetCompositionLayer(this);
+}
 
 V8XRLayerLayout XRCompositionLayer::layout() const {
   return V8XRLayerLayout(V8XRLayerLayout::Enum::kDefault);
@@ -75,8 +86,40 @@ void XRCompositionLayer::SetMipLevels(uint16_t mipLevels) {
   mip_levels_ = mipLevels;
 }
 
+uint16_t XRCompositionLayer::textureWidth() const {
+  return drawing_context_->TextureWidth();
+}
+
+uint16_t XRCompositionLayer::textureHeight() const {
+  return drawing_context_->TextureHeight();
+}
+
+uint16_t XRCompositionLayer::textureArrayLength() const {
+  return drawing_context_->TextureWidth();
+}
+
+void XRCompositionLayer::OnFrameStart() {
+  drawing_context_->OnFrameStart();
+}
+
+void XRCompositionLayer::OnFrameEnd() {
+  drawing_context_->OnFrameEnd();
+
+  XRFrameProvider* frame_provider = session()->xr()->frameProvider();
+
+  if (IsModified()) {
+    if (XRProjectionLayer* layer = DynamicTo<XRProjectionLayer>(this); layer) {
+      frame_provider->UpdateLayerViewports(layer);
+      SetModified(false);
+    }
+  }
+
+  frame_provider->SubmitCompositionLayer(this);
+}
+
 void XRCompositionLayer::Trace(Visitor* visitor) const {
   visitor->Trace(binding_);
+  visitor->Trace(drawing_context_);
   XRLayer::Trace(visitor);
 }
 

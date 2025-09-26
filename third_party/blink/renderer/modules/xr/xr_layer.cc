@@ -29,6 +29,14 @@ bool XRLayer::HasSharedImage() const {
   return session_->LayerSharedImageManager().HasLayerSharedImage(layer_id_);
 }
 
+void XRLayer::SetModified(bool is_modified) {
+  is_modified_ = is_modified;
+}
+
+bool XRLayer::IsModified() const {
+  return is_modified_;
+}
+
 void XRLayer::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   EventTarget::Trace(visitor);

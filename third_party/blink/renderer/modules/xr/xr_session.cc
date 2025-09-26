@@ -78,7 +78,7 @@ const char kReferenceSpaceNotSupported[] =
     "This device does not support the requested reference space type.";
 
 const char kIncompatibleLayer[] =
-    "XRWebGLLayer was created with a different session.";
+    "XRLayer was created with a different session.";
 
 const char kBaseLayerAndLayers[] =
     "Both baseLayer and layers should not be set at the same time when "

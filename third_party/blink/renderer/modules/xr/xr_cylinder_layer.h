@@ -19,9 +19,12 @@ class XRCylinderLayer : public XRShapedLayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRCylinderLayer(const XRCylinderLayerInit* init,
-                           XRGraphicsBinding* binding);
+  XRCylinderLayer(const XRCylinderLayerInit* init,
+                  XRGraphicsBinding* binding,
+                  XRLayerDrawingContext* drawing_context);
   ~XRCylinderLayer() override = default;
+
+  XRLayerType LayerType() const override;
 
   XRRigidTransform* transform() const { return transform_.Get(); }
   void setTransform(XRRigidTransform* value);

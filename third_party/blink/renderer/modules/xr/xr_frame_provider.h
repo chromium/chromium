@@ -25,12 +25,12 @@ namespace blink {
 
 class LocalDOMWindow;
 class XRFrameTransport;
-class XRGPUProjectionLayer;
 class XRProjectionLayer;
 class XRSession;
 class XRSystem;
 class XRWebGLLayer;
 class XRWebGLLayerClient;
+class XRCompositionLayer;
 
 // This class manages requesting and dispatching frame updates, which includes
 // pose information for a given XRDevice.
@@ -62,10 +62,10 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   void OnNonImmersiveVSync(double high_res_now_ms);
 
+  void SubmitCompositionLayer(XRCompositionLayer*);
+
   void SubmitWebGLLayer(XRWebGLLayerClient*, bool was_changed);
   void UpdateWebGLLayerViewports(XRWebGLLayer*);
-
-  void SubmitWebGPULayer(XRGPUProjectionLayer*, bool was_queried);
 
   // Used for both WebGPU and WebGL layers.
   void UpdateLayerViewports(XRProjectionLayer*);
@@ -90,6 +90,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
     kInline = 0,
     kImmersive = 1,
   };
+
+  void SubmitWebGPULayer(XRCompositionLayer*);
 
   void OnImmersiveFrameData(device::mojom::blink::XRFrameDataPtr data);
   void OnNonImmersiveFrameData(XRSession* session,

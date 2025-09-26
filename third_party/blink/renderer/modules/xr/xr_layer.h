@@ -15,6 +15,14 @@ namespace blink {
 class XRSession;
 struct XRSharedImageData;
 
+enum class XRLayerType {
+  kWebGLLayer,
+  kProjectionLayer,
+  kQuadLayer,
+  kCylinderLayer,
+  kEquirectLayer
+};
+
 class XRLayer : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -33,15 +41,20 @@ class XRLayer : public EventTarget {
   const AtomicString& InterfaceName() const override;
 
   uint32_t layer_id() const { return layer_id_; }
+  virtual XRLayerType LayerType() const = 0;
 
   const XRSharedImageData& SharedImage() const;
   bool HasSharedImage() const;
+
+  void SetModified(bool modified);
+  bool IsModified() const;
 
   void Trace(Visitor*) const override;
 
  private:
   const Member<XRSession> session_;
   const uint32_t layer_id_;
+  bool is_modified_{false};
 };
 
 }  // namespace blink

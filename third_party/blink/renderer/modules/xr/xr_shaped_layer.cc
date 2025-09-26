@@ -11,8 +11,9 @@
 namespace blink {
 
 XRShapedLayer::XRShapedLayer(const XRLayerInit* init,
-                             XRGraphicsBinding* binding)
-    : XRCompositionLayer(binding),
+                             XRGraphicsBinding* binding,
+                             XRLayerDrawingContext* drawing_context)
+    : XRCompositionLayer(binding, drawing_context),
       xr_space_(init->space()),
       texture_width_(init->viewPixelWidth()),
       texture_height_(init->viewPixelHeight()),
@@ -28,15 +29,7 @@ bool XRShapedLayer::InitializeLayer() const {
 
 void XRShapedLayer::setSpace(XRSpace* space) {
   xr_space_ = space;
-  OnUpdateLayerData();
-}
-
-uint16_t XRShapedLayer::textureWidth() const {
-  return texture_width_;
-}
-
-uint16_t XRShapedLayer::textureHeight() const {
-  return texture_height_;
+  SetModified(true);
 }
 
 void XRShapedLayer::Trace(Visitor* visitor) const {

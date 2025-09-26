@@ -18,8 +18,12 @@ class XRQuadLayer : public XRShapedLayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRQuadLayer(const XRQuadLayerInit* init, XRGraphicsBinding* binding);
+  XRQuadLayer(const XRQuadLayerInit* init,
+              XRGraphicsBinding* binding,
+              XRLayerDrawingContext* drawing_context);
   ~XRQuadLayer() override = default;
+
+  XRLayerType LayerType() const override;
 
   XRRigidTransform* transform() const { return transform_.Get(); }
   void setTransform(XRRigidTransform* value);

@@ -10,8 +10,9 @@
 
 namespace blink {
 XREquirectLayer::XREquirectLayer(const XREquirectLayerInit* init,
-                                 XRGraphicsBinding* binding)
-    : XRShapedLayer(init, binding),
+                                 XRGraphicsBinding* binding,
+                                 XRLayerDrawingContext* drawing_context)
+    : XRShapedLayer(init, binding, drawing_context),
       radius_(init->radius()),
       central_horizontal_angle_(init->centralHorizontalAngle()),
       upper_vertical_angle_(init->upperVerticalAngle()),
@@ -24,30 +25,34 @@ XREquirectLayer::XREquirectLayer(const XREquirectLayerInit* init,
   }
 }
 
+XRLayerType XREquirectLayer::LayerType() const {
+  return XRLayerType::kEquirectLayer;
+}
+
 void XREquirectLayer::setRadius(float radius) {
   radius_ = radius;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XREquirectLayer::setCentralHorizontalAngle(float angle) {
   central_horizontal_angle_ = angle;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XREquirectLayer::setUpperVerticalAngle(float angle) {
   upper_vertical_angle_ = angle;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XREquirectLayer::setLowerVerticalAngle(float angle) {
   lower_vertical_angle_ = angle;
-  OnUpdateLayerData();
+  SetModified(true);
 }
 
 void XREquirectLayer::setTransform(XRRigidTransform* value) {
   if (transform_ != value) {
     transform_ = value;
-    OnUpdateLayerData();
+    SetModified(true);
   }
 }
 

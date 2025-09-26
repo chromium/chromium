@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/xr/xr_gpu_projection_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_drawing_context.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_gpu_projection_layer_init.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
@@ -18,64 +18,62 @@
 
 namespace blink {
 
-XRGPUProjectionLayer::XRGPUProjectionLayer(
+XRGPUDrawingContext::XRGPUDrawingContext(
     XRGPUBinding* binding,
     XRGPUSwapChain* color_swap_chain,
     XRGPUSwapChain* depth_stencil_swap_chain)
-    : XRProjectionLayer(binding),
-      device_(binding->device()),
+    : device_(binding->device()),
       color_swap_chain_(color_swap_chain),
       depth_stencil_swap_chain_(depth_stencil_swap_chain) {
   CHECK(color_swap_chain_);
-  color_swap_chain_->SetLayer(this);
-  if (depth_stencil_swap_chain_) {
-    depth_stencil_swap_chain_->SetLayer(this);
-  }
 }
 
-uint16_t XRGPUProjectionLayer::textureWidth() const {
+enum XRGraphicsBinding::Api XRGPUDrawingContext::GraphicsApi() const {
+  return XRGraphicsBinding::Api::kWebGPU;
+}
+
+uint16_t XRGPUDrawingContext::TextureWidth() const {
   return color_swap_chain_->descriptor().size.width;
 }
 
-uint16_t XRGPUProjectionLayer::textureHeight() const {
+uint16_t XRGPUDrawingContext::TextureHeight() const {
   return color_swap_chain_->descriptor().size.height;
 }
 
-uint16_t XRGPUProjectionLayer::textureArrayLength() const {
+uint16_t XRGPUDrawingContext::TextureArrayLength() const {
   return color_swap_chain_->descriptor().size.depthOrArrayLayers;
 }
 
-void XRGPUProjectionLayer::OnFrameStart() {
+bool XRGPUDrawingContext::TextureWasQueried() const {
+  return color_swap_chain_->texture_was_queried();
+}
+
+void XRGPUDrawingContext::SetCompositionLayer(XRCompositionLayer* layer) {
+  color_swap_chain_->SetLayer(layer);
+  if (depth_stencil_swap_chain_) {
+    depth_stencil_swap_chain_->SetLayer(layer);
+  }
+}
+
+void XRGPUDrawingContext::OnFrameStart() {
   color_swap_chain_->OnFrameStart();
   if (depth_stencil_swap_chain_) {
     depth_stencil_swap_chain_->OnFrameStart();
   }
 }
 
-void XRGPUProjectionLayer::OnFrameEnd() {
+void XRGPUDrawingContext::OnFrameEnd() {
   color_swap_chain_->OnFrameEnd();
   if (depth_stencil_swap_chain_) {
     depth_stencil_swap_chain_->OnFrameEnd();
   }
-
-  XRFrameProvider* frame_provider = session()->xr()->frameProvider();
-
-  if (viewport_updated_) {
-    frame_provider->UpdateLayerViewports(this);
-    viewport_updated_ = false;
-  }
-
-  frame_provider->SubmitWebGPULayer(this,
-                                    color_swap_chain_->texture_was_queried());
 }
 
-void XRGPUProjectionLayer::OnResize() {}
-
-void XRGPUProjectionLayer::Trace(Visitor* visitor) const {
+void XRGPUDrawingContext::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(color_swap_chain_);
   visitor->Trace(depth_stencil_swap_chain_);
-  XRProjectionLayer::Trace(visitor);
+  XRLayerDrawingContext::Trace(visitor);
 }
 
 }  // namespace blink
