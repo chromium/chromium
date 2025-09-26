@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/unguessable_token.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/buffer_types.h"
@@ -36,7 +37,7 @@ class GPU_GLES2_EXPORT SharedMemoryRegionWrapper {
   // until destruction.
   bool Initialize(const gfx::GpuMemoryBufferHandle& handle,
                   const gfx::Size& size,
-                  gfx::BufferFormat format);
+                  viz::SharedImageFormat format);
 
   bool IsValid() const;
   uint8_t* GetMemory(int plane_index) {

@@ -57,16 +57,15 @@ gfx::GpuMemoryBufferHandle
 SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format) {
-  size_t buffer_size = 0u;
   CHECK(viz::HasEquivalentBufferFormat(format));
-  auto buffer_format = ToBufferFormat(format);
-  if (!gfx::BufferSizeForBufferFormatChecked(size, buffer_format,
-                                             &buffer_size)) {
+  std::optional<size_t> buffer_size =
+      viz::SharedMemorySizeForSharedImageFormat(format, size);
+  if (!buffer_size) {
     return gfx::GpuMemoryBufferHandle();
   }
 
   auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
+      base::UnsafeSharedMemoryRegion::Create(buffer_size.value());
   if (!shared_memory_region.IsValid()) {
     return gfx::GpuMemoryBufferHandle();
   }
@@ -74,8 +73,10 @@ SharedMemoryImageBackingFactory::CreateGpuMemoryBufferHandle(
   gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
   handle.type = gfx::SHARED_MEMORY_BUFFER;
   handle.offset = 0;
-  handle.stride = static_cast<uint32_t>(
-      gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
+  handle.stride =
+      static_cast<uint32_t>(viz::SharedMemoryRowSizeForSharedImageFormat(
+                                format, /*plane=*/0, size.width())
+                                .value());
   return handle;
 }
 
@@ -100,7 +101,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     gfx::GpuMemoryBufferHandle handle) {
   CHECK(handle.type == gfx::SHARED_MEMORY_BUFFER);
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format))) {
+  if (!shm_wrapper.Initialize(handle, size, format)) {
     return nullptr;
   }
   return std::make_unique<SharedMemoryImageBacking>(
@@ -126,7 +127,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     handle = CreateGpuMemoryBufferHandle(size, format);
   }
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, ToBufferFormat(format))) {
+  if (!shm_wrapper.Initialize(handle, size, format)) {
     return nullptr;
   }
   auto backing = std::make_unique<SharedMemoryImageBacking>(
