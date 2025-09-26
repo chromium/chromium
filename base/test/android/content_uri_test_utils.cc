@@ -10,6 +10,7 @@
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 
@@ -82,6 +83,16 @@ std::optional<FilePath> GetVirtualDocumentPathFromCacheDirDirectory(
     return std::nullopt;
   }
   return base::ResolveToVirtualDocumentPath(*content_url);
+}
+
+std::optional<FilePath> CreateCacheCopyAndGetContentUri(
+    const FilePath& source_path,
+    const ScopedTempDir& temp_dir) {
+  if (!base::CopyDirectory(source_path, temp_dir.GetPath(), true)) {
+    return std::nullopt;
+  }
+  return GetInMemoryContentTreeUriFromCacheDirDirectory(
+      temp_dir.GetPath().Append(source_path.BaseName()));
 }
 
 }  // namespace base::test::android
