@@ -22933,25 +22933,6 @@
             ]
         }
     ],
-    "SegmentationPlatformUmaFromSqlDb": [
-        {
-            "platforms": [
-                "android",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SegmentationPlatformUmaFromSqlDb"
-                    ]
-                }
-            ]
-        }
-    ],
     "SelectFileOpenDocument": [
         {
             "platforms": [
