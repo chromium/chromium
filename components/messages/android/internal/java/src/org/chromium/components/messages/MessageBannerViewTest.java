@@ -264,6 +264,7 @@ public class MessageBannerViewTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/428750594")
     public void testSecondaryActionMenuInvokesPopupMenuEventHandlers() {
         PopupMenuShownListener listener = Mockito.mock(PopupMenuShownListener.class);
         ThreadUtils.runOnUiThreadBlocking(
