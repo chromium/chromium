@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/screen_presenter_factory.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -37,6 +38,8 @@
 #include "chromeos/ash/components/boca/spotlight/spotlight_constants.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_frame_consumer.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_remoting_client_manager.h"
+#include "chromeos/ash/components/boca/student_screen_presenter.h"
+#include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/session_manager/core/session_manager.h"
@@ -462,6 +465,31 @@ void BocaSessionManager::OnInvalidationReceived(const std::string& payload) {
   LoadCurrentSession(/*from_polling=*/false);
 }
 
+void BocaSessionManager::SetScreenPresenterFactory(
+    std::unique_ptr<ScreenPresenterFactory> screen_presenter_factory) {
+  screen_presenter_factory_ = std::move(screen_presenter_factory);
+}
+
+StudentScreenPresenter* BocaSessionManager::GetStudentScreenPresenter() {
+  if (!IsSessionActive(current_session_.get())) {
+    return nullptr;
+  }
+  return student_screen_presenter_.get();
+}
+
+TeacherScreenPresenter* BocaSessionManager::GetTeacherScreenPresenter() {
+  if (!screen_presenter_factory_ ||
+      !ash::features::IsBocaScreenSharingTeacherEnabled()) {
+    return nullptr;
+  }
+  if (!teacher_screen_presenter_) {
+    teacher_screen_presenter_ =
+        screen_presenter_factory_->CreateTeacherScreenPresenter(
+            BocaAppClient::Get()->GetDeviceId());
+  }
+  return teacher_screen_presenter_.get();
+}
+
 std::optional<std::string> BocaSessionManager::GetStudentActiveDeviceId(
     std::string_view student_id) {
   if (!current_session_ ||
@@ -577,6 +605,13 @@ void BocaSessionManager::NotifySessionUpdate() {
 
   if (!IsSessionActive(previous_session_.get()) &&
       IsSessionActive(current_session_.get())) {
+    if (ash::features::IsBocaScreenSharingStudentEnabled() &&
+        screen_presenter_factory_) {
+      student_screen_presenter_ =
+          screen_presenter_factory_->CreateStudentScreenPresenter(
+              current_session_->session_id(), current_session_->teacher(),
+              BocaAppClient::Get()->GetDeviceId());
+    }
     for (auto& observer : observers_) {
       VLOG(1) << "[Boca] notifying session started";
       StartSessionPolling(/*in_session=*/true);

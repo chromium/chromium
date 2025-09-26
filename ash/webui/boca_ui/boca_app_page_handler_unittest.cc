@@ -41,9 +41,6 @@
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
-#include "chromeos/ash/components/boca/receiver/screen_presenter_factory_impl.h"
-#include "chromeos/ash/components/boca/receiver/student_screen_presenter_impl.h"
-#include "chromeos/ash/components/boca/receiver/teacher_screen_presenter_impl.h"
 #include "chromeos/ash/components/boca/session_api/add_students_request.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
@@ -54,6 +51,8 @@
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
 #include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
+#include "chromeos/ash/components/boca/student_screen_presenter.h"
+#include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/fake_browser_context_helper_delegate.h"
@@ -304,6 +303,14 @@ class MockSessionManager : public BocaSessionManager {
               (const ::boca::CaptionsConfig&),
               (override));
   MOCK_METHOD(bool, disabled_on_non_managed_network, (), (override));
+  MOCK_METHOD(StudentScreenPresenter*,
+              GetStudentScreenPresenter,
+              (),
+              (override));
+  MOCK_METHOD(TeacherScreenPresenter*,
+              GetTeacherScreenPresenter,
+              (),
+              (override));
   MOCK_METHOD(std::optional<std::string>,
               GetStudentActiveDeviceId,
               (std::string_view),
@@ -341,22 +348,6 @@ class MockWebviewAuthHandler : public WebviewAuthHandler {
   ~MockWebviewAuthHandler() override {}
 
   MOCK_METHOD1(AuthenticateWebview, void(AuthenticateWebviewCallback));
-};
-
-class MockScreenPresenterFactory : public ScreenPresenterFactory {
- public:
-  MockScreenPresenterFactory() = default;
-  ~MockScreenPresenterFactory() override = default;
-
-  MOCK_METHOD(std::unique_ptr<StudentScreenPresenter>,
-              CreateStudentScreenPresenter,
-              (std::string_view, const ::boca::UserIdentity&, std::string_view),
-              (override));
-
-  MOCK_METHOD(std::unique_ptr<TeacherScreenPresenter>,
-              CreateTeacherScreenPresenter,
-              (std::string_view),
-              (override));
 };
 
 class MockStudentScreenPresenter : public StudentScreenPresenter {
@@ -557,8 +548,6 @@ class BocaAppPageHandlerTest : public testing::Test {
 
   void TearDown() override {
     VerifyEndSession();
-    teacher_screen_presenter_ptr_ = nullptr;
-    student_screen_presenter_ = nullptr;
     browser_context_ = nullptr;
     boca_app_handler_.reset();
     web_ui_.reset();
@@ -578,22 +567,6 @@ class BocaAppPageHandlerTest : public testing::Test {
     // construction.
     EXPECT_CALL(*boca_app_client(), GetSessionManager)
         .WillOnce(Return(session_manager()));
-    auto screen_presenter_factory =
-        std::make_unique<NiceMock<MockScreenPresenterFactory>>();
-    ON_CALL(*screen_presenter_factory, CreateStudentScreenPresenter)
-        .WillByDefault([this]() {
-          auto student_screen_presenter =
-              std::make_unique<MockStudentScreenPresenter>();
-          student_screen_presenter_ = student_screen_presenter.get();
-          return student_screen_presenter;
-        });
-    // `CreateTeacherScreenPresenter` is only called once per instance.
-    teacher_screen_presenter_ptr_ = nullptr;
-    teacher_screen_presenter_ = std::make_unique<MockTeacherScreenPresenter>();
-    teacher_screen_presenter_ptr_ = teacher_screen_presenter_.get();
-    ON_CALL(*screen_presenter_factory, CreateTeacherScreenPresenter)
-        .WillByDefault(
-            [this]() { return std::move(teacher_screen_presenter_); });
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         remote_.BindNewPipeAndPassReceiver(),
         // TODO(crbug.com/359929870): Setting nullptr for other dependencies for
@@ -603,8 +576,7 @@ class BocaAppPageHandlerTest : public testing::Test {
                                                  kWebviewHostName),
         /*classroom_client_impl=*/nullptr,
         /*content_settings_handler=*/nullptr,
-        /*system_web_app_manager=*/nullptr, &session_client_impl_,
-        std::move(screen_presenter_factory), is_producer);
+        /*system_web_app_manager=*/nullptr, &session_client_impl_, is_producer);
     fake_page_ = std::make_unique<FakePage>(std::move(page_pending_receiver));
     boca_app_handler_->SetSpotlightService(&spotlight_service_);
     // Explicitly set pref
@@ -687,12 +659,6 @@ class BocaAppPageHandlerTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable* pref_service() {
     return &pref_service_;
   }
-  MockStudentScreenPresenter* student_screen_presenter() {
-    return student_screen_presenter_;
-  }
-  MockTeacherScreenPresenter* teacher_screen_presenter() {
-    return teacher_screen_presenter_ptr_;
-  }
 
   void SetSessionCaptionInitializer(bool success) {
     session_manager()->SetSessionCaptionInitializer(base::BindLambdaForTesting(
@@ -727,9 +693,6 @@ class BocaAppPageHandlerTest : public testing::Test {
   std::unique_ptr<BocaAppHandler> boca_app_handler_;
   StrictMock<MockSpotlightService> spotlight_service_{nullptr};
   raw_ptr<content::BrowserContext> browser_context_;
-  raw_ptr<MockStudentScreenPresenter> student_screen_presenter_;
-  std::unique_ptr<MockTeacherScreenPresenter> teacher_screen_presenter_;
-  raw_ptr<MockTeacherScreenPresenter> teacher_screen_presenter_ptr_;
 };
 
 class BocaAppPageHandlerProducerTest : public BocaAppPageHandlerTest {
@@ -3103,6 +3066,10 @@ TEST_F(BocaAppPageHandlerProducerTest,
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
   base::OnceClosure disconnected_callback;
   base::test::TestFuture<bool> success_future;
   base::test::TestFuture<void> disconnected_future;
@@ -3113,7 +3080,7 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
   EXPECT_CALL(*session_manager(), GetStudentActiveDeviceId)
       .WillOnce(Return(kStudentDeviceId));
-  EXPECT_CALL(*student_screen_presenter(),
+  EXPECT_CALL(*student_screen_presenter,
               Start(kReceiverId, _, kStudentDeviceId, _, _))
       .WillOnce([&disconnected_callback, &student_identity](
                     std::string_view, const ::boca::UserIdentity& student,
@@ -3138,11 +3105,15 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenSuccess) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
   EXPECT_CALL(*session_manager(), GetStudentActiveDeviceId)
       .WillOnce(Return(kStudentDeviceId));
-  EXPECT_CALL(*student_screen_presenter(),
+  EXPECT_CALL(*student_screen_presenter,
               Start(kReceiverId, _, kStudentDeviceId, _, _))
       .WillOnce([](std::string_view, const ::boca::UserIdentity&,
                    std::string_view, base::OnceCallback<void(bool)> success_cb,
@@ -3157,11 +3128,15 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenFailure) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenNoDeviceFound) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
   EXPECT_CALL(*session_manager(), GetStudentActiveDeviceId)
       .WillOnce(Return(std::nullopt));
-  EXPECT_CALL(*student_screen_presenter(), Start).Times(0);
+  EXPECT_CALL(*student_screen_presenter, Start).Times(0);
   boca_app_handler()->PresentStudentScreen(
       mojom::Identity::New(kActiveStudentId, "student name",
                            "student@email.com", std::nullopt),
@@ -3169,7 +3144,9 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenNoDeviceFound) {
   EXPECT_FALSE(success_future.Get());
 }
 
-TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenOutOfSession) {
+TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenWhenNull) {
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(nullptr));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->PresentStudentScreen(
       mojom::Identity::New(kActiveStudentId, "student name",
@@ -3179,9 +3156,13 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentStudentScreenOutOfSession) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenSuccess) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
-  EXPECT_CALL(*student_screen_presenter(), Stop)
+  EXPECT_CALL(*student_screen_presenter, Stop)
       .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
         std::move(success_cb).Run(true);
       });
@@ -3190,9 +3171,13 @@ TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenSuccess) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenFailure) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
-  EXPECT_CALL(*student_screen_presenter(), Stop)
+  EXPECT_CALL(*student_screen_presenter, Stop)
       .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
         std::move(success_cb).Run(false);
       });
@@ -3202,13 +3187,18 @@ TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenFailure) {
 
 TEST_F(BocaAppPageHandlerProducerTest,
        StopPresentingStudentScreenOnSessionEnd) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
-  EXPECT_CALL(*student_screen_presenter(), Stop).Times(1);
+  EXPECT_CALL(*student_screen_presenter, Stop).Times(1);
   boca_app_handler()->OnSessionEnded("session_id");
 }
 
-TEST_F(BocaAppPageHandlerProducerTest,
-       StopPresentingStudentScreenOutOfSession) {
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingStudentScreenWhenNull) {
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(nullptr));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->StopPresentingStudentScreen(success_future.GetCallback());
   EXPECT_FALSE(success_future.Get());
@@ -3216,16 +3206,24 @@ TEST_F(BocaAppPageHandlerProducerTest,
 
 TEST_F(BocaAppPageHandlerProducerTest,
        CheckPresentingStudentScreenConnectionOnInvalidation) {
+  auto student_screen_presenter =
+      std::make_unique<MockStudentScreenPresenter>();
+  ON_CALL(*session_manager(), GetStudentScreenPresenter)
+      .WillByDefault(Return(student_screen_presenter.get()));
   boca_app_handler()->OnSessionStarted("session_id", ::boca::UserIdentity());
-  EXPECT_CALL(*student_screen_presenter(), CheckConnection).Times(1);
+  EXPECT_CALL(*student_screen_presenter, CheckConnection).Times(1);
   boca_app_handler()->OnReceiverInvalidation();
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentOwnScreenSuccess) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
   base::OnceClosure disconnected_callback;
   base::test::TestFuture<bool> success_future;
   base::test::TestFuture<void> disconnected_future;
-  EXPECT_CALL(*teacher_screen_presenter(), Start(kReceiverId, _, _, _))
+  EXPECT_CALL(*teacher_screen_presenter, Start(kReceiverId, _, _, _))
       .WillOnce(
           [&disconnected_callback](std::string_view, ::boca::UserIdentity,
                                    base::OnceCallback<void(bool)> success_cb,
@@ -3244,8 +3242,12 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentOwnScreenSuccess) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, PresentOwnScreenFail) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
   base::test::TestFuture<bool> success_future;
-  EXPECT_CALL(*teacher_screen_presenter(), Start(kReceiverId, _, _, _))
+  EXPECT_CALL(*teacher_screen_presenter, Start(kReceiverId, _, _, _))
       .WillOnce([](std::string_view, ::boca::UserIdentity,
                    base::OnceCallback<void(bool)> success_cb,
                    base::OnceClosure) { std::move(success_cb).Run(false); });
@@ -3255,9 +3257,13 @@ TEST_F(BocaAppPageHandlerProducerTest, PresentOwnScreenFail) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenSuccess) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
   base::test::TestFuture<bool> success_future;
-  EXPECT_CALL(*teacher_screen_presenter(), Start).Times(1);
-  EXPECT_CALL(*teacher_screen_presenter(), Stop)
+  EXPECT_CALL(*teacher_screen_presenter, Start).Times(1);
+  EXPECT_CALL(*teacher_screen_presenter, Stop)
       .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
         std::move(success_cb).Run(true);
       });
@@ -3267,9 +3273,13 @@ TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenSuccess) {
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenFailure) {
+  auto teacher_screen_presenter =
+      std::make_unique<MockTeacherScreenPresenter>();
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(teacher_screen_presenter.get()));
   base::test::TestFuture<bool> success_future;
-  EXPECT_CALL(*teacher_screen_presenter(), Start).Times(1);
-  EXPECT_CALL(*teacher_screen_presenter(), Stop)
+  EXPECT_CALL(*teacher_screen_presenter, Start).Times(1);
+  EXPECT_CALL(*teacher_screen_presenter, Stop)
       .WillOnce([](base::OnceCallback<void(bool)> success_cb) {
         std::move(success_cb).Run(false);
       });
@@ -3278,7 +3288,9 @@ TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenFailure) {
   EXPECT_FALSE(success_future.Get());
 }
 
-TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenWithoutStart) {
+TEST_F(BocaAppPageHandlerProducerTest, StopPresentingOwnScreenWhenNull) {
+  ON_CALL(*session_manager(), GetTeacherScreenPresenter)
+      .WillByDefault(Return(nullptr));
   base::test::TestFuture<bool> success_future;
   boca_app_handler()->StopPresentingOwnScreen(success_future.GetCallback());
   EXPECT_FALSE(success_future.Get());

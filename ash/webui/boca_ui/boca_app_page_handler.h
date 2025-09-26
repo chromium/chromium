@@ -42,7 +42,6 @@ class DesktopFrame;
 
 namespace ash::boca {
 
-class ScreenPresenterFactory;
 class StudentScreenPresenter;
 class TeacherScreenPresenter;
 
@@ -60,7 +59,6 @@ class BocaAppHandler : public mojom::PageHandler,
       std::unique_ptr<ContentSettingsHandler> content_settings_handler,
       OnTaskSystemWebAppManager* system_web_app_manager,
       SessionClientImpl* session_client_impl,
-      std::unique_ptr<ScreenPresenterFactory> presenter_factory,
       bool is_producer);
 
   BocaAppHandler(const BocaAppHandler&) = delete;
@@ -274,6 +272,9 @@ class BocaAppHandler : public mojom::PageHandler,
   void OnPresentStudentScreenEnded() override;
   void OnPresentOwnScreenEnded() override;
 
+  TeacherScreenPresenter* teacher_screen_presenter();
+  StudentScreenPresenter* student_screen_presenter();
+
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
   std::string base_url_;
@@ -298,9 +299,6 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<PrefService> pref_service_;
   mojom::CaptionConfigPtr producer_current_session_caption_config_;
   raw_ptr<BocaSessionManager> session_manager_;
-  std::unique_ptr<ScreenPresenterFactory> presenter_factory_;
-  std::unique_ptr<StudentScreenPresenter> student_screen_presenter_;
-  std::unique_ptr<TeacherScreenPresenter> teacher_screen_presenter_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

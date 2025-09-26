@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
-#include "chromeos/ash/components/boca/receiver/screen_presenter_factory_impl.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -147,9 +146,6 @@ void BocaUI::Create(
       std::move(auth_handler), std::make_unique<ClassroomPageHandlerImpl>(),
       std::move(content_settings_handler), system_web_app_manager,
       BocaAppClient::Get()->GetSessionManager()->session_client_impl(),
-      std::make_unique<ScreenPresenterFactoryImpl>(
-          BocaAppClient::Get()->GetURLLoaderFactory(),
-          BocaAppClient::Get()->GetIdentityManager()),
       is_producer_);
   page_handler_impl_->SetSpotlightService(&spotlight_service_);
   if (ash::features::IsAnnotatorModeEnabled() && is_producer_) {

@@ -26,11 +26,14 @@
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
+#include "chromeos/ash/components/boca/screen_presenter_factory.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/get_session_request.h"
 #include "chromeos/ash/components/boca/session_api/student_heartbeat_request.h"
 #include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
 #include "chromeos/ash/components/boca/session_api/upload_token_request.h"
+#include "chromeos/ash/components/boca/student_screen_presenter.h"
+#include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/fake_cros_settings_provider.h"
@@ -57,7 +60,9 @@
 
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::IsNull;
 using ::testing::NiceMock;
+using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArg;
@@ -175,6 +180,57 @@ constexpr char kBocaUploadTokenErrorCodeUmaPath[] =
       inital_time.InMillisecondsSinceUnixEpoch() / 1000);
   return session_1;
 }
+
+class MockScreenPresenterFactory : public ScreenPresenterFactory {
+ public:
+  MockScreenPresenterFactory() = default;
+  ~MockScreenPresenterFactory() override = default;
+
+  MOCK_METHOD(std::unique_ptr<StudentScreenPresenter>,
+              CreateStudentScreenPresenter,
+              (std::string_view, const ::boca::UserIdentity&, std::string_view),
+              (override));
+
+  MOCK_METHOD(std::unique_ptr<TeacherScreenPresenter>,
+              CreateTeacherScreenPresenter,
+              (std::string_view),
+              (override));
+};
+
+class MockStudentScreenPresenter : public StudentScreenPresenter {
+ public:
+  MockStudentScreenPresenter() = default;
+  ~MockStudentScreenPresenter() override = default;
+
+  MOCK_METHOD(void,
+              Start,
+              (std::string_view,
+               const ::boca::UserIdentity&,
+               std::string_view,
+               base::OnceCallback<void(bool)>,
+               base::OnceClosure),
+              (override));
+
+  MOCK_METHOD(void, CheckConnection, (), (override));
+
+  MOCK_METHOD(void, Stop, (base::OnceCallback<void(bool)>), (override));
+};
+
+class MockTeacherScreenPresenter : public TeacherScreenPresenter {
+ public:
+  MockTeacherScreenPresenter() = default;
+  ~MockTeacherScreenPresenter() override = default;
+
+  MOCK_METHOD(void,
+              Start,
+              (std::string_view,
+               ::boca::UserIdentity,
+               base::OnceCallback<void(bool)>,
+               base::OnceClosure),
+              (override));
+
+  MOCK_METHOD(void, Stop, (base::OnceCallback<void(bool)>), (override));
+};
 
 class BocaSessionManagerTestBase : public testing::Test {
  public:
@@ -313,7 +369,8 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
     BocaSessionManagerTestBase::SetUp();
     scoped_feature_list().InitWithFeatures(
         {ash::features::kBoca, ash::features::kBocaStudentHeartbeat,
-         ash::features::kBocaScreenSharingStudent},
+         ash::features::kBocaScreenSharingStudent,
+         ash::features::kBocaScreenSharingTeacher},
         /*disabled_features=*/{ash::features::kBocaCustomPolling});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
@@ -1235,6 +1292,67 @@ TEST_F(BocaSessionManagerTest, GetStudentActiveDeviceIdFound) {
       boca_session_manager()->GetStudentActiveDeviceId(kActiveStudentId);
   ASSERT_TRUE(device_id.has_value());
   EXPECT_EQ(device_id.value(), kDeviceId);
+}
+
+TEST_F(BocaSessionManagerTest,
+       GetScreenPresentersWithoutSettingPresenterFactory) {
+  base::test::TestFuture<void> signal;
+  auto session =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  EXPECT_CALL(*session_client_impl(), GetSession)
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                     std::move(session));
+        signal.GetCallback().Run();
+      }));
+  boca_session_manager()->OnInvalidationReceived("payload");
+  EXPECT_TRUE(signal.Wait());
+  EXPECT_THAT(boca_session_manager()->GetStudentScreenPresenter(), IsNull());
+  EXPECT_THAT(boca_session_manager()->GetTeacherScreenPresenter(), IsNull());
+}
+
+TEST_F(BocaSessionManagerTest, GetStudentScreenPresenter) {
+  base::test::TestFuture<void> inactive_signal;
+  base::test::TestFuture<void> active_signal;
+  auto session =
+      std::make_unique<::boca::Session>(GetInitialSession(session_start_time_));
+  auto screen_presenter_factory =
+      std::make_unique<MockScreenPresenterFactory>();
+  EXPECT_CALL(*screen_presenter_factory, CreateStudentScreenPresenter)
+      .WillOnce(Return(std::make_unique<MockStudentScreenPresenter>()));
+
+  boca_session_manager()->SetScreenPresenterFactory(
+      std::move(screen_presenter_factory));
+  // Stop session.
+  EXPECT_CALL(*session_client_impl(), GetSession)
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(
+            /*from_polling=*/false, std::make_unique<::boca::Session>());
+        inactive_signal.GetCallback().Run();
+      }));
+  EXPECT_CALL(*observer(), OnSessionEnded).Times(1);
+  boca_session_manager()->OnInvalidationReceived("payload");
+  EXPECT_TRUE(inactive_signal.Wait());
+  // Start session.
+  EXPECT_CALL(*session_client_impl(), GetSession).WillOnce(([&]() {
+    boca_session_manager()->ParseSessionResponse(/*from_polling=*/false,
+                                                 std::move(session));
+    active_signal.GetCallback().Run();
+  }));
+  EXPECT_CALL(*observer(), OnSessionStarted).Times(1);
+  boca_session_manager()->OnInvalidationReceived("payload");
+  EXPECT_TRUE(active_signal.Wait());
+  EXPECT_THAT(boca_session_manager()->GetStudentScreenPresenter(), NotNull());
+}
+
+TEST_F(BocaSessionManagerTest, GetTeacherScreenPresenter) {
+  auto screen_presenter_factory =
+      std::make_unique<MockScreenPresenterFactory>();
+  EXPECT_CALL(*screen_presenter_factory, CreateTeacherScreenPresenter)
+      .WillOnce(Return(std::make_unique<MockTeacherScreenPresenter>()));
+  boca_session_manager()->SetScreenPresenterFactory(
+      std::move(screen_presenter_factory));
+  EXPECT_THAT(boca_session_manager()->GetTeacherScreenPresenter(), NotNull());
 }
 
 TEST_F(BocaSessionManagerTest,
