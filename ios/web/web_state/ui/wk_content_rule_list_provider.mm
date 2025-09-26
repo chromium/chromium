@@ -6,7 +6,9 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
@@ -17,7 +19,12 @@
 
 namespace web {
 
-WKContentRuleListProvider::WKContentRuleListProvider() = default;
+WKContentRuleListProvider::WKContentRuleListProvider(
+    const base::FilePath& state_path) {
+  rule_list_store_ = [WKContentRuleListStore
+      storeWithURL:base::apple::FilePathToNSURL(state_path)];
+  CHECK(rule_list_store_);
+}
 
 WKContentRuleListProvider::~WKContentRuleListProvider() = default;
 
@@ -45,10 +52,9 @@ void WKContentRuleListProvider::UpdateRuleList(RuleListKey key,
                          weak_ptr_factory_.GetWeakPtr(), key,
                          std::move(callback), base::TimeTicks::Now()));
 
-  [WKContentRuleListStore.defaultStore
-      compileContentRuleListForIdentifier:identifier
-                   encodedContentRuleList:rules
-                        completionHandler:completion_handler];
+  [rule_list_store_ compileContentRuleListForIdentifier:identifier
+                                 encodedContentRuleList:rules
+                                      completionHandler:completion_handler];
 }
 
 void WKContentRuleListProvider::RemoveRuleList(RuleListKey key,
@@ -67,7 +73,7 @@ void WKContentRuleListProvider::RemoveRuleList(RuleListKey key,
 
   // Now, asynchronously remove it from the persistent WKContentRuleListStore.
   NSString* identifier = base::SysUTF8ToNSString(key);
-  [WKContentRuleListStore.defaultStore
+  [rule_list_store_
       removeContentRuleListForIdentifier:identifier
                        completionHandler:
                            base::CallbackToBlock(base::BindOnce(

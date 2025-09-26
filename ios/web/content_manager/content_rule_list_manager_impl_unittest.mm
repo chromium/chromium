@@ -6,7 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
-#import <optional>
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/task_environment.h"
@@ -39,68 +39,61 @@ constexpr char kInvalidTestRuleListJson[] = "this is not valid json";
 // A test key for a content rule list.
 const RuleListKey kTestRuleListKey = "test_key";
 
-// Helper to check for a rule list's presence in the store and wait.
-// Returns a gtest AssertionResult for use with EXPECT_TRUE.
-[[nodiscard]] testing::AssertionResult CheckStoreForRuleListSync(
-    const RuleListKey& rule_list_key,
-    bool expect_found = true) {
-  TestFuture<WKContentRuleList*, NSError*> future;
-  void (^completion_block)(WKContentRuleList*, NSError*) =
-      base::CallbackToBlock(future.GetCallback());
-  [WKContentRuleListStore.defaultStore
-      lookUpContentRuleListForIdentifier:base::SysUTF8ToNSString(rule_list_key)
-                       completionHandler:completion_block];
-  auto [rule_list, error] = future.Get();
-
-  const bool was_found = (rule_list != nil);
-
-  // First, handle any unexpected WebKit errors. This is always a failure.
-  // WKErrorContentRuleListStoreLookUpFailed are ignored because that is the
-  // expected error when a rule list is not found.
-  if (error && (![error.domain isEqualToString:WKErrorDomain] ||
-                error.code != WKErrorContentRuleListStoreLookUpFailed)) {
-    return testing::AssertionFailure()
-           << "Unexpected error looking up content rule list with key '"
-           << rule_list_key << "': " << base::SysNSStringToUTF8(error.description);
-  }
-
-  // Now, check if the outcome matches the expectation.
-  if (was_found == expect_found) {
-    return testing::AssertionSuccess();
-  }
-
-  // The outcome did not match the expectation, return a specific failure.
-  if (expect_found) {
-    return testing::AssertionFailure()
-           << "Expected to find content rule list with key '"
-           << rule_list_key << "', but it was not found.";
-  } else {
-    return testing::AssertionFailure()
-           << "Expected content rule list with key '" << rule_list_key
-           << "' to be absent, but it was found.";
-  }
-}
-
 }  // namespace
 
 class ContentRuleListManagerImplTest : public PlatformTest {
  protected:
-  void TearDown() override {
-    // Ensure any test lists are cleared from the store to prevent leakage.
-    // Use a test-specific key to avoid interfering with other tests.
-    TestFuture<NSError*> future;
-    [WKContentRuleListStore.defaultStore
-        removeContentRuleListForIdentifier:base::SysUTF8ToNSString(
-                                               kTestRuleListKey)
-                         completionHandler:base::CallbackToBlock(
-                                               future.GetCallback())];
-    std::ignore = future.Wait();
-    PlatformTest::TearDown();
-  }
-
   // Returns the ContentRuleListManager associated with `browser_state_`.
   ContentRuleListManager& GetManager() {
     return ContentRuleListManager::FromBrowserState(&browser_state_);
+  }
+
+  // Helper to check for a rule list's presence in the store and wait.
+  // Returns a gtest AssertionResult for use with EXPECT_TRUE.
+  [[nodiscard]] testing::AssertionResult CheckStoreForRuleListSync(
+      const RuleListKey& rule_list_key,
+      bool expect_found = true) {
+    TestFuture<WKContentRuleList*, NSError*> future;
+    // Create a temporary store that points to the same path as the provider's
+    // store to independently verify the file system state.
+    WKContentRuleListStore* store = [WKContentRuleListStore
+        storeWithURL:base::apple::FilePathToNSURL(
+                         browser_state_.GetStatePath())];
+    CHECK(store);
+
+    void (^completion_block)(WKContentRuleList*, NSError*) =
+        base::CallbackToBlock(future.GetCallback());
+    [store lookUpContentRuleListForIdentifier:base::SysUTF8ToNSString(
+                                                  rule_list_key)
+                            completionHandler:completion_block];
+    auto [rule_list, error] = future.Get();
+
+    const bool was_found = (rule_list != nil);
+
+    // First, handle any unexpected WebKit errors. This is always a failure.
+    if (error && (![error.domain isEqualToString:WKErrorDomain] ||
+                  error.code != WKErrorContentRuleListStoreLookUpFailed)) {
+      return testing::AssertionFailure()
+             << "Unexpected error looking up content rule list with key '"
+             << rule_list_key
+             << "': " << base::SysNSStringToUTF8(error.description);
+    }
+
+    // Now, check if the outcome matches the expectation.
+    if (was_found == expect_found) {
+      return testing::AssertionSuccess();
+    }
+
+    // The outcome did not match the expectation, return a specific failure.
+    if (expect_found) {
+      return testing::AssertionFailure()
+             << "Expected to find content rule list with key '" << rule_list_key
+             << "', but it was not found.";
+    } else {
+      return testing::AssertionFailure()
+             << "Expected content rule list with key '" << rule_list_key
+             << "' to be absent, but it was found.";
+    }
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -123,15 +116,14 @@ TEST_F(ContentRuleListManagerImplTest, GetInstance) {
 
 // Tests registering a valid rule list for the first time.
 TEST_F(ContentRuleListManagerImplTest, RegisterValidRules) {
-  // The rule list should not be in the store yet.
   ASSERT_TRUE(CheckStoreForRuleListSync(kTestRuleListKey,
                                         /*expect_found=*/false));
 
-  TestFuture<NSError*> future;
+  TestFuture<NSError*> update_future;
   GetManager().UpdateRuleList(kTestRuleListKey, kValidTestRuleListJson,
-                              future.GetCallback());
+                              update_future.GetCallback());
+  EXPECT_EQ(nil, update_future.Get());
 
-  EXPECT_EQ(nil, future.Get());
   EXPECT_TRUE(CheckStoreForRuleListSync(kTestRuleListKey,
                                         /*expect_found=*/true));
 }
@@ -141,14 +133,15 @@ TEST_F(ContentRuleListManagerImplTest, RegisterInvalidRules) {
   ASSERT_TRUE(CheckStoreForRuleListSync(kTestRuleListKey,
                                         /*expect_found=*/false));
 
-  TestFuture<NSError*> future;
+  TestFuture<NSError*> update_future;
   GetManager().UpdateRuleList(kTestRuleListKey, kInvalidTestRuleListJson,
-                              future.GetCallback());
+                              update_future.GetCallback());
 
-  NSError* result = future.Get();
+  NSError* result = update_future.Get();
   ASSERT_NE(nil, result);
   EXPECT_NSEQ(WKErrorDomain, result.domain);
   EXPECT_EQ(WKErrorContentRuleListStoreCompileFailed, result.code);
+
   EXPECT_TRUE(CheckStoreForRuleListSync(kTestRuleListKey,
                                         /*expect_found=*/false));
 }
@@ -164,8 +157,8 @@ TEST_F(ContentRuleListManagerImplTest, RemoveExistingRules) {
 
   TestFuture<NSError*> remove_future;
   GetManager().RemoveRuleList(kTestRuleListKey, remove_future.GetCallback());
-
   EXPECT_EQ(nil, remove_future.Get());
+
   EXPECT_TRUE(CheckStoreForRuleListSync(kTestRuleListKey,
                                         /*expect_found=*/false));
 }

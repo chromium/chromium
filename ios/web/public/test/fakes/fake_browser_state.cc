@@ -4,8 +4,10 @@
 
 #include "ios/web/public/test/fakes/fake_browser_state.h"
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_file_util.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "ios/web/test/test_url_constants.h"
@@ -55,7 +57,8 @@ class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
 // static
 const char FakeBrowserState::kCorsExemptTestHeaderName[] = "ExemptTest";
 
-FakeBrowserState::FakeBrowserState() = default;
+FakeBrowserState::FakeBrowserState()
+    : state_path_(base::CreateUniqueTempDirectoryScopedToTest()) {}
 
 FakeBrowserState::~FakeBrowserState() = default;
 
@@ -64,7 +67,7 @@ bool FakeBrowserState::IsOffTheRecord() const {
 }
 
 base::FilePath FakeBrowserState::GetStatePath() const {
-  return base::FilePath();
+  return state_path_;
 }
 
 net::URLRequestContextGetter* FakeBrowserState::GetRequestContext() {

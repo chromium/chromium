@@ -48,6 +48,8 @@ class FakeBrowserState final : public BrowserState {
   void SetWebKitStorageID(base::Uuid uuid);
 
  private:
+  base::FilePath state_path_;
+
   scoped_refptr<net::URLRequestContextGetter> request_context_;
 
   bool is_off_the_record_ = false;

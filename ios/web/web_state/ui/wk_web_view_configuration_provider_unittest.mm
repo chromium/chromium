@@ -125,7 +125,8 @@ TEST_F(WKWebViewConfigurationProviderTest, Purge) {
 
 class MockWKContentRuleListProvider : public WKContentRuleListProvider {
  public:
-  MockWKContentRuleListProvider() = default;
+  explicit MockWKContentRuleListProvider(const base::FilePath& path)
+      : WKContentRuleListProvider(path) {}
   ~MockWKContentRuleListProvider() override = default;
 
   MOCK_METHOD(void,
@@ -143,7 +144,8 @@ class MockWKContentRuleListProvider : public WKContentRuleListProvider {
 // Tests that the static content rule lists are created on initialization.
 TEST_F(WKWebViewConfigurationProviderTest, StaticContentRuleListsAreCreated) {
   auto rule_list_provider =
-      std::make_unique<testing::StrictMock<MockWKContentRuleListProvider>>();
+      std::make_unique<testing::StrictMock<MockWKContentRuleListProvider>>(
+          browser_state_.GetStatePath());
   EXPECT_CALL(
       *rule_list_provider,
       UpdateRuleList(kBlockLocalResourcesRuleListKey, testing::_, testing::_));

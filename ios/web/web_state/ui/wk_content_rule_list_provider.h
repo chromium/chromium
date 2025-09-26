@@ -15,7 +15,12 @@
 
 @class NSError;
 @class WKContentRuleList;
+@class WKContentRuleListStore;
 @class WKUserContentController;
+
+namespace base {
+class FilePath;
+}
 
 namespace web {
 
@@ -32,7 +37,9 @@ class WKContentRuleListProvider {
   // be nil on success, and non-nil if compilation or removal failed.
   using OperationCallback = base::OnceCallback<void(NSError* error)>;
 
-  WKContentRuleListProvider();
+  // `state_path` - The path where the BrowserState data is stored, in which to
+  // store content rule lists.
+  explicit WKContentRuleListProvider(const base::FilePath& state_path);
   virtual ~WKContentRuleListProvider();
 
   WKContentRuleListProvider(const WKContentRuleListProvider&) = delete;
@@ -85,6 +92,8 @@ class WKContentRuleListProvider {
   __weak WKUserContentController* user_content_controller_ = nullptr;
   // A map of all compiled lists, keyed by their identifier.
   std::map<RuleListKey, WKContentRuleList*> compiled_lists_;
+  // The persistent store where content rule lists are stored.
+  WKContentRuleListStore* __strong rule_list_store_ = nil;
 
   base::WeakPtrFactory<WKContentRuleListProvider> weak_ptr_factory_{this};
 };
