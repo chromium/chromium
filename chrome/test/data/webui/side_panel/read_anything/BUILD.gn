@@ -18,8 +18,6 @@ build_webui_tests("build") {
     "content_controller_test.ts",
     "dom_read_aloud_node_test.ts",
     "fake_reading_mode.ts",
-    "fake_tree_builder.ts",
-    "fake_tree_builder_test.ts",
     "font_menu_test.ts",
     "font_size_test.ts",
     "highlight_menu_test.ts",
