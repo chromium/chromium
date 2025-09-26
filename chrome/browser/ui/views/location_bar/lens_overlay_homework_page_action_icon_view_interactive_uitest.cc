@@ -13,6 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/lens/lens_keyed_service.h"
+#include "chrome/browser/ui/lens/lens_keyed_service_factory.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -25,7 +27,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/test/test_event.h"
@@ -113,14 +114,16 @@ class LensOverlayHomeworkPageActionIconViewTestBase
 
   // Sets the number of times the edu action chip has been shown.
   void SetLensOverlayEduActionChipShownCount(Profile* profile, int count) {
-    profile->GetPrefs()->SetInteger(
-        lens::prefs::kLensOverlayEduActionChipShownCount, count);
+    LensKeyedService* service = LensKeyedServiceFactory::GetForProfile(
+        profile, /*create_if_necessary=*/true);
+    service->SetActionChipShownCount(count);
   }
 
   // Returns the number of times the edu action chip has been shown.
   int GetLensOverlayEduActionChipShownCount(Profile* profile) {
-    return profile->GetPrefs()->GetInteger(
-        lens::prefs::kLensOverlayEduActionChipShownCount);
+    LensKeyedService* service = LensKeyedServiceFactory::GetForProfile(
+        profile, /*create_if_necessary=*/true);
+    return service->GetActionChipShownCount();
   }
 
  protected:
@@ -192,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
 
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
                        HidesAfterMaxShownCountReached) {
-  SetLensOverlayEduActionChipShownCount(browser()->profile(), 3);
+  SetLensOverlayEduActionChipShownCount(browser()->profile(), 4);
   // Navigate to a matching page.
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
@@ -210,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
 
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_FALSE(icon_view->GetVisible());
-  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 3);
+  EXPECT_EQ(GetLensOverlayEduActionChipShownCount(browser()->profile()), 4);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -223,6 +226,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
 // Flaky failures on Windows; see https://crbug.com/419308044.
 IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
                        MAYBE_OpensNewTabWhenEnteredThroughKeyboard) {
+  SetLensOverlayEduActionChipShownCount(browser()->profile(), 0);
   const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
   // Navigate to a matching page.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
