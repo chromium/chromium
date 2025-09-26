@@ -150,7 +150,6 @@ ts_library("library") {
     "//chrome/test/data/webui/settings:build_ts",
     "//chrome/test/data/webui/side_panel:build_ts",
     "//chrome/test/data/webui/support_tool:build_ts",
-    "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
