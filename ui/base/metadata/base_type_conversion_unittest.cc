@@ -254,3 +254,26 @@ TEST_F(TypeConversionTest, CheckIsSerializable) {
       ui::metadata::TypeConverter<std::optional<const char*>>::is_serializable);
   EXPECT_TRUE(ui::metadata::TypeConverter<std::optional<int>>::is_serializable);
 }
+
+TEST_F(TypeConversionTest, CheckClassHasToString) {
+  class ToStringTestClassA {
+   public:
+    std::string ToString() const { return "test string"; }
+  };
+
+  // Test types with explicitly added converters.
+  EXPECT_FALSE(
+      ui::metadata::TypeConverter<ToStringTestClassA>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<ToStringTestClassA>::is_read_only);
+
+  class ToStringTestClassB {
+   public:
+    static std::optional<ToStringTestClassB> FromString(std::string_view sv) {
+      return ToStringTestClassB();
+    }
+    std::string ToString() const { return "test string b"; }
+  };
+
+  EXPECT_TRUE(ui::metadata::TypeConverter<ToStringTestClassB>::is_serializable);
+  EXPECT_FALSE(ui::metadata::TypeConverter<ToStringTestClassB>::is_read_only);
+}
