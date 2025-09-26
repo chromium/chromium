@@ -1082,6 +1082,9 @@
       <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_LABEL" desc="Label for the tracking script blocking settings link row." formatter_data="android_java">
         Block tracking scripts
       </message>
+      <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL" desc="Sublabel for the tracking script blocking settings link row." translateable="false">
+          Limit access to device and browser data
+      </message>
       <message name="IDS_FINGERPRINTING_PROTECTION_LINK_ROW_SUBLABEL_ENABLED" desc="Sublabel for the tracking script blocking settings row when the setting is enabled." formatter_data="android_java">
         Limit access to device and browser data. This setting is on.
       </message>

@@ -18,6 +18,10 @@
 - (void)trackingProtectionsViewControllerDidRemove:
     (TrackingProtectionsViewController*)controller;
 
+// Called when the script blocking option is selected.
+- (void)trackingProtectionsViewControllerSelectedScriptBlocking:
+    (TrackingProtectionsViewController*)controller;
+
 @end
 
 // View controller for tracking protection settings.
