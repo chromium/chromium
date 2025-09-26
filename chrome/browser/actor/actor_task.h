@@ -112,7 +112,11 @@ class ActorTask {
   void AddTab(tabs::TabHandle tab, AddTabCallback callback);
   void RemoveTab(tabs::TabHandle tab);
 
-  // Returns true if the given tab is part of this task's acting set.
+  // Returns true if the given tab is part of this task's tab set.
+  bool HasTab(tabs::TabHandle tab) const;
+
+  // Returns true if the given tab is part of this task's tab set and is in
+  // an active (non-paused) state.
   bool IsActingOnTab(tabs::TabHandle tab) const;
 
   using TabHandleSet = absl::flat_hash_set<tabs::TabHandle>;

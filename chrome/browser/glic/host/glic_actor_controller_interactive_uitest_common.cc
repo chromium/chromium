@@ -530,7 +530,24 @@ MultiStep GlicActorControllerUiTest::CheckIsActingOnTab(
         auto* actor_service =
             actor::ActorKeyedService::Get(tab_contents->GetBrowserContext());
         return actor_service &&
-               actor_service->IsAnyTaskActingOnTab(
+               actor_service->IsActiveOnTab(
+                   *tabs::TabInterface::GetFromContents(tab_contents));
+      },
+      expected));
+}
+
+MultiStep GlicActorControllerUiTest::CheckHasTaskForTab(
+    ui::ElementIdentifier tab,
+    bool expected) {
+  return InAnyContext(CheckElement(
+      tab,
+      [](ui::TrackedElement* el) {
+        content::WebContents* tab_contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        auto* actor_service =
+            actor::ActorKeyedService::Get(tab_contents->GetBrowserContext());
+        return actor_service &&
+               actor_service->GetTaskFromTab(
                    *tabs::TabInterface::GetFromContents(tab_contents));
       },
       expected));

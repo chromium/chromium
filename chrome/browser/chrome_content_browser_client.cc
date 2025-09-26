@@ -6937,7 +6937,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     // If actor is active, bail out early to prevent it from launching external
     // applications.
     if (tab_interface && actor_service &&
-        actor_service->IsAnyTaskActingOnTab(*tab_interface)) {
+        actor_service->IsActiveOnTab(*tab_interface)) {
       return false;
     }
   }

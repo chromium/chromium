@@ -164,7 +164,12 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   // it in `annotated_page_content_`).
   MultiStep GetPageContextFromFocusedTab();
 
+  // Ensure whether a task is actively (non-paused) acting on the given tab.
   MultiStep CheckIsActingOnTab(ui::ElementIdentifier tab, bool expected);
+
+  // Ensure whether a task is currently associated with the given tab, paused or
+  // not.
+  MultiStep CheckHasTaskForTab(ui::ElementIdentifier tab, bool expected);
 
   MultiStep CheckIsWebContentsCaptured(ui::ElementIdentifier tab,
                                        bool expected);

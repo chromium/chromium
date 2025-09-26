@@ -95,6 +95,7 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   loop.Run();
 
   EXPECT_TRUE(task->IsActingOnTab(tabs::TabHandle(123)));
+  EXPECT_TRUE(task->HasTab(tabs::TabHandle(123)));
   actor_service->StopTask(id, /*success=*/true);
   ASSERT_EQ(actor_service->GetActiveTasks().size(), 0u);
   ASSERT_EQ(actor_service->GetInactiveTasks().size(), 1u);
@@ -103,6 +104,7 @@ TEST_F(ActorKeyedServiceTest, StopActiveTask) {
   EXPECT_EQ(actor_service->GetInactiveTasks().begin()->second->GetEndTime(),
             base::Time::Now());
   EXPECT_FALSE(task->IsActingOnTab(tabs::TabHandle(123)));
+  EXPECT_FALSE(task->HasTab(tabs::TabHandle(123)));
 }
 
 TEST_F(ActorKeyedServiceTest, FindTaskIdsInActive_ReturnsSuccessfully) {
@@ -160,6 +162,7 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
     loop.Run();
   }
   EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+  EXPECT_FALSE(task->HasTab(tab_handle));
 
   // Stop the task and try to add a tab.
   actor_service->StopTask(id, true);
@@ -175,6 +178,68 @@ TEST_F(ActorKeyedServiceTest, AddTabToPausedOrStoppedTask) {
     loop.Run();
   }
   EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+  EXPECT_FALSE(task->HasTab(tab_handle));
+}
+
+// Test tab association to a paused task.
+TEST_F(ActorKeyedServiceTest, PausedTaskTabs) {
+  auto* actor_service = ActorKeyedService::Get(profile());
+  TaskId id = actor_service->CreateTask();
+
+  ActorTask* task = actor_service->GetTask(id);
+  ASSERT_TRUE(task);
+  const tabs::TabHandle tab_handle(123);
+
+  {
+    base::test::TestFuture<mojom::ActionResultPtr> future;
+    task->AddTab(tab_handle, future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // The tab should be both part of the task and actively acting on it when in a
+  // created or acting state.
+
+  EXPECT_TRUE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
+
+  task->SetState(ActorTask::State::kActing);
+
+  EXPECT_TRUE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
+
+  task->SetState(ActorTask::State::kReflecting);
+
+  EXPECT_TRUE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
+
+  // Pausing the task should keep the tab in the task but it should no longer be
+  // considered acting.
+
+  task->Pause(true);
+
+  EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
+
+  task->Resume();
+
+  EXPECT_TRUE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
+
+  task->Pause(false);
+
+  EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
+
+  task->Resume();
+
+  EXPECT_TRUE(task->IsActingOnTab(tab_handle));
+  EXPECT_TRUE(task->HasTab(tab_handle));
+
+  // Stop the task. This should remove the tab from the task.
+  actor_service->StopTask(id, true);
+
+  EXPECT_FALSE(task->IsActingOnTab(tab_handle));
+  EXPECT_FALSE(task->HasTab(tab_handle));
 }
 
 TEST_F(ActorKeyedServiceTest, LogsActorTaskCreatedOnCreateTask) {

@@ -99,9 +99,13 @@ class ActorKeyedService : public KeyedService {
   // The associated ActorUiStateManager for the associated profile.
   ui::ActorUiStateManagerInterface* GetActorUiStateManager();
 
-  // Returns an acting task on provided `tab`. A null TaskId is returned if no
-  // task is acting on `tab`.
-  TaskId IsAnyTaskActingOnTab(const tabs::TabInterface& tab) const;
+  // Returns true if there is a task that is actively (i.e. not paused) acting
+  // in the given `tab`.
+  bool IsActiveOnTab(const tabs::TabInterface& tab) const;
+
+  // Returns the id of an ActorTask which has the given tab in its set. Returns
+  // a null TaskId if no task has `tab`. Note: a returned task may be paused.
+  TaskId GetTaskFromTab(const tabs::TabInterface& tab) const;
 
   Profile* GetProfile();
 

@@ -207,7 +207,7 @@ void ActorUiTabController::InitializeImmersiveModeObserver() {
 }
 
 void ActorUiTabController::OnImmersiveFullscreenEntered() {
-  if (!actor_keyed_service_->IsAnyTaskActingOnTab(*tab_)) {
+  if (!actor_keyed_service_->GetTaskFromTab(*tab_)) {
     return;
   }
   UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError,
@@ -215,7 +215,7 @@ void ActorUiTabController::OnImmersiveFullscreenEntered() {
 }
 
 void ActorUiTabController::OnImmersiveFullscreenExited() {
-  if (!actor_keyed_service_->IsAnyTaskActingOnTab(*tab_)) {
+  if (!actor_keyed_service_->GetTaskFromTab(*tab_)) {
     return;
   }
   UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError,
@@ -276,7 +276,7 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
 }
 
 void ActorUiTabController::SetActorTaskPaused() {
-  TaskId task_id = actor_keyed_service_->IsAnyTaskActingOnTab(*tab_);
+  TaskId task_id = actor_keyed_service_->GetTaskFromTab(*tab_);
   if (!task_id) {
     VLOG(1) << "There is no active task acting on this tab.";
     return;
@@ -288,7 +288,7 @@ void ActorUiTabController::SetActorTaskPaused() {
 }
 
 void ActorUiTabController::SetActorTaskResume() {
-  TaskId task_id = actor_keyed_service_->IsAnyTaskActingOnTab(*tab_);
+  TaskId task_id = actor_keyed_service_->GetTaskFromTab(*tab_);
   if (!task_id) {
     VLOG(1) << "There is no active task acting on this tab.";
     return;

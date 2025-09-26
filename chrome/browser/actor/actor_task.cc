@@ -296,7 +296,7 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
   if (reason != tabs::TabInterface::DetachReason::kDelete) {
     return;
   }
-  if (!IsActingOnTab(tab->GetHandle())) {
+  if (!HasTab(tab->GetHandle())) {
     return;
   }
 
@@ -306,8 +306,16 @@ void ActorTask::OnTabWillDetach(tabs::TabInterface* tab,
   actor::ActorKeyedService::Get(profile_)->StopTask(id(), /*success=*/false);
 }
 
-bool ActorTask::IsActingOnTab(tabs::TabHandle tab) const {
+bool ActorTask::HasTab(tabs::TabHandle tab) const {
   return acting_tabs_.contains(tab);
+}
+
+bool ActorTask::IsActingOnTab(tabs::TabHandle tab) const {
+  if (IsPaused() || IsStopped()) {
+    return false;
+  }
+
+  return HasTab(tab);
 }
 
 absl::flat_hash_set<tabs::TabHandle> ActorTask::GetLastActedTabs() const {

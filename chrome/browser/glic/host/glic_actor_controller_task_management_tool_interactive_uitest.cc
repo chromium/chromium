@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
     StopActorTask(),
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE,
         actor::mojom::ActionResultCode::kTaskWentAway),
-    CheckIsActingOnTab(kNewActorTabId, false));
+    CheckHasTaskForTab(kNewActorTabId, false));
   // clang-format on
 }
 
@@ -136,8 +136,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
     ClickAction(kClickableButtonLabel, ClickAction::LEFT, ClickAction::SINGLE,
                 actor::mojom::ActionResultCode::kTaskPaused),
 
-    // Unlike stopping, pausing keeps the task.
-    CheckIsActingOnTab(kNewActorTabId, true)
+    // Unlike stopping, pausing keeps the task but it is not acting.
+    CheckHasTaskForTab(kNewActorTabId, true),
+    CheckIsActingOnTab(kNewActorTabId, false)
       // clang-format on
   );
 }
@@ -161,10 +162,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
     WaitForActorTaskState(mojom::ActorTaskState::kIdle),
 
     PauseActorTask(),
-    CheckIsActingOnTab(kNewActorTabId, true),
+    CheckHasTaskForTab(kNewActorTabId, true),
+    CheckIsActingOnTab(kNewActorTabId, false),
     WaitForActorTaskState(mojom::ActorTaskState::kPaused),
 
     StopActorTask(),
+    CheckHasTaskForTab(kNewActorTabId, false),
     CheckIsActingOnTab(kNewActorTabId, false)
       // clang-format on
   );
@@ -190,7 +193,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
     // Ensure pausing twice in a row is a no-op.
     PauseActorTask(),
     PauseActorTask(),
-    CheckIsActingOnTab(kNewActorTabId, true)
+    CheckHasTaskForTab(kNewActorTabId, true),
+    CheckIsActingOnTab(kNewActorTabId, false)
       // clang-format on
   );
 }
@@ -240,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
 
     StopActorTask(),
     CheckIsActingOnTab(kNewActorTabId, false),
+    CheckHasTaskForTab(kNewActorTabId, false),
 
     // Once a task is stopped, it can't be resumed.
     ResumeActorTask(UpdatedContextOptions(), false)
@@ -290,6 +295,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
       WaitForJsResult(kNewActorTabId, "() => button_clicked"),
       CheckIsActingOnTab(kNewActorTabId, true),
       CheckIsActingOnTab(kOtherTabId, false),
+      CheckHasTaskForTab(kOtherTabId, false),
       StopActorTask(),
       CheckIsWebContentsCaptured(kNewActorTabId, false));
   // clang-format on

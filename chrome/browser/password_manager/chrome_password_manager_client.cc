@@ -1777,7 +1777,7 @@ bool ChromePasswordManagerClient::IsActorTaskActive() {
 
   const tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
-  return tab_interface && actor_service->IsAnyTaskActingOnTab(*tab_interface);
+  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

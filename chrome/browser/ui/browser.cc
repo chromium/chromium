@@ -35,7 +35,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/actor/actor_util.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/background/background_contents.h"
@@ -449,6 +449,25 @@ base::FunctionRef<bool(const Browser*)> MaybeLazyIsFullscreen(
   // In the control branch, eagerly evaluate ShouldHideUIForFullscreen.
   return browser->ShouldHideUIForFullscreen() ? &AlwaysReturnTrue
                                               : &AlwaysReturnFalse;
+}
+
+bool HasActorTask(Profile* profile, content::RenderFrameHost* rfh) {
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  if (!actor_service) {
+    return false;
+  }
+
+  auto* wc = content::WebContents::FromRenderFrameHost(rfh);
+  if (!wc) {
+    return false;
+  }
+
+  const auto* tab_interface = tabs::TabInterface::MaybeGetFromContents(wc);
+  if (!tab_interface) {
+    return false;
+  }
+
+  return !actor_service->GetTaskFromTab(*tab_interface).is_null();
 }
 
 }  // namespace
@@ -2398,11 +2417,12 @@ bool Browser::IsWebContentsCreationOverridden(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
-  if (actor::IsActorOperatingOnWebContents(
-          profile(), content::WebContents::FromRenderFrameHost(opener))) {
-    // If an ExecutionEngine is acting on the opener, prevent it from creating
-    // a new WebContents. We'll instead force the navigation to happen in the
-    // same tab.
+  if (HasActorTask(profile(), opener)) {
+    // If an ExecutionEngine is acting on the opener, prevent it from creating a
+    // new WebContents. We'll instead force the navigation to happen in the same
+    // tab. Note, we do this even if the task isn't active (e.g. paused) so that
+    // a user action on behalf of the actor has the same behavior since the
+    // resumed task will still be fixed to the tab.
     return true;
   }
 
@@ -2422,7 +2442,7 @@ WebContents* Browser::CreateCustomWebContents(
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
   if (auto* opener_contents = content::WebContents::FromRenderFrameHost(opener);
-      actor::IsActorOperatingOnWebContents(profile(), opener_contents)) {
+      HasActorTask(profile(), opener)) {
     // If an ExecutionEngine is acting on the opener, we force the navigation
     // to happen in the same tab.
     content::NavigationController::LoadURLParams params(target_url);

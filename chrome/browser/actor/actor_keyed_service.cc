@@ -79,9 +79,7 @@ const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
           tabs::TabModel::MaybeGetFromContents(web_contents)) {
     // There should only be one active task per tab.
     for (const auto& [task_id, actor_task] : GetActiveTasks()) {
-      if (actor_task->IsActingOnTab(tab_interface->GetHandle()) &&
-          (actor_task->GetState() == ActorTask::State::kActing ||
-           actor_task->GetState() == ActorTask::State::kReflecting)) {
+      if (actor_task->IsActingOnTab(tab_interface->GetHandle())) {
         return actor_task;
       }
     }
@@ -373,11 +371,21 @@ ActorUiStateManagerInterface* ActorKeyedService::GetActorUiStateManager() {
   return actor_ui_state_manager_.get();
 }
 
-TaskId ActorKeyedService::IsAnyTaskActingOnTab(
-    const tabs::TabInterface& tab) const {
+bool ActorKeyedService::IsActiveOnTab(const tabs::TabInterface& tab) const {
   tabs::TabHandle handle = tab.GetHandle();
   for (auto [task_id, task] : GetActiveTasks()) {
     if (task->IsActingOnTab(handle)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+TaskId ActorKeyedService::GetTaskFromTab(const tabs::TabInterface& tab) const {
+  tabs::TabHandle handle = tab.GetHandle();
+  for (auto [task_id, task] : GetActiveTasks()) {
+    if (task->HasTab(handle)) {
       return task_id;
     }
   }

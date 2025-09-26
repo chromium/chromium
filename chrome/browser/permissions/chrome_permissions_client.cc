@@ -83,7 +83,7 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/actor_util.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -841,8 +841,15 @@ bool ChromePermissionsClient::CanPromptSystemPermission(
 bool ChromePermissionsClient::IsActorOperatingOnWebContents(
     content::WebContents* web_contents) const {
 #if !BUILDFLAG(IS_ANDROID)
-  return actor::IsActorOperatingOnWebContents(web_contents->GetBrowserContext(),
-                                              web_contents);
+  auto* actor_service =
+      actor::ActorKeyedService::Get(web_contents->GetBrowserContext());
+  if (!actor_service) {
+    return false;
+  }
+
+  const auto* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  return tab_interface && actor_service->IsActiveOnTab(*tab_interface);
 #else
   return false;
 #endif
