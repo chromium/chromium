@@ -110,6 +110,7 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span_forward_internal.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
@@ -471,7 +472,8 @@ class BASE_EXPORT FilePath {
 
   // Normalize all path separators to given type on Windows
   // (if FILE_PATH_USES_WIN_SEPARATORS is true), or do nothing on POSIX systems.
-  [[nodiscard]] FilePath NormalizePathSeparatorsTo(CharType separator) const;
+  [[nodiscard]] FilePath NormalizePathSeparatorsTo(
+      CharType normalized_separator) const;
 
   // Compare two strings in the same way the file system does.
   // Note that these always ignore case, even on file systems that are case-
@@ -538,6 +540,9 @@ class BASE_EXPORT FilePath {
   // separators is never stripped, to support alternate roots.  This is used to
   // support UNC paths on Windows.
   void StripTrailingSeparatorsInternal();
+
+  // Returns `kSeparators` as a `span` (without the terminating NUL character).
+  static span<const CharType> SeparatorsAsSpan();
 
   bool IsParentFast(const FilePath& child) const;
   bool IsParentSlow(const FilePath& child) const;

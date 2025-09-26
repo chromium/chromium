@@ -1662,6 +1662,17 @@ TEST_F(FilePathTest, TracedValueSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(FilePath(FPL("foo"))), "foo");
 }
 
+TEST_F(FilePathTest, IsSeparator) {
+  EXPECT_FALSE(FilePath::IsSeparator(FILE_PATH_LITERAL('x')));
+  EXPECT_FALSE(FilePath::IsSeparator(FILE_PATH_LITERAL('\0')));
+  EXPECT_TRUE(FilePath::IsSeparator(FILE_PATH_LITERAL('/')));
+#if defined(FILE_PATH_USES_WIN_SEPARATORS)
+  EXPECT_TRUE(FilePath::IsSeparator(FILE_PATH_LITERAL('\\')));
+#else
+  EXPECT_FALSE(FilePath::IsSeparator(FILE_PATH_LITERAL('\\')));
+#endif
+}
+
 // Test GetHFSDecomposedForm should return empty result for invalid UTF-8
 // strings.
 #if BUILDFLAG(IS_APPLE)

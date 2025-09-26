@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/files/file_path.h"
 
 #include <string.h>
@@ -16,6 +11,8 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/features.h"
 #include "base/files/safe_base_name.h"
 #include "base/numerics/safe_conversions.h"
@@ -322,13 +319,8 @@ std::ostream& operator<<(std::ostream& out, const FilePath& file_path) {
 
 // static
 bool FilePath::IsSeparator(CharType character) {
-  for (size_t i = 0; i < kSeparatorsLength - 1; ++i) {
-    if (character == kSeparators[i]) {
-      return true;
-    }
-  }
-
-  return false;
+  span<const CharType> all_known_separators = SeparatorsAsSpan();
+  return base::Contains(all_known_separators, character);
 }
 
 std::vector<FilePath::StringType> FilePath::GetComponents() const {
@@ -814,6 +806,19 @@ FilePath FilePath::StripTrailingSeparators() const {
   return new_path;
 }
 
+// static
+span<const FilePath::CharType> FilePath::SeparatorsAsSpan() {
+  // The last element of `kSeparators` is a terminating NUL character.
+  // Discard it when creating the span.
+  //
+  // TODO(lukasza): We could try to avoid `UNSAFE_TODO` here.  One idea would
+  // be changing the type of `kSeparators` to `std::array<CharType, 2-or-3>`,
+  // but this idea seems incompatible with `constexpr` (and maybe the risk
+  // of changing the public API is not worth it).
+  DCHECK_EQ(kSeparators[kSeparatorsLength - 1], FILE_PATH_LITERAL('\0'));
+  return UNSAFE_TODO(span(kSeparators, kSeparatorsLength - 1));
+}
+
 bool FilePath::ReferencesParent() const {
   if (path_.find(kParentDirectory) == StringType::npos) {
     // GetComponents is quite expensive, so avoid calling it in the majority
@@ -1035,7 +1040,7 @@ int FilePath::CompareIgnoreCase(StringViewType string1,
 namespace {
 
 // clang-format off
-const UInt16 lower_case_table[11 * 256] = {
+const std::array<UInt16, 11*256> lower_case_table = {
   // High-byte indices ( == 0 iff no case mapping and no ignorables )
 
   /* 0 */ 0x0100, 0x0200, 0x0000, 0x0300, 0x0400, 0x0500, 0x0000, 0x0000,
@@ -1434,18 +1439,20 @@ inline base_icu::UChar32 HFSReadNextNonIgnorableCodepoint(const char* string,
   while (*index < length && codepoint == 0) {
     // CBU8_NEXT returns a value < 0 in error cases. For purposes of string
     // comparison, we just use that value and flag it with DCHECK.
-    CBU8_NEXT(reinterpret_cast<const uint8_t*>(string), *index, length,
-              codepoint);
+    UNSAFE_BUFFERS(CBU8_NEXT(reinterpret_cast<const uint8_t*>(string), *index,
+                             length, codepoint));
     DCHECK_GT(codepoint, 0);
 
     // Note: Here, there are no lower case conversion implemented in the
     // Supplementary Multilingual Plane (codepoint > 0xFFFF).
 
     if (codepoint > 0 && codepoint <= 0xFFFF) {
+      UInt16 unsigned_codepoint = checked_cast<UInt16>(codepoint);
       // Check if there is a subtable for this upper byte.
-      int lookup_offset = lower_case_table[codepoint >> 8];
+      UInt16 lookup_offset = lower_case_table[unsigned_codepoint >> 8];
       if (lookup_offset != 0) {
-        codepoint = lower_case_table[lookup_offset + (codepoint & 0x00FF)];
+        codepoint =
+            lower_case_table[lookup_offset + (unsigned_codepoint & 0x00FF)];
       }
       // Note: `codepoint` may be again 0 at this point if the character was
       // an ignorable.
@@ -1546,15 +1553,14 @@ int FilePath::CompareIgnoreCase(StringViewType string1,
     // succeed, fall back to strcmp. This can occur when the input string is
     // invalid UTF-8.
     if (!cfstring1 || !cfstring2) {
-      int comparison = memcmp(string1.data(), string2.data(),
-                              std::min(string1.length(), string2.length()));
-      if (comparison < 0) {
+      std::strong_ordering order = (string1 <=> string2);
+      if (order < 0) {
         return -1;
-      }
-      if (comparison > 0) {
+      } else if (order > 0) {
         return 1;
+      } else {
+        return 0;
       }
-      return 0;
     }
 
     return static_cast<int>(CFStringCompare(cfstring1.get(), cfstring2.get(),
@@ -1611,13 +1617,17 @@ void FilePath::WriteIntoTrace(perfetto::TracedValue context) const {
   perfetto::WriteIntoTracedValue(std::move(context), value());
 }
 
-FilePath FilePath::NormalizePathSeparatorsTo(CharType separator) const {
+FilePath FilePath::NormalizePathSeparatorsTo(
+    CharType normalized_separator) const {
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-  DCHECK_NE(kSeparators + kSeparatorsLength,
-            std::find(kSeparators, kSeparators + kSeparatorsLength, separator));
+  span<const CharType> all_known_separators = SeparatorsAsSpan();
+  DCHECK(base::Contains(all_known_separators, normalized_separator));
+
   StringType copy = path_;
-  for (size_t i = 0; i < kSeparatorsLength; ++i) {
-    std::replace(copy.begin(), copy.end(), kSeparators[i], separator);
+  for (CharType known_separator : all_known_separators) {
+    if (known_separator != normalized_separator) {
+      std::ranges::replace(copy, known_separator, normalized_separator);
+    }
   }
   return FilePath(copy);
 #else
