@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
@@ -24,6 +25,12 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/messages/android/message_dispatcher_bridge.h"
+#include "components/messages/android/message_enums.h"
+#include "components/messages/android/message_wrapper.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -127,6 +134,35 @@ ReloadPageDialogController::AcceptDialogForTesting(bool accept_dialog) {
 }
 
 void ReloadPageDialogController::Show() {
+#if BUILDFLAG(IS_ANDROID)
+  message_ = std::make_unique<messages::MessageWrapper>(
+      messages::MessageIdentifier::RELOAD_PAGE,
+      base::BindOnce(&ReloadPageDialogController::OnAcceptSelected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::DoNothing());
+
+  message_->SetTitle(GetTitle(extensions_info_));
+  message_->SetPrimaryButtonText(
+      l10n_util::GetStringUTF16(IDS_EXTENSION_RELOAD_PAGE_BUBBLE_OK_BUTTON));
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    int extensions_count = extensions_info_.size();
+    if (extensions_count == 1 && !extensions_info_[0].icon.IsEmpty()) {
+      message_->SetIcon(extensions_info_[0].icon.AsBitmap());
+    } else if (extensions_count > 1) {
+      // TODO (crbug.com/424012380): The message UI on Android doesn't support
+      // displaying a list of extensions like the desktop dialog. This case
+      // needs to be handled differently for Android. For now, no icon will be
+      // shown for multiple extensions.
+    }
+  }
+
+  messages::MessageDispatcherBridge::Get()->EnqueueMessage(
+      message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
+      messages::MessagePriority::kNormal);
+
+#else
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetTitle(GetTitle(extensions_info_))
       .AddOkButton(base::BindOnce(&ReloadPageDialogController::OnAcceptSelected,
@@ -165,6 +201,7 @@ void ReloadPageDialogController::Show() {
 
   ShowDialog(web_contents_->GetTopLevelNativeWindow(), extension_ids,
              dialog_builder.Build());
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ReloadPageDialogController::OnExtensionIconLoaded(

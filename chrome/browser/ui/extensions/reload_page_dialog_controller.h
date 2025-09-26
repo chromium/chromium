@@ -11,10 +11,16 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/native_ui_types.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/messages/android/message_enums.h"
+#include "components/messages/android/message_wrapper.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class BrowserContext;
@@ -73,6 +79,10 @@ class ReloadPageDialogController {
 
   // Information for the extensions to be displayed in the dialog.
   std::vector<ExtensionInfo> extensions_info_;
+
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<messages::MessageWrapper> message_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<ReloadPageDialogController> weak_ptr_factory_{this};
 };

@@ -1906,6 +1906,7 @@ if (is_android) {
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/android/hats:browser_tests",
+      "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/plus_addresses:browser_tests",
       "//chrome/browser/ui/tabs:tab_enums",
@@ -1945,6 +1946,7 @@ if (is_android) {
       "//components/invalidation:test_support",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
+      "//components/messages/android:test_support",
       "//components/messages/android/test:test_support_cpp",
       "//components/messages/android/test:test_support_java",
       "//components/metrics:content",
@@ -2140,6 +2142,7 @@ if (is_android) {
         "../browser/extensions/api/omnibox/omnibox_api_interactive_test.cc",
         "../browser/extensions/api/tabs/tabs_apitest_android.cc",
         "../browser/extensions/desktop_android_extensions_browsertest.cc",
+        "../browser/ui/extensions/reload_page_dialog_controller_android_browsertest.cc",
       ]
 
       deps += [

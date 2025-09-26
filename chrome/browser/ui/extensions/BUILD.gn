@@ -29,6 +29,7 @@ source_set("extensions") {
 
     if (is_android) {
       sources += [ "extension_install_ui_android.h" ]
+      public_deps += [ "//components/messages/android" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {
