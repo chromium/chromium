@@ -255,7 +255,7 @@ class CC_EXPORT GpuImageDecodeCache
   void ReleaseContextLockForTesting();
 
  private:
-  enum class DecodedDataMode { kGpu, kCpu, kTransferCache };
+  enum class DecodedDataMode { kTransferCache };
   using ImageTaskMap = base::flat_map<ClientId, scoped_refptr<TileTask>>;
 
   // Stores stats tracked by both DecodedImageData and UploadedImageData.
