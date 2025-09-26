@@ -1136,6 +1136,19 @@ class WebIdlSchemaTest(unittest.TestCase):
             'name': 'union_type_key'
         }, manifest_keys['union_type_key'])
 
+  # Tests that if 'partial' is left off the 'Manifest' dictionary, we throw an
+  # error.
+  def testNonPartialManifestDictError(self):
+    expected_error_regex = (
+        r'.* Dictionary\(Manifest\): If using a "Manifest" dictionary to define'
+        r' manifest keys, it must be declared "partial"\.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/non_partial_manifest_dict.idl',
+    )
+
 
 if __name__ == '__main__':
   unittest.main()
