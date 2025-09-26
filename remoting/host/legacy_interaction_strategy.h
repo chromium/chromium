@@ -18,9 +18,8 @@
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/host/keyboard_layout_monitor.h"
-#include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
 
@@ -39,8 +38,7 @@ class LegacyInteractionStrategy : public DesktopInteractionStrategy {
   std::unique_ptr<DesktopResizer> CreateDesktopResizer() override;
   std::unique_ptr<DesktopCapturer> CreateVideoCapturer(
       webrtc::ScreenId id) override;
-  std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor()
-      override;
+  std::unique_ptr<MouseCursorMonitor> CreateMouseCursorMonitor() override;
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;

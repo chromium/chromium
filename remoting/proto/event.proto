@@ -10,6 +10,8 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting.protocol;
 
+import "coordinates.proto";
+
 // Defines a keyboard event.
 message KeyEvent {
 
@@ -42,16 +44,6 @@ message KeyEvent {
 message TextEvent {
   // Unicode sequence for the event in UTF-8.
   optional string text = 1;
-}
-
-// Fractional coordinate information. Fractional coordinates define a location
-// as a number in the range [0, 1], interpreted relative to the bounds of a
-// monitor identified by |stream_id| in the most recent VideoLayout message sent
-// by the host.
-message FractionalCoordinate {
-  optional float x = 1;
-  optional float y = 2;
-  optional int64 screen_id = 3;
 }
 
 // Defines a mouse event message on the event channel.

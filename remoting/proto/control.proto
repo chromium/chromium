@@ -10,6 +10,7 @@ option optimize_for = LITE_RUNTIME;
 
 package remoting.protocol;
 
+import "coordinates.proto";
 import "layout_key_function.proto";
 
 // Set the host resolution to match the client. If screen_id is omitted, then
@@ -273,4 +274,11 @@ message PeerConnectionParameters {
 // Next ID: 2
 message ActiveDisplay {
   optional int64 screen_id = 1;
+}
+
+// The position of the mouse cursor on the host. This is used for client side
+// rendering of the host's cursor in relative mouse mode.
+// Next ID: 2
+message HostCursorPosition {
+  optional FractionalCoordinate fractional_coordinate = 1;
 }

@@ -14,6 +14,8 @@ namespace remoting {
 // relative pointer mode, which corresponds to client-side pointer lock. Coupled
 // with a local input monitor detecting local mouse activity, this can be used
 // to enable or disable compositing of the local mouse cursor.
+// TODO: crbug.com/447440351 - Rename this to RelativeMouseModeNotifier and
+// rename SetComposeEnabled() to SetRelativeMouseModeEnabled().
 class DesktopAndCursorComposerNotifier : public protocol::InputFilter {
  public:
   class EventHandler {

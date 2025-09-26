@@ -38,10 +38,10 @@
 #include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
 #include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "remoting/host/win/evaluate_d3d.h"
@@ -106,7 +106,7 @@ DesktopDisplayInfoMonitor* BasicDesktopEnvironment::GetDisplayInfoMonitor() {
   return display_info_monitor_.get();
 }
 
-std::unique_ptr<webrtc::MouseCursorMonitor>
+std::unique_ptr<MouseCursorMonitor>
 BasicDesktopEnvironment::CreateMouseCursorMonitor() {
   return interaction_strategy_->CreateMouseCursorMonitor();
 }

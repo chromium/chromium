@@ -80,6 +80,8 @@ class TestClientStub : public protocol::ClientStub {
 
   // protocol::CursorShapeStub implementation.
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override;
+  void SetHostCursorPosition(
+      const protocol::HostCursorPosition& position) override;
 
   // protocol::KeyboardLayoutStub implementation.
   void SetKeyboardLayout(const protocol::KeyboardLayout& layout) override;
@@ -122,6 +124,9 @@ void TestClientStub::InjectClipboardEvent(
 
 void TestClientStub::SetCursorShape(
     const protocol::CursorShapeInfo& cursor_shape) {}
+
+void TestClientStub::SetHostCursorPosition(
+    const protocol::HostCursorPosition& position) {}
 
 void TestClientStub::SetKeyboardLayout(const protocol::KeyboardLayout& layout) {
 }

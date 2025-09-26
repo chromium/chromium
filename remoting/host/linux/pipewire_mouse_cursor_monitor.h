@@ -7,11 +7,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/linux/pipewire_mouse_cursor_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 
 namespace remoting {
 
-class PipewireMouseCursorMonitor : public webrtc::MouseCursorMonitor {
+class PipewireMouseCursorMonitor : public MouseCursorMonitor {
  public:
   explicit PipewireMouseCursorMonitor(
       base::WeakPtr<PipewireMouseCursorCapturer> capturer);

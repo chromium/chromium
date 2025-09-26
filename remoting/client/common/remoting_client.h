@@ -79,6 +79,8 @@ class RemotingClient : public SignalStrategy::Listener,
   void SetActiveDisplay(const protocol::ActiveDisplay& active_display) override;
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override;
+  void SetHostCursorPosition(
+      const protocol::HostCursorPosition& position) override;
   void SetKeyboardLayout(const protocol::KeyboardLayout& layout) override;
 
   // ConnectionToHost::HostEventCallback implementation.

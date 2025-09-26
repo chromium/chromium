@@ -113,7 +113,7 @@ std::unique_ptr<DesktopCapturer> DesktopSessionProxy::CreateVideoCapturer(
   return video_capturer;
 }
 
-std::unique_ptr<webrtc::MouseCursorMonitor>
+std::unique_ptr<MouseCursorMonitor>
 DesktopSessionProxy::CreateMouseCursorMonitor() {
   return std::make_unique<IpcMouseCursorMonitor>(this);
 }

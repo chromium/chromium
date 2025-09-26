@@ -15,13 +15,13 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 using ::remoting::protocol::MockClientStub;
 
@@ -37,7 +37,7 @@ static const int kCursorHeight = 32;
 static const int kHotspotX = 11;
 static const int kHotspotY = 12;
 
-class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor {
+class ThreadCheckMouseCursorMonitor : public MouseCursorMonitor {
  public:
   explicit ThreadCheckMouseCursorMonitor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -78,9 +78,8 @@ class ThreadCheckMouseCursorMonitor : public webrtc::MouseCursorMonitor {
   raw_ptr<Callback> callback_;
 };
 
-class MouseCursorMonitorProxyTest
-    : public testing::Test,
-      public webrtc::MouseCursorMonitor::Callback {
+class MouseCursorMonitorProxyTest : public testing::Test,
+                                    public MouseCursorMonitor::Callback {
  public:
   MouseCursorMonitorProxyTest() : capture_thread_("test capture thread") {
     capture_thread_.Start();
@@ -91,7 +90,7 @@ class MouseCursorMonitorProxyTest
     base::RunLoop().RunUntilIdle();
   }
 
-  // webrtc::MouseCursorMonitor::Callback implementation.
+  // MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
 
  protected:
@@ -120,7 +119,7 @@ TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
   // Initialize the proxy.
   proxy_ = std::make_unique<MouseCursorMonitorProxy>(
       capture_thread_.task_runner(),
-      base::ReturnValueOnce<std::unique_ptr<webrtc::MouseCursorMonitor>>(
+      base::ReturnValueOnce<std::unique_ptr<MouseCursorMonitor>>(
           std::make_unique<ThreadCheckMouseCursorMonitor>(
               capture_thread_.task_runner())));
   proxy_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);

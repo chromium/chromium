@@ -128,7 +128,7 @@ DesktopDisplayInfoMonitor* FakeDesktopEnvironment::GetDisplayInfoMonitor() {
   return nullptr;
 }
 
-std::unique_ptr<webrtc::MouseCursorMonitor>
+std::unique_ptr<MouseCursorMonitor>
 FakeDesktopEnvironment::CreateMouseCursorMonitor() {
   return std::make_unique<FakeMouseCursorMonitor>();
 }

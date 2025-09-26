@@ -32,7 +32,7 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "ui/events/types/event_type.h"
 
 namespace base {
@@ -68,7 +68,7 @@ class InputEventTracker;
 class DesktopSessionAgent
     : public base::RefCountedThreadSafe<DesktopSessionAgent>,
       public IPC::Listener,
-      public webrtc::MouseCursorMonitor::Callback,
+      public MouseCursorMonitor::Callback,
       public ClientSessionControl,
       public mojom::DesktopSessionAgent,
       public mojom::DesktopSessionControl {
@@ -107,7 +107,7 @@ class DesktopSessionAgent
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // webrtc::MouseCursorMonitor::Callback implementation.
+  // MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 

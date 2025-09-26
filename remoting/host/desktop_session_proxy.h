@@ -38,21 +38,14 @@
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/desktop_capturer.h"
 #include "remoting/protocol/errors.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
-
 namespace IPC {
 class ChannelProxy;
 }  // namespace IPC
-
-namespace webrtc {
-class MouseCursor;
-}  // namespace webrtc
 
 namespace remoting {
 
@@ -103,7 +96,7 @@ class DesktopSessionProxy
   std::unique_ptr<InputInjector> CreateInputInjector();
   std::unique_ptr<ScreenControls> CreateScreenControls();
   std::unique_ptr<DesktopCapturer> CreateVideoCapturer(webrtc::ScreenId id);
-  std::unique_ptr<webrtc::MouseCursorMonitor> CreateMouseCursorMonitor();
+  std::unique_ptr<MouseCursorMonitor> CreateMouseCursorMonitor();
   std::unique_ptr<KeyboardLayoutMonitor> CreateKeyboardLayoutMonitor(
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
   std::unique_ptr<FileOperations> CreateFileOperations();

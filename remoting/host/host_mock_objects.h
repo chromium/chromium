@@ -42,10 +42,9 @@
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/events/types/event_type.h"
 
 namespace base {
@@ -83,7 +82,7 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               GetDisplayInfoMonitor,
               (),
               (override));
-  MOCK_METHOD(std::unique_ptr<webrtc::MouseCursorMonitor>,
+  MOCK_METHOD(std::unique_ptr<MouseCursorMonitor>,
               CreateMouseCursorMonitor,
               (),
               (override));
@@ -306,7 +305,7 @@ class MockSecurityKeyAuthHandler : public SecurityKeyAuthHandler {
   SecurityKeyAuthHandler::SendMessageCallback callback_;
 };
 
-class MockMouseCursorMonitor : public webrtc::MouseCursorMonitor {
+class MockMouseCursorMonitor : public MouseCursorMonitor {
  public:
   MockMouseCursorMonitor();
 

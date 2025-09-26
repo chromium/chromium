@@ -268,6 +268,11 @@ void RemotingClient::SetCursorShape(
   NOTIMPLEMENTED();
 }
 
+void RemotingClient::SetHostCursorPosition(
+    const protocol::HostCursorPosition& position) {
+  NOTIMPLEMENTED();
+}
+
 void RemotingClient::SetKeyboardLayout(const protocol::KeyboardLayout& layout) {
   NOTIMPLEMENTED();
 }

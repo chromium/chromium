@@ -14,10 +14,10 @@
 #include "base/thread_annotations.h"
 #include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "remoting/host/linux/pipewire_capture_stream_manager.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_desktop_frame.h"
 
 namespace remoting {
@@ -25,11 +25,11 @@ namespace remoting {
 // A class that allows incarnations of PipewireMouseCursorMonitor to capture
 // mouse cursor shapes and positions, and get the latest cursor shape before
 // it is created. The interface of this class pretty much mirrors
-// webrtc::MouseCursorMonitor.
+// MouseCursorMonitor.
 class PipewireMouseCursorCapturer {
  public:
-  using Callback = webrtc::MouseCursorMonitor::Callback;
-  using Mode = webrtc::MouseCursorMonitor::Mode;
+  using Callback = MouseCursorMonitor::Callback;
+  using Mode = MouseCursorMonitor::Mode;
 
   explicit PipewireMouseCursorCapturer(
       base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
@@ -50,6 +50,12 @@ class PipewireMouseCursorCapturer {
   base::WeakPtr<PipewireMouseCursorCapturer> GetWeakPtr();
 
  private:
+  struct MonitorInfo {
+    int dpi;
+    int width;
+    int height;
+  };
+
   void OnDisplayConfig(const GnomeDisplayConfig& config);
   std::unique_ptr<webrtc::MouseCursor> ShareLatestCursor();
 
@@ -68,7 +74,7 @@ class PipewireMouseCursorCapturer {
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<GnomeDisplayConfigMonitor::Subscription>
       display_config_subscription_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::flat_map<webrtc::ScreenId, int> monitor_dpis_
+  base::flat_map<webrtc::ScreenId, MonitorInfo> monitors_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);

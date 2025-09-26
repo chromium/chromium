@@ -928,6 +928,7 @@ void ClientSession::SetComposeEnabled(bool enabled) {
   for (const auto& [_, video_stream] : video_streams_) {
     video_stream->SetComposeEnabled(enabled);
   }
+  mouse_shape_pump_->SetSendCursorPositionToClient(enabled);
 }
 
 void ClientSession::OnMouseCursor(webrtc::MouseCursor* mouse_cursor) {

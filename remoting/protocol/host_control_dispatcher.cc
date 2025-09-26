@@ -90,6 +90,13 @@ void HostControlDispatcher::SetCursorShape(
   message_pipe()->Send(&message, {});
 }
 
+void HostControlDispatcher::SetHostCursorPosition(
+    const HostCursorPosition& position) {
+  ControlMessage message;
+  message.mutable_host_cursor_position()->CopyFrom(position);
+  message_pipe()->Send(&message, {});
+}
+
 void HostControlDispatcher::SetKeyboardLayout(const KeyboardLayout& layout) {
   ControlMessage message;
   message.mutable_keyboard_layout()->CopyFrom(layout);
