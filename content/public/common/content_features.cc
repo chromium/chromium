@@ -1318,7 +1318,7 @@ BASE_FEATURE(kEnableExclusiveAccessManager, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kKeyboardLockApiOnAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kKeyboardLockApiOnAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Sets IO threads to kInteractive all the time.
