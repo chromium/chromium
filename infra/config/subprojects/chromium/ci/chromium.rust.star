@@ -283,9 +283,6 @@ ci.builder(
         category = "Linux",
         short_name = "rel",
     ),
-    experiments = {
-        "chromium_tests.resultdb_module": 100,
-    },
 )
 
 ci.builder(
