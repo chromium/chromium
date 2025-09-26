@@ -1,9 +1,8 @@
 Name: Metrics Protos
 Short Name: metrics_proto
 URL: Google Internal
-Version: 797981257
-Date: 2025-08-22
-Update Mechanism: Static (https://crbug.com/422306217)
+Version: 811856464
+Date: 2025-09-26
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes

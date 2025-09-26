@@ -47,7 +47,7 @@ message EncryptedPrivateMetricReport {
   // be provided in addition to `report_header` field due to protocol buffer
   // serialization not being deterministic. See:
   // go/proto-serialization-not-canonical
-  optional string serialized_report_header = 2;
+  optional bytes serialized_report_header = 2;
 
   // The PrivateMetricReportHeader protocol buffer provided as a non-serialized
   // form. This field is provided to be prevent `serialized_report_header` from
@@ -62,6 +62,7 @@ message EncryptedPrivateMetricReport {
   enum ReportType {
     REPORT_TYPE_INVALID = 0;
     DWA = 1;
+    DKM = 2;
   }
 
   optional ReportType report_type = 4;
