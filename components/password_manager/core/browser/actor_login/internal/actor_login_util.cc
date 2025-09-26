@@ -17,8 +17,6 @@
 
 namespace actor_login {
 
-namespace {
-
 bool IsElementFocusable(autofill::FieldRendererId renderer_id,
                         const autofill::FormData& form_data) {
   auto field = std::ranges::find(form_data.fields(), renderer_id,
@@ -41,9 +39,6 @@ bool IsLoginForm(const password_manager::PasswordForm& form) {
   return (has_focusable_username || has_focusable_password) &&
          !has_focusable_new_password;
 }
-
-}  // namespace
-
 std::u16string GetSourceSiteOrAppFromUrl(const GURL& url) {
   return base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
 }

@@ -733,7 +733,6 @@ test("components_unittests") {
     deps += [
       "//components/keep_alive_registry:unit_tests",
       "//components/manta:unit_tests",
-      "//components/password_manager/core/browser/actor_login/internal:unit_tests",
       "//components/trusted_vault:unit_tests",
     ]
   }
@@ -745,6 +744,7 @@ test("components_unittests") {
       "//components/headless/console_message_logger:unit_tests",
       "//components/headless/screen_info:unit_tests",
       "//components/live_caption:unit_tests",
+      "//components/password_manager/core/browser/actor_login/internal:unit_tests",
       "//components/soda:unit_tests",
       "//components/storage_monitor:unit_tests",
       "//components/web_modal:unit_tests",

@@ -7,7 +7,6 @@
 #include <ranges>
 #include <utility>
 
-#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/strings/to_string.h"
@@ -19,6 +18,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_util.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -148,16 +148,25 @@ void ActorLoginCredentialFiller::AttemptLogin(
   autofill::FormRendererId form_renderer_id =
       signin_form_manager->GetParsedObservedForm()->form_data.renderer_id();
 
-  auto fill_form_cb = base::BindOnce(
-      &ActorLoginCredentialFiller::FillForm, weak_ptr_factory_.GetWeakPtr(),
-      driver, form_renderer_id, stored_credential->username_value,
-      stored_credential->password_value);
+  base::OnceClosure fill_cb = base::DoNothing();
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kActorLoginFillingHeuristics)) {
+    fill_cb = base::BindOnce(&ActorLoginCredentialFiller::FillAllEligibleFields,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             stored_credential->username_value,
+                             stored_credential->password_value);
+  } else {
+    fill_cb = base::BindOnce(
+        &ActorLoginCredentialFiller::FillForm, weak_ptr_factory_.GetWeakPtr(),
+        driver, form_renderer_id, stored_credential->username_value,
+        stored_credential->password_value);
+  }
 
   if (client_->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
     LogStatus(logger.get(), Logger::STRING_ACTOR_LOGIN_WAITING_FOR_REAUTH);
-    ReauthenticateAndFill(std::move(fill_form_cb));
+    ReauthenticateAndFill(std::move(fill_cb));
   } else {
-    std::move(fill_form_cb).Run();
+    std::move(fill_cb).Run();
   }
 }
 
@@ -244,6 +253,40 @@ void ActorLoginCredentialFiller::FillForm(
                            weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ActorLoginCredentialFiller::FillAllEligibleFields(
+    std::u16string username,
+    std::u16string password) {
+  PasswordManagerInterface* password_manager = client_->GetPasswordManager();
+  PasswordFormCache* form_cache = password_manager->GetPasswordFormCache();
+
+  base::ConcurrentClosures concurrent_filling;
+  for (const auto& manager : form_cache->GetFormManagers()) {
+    if (!manager->GetDriver()) {
+      continue;
+    }
+    if (!manager->GetDriver()->GetLastCommittedOrigin().IsSameOriginWith(
+            origin_)) {
+      continue;
+    }
+
+    const password_manager::PasswordForm* parsed_form =
+        manager->GetParsedObservedForm();
+    if (!parsed_form || !IsLoginForm(*parsed_form)) {
+      continue;
+    }
+    FillField(manager->GetDriver().get(),
+              parsed_form->username_element_renderer_id, username,
+              FieldType::kUsername, concurrent_filling.CreateClosure());
+    FillField(manager->GetDriver().get(),
+              parsed_form->password_element_renderer_id, password,
+              FieldType::kPassword, concurrent_filling.CreateClosure());
+  }
+
+  std::move(concurrent_filling)
+      .Done(base::BindOnce(&ActorLoginCredentialFiller::OnFillingDone,
+                           weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ActorLoginCredentialFiller::FillField(PasswordManagerDriver* driver,
                                            FieldRendererId field_renderer_id,
                                            const std::u16string& value,
@@ -290,4 +333,5 @@ void ActorLoginCredentialFiller::OnFillingDone() {
   std::move(callback_).Run(
       GetEndFillingResult(username_filled_, password_filled_));
 }
+
 }  // namespace actor_login

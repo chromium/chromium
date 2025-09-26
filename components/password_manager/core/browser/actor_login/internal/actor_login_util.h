@@ -10,6 +10,7 @@
 #include "url/gurl.h"
 
 namespace password_manager {
+struct PasswordForm;
 class PasswordFormCache;
 class PasswordFormManager;
 }  // namespace password_manager
@@ -19,6 +20,9 @@ class Origin;
 }  // namespace url
 
 namespace actor_login {
+
+// Checks whether `form` is a login form.
+bool IsLoginForm(const password_manager::PasswordForm& form);
 
 // Transforms `url` into `Credential.source_site_or_app`
 std::u16string GetSourceSiteOrAppFromUrl(const GURL& url);

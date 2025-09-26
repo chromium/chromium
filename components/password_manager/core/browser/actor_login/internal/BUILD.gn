@@ -4,7 +4,10 @@
 
 import("//build/config/features.gni")
 
-assert(!is_android)
+# The code can theoretically be used on mobile too, it's just currently
+# not needed. Remove the asserts if using it on mobile and remember
+# to also modify components/BUILD.gn to start building the tests.
+assert(!is_android && !is_ios)
 
 source_set("delegate") {
   sources = [
@@ -32,6 +35,7 @@ source_set("delegate") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/strings:components_strings",
     "//url",
   ]
@@ -51,6 +55,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/test:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

@@ -164,5 +164,4 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   std::move(pending_attempt_login_callback_).Run(std::move(result));
 }
 
-
 }  // namespace actor_login

@@ -4,7 +4,10 @@
 
 import("//build/config/features.gni")
 
-assert(!is_android)
+# The code can theoretically be used on mobile too, it's just currently
+# not needed. Remove the asserts if using it on mobile and remember
+# to also modify components/BUILD.gn to start building the tests.
+assert(!is_android && !is_ios)
 
 # All actor_login code should be able to depend on this.
 source_set("common") {

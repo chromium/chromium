@@ -18,6 +18,7 @@ namespace password_manager::features {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kActorLogin);
+BASE_DECLARE_FEATURE(kActorLoginFillingHeuristics);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
