@@ -2290,6 +2290,7 @@ chromium-metrics-reviews@google.com.
   <int value="1395"
       label="ExtensionForceInstallWithNonMalwareViolationsEnabled"/>
   <int value="1396" label="CacheEncryptionEnabled"/>
+  <int value="1397" label="SilentPrintingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

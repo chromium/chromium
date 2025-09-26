@@ -1850,6 +1850,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGenAIInlineImageSettings,
     ash::prefs::kLobsterEnterprisePolicySettings,
     base::Value::Type::INTEGER},
+  { key::kSilentPrintingEnabled,
+    ash::prefs::kSilentPrintingEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
