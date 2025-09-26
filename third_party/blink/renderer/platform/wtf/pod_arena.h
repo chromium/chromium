@@ -23,18 +23,15 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_ARENA_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -149,8 +146,10 @@ class PodArena final : public RefCounted<PodArena> {
     // Allocates a block of memory of the given size from the passed
     // Allocator.
     Chunk(Allocator* allocator, size_t size)
-        : allocator_(allocator), size_(size), current_offset_(0) {
-      base_ = static_cast<uint8_t*>(allocator_->Allocate(size));
+        : allocator_(allocator), current_offset_(0) {
+      uint8_t* allocated = static_cast<uint8_t*>(allocator_->Allocate(size));
+      // SAFETY: Allocate() ensures `allocated` has `size` bytes.
+      base_ = UNSAFE_BUFFERS(base::span<uint8_t>(allocated, allocated + size));
     }
 
     Chunk(const Chunk&) = delete;
@@ -158,7 +157,7 @@ class PodArena final : public RefCounted<PodArena> {
 
     // Frees the memory allocated from the Allocator in the
     // constructor.
-    ~Chunk() { allocator_->Free(base_); }
+    ~Chunk() { allocator_->Free(base_.data()); }
 
     // Returns a pointer to "size" bytes of storage, or 0 if this
     // Chunk could not satisfy the allocation.
@@ -167,18 +166,18 @@ class PodArena final : public RefCounted<PodArena> {
       if (current_offset_ + size < current_offset_)
         return nullptr;
 
-      if (current_offset_ + size > size_)
+      if (current_offset_ + size > base_.size()) {
         return nullptr;
+      }
 
-      void* result = base_ + current_offset_;
+      void* result = base_.subspan(current_offset_, size).data();
       current_offset_ += size;
       return result;
     }
 
    protected:
     Allocator* allocator_;
-    uint8_t* base_;
-    size_t size_;
+    base::span<uint8_t> base_;
     size_t current_offset_;
   };
 
