@@ -192,8 +192,8 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
 template <typename T>
 class WebUIContentsWrapperT : public WebUIContentsWrapper {
  public:
-  // Helper to allow static_assert to concatenate string_view at build time.
-  static consteval std::string ConcatStrings(
+  // Helper to allow static_assert to concatenate string_view.
+  static constexpr std::string ConcatStrings(
       std::initializer_list<std::string_view> strs) {
     std::string result;
     size_t total_length = 0;
