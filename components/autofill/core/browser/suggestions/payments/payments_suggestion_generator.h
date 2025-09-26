@@ -116,9 +116,9 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const FormFieldData& trigger_field,
     FieldType trigger_field_type);
 
-// Returns a suggestion list with a BNPL suggestion, initialized with
-// `bnpl_issuers` and the BNPL amount `extracted_amount_in_micros`, added at the
-// end (but before footer items) of the given suggestion list
+// Returns a suggestion list with a separator and BNPL suggestion, initialized
+// with `bnpl_issuers` and the BNPL amount `extracted_amount_in_micros`, added
+// at the end (but before footer items) of the given suggestion list
 // `current_suggestions`. `BnplSuggestionUpdateResult::is_bnpl_suggestion_added`
 // is true if a BNPL suggestion is inserted successfully.
 BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(

@@ -1669,6 +1669,96 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
   EXPECT_EQ(current_suggestion_index, updated_suggestions.size());
 }
 
+// Ensures that the separator and pay over time option is generated with
+// expected content and inserted as the last entry before the footer
+// suggestions.
+TEST_F(PaymentsSuggestionGeneratorBnplTest,
+       MaybeUpdateDesktopSuggestionsWithBnpl_SeparatorAndBnplSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableAmountExtraction,
+       features::kAutofillEnableBuyNowPayLater,
+       features::kAutofillEnableBuyNowPayLaterSyncing,
+       features::
+           kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString},
+      /*disabled_features=*/{});
+
+  // Add a server card with vcn enrolled.
+  payments_data().AddServerCreditCard(
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber());
+
+  BnplIssuer bnpl_issuer =
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip);
+
+  // Add BNPL issuers.
+  payments_data().AddBnplIssuer(bnpl_issuer);
+
+  std::vector<CreditCard> ordered_cards_for_suggestions =
+      GetOrderedCardsToSuggestForTest(
+          autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER,
+          /*suppress_disused_cards=*/false,
+          /*prefix_match=*/false,
+          /*require_non_empty_value_on_trigger_field=*/false,
+          /*include_virtual_cards=*/true);
+
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(
+      autofill_client(), FormFieldData(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/
+      {}, CREDIT_CARD_NUMBER,
+      /*should_show_scan_credit_card=*/false, summary);
+
+  uint64_t extracted_amount_in_micros = 50'000'000;
+
+  BnplSuggestionUpdateResult update_suggestions_result =
+      MaybeUpdateDesktopSuggestionsWithBnpl(suggestions,
+                                            payments_data().GetBnplIssuers(),
+                                            extracted_amount_in_micros);
+
+  // `updated_suggesions` should contains 6 suggestions which are 2 credit
+  // card suggestions, 1 BNPL suggestion, 2 separators, and 1 manage card
+  // footer.
+  ASSERT_TRUE(update_suggestions_result.is_bnpl_suggestion_added);
+  std::vector<Suggestion>& updated_suggestions =
+      update_suggestions_result.suggestions;
+  ASSERT_EQ(updated_suggestions.size(), 6U);
+  size_t current_suggestion_index = 0;
+  // Checks card suggestions stayed in the same order after the insertion.
+  for (const CreditCard& card : ordered_cards_for_suggestions) {
+    EXPECT_THAT(updated_suggestions[current_suggestion_index++],
+                EqualsSuggestion(CreateCreditCardSuggestionForTest(
+                    card, autofill_client(), CREDIT_CARD_NUMBER,
+                    /*virtual_card_option=*/card.record_type() ==
+                        CreditCard::RecordType::kVirtualCard,
+                    /*card_linked_offer_available=*/false)));
+  }
+
+  EXPECT_EQ(updated_suggestions[current_suggestion_index++].type,
+            SuggestionType::kSeparator);
+
+  // Checks BNPL suggestion is inserted.
+  EXPECT_EQ(updated_suggestions[current_suggestion_index]
+                .GetPayload<Suggestion::PaymentsPayload>()
+                .extracted_amount_in_micros,
+            extracted_amount_in_micros);
+  EXPECT_THAT(
+      updated_suggestions[current_suggestion_index++],
+      EqualsSuggestion(
+          SuggestionType::kBnplEntry,
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          Suggestion::Icon::kBnpl,
+          {{Suggestion::Text(bnpl_issuer.GetDisplayName())}}));
+
+  // Checks the footer suggestions stayed in the same order after the insertion.
+  EXPECT_THAT(updated_suggestions[current_suggestion_index++],
+              EqualsSuggestion(SuggestionType::kSeparator));
+  EXPECT_THAT(updated_suggestions[current_suggestion_index++],
+              EqualsSuggestion(SuggestionType::kManageCreditCard));
+  EXPECT_EQ(current_suggestion_index, updated_suggestions.size());
+}
+
 // Ensures that `GetBnplPriceLowerBound()` returns the minimum lower price
 // bound among all given issuers.
 TEST_F(PaymentsSuggestionGeneratorBnplTest,

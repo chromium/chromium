@@ -1264,7 +1264,13 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
   }
 
   BnplSuggestionUpdateResult suggestion_update_result;
-  suggestion_update_result.suggestions.reserve(current_suggestions.size() + 1);
+  suggestion_update_result.suggestions.reserve(
+      current_suggestions.size() +
+      (base::FeatureList::IsEnabled(
+           features::
+               kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)
+           ? 2
+           : 1));
   // Insert BNPL suggestion before the first footer item.
   for (size_t index = 0; index < current_suggestions.size(); index++) {
     // No need to add new BNPL suggestion if there is already one.
@@ -1273,6 +1279,12 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
     }
 
     if (IsCreditCardFooterSuggestion(current_suggestions, index)) {
+      if (base::FeatureList::IsEnabled(
+              features::
+                  kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {
+        suggestion_update_result.suggestions.emplace_back(
+            SuggestionType::kSeparator);
+      }
       suggestion_update_result.suggestions.push_back(CreateBnplSuggestion(
           std::move(bnpl_issuers), extracted_amount_in_micros));
       suggestion_update_result.suggestions.insert(
