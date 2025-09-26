@@ -109,6 +109,23 @@ public class RadioButtonGroupThemePreference extends ContainedRadioButtonGroupPr
         mSettingRadioButton = mButtons.get(mSetting);
         mSettingRadioButton.setChecked(true);
         positionCheckbox();
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            // TODO(crbug.com/439911511): Set the value directly in the layout instead.
+            int verticalPadding =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(
+                                    org.chromium.components.browser_ui.settings.R.dimen
+                                            .settings_item_vertical_padding);
+            for (RadioButtonWithDescription button : mButtons) {
+                button.setPadding(
+                        button.getPaddingLeft(),
+                        verticalPadding,
+                        button.getPaddingRight(),
+                        verticalPadding);
+            }
+        }
     }
 
     /** Remove and insert the checkbox to the view, based on the current theme preference. */

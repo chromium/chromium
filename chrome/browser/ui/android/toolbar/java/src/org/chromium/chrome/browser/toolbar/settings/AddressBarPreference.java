@@ -94,6 +94,24 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
         mTopButton = (RadioButtonWithDescription) holder.findViewById(R.id.address_bar_top);
         mBottomButton = (RadioButtonWithDescription) holder.findViewById(R.id.address_bar_bottom);
 
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            // TODO(crbug.com/439911511): Set the value directly in the layout instead.
+            int verticalPadding =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.settings_item_vertical_padding);
+            mTopButton.setPadding(
+                    mTopButton.getPaddingLeft(),
+                    verticalPadding,
+                    mTopButton.getPaddingRight(),
+                    verticalPadding);
+            mBottomButton.setPadding(
+                    mBottomButton.getPaddingLeft(),
+                    verticalPadding,
+                    mBottomButton.getPaddingRight(),
+                    verticalPadding);
+        }
+
         initializeRadioButtonSelection();
     }
 

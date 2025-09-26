@@ -20,4 +20,5 @@ found in the LICENSE file.
     <dimen name="settings_item_horizontal_margin">16dp</dimen>
     <dimen name="settings_item_vertical_margin">1dp</dimen>
     <dimen name="settings_section_bottom_margin">8dp</dimen>
+    <dimen name="settings_item_vertical_padding">16dp</dimen>
 </resources>
