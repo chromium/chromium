@@ -593,13 +593,13 @@ TEST_F(PageActionControllerMockModelTest, ShouldForciblyHidePageActions) {
                           properties_provider_);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetShouldHidePageAction(_, /*should_hide_page_actions*/ true))
+              SetIsSuppressedByOmnibox(_, /*is_suppressed*/ true))
       .Times(1);
 
   controller().SetShouldHidePageActions(true);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetShouldHidePageAction(_, /*should_hide_page_actions*/ false))
+              SetIsSuppressedByOmnibox(_, /*is_suppressed*/ false))
       .Times(1);
 
   controller().SetShouldHidePageActions(false);

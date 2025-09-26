@@ -62,8 +62,11 @@ class PageActionModelInterface {
       const std::optional<std::u16string>& override_tooltip) = 0;
   virtual void SetActionActive(base::PassKey<PageActionController>,
                                bool is_active) = 0;
-  virtual void SetShouldHidePageAction(base::PassKey<PageActionController>,
-                                       bool should_hide) = 0;
+  virtual void SetIsSuppressedByOmnibox(base::PassKey<PageActionController>,
+                                        bool is_suppressed) = 0;
+  virtual void SetExemptFromOmniboxSuppression(
+      base::PassKey<PageActionController>,
+      bool is_exempt) = 0;
   virtual void SetIsChipShowing(base::PassKey<PageActionController>,
                                 bool is_chip_showing) = 0;
 
@@ -127,8 +130,11 @@ class PageActionModel : public PageActionModelInterface {
   void SetActionActive(base::PassKey<PageActionController>,
                        bool is_active) override;
 
-  void SetShouldHidePageAction(base::PassKey<PageActionController>,
-                               bool should_hide) override;
+  void SetIsSuppressedByOmnibox(base::PassKey<PageActionController>,
+                                bool is_suppressed) override;
+
+  void SetExemptFromOmniboxSuppression(base::PassKey<PageActionController>,
+                                       bool is_exempt) override;
 
   void SetIsChipShowing(base::PassKey<PageActionController>,
                         bool is_chip_showing) override;
@@ -203,9 +209,13 @@ class PageActionModel : public PageActionModelInterface {
   // Represents whether the action is currently active (e.g. showing dialog).
   bool action_active_ = false;
 
-  // Tracks whether we should forcibly hide the page action (e.g., Omnibox is
-  // getting updated).
-  bool should_hide_ = false;
+  // Indicates that the omnibox wants the page action hidden (e.g., Omnibox is
+  // getting updated, or omnibox popup is open).
+  bool is_suppressed_by_omnibox_ = false;
+
+  // Represents whether this page action should ignore visibility override set
+  // by `is_suppressed_by_omnibox_` variable (eg. AI mode page action).
+  bool is_exempt_from_omnibox_suppression_ = false;
 
   // Flag used to disallow reentrant behaviour.
   bool is_notifying_observers_ = false;

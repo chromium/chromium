@@ -262,7 +262,8 @@ class PageActionControllerImpl : public PageActionController,
   // Creates a page action model for the given id, and initializes it's values.
   void Register(actions::ActionId action_id,
                 bool is_tab_active,
-                bool is_ephemeral);
+                bool is_ephemeral,
+                bool is_exempt_from_omnibox_suppression);
 
   // Triggered when `page_action_view` chip state visibility has changed and
   // completed animation to the new state.

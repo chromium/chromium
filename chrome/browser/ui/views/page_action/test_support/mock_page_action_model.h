@@ -94,8 +94,12 @@ class MockPageActionModel : public PageActionModelInterface {
               (base::PassKey<PageActionController>, bool is_active),
               (override));
   MOCK_METHOD(void,
-              SetShouldHidePageAction,
-              (base::PassKey<PageActionController>, bool should_hide),
+              SetIsSuppressedByOmnibox,
+              (base::PassKey<PageActionController>, bool is_suppressed),
+              (override));
+  MOCK_METHOD(void,
+              SetExemptFromOmniboxSuppression,
+              (base::PassKey<PageActionController>, bool is_exempt),
               (override));
   MOCK_METHOD(bool, IsEphemeral, (), (const, override));
 };

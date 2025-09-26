@@ -164,7 +164,7 @@ TEST_F(PageActionModelTest, SetActionItemProperties) {
   EXPECT_EQ(model_.GetActionItemIsShowingBubble(), true);
 }
 
-TEST_F(PageActionModelTest, ShouldHidePageAction) {
+TEST_F(PageActionModelTest, ShouldGetSuppressedByOmnibox) {
   model_.SetShowRequested(PassKey(), true);
   model_.SetActionItemProperties(
       PassKey(),
@@ -179,10 +179,27 @@ TEST_F(PageActionModelTest, ShouldHidePageAction) {
   //   2) true->false  => triggers a notify
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
 
-  model_.SetShouldHidePageAction(PassKey(), true);
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
   EXPECT_FALSE(model_.GetVisible());
 
-  model_.SetShouldHidePageAction(PassKey(), false);
+  model_.SetIsSuppressedByOmnibox(PassKey(), false);
+  EXPECT_TRUE(model_.GetVisible());
+}
+
+TEST_F(PageActionModelTest, ShouldIgnoreOmniboxSuppression) {
+  model_.SetShowRequested(PassKey(), true);
+  model_.SetActionItemProperties(
+      PassKey(),
+      ActionItem::Builder().SetEnabled(true).SetVisible(true).Build().get());
+  model_.SetTabActive(PassKey(), true);
+  model_.SetExemptFromOmniboxSuppression(PassKey(), true);
+
+  // Confirm it's now visible by default.
+  EXPECT_TRUE(model_.GetVisible());
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+
+  model_.SetIsSuppressedByOmnibox(PassKey(), true);
   EXPECT_TRUE(model_.GetVisible());
 }
 

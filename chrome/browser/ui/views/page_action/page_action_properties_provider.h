@@ -23,6 +23,10 @@ struct PageActionProperties {
   // conditionally visible for some time. This is optional.
   // Defaulted to `true` because most page actions are be ephemeral.
   bool is_ephemeral = true;
+  // This allows the page action to be exempt from the controller-wide
+  // suppression due to current omnibox state (eg. Omnibox popup open, or
+  // Omnibox text being edited). This is optional.
+  bool exempt_from_omnibox_suppression = false;
   // Indicates the page action type and it's mandatory.
   PageActionIconType type;
   // This indicates the page action view element identifier. This is optional.

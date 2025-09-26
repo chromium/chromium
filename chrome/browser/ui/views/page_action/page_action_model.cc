@@ -108,12 +108,11 @@ void PageActionModel::SetActionItemProperties(
 }
 
 bool PageActionModel::GetVisible() const {
-  if (should_hide_) {
-    return false;
-  }
+  const bool hidden_by_omnibox =
+      is_suppressed_by_omnibox_ && !is_exempt_from_omnibox_suppression_;
 
-  return is_tab_active_ && action_item_enabled_ && action_item_visible_ &&
-         show_requested_ && !has_pinned_icon_;
+  return is_tab_active_ && !hidden_by_omnibox && action_item_enabled_ &&
+         action_item_visible_ && show_requested_ && !has_pinned_icon_;
 }
 
 bool PageActionModel::IsChipShowing() const {
@@ -199,14 +198,23 @@ void PageActionModel::SetOverrideTooltip(
   NotifyChange();
 }
 
-void PageActionModel::SetShouldHidePageAction(
+void PageActionModel::SetIsSuppressedByOmnibox(
     base::PassKey<PageActionController>,
-    bool should_hide) {
-  if (should_hide_ == should_hide) {
+    bool is_suppressed) {
+  if (is_suppressed_by_omnibox_ == is_suppressed) {
     return;
   }
+  is_suppressed_by_omnibox_ = is_suppressed;
+  NotifyChange();
+}
 
-  should_hide_ = should_hide;
+void PageActionModel::SetExemptFromOmniboxSuppression(
+    base::PassKey<PageActionController>,
+    bool is_exempt) {
+  if (is_exempt_from_omnibox_suppression_ == is_exempt) {
+    return;
+  }
+  is_exempt_from_omnibox_suppression_ = is_exempt;
   NotifyChange();
 }
 

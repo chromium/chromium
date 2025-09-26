@@ -103,7 +103,8 @@ void PageActionControllerImpl::Initialize(
   for (actions::ActionId id : action_ids) {
     const PageActionProperties& properties =
         properties_provider.GetProperties(id);
-    Register(id, tab_interface.IsActivated(), properties.is_ephemeral);
+    Register(id, tab_interface.IsActivated(), properties.is_ephemeral,
+             properties.exempt_from_omnibox_suppression);
 
     // It's safe to use base::Unretained here since the recorded is owned by
     // this object.
@@ -124,12 +125,16 @@ void PageActionControllerImpl::Initialize(
   }
 }
 
-void PageActionControllerImpl::Register(actions::ActionId action_id,
-                                        bool is_tab_active,
-                                        bool is_ephemeral) {
+void PageActionControllerImpl::Register(
+    actions::ActionId action_id,
+    bool is_tab_active,
+    bool is_ephemeral,
+    bool is_exempt_from_omnibox_suppression) {
   std::unique_ptr<PageActionModelInterface> model =
       CreateModel(action_id, is_ephemeral);
   model->SetTabActive(PassKey(), is_tab_active);
+  model->SetExemptFromOmniboxSuppression(PassKey(),
+                                         is_exempt_from_omnibox_suppression);
   page_actions_.emplace(action_id, std::move(model));
   // Initialize counter to 0
   activity_counters_[action_id] = 0;
@@ -269,7 +274,7 @@ PageActionControllerImpl::CreateActionItemSubscription(
 void PageActionControllerImpl::SetShouldHidePageActions(
     bool should_hide_page_actions) {
   for (auto& [id, model] : page_actions_) {
-    model->SetShouldHidePageAction(PassKey(), should_hide_page_actions);
+    model->SetIsSuppressedByOmnibox(PassKey(), should_hide_page_actions);
   }
 }
 
