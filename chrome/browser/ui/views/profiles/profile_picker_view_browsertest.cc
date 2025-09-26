@@ -766,14 +766,13 @@ class ProfilePickerCreationFlowBrowserTest
     return GURL("chrome://history-sync-optin?launch_context=0");
   }
 
-  // TODO(crbug.com/447584795): Add retry logic.
   void RejectHistoryOptin() {
     ASSERT_TRUE(base::FeatureList::IsEnabled(
         syncer::kReplaceSyncPromosWithSignInPromos));
     constexpr char kRejectHistory[] =
         "(() => {"
         "  const historySyncOptinApp = "
-        "      document.querySelector('history-sync-optin-app');"
+        "  document.querySelector('history-sync-optin-app');"
         "  const rejectButton = "
         "      historySyncOptinApp.shadowRoot.querySelector('#rejectButton');"
         "  rejectButton.click();"
@@ -781,23 +780,6 @@ class ProfilePickerCreationFlowBrowserTest
         "})();";
 
     EXPECT_EQ(true, content::EvalJs(web_contents(), kRejectHistory));
-  }
-
-  // TODO(crbug.com/447584795): Add retry logic.
-  void AcceptHistoryOptin() {
-    ASSERT_TRUE(base::FeatureList::IsEnabled(
-        syncer::kReplaceSyncPromosWithSignInPromos));
-    constexpr char kAcceptHistory[] =
-        "(() => {"
-        "  const historySyncOptinApp = "
-        "      document.querySelector('history-sync-optin-app');"
-        "  const acceptButton = "
-        "      historySyncOptinApp.shadowRoot.querySelector('#acceptButton');"
-        "  acceptButton.click();"
-        "  return true;"
-        "})();";
-
-    EXPECT_EQ(true, content::EvalJs(web_contents(), kAcceptHistory));
   }
 
  protected:
@@ -2988,7 +2970,12 @@ class SupervisedUserProfileIPHTest
       public testing::WithParamInterface<
           LoginUIService::SyncConfirmationUIClosedResult> {
  public:
-  SupervisedUserProfileIPHTest() = default;
+  SupervisedUserProfileIPHTest() {
+    // TODO(crbug.com/447099373): Fix the tests to work with the feature
+    // enabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
 
  protected:
   LoginUIService::SyncConfirmationUIClosedResult GetSyncConfirmationResult() {
@@ -3000,6 +2987,8 @@ class SupervisedUserProfileIPHTest
     return HasPromoBeenShown(
         browser, feature_engagement::kIPHSupervisedUserProfileSigninFeature);
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 std::string SyncConfirmationResultToString(
@@ -3029,13 +3018,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
                        ShowIphWhenCustomizationBubbleIsSkipped) {
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) &&
-      GetSyncConfirmationResult() == LoginUIService::CONFIGURE_SYNC_FIRST) {
-    // The history optin screen does not have a settings button.
-    GTEST_SKIP();
-  }
-
   size_t initial_browser_count = BrowserList::GetInstance()->size();
   auto scoped_iph_delay =
       AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
@@ -3043,12 +3025,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
-  GURL target_url =
-      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
-          ? GetHistorySyncOptinURL()
-          : GetSyncConfirmationURL();
   Profile* profile_being_created = SignInForNewProfile(
-      target_url, "joe@gmail.com", "Joe", kNoHostedDomainFound,
+      GetSyncConfirmationURL(), "joe@gmail.com", "Joe", kNoHostedDomainFound,
       /*start_on_management_page=*/false,
       /*is_supervised_profile=*/true);
 
@@ -3062,27 +3040,11 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserProfileIPHTest,
       ThemeSyncableService::ThemeSyncState::kApplied);
 
   // Pick an action from the Sync screen.
-  BrowserAddedWaiter browser_waiter =
-      BrowserAddedWaiter(initial_browser_count + 1);
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    switch (GetSyncConfirmationResult()) {
-      case LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC:
-        RejectHistoryOptin();
-        break;
-      case LoginUIService::SyncConfirmationUIClosedResult::
-          SYNC_WITH_DEFAULT_SETTINGS:
-        AcceptHistoryOptin();
-        break;
-      default:
-        NOTREACHED();
-    }
-  } else {
-    LoginUIServiceFactory::GetForProfile(profile_being_created)
-        ->SyncConfirmationUIClosed(GetSyncConfirmationResult());
-  }
+  LoginUIServiceFactory::GetForProfile(profile_being_created)
+      ->SyncConfirmationUIClosed(GetSyncConfirmationResult());
 
-  BrowserWindowInterface* new_browser = browser_waiter.Wait();
+  BrowserWindowInterface* const new_browser =
+      BrowserAddedWaiter(initial_browser_count + 1).Wait();
   CHECK(new_browser);
   ASSERT_TRUE(content::WaitForLoadStop(
       new_browser->GetTabStripModel()->GetActiveWebContents()));
