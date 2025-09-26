@@ -38,21 +38,19 @@ namespace autofill {
 //    - Show B immediately.
 //
 // 2. If a bubble (A) is already showing:
-//    - The manager determines if the new bubble's controller (B)
-//      should preempt the active bubble (A).  If the request is to force
-//      show, the active bubble is preempted irrespective of the priorities of
-//      the bubbles and hovering state. The default preemption policy is based
-//      on priority (i.e., priority(B) > priority(A)), but custom rules can be
-//      defined in ShouldAlwaysPreemptSameType(e.g., to always preempt another
-//      bubble of the same type).
-//    - HOWEVER, preemption is blocked if the user is currently hovering their
-//      mouse over bubble A.
+//    - Preemption of an active bubble (A) by a new bubble (B) is determined by
+//      the following rules, in order:
+//      - Force Show: If `force_show` is true, B always preempts A.
+//      - Mouse Hover: If the user is hovering over A, B never preempts A.
+//      - Same Type: If B and A have the same type, B preempts A only if that
+//        type has a "preempt same type" policy.
+//      - Priority: Otherwise, B preempts A if priority(B) > priority(A).
 //
 //    - If B preempts A:
 //      - Hide A and add it to the pending queue.
 //      - Show B.
 //
-//    - If B does not preempt A (due to its policy or A being hovered):
+//    - If B does not preempt A:
 //      - Add B to the pending queue. A remains visible.
 //
 // === Queue and Hiding Logic ===
@@ -79,7 +77,9 @@ class BubbleManager {
   static std::unique_ptr<BubbleManager> Create(tabs::TabInterface* tab);
   static BubbleManager* GetForWebContents(content::WebContents* web_contents);
 
-  // Called by the bubbles once they are ready to be shown.
+  // Requests the bubble for `controller_to_show` to be displayed.
+  // If `force_show` is true, this bubble will preempt any active bubble,
+  // regardless of priority or hover state.
   virtual void RequestShowController(BubbleControllerBase& controller_to_show,
                                      bool force_show) = 0;
 
@@ -90,9 +90,11 @@ class BubbleManager {
       BubbleControllerBase& controller_to_hide,
       bool show_next_bubble) = 0;
 
-  // Returns true if there is a pending bubble that has not timed out, of the
-  // specified `bubble_type` in the queue. Always returns false for the bubble
-  // types that preempt themselves (eg. Password manager bubbles).
+  // Returns true if a bubble of the specified `bubble_type` is already
+  // pending in the queue and has not timed out.
+  // Note: This will always return false for bubble types that preempt
+  // themselves (e.g., password bubbles), as they replace existing requests
+  // instead of waiting in the queue.
   [[nodiscard]] virtual bool HasPendingBubbleOfSameType(
       const BubbleType bubble_type) const = 0;
 };
