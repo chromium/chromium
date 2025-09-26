@@ -546,7 +546,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       base::Seconds(5);
 
   // CanvasResourceProvider:
-  CanvasResourceProviderSharedImage* AsSharedImageProvider() override {
+  CanvasResourceProviderSharedImage* AsSharedImageProvider() final {
     return this;
   }
   bool IsAccelerated() const final { return is_accelerated_; }
@@ -554,24 +554,23 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<CanvasResource> ProduceCanvasResource(
       FlushReason reason) override;
   bool IsValid() const override;
-  bool IsSoftwareSharedImageGpuChannelLost() const override;
+  bool IsSoftwareSharedImageGpuChannelLost() const final;
   void ExternalCanvasDrawHelper(
-      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback)
-      override;
+      base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback) final;
   void RasterRecord(cc::PaintRecord last_recording) override;
   sk_sp<SkSurface> CreateSkSurface() const override;
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) final;
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) final;
   scoped_refptr<StaticBitmapImage> Snapshot(
       FlushReason reason,
       ImageOrientation = ImageOrientationEnum::kDefault) override;
-  bool IsSingleBuffered() const override;
+  bool IsSingleBuffered() const final;
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void WillDraw() override;
+  void WillDraw() final;
 
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
@@ -610,10 +609,10 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
 
   // `viz::ContextLostObserver`:
-  void OnContextLost() override;
+  void OnContextLost() final;
 
   // BitmapGpuChannelLostObserver:
-  void OnGpuChannelLost() override;
+  void OnGpuChannelLost() final;
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |unused_resources_| will be empty.

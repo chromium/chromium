@@ -602,8 +602,6 @@ class FakeCanvasResourceProvider : public CanvasResourceProviderSharedImage {
   bool SupportsDirectCompositing() const override {
     return supports_direct_compositing_;
   }
-  bool IsSingleBuffered() const override { return false; }
-  bool IsValid() const override { return true; }
   sk_sp<SkSurface> CreateSkSurface() const override {
     return SkSurfaces::Raster(GetSkImageInfo());
   }
