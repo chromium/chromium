@@ -6289,6 +6289,22 @@
             ]
         }
     ],
+    "ClientSideDetectionSendIntelligentScanInfoAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionSendIntelligentScanInfoAndroid",
+                        "OptimizationGuideOnDeviceModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionSendLlamaForcedTriggerInfo": [
         {
             "platforms": [
