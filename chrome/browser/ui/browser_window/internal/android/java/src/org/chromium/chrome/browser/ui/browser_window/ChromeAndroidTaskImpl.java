@@ -472,7 +472,7 @@ final class ChromeAndroidTaskImpl
             Activity activity = activityWindowAndroid.getActivity().get();
             if (activity == null) return;
             // No maximize action in non desktop window mode.
-            if (!isInDesktopWindowing(activity.getWindowManager())) return;
+            if (!activity.isInMultiWindowMode()) return;
             if (isRestoredInternalLocked(activityWindowAndroid)) {
                 mRestoredBounds = getBoundsInternalLocked();
             }
@@ -716,11 +716,13 @@ final class ChromeAndroidTaskImpl
         if (activityWindowAndroid == null) return false;
         var activity = activityWindowAndroid.getActivity().get();
         if (activity == null) return false;
-        var windowManager = activity.getWindowManager();
-        if (isInDesktopWindowing(windowManager)) {
-            return getBoundsInternalLocked().equals(getMaximizedBounds(windowManager));
+        if (activity.isInMultiWindowMode()) {
+            // Desktop windowing mode is also a multi-window mode.
+            return getBoundsInternalLocked()
+                    .equals(getMaximizedBounds(activity.getWindowManager()));
         } else {
-            return !activity.isInMultiWindowMode();
+            // In non-multi-window mode, Chrome is maximized by default.
+            return true;
         }
     }
 
@@ -786,12 +788,10 @@ final class ChromeAndroidTaskImpl
                 0, insets.top, fullscreenBounds.right, fullscreenBounds.bottom - insets.bottom);
     }
 
-    @RequiresApi(api = VERSION_CODES.R)
-    // TODO(crbug.com/437982549): Replace with a more versatile API to improve OEM compatibility.
-    private static boolean isInDesktopWindowing(WindowManager windowManager) {
-        return windowManager
-                .getCurrentWindowMetrics()
-                .getWindowInsets()
-                .isVisible(WindowInsets.Type.captionBar());
+    @VisibleForTesting
+    @Nullable Rect getRestoredBoundsForTesting() {
+        synchronized (mActivityWindowAndroidLock) {
+            return mRestoredBounds;
+        }
     }
 }
