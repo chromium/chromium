@@ -67,7 +67,8 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     kNotFound = 13,
     kInvalidArgument = 14,
     kBodyEndMismatch = 15,
-    kMaxValue = kBodyEndMismatch
+    kFailedForTesting = 16,
+    kMaxValue = kFailedForTesting
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheStoreError)
 
@@ -334,6 +335,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // Enables a strict corruption checking mode for testing purposes.
   virtual void EnableStrictCorruptionCheckForTesting() = 0;
+
+  // Sets a flag to simulate database operation failures for testing.
+  virtual void SetSimulateDbFailureForTesting(bool fail) = 0;
 
  protected:
   SqlPersistentStore() = default;

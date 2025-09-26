@@ -379,6 +379,10 @@ class Backend {
     strict_corruption_check_enabled_ = true;
   }
 
+  void SetSimulateDbFailureForTesting(bool fail) {
+    simulate_db_failure_for_testing_ = fail;
+  }
+
  private:
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
@@ -528,6 +532,7 @@ class Backend {
   std::optional<Error> db_init_status_;
   StoreStatus store_status_;
   bool strict_corruption_check_enabled_ = false;
+  bool simulate_db_failure_for_testing_ = false;
   // The number of pages in the write-ahead log file. This is updated by
   // `OnCommitCallback` and reset to 0 after a checkpoint.
   int wal_pages_ = 0;
@@ -572,6 +577,9 @@ InitResultOrError Backend::Initialize() {
 
 Error Backend::InitializeInternal(bool& corruption_detected,
                                   HashResIdSet& index) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CHECK(!db_init_status_.has_value());
 
   db_.set_error_callback(base::BindRepeating(&Backend::DatabaseErrorCallback,
@@ -707,6 +715,9 @@ EntryInfoOrErrorAndEvictionRequested Backend::OpenOrCreateEntry(
 
 EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key,
                                                     bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
   // Try to open first.
   auto open_result = OpenEntryInternal(key);
   if (open_result.has_value() && open_result->has_value()) {
@@ -742,6 +753,9 @@ OptionalEntryInfoOrError Backend::OpenEntry(const CacheEntryKey& key) {
 }
 
 OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
+  if (simulate_db_failure_for_testing_) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
   CheckDatabaseInitStatus();
 
   sql::Statement statement(db_.GetCachedStatement(
@@ -800,6 +814,9 @@ EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
 EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
                                               bool run_existance_check,
                                               bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -880,6 +897,9 @@ ErrorAndEvictionRequested Backend::DoomEntry(const CacheEntryKey& key,
 }
 
 Error Backend::DoomEntryInternal(ResId res_id, bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -949,6 +969,9 @@ ErrorAndEvictionRequested Backend::DeleteDoomedEntry(const CacheEntryKey& key,
 }
 
 Error Backend::DeleteDoomedEntryInternal(ResId res_id) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1008,6 +1031,9 @@ Error Backend::DeleteDoomedEntriesInternal(
     const base::flat_set<ResId>& excluded_res_ids,
     size_t& deleted_count,
     bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1081,6 +1107,9 @@ ResIdAndHashKeyListOrErrorAndEvictionRequested Backend::DeleteLiveEntry(
 ResIdAndHashKeyListOrError Backend::DeleteLiveEntryInternal(
     const CacheEntryKey& key,
     bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1164,6 +1193,9 @@ ErrorAndEvictionRequested Backend::DeleteAllEntries() {
 }
 
 Error Backend::DeleteAllEntriesInternal(bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1233,6 +1265,9 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntriesBetweenInternal(
     base::Time end_time,
     const base::flat_set<CacheEntryKey>& excluded_keys,
     bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1315,6 +1350,9 @@ Error Backend::UpdateEntryLastUsed(const CacheEntryKey& key,
 
 Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
                                            base::Time last_used) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1378,6 +1416,9 @@ Error Backend::UpdateEntryHeaderAndLastUsedInternal(
     scoped_refptr<net::IOBuffer> buffer,
     int64_t header_size_delta,
     bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CHECK(buffer);
   CheckDatabaseInitStatus();
 
@@ -1455,6 +1496,9 @@ Error Backend::WriteEntryDataInternal(ResId res_id,
                                       int buf_len,
                                       bool truncate,
                                       bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
   CheckDatabaseInitStatus();
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
@@ -1863,6 +1907,9 @@ IntOrError Backend::ReadEntryDataInternal(ResId res_id,
                                           int64_t body_end,
                                           bool sparse_reading,
                                           bool& corruption_detected) {
+  if (simulate_db_failure_for_testing_) {
+    return base::unexpected(Error::kFailedForTesting);
+  }
   CheckDatabaseInitStatus();
 
   if (offset < 0 || buf_len < 0 || !buffer || buf_len > buffer->size()) {
@@ -2558,6 +2605,10 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
   void EnableStrictCorruptionCheckForTesting() override {
     strict_corruption_check_enabled_ = true;
     backend_.AsyncCall(&Backend::EnableStrictCorruptionCheckForTesting);
+  }
+
+  void SetSimulateDbFailureForTesting(bool fail) override {
+    backend_.AsyncCall(&Backend::SetSimulateDbFailureForTesting).WithArgs(fail);
   }
 
   IndexState GetIndexStateForHash(CacheEntryKey::Hash key_hash) const override {
