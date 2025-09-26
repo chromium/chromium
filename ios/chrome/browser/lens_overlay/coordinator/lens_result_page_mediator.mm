@@ -231,7 +231,6 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)disconnect {
   if (_webState) {
     [self detachWebState];
-    _webState.reset();
   }
   _webStateObserverBridge.reset();
   _webStateDelegateBridge.reset();
