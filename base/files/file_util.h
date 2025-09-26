@@ -446,7 +446,6 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
 //
 // Create a new directory. If prefix is provided, the new directory name is in
 // the format of prefixyyyy.
-// NOTE: prefix is ignored in the POSIX implementation.
 // If success, return true and output the full path of the directory created.
 //
 // For Windows, this directory is usually created in a secure location if the

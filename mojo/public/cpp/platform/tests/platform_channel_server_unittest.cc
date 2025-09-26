@@ -113,7 +113,13 @@ class TestChannel : public core::Channel::Delegate {
 
 class PlatformChannelServerTest : public testing::Test {
  public:
-  PlatformChannelServerTest() { CHECK(temp_dir_.CreateUniqueTempDir()); }
+  // On Mac, the maximum length of `sun_path` within the `sockaddr_un` structure
+  // has a limit of only 104 characters (including the null terminator). The
+  // default prefix of "scoped_dir" in `base::ScopedTempDir` makes the path in
+  // the unit test exceed this limit. So we use a blank prefix here.
+  PlatformChannelServerTest() {
+    CHECK(temp_dir_.CreateUniqueTempDir(/*prefix=*/FILE_PATH_LITERAL("")));
+  }
 
   ~PlatformChannelServerTest() override = default;
 

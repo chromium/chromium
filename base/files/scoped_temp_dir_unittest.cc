@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -75,6 +76,44 @@ TEST(ScopedTempDir, TempDir) {
 #endif  // BUILDFLAG(IS_WIN)
   }
   EXPECT_FALSE(DirectoryExists(test_path));
+}
+
+TEST(ScopedTempDir, Prefix) {
+  EXPECT_STREQ(ScopedTempDir::GetTempDirPrefix(),
+               FILE_PATH_LITERAL("scoped_dir"));
+
+  // Default prefix.
+  {
+    ScopedTempDir dir;
+    EXPECT_TRUE(dir.CreateUniqueTempDir());
+    EXPECT_THAT(dir.GetPath().BaseName().value(),
+                ::testing::HasSubstr(FILE_PATH_LITERAL("scoped_dir")));
+    EXPECT_TRUE(DirectoryExists(dir.GetPath()));
+  }
+
+  // "test_prefix".
+  {
+    ScopedTempDir dir;
+    EXPECT_TRUE(dir.CreateUniqueTempDir(FILE_PATH_LITERAL("test_prefix")));
+    EXPECT_THAT(dir.GetPath().BaseName().value(),
+                ::testing::HasSubstr(FILE_PATH_LITERAL("test_prefix")));
+    EXPECT_TRUE(DirectoryExists(dir.GetPath()));
+
+    ScopedTempDir dir_under_path;
+    EXPECT_TRUE(dir_under_path.CreateUniqueTempDirUnderPath(
+        dir.GetPath(), FILE_PATH_LITERAL("dir_under_path_prefix")));
+    EXPECT_THAT(
+        dir_under_path.GetPath().BaseName().value(),
+        ::testing::HasSubstr(FILE_PATH_LITERAL("dir_under_path_prefix")));
+    EXPECT_TRUE(DirectoryExists(dir_under_path.GetPath()));
+  }
+
+  // No prefix.
+  {
+    ScopedTempDir dir;
+    EXPECT_TRUE(dir.CreateUniqueTempDir(FILE_PATH_LITERAL("")));
+    EXPECT_TRUE(DirectoryExists(dir.GetPath()));
+  }
 }
 
 TEST(ScopedTempDir, UniqueTempDirUnderPath) {

@@ -127,8 +127,9 @@ bool VerifySpecificPathControlledByUser(const FilePath& path,
 }
 #endif
 
-base::FilePath GetTempTemplate() {
-  return FormatTemporaryFileName("XXXXXX");
+base::FilePath GetTempTemplate(FilePath::StringViewType prefix = "") {
+  return FormatTemporaryFileName(
+      StrCat({prefix, prefix.empty() ? "" : ".", "XXXXXX"}));
 }
 
 bool AdvanceEnumeratorWithStat(FileEnumerator* traversal,
@@ -935,7 +936,8 @@ bool CreateNewTempDirectory(const FilePath::StringType& prefix,
     return false;
   }
 
-  return CreateTemporaryDirInDirImpl(tmpdir, GetTempTemplate(), new_temp_path);
+  return CreateTemporaryDirInDirImpl(tmpdir, GetTempTemplate(prefix),
+                                     new_temp_path);
 }
 
 bool CreateDirectoryAndGetError(const FilePath& full_path, File::Error* error) {

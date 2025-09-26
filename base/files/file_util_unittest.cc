@@ -3290,6 +3290,24 @@ TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   EXPECT_TRUE(DeleteFile(temp_dir));
 }
 
+TEST_F(FileUtilTest, CreateNewTempDirectoryPrefixTest) {
+  FilePath temp_dir;
+  ASSERT_TRUE(
+      CreateNewTempDirectory(FILE_PATH_LITERAL("test_dir_prefix"), &temp_dir));
+  EXPECT_TRUE(PathExists(temp_dir));
+
+  const FilePath::StringType matcher =
+#if BUILDFLAG(IS_WIN)
+      FILE_PATH_LITERAL("test_dir_prefix*");
+#else   // BUILDFLAG(IS_WIN)
+      FILE_PATH_LITERAL("*.test_dir_prefix.*");
+#endif  // BUILDFLAG(IS_WIN)
+
+  EXPECT_THAT(temp_dir.value(),
+              ::testing::HasSubstr(FILE_PATH_LITERAL("test_dir_prefix")));
+  EXPECT_TRUE(DeleteFile(temp_dir));
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(FileUtilTest, TempDirectoryParentTest) {
   if (!::IsUserAnAdmin()) {
