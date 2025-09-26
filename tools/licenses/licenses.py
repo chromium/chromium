@@ -77,7 +77,10 @@ PRUNE_PATHS = set([
     os.path.join('third_party', 'gperf'),
     os.path.join('third_party', 'lighttpd'),
     os.path.join('third_party', 'llvm'),
+    os.path.join('third_party', 'llvm-bootstrap'),
+    os.path.join('third_party', 'llvm-bootstrap-install'),
     os.path.join('third_party', 'llvm-build'),
+    os.path.join('third_party', 'llvm-build-tools'),
     os.path.join('third_party', 'mingw-w64'),
     os.path.join('third_party', 'nacl_sdk_binaries'),
     os.path.join('third_party', 'pefile'),
@@ -86,6 +89,8 @@ PRUNE_PATHS = set([
     os.path.join('third_party', 'pyelftools'),
     os.path.join('third_party', 'pylib'),
     os.path.join('third_party', 'pywebsocket'),
+    os.path.join('third_party', 'rust-src'),
+    os.path.join('third_party', 'rust-toolchain-intermediate'),
     os.path.join('third_party', 'syzygy'),
 
     # Stuff pulled in from chrome-internal for official builds/tools.
