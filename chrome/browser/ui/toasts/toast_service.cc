@@ -293,4 +293,10 @@ void ToastService::RegisterToasts(
                                base::Unretained(browser_window_interface)))
           .AddGlobalScoped()
           .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kEmailVerified,
+      ToastSpecification::Builder(vector_icons::kEmailIcon, IDS_EMAIL_VERIFIED)
+          .AddCloseButton()
+          .Build());
 }  // RegisterToasts() end.

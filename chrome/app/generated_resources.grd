@@ -2338,6 +2338,10 @@ are declared in tools/grit/grit_args.gni.
         Failed to copy link
       </message>
 
+      <message name="IDS_EMAIL_VERIFIED" desc="Toast message to notify the user when their email is automatically verified by the browser.">
+        Email automaticaly verified
+      </message>
+
       <if expr="is_chromeos">
         <message name="IDS_PROMPT_BLOCKED_INSECURE_DOWNLOAD_TITLE"
                  desc="In the download notification, a title of the message shown on a download blocked for being insecure.">
