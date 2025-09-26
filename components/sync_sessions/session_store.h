@@ -52,6 +52,24 @@ class SessionStore {
                    SyncSessionsClient* sessions_client,
                    OpenCallback callback);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SessionSpecificsInvalidReason)
+  enum class SpecificsInvalidReason {
+    kMissingSessionTag = 0,
+    kBothHeaderAndTab = 1,
+    kNeitherHeaderNorTab = 2,
+    kTabBadTabNodeId = 3,
+    kTabBadTabId = 4,
+    kHeaderWithDuplicateTabIds = 5,
+    kHeaderWithTabNodeId = 6,
+    kMaxValue = kHeaderWithTabNodeId
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SessionSpecificsInvalidReason)
+
+  // Returns the reason the given `specifics` is invalid, or nullopt if valid.
+  static std::optional<SpecificsInvalidReason> GetSpecificsInvalidReason(
+      const sync_pb::SessionSpecifics& specifics);
   // Verifies whether a proto is malformed (e.g. required fields are missing).
   static bool AreValidSpecifics(const sync_pb::SessionSpecifics& specifics);
   // |specifics| must be valid, see AreValidSpecifics().

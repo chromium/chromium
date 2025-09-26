@@ -258,6 +258,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/bookmark_model_merger.cc:RemoteBookmarkUpdateError) -->
 
+<!-- LINT.IfChange(SessionSpecificsInvalidReason) -->
+
+<enum name="SessionSpecificsInvalidReason">
+  <summary>
+    The validity (or reason for non-validity) of a SessionSpecifics.
+  </summary>
+  <int value="0" label="Missing session_tag"/>
+  <int value="1" label="Both header and tab specified"/>
+  <int value="2" label="Neither header nor tab specified"/>
+  <int value="3" label="Tab with invalid tab_node_id"/>
+  <int value="4" label="Tab with invalid tab_id"/>
+  <int value="5" label="Header with duplicate tab IDs"/>
+  <int value="6" label="Header with tab_node_id"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync_sessions/session_store.h:SessionSpecificsInvalidReason) -->
+
 <enum name="SyncablePref">
 <!-- LINT.IfChange(CommonSyncablePref) -->
 

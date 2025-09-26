@@ -19,6 +19,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_sessions/session_store.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
@@ -315,7 +316,18 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
   auto specifics = std::make_unique<sync_pb::SessionSpecifics>();
   specifics->set_session_tag(current_session_tag_);
   current_session->ToSessionHeaderProto().Swap(specifics->mutable_header());
-  batch->Put(std::move(specifics));
+
+  // TODO(crbug.com/408182457): Some reports indicate that `specifics` is
+  // occasionally invalid here. In that case, avoid sending it to the sync
+  // machinery to avoid CHECK failures.
+  std::optional<SessionStore::SpecificsInvalidReason> invalid_reason =
+      SessionStore::GetSpecificsInvalidReason(*specifics);
+  if (!invalid_reason.has_value()) {
+    batch->Put(std::move(specifics));
+  } else {
+    base::UmaHistogramEnumeration("Sync.InvalidSessionHeader.AssociateWindows",
+                                  *invalid_reason);
+  }
 
   if (is_session_restore) {
     UmaHistogramMediumTimes("Sync.AssociateWindowsTime.OnSessionRestore",

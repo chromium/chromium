@@ -1350,6 +1350,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.InvalidSessionHeader.AssociateWindows"
+    enum="SessionSpecificsInvalidReason" expires_after="2026-03-30">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Recorded if the SessionHeader specifics produced at the end of an
+    AssociateWindows() call was invalid (and thus not actually sent to the sync
+    machinery).
+  </summary>
+</histogram>
+
 <histogram name="Sync.KeystoreDecryptionFailed"
     enum="SyncKeystoreDecryptionFailure" expires_after="2026-07-05">
   <owner>mmoskvitin@google.com</owner>
