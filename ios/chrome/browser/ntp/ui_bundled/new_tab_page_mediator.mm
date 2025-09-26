@@ -20,6 +20,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
+#import "components/image_fetcher/core/request_metadata.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -43,6 +44,7 @@
 #import "ios/chrome/browser/home_customization/model/home_background_data.h"
 #import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_framing_coordinates.h"
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -441,111 +443,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 - (void)updateBackground {
-  CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
-      initWithMutableTraits:self.consumer.traitOverrides];
-
-  std::optional<HomeCustomBackground> customBackground =
-      _backgroundCustomizationService->GetCurrentCustomBackground();
-
-  if (customBackground) {
-    if (std::holds_alternative<sync_pb::NtpCustomBackground>(
-            customBackground.value())) {
-      sync_pb::NtpCustomBackground background =
-          std::get<sync_pb::NtpCustomBackground>(customBackground.value());
-
-      GURL imageURL = GURL(background.url());
-      GURL thumbnailURL = AddOptionsToImageURL(
-          RemoveOptionsFromImageURL(imageURL.spec()).spec(),
-          GetThumbnailImageOptions());
-
-      image_fetcher::ImageFetcher* imageFetcher =
-          _imageFetcherService->GetImageFetcher(
-              image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
-
-      __weak __typeof(self) weakSelf = self;
-
-      auto cancelable_thumbnail_callback =
-          std::make_shared<base::CancelableOnceCallback<void(
-              const gfx::Image&, const image_fetcher::RequestMetadata&)>>();
-
-      cancelable_thumbnail_callback->Reset(
-          base::BindOnce(^(const gfx::Image& image,
-                           const image_fetcher::RequestMetadata& metadata) {
-            if (!image.IsEmpty()) {
-              // Temporarily sets the thumbnail as the background until the
-              // high-resolution image is loaded.
-              [weakSelf handleBackgroundImageFetch:image];
-              return;
-            }
-          }));
-
-      // Retrieving the thumbnail URL should hit the cache, so it returns almost
-      // instantly.
-      imageFetcher->FetchImage(thumbnailURL,
-                               cancelable_thumbnail_callback->callback(),
-                               image_fetcher::ImageFetcherParams(
-                                   kTrafficAnnotation, kImageFetcherUmaClient));
-
-      imageFetcher->FetchImage(
-          imageURL,
-          base::BindOnce(^(const gfx::Image& image,
-                           const image_fetcher::RequestMetadata& metadata) {
-            // Cancel the thumbnail URL fetch if the high-resolution fetch
-            // finished first.
-            if (cancelable_thumbnail_callback) {
-              cancelable_thumbnail_callback->Cancel();
-            }
-            if (!image.IsEmpty()) {
-              [weakSelf handleBackgroundImageFetch:image];
-              [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
-              [traitAccessor
-                  setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
-            }
-          }),
-          image_fetcher::ImageFetcherParams(kTrafficAnnotation,
-                                            kImageFetcherUmaClient));
-    } else {
-      HomeUserUploadedBackground userBackground =
-          std::get<HomeUserUploadedBackground>(customBackground.value());
-      HomeCustomizationFramingCoordinates* framingCoordinates =
-          HomeCustomizationFramingCoordinatesFromFramingCoordinates(
-              userBackground.framing_coordinates);
-
-      __weak __typeof(self) weakSelf = self;
-      _userUploadedImageManager->LoadUserUploadedImage(
-          base::FilePath(userBackground.image_path),
-          base::BindOnce(^(UIImage* image) {
-            [weakSelf handleUserUploadedImage:image
-                           framingCoordinates:framingCoordinates];
-            [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
-            [traitAccessor
-                setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
-          }));
-    }
-    return;
-  } else {
-    [self.consumer setBackgroundImage:nil framingCoordinates:nil];
-  }
-
-  std::optional<sync_pb::UserColorTheme> colorTheme =
-      _backgroundCustomizationService->GetCurrentColorTheme();
-
-  if (colorTheme && colorTheme->color()) {
-    // Sets the New Tab Page trait to a color palette generated from the current
-    // theme.
-    NewTabPageColorPalette* colorPalette = CreateColorPaletteFromSeedColor(
-        skia::UIColorFromSkColor(colorTheme->color()),
-        ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()));
-
-    [traitAccessor setObjectForNewTabPageTrait:colorPalette];
-    [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
-    return;
-  }
-
-  // Clears the color palette associated with the New Tab Page trait,
-  // reverting to the default colors defined by the trait.
-  [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
-  [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
+  [self updateBackgroundForInitialLoad:YES];
 }
 
 #pragma mark - BrowserViewVisibilityObserving
@@ -650,7 +548,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 #pragma mark - HomeBackgroundCustomizationServiceObserving
 
 - (void)onBackgroundChanged {
-  [self updateBackground];
+  [self updateBackgroundForInitialLoad:NO];
 }
 
 #pragma mark - Private
@@ -743,6 +641,137 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
   [self.consumer setBackgroundImage:image
                  framingCoordinates:framingCoordinates];
+}
+
+// Updates the background based on the current customization settings.
+// `initialLoad` is YES if this is the first time the background is being set.
+- (void)updateBackgroundForInitialLoad:(BOOL)initialLoad {
+  CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
+      initWithMutableTraits:self.consumer.traitOverrides];
+
+  std::optional<HomeCustomBackground> customBackground =
+      _backgroundCustomizationService->GetCurrentCustomBackground();
+
+  if (customBackground) {
+    if (std::holds_alternative<sync_pb::NtpCustomBackground>(
+            customBackground.value())) {
+      sync_pb::NtpCustomBackground background =
+          std::get<sync_pb::NtpCustomBackground>(customBackground.value());
+
+      GURL imageURL = GURL(background.url());
+      GURL thumbnailURL = AddOptionsToImageURL(
+          RemoveOptionsFromImageURL(imageURL.spec()).spec(),
+          GetThumbnailImageOptions());
+
+      image_fetcher::ImageFetcher* imageFetcher =
+          _imageFetcherService->GetImageFetcher(
+              image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
+
+      __weak __typeof(self) weakSelf = self;
+
+      auto cancelable_thumbnail_callback =
+          std::make_shared<base::CancelableOnceCallback<void(
+              const gfx::Image&, const image_fetcher::RequestMetadata&)>>();
+
+      cancelable_thumbnail_callback->Reset(
+          base::BindOnce(^(const gfx::Image& image,
+                           const image_fetcher::RequestMetadata& metadata) {
+            if (!image.IsEmpty()) {
+              // Temporarily sets the thumbnail as the background until the
+              // high-resolution image is loaded.
+              [weakSelf handleBackgroundImageFetch:image];
+              return;
+            }
+          }));
+
+      // Retrieving the thumbnail URL should hit the cache, so it returns almost
+      // instantly.
+      imageFetcher->FetchImage(thumbnailURL,
+                               cancelable_thumbnail_callback->callback(),
+                               image_fetcher::ImageFetcherParams(
+                                   kTrafficAnnotation, kImageFetcherUmaClient));
+
+      imageFetcher->FetchImage(
+          imageURL,
+          base::BindOnce(^(const gfx::Image& image,
+                           const image_fetcher::RequestMetadata& metadata) {
+            // Cancel the thumbnail URL fetch if the high-resolution fetch
+            // finished first.
+            if (cancelable_thumbnail_callback) {
+              cancelable_thumbnail_callback->Cancel();
+            }
+            if (!image.IsEmpty()) {
+              [weakSelf handleBackgroundImageFetch:image];
+              [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
+              [traitAccessor
+                  setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+            } else {
+              base::UmaHistogramSparse(
+                  "IOS.HomeCustomization.Background.Ntp.ImageDownloadErrorCode",
+                  metadata.http_response_code);
+            }
+          }),
+          image_fetcher::ImageFetcherParams(kTrafficAnnotation,
+                                            kImageFetcherUmaClient));
+      if (initialLoad) {
+        base::UmaHistogramEnumeration(
+            "IOS.HomeCustomization.Background.Ntp.Loaded",
+            HomeCustomizationBackgroundStyle::kPreset);
+      }
+    } else {
+      HomeUserUploadedBackground userBackground =
+          std::get<HomeUserUploadedBackground>(customBackground.value());
+      HomeCustomizationFramingCoordinates* framingCoordinates =
+          HomeCustomizationFramingCoordinatesFromFramingCoordinates(
+              userBackground.framing_coordinates);
+
+      __weak __typeof(self) weakSelf = self;
+      _userUploadedImageManager->LoadUserUploadedImage(
+          base::FilePath(userBackground.image_path),
+          base::BindOnce(^(UIImage* image) {
+            [weakSelf handleUserUploadedImage:image
+                           framingCoordinates:framingCoordinates];
+            [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
+            [traitAccessor
+                setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+          }));
+      if (initialLoad) {
+        base::UmaHistogramEnumeration(
+            "IOS.HomeCustomization.Background.Ntp.Loaded",
+            HomeCustomizationBackgroundStyle::kUserUploaded);
+      }
+    }
+    return;
+  } else {
+    [self.consumer setBackgroundImage:nil framingCoordinates:nil];
+  }
+
+  std::optional<sync_pb::UserColorTheme> colorTheme =
+      _backgroundCustomizationService->GetCurrentColorTheme();
+
+  if (colorTheme && colorTheme->color()) {
+    // Sets the New Tab Page trait to a color palette generated from the current
+    // theme.
+    NewTabPageColorPalette* colorPalette = CreateColorPaletteFromSeedColor(
+        skia::UIColorFromSkColor(colorTheme->color()),
+        ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()));
+
+    [traitAccessor setObjectForNewTabPageTrait:colorPalette];
+    [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
+    if (initialLoad) {
+      base::UmaHistogramEnumeration(
+          "IOS.HomeCustomization.Background.Ntp.Loaded",
+          HomeCustomizationBackgroundStyle::kColor);
+    }
+    return;
+  }
+
+  // Clears the color palette associated with the New Tab Page trait,
+  // reverting to the default colors defined by the trait.
+  [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+  [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
+  base::UmaHistogramEnumeration("IOS.HomeCustomization.Background.Ntp.Loaded",
+                                HomeCustomizationBackgroundStyle::kDefault);
 }
 
 @end

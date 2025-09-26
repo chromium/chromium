@@ -660,6 +660,17 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="ShopCard tile"/>
 </enum>
 
+<!-- LINT.IfChange(IOSHomeCustomizationBackgroundStyle) -->
+
+<enum name="IOSHomeCustomizationBackgroundStyle">
+  <int value="0" label="Default NTP background was loaded"/>
+  <int value="1" label="Gallery image background was loaded"/>
+  <int value="2" label="Color background was loaded"/>
+  <int value="3" label="User uploaded image background was loaded"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/home_customization/utils/home_customization_constants.h:HomeCustomizationBackgroundStyle) -->
+
 <enum name="IOSHomeCustomizationEntrypoint">
   <int value="0" label="Main entrypoint"/>
   <int value="1" label="Magic Stack entrypoint"/>

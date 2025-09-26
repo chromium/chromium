@@ -117,6 +117,9 @@ enum class CustomizationLinkType : NSInteger {
 };
 
 // Represents the background style used for home customization.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(HomeCustomizationBackgroundStyle)
 enum class HomeCustomizationBackgroundStyle : NSInteger {
   // No background (default appearance).
   kDefault,
@@ -129,7 +132,11 @@ enum class HomeCustomizationBackgroundStyle : NSInteger {
 
   // User-uploaded background image.
   kUserUploaded,
+
+  // Must be last.
+  kMaxValue = kUserUploaded,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSHomeCustomizationBackgroundStyle)
 
 // Records the final outcome of the user's background selection flow.
 // This is logged once the user either applies a background or exits
