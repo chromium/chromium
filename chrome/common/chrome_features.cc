@@ -722,6 +722,10 @@ extern const base::FeatureParam<std::string> kGlicCaaLinkUrl{
     &kGlicCaaGuestError, "glic-caa-link-url", "https://gemini.google.com/"};
 extern const base::FeatureParam<std::string> kGlicCaaLinkText{
     &kGlicCaaGuestError, "glic-caa-link-text", "gemini.google.com"};
+extern const base::FeatureParam<std::string> kGlicCaaGuestRedirectPatterns{
+    &kGlicCaaGuestError, "glic-caa-redirect-patterns",
+    "https://access.workspace.google.com https://admin.google.com "
+    "https://accounts.google.com/info/servicerestricted"};
 
 BASE_FEATURE(kGlicEntrypointVariations, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicEntrypointVariationsShowLabel{
