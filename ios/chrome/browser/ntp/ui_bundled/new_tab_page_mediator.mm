@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/cancelable_callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
@@ -453,16 +454,47 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           std::get<sync_pb::NtpCustomBackground>(customBackground.value());
 
       GURL imageURL = GURL(background.url());
+      GURL thumbnailURL = AddOptionsToImageURL(
+          RemoveOptionsFromImageURL(imageURL.spec()).spec(),
+          GetThumbnailImageOptions());
 
       image_fetcher::ImageFetcher* imageFetcher =
           _imageFetcherService->GetImageFetcher(
               image_fetcher::ImageFetcherConfig::kDiskCacheOnly);
 
       __weak __typeof(self) weakSelf = self;
+
+      auto cancelable_thumbnail_callback =
+          std::make_shared<base::CancelableOnceCallback<void(
+              const gfx::Image&, const image_fetcher::RequestMetadata&)>>();
+
+      cancelable_thumbnail_callback->Reset(
+          base::BindOnce(^(const gfx::Image& image,
+                           const image_fetcher::RequestMetadata& metadata) {
+            if (!image.IsEmpty()) {
+              // Temporarily sets the thumbnail as the background until the
+              // high-resolution image is loaded.
+              [weakSelf handleBackgroundImageFetch:image];
+              return;
+            }
+          }));
+
+      // Retrieving the thumbnail URL should hit the cache, so it returns almost
+      // instantly.
+      imageFetcher->FetchImage(thumbnailURL,
+                               cancelable_thumbnail_callback->callback(),
+                               image_fetcher::ImageFetcherParams(
+                                   kTrafficAnnotation, kImageFetcherUmaClient));
+
       imageFetcher->FetchImage(
           imageURL,
           base::BindOnce(^(const gfx::Image& image,
                            const image_fetcher::RequestMetadata& metadata) {
+            // Cancel the thumbnail URL fetch if the high-resolution fetch
+            // finished first.
+            if (cancelable_thumbnail_callback) {
+              cancelable_thumbnail_callback->Cancel();
+            }
             if (!image.IsEmpty()) {
               [weakSelf handleBackgroundImageFetch:image];
               [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
