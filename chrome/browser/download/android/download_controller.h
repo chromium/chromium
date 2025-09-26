@@ -33,6 +33,8 @@
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 
+class DownloadUIModel;
+
 class DownloadController : public DownloadControllerBase {
  public:
   static DownloadController* GetInstance();
@@ -94,7 +96,7 @@ class DownloadController : public DownloadControllerBase {
   void OnDangerousDownload(download::DownloadItem* item);
 
   // Shows the UI warnings from Safe Browsing malicious APK download check.
-  void ShowDangerousDownloadWarning(download::DownloadItem* item);
+  void ShowDangerousDownloadWarning(DownloadUIModel& model);
 
   // Helper methods to start android download on UI thread.
   void StartAndroidDownload(const content::WebContents::Getter& wc_getter,
