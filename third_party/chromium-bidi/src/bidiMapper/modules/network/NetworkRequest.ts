@@ -931,7 +931,7 @@ export class NetworkRequest {
         this.#servedFromCache,
       headers: this.#responseOverrides?.headers ?? headers,
       mimeType: this.#response.info?.mimeType || '',
-      bytesReceived: this.#response.info?.encodedDataLength || 0,
+      bytesReceived: this.bytesReceived,
       headersSize: computeHeadersSize(headers),
       // TODO: consider removing from spec.
       bodySize: 0,
@@ -946,6 +946,10 @@ export class NetworkRequest {
       ...response,
       'goog:securityDetails': this.#response.info?.securityDetails,
     } as Network.ResponseData;
+  }
+
+  get bytesReceived() {
+    return this.#response.info?.encodedDataLength || 0;
   }
 
   #getRequestData(): Network.RequestData {

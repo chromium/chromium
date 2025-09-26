@@ -22,7 +22,7 @@ from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
 SOME_CONTENT = "some downloadable content"
 NETWORK_RESPONSE_STARTED_EVENT = "network.responseStarted"
 SOME_UNKNOWN_COLLECTOR_ID = "SOME_UNKNOWN_COLLECTOR_ID"
-MAX_ENCODED_DATA_SIZE = 1024 * 1024 * 1024  # 1 MB
+MAX_TOTAL_COLLECTED_SIZE = 200 * 1000 * 1000  # Default CDP limit.
 
 
 @pytest.fixture
@@ -86,7 +86,7 @@ async def test_network_collector_get_data_required_params(
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -134,7 +134,7 @@ async def test_network_collector_get_data_collector(websocket, context_id,
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -206,7 +206,7 @@ async def test_network_collector_get_data_disown_no_collector(
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
             }
         })
 
@@ -237,7 +237,7 @@ async def test_network_collector_get_data_disown_removes_data(
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -288,7 +288,7 @@ async def test_network_collector_remove_data_collector(websocket, context_id,
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -360,7 +360,7 @@ async def test_network_collector_disown_data(websocket, context_id,
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}
@@ -416,12 +416,11 @@ async def test_network_collector_scoped_to_context(websocket, context_id,
                                                    another_context_id,
                                                    init_request):
     resp = await execute_command(
-        websocket,
-        {
+        websocket, {
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": 1024 * 1024 * 1024,  # 1 MB
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE,
                 "contexts": [another_context_id]
             }
         })
@@ -457,7 +456,7 @@ async def test_network_collector_get_data_oopif(websocket, context_id, html):
             "method": "network.addDataCollector",
             "params": {
                 "dataTypes": ["response"],
-                "maxEncodedDataSize": MAX_ENCODED_DATA_SIZE
+                "maxEncodedDataSize": MAX_TOTAL_COLLECTED_SIZE
             }
         })
     assert resp == {"collector": ANY_UUID}

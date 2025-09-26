@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-import {NoSuchNetworkCollectorException} from '../../../protocol/ErrorResponse.js';
+import {
+  InvalidArgumentException,
+  NoSuchNetworkCollectorException,
+} from '../../../protocol/ErrorResponse.js';
 import type {
   Browser,
   BrowsingContext,
@@ -28,6 +31,10 @@ import type {NetworkRequest} from './NetworkRequest.js';
 
 type NetworkCollector = Network.AddDataCollectorParameters;
 
+// The default total data size limit in CDP.
+// https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_network_agent.cc;drc=da1f749634c9a401cc756f36c2e6ce233e1c9b4d;l=133
+const MAX_TOTAL_COLLECTED_SIZE = 200 * 1000 * 1000;
+
 export class CollectorsStorage {
   readonly #collectors = new Map<string, NetworkCollector>();
   readonly #requestCollectors = new Map<Network.Request, Set<string>>();
@@ -38,6 +45,16 @@ export class CollectorsStorage {
   }
 
   addDataCollector(params: Network.AddDataCollectorParameters) {
+    if (
+      params.maxEncodedDataSize < 1 ||
+      params.maxEncodedDataSize > MAX_TOTAL_COLLECTED_SIZE
+    ) {
+      // 200 MB is the default limit in CDP:
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/inspector/inspector_network_agent.cc;drc=da1f749634c9a401cc756f36c2e6ce233e1c9b4d;l=133
+      throw new InvalidArgumentException(
+        `Max encoded data size should be between 1 and ${MAX_TOTAL_COLLECTED_SIZE}`,
+      );
+    }
     const collectorId = uuidv4();
     this.#collectors.set(collectorId, params);
     return collectorId;
@@ -79,32 +96,46 @@ export class CollectorsStorage {
     }
   }
 
-  #getCollectorIdsForRequest(
+  #shouldCollectRequest(
+    collectorId: string,
     request: NetworkRequest,
     topLevelBrowsingContext: BrowsingContext.BrowsingContext,
     userContext: Browser.UserContext,
-  ): string[] {
-    const collectors = new Set<string>();
-    for (const collectorId of this.#collectors.keys()) {
-      const collector = this.#collectors.get(collectorId)!;
+  ): boolean {
+    if (!this.#collectors.has(collectorId)) {
+      throw new NoSuchNetworkCollectorException(
+        `Unknown collector ${collectorId}`,
+      );
+    }
 
-      if (!collector.userContexts && !collector.contexts) {
-        // A global collector.
-        collectors.add(collectorId);
-      }
-      if (collector.contexts?.includes(topLevelBrowsingContext)) {
-        collectors.add(collectorId);
-      }
-      if (collector.userContexts?.includes(userContext)) {
-        collectors.add(collectorId);
-      }
+    const collector = this.#collectors.get(collectorId)!;
+    if (
+      collector.userContexts &&
+      !collector.userContexts.includes(userContext)
+    ) {
+      // Collector is aimed for a different user context.
+      return false;
+    }
+    if (
+      collector.contexts &&
+      !collector.contexts.includes(topLevelBrowsingContext)
+    ) {
+      // Collector is aimed for a different top-level browsing context.
+      return false;
+    }
+    if (collector.maxEncodedDataSize < request.bytesReceived) {
+      this.#logger?.(
+        LogType.debug,
+        `Request ${request.id} is too big for the collector ${collectorId}`,
+      );
+      return false;
     }
 
     this.#logger?.(
       LogType.debug,
-      `Request ${request.id} collected by ${[...collectors.values()]}`,
+      `Collector ${collectorId} collected request ${request.id}`,
     );
-    return [...collectors.values()];
+    return true;
   }
 
   collectIfNeeded(
@@ -112,10 +143,13 @@ export class CollectorsStorage {
     topLevelBrowsingContext: BrowsingContext.BrowsingContext,
     userContext: Browser.UserContext,
   ) {
-    const collectorIds = this.#getCollectorIdsForRequest(
-      request,
-      topLevelBrowsingContext,
-      userContext,
+    const collectorIds = [...this.#collectors.keys()].filter((collectorId) =>
+      this.#shouldCollectRequest(
+        collectorId,
+        request,
+        topLevelBrowsingContext,
+        userContext,
+      ),
     );
     if (collectorIds.length > 0) {
       this.#requestCollectors.set(request.id, new Set(collectorIds));
