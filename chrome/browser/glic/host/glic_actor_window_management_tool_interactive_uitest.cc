@@ -5,8 +5,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,10 +90,10 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 
   size_t initial_window_count = 0;
-  Browser* initial_window = browser();
+  BrowserWindowInterface* initial_window = browser();
   SessionID initial_window_session_id = SessionID::InvalidValue();
 
-  Browser* created_window = nullptr;
+  BrowserWindowInterface* created_window = nullptr;
   SessionID created_window_session_id = SessionID::InvalidValue();
 
   // clang-format off
@@ -105,8 +106,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
                               kActivateSurfaceIncompatibilityNotice),
 
       Do([&]() {
-        initial_window = BrowserList::GetInstance()->GetLastActive();
-        initial_window_session_id = initial_window->session_id();
+        initial_window = GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+        initial_window_session_id = initial_window->GetSessionID();
         initial_window_count = BrowserList::GetInstance()->size();
       }),
 
@@ -117,13 +118,13 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
                   initial_window_count + 1;
           },
           "New window was created"),
-      CheckResult([]() { return BrowserList::GetInstance()->GetLastActive(); },
+      CheckResult([]() { return GetLastActiveBrowserWindowInterfaceWithAnyProfile(); },
           testing::Ne(initial_window),
           "Last active window was changed"),
 
       Do([&]() {
-        created_window = BrowserList::GetInstance()->GetLastActive();
-        created_window_session_id = created_window->session_id();
+        created_window = GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+        created_window_session_id = created_window->GetSessionID();
       }),
       Check([&]() { return created_window->IsActive(); },
           "New window is active"),
@@ -133,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
       // Activate the initial window
       ActivateWindowAction(task_id_, initial_window_session_id),
       CheckResult(
-          []() { return BrowserList::GetInstance()->GetLastActive(); },
+          []() { return GetLastActiveBrowserWindowInterfaceWithAnyProfile(); },
           initial_window,
           "Initial window becomes last actived"),
       Check([&]() { return initial_window->IsActive(); },
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
           },
           "Created window was closed"),
       CheckResult(
-          []() { return BrowserList::GetInstance()->GetLastActive(); },
+          []() { return GetLastActiveBrowserWindowInterfaceWithAnyProfile(); },
           initial_window,
           "Initial window remains active")
   );
