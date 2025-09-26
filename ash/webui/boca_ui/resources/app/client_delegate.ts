@@ -376,6 +376,12 @@ export class ClientDelegateFactory {
       stopPresentingStudentScreen: async () => {
         return (await pageHandler.stopPresentingStudentScreen()).success;
       },
+      presentOwnScreen: async (receiverId: string) => {
+        return (await pageHandler.presentOwnScreen(receiverId)).success;
+      },
+      stopPresentingOwnScreen: async () => {
+        return (await pageHandler.stopPresentingOwnScreen()).success;
+      },
     };
   }
 

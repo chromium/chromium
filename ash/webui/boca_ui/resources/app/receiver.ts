@@ -59,6 +59,9 @@ function initializeApp(app: ClientApi) {
 
   callbackRouter.onPresentStudentScreenEnded.addListener(
       () => app.onPresentStudentScreenEnded());
+
+  callbackRouter.onPresentOwnScreenEnded.addListener(
+      () => app.onPresentOwnScreenEnded());
 }
 
 /**

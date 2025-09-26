@@ -44,6 +44,8 @@ namespace ash::boca {
 
 class ScreenPresenterFactory;
 class StudentScreenPresenter;
+class TeacherScreenPresenter;
+
 // TODO(crbug.com/399923859): Remove `mojom::Page` implementation.
 class BocaAppHandler : public mojom::PageHandler,
                        public mojom::Page,
@@ -128,6 +130,10 @@ class BocaAppHandler : public mojom::PageHandler,
                             PresentStudentScreenCallback callback) override;
   void StopPresentingStudentScreen(
       StopPresentingStudentScreenCallback callback) override;
+  void PresentOwnScreen(const std::string& receiver_id,
+                        PresentOwnScreenCallback callback) override;
+  void StopPresentingOwnScreen(
+      StopPresentingOwnScreenCallback callback) override;
 
   // mojom::Page:
   void OnStudentActivityUpdated(
@@ -266,6 +272,7 @@ class BocaAppHandler : public mojom::PageHandler,
   // TODO(crbug.com/399923859): remove only the override keyword when the
   // inheritance from `mojom::Page` is removed.
   void OnPresentStudentScreenEnded() override;
+  void OnPresentOwnScreenEnded() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
   const bool is_producer_;
@@ -293,6 +300,7 @@ class BocaAppHandler : public mojom::PageHandler,
   raw_ptr<BocaSessionManager> session_manager_;
   std::unique_ptr<ScreenPresenterFactory> presenter_factory_;
   std::unique_ptr<StudentScreenPresenter> student_screen_presenter_;
+  std::unique_ptr<TeacherScreenPresenter> teacher_screen_presenter_;
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };
 

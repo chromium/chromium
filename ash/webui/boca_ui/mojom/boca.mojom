@@ -414,6 +414,10 @@ interface PageHandler {
   // If successful, it is guaranteed that `OnPresentStudentScreenEnded` will not
   // be triggered for that screen presentation.
   StopPresentingStudentScreen() => (bool success);
+  // Present the teacher's screen to the given receiver.
+  PresentOwnScreen(string receiver_id) => (bool success);
+  // Stop the current screen share presentation for the teacher.
+  StopPresentingOwnScreen() => (bool success);
 };
 
 // Implemented by renderer process. There is an implementation in the browser
@@ -439,6 +443,9 @@ interface Page {
   // Notifies the app that the screen share presentation for the student has
   // ended.
   OnPresentStudentScreenEnded();
+  // Notify the app that the screen share presentation for the teacher has
+  // ended.
+  OnPresentOwnScreenEnded();
 };
 
 // Implemented in browser process to set up the communication between the Page

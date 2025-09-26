@@ -26,6 +26,7 @@ class IdentityManager;
 namespace ash::boca {
 
 class StudentScreenPresenter;
+class TeacherScreenPresenter;
 
 class ScreenPresenterFactory {
  public:
@@ -37,6 +38,9 @@ class ScreenPresenterFactory {
   virtual std::unique_ptr<StudentScreenPresenter> CreateStudentScreenPresenter(
       std::string_view session_id,
       const ::boca::UserIdentity& teacher_identity,
+      std::string_view teacher_device_id) = 0;
+
+  virtual std::unique_ptr<TeacherScreenPresenter> CreateTeacherScreenPresenter(
       std::string_view teacher_device_id) = 0;
 
  protected:
@@ -59,6 +63,8 @@ class ScreenPresenterFactoryImpl : public ScreenPresenterFactory {
   std::unique_ptr<StudentScreenPresenter> CreateStudentScreenPresenter(
       std::string_view session_id,
       const ::boca::UserIdentity& teacher_identity,
+      std::string_view teacher_device_id) override;
+  std::unique_ptr<TeacherScreenPresenter> CreateTeacherScreenPresenter(
       std::string_view teacher_device_id) override;
 
  private:

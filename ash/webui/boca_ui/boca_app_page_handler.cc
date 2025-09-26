@@ -43,6 +43,7 @@
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/receiver/screen_presenter_factory.h"
 #include "chromeos/ash/components/boca/receiver/student_screen_presenter.h"
+#include "chromeos/ash/components/boca/receiver/teacher_screen_presenter.h"
 #include "chromeos/ash/components/boca/session_api/add_students_request.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
@@ -807,6 +808,35 @@ void BocaAppHandler::StopPresentingStudentScreen(
   student_screen_presenter_->Stop(std::move(callback));
 }
 
+void BocaAppHandler::PresentOwnScreen(const std::string& receiver_id,
+                                      PresentOwnScreenCallback callback) {
+  if (!is_producer_ || !ash::features::IsBocaScreenSharingTeacherEnabled()) {
+    LOG(ERROR) << "[Boca] unexpected call to present teacher's own screen";
+    std::move(callback).Run(false);
+    return;
+  }
+  if (!teacher_screen_presenter_) {
+    teacher_screen_presenter_ =
+        presenter_factory_->CreateTeacherScreenPresenter(
+            BocaAppClient::Get()->GetDeviceId());
+  }
+  teacher_screen_presenter_->Start(
+      receiver_id, user_identity_, std::move(callback),
+      base::BindOnce(&BocaAppHandler::OnPresentOwnScreenEnded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BocaAppHandler::StopPresentingOwnScreen(
+    StopPresentingOwnScreenCallback callback) {
+  if (!teacher_screen_presenter_) {
+    LOG(ERROR)
+        << "[Boca] unexpected call to stop presenting teacher's own screen";
+    std::move(callback).Run(false);
+    return;
+  }
+  teacher_screen_presenter_->Stop(std::move(callback));
+}
+
 void BocaAppHandler::OnStudentActivityUpdated(
     std::vector<mojom::IdentifiedActivityPtr> activities) {
   remote_->OnStudentActivityUpdated(std::move(activities));
@@ -1325,6 +1355,10 @@ void BocaAppHandler::SetAccountImage(user_manager::User* user) {
 
 void BocaAppHandler::OnPresentStudentScreenEnded() {
   remote_->OnPresentStudentScreenEnded();
+}
+
+void BocaAppHandler::OnPresentOwnScreenEnded() {
+  remote_->OnPresentOwnScreenEnded();
 }
 
 }  // namespace ash::boca
