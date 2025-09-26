@@ -144,6 +144,10 @@ BASE_DECLARE_FEATURE(kLensSidePanelEnableWebviewResults);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchZeroStateCsb);
 
+// Enables handling for the video citations feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensVideoCitations);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -972,6 +976,11 @@ extern bool IsLensSearchZeroStateCsbEnabled();
 // The query text to use for zero state CSB in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetZeroStateCsbQuery();
+
+// Whether the feature to enable the special handling for video citations is
+// enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensVideoCitationsEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

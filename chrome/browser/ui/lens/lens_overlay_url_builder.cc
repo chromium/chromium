@@ -138,6 +138,24 @@ inline constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 // search request is made (i.e. qsubts).
 inline constexpr char kClientUploadDurationQueryParameter[] = "cud";
 
+// Host for YouTube URLs.
+inline constexpr char kYoutubeHost[] = "www.youtube.com";
+
+// Path denoting a YouTube watch page.
+inline constexpr char kYoutubeWatchPath[] = "/watch";
+
+// Path denoting a YouTube embed page.
+inline constexpr char kYoutubeEmbedPathPrefix[] = "/embed/";
+
+// Query parameter for the video timestamp.
+inline constexpr char kVideoTimestampQueryParameter[] = "t";
+
+// Query parameter for the video ID.
+inline constexpr char kVideoIdQueryParameter[] = "v";
+
+// Character denoting seconds in the "t=" query parameter of a YouTube URL.
+inline constexpr char kVideoTimestampSecondsCharacter = 's';
+
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
     const GURL& url_to_modify,
@@ -563,6 +581,59 @@ GURL AddPDFScrollToParametersToUrl(
   }
 
   return net::AppendOrReplaceRef(url, ref);
+}
+
+std::optional<base::TimeDelta> ExtractTimeInSecondsFromQueryIfExists(
+    const GURL& target) {
+  // Make sure that the target specifies a t=.
+  std::string t_string;
+  if (!net::GetValueForKeyInQuery(target, kVideoTimestampQueryParameter, &t_string)) {
+    return {};
+  }
+
+  // The t_string will end in "s" to denote seconds so it must be at least 2
+  // chars long.
+  if (t_string.length() <= 1) {
+    return {};
+  }
+
+  // The t_string will end in "s" to denote seconds.
+  if (t_string.back() != kVideoTimestampSecondsCharacter) {
+    return {};
+  }
+
+  // Pop the last "s" from the string so it can parse correctly.
+  t_string.pop_back();
+  unsigned int t = 0;
+  if (!base::StringToUint(t_string, &t)) {
+    return {};
+  }
+
+  return base::Seconds(t);
+}
+
+std::optional<std::string> ExtractVideoNameIfExists(const GURL& url) {
+  if (url.host() != kYoutubeHost) {
+    return {};
+  }
+
+  // `url` is a link to www.youtube.com.  The video name is either the value of
+  // the `v=` query param if the format is "...youtube.com/watch", or the last
+  // part of the path if it's "...youtube.com/embed/video name here".
+  // Extract it and return it, or else {} if there's no match.
+  std::string video_name;
+  if (url.path() == kYoutubeWatchPath) {
+    if (net::GetValueForKeyInQuery(url, kVideoIdQueryParameter, &video_name) &&
+        !video_name.empty()) {
+      return video_name;
+    }
+  } else if (base::StartsWith(url.path(), kYoutubeEmbedPathPrefix)) {
+    video_name = url.path().substr(strlen(kYoutubeEmbedPathPrefix));
+    if (!video_name.empty()) {
+      return video_name;
+    }
+  }
+  return {};
 }
 
 }  // namespace lens

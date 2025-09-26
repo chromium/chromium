@@ -143,6 +143,12 @@ class LensOverlaySidePanelCoordinator
   // is compared to the URL of the current open tab.
   bool MaybeHandleTextDirectives(const GURL& nav_url);
 
+  // Handles seeking videos on the main browser window based on navigations from
+  // the side panel. Returns true if handled, false otherwise. `nav_url` refers
+  // to the URL that the side panel was set to navigate to. It is compared to
+  // the URL of the current open tab.
+  bool MaybeHandleContextualMediaLink(const GURL& nav_url);
+
   // Whether the lens overlay entry is currently the active entry in the side
   // panel UI.
   bool IsEntryShowing();

@@ -107,6 +107,8 @@ BASE_FEATURE(kLensAimSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensSearchZeroStateCsb, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensVideoCitations, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -1191,6 +1193,10 @@ bool IsLensSearchZeroStateCsbEnabled() {
 
 std::string GetZeroStateCsbQuery() {
   return IsLensSearchZeroStateCsbEnabled() ? kZeroStateCsbQuery.Get() : "";
+}
+
+bool IsLensVideoCitationsEnabled() {
+  return base::FeatureList::IsEnabled(kLensVideoCitations);
 }
 
 }  // namespace lens::features

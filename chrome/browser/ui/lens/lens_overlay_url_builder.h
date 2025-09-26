@@ -136,6 +136,13 @@ GURL AddPDFScrollToParametersToUrl(
     const std::vector<std::string>& text_fragments,
     int pdf_page_number);
 
+// Return the time from a `t=` parameter if it exists.
+std::optional<base::TimeDelta> ExtractTimeInSecondsFromQueryIfExists(
+    const GURL& target);
+
+// Return the video ID if it's set in `url`.
+std::optional<std::string> ExtractVideoNameIfExists(const GURL& url);
+
 }  // namespace lens
 
 #endif  // CHROME_BROWSER_UI_LENS_LENS_OVERLAY_URL_BUILDER_H_

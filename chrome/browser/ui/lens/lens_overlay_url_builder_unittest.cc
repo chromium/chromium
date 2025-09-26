@@ -943,4 +943,51 @@ TEST_F(LensOverlayUrlBuilderTest, AddPDFScrollToParametersToUrl) {
             base::StringPrintf("page=%d", expected_pdf_page_number));
 }
 
+TEST_F(LensOverlayUrlBuilderTest, ExtractTimeInSecondsFromQueryIfExists) {
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=10s")),
+            base::Seconds(10));
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=60s")),
+            base::Seconds(60));
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test")),
+            std::nullopt);
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=s")),
+            std::nullopt);
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=10")),
+            std::nullopt);
+  EXPECT_EQ(lens::ExtractTimeInSecondsFromQueryIfExists(
+                GURL("https://www.youtube.com/watch?v=test&t=abcs")),
+            std::nullopt);
+}
+
+TEST_F(LensOverlayUrlBuilderTest, ExtractVideoNameIfExists) {
+  EXPECT_EQ(lens::ExtractVideoNameIfExists(
+                GURL("https://www.youtube.com/watch?v=VIDEO_ID")),
+            "VIDEO_ID");
+  EXPECT_EQ(lens::ExtractVideoNameIfExists(
+                GURL("https://www.youtube.com/embed/VIDEO_ID")),
+            "VIDEO_ID");
+  EXPECT_EQ(lens::ExtractVideoNameIfExists(GURL("https://www.google.com")),
+            std::nullopt);
+  EXPECT_EQ(
+      lens::ExtractVideoNameIfExists(GURL("https://www.google.com?v=VIDEO_ID")),
+      std::nullopt);
+  EXPECT_EQ(lens::ExtractVideoNameIfExists(
+                GURL("https://www.google.com/embed/VIDEO_ID")),
+            std::nullopt);
+  EXPECT_EQ(lens::ExtractVideoNameIfExists(
+                GURL("https://www.google.com/watch?v=VIDEO_ID")),
+            std::nullopt);
+  EXPECT_EQ(
+      lens::ExtractVideoNameIfExists(GURL("https://www.youtube.com/watch?v=")),
+      std::nullopt);
+  EXPECT_EQ(
+      lens::ExtractVideoNameIfExists(GURL("https://www.youtube.com/embed/")),
+      std::nullopt);
+}
+
 }  // namespace lens
