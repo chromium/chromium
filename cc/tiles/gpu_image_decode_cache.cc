@@ -2814,19 +2814,6 @@ void GpuImageDecodeCache::FlushYUVImages(
 void GpuImageDecodeCache::RunPendingContextThreadOperations() {
   CheckContextLockAcquiredIfNecessary();
 
-  for (SkImage* image : images_pending_complete_lock_) {
-    context_->ContextSupport()->CompleteLockDiscardableTexureOnContextThread(
-        GlIdFromSkImage(image));
-  }
-  images_pending_complete_lock_.clear();
-
-  FlushYUVImages(&yuv_images_pending_unlock_);
-  for (SkImage* image : images_pending_unlock_) {
-    context_->RasterInterface()->UnlockDiscardableTextureCHROMIUM(
-        GlIdFromSkImage(image));
-  }
-  images_pending_unlock_.clear();
-
   for (auto id : ids_pending_unlock_) {
     context_->ContextSupport()->UnlockTransferCacheEntries({std::make_pair(
         static_cast<uint32_t>(TransferCacheEntryType::kImage), id)});
