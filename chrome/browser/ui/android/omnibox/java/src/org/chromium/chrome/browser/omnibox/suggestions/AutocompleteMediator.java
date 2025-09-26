@@ -173,7 +173,7 @@ class AutocompleteMediator
     // The number of prefetches that were started from touch down events during an omnibox session.
     private int mNumPrefetchesStartedInOmniboxSession;
     // The suggestion that the last prefetch was started for within the current omnibox session.
-    private Optional<AutocompleteMatch> mLastPrefetchStartedSuggestion = Optional.empty();
+    private @Nullable AutocompleteMatch mLastPrefetchStartedSuggestion;
 
     // Observer watching for changes to the visual state of the omnibox suggestions.
     private Optional<AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver>
@@ -467,7 +467,7 @@ class AutocompleteMediator
                     mNumPrefetchesStartedInOmniboxSession);
             mNumTouchDownEventForwardedInOmniboxSession = 0;
             mNumPrefetchesStartedInOmniboxSession = 0;
-            mLastPrefetchStartedSuggestion = Optional.empty();
+            mLastPrefetchStartedSuggestion = null;
 
             mOmniboxInZeroPrefixState = null;
             mNewOmniboxEditSessionTimestamp = -1;
@@ -599,7 +599,7 @@ class AutocompleteMediator
                         : false;
         if (wasPrefetchStarted) {
             mNumPrefetchesStartedInOmniboxSession++;
-            mLastPrefetchStartedSuggestion = Optional.of(suggestion);
+            mLastPrefetchStartedSuggestion = suggestion;
         }
     }
 
