@@ -387,12 +387,10 @@ TFLiteOpResolver::TFLiteOpResolver() {
              tflite::ops::builtin::Register_RANDOM_UNIFORM());
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  if (features::TFLiteXNNPACKDelegateEnabled()) {
-    delegate_creators_.push_back([](TfLiteContext* context) {
-      return tflite::MaybeCreateXNNPACKDelegate(
-          context, tflite::XNNPackQS8Options::default_value);
-    });
-  }
+  delegate_creators_.push_back([](TfLiteContext* context) {
+    return tflite::MaybeCreateXNNPACKDelegate(
+        context, tflite::XNNPackQS8Options::default_value);
+  });
 #endif
 }
 

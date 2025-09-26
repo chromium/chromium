@@ -75,9 +75,6 @@ BASE_FEATURE(kPreventLongRunningPredictionModels,
 BASE_FEATURE(kOverrideNumThreadsForModelExecution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Killswitch for fetching on search results from a remote Optimization Guide
 // Service.
 BASE_FEATURE(kOptimizationGuideFetchingForSRP,
@@ -393,10 +390,6 @@ std::optional<int> OverrideNumThreadsForOptTarget(
 
   // Cap to the number of CPUs on the device.
   return std::min(num_threads, base::SysInfo::NumberOfProcessors());
-}
-
-bool TFLiteXNNPACKDelegateEnabled() {
-  return base::FeatureList::IsEnabled(kOptGuideEnableXNNPACKDelegateWithTFLite);
 }
 
 std::map<proto::OptimizationTarget, std::set<int64_t>>
