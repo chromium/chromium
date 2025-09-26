@@ -23,7 +23,7 @@ import xml_utils
 # split across multiple files.
 _NAMESPACES_IN_MULTIPLE_FILES = [
     'ash', 'autocomplete', 'chromeos', 'fcminvalidations', 'graphics', 'launch',
-    'usereducation'
+    'net', 'networkservice', 'usereducation'
 ]
 
 

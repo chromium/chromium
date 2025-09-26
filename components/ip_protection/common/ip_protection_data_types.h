@@ -183,7 +183,7 @@ enum class TryGetProbabilisticRevealTokensStatus {
   kInvalidEpochIdSize = 15,
   kMaxValue = kInvalidEpochIdSize,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:ProbabilisticRevealTokensResult)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ip_protection/enums.xml:ProbabilisticRevealTokensResult)
 
 // Stores return status of TryGetProbabilisticRevealTokens() together with
 // NetError() returned by url loader.
