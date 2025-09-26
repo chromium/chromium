@@ -71,7 +71,8 @@ CSSAtRuleID CssAtRuleID(StringView name) {
   if (EqualIgnoringASCIICase(name, "property")) {
     return CSSAtRuleID::kCSSAtRuleProperty;
   }
-  if (EqualIgnoringASCIICase(name, "route")) {
+  if (RuntimeEnabledFeatures::RouteMatchingEnabled() &&
+      EqualIgnoringASCIICase(name, "route")) {
     return CSSAtRuleID::kCSSAtRuleRoute;
   }
   if (EqualIgnoringASCIICase(name, "container")) {

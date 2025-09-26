@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -443,6 +444,16 @@ TEST_F(StyleRuleTest, CloneStyleRuleStartingStyle) {
             To<StyleRule>(reparented->ChildRules().front().Get())
                 ->FirstSelector()
                 ->SelectorTextExpandingPseudoReferences(/*scope_id=*/0));
+}
+
+TEST_F(StyleRuleTest, RouteRuleDisabled) {
+  ScopedRouteMatchingForTest enabled(false);
+  // Test both old and new syntax.
+  StyleRuleBase* rule =
+      css_test_helpers::ParseRule(GetDocument(), "@route sixtysix {}");
+  EXPECT_FALSE(rule);
+  rule = css_test_helpers::ParseRule(GetDocument(), "@route (sixtysix) {}");
+  EXPECT_FALSE(rule);
 }
 
 }  // namespace blink
