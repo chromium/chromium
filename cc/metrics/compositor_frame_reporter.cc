@@ -1917,7 +1917,6 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
         TRACE_EVENT(
             "input",
             "ProcessFrameEventMetrics: Multiple scroll ends in a frame");
-        base::debug::DumpWithoutCrashing();
       }
       scroll_end_ts = generation_ts;
       continue;
@@ -1945,7 +1944,6 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
           TRACE_EVENT("input",
                       "ProcessFrameEventMetrics: Multiple scroll starts in a "
                       "single frame (unexpected)");
-          base::debug::DumpWithoutCrashing();
         }
         scroll_start_ts = generation_ts;
         [[fallthrough]];
@@ -1991,7 +1989,6 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
     TRACE_EVENT("input",
                 "ProcessFrameEventMetrics: First scroll starts after another "
                 "scroll update in a single frame (unexpected)");
-    base::debug::DumpWithoutCrashing();
   }
 
   stages.emplace_back(ScrollUpdates{
@@ -2023,7 +2020,6 @@ CompositorFrameReporter::FrameJankReportingStage::CalculateStages(
       TRACE_EVENT("input",
                   "ProcessFrameEventMetrics: Scroll end between two scroll "
                   "updates in a single frame (unexpected)");
-      base::debug::DumpWithoutCrashing();
     }
     stages.emplace_back(ScrollEnd{});
   }
