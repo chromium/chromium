@@ -12,7 +12,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/journal_details_builder.h"
-#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -86,23 +85,11 @@ std::string NavigateTool::JournalEvent() const {
   return "Navigate";
 }
 
-std::unique_ptr<ObservationDelayController>
-NavigateTool::GetObservationDelayer() const {
-  ObservationDelayController::UsePageStabilityMonitor
-      use_page_stability_monitor;
-  switch (features::kActorGeneralPageStabilityMode.Get()) {
-    case features::ActorGeneralPageStabilityMode::kDisabled:
-      use_page_stability_monitor =
-          ObservationDelayController::UsePageStabilityMonitor::kDisabled;
-      break;
-    case features::ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled:
-      use_page_stability_monitor =
-          ObservationDelayController::UsePageStabilityMonitor::kEnabled;
-      break;
-  }
+std::unique_ptr<ObservationDelayController> NavigateTool::GetObservationDelayer(
+    std::optional<ObservationDelayController::PageStabilityConfig>
+        page_stability_config) const {
   return std::make_unique<ObservationDelayController>(
-      *web_contents()->GetPrimaryMainFrame(), task_id(),
-      use_page_stability_monitor);
+      *web_contents()->GetPrimaryMainFrame(), task_id(), page_stability_config);
 }
 
 void NavigateTool::UpdateTaskBeforeInvoke(ActorTask& task,

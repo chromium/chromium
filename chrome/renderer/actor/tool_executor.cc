@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/actor_utils.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/click_tool.h"
@@ -69,7 +70,7 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
   if (!web_frame || !web_frame->FrameWidget()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&ToolExecutor::PageStabilized,
+        base::BindOnce(&ToolExecutor::OnCompletion,
                        weak_ptr_factory_.GetWeakPtr(),
                        MakeResult(mojom::ActionResultCode::kFrameWentAway)));
     return;
@@ -146,8 +147,13 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
       NOTREACHED();
   }
 
-  page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
-      *frame_, tool_->SupportsPaintStability(), invocation->task_id, *journal_);
+  // If GeneralPageStabilityMode is kAllEnabled, the monitor is created in a
+  // separate mojo call from the browser.
+  if (!UseGeneralPageStabilityAllTools()) {
+    page_stability_monitor_ = std::make_unique<PageStabilityMonitor>(
+        *frame_, tool_->SupportsPaintStability(), invocation->task_id,
+        *journal_);
+  }
 
   if (features::kGlicActorScrollTargetIntoView.Get()) {
     tool_->EnsureTargetInView();
@@ -163,13 +169,17 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
 void ToolExecutor::ToolFinished(mojom::ActionResultPtr result) {
   execute_journal_entry_.reset();
   result->execution_end_time = base::TimeTicks::Now();
-  page_stability_monitor_->NotifyWhenStable(
-      tool_->ExecutionObservationDelay(),
-      base::BindOnce(&ToolExecutor::PageStabilized,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+  if (page_stability_monitor_) {
+    page_stability_monitor_->NotifyWhenStable(
+        tool_->ExecutionObservationDelay(),
+        base::BindOnce(&ToolExecutor::OnCompletion,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(result)));
+  } else {
+    OnCompletion(std::move(result));
+  }
 }
 
-void ToolExecutor::PageStabilized(mojom::ActionResultPtr result) {
+void ToolExecutor::OnCompletion(mojom::ActionResultPtr result) {
   CHECK(completion_callback_);
   page_stability_monitor_.reset();
 

@@ -638,15 +638,15 @@ void ChromeRenderFrameObserver::StartActorJournal(
 
 void ChromeRenderFrameObserver::CreatePageStabilityMonitor(
     mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
-    const actor::TaskId& task_id) {
+    const actor::TaskId& task_id,
+    bool supports_paint_stability) {
   if (features::kActorGeneralPageStabilityMode.Get() ==
       features::ActorGeneralPageStabilityMode::kDisabled) {
     return;
   }
 
   page_stability_monitor_ = std::make_unique<actor::PageStabilityMonitor>(
-      *render_frame(), /*supports_paint_stability=*/false, task_id,
-      *actor_journal_);
+      *render_frame(), supports_paint_stability, task_id, *actor_journal_);
   page_stability_monitor_->Bind(std::move(monitor));
 }
 

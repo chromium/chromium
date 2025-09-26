@@ -284,10 +284,11 @@ std::string AttemptLoginTool::JournalEvent() const {
 }
 
 std::unique_ptr<ObservationDelayController>
-AttemptLoginTool::GetObservationDelayer() const {
+AttemptLoginTool::GetObservationDelayer(
+    std::optional<ObservationDelayController::PageStabilityConfig>
+        page_stability_config) const {
   return std::make_unique<ObservationDelayController>(
-      GetPrimaryMainFrameOfTab(tab_handle_), task_id(),
-      ObservationDelayController::UsePageStabilityMonitor::kDisabled);
+      GetPrimaryMainFrameOfTab(tab_handle_), task_id(), page_stability_config);
 }
 
 void AttemptLoginTool::UpdateTaskBeforeInvoke(ActorTask& task,

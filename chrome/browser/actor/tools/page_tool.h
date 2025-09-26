@@ -46,8 +46,9 @@ class PageTool : public Tool {
   std::string DebugString() const override;
   GURL JournalURL() const override;
   std::string JournalEvent() const override;
-  std::unique_ptr<ObservationDelayController> GetObservationDelayer()
-      const override;
+  std::unique_ptr<ObservationDelayController> GetObservationDelayer(
+      std::optional<ObservationDelayController::PageStabilityConfig>
+          page_stability_config) const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               InvokeCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;
@@ -60,8 +61,6 @@ class PageTool : public Tool {
   void OnRenderFrameGone();
 
   void FinishInvoke(mojom::ActionResultPtr result);
-
-  void PostFinishInvoke(mojom::ActionResultCode result_code);
 
   content::RenderFrameHost* GetFrame() const;
 

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
@@ -24,7 +25,6 @@ namespace actor {
 
 class ActorTask;
 class AggregatedJournal;
-class ObservationDelayController;
 
 // Interface all actor tools implement. A tool is held by the ToolController and
 // validated and invoked from there. The controller makes no guarantees about
@@ -76,8 +76,9 @@ class Tool {
   // Returns an optional delay object that can be used to delay completion of
   // the tool until some external conditions are met, typically waiting on a
   // loading navigation to settle.
-  virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer()
-      const = 0;
+  virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer(
+      std::optional<ObservationDelayController::PageStabilityConfig>
+          page_stability_config) const = 0;
 
   // Gives the tool an opportunity to update the task's state before being
   // invoked.

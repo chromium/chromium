@@ -434,8 +434,9 @@ std::string PageTool::JournalEvent() const {
   return request_->JournalEvent();
 }
 
-std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
-    const {
+std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer(
+    std::optional<ObservationDelayController::PageStabilityConfig>
+        page_stability_config) const {
   CHECK(has_completed_time_of_use_);
 
   RenderFrameHost* frame = GetFrame();
@@ -444,9 +445,8 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer()
   // this method.
   CHECK(frame);
 
-  return std::make_unique<ObservationDelayController>(
-      *frame, task_id(),
-      ObservationDelayController::UsePageStabilityMonitor::kDisabled);
+  return std::make_unique<ObservationDelayController>(*frame, task_id(),
+                                                      page_stability_config);
 }
 
 void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,
@@ -494,14 +494,6 @@ void PageTool::FinishInvoke(mojom::ActionResultPtr result) {
   std::move(invoke_callback_).Run(std::move(result));
 
   // WARNING: `this` may now be destroyed.
-}
-
-void PageTool::PostFinishInvoke(mojom::ActionResultCode result_code) {
-  CHECK(invoke_callback_);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PageTool::FinishInvoke, weak_ptr_factory_.GetWeakPtr(),
-                     MakeResult(result_code)));
 }
 
 content::RenderFrameHost* PageTool::GetFrame() const {

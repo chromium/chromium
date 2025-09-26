@@ -346,6 +346,7 @@ constexpr base::FeatureParam<ActorGeneralPageStabilityMode>::Option
         {ActorGeneralPageStabilityMode::kDisabled, "disabled"},
         {ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled,
          "navigate-and-history-enabled"},
+        {ActorGeneralPageStabilityMode::kAllEnabled, "all-enabled"},
 };
 BASE_FEATURE_ENUM_PARAM(
     ActorGeneralPageStabilityMode,

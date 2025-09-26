@@ -107,7 +107,8 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
       override {}
   void CreatePageStabilityMonitor(
       mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
-      const TaskId& task_id) override {}
+      const TaskId& task_id,
+      bool supports_paint_stability) override {}
 
  private:
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
@@ -149,8 +150,9 @@ class MockTool : public Tool {
 
   std::string DebugString() const override { return "MockTool"; }
   std::string JournalEvent() const override { return "MockTool"; }
-  std::unique_ptr<ObservationDelayController> GetObservationDelayer()
-      const override {
+  std::unique_ptr<ObservationDelayController> GetObservationDelayer(
+      std::optional<ObservationDelayController::PageStabilityConfig>
+          page_stability_config) const override {
     return nullptr;
   }
 

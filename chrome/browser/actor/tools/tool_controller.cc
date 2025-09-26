@@ -123,6 +123,9 @@ void ToolController::CreateToolAndValidate(
     return;
   }
 
+  observation_page_stability_config_ =
+      request.GetObservationPageStabilityConfig();
+
   std::unique_ptr<Tool>& tool = create_result.tool;
   CHECK(tool);
 
@@ -193,7 +196,8 @@ void ToolController::Invoke(ResultCallback result_callback) {
   // alive and focused), return error otherwise.
 
   SetState(State::kInvoking);
-  observation_delayer_ = tool.GetObservationDelayer();
+  observation_delayer_ =
+      tool.GetObservationDelayer(observation_page_stability_config_);
   tool.Invoke(base::BindOnce(&ToolController::DidFinishToolInvoke,
                              weak_ptr_factory_.GetWeakPtr()));
 }

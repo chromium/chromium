@@ -49,6 +49,8 @@ class PageToolRequest : public TabToolRequest {
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
+  std::optional<ObservationDelayController::PageStabilityConfig>
+  GetObservationPageStabilityConfig() const override;
 
   // Returns what in the page the tool should act upon.
   const PageTarget& GetTarget() const;

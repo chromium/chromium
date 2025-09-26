@@ -10,7 +10,6 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -111,23 +110,11 @@ std::string HistoryTool::JournalEvent() const {
                                                             : "Forward";
 }
 
-std::unique_ptr<ObservationDelayController> HistoryTool::GetObservationDelayer()
-    const {
-  ObservationDelayController::UsePageStabilityMonitor
-      use_page_stability_monitor;
-  switch (features::kActorGeneralPageStabilityMode.Get()) {
-    case features::ActorGeneralPageStabilityMode::kDisabled:
-      use_page_stability_monitor =
-          ObservationDelayController::UsePageStabilityMonitor::kDisabled;
-      break;
-    case features::ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled:
-      use_page_stability_monitor =
-          ObservationDelayController::UsePageStabilityMonitor::kEnabled;
-      break;
-  }
+std::unique_ptr<ObservationDelayController> HistoryTool::GetObservationDelayer(
+    std::optional<ObservationDelayController::PageStabilityConfig>
+        page_stability_config) const {
   return std::make_unique<ObservationDelayController>(
-      *web_contents()->GetPrimaryMainFrame(), task_id(),
-      use_page_stability_monitor);
+      *web_contents()->GetPrimaryMainFrame(), task_id(), page_stability_config);
 }
 
 void HistoryTool::UpdateTaskBeforeInvoke(ActorTask& task,

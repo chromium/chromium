@@ -32,6 +32,8 @@ class HistoryToolRequest : public TabToolRequest {
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;
   std::string JournalEvent() const override;
+  std::optional<ObservationDelayController::PageStabilityConfig>
+  GetObservationPageStabilityConfig() const override;
 
   // Whether the navigation is backwards or forwards in session history.
   Direction direction_;

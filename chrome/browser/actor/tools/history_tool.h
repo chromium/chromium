@@ -42,8 +42,9 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   void Invoke(InvokeCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
-  std::unique_ptr<ObservationDelayController> GetObservationDelayer()
-      const override;
+  std::unique_ptr<ObservationDelayController> GetObservationDelayer(
+      std::optional<ObservationDelayController::PageStabilityConfig>
+          page_stability_config) const override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               InvokeCallback callback) const override;
   tabs::TabHandle GetTargetTab() const override;

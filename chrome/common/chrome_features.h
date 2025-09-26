@@ -272,6 +272,8 @@ enum ActorGeneralPageStabilityMode {
   kDisabled,
   // Only enabled for navigate and history tools.
   kNavigateAndHistoryEnabled,
+  // Enabled for any tools that request it.
+  kAllEnabled,
 };
 
 COMPONENT_EXPORT(CHROME_FEATURES)

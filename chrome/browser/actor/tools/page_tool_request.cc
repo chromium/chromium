@@ -4,10 +4,13 @@
 
 #include "chrome/browser/actor/tools/page_tool_request.h"
 
+#include <optional>
+
 #include "chrome/browser/actor/tools/page_tool.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
+#include "chrome/common/actor/actor_utils.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -57,6 +60,15 @@ ToolRequest::CreateToolResult PageToolRequest::CreateTool(
 
 const PageTarget& PageToolRequest::GetTarget() const {
   return target_;
+}
+
+std::optional<ObservationDelayController::PageStabilityConfig>
+PageToolRequest::GetObservationPageStabilityConfig() const {
+  if (UseGeneralPageStabilityAllTools()) {
+    return ObservationDelayController::PageStabilityConfig();
+  } else {
+    return std::nullopt;
+  }
 }
 
 }  // namespace actor

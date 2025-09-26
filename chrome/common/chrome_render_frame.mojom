@@ -123,8 +123,10 @@ interface ChromeRenderFrame {
   // there's no need to wait.
   //
   // `task_id` identifies the ID of the active actor tool.
+  // `supports_paint_stability` indicates whether to include paint stability in
+  // page stability heuristics.
   [EnableIfNot=is_android]
   CreatePageStabilityMonitor(
     pending_receiver<actor.mojom.PageStabilityMonitor> monitor,
-    actor.mojom.TaskId task_id);
+    actor.mojom.TaskId task_id, bool supports_paint_stability);
 };

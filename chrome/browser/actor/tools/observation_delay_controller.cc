@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -36,12 +38,12 @@ constexpr base::TimeDelta kCompletionTimeout = base::Seconds(10);
 ObservationDelayController::ObservationDelayController(
     content::RenderFrameHost& target_frame,
     TaskId task_id,
-    UsePageStabilityMonitor use_page_stability_monitor)
+    std::optional<PageStabilityConfig> page_stability_config)
     : content::WebContentsObserver(
           WebContents::FromRenderFrameHost(&target_frame)) {
   CHECK(web_contents());
 
-  if (use_page_stability_monitor == UsePageStabilityMonitor::kEnabled) {
+  if (page_stability_config.has_value()) {
     CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
              features::ActorGeneralPageStabilityMode::kDisabled);
 
@@ -51,10 +53,12 @@ ObservationDelayController::ObservationDelayController(
         &chrome_render_frame);
 
     chrome_render_frame->CreatePageStabilityMonitor(
-        page_stability_monitor_remote_.BindNewPipeAndPassReceiver(), task_id);
+        page_stability_monitor_remote_.BindNewPipeAndPassReceiver(), task_id,
+        page_stability_config->supports_paint_stability);
     page_stability_monitor_remote_.set_disconnect_handler(
         base::BindOnce(&ObservationDelayController::OnMonitorDisconnected,
                        base::Unretained(this)));
+    page_stability_start_delay_ = page_stability_config->start_delay;
   }
 }
 
@@ -74,7 +78,7 @@ void ObservationDelayController::Wait(
 
   if (page_stability_monitor_remote_.is_bound()) {
     page_stability_monitor_remote_->NotifyWhenStable(
-        /*observation_delay=*/base::TimeDelta(),
+        page_stability_start_delay_,
         base::BindOnce(&ObservationDelayController::WaitForLoading,
                        base::Unretained(this)));
 

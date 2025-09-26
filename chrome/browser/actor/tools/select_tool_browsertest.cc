@@ -27,7 +27,7 @@ std::string GetSelectElementCurrentValue(content::WebContents* web_contents,
       .ExtractString();
 }
 
-class ActorSelectToolBrowserTest : public ActorToolsTest {
+class ActorSelectToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
  public:
   ActorSelectToolBrowserTest() = default;
   ~ActorSelectToolBrowserTest() override = default;
@@ -39,9 +39,15 @@ class ActorSelectToolBrowserTest : public ActorToolsTest {
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorSelectToolBrowserTest,
+    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
+    ActorToolsGeneralPageStabilityTest::DescribeParam);
+
 // Test that the SelectTool can select an ordinary <option> in a <select>
 // element.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_OptionSelected) {
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest, SelectTool_OptionSelected) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -90,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_OptionSelected) {
 }
 
 // Test that attempting to select in an offscreen <select> succeeds.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Offscreen) {
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest, SelectTool_Offscreen) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -119,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Offscreen) {
 
 // Test that the SelectTool causes the change and input events to fire on the
 // <select> element.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Events) {
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest, SelectTool_Events) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -144,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest, SelectTool_Events) {
 
 // Test that attempting to select a value that does not exist in the <option>
 // list fails and does not change the current selection.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_NonExistentValueFails) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -169,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 
 // Test that attempting to select a value corresponding to a non-<option>
 // element fails. The select tool should only target valid options.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_NonOptionNodeValueFails) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -226,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 }
 
 // Test that matching option values is case-sensitive.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_ValueIsCaseSensitive) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -253,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 }
 
 // Test that attempting to select a disabled <option> fails.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_DisabledOptionFails) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -278,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 }
 
 // Test that attempting to select a <option> in a disabled <optgroup> fails.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_DisabledOptGroupFails) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -305,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 
 // Test that attempting to select any option in a disabled <select> element
 // fails.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_DisabledSelectFails) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -330,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 }
 
 // Test that options within <optgroup> elements can be selected.
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_GroupedOptionSelected) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -369,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
 
 // Test that an option can be selected in a <select> element rendered as a
 // listbox (size attribute > 1).
-IN_PROC_BROWSER_TEST_F(ActorSelectToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorSelectToolBrowserTest,
                        SelectTool_ListboxOptionSelected) {
   const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

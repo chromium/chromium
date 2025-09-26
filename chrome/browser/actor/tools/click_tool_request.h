@@ -30,6 +30,8 @@ class ClickToolRequest : public PageToolRequest {
 
   // ToolRequest
   std::string JournalEvent() const override;
+  std::optional<ObservationDelayController::PageStabilityConfig>
+  GetObservationPageStabilityConfig() const override;
 
   // PageToolRequest
   mojom::ToolActionPtr ToMojoToolAction(

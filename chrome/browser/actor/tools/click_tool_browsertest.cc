@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <sstream>
+#include <string>
+#include <tuple>
+
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -28,15 +32,32 @@ namespace actor {
 
 namespace {
 
-class ActorClickToolBrowserTest : public ActorToolsTest,
-                                  public ::testing::WithParamInterface<
-                                      ::features::ActorPaintStabilityMode> {
+class ActorClickToolBrowserTest
+    : public ActorToolsTest,
+      public ::testing::WithParamInterface<
+          std::tuple<::features::ActorPaintStabilityMode,
+                     ::features::ActorGeneralPageStabilityMode>> {
  public:
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    auto [paint_stability_mode, general_page_stability_mode] = info.param;
+    std::stringstream params_description;
+    params_description << DescribePaintStabilityMode(paint_stability_mode)
+                       << "_"
+                       << DescribeGeneralPageStabilityMode(
+                              general_page_stability_mode);
+    return params_description.str();
+  }
+
   ActorClickToolBrowserTest() {
+    auto [paint_stability_mode, general_page_stability_mode] = GetParam();
     feature_list_.InitAndEnableFeatureWithParameters(
         ::features::kGlicActor,
         {{::features::kActorPaintStabilityMode.name,
-          ::features::kActorPaintStabilityMode.GetName(GetParam())}});
+          ::features::kActorPaintStabilityMode.GetName(paint_stability_mode)},
+         {::features::kActorGeneralPageStabilityMode.name,
+          ::features::kActorGeneralPageStabilityMode.GetName(
+              general_page_stability_mode)}});
   }
 
   ~ActorClickToolBrowserTest() override = default;
@@ -353,9 +374,12 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     ,
     ActorClickToolBrowserTest,
-    testing::Values(::features::ActorPaintStabilityMode::kDisabled,
-                    ::features::ActorPaintStabilityMode::kLogOnly,
-                    ::features::ActorPaintStabilityMode::kEnabled));
+    testing::Combine(
+        testing::Values(::features::ActorPaintStabilityMode::kDisabled,
+                        ::features::ActorPaintStabilityMode::kLogOnly,
+                        ::features::ActorPaintStabilityMode::kEnabled),
+        testing::ValuesIn(kActorGeneralPageStabilityModeValues)),
+    ActorClickToolBrowserTest::DescribeParams);
 
 }  // namespace
 }  // namespace actor

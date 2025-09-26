@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/common/actor.mojom.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -24,19 +22,9 @@ namespace actor {
 
 namespace {
 
-class ActorNavigateToolBrowserTest
-    : public ActorToolsTest,
-      public ::testing::WithParamInterface<
-          features::ActorGeneralPageStabilityMode> {
+class ActorNavigateToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
  public:
-  ActorNavigateToolBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {
-            {features::kActorGeneralPageStabilityMode.name,
-             features::kActorGeneralPageStabilityMode.GetName(GetParam())},
-        });
-  }
+  ActorNavigateToolBrowserTest() = default;
   ~ActorNavigateToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -44,27 +32,13 @@ class ActorNavigateToolBrowserTest
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     ActorNavigateToolBrowserTest,
-    testing::Values(
-        features::ActorGeneralPageStabilityMode::kDisabled,
-        features::ActorGeneralPageStabilityMode::kNavigateAndHistoryEnabled),
-    [](const ::testing::TestParamInfo<features::ActorGeneralPageStabilityMode>&
-           info) {
-      switch (info.param) {
-        case features::ActorGeneralPageStabilityMode::kDisabled:
-          return "Disabled";
-        case features::ActorGeneralPageStabilityMode::
-            kNavigateAndHistoryEnabled:
-          return "NavigateAndHistoryEnabled";
-      }
-    });
+    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
+    ActorToolsGeneralPageStabilityTest::DescribeParam);
 
 // Basic test of the NavigateTool.
 IN_PROC_BROWSER_TEST_P(ActorNavigateToolBrowserTest, NavigateTool) {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOL_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -98,6 +99,9 @@ class ToolController {
     std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry;
   };
   std::optional<ActiveState> active_state_;
+
+  std::optional<ObservationDelayController::PageStabilityConfig>
+      observation_page_stability_config_;
 
   // Set while a tool invocation is in progress, delays invocation of the
   // completion_callback until the page is ready for observation.

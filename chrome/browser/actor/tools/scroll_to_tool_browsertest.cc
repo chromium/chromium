@@ -24,7 +24,7 @@ namespace actor {
 
 namespace {
 
-class ActorScrollToToolBrowserTest : public ActorToolsTest {
+class ActorScrollToToolBrowserTest : public ActorToolsGeneralPageStabilityTest {
  public:
   ActorScrollToToolBrowserTest() = default;
   ~ActorScrollToToolBrowserTest() override = default;
@@ -36,7 +36,13 @@ class ActorScrollToToolBrowserTest : public ActorToolsTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest, FailsOnInvalidNodeID) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorScrollToToolBrowserTest,
+    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
+    ActorToolsGeneralPageStabilityTest::DescribeParam);
+
+IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest, FailsOnInvalidNodeID) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -52,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest, FailsOnInvalidNodeID) {
   EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest, ScrollsToValidNodeID) {
+IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest, ScrollsToValidNodeID) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
@@ -75,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest, ScrollsToValidNodeID) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest,
                        PositionFixed_DoesNotScroll) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -92,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest,
   EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 }
 
-IN_PROC_BROWSER_TEST_F(ActorScrollToToolBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActorScrollToToolBrowserTest,
                        DisplayNone_DoesNotScroll) {
   const GURL url = embedded_test_server()->GetURL("/actor/scroll_to.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

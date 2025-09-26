@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_TOOLS_TEST_UTIL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOLS_TEST_UTIL_H_
 
+#include <string>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -13,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -96,8 +98,33 @@ class ActorToolsTest : public InProcessBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
+class ActorToolsGeneralPageStabilityTest
+    : public ActorToolsTest,
+      public ::testing::WithParamInterface<
+          ::features::ActorGeneralPageStabilityMode> {
+ public:
+  static std::string DescribeParam(
+      const testing::TestParamInfo<ParamType>& info);
+  ActorToolsGeneralPageStabilityTest();
+  ~ActorToolsGeneralPageStabilityTest() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,
                                  std::string_view query);
+
+std::string DescribeGeneralPageStabilityMode(
+    features::ActorGeneralPageStabilityMode mode);
+
+inline constexpr features::ActorGeneralPageStabilityMode
+    kActorGeneralPageStabilityModeValues[] = {
+        features::ActorGeneralPageStabilityMode::kDisabled,
+        features::ActorGeneralPageStabilityMode::kAllEnabled,
+};
+
+std::string DescribePaintStabilityMode(features::ActorPaintStabilityMode mode);
 
 }  // namespace actor
 

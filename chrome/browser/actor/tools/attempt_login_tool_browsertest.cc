@@ -76,7 +76,7 @@ class MockExecutionEngine : public ExecutionEngine {
   MOCK_METHOD(favicon::FaviconService*, GetFaviconService, (), (override));
 };
 
-class ActorAttemptLoginToolTest : public ActorToolsTest {
+class ActorAttemptLoginToolTest : public ActorToolsGeneralPageStabilityTest {
  public:
   ActorAttemptLoginToolTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -125,7 +125,13 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorAttemptLoginToolTest,
+    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
+    ActorToolsGeneralPageStabilityTest::DescribeParam);
+
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, Basic) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -146,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, Basic) {
   EXPECT_EQ(u"username", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoCredentials) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, NoCredentials) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -158,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoCredentials) {
                     mojom::ActionResultCode::kLoginNoCredentialsAvailable);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
                        MultipleCredentialsSelectFirst) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -182,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
                        MultipleCredentialsSelectSecond) {
   ON_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
       .WillByDefault(
@@ -215,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   EXPECT_EQ(u"username2", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, NoAvailableCredentials) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -232,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoAvailableCredentials) {
                     mojom::ActionResultCode::kLoginNoCredentialsAvailable);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
                        MultipleCredentialsOnlyOneAvailable) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -259,7 +265,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   EXPECT_EQ(u"username2", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -276,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyUsernameFilled) {
   ExpectOkResult(result);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -293,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, OnlyPasswordFilled) {
   ExpectOkResult(result);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, NoSigninForm) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -309,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, NoSigninForm) {
   ExpectErrorResult(result, mojom::ActionResultCode::kLoginNotLoginPage);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
                        InvalidCredentialForGivenUrl) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -327,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
                     mojom::ActionResultCode::kLoginNoCredentialsAvailable);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
                        FillingNotAllowedForGivenUrl) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -344,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, FailedAttemptLogin) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -360,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
   ExpectErrorResult(result, mojom::ActionResultCode::kError);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, CredentialSaved) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, CredentialSaved) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -400,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, CredentialSaved) {
             mock_login_service().last_credential_used()->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, SavedCredentialNotUsed) {
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, SavedCredentialNotUsed) {
   const GURL blank_url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), blank_url));
@@ -489,7 +495,13 @@ class ActorAttemptLoginToolTestWithFaviconService
   favicon::MockFaviconService mock_favicon_service_;
 };
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService, NoService) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ActorAttemptLoginToolTestWithFaviconService,
+    testing::ValuesIn(kActorGeneralPageStabilityModeValues),
+    ActorToolsGeneralPageStabilityTest::DescribeParam);
+
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTestWithFaviconService, NoService) {
   ON_CALL(mock_execution_engine(), GetFaviconService())
       .WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_favicon_service(), GetFaviconImageForPageURL(_, _, _))
@@ -522,7 +534,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService, NoService) {
   EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTestWithFaviconService,
                        EmptyFavicons) {
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -553,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
   EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTestWithFaviconService,
                        OneFavicon) {
   const SkBitmap bitmap = GenerateSquareBitmap(/*size=*/10, SK_ColorRED);
   auto image = gfx::Image::CreateFrom1xBitmap(bitmap);
@@ -598,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
   EXPECT_EQ(u"username1", last_credential_used->username);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTestWithFaviconService,
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTestWithFaviconService,
                        TwoFavicons) {
   auto blank_icon = gfx::Image::CreateFrom1xBitmap(
       GenerateSquareBitmap(/*size=*/10, SK_ColorWHITE));

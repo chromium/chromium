@@ -133,14 +133,17 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   void StartActorJournal(
       mojo::PendingAssociatedRemote<actor::mojom::JournalClient> client)
       override;
-  //  Multiple calls will clobber a PageStabilityMonitor previously created and
-  //  it's the caller's responsibility to ensure the monitor is unneeded before
-  //  creating a new one.
+  // Multiple calls will clobber a PageStabilityMonitor previously created and
+  // it's the caller's responsibility to ensure the monitor is unneeded before
+  // creating a new one.
   //
-  //  `task_id` identifies the ID of the active actor tool.
+  // `task_id` identifies the ID of the active actor tool.
+  // `supports_paint_stability` indicates whether to include paint stability in
+  // page stability heuristics.
   void CreatePageStabilityMonitor(
       mojo::PendingReceiver<actor::mojom::PageStabilityMonitor> monitor,
-      const actor::TaskId& task_id) override;
+      const actor::TaskId& task_id,
+      bool supports_paint_stability) override;
 #endif
 
   // Initialize a |phishing_classifier_delegate_|.

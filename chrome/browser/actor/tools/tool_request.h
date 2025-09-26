@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <variant>
 
 #include "base/types/expected.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -79,6 +81,11 @@ class ToolRequest {
   // security feature, new tool requests should not use this method unless it is
   // safe to use their origins as a trust signal.
   virtual std::optional<url::Origin> AssociatedOriginGrant() const;
+
+  // Gets configuration for general page stability on observation. Returns
+  // `std::nullopt` if not enabled.
+  virtual std::optional<ObservationDelayController::PageStabilityConfig>
+  GetObservationPageStabilityConfig() const;
 };
 
 // Tool requests targeting a specific, existing tab should inherit from this

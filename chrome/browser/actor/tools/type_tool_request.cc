@@ -4,10 +4,24 @@
 
 #include "chrome/browser/actor/tools/type_tool_request.h"
 
+#include <optional>
+
+#include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/actor_utils.h"
 
 namespace actor {
+
+namespace {
+
+// Typing into input fields often causes custom made dropdowns to appear and
+// update content. These are often updated via async tasks that try to detect
+// when a user has finished typing. Delay observation to try to ensure the page
+// stability monitor kicks in only after these tasks have invoked.
+constexpr base::TimeDelta kPageStabilityStartDelay = base::Seconds(1);
+
+}  // namespace
 
 using ::tabs::TabHandle;
 
@@ -55,6 +69,18 @@ mojom::ToolActionPtr TypeToolRequest::ToMojoToolAction(
 
 std::unique_ptr<PageToolRequest> TypeToolRequest::Clone() const {
   return std::make_unique<TypeToolRequest>(*this);
+}
+
+std::optional<ObservationDelayController::PageStabilityConfig>
+TypeToolRequest::GetObservationPageStabilityConfig() const {
+  if (UseGeneralPageStabilityAllTools()) {
+    return ObservationDelayController::PageStabilityConfig{
+        .supports_paint_stability = true,
+        .start_delay = kPageStabilityStartDelay,
+    };
+  } else {
+    return std::nullopt;
+  }
 }
 
 }  // namespace actor

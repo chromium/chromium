@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/tools/tool_request.h"
 
+#include <optional>
+
 #include "chrome/browser/actor/tools/tool.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -47,6 +49,11 @@ bool ToolRequest::RequiresUrlCheckInCurrentTab() const {
 }
 
 std::optional<url::Origin> ToolRequest::AssociatedOriginGrant() const {
+  return std::nullopt;
+}
+
+std::optional<ObservationDelayController::PageStabilityConfig>
+ToolRequest::GetObservationPageStabilityConfig() const {
   return std::nullopt;
 }
 

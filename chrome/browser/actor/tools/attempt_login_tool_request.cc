@@ -4,10 +4,13 @@
 
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 
+#include <optional>
+
 #include "chrome/browser/actor/tools/attempt_login_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
+#include "chrome/common/actor/actor_utils.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor {
@@ -36,6 +39,15 @@ void AttemptLoginToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 
 std::string AttemptLoginToolRequest::JournalEvent() const {
   return "AttemptLogin";
+}
+
+std::optional<ObservationDelayController::PageStabilityConfig>
+AttemptLoginToolRequest::GetObservationPageStabilityConfig() const {
+  if (UseGeneralPageStabilityAllTools()) {
+    return ObservationDelayController::PageStabilityConfig();
+  } else {
+    return std::nullopt;
+  }
 }
 
 }  // namespace actor
