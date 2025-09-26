@@ -88,7 +88,16 @@ SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() {
                         SessionRestoreInfoBarDelegate::InfobarAction::kIgnored);
     if (profile_->GetPrefs()->GetInteger(
             prefs::kSessionRestoreInfoBarTimesShown) ==
-               kSessionRestoreInfoBarMaxTimesToShow) {
+            kSessionRestoreInfoBarMaxTimesToShow &&
+        message_type_ == InfobarMessageType::kTurnOnSessionRestore) {
+      // Only the infobar with the message kTurnOnSessionRestore will be shown
+      // on 3 different browser sessions. And false will be recorded once if no
+      // action was taken to change the setting.
+      RecordSettingChanged(false, message_type_);
+    } else {
+      // The infobars with the message to turn off session restore will only be
+      // displayed once and if no action is taken,
+      //  false will be recorded for no setting changed.
       RecordSettingChanged(false, message_type_);
     }
   }
