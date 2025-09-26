@@ -12,6 +12,7 @@
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/test/setup_field_trials.h"
 #include "gpu/ipc/test_gpu_thread_holder.h"
 #include "media/base/media.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +32,124 @@ namespace content {
 
 ContentTestSuite::ContentTestSuite(int argc, char** argv)
     : ContentTestSuiteBase(argc, argv) {
+  constexpr bool kEnableFieldTrials =
+      // Failing tests on windows:
+      // -DelegatedFrameHostTest.NoCopyOutputRequestWithNoValidSurface
+      // -EmbeddedFrameSinkProviderImplTest.*
+      // -RendererSandboxSettings/RendererFeatureSandboxWinTest.RendererGeneratedPolicyTest/0
+      // TODO(40105939): Enable field trials on windows.
+      !BUILDFLAG(IS_WIN) &&
+
+      // On Android, `content_unittests` fails during `--gtest-list-tests` with
+      // no debug information.
+      // TODO(40105939): Enable field trials on android.
+      !BUILDFLAG(IS_ANDROID);
+
+  if (!kEnableFieldTrials) {
+    return;
+  }
+
+  // Note that this could be moved to content::UnitTestTestSuite at some point
+  // to target all of the unittests, instead of just `content_unittests`.
+  SetupFieldTrials();
+
+  // Some field trial features are failing tests, so they are disabled here.
+  // This was done as a temporary measure to start enabling field trials in
+  // general in content_unittests.
+  std::vector<std::string> disabled_field_trial;
+  auto disable_field_trial = [&](std::string feature) {
+    base::FeatureList* feature_list = base::FeatureList::GetInstance();
+    // The user's command line take precedence.
+    // This is important for developers to investigate why a feature causes
+    // failures.
+    if (feature_list->IsFeatureOverriddenFromCommandLine(feature)) {
+      return;
+    }
+
+    // Do not revert a feature if it wasn't enabled via a field trial, e.g. in
+    // branded builds.
+    if (!feature_list->IsFeatureOverridden(feature)) {
+      return;
+    }
+
+    CHECK(feature_list->GetEnabledFieldTrialByFeatureName(feature));
+    disabled_field_trial.push_back(feature);
+  };
+
+  // TODO(447172722) Enable testing for this field trial feature.
+  // Reproducer:AttributionManagerImplTest.SendReport_RecordsTimeFromLastNavigation_Failure
+  disable_field_trial("AttributionReportNavigationBasedRetry");
+
+  // TODO(447306270) Enable testing for this field trial feature.
+  // Reproducer:AuctionRunnerTest.OneBidOne404
+  disable_field_trial("FledgeSellerWorkletThreadPool");
+
+  // TODO(447306903) Enable testing for this field trial feature.
+  // Reproducer:AuctionRunnerTest.ExecutionModeGroupByOriginClickiness
+  disable_field_trial("FledgeBidderUseBalancingThreadSelector");
+
+  // TODO(447306271) Enable testing for this field trial feature.
+  // Reproducer:AuctionRunnerTest.PrivateAggregationRequestForEventFilteringIdNonKAnon
+  disable_field_trial("CookieDeprecationFacilitatedTesting");
+
+  // TODO(447306904) Enable testing for this field trial feature.
+  // Reproducer:AuctionRunnerTest.TrustedScoringSignalsJointBatchedRequests
+  disable_field_trial("FledgeSellerSignalsRequestsOneAtATime");
+
+  // TODO(447306905) Enable testing for this field trial feature.
+  // Reproducer:BiddingAndAuctionSerializerTest.SerializeWithTooSmallRequestSize
+  disable_field_trial("FledgeEnableSampleDebugReportOnCookieSetting");
+  disable_field_trial("FledgeEnforceKAnonymity");
+  disable_field_trial("FledgeSendDebugReportCooldownsToBandA");
+
+  // TODO(447306422) Enable testing for this field trial feature.
+  // Reproducer:InputRouterImplTest.AsyncTouchMoveAckedImmediately
+  disable_field_trial("SendEmptyGestureScrollUpdate");
+
+  // TODO(447305317) Enable testing for this field trial feature.
+  // Reproducer:NavigationPolicyContainerBuilderTest.MHTMLSandboxFlags
+  disable_field_trial("MHTML_Improvements");
+
+  // TODO(447306955) Enable testing for this field trial feature.
+  // Reproducer:SellerWorkletTest.ReportResultTextConversions
+  disable_field_trial("FledgeTextConversionHelpers");
+
+  // TODO(447306906) Enable testing for this field trial feature.
+  // Reproducer:BidderWorkletTest.GenerateBidInterestGroupCreativeScanningMetadata
+  disable_field_trial("FledgeTrustedSignalsKVv1CreativeScanning");
+
+  // TODO(447306273) Enable testing for this field trial feature.
+  // Reproducer:FileSystemAccessFileHandleImplRequestPermissionTest.RequestWrite_Denied
+  disable_field_trial("TrackEmptyRendererProcessesForReuse");
+
+  // TODO(447305320) Enable testing for this field trial feature.
+  // Reproducer:NavigatorTest.NoContent
+  disable_field_trial("DeferSpeculativeRFHCreation");
+
+  // TODO(447306274) Enable testing for this field trial feature.
+  // Reproducer:WebContentsImplTestWithSiteIsolation.StartStopEventsBalance
+  disable_field_trial("AvoidUnnecessaryBeforeUnloadCheckSync");
+
+  // TODO(447307242) Enable testing for this field trial feature.
+  // Reproducer:PrerendererTest.RemoveRendererHostAfterCandidateRemoved
+  disable_field_trial("LCPTimingPredictorPrerender2");
+
+  // TODO(447306957) Enable testing for this field trial feature.
+  // Reproducer:ServiceWorkerRaceNetworkRequestURLLoaderClientTest.NetworkError_AfterInitialResponse
+  disable_field_trial(
+      "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement");
+
+  // TODO(447307245) Enable testing for this field trial feature.
+  // Reproducer:ParametrizedTests/PrefetchServiceTest.PrefetchQueueNotStuckWhenResettingRunningPrefetch/2
+  disable_field_trial("Prerender2FallbackPrefetchSpecRules");
+
+  // TODO(447306958) Enable testing for this field trial feature.
+  // Reproducer:MediaSessionEnabledTestInstances/MediaSessionControllersManagerTest.PictureInPictureAvailability/1
+  disable_field_trial("BrowserInitiatedAutomaticPictureInPicture");
+
+  revert_field_trial_features_.InitFromCommandLine(
+      /*enable_features=*/{},
+      /*disable_features=*/base::JoinString(disabled_field_trial, ","));
 }
 
 ContentTestSuite::~ContentTestSuite() = default;
