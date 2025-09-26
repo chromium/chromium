@@ -2610,10 +2610,29 @@ const char kLensSearchAimM3Name[] = "Enables AIM in Lens side panel.";
 const char kLensSearchAimM3Description[] =
     "Enables AIM follow ups with the Lens overlay results side panel.";
 
+const char kLensSearchReinvocationAffordanceName[] =
+    "Lens search reinvocation affordance";
+const char kLensSearchReinvocationAffordanceDescription[] =
+    "Enables the Lens button in the AIM Searchbox for reinvocation of "
+    "selection overlay.";
+
 const char kLensSearchSidePanelNewFeedbackName[] =
     "Lens side panel new feedback";
 const char kLensSearchSidePanelNewFeedbackDescription[] =
     "Enables a new feedback entry point in the Lens side panel.";
+
+const char kLensSearchZeroStateCsbName[] = "Lens search zero state CSB";
+const char kLensSearchZeroStateCsbDescription[] =
+    "Enables a zero state CSB query in Lens.";
+
+const char kLensVideoCitationsName[] = "Lens video citations";
+const char kLensVideoCitationsDescription[] =
+    "Enables special handling for video citations in Lens.";
+
+const char kLensUpdatedFeedbackEntrypointName[] =
+    "Lens updated feedback entrypoint";
+const char kLensUpdatedFeedbackEntrypointDescription[] =
+    "Enables an updated feedback entry point in the Lens side panel.";
 
 const char kLinkedServicesSettingName[] = "Linked Services Setting";
 const char kLinkedServicesSettingDescription[] =

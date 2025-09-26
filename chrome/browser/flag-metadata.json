@@ -6552,9 +6552,19 @@
     "expiry_milestone": 145
   },
   {
+    "name": "lens-reinvocation-affordance",
+    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 152
+  },
+  {
     "name": "lens-search-headers-check-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 150
+  },
+    {
+    "name": "lens-search-zero-state-csb",
+    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 152
   },
   {
     "name": "lens-single-tap-text-selection-disabled",
@@ -6595,6 +6605,16 @@
     "name": "lens-unary-http-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com", "lihailong@google.com"],
     "expiry_milestone": 145
+  },
+  {
+    "name": "lens-updated-feedback-entrypoint",
+    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 152
+  },
+  {
+    "name": "lens-video-citations",
+    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 152
   },
   {
     "name": "lens-web-page-load-optimization-enabled",

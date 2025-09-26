@@ -13272,6 +13272,28 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCryptographyComplianceCnsaDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kCryptographyComplianceCnsa)},
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"lens-reinvocation-affordance",
+     flag_descriptions::kLensSearchReinvocationAffordanceName,
+     flag_descriptions::kLensSearchReinvocationAffordanceDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensSearchReinvocationAffordance)},
+
+    {"lens-search-zero-state-csb",
+     flag_descriptions::kLensSearchZeroStateCsbName,
+     flag_descriptions::kLensSearchZeroStateCsbDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensSearchZeroStateCsb)},
+
+    {"lens-updated-feedback-entrypoint",
+     flag_descriptions::kLensUpdatedFeedbackEntrypointName,
+     flag_descriptions::kLensUpdatedFeedbackEntrypointDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensUpdatedFeedbackEntrypoint)},
+
+    {"lens-video-citations", flag_descriptions::kLensVideoCitationsName,
+     flag_descriptions::kLensVideoCitationsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensVideoCitations)},
+#endif
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

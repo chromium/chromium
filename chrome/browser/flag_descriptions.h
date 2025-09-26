@@ -1530,8 +1530,20 @@ extern const char kLensOverlayUpdatedVisualsDescription[];
 extern const char kLensSearchAimM3Name[];
 extern const char kLensSearchAimM3Description[];
 
+extern const char kLensSearchReinvocationAffordanceName[];
+extern const char kLensSearchReinvocationAffordanceDescription[];
+
 extern const char kLensSearchSidePanelNewFeedbackName[];
 extern const char kLensSearchSidePanelNewFeedbackDescription[];
+
+extern const char kLensSearchZeroStateCsbName[];
+extern const char kLensSearchZeroStateCsbDescription[];
+
+extern const char kLensUpdatedFeedbackEntrypointName[];
+extern const char kLensUpdatedFeedbackEntrypointDescription[];
+
+extern const char kLensVideoCitationsName[];
+extern const char kLensVideoCitationsDescription[];
 
 extern const char kLinkedServicesSettingName[];
 extern const char kLinkedServicesSettingDescription[];

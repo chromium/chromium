@@ -8716,6 +8716,7 @@ from previous Chrome versions.
       label="LensSearchSidePanelDefaultWidthChange:enabled"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
+  <int value="-1952485783" label="LensSearchZeroStateCsb:enabled"/>
   <int value="-1952346069"
       label="WebSigninLeadsToImplicitlySignedInState:enabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
@@ -8748,6 +8749,7 @@ from previous Chrome versions.
   <int value="-1940291343" label="SpeculativeResourcePrefetching:enabled"/>
   <int value="-1940251540"
       label="AutofillEnableEmailOtpForVcnYellowPath:enabled"/>
+  <int value="-1939644261" label="LensUpdatedFeedbackEntrypoint:disabled"/>
   <int value="-1939554947" label="DisableSlowMSAAInGraphite:enabled"/>
   <int value="-1939525844" label="AssistantTimersV2:enabled"/>
   <int value="-1939016096"
@@ -11854,6 +11856,7 @@ from previous Chrome versions.
   <int value="-829545582" label="PrivacySandboxAdsApiUxEnhancements:enabled"/>
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
   <int value="-826848767" label="DataSharing:enabled"/>
+  <int value="-826409136" label="LensUpdatedFeedbackEntrypoint:enabled"/>
   <int value="-826067311" label="MerchantTrust:disabled"/>
   <int value="-826010284" label="EnterpriseReportingUI:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
@@ -14903,6 +14906,7 @@ from previous Chrome versions.
   <int value="278028552"
       label="SyncShowIdentityErrorsForSignedInUsers:enabled"/>
   <int value="278756320" label="disable-app-list-app-info"/>
+  <int value="278857760" label="LensVideoCitations:disabled"/>
   <int value="279103655" label="MacAccessibilityAPIMigration:disabled"/>
   <int value="279525129" label="SystemEmojiPickerJellySupport:disabled"/>
   <int value="280459238" label="ChromeSharingHubLaunchAdjacent:disabled"/>
@@ -14937,6 +14941,7 @@ from previous Chrome versions.
   <int value="288012253" label="CrostiniFiles:enabled"/>
   <int value="288354568"
       label="InterestFeedV2ClickAndViewActionsConditionalUpload:disabled"/>
+  <int value="288540847" label="LensSearchZeroStateCsb:disabled"/>
   <int value="288755982"
       label="AutofillEnableLocalCardMigrationForNonSyncUser:enabled"/>
   <int value="288826415" label="SecurePaymentConfirmationUxRefresh:enabled"/>
@@ -15845,6 +15850,7 @@ from previous Chrome versions.
       label="GlanceablesTimeManagementClassroomStudentView:disabled"/>
   <int value="620189062" label="TabFreeze:enabled"/>
   <int value="620989380" label="ImeInputLogicFst:enabled"/>
+  <int value="621308804" label="LensSearchReinvocationAffordance:disabled"/>
   <int value="621484660" label="ReorderBookmarks:disabled"/>
   <int value="621827872" label="GlicPanelResetOnSessionTimeout:disabled"/>
   <int value="622027416" label="HoldingSpaceSuggestions:disabled"/>
@@ -16458,6 +16464,7 @@ from previous Chrome versions.
   <int value="820650704" label="disable-ntp-popular-sites"/>
   <int value="821192723" label="show-fps-counter"/>
   <int value="821819319" label="NavBarColorAnimation:enabled"/>
+  <int value="821831159" label="LensSearchReinvocationAffordance:enabled"/>
   <int value="822352138" label="GameDashboard:enabled"/>
   <int value="823002266" label="NewTabAddsToActiveGroup:enabled"/>
   <int value="823505300" label="LensOnQuickActionSearchWidget:disabled"/>
@@ -18218,6 +18225,7 @@ from previous Chrome versions.
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1451160278"
       label="AutofillRequireValidLocalCardsInSettings:disabled"/>
+  <int value="1451960103" label="LensVideoCitations:enabled"/>
   <int value="1452411293" label="ShowFeaturedEnterpriseSiteSearch:enabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>
   <int value="1452913955" label="GlicActor:enabled"/>
