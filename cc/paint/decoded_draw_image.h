@@ -15,6 +15,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSize.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace cc {
 
@@ -35,6 +36,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
                    bool is_budgeted);
   DecodedDrawImage(sk_sp<SkImage> image,
                    sk_sp<SkImage> gainmap_image,
+                   const std::optional<gfx::HDRMetadata>& hdr_metadata,
                    sk_sp<ColorFilter> dark_mode_color_filter,
                    const SkSize& src_rect_offset,
                    const SkSize& scale_adjustment,
@@ -59,6 +61,9 @@ class CC_PAINT_EXPORT DecodedDrawImage {
 
   const sk_sp<SkImage>& image() const { return image_; }
   const sk_sp<SkImage>& gainmap_image() const { return gainmap_image_; }
+  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
+    return hdr_metadata_;
+  }
   const sk_sp<ColorFilter>& dark_mode_color_filter() const {
     return dark_mode_color_filter_;
   }
@@ -87,6 +92,7 @@ class CC_PAINT_EXPORT DecodedDrawImage {
  private:
   sk_sp<SkImage> image_;
   sk_sp<SkImage> gainmap_image_;
+  std::optional<gfx::HDRMetadata> hdr_metadata_;
   gpu::Mailbox mailbox_;
   std::optional<uint32_t> transfer_cache_entry_id_;
   sk_sp<ColorFilter> dark_mode_color_filter_;

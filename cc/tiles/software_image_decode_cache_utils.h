@@ -130,6 +130,7 @@ class SoftwareImageDecodeCacheUtils {
     CacheEntry();
     CacheEntry(sk_sp<SkImage> image,
                sk_sp<SkImage> gainmap_image,
+               const std::optional<gfx::HDRMetadata>& hdr_metadata,
                std::unique_ptr<base::DiscardableMemory> memory,
                const SkSize& src_rect_offset);
     ~CacheEntry();
@@ -148,6 +149,10 @@ class SoftwareImageDecodeCacheUtils {
       }
       DCHECK(is_locked);
       return gainmap_image_;
+    }
+    const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
+      DCHECK(is_locked);
+      return hdr_metadata_;
     }
     const SkSize& src_rect_offset() const { return src_rect_offset_; }
 
@@ -180,6 +185,7 @@ class SoftwareImageDecodeCacheUtils {
    private:
     sk_sp<SkImage> image_;
     sk_sp<SkImage> gainmap_image_;
+    std::optional<gfx::HDRMetadata> hdr_metadata_;
     SkSize src_rect_offset_;
     uint64_t tracing_id_;
     // Indicates whether this entry was ever in the cache.
