@@ -58,6 +58,7 @@ ActorUiTabController::ActorUiTabController(
   CHECK(actor_keyed_service_);
   handoff_button_controller_ =
       controller_factory_->CreateHandoffButtonController(tab);
+  RegisterTabSubscriptions();
 }
 
 ActorUiTabController::~ActorUiTabController() = default;
