@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_sync_handler.h"
 #include "chrome/common/webui_url_constants.h"

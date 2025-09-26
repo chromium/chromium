@@ -11,6 +11,7 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/commerce/price_insights_handler.h"
+#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"

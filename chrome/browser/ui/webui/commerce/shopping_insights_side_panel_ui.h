@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "components/commerce/core/commerce_constants.h"
@@ -27,6 +26,7 @@ class ColorChangeHandler;
 
 namespace commerce {
 class PriceInsightsHandler;
+class PriceTrackingHandler;
 class ShoppingServiceHandler;
 }  // namespace commerce
 

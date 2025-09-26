@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"

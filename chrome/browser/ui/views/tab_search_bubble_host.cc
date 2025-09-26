@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"

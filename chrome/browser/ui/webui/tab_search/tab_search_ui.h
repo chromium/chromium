@@ -9,7 +9,6 @@
 
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -25,6 +24,7 @@ namespace ui {
 class ColorChangeHandler;
 }
 
+class TabSearchPageHandler;
 class TabSearchUI;
 
 class TabSearchUIConfig : public DefaultTopChromeWebUIConfig<TabSearchUI> {
