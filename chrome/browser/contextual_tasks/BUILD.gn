@@ -30,10 +30,11 @@ source_set("public") {
     "contextual_tasks_context_controller.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
+    "//components/sessions:session_id",
   ]
 }
 
@@ -49,6 +50,7 @@ source_set("internal") {
     ":public",
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
+    "//components/sessions:session_id",
   ]
 }
 

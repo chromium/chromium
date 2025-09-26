@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/sessions/core/session_id.h"
 
 namespace contextual_tasks {
 
@@ -26,9 +27,23 @@ void ContextualTasksContextControllerImpl::GetTasks(
 }
 
 void ContextualTasksContextControllerImpl::GetTask(
-    base::Uuid task_id,
+    const base::Uuid& task_id,
     base::OnceCallback<void(std::optional<ContextualTask>)> callback) {
   service_->GetTaskById(task_id, std::move(callback));
+}
+
+void ContextualTasksContextControllerImpl::AssociateTabWithTask(
+    SessionID tab_session_id,
+    const base::Uuid& task_id) {
+  service_->AttachSessionIdToTask(task_id, tab_session_id);
+}
+
+void ContextualTasksContextControllerImpl::GetSelectedTaskForTab(
+    SessionID tab_session_id,
+    base::OnceCallback<void(std::optional<ContextualTask>)>
+        selected_task_callback) {
+  std::move(selected_task_callback)
+      .Run(service_->GetMostRecentContextualTaskForSessionID(tab_session_id));
 }
 
 }  // namespace contextual_tasks

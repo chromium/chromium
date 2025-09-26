@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
+#include "components/sessions/core/session_id.h"
 
 namespace contextual_tasks {
 class ContextualTasksService;
@@ -21,9 +22,15 @@ class ContextualTasksContextControllerImpl
   // ContextualTasksController implementation.
   void GetTasks(
       base::OnceCallback<void(std::vector<ContextualTask>)> callback) override;
-  void GetTask(base::Uuid task_id,
+  void GetTask(const base::Uuid& task_id,
                base::OnceCallback<void(std::optional<ContextualTask>)> callback)
       override;
+  void AssociateTabWithTask(SessionID tab_session_id,
+                            const base::Uuid& task_id) override;
+  void GetSelectedTaskForTab(
+      SessionID tab_session_id,
+      base::OnceCallback<void(std::optional<ContextualTask>)>
+          selected_task_callback) override;
 
  private:
   raw_ptr<ContextualTasksService> service_;

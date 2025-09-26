@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sessions/core/session_id.h"
 
 namespace contextual_tasks {
 
@@ -26,8 +27,21 @@ class ContextualTasksContextController : public KeyedService {
 
   // Retrieve a specific `ContextualTask` with the given `task_id`.
   virtual void GetTask(
-      base::Uuid task_id,
+      const base::Uuid& task_id,
       base::OnceCallback<void(std::optional<ContextualTask>)> callback) = 0;
+
+  // Associates a tab, identified by its `SessionID`, with a `ContextualTask`.
+  // This is used to mark a task as "selected" for a given tab.
+  virtual void AssociateTabWithTask(SessionID tab_session_id,
+                                    const base::Uuid& task_id) = 0;
+
+  // Gets the currently selected contextual task for a given tab.
+  // The `selected_task_callback` will receive the task if one is selected,
+  // or `std::nullopt` otherwise.
+  virtual void GetSelectedTaskForTab(
+      SessionID tab_session_id,
+      base::OnceCallback<void(std::optional<ContextualTask>)>
+          selected_task_callback) = 0;
 
  protected:
   ContextualTasksContextController();

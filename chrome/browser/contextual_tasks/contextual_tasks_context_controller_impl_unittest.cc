@@ -76,10 +76,6 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
   void TearDown() override { controller_.reset(); }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-  MockContextualTasksService mock_service_;
-  std::unique_ptr<ContextualTasksContextControllerImpl> controller_;
-
   std::vector<ContextualTask> GetTasks() {
     std::vector<ContextualTask> tasks;
     base::RunLoop run_loop;
@@ -109,6 +105,29 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
     run_loop.Run();
     return task;
   }
+
+  std::optional<ContextualTask> GetSelectedTaskForTab(
+      SessionID tab_session_id) {
+    std::optional<ContextualTask> task;
+    base::RunLoop run_loop;
+    controller_->GetSelectedTaskForTab(
+        tab_session_id, base::BindOnce(
+                            [](std::optional<ContextualTask>* out_task,
+                               base::OnceClosure quit_closure,
+                               std::optional<ContextualTask> result) {
+                              *out_task = std::move(result);
+                              std::move(quit_closure).Run();
+                            },
+                            &task, run_loop.QuitClosure()));
+    run_loop.Run();
+    return task;
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  // Mock service to control the behavior of ContextualTasksService.
+  MockContextualTasksService mock_service_;
+  // The controller under test.
+  std::unique_ptr<ContextualTasksContextControllerImpl> controller_;
 };
 
 TEST_F(ContextualTasksContextControllerImplTest, GetTasks) {
@@ -155,6 +174,41 @@ TEST_F(ContextualTasksContextControllerImplTest, GetTask_NotFound) {
                         callback) { std::move(callback).Run(std::nullopt); });
 
   std::optional<ContextualTask> task = GetTaskById(task_id);
+  EXPECT_FALSE(task.has_value());
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, AssociateTabWithTask) {
+  SessionID tab_session_id = SessionID::NewUnique();
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(mock_service_, AttachSessionIdToTask(task_id, tab_session_id))
+      .Times(1);
+
+  controller_->AssociateTabWithTask(tab_session_id, task_id);
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, GetSelectedTaskForTab) {
+  SessionID tab_session_id = SessionID::NewUnique();
+  ContextualTask expected_task(base::Uuid::GenerateRandomV4());
+
+  EXPECT_CALL(mock_service_,
+              GetMostRecentContextualTaskForSessionID(tab_session_id))
+      .WillOnce(Return(std::make_optional(expected_task)));
+
+  std::optional<ContextualTask> task = GetSelectedTaskForTab(tab_session_id);
+  ASSERT_TRUE(task.has_value());
+  EXPECT_EQ(task->GetTaskId(), expected_task.GetTaskId());
+}
+
+TEST_F(ContextualTasksContextControllerImplTest,
+       GetSelectedTaskForTab_NotFound) {
+  SessionID tab_session_id = SessionID::NewUnique();
+
+  EXPECT_CALL(mock_service_,
+              GetMostRecentContextualTaskForSessionID(tab_session_id))
+      .WillOnce(Return(std::nullopt));
+
+  std::optional<ContextualTask> task = GetSelectedTaskForTab(tab_session_id);
   EXPECT_FALSE(task.has_value());
 }
 
