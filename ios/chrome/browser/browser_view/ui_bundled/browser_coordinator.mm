@@ -341,6 +341,7 @@
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -4413,10 +4414,10 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - PasswordControllerDelegate methods
 
 - (BOOL)displaySignInNotification:(UIViewController*)viewController
-                        fromTabId:(NSString*)tabId {
-  NSString* visibleTabId = self.activeWebState->GetStableIdentifier();
+                        fromTabId:(web::WebStateID)tabId {
   // Ignore unless the call comes from currently visible tab.
-  if (![tabId isEqualToString:visibleTabId]) {
+  web::WebStateID visibleTabId = self.activeWebState->GetUniqueIdentifier();
+  if (tabId != visibleTabId) {
     return NO;
   }
   [self.viewController addChildViewController:viewController];
