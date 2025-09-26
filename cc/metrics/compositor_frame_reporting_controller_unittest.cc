@@ -1010,6 +1010,44 @@ TEST_F(CompositorFrameReportingControllerTest, BlinkBreakdown) {
       1);
 }
 
+TEST_F(CompositorFrameReportingControllerTest, VizBreakdown) {
+  base::HistogramTester histogram_tester;
+
+  SimulateSubmitCompositorFrame({});
+  viz::FrameTimingDetails viz_details = BuildVizBreakdown();
+  reporting_controller_.DidPresentCompositorFrame(*current_token_, viz_details);
+
+  // Check that the viz timestamps were set corresponding to the values
+  // in BuildVizBreakdown.
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.EndActivateToSubmitCompositorFrame", 10, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame."
+      "SubmitToReceiveCompositorFrame",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame."
+      "ReceivedCompositorFrameToStartDraw",
+      2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame."
+      "StartDrawToSwapStart",
+      3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame."
+      "SwapStartToSwapEnd",
+      4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame."
+      "SwapEndToPresentationCompositorFrame",
+      5, 1);
+
+  // Expect the total latency to be equal to the sum of the stages.
+  histogram_tester.ExpectUniqueSample(
+      "CompositorLatency2.SubmitCompositorFrameToPresentationCompositorFrame",
+      1 + 2 + 3 + 4 + 5, 1);
+}
+
 class TreesInVizClientCompositorFrameReportingControllerTest
     : public CompositorFrameReportingControllerTest {
  public:
