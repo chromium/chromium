@@ -70,7 +70,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 /** Helper methods that can be used across multiple Autofill UIs. */
 @NullMarked
@@ -748,15 +747,15 @@ public class AutofillUiUtils {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 
-        Optional<Bitmap> customIconBitmap =
+        Bitmap customIconBitmap =
                 imageFetcher.getImageIfAvailable(
                         cardArtUrl,
                         IconSpecs.create(context, ImageType.CREDIT_CARD_ART_IMAGE, cardIconSize));
-        if (!customIconBitmap.isPresent()) {
+        if (customIconBitmap == null) {
             return defaultIcon;
         }
 
-        return new BitmapDrawable(context.getResources(), customIconBitmap.get());
+        return new BitmapDrawable(context.getResources(), customIconBitmap);
     }
 
     /**
@@ -778,9 +777,9 @@ public class AutofillUiUtils {
             @ImageSize int imageSize,
             String merchantName) {
         IconSpecs specs = IconSpecs.create(context, ImageType.VALUABLE_IMAGE, imageSize);
-        Optional<Bitmap> customIconBitmap = imageFetcher.getImageIfAvailable(imageUrl, specs);
+        Bitmap customIconBitmap = imageFetcher.getImageIfAvailable(imageUrl, specs);
 
-        if (!customIconBitmap.isPresent()) {
+        if (customIconBitmap == null) {
             RoundedIconGenerator generator =
                     new RoundedIconGenerator(
                             specs.getWidth(),
@@ -792,7 +791,7 @@ public class AutofillUiUtils {
             Bitmap icon = generator.generateIconForText(merchantName);
             return new BitmapDrawable(context.getResources(), icon);
         }
-        return new BitmapDrawable(context.getResources(), customIconBitmap.get());
+        return new BitmapDrawable(context.getResources(), customIconBitmap);
     }
 
     /**

@@ -64,7 +64,6 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -220,8 +219,7 @@ public class CreditCardAccessorySheetViewTest {
         when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any()))
-                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(TEST_CARD_ART_IMAGE);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -268,7 +266,7 @@ public class CreditCardAccessorySheetViewTest {
         when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return null to AutofillImageFetcher.getImageIfAvailable to indicate that the image is not
         // present in the cache.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -494,7 +492,7 @@ public class CreditCardAccessorySheetViewTest {
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
         when(mMockImageFetcher.getImageIfAvailable(eq(kProgramLogo), any()))
-                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
+                .thenReturn(TEST_CARD_ART_IMAGE);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -551,7 +549,7 @@ public class CreditCardAccessorySheetViewTest {
 
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

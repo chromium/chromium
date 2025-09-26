@@ -24,8 +24,6 @@ import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-import java.util.Optional;
-
 /** Dialog shown to the user for credit card unmasking using OTP-based verification. */
 @NullMarked
 public class OtpVerificationDialogView extends RelativeLayout {
@@ -107,17 +105,16 @@ public class OtpVerificationDialogView extends RelativeLayout {
      * unsuccessful server response after the user submits an OTP, and the errorMessage lets the
      * user know why the OTP was unsuccessful.
      *
-     * @param errorMessage The error message that gets displayed to the user. Can be empty,
-     * indicating there should be no error message shown on the dialog (so we hide it).
+     * @param errorMessage The error message that gets displayed to the user.
      */
-    void showOtpErrorMessage(Optional<String> errorMessage) {
+    void showOtpErrorMessage(String errorMessage) {
         mOtpErrorMessageTextView.setVisibility(View.VISIBLE);
-        mOtpErrorMessageTextView.setText(errorMessage.get());
+        mOtpErrorMessageTextView.setText(errorMessage);
     }
 
     /**
-     *  Hides the OTP error message. This method is called when the user changes the text in the
-     *  edit text field while an OTP error message is showing.
+     * Hides the OTP error message. This method is called when the user changes the text in the edit
+     * text field while an OTP error message is showing.
      */
     void hideOtpErrorMessage() {
         mOtpErrorMessageTextView.setVisibility(View.GONE);

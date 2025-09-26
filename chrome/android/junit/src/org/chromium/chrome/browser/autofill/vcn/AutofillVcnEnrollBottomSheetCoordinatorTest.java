@@ -50,8 +50,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
-
 /** Unit test for {@link AutofillVcnEnrollBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
@@ -111,9 +109,9 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
                                 mWindow.getContext().get(),
                                 ImageType.CREDIT_CARD_ART_IMAGE,
                                 ImageSize.SMALL)))
-                .thenReturn(Optional.of(bitmap));
+                .thenReturn(bitmap);
         when(mImageFetcher.getImageIfAvailable(/* url= */ any(), /* iconSpecs= */ any()))
-                .thenReturn(Optional.empty());
+                .thenReturn(null);
     }
 
     @After

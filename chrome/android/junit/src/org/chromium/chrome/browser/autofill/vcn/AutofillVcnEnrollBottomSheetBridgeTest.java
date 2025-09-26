@@ -64,7 +64,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.Optional;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -107,12 +106,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                                 ImageType.CREDIT_CARD_ART_IMAGE,
                                 ImageSize.SMALL)))
                 .thenReturn(
-                        Optional.of(
-                                Bitmap.createBitmap(
-                                        /* colors= */ new int[4],
-                                        /* width= */ 2,
-                                        /* height= */ 2,
-                                        Config.ARGB_8888)));
+                        Bitmap.createBitmap(
+                                /* colors= */ new int[4],
+                                /* width= */ 2,
+                                /* height= */ 2,
+                                Config.ARGB_8888));
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mBridge = new AutofillVcnEnrollBottomSheetBridge();
 

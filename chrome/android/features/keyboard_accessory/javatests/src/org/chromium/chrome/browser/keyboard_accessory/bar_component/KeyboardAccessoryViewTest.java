@@ -112,7 +112,6 @@ import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
@@ -837,8 +836,7 @@ public class KeyboardAccessoryViewTest {
         when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
         // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any()))
-                .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(TEST_CARD_ART_IMAGE);
         // Create an autofill suggestion and set the `customIconUrl`.
         AutofillBarItem customIconItem =
                 new AutofillBarItem(
@@ -873,9 +871,9 @@ public class KeyboardAccessoryViewTest {
         GURL customIconUrl = mock(GURL.class);
         when(customIconUrl.isValid()).thenReturn(true);
         when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
-        // Return null to AutofillImageFetcher.getImageIfAvailable to indicate that the image is not
-        // present in the cache.
-        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
+        // Return the response of PersonalDataManager.getImageIfAvailable
+        // to null to indicate that the image is not present in the cache.
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(null);
         AutofillBarItem customIconItem =
                 new AutofillBarItem(
                         getDefaultAutofillSuggestionBuilder()

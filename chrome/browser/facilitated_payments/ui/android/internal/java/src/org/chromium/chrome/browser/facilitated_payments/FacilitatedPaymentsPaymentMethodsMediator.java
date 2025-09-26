@@ -91,7 +91,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -341,18 +340,18 @@ class FacilitatedPaymentsPaymentMethodsMediator {
 
         // This will contain the shared ewallet name if all eWallets have the same name;
         // otherwise, it will contain `null`.
-        Optional<String> sharedEwalletName = Optional.of(ewallets.get(0).getEwalletName());
+        String sharedEwalletName = ewallets.get(0).getEwalletName();
         for (Ewallet ewallet : ewallets) {
-            if (!sharedEwalletName.get().equals(ewallet.getEwalletName())) {
-                sharedEwalletName = Optional.empty();
+            if (!sharedEwalletName.equals(ewallet.getEwalletName())) {
+                sharedEwalletName = null;
                 break;
             }
         }
-        if (sharedEwalletName.isPresent()) {
+        if (sharedEwalletName != null) {
             // If all ewallets have same name, return a specific title containing that eWallet name.
             return context.getString(
                     R.string.facilitated_payments_payment_methods_bottom_sheet_detailed_title,
-                    sharedEwalletName.get());
+                    sharedEwalletName);
         }
         // If ewallets have different names, return a generic title.
         return context.getString(
@@ -480,9 +479,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(EWALLET_NAME, ewallet.getEwalletName())
                         .with(ACCOUNT_DISPLAY_NAME, ewallet.getAccountDisplayName())
                         .with(ON_EWALLET_CLICK_ACTION, () -> this.onEwalletSelected(ewallet));
-        Optional<Bitmap> ewalletIconOptional = Optional.empty();
+        Bitmap ewalletIcon = null;
         if (ewallet.getDisplayIconUrl() != null && ewallet.getDisplayIconUrl().isValid()) {
-            ewalletIconOptional =
+            ewalletIcon =
                     AutofillImageFetcherFactory.getForProfile(mProfile)
                             .getImageIfAvailable(
                                     ewallet.getDisplayIconUrl(),
@@ -491,8 +490,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                             ImageType.CREDIT_CARD_ART_IMAGE,
                                             ImageSize.LARGE));
         }
-        if (ewalletIconOptional.isPresent()) {
-            ewalletModelBuilder.with(EWALLET_ICON_BITMAP, ewalletIconOptional.get());
+        if (ewalletIcon != null) {
+            ewalletModelBuilder.with(EWALLET_ICON_BITMAP, ewalletIcon);
         } else {
             ewalletModelBuilder.with(EWALLET_DRAWABLE_ID, R.drawable.ic_account_balance);
         }

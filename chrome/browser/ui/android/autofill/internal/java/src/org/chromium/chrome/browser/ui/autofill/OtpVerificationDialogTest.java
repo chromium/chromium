@@ -41,8 +41,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
-import java.util.Optional;
-
 /** Unit tests for {@link OtpVerificationDialogView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OtpVerificationDialogTest {
@@ -100,7 +98,7 @@ public class OtpVerificationDialogTest {
     @Test
     public void testShowHideErrorMessage() {
         mOtpVerificationDialogCoordinator.show(/* otpLength= */ 6);
-        mOtpVerificationDialogView.showOtpErrorMessage(Optional.of(ERROR_MESSAGE));
+        mOtpVerificationDialogView.showOtpErrorMessage(ERROR_MESSAGE);
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         View view = model.get(ModalDialogProperties.CUSTOM_VIEW);
