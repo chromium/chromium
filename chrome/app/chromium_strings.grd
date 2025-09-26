@@ -1781,6 +1781,10 @@ Chromium is unable to recover your settings.
           desc="The message on the toast prompting the user to share their thoughts by sending feedback.">
           Share your thoughts
         </message>
+        <message name="IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE_ALT"
+          desc="The message on the toast asking the user if the results are useful and to send feedback.">
+          Are these results useful?
+        </message>
         <message name="IDS_LENS_OVERLAY_SEND_FEEDBACK_BUTTON_LABEL"
           desc="The label for the button that on click opens a feedback form for the user to send feedback about the feature.">
           Send feedback
