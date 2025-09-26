@@ -4673,7 +4673,7 @@
   },
   {
     "name": "enable-web-payments-experimental-features",
-    "owners": [ "rouslan@chromium.org", "chrome-payments-eng@google.com" ],
+    "owners": [ "chrome-payments-eng@google.com" ],
     // This flag is used by early adoption partners to test new Web Payments
     // features in each release.
     "expiry_milestone": -1
