@@ -139,4 +139,8 @@ public class LoginPrompt {
         mPasswordView.setText(password);
         mUsernameView.selectAll();
     }
+
+    public AlertDialog getDialogForTesting() {
+        return mDialog;
+    }
 }

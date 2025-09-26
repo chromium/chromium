@@ -58,6 +58,11 @@ BASE_FEATURE(kAndroidAutofillImprovedVisibilityDetection,
 BASE_FEATURE(kAndroidAutofillUpdateContextForWebContents,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the URL of the current page is passed to the HttpAuth dialog for
+// autofill purposes. Functions as a kill switch. Remove in or after M146.
+BASE_FEATURE(kAndroidAutofillSupportForHttpAuth,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 static jlong JNI_AndroidAutofillFeatures_GetFeature(JNIEnv* env, jint ordinal) {
   return reinterpret_cast<jlong>(kFeaturesExposedToJava[ordinal]);
 }

@@ -230,6 +230,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/test/android:chrome_java_test_pagecontroller",
     "//chrome/test/android:chrome_java_transit",
     "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
+    "//components/android_autofill/browser:features_java",
     "//components/android_autofill/browser/test_support:java",
     "//components/autofill/android:autofill_features_java",
     "//components/autofill/android:autofill_java",
@@ -1579,6 +1580,7 @@ android_library("chrome_test_java_various") {
   deps = [
     ":chrome_test_java_helper",
     "//base:holder_java",
+    "//components/browser_ui/http_auth/android:java",
   ]
 }
 

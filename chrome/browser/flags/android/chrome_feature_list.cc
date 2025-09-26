@@ -22,6 +22,7 @@
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
+#include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -96,6 +97,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &credential_management::features::
         kCredentialManagementThirdPartyWebApiRequestForwarding,
+    &autofill::features::kAndroidAutofillSupportForHttpAuth,
     &autofill::features::kAutofillEnableCardBenefitsForAmericanExpress,
     &autofill::features::kAutofillEnableCardBenefitsForBmo,
     &autofill::features::kAutofillEnableFlatRateCardBenefitsFromCurinos,

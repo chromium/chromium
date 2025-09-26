@@ -26,6 +26,7 @@ include_rules = [
   "+components/bookmarks/common/android/java/src/org/chromium/components/bookmarks",
   "+components/browser_ui/accessibility/android",
   "+components/browser_ui/device_lock/android",
+  "+components/browser_ui/http_auth/android",
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/settings/android",
   "+components/browser_ui/sms/android",

@@ -69,6 +69,7 @@ static_library("flags_android_impl") {
     "//chrome/browser/task_manager/common",
     "//chrome/browser/ui:ui_features",
     "//chrome/common:chrome_features",
+    "//components/android_autofill/browser:features",
     "//components/autofill/core/common:features",
     "//components/browser_sync:switches",
     "//components/browser_ui/photo_picker/android",
