@@ -346,12 +346,11 @@ void GlicInstanceCoordinatorImpl::SidePanelShown(
   NOTIMPLEMENTED();
 }
 
-base::CallbackListSubscription
-GlicInstanceCoordinatorImpl::RegisterFloatyStateChange(
-    FloatyStateChangeCallback callback) {
+base::CallbackListSubscription GlicInstanceCoordinatorImpl::RegisterStateChange(
+    StateChangeCallback callback) {
   // Method should only be called on individual panels not the coordinator.
   NOTIMPLEMENTED();
-  return floaty_state_change_callback_list_.Add(std::move(callback));
+  return base::CallbackListSubscription();
 }
 
 void GlicInstanceCoordinatorImpl::AttachInstance(GlicInstance* instance) {

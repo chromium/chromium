@@ -45,20 +45,19 @@ class GlicActorTaskIconManager : public KeyedService {
                            glic::GlicWindowController& window_controller);
   ~GlicActorTaskIconManager() override;
 
-  // Called whenever floaty updates.
-  void OnFloatyUpdate(glic::GlicWindowController::State floaty_state,
-                      glic::mojom::CurrentView current_view);
+  // Called whenever the instance visibility updates.
+  void OnInstanceStateChange(bool is_showing,
+                             glic::mojom::CurrentView current_view);
 
   // Called whenever actor task state updates.
   void OnActorTaskStateUpdate(actor::TaskId task_id);
 
   // Determines the state the task icon should be in.
-  void UpdateTaskIcon(glic::GlicWindowController::State floaty_state,
-                      glic::mojom::CurrentView current_view);
+  void UpdateTaskIcon(bool is_showing, glic::mojom::CurrentView current_view);
 
   // Register for this callback to get task icon state change notifications.
   using TaskIconStateChangeCallback = base::RepeatingCallback<void(
-      glic::GlicWindowController::State floaty_state,
+      bool is_showing,
       glic::mojom::CurrentView current_view,
       const ActorTaskIconState& actor_task_icon_state)>;
   base::CallbackListSubscription RegisterTaskIconStateChange(
@@ -78,7 +77,7 @@ class GlicActorTaskIconManager : public KeyedService {
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 
   using TaskIconStateChangeCallbackList = base::RepeatingCallbackList<void(
-      glic::GlicWindowController::State floaty_state,
+      bool is_showing,
       glic::mojom::CurrentView current_view,
       const ActorTaskIconState& actor_task_icon_state)>;
   TaskIconStateChangeCallbackList task_icon_state_change_callback_list_;

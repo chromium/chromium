@@ -57,22 +57,22 @@ void GlicActorTaskIconController::UpdateCurrentTaskIconUiState() {
           GlicActorTaskIconManagerFactory::GetForProfile(profile_)) {
     auto* glic_service = GlicKeyedService::Get(profile_);
 
-    CurrentView current_view = CurrentView::kConversation;
     // TODO(crbug.com/446734119): Instead ActorTask should hold a glic
     // InstanceId and use that to retrieve the instance.
-    if (GlicInstance* instance =
-            glic_service->GetInstanceForActiveTab(browser_)) {
-      current_view = instance->host().GetPrimaryCurrentView();
+    GlicInstance* instance = glic_service->GetInstanceForActiveTab(browser_);
+    if (!instance) {
+      return;
     }
 
-    OnStateUpdate(glic_service->window_controller().state(), current_view,
+    OnStateUpdate(instance->IsShowing(),
+                  instance->host().GetPrimaryCurrentView(),
                   manager->GetCurrentActorTaskIconState());
   }
 }
 
 void GlicActorTaskIconController::OnStateUpdate(
-    GlicWindowController::State floaty_state,
-    CurrentView floaty_view,
+    bool is_showing,
+    CurrentView current_view,
     const ActorTaskIconState& actor_task_icon_state) {
   // If the task icon is inactive, hide it and perform no additional style
   // changes.
@@ -97,28 +97,21 @@ void GlicActorTaskIconController::OnStateUpdate(
   }
 
   // Determines highlight + tooltip styling.
-  switch (floaty_state) {
-    case GlicWindowController::State::kOpen:
-      if (floaty_view == CurrentView::kConversation) {
-        tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
-        tab_strip_action_container_->HighlightGlicButton();
-      } else if (floaty_view == CurrentView::kActuation) {
-        tab_strip_action_container_->UnhighlightGlicButton();
-        tab_strip_action_container_->HighlightGlicActorTaskIcon();
-      }
-      tab_strip_action_container_->glic_actor_task_icon()
-          ->SetFloatyOpenTooltipText();
-      break;
-    case glic::GlicWindowController::State::kClosed:
+  if (is_showing) {
+    if (current_view == CurrentView::kConversation) {
       tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
+      tab_strip_action_container_->HighlightGlicButton();
+    } else if (current_view == CurrentView::kActuation) {
       tab_strip_action_container_->UnhighlightGlicButton();
-      tab_strip_action_container_->glic_actor_task_icon()
-          ->SetFloatyClosedTooltipText();
-      break;
-    case glic::GlicWindowController::State::kWaitingForGlicToLoad:
-    case glic::GlicWindowController::State::kWaitingForSidePanelToShow:
-    case glic::GlicWindowController::State::kDetaching:
-      break;
+      tab_strip_action_container_->HighlightGlicActorTaskIcon();
+    }
+    tab_strip_action_container_->glic_actor_task_icon()
+        ->SetFloatyOpenTooltipText();
+  } else {
+    tab_strip_action_container_->UnhighlightGlicActorTaskIcon();
+    tab_strip_action_container_->UnhighlightGlicButton();
+    tab_strip_action_container_->glic_actor_task_icon()
+        ->SetFloatyClosedTooltipText();
   }
 }
 

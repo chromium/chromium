@@ -89,8 +89,8 @@ class MockGlicWindowController
               (tabs::TabInterface&),
               (override));
   MOCK_METHOD(base::CallbackListSubscription,
-              RegisterFloatyStateChange,
-              (FloatyStateChangeCallback callback),
+              RegisterStateChange,
+              (StateChangeCallback callback),
               (override));
   MOCK_METHOD(void, SidePanelShown, (BrowserWindowInterface*), (override));
 

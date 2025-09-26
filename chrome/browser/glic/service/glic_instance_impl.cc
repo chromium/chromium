@@ -35,6 +35,11 @@
 
 namespace glic {
 
+void GlicInstanceImpl::NotifyStateChange() {
+  state_change_callback_list_.Notify(IsShowing(),
+                                     host().GetPrimaryCurrentView());
+}
+
 GlicInstanceImpl::EmbedderEntry::EmbedderEntry() = default;
 GlicInstanceImpl::EmbedderEntry::~EmbedderEntry() = default;
 GlicInstanceImpl::EmbedderEntry::EmbedderEntry(EmbedderEntry&&) = default;
@@ -94,6 +99,7 @@ void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
 
   MaybeShowHostUi(embedder_to_show);
   embedder_to_show->Show();
+  NotifyStateChange();
 }
 
 void GlicInstanceImpl::Close(EmbedderType type, tabs::TabInterface* tab) {
@@ -252,6 +258,11 @@ const InstanceId& GlicInstanceImpl::id() const {
   return id_;
 }
 
+base::CallbackListSubscription GlicInstanceImpl::RegisterStateChange(
+    StateChangeCallback callback) {
+  return state_change_callback_list_.Add(std::move(callback));
+}
+
 void GlicInstanceImpl::FetchZeroStateSuggestions(
     bool is_first_run,
     std::optional<std::vector<std::string>> supported_tools,
@@ -358,6 +369,7 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   host_.SetDelegate(&empty_embedder_delegate_);
   it->second.embedder = old_embedder->CreateInactiveEmbedder();
   active_embedder_key_.reset();
+  NotifyStateChange();
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(

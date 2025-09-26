@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_INSTANCE_H_
 #define CHROME_BROWSER_GLIC_PUBLIC_GLIC_INSTANCE_H_
 
+#include "base/functional/callback.h"
 #include "base/uuid.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 
 namespace glic {
 
@@ -22,6 +24,12 @@ class UIDelegate {
   virtual ~UIDelegate() = default;
 
   virtual bool IsShowing() const = 0;
+
+  // Register for this callback to detect UI changes to the instance.
+  using StateChangeCallback =
+      base::RepeatingCallback<void(bool, mojom::CurrentView view)>;
+  virtual base::CallbackListSubscription RegisterStateChange(
+      StateChangeCallback callback) = 0;
 };
 
 }  // namespace glic_instance_internal

@@ -98,6 +98,8 @@ class GlicInstanceImpl : public GlicInstance,
   const InstanceId& id() const override;
   std::optional<std::string> conversation_id() const;
   void set_conversation_id(const std::string& conversation_id);
+  base::CallbackListSubscription RegisterStateChange(
+      StateChangeCallback callback) override;
 
   // Host::InstanceDelegate:
   void CreateTab(
@@ -169,6 +171,8 @@ class GlicInstanceImpl : public GlicInstance,
     std::string conversation_title;
   };
 
+  void NotifyStateChange();
+
   EmbedderKey GetEmbedderKey(EmbedderType type, tabs::TabInterface* tab);
   GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
@@ -185,6 +189,10 @@ class GlicInstanceImpl : public GlicInstance,
           callback,
       std::vector<std::string> returned_suggestions);
   void MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key);
+
+  using StateChangeCallbackList =
+      base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
+  StateChangeCallbackList state_change_callback_list_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;

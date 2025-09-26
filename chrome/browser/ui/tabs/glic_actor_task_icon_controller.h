@@ -27,15 +27,15 @@ class GlicActorTaskIconController {
       const GlicActorTaskIconController& other) = delete;
   virtual ~GlicActorTaskIconController();
 
-  void OnStateUpdate(glic::GlicWindowController::State floaty_state,
-                     glic::mojom::CurrentView floaty_view,
+  void OnStateUpdate(bool is_showing,
+                     glic::mojom::CurrentView current_view,
                      const ActorTaskIconState& actor_task_icon_state);
 
  private:
   // Subscribe to updates from the GlicActorTaskIconManager.
   void RegisterTaskIconStateCallback();
 
-  // Get the current task icon and floaty state and update the UI. Called on
+  // Get the current task icon and instance state and update the UI. Called on
   // window creation to maintain state across multiple windows.
   void UpdateCurrentTaskIconUiState();
 

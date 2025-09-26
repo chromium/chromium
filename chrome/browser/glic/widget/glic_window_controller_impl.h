@@ -119,8 +119,6 @@ class GlicWindowControllerImpl
   std::unique_ptr<views::View> CreateViewForSidePanel(
       tabs::TabInterface& tab) override;
   void SidePanelShown(BrowserWindowInterface* browser) override;
-  base::CallbackListSubscription RegisterFloatyStateChange(
-      FloatyStateChangeCallback callback) override;
 
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
@@ -160,6 +158,8 @@ class GlicWindowControllerImpl
   // GlicInstance implementation
   Host& host() override;
   const InstanceId& id() const override;
+  base::CallbackListSubscription RegisterStateChange(
+      StateChangeCallback callback) override;
 
  private:
   // Sets the floating attributes of the glic window.
@@ -302,9 +302,9 @@ class GlicWindowControllerImpl
   // Check if the invocation source matches the entry point for the given view.
   bool InvocationSourceMatchesCurrentView(mojom::InvocationSource source);
 
-  using FloatyStateChangeCallbackList =
-      base::RepeatingCallbackList<void(State, mojom::CurrentView view)>;
-  FloatyStateChangeCallbackList floaty_state_change_callback_list_;
+  using StateChangeCallbackList =
+      base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
+  StateChangeCallbackList state_change_callback_list_;
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

@@ -901,7 +901,7 @@ void GlicWindowControllerImpl::ClientReadyToShow(
 }
 
 void GlicWindowControllerImpl::OnViewChanged(mojom::CurrentView view) {
-  floaty_state_change_callback_list_.Notify(state(), view);
+  state_change_callback_list_.Notify(IsShowing(), view);
 }
 
 void GlicWindowControllerImpl::ContextAccessIndicatorChanged(bool enabled) {
@@ -1582,10 +1582,9 @@ void GlicWindowControllerImpl::MaybeAdjustSizeForDisplay(bool animate) {
   }
 }
 
-base::CallbackListSubscription
-GlicWindowControllerImpl::RegisterFloatyStateChange(
-    FloatyStateChangeCallback callback) {
-  return floaty_state_change_callback_list_.Add(std::move(callback));
+base::CallbackListSubscription GlicWindowControllerImpl::RegisterStateChange(
+    StateChangeCallback callback) {
+  return state_change_callback_list_.Add(std::move(callback));
 }
 
 void GlicWindowControllerImpl::SetWindowState(State new_state) {
@@ -1607,8 +1606,8 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
     }
   }
 
-  floaty_state_change_callback_list_.Notify(state_,
-                                            host().GetPrimaryCurrentView());
+  state_change_callback_list_.Notify(IsShowing(),
+                                     host_.GetPrimaryCurrentView());
 
   if (IsWindowOpenAndReady()) {
     glic_service_->metrics()->OnGlicWindowOpenAndReady();

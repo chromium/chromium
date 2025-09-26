@@ -118,8 +118,8 @@ class GlicInstanceCoordinatorImpl
       tabs::TabInterface& tab) override;
   void SidePanelShown(BrowserWindowInterface* browser) override;
 
-  base::CallbackListSubscription RegisterFloatyStateChange(
-      FloatyStateChangeCallback callback) override;
+  base::CallbackListSubscription RegisterStateChange(
+      StateChangeCallback callback) override;
 
   void FindInstanceFromGlicContentsAndBindToTab(
       content::WebContents* source_glic_web_contents,
@@ -139,9 +139,6 @@ class GlicInstanceCoordinatorImpl
 
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
-  using FloatyStateChangeCallbackList =
-      base::RepeatingCallbackList<void(State, mojom::CurrentView view)>;
-  FloatyStateChangeCallbackList floaty_state_change_callback_list_;
 
   mojom::PanelState panel_state_;
   const raw_ptr<Profile> profile_;
