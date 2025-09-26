@@ -687,20 +687,26 @@ SearchboxHandler::CreateAutocompleteMatches(
 base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
 SearchboxHandler::CreateSuggestionGroupsMap(
     const AutocompleteResult& result,
+    const OmniboxEditModel* edit_model,
     const PrefService* prefs,
     const omnibox::GroupConfigMap& suggestion_groups_map) {
   base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
-    searchbox::mojom::SuggestionGroupPtr suggestion_group =
-        searchbox::mojom::SuggestionGroup::New();
-    suggestion_group->header = base::UTF8ToUTF16(pair.second.header_text());
-    suggestion_group->side_type =
-        static_cast<searchbox::mojom::SideType>(pair.second.side_type());
-    suggestion_group->render_type =
-        static_cast<searchbox::mojom::RenderType>(pair.second.render_type());
+    std::u16string header =
+        edit_model->GetSuggestionGroupHeaderText(pair.first);
 
-    result_map.emplace(static_cast<int>(pair.first),
-                       std::move(suggestion_group));
+    if (!header.empty()) {
+      searchbox::mojom::SuggestionGroupPtr suggestion_group =
+          searchbox::mojom::SuggestionGroup::New();
+      suggestion_group->header = header;
+      suggestion_group->side_type =
+          static_cast<searchbox::mojom::SideType>(pair.second.side_type());
+      suggestion_group->render_type =
+          static_cast<searchbox::mojom::RenderType>(pair.second.render_type());
+
+      result_map.emplace(static_cast<int>(pair.first),
+                         std::move(suggestion_group));
+    }
   }
   return result_map;
 }
@@ -715,7 +721,8 @@ SearchboxHandler::CreateAutocompleteResult(
     const TemplateURLService* turl_service) {
   return searchbox::mojom::AutocompleteResult::New(
       input,
-      CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
+      CreateSuggestionGroupsMap(result, edit_model, prefs,
+                                result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, edit_model, bookmark_model,
                                 result.suggestion_groups_map(), turl_service),
       base::UTF8ToUTF16(result.smart_compose_inline_hint()));

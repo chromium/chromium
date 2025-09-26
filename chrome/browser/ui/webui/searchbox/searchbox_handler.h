@@ -144,6 +144,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
   CreateSuggestionGroupsMap(
       const AutocompleteResult& result,
+      const OmniboxEditModel* edit_model,
       const PrefService* prefs,
       const omnibox::GroupConfigMap& suggestion_groups_map);
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
