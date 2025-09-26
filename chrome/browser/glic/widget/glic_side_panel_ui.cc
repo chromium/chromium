@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 
 namespace glic {
 
@@ -126,6 +128,30 @@ void GlicSidePanelUi::Close() {
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
   return GlicInactiveSidePanelUi::From(*this, tab_);
+}
+
+void GlicSidePanelUi::TakeScreenshot(
+    ui::GrabSnapshotImageCallback callback) const {
+  content::WebContents* web_contents = delegate_->host().webui_contents();
+  if (!web_contents) {
+    std::move(callback).Run(gfx::Image());
+    return;
+  }
+
+  content::RenderWidgetHostView* render_widget_host_view =
+      web_contents->GetRenderWidgetHostView();
+  if (!render_widget_host_view) {
+    std::move(callback).Run(gfx::Image());
+    return;
+  }
+
+  render_widget_host_view->CopyFromSurface(
+      gfx::Rect(), gfx::Size(),
+      base::BindOnce(
+          [](ui::GrabSnapshotImageCallback callback, const SkBitmap& bitmap) {
+            std::move(callback).Run(gfx::Image::CreateFrom1xBitmap(bitmap));
+          },
+          std::move(callback)));
 }
 
 }  // namespace glic

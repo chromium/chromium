@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/snapshot/snapshot.h"
 
 namespace tabs {
 class TabInterface;
@@ -58,6 +60,8 @@ class GlicSidePanelUi : public GlicUiEmbedder,
 
   // GlicUiEmbedder and Host::Delegate:
   bool IsShowing() const override;
+
+  void TakeScreenshot(ui::GrabSnapshotImageCallback callback) const;
 
  private:
   base::ScopedObservation<GlicSidePanelCoordinator,

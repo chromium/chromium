@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_H_
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/views/view_tracker.h"
 
 namespace glic {
 
@@ -34,16 +37,23 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   // GlicSidePanelCoordinator::StateObserver:
   void VisibilityChanged(bool visible) override;
 
+  void OnScreenshotCaptured(gfx::Image screenshot);
+
  private:
   explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab);
   std::unique_ptr<views::View> CreateView(
       base::WeakPtr<tabs::TabInterface> tab);
+  void UpdateImageView();
+  void OnImageBlurred(gfx::ImageSkia blurred_image);
 
   base::ScopedObservation<GlicSidePanelCoordinator,
                           GlicSidePanelCoordinator::StateObserver>
       coordinator_observation_{this};
   base::WeakPtr<tabs::TabInterface> tab_;
   bool is_showing_ = false;
+  gfx::ImageSkia screenshot_;
+  views::ViewTracker image_view_tracker_;
+  base::WeakPtrFactory<GlicInactiveSidePanelUi> weak_ptr_factory_{this};
 };
 
 }  // namespace glic
