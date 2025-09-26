@@ -60,6 +60,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Load Key Failed"/>
   <int value="10" label="Invalid Final Identity Name"/>
   <int value="11" label="Identity Not Found"/>
+  <int value="12" label="Delete Identity Failed"/>
 </enum>
 
 <enum name="CertificateUploadClientError">

@@ -27,7 +27,8 @@ enum class StoreError {
   kLoadKeyFailed = 9,
   kInvalidFinalIdentityName = 10,
   kIdentityNotFound = 11,
-  kMaxValue = kIdentityNotFound
+  kDeleteIdentityFailed = 12,
+  kMaxValue = kDeleteIdentityFailed
 };
 
 template <class T>

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -64,6 +65,8 @@ class CertificateProvisioningServiceImpl
 
   // CertificateProvisioningService:
   void GetManagedIdentity(GetManagedIdentityCallback callback) override;
+  void DeleteManagedIdentities(
+      base::OnceCallback<void(bool)> callback) override;
   Status GetCurrentStatus() const override;
 
  private:
@@ -91,6 +94,10 @@ class CertificateProvisioningServiceImpl
   void OnCertificateCommitted(scoped_refptr<PrivateKey> private_key,
                               scoped_refptr<net::X509Certificate> certificate,
                               std::optional<StoreError> commit_error);
+
+  void OnIdentitiesDeleted(const std::vector<std::string>& identity_names,
+                           base::OnceCallback<void(bool)> callback,
+                           std::optional<StoreError> error);
 
   void OnProvisioningError(
       ProvisioningError error,
@@ -189,6 +196,21 @@ void CertificateProvisioningServiceImpl::GetManagedIdentity(
   if (!IsProvisioning()) {
     OnPolicyUpdated();
   }
+}
+
+void CertificateProvisioningServiceImpl::DeleteManagedIdentities(
+    base::OnceCallback<void(bool)> callback) {
+  if (IsProvisioning()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  std::vector<std::string> identity_names = {identity_name(),
+                                             temporary_identity_name()};
+  certificate_store_->DeleteIdentities(
+      identity_names,
+      base::BindOnce(&CertificateProvisioningServiceImpl::OnIdentitiesDeleted,
+                     weak_factory_.GetWeakPtr(), identity_names,
+                     std::move(callback)));
 }
 
 CertificateProvisioningService::Status
@@ -459,6 +481,33 @@ void CertificateProvisioningServiceImpl::OnCertificateCommitted(
                            std::move(certificate));
 
   OnFinishedProvisioning(/*success=*/true);
+}
+
+void CertificateProvisioningServiceImpl::OnIdentitiesDeleted(
+    const std::vector<std::string>& identity_names,
+    base::OnceCallback<void(bool)> callback,
+    std::optional<StoreError> error) {
+  if (error.has_value()) {
+    LOG_POLICY(ERROR, DEVICE_TRUST)
+        << "Failed to delete identities from store: "
+        << StoreErrorToString(error.value());
+    std::move(callback).Run(false);
+    return;
+  }
+
+  LOG_POLICY(INFO, DEVICE_TRUST)
+      << "Identities successfully deleted from store.";
+
+  if (cached_identity_ &&
+      base::Contains(identity_names, cached_identity_->name)) {
+    if (cached_identity_->certificate) {
+      context_delegate_->OnClientCertificateDeleted(
+          cached_identity_->certificate);
+    }
+    cached_identity_ = std::nullopt;
+  }
+
+  std::move(callback).Run(true);
 }
 
 void CertificateProvisioningServiceImpl::OnProvisioningError(

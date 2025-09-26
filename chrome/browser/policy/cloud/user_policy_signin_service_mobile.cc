@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -97,6 +99,21 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     // `ProfileManager` may be null in tests.
     UpdateProfileAttributesWhenSignout(profile_, profile_manager);
   }
+
+  client_certificates::CertificateProvisioningService* provisioning_service =
+      client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
+          profile_);
+
+  if (provisioning_service) {
+    // Delete the managed identities (permanent and temporary).
+    provisioning_service->DeleteManagedIdentities(
+        base::BindOnce([](bool success) {
+          if (!success) {
+            LOG(ERROR) << "Failed to delete managed identities on sign-out.";
+          }
+        }));
+  }
+
   ShutdownCloudPolicyManager();
 }
 

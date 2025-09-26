@@ -840,4 +840,81 @@ TEST_F(CertificateProvisioningServiceTest, ConcurrentGetManagedIdentityCalls) {
   VerifyIdleWithCache(mocked_private_key, fake_cert, kSuccessUploadCode);
 }
 
+TEST_F(CertificateProvisioningServiceTest, DeleteManagedIdentities_Success) {
+  SetPolicyPref(true);
+
+  auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
+  auto test_cert = LoadTestCert();
+  ClientIdentity existing_identity(kIdentityName, mocked_private_key,
+                                   test_cert);
+
+  auto mock_context_delegate = CreateContextDelegate();
+  auto* mock_context_delegate_ptr = mock_context_delegate.get();
+
+  // This will be called on service creation since policy is enabled.
+  EXPECT_CALL(mock_store_, GetIdentity(kIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(existing_identity));
+
+  CreateProvisioningService(
+      std::move(mock_context_delegate),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
+  ASSERT_TRUE(service_);
+
+  // Let the service initialize.
+  task_environment_.RunUntilIdle();
+
+  // Verify that the identity is cached.
+  auto status_before_delete = service_->GetCurrentStatus();
+  ASSERT_TRUE(status_before_delete.identity.has_value());
+  EXPECT_TRUE(test_cert->EqualsIncludingChain(
+      status_before_delete.identity->certificate.get()));
+
+  // Set up expectations for deletion.
+  EXPECT_CALL(mock_store_,
+              DeleteIdentities(
+                  testing::ElementsAre(kIdentityName, kTempIdentityName), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(*mock_context_delegate_ptr,
+              OnClientCertificateDeleted(test_cert));
+
+  base::test::TestFuture<bool> delete_future;
+  service_->DeleteManagedIdentities(delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
+
+  // Verify the cache is cleared.
+  auto status_after_delete = service_->GetCurrentStatus();
+  EXPECT_FALSE(status_after_delete.identity.has_value());
+}
+
+TEST_F(CertificateProvisioningServiceTest, DeleteManagedIdentities_NoIdentity) {
+  CreateProvisioningService(
+      CreateContextDelegate(),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
+
+  EXPECT_CALL(mock_store_,
+              DeleteIdentities(
+                  testing::ElementsAre(kIdentityName, kTempIdentityName), _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  base::test::TestFuture<bool> delete_future;
+  service_->DeleteManagedIdentities(delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
+}
+
+TEST_F(CertificateProvisioningServiceTest,
+       DeleteManagedIdentities_StoreDeleteFailure) {
+  CreateProvisioningService(
+      CreateContextDelegate(),
+      std::make_unique<StrictMock<MockKeyUploadClient>>());
+
+  EXPECT_CALL(mock_store_,
+              DeleteIdentities(
+                  testing::ElementsAre(kIdentityName, kTempIdentityName), _))
+      .WillOnce(RunOnceCallback<1>(StoreError::kDeleteIdentityFailed));
+
+  base::test::TestFuture<bool> delete_future;
+  service_->DeleteManagedIdentities(delete_future.GetCallback());
+  EXPECT_FALSE(delete_future.Get());
+}
+
 }  // namespace client_certificates

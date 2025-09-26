@@ -748,4 +748,39 @@ TEST_F(LevelDbCertificateStoreTest, GetIdentity_LoadPrivateKeyFail) {
   EXPECT_THAT(test_future.Get(), ErrorIs(StoreError::kLoadKeyFailed));
 }
 
+TEST_F(LevelDbCertificateStoreTest, DeleteIdentities_Success) {
+  client_certificates_pb::ClientIdentity proto_identity;
+  *proto_identity.mutable_private_key() = CreateFakeProtoKey();
+  AddDatabaseEntry(kTestIdentityName, proto_identity);
+  AddDatabaseEntry(kOtherTestIdentityName, proto_identity);
+
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->DeleteIdentities({kTestIdentityName, kOtherTestIdentityName},
+                           test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->UpdateCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future.Get(), std::nullopt);
+  ExpectNoDatabaseEntry(kTestIdentityName);
+  ExpectNoDatabaseEntry(kOtherTestIdentityName);
+}
+
+TEST_F(LevelDbCertificateStoreTest, DeleteIdentities_NotFound) {
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->DeleteIdentities({kTestIdentityName}, test_future.GetCallback());
+
+  fake_db_->InitStatusCallback(InitStatus::kOK);
+  fake_db_->UpdateCallback(/*success=*/true);
+
+  EXPECT_EQ(test_future.Get(), std::nullopt);
+}
+
+TEST_F(LevelDbCertificateStoreTest, DeleteIdentities_InvalidName) {
+  base::test::TestFuture<std::optional<StoreError>> test_future;
+  store_->DeleteIdentities({kTestIdentityName, ""}, test_future.GetCallback());
+
+  EXPECT_EQ(test_future.Get(), StoreError::kInvalidIdentityName);
+}
+
 }  // namespace client_certificates

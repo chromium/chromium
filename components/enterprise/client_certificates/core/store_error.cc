@@ -32,6 +32,8 @@ std::string_view StoreErrorToString(StoreError error) {
       return "InvalidFinalIdentityName";
     case StoreError::kIdentityNotFound:
       return "IdentityNotFound";
+    case StoreError::kDeleteIdentityFailed:
+      return "DeleteIdentityFailed";
   }
 }
 
