@@ -9,6 +9,7 @@ import '/strings.m.js';
 import '/lens/shared/searchbox_ghost_loader.js';
 import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_components/searchbox/searchbox.js';
+import '//resources/cr_elements/cr_icons.css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_components/composebox/composebox.js';
 
