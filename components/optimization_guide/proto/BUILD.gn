@@ -18,6 +18,7 @@ proto_library("optimization_guide_proto") {
     "contextual_cueing_metadata.proto",
     "descriptors.proto",
     "features/actions_data.proto",
+    "features/amount_extraction.proto",
     "features/bling_prototyping.proto",
     "features/common_quality_data.proto",
     "features/compose.proto",

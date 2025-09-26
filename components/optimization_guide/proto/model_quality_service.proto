@@ -6,6 +6,7 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/compose.proto";
 import "components/optimization_guide/proto/features/default.proto";
@@ -93,6 +94,8 @@ message LogAiDataRequest {
     SummarizeLoggingData summarize = 27;
 
     WalletablePassExtractionLoggingData walletable_pass_extraction = 28;
+
+    AmountExtractionLoggingData amount_extraction = 29;
 
     DefaultLoggingData default = 1000;
   }
