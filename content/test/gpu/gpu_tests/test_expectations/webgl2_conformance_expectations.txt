@@ -1000,6 +1000,17 @@ crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canva
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 
+###############
+# V8 Failures #
+###############
+crbug.com/447457276 [ android android-pixel-2 graphite-disabled ] deqp/functional/gles3/shadertexturefunction/texturegradoffset.html [ Failure ]
+crbug.com/447457276 [ android android-pixel-2 graphite-disabled ] deqp/functional/gles3/shadertexturefunction/textureprojgradoffset.html [ Failure ]
+
+crbug.com/447457276 [ win qualcomm-0x41333430 graphite-disabled passthrough ] deqp/functional/gles3/shadertexturefunction/texturegradoffset.html [ Failure ]
+crbug.com/447457276 [ win qualcomm-0x41333430 graphite-disabled passthrough ] deqp/functional/gles3/shadertexturefunction/textureprojgradoffset.html [ Failure ]
+
+crbug.com/447457276 [ mac passthrough ] deqp/functional/gles3/shadertexturefunction/texturegradoffset.html [ Failure ]
+crbug.com/447457276 [ mac passthrough ] deqp/functional/gles3/shadertexturefunction/textureprojgradoffset.html [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
