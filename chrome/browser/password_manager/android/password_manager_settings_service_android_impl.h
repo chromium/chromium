@@ -57,6 +57,9 @@ class PasswordManagerSettingsServiceAndroidImpl
   void RequestSettingsFromBackend() override;
   void TurnOffAutoSignIn() override;
 
+  // KeyedService implementation
+  void Shutdown() override;
+
  private:
   // Does actions that need to be done on startup (e.g. attaches services
   // observers and migrates and requests settings if needed).
@@ -84,6 +87,7 @@ class PasswordManagerSettingsServiceAndroidImpl
 
   // syncer::SyncServiceObserver implementation
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;

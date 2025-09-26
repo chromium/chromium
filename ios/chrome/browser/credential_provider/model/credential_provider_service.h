@@ -173,6 +173,7 @@ class CredentialProviderService
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Observer for change in enabled or managed state of prefs that govern the
   // CPE.

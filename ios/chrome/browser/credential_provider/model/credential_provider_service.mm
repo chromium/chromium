@@ -664,6 +664,11 @@ void CredentialProviderService::OnStateChanged(syncer::SyncService* sync) {
   UpdatePasswordSyncSetting();
 }
 
+void CredentialProviderService::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
+}
+
 // PasskeyModel::Observer:
 void CredentialProviderService::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {

@@ -63,6 +63,11 @@ void AuthErrorObserver::OnStateChanged(syncer::SyncService* sync) {
   HandleAuthError(sync->GetAuthError());
 }
 
+void AuthErrorObserver::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
+}
+
 void AuthErrorObserver::OnErrorChanged() {
   // This notification could have come for any account but we are only
   // interested in errors for the Primary Account.

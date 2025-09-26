@@ -163,6 +163,13 @@ void PasswordManagerSettingsServiceAndroidImpl::TurnOffAutoSignIn() {
       account, PasswordManagerSetting::kAutoSignIn, false);
 }
 
+void PasswordManagerSettingsServiceAndroidImpl::Shutdown() {
+  if (sync_service_) {
+    sync_service_->RemoveObserver(this);
+    sync_service_ = nullptr;
+  }
+}
+
 void PasswordManagerSettingsServiceAndroidImpl::Init() {
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
@@ -244,4 +251,10 @@ void PasswordManagerSettingsServiceAndroidImpl::OnStateChanged(
   // Fetch settings from the backend to align values stored in GMS Core and
   // Chrome's cache.
   RequestSettingsFromBackend();
+}
+
+void PasswordManagerSettingsServiceAndroidImpl::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
 }
