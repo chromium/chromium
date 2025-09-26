@@ -18,8 +18,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.net.NetError;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
-
 /** An observer for firing navigation events on {@link CustomTabsCallback}. */
 @NullMarked
 public class CustomTabNavigationEventObserver extends EmptyTabObserver {
@@ -78,14 +76,14 @@ public class CustomTabNavigationEventObserver extends EmptyTabObserver {
 
         // For privacy reason, we do not pass all the error codes but choose a few safe ones.
         // See crbug/1501085 for more details.
-        Optional<Integer> code =
+        Integer code =
                 switch (errorCode) {
                     case NetError.ERR_INTERNET_DISCONNECTED:
                     case NetError.ERR_CONNECTION_TIMED_OUT:
                     case NetError.ERR_NAME_RESOLUTION_FAILED:
-                        yield Optional.of(getReportErrorCode(errorCode));
+                        yield getReportErrorCode(errorCode);
                     default:
-                        yield Optional.empty();
+                        yield null;
                 };
 
         mConnection.notifyNavigationEvent(mSessionToken, navigationEvent, code);

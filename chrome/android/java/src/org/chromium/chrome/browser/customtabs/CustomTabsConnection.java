@@ -104,7 +104,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -1597,10 +1596,10 @@ public class CustomTabsConnection {
     }
 
     /**
-     * @see {@link notifyNavigationEvent(SessionHolder, int, Optional<int>)}
+     * @see {@link notifyNavigationEvent(SessionHolder, int, int)}
      */
     public boolean notifyNavigationEvent(@Nullable SessionHolder<?> session, int navigationEvent) {
-        return notifyNavigationEvent(session, navigationEvent, Optional.empty());
+        return notifyNavigationEvent(session, navigationEvent, /* errorCode= */ null);
     }
 
     /**
@@ -1610,17 +1609,17 @@ public class CustomTabsConnection {
      *
      * @param session The Binder object identifying the session.
      * @param navigationEvent The navigation event code, defined in {@link CustomTabsCallback}
-     * @param errorCode Network error code. Empty if there was no error or the error code is not in
+     * @param errorCode Network error code. Null if there was no error or the error code is not in
      *     the list of error codes that should be passed to the embedder.
      * @return true for success.
      */
     public boolean notifyNavigationEvent(
-            @Nullable SessionHolder<?> session, int navigationEvent, Optional<Integer> errorCode) {
+            @Nullable SessionHolder<?> session, int navigationEvent, @Nullable Integer errorCode) {
         BrowserCallbackWrapper callback = mClientManager.getCallbackForSession(session);
         if (callback == null) return false;
         try {
             Bundle extra = getExtrasBundleForNavigationEventForSession(session);
-            if (errorCode.isPresent()) extra.putInt("navigationEventErrorCode", errorCode.get());
+            if (errorCode != null) extra.putInt("navigationEventErrorCode", errorCode);
             callback.onNavigationEvent(navigationEvent, extra);
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,

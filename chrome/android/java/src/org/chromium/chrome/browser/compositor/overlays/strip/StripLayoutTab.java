@@ -45,7 +45,6 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * {@link StripLayoutTab} is used to keep track of the strip position and rendering information for
@@ -159,7 +158,7 @@ public class StripLayoutTab extends StripLayoutView {
     private float mContainerOpacity;
 
     // For avoiding unnecessary accessibility description updates.
-    private Optional<String> mCachedA11yDescriptionTitle = Optional.empty();
+    private @Nullable String mCachedA11yDescriptionTitle;
     private @StringRes int mCachedA11yTabstripIdentifierResId;
 
     // Startup parameters
@@ -367,7 +366,7 @@ public class StripLayoutTab extends StripLayoutView {
 
         // Cache the title + resource ID used to create this description so we can avoid unnecessary
         // updates.
-        mCachedA11yDescriptionTitle = Optional.ofNullable(title);
+        mCachedA11yDescriptionTitle = title;
         mCachedA11yTabstripIdentifierResId = newA11yTabstripIdentifierResId;
     }
 
@@ -383,11 +382,11 @@ public class StripLayoutTab extends StripLayoutView {
             // A different resource ID was used to create the description.
             return true;
         }
-        if (mCachedA11yDescriptionTitle.isPresent() && newTitle == null) {
+        if (mCachedA11yDescriptionTitle != null && newTitle == null) {
             // Going from non-null title to null title.
             return true;
         }
-        if (newTitle != null && !newTitle.equals(mCachedA11yDescriptionTitle.orElse(null))) {
+        if (newTitle != null && !newTitle.equals(mCachedA11yDescriptionTitle)) {
             // Going from non-null title to some other title (may even be null).
             return true;
         }

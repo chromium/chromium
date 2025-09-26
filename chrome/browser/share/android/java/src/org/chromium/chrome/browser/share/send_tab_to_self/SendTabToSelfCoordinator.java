@@ -28,7 +28,6 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
-import java.util.Optional;
 
 /** Coordinator for displaying the send tab to self feature. */
 @NullMarked
@@ -83,12 +82,13 @@ public class SendTabToSelfCoordinator {
         }
 
         private void notifyAndDestroyIfDone() {
-            Optional</*@EntryPointDisplayReason*/ Integer> displayReason =
+            @EntryPointDisplayReason
+            Integer displayReason =
                     SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
             // The model is starting up, keep waiting.
-            if (!displayReason.isPresent()) return;
+            if (displayReason == null) return;
 
-            switch (displayReason.get()) {
+            switch (displayReason) {
                 case EntryPointDisplayReason.OFFER_SIGN_IN:
                     return;
                 case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
@@ -164,12 +164,13 @@ public class SendTabToSelfCoordinator {
     }
 
     public void show() {
-        Optional</*@EntryPointDisplayReason*/ Integer> displayReason =
+        @EntryPointDisplayReason
+        Integer displayReason =
                 SendTabToSelfAndroidBridge.getEntryPointDisplayReason(mProfile, mUrl);
-        assert displayReason.isPresent();
+        assert displayReason != null;
 
         MetricsRecorder.recordCrossDeviceTabJourney();
-        switch (displayReason.get()) {
+        switch (displayReason) {
             case EntryPointDisplayReason.INFORM_NO_TARGET_DEVICE:
                 mController.requestShowContent(
                         new NoTargetDeviceBottomSheetContent(mContext, mProfile), true);
