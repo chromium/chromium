@@ -674,8 +674,8 @@ std::string GetTypeAsString(const clang::QualType& qual_type,
                             const clang::ASTContext& ast_context) {
   clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
   printing_policy.SuppressScope = 0;
+  printing_policy.SuppressTagKeyword = 0;
   printing_policy.SuppressUnwrittenScope = 1;
-  printing_policy.SuppressElaboration = 0;
   printing_policy.SuppressInlineNamespace = 1;
   printing_policy.SuppressDefaultTemplateArgs = 1;
   printing_policy.PrintAsCanonical = 0;
@@ -751,36 +751,23 @@ clang::SourceRange getSourceRange(const MatchFinder::MatchResult& result) {
   assert(false && "Unexpected match in getSourceRange()");
 }
 
-// Unwraps typedef type locs and/or elaborated type locs, and returns the body
-// type loc.
+// Unwraps typedef type locs and returns the body type loc.
 //
 // Note that using-declared types are also represented with typedef types in
 // clang, so this function works for both 'typedef' and 'using' declarations.
 //
 // Example TypeLoc structures:
 //     // Given T2 where typedef int T1; using T2 = T1;
-//     ElaboratedTypeLoc('T2')
-//       --(getNamedTypeLoc)--> TypedefTypeLoc('T2')
-//         --(getTypedefNameDecl)--> ElaboratedTypeLoc('T1')
-//           --(getNamedTypeLoc)--> TypedefTypeLoc('T1')
-//             --(getTypedefNameDecl)--> BuiltinTypeLoc('int')
+//     TypedefTypeLoc('T2')
+//       --(getDecl)--> TypedefTypeLoc('T1')
+//         --(getDecl)--> BuiltinTypeLoc('int')
 //     => returns BuiltinTypeLoc('int').
-//
-//     // Given base::raw_ptr<int>,
-//     ElaboratedTypeLoc('base::raw_ptr<int>')
-//       --(getNamedTypeLoc)--> TemplateSpecializationTypeLoc('raw_ptr<int>')
-//         --(getArgLoc)--> TemplateArgumentLoc('int')
-//     => returns TemplateSpecializationTypeLoc('raw_ptr<int>').
 clang::TypeLoc UnwrapTypedefTypeLoc(clang::TypeLoc type_loc) {
-  while (const clang::ElaboratedTypeLoc elaborated_type_loc =
-             type_loc.getAs<clang::ElaboratedTypeLoc>()) {
-    type_loc = elaborated_type_loc.getNamedTypeLoc();
-    if (const clang::TypedefTypeLoc typedef_type_loc =
-            type_loc.getAs<clang::TypedefTypeLoc>()) {
-      const clang::TypedefNameDecl* typedef_name_decl =
-          typedef_type_loc.getTypedefNameDecl();
-      type_loc = typedef_name_decl->getTypeSourceInfo()->getTypeLoc();
-    }
+  while (const clang::TypedefTypeLoc typedef_type_loc =
+             type_loc.getAs<clang::TypedefTypeLoc>()) {
+    const clang::TypedefNameDecl* typedef_name_decl =
+        typedef_type_loc.getDecl();
+    type_loc = typedef_name_decl->getTypeSourceInfo()->getTypeLoc();
   }
   return type_loc;
 }
@@ -2517,23 +2504,15 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   if (!unnamed_class.empty()) {
     element_type_as_string = unnamed_class;
   } else if (original_element_type->isElaboratedTypeSpecifier()) {
-    // If the `original_element_type` is an elaborated type with a keyword, i.e.
-    // `struct`, `class`, `union`, we will create another ElaboratedType
-    // without the keyword. So `struct funcHasName` will be `funcHasHame`.
-    auto* original_type = new_element_type->getAs<clang::ElaboratedType>();
-
-    // Create a new ElaboratedType without 'struct', 'class', 'union'
-    // keywords.
-    auto new_element_type = ast_context.getElaboratedType(
-        // Use `None` to suppress tag names.
-        clang::ElaboratedTypeKeyword::None,
-        // Keep the same as the original.
-        original_type->getQualifier(),
-        // Keep the same as the original.
-        original_type->getNamedType(),
-        // Remove `OwnedTagDecl`. We don't need IncludeTagDefinition.
-        nullptr);
-    element_type_as_string = GetTypeAsString(new_element_type, ast_context);
+    // `GetTypeAsString` doesn't remove a tag keyword (struct, class, enum, or
+    // union), but we'd like to remove the tag keyword here.
+    clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
+    printing_policy.SuppressTagKeyword = 1;
+    printing_policy.SuppressUnwrittenScope = 1;
+    printing_policy.SuppressInlineNamespace = 1;
+    printing_policy.SuppressDefaultTemplateArgs = 1;
+    printing_policy.PrintAsCanonical = 1;
+    element_type_as_string = new_element_type.getAsString(printing_policy);
   } else {
     element_type_as_string = RewriteCArrayToStdArray(
         new_element_type, array_type_loc.getElementLoc(), source_manager,

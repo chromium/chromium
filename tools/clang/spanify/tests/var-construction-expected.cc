@@ -134,7 +134,7 @@ void raw_ptr_variables() {
   // Expected rewrite:
   // base::raw_span<char> buf4 = buf3;
   // base::PostIncrementSpan(buf4);
-  base::base::raw_span<char> buf4 = buf3;
+  base::raw_span<char> buf4 = buf3;
   base::PostIncrementSpan(buf4);
 
   // Expected rewrite:

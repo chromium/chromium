@@ -42,10 +42,10 @@ base::span<int> FuncRet() {
 // Expected rewrite:
 // base::span<int> FuncAll(base::span<int, 3> arg1,
 //                         base::span<int> arg2,
-//                         base::base::raw_span<int> arg3) {
+//                         base::raw_span<int> arg3) {
 base::span<int> FuncAll(base::span<int, 3> arg1,
                         base::span<int> arg2,
-                        base::base::raw_span<int> arg3) {
+                        base::raw_span<int> arg3) {
   arg1[UnsafeIndex()] = 3;
   arg2[UnsafeIndex()] = 3;
   arg3[UnsafeIndex()] = 3;
@@ -185,10 +185,10 @@ void test_type_alias() {
     // Expected rewrite:
     // typedef base::span<int> (*AllType1)(base::span<int, 3> arg1,
     //                                     base::span<int> arg2,
-    //                                     base::base::raw_span<int> arg3);
+    //                                     base::raw_span<int> arg3);
     typedef base::span<int> (*AllType1)(base::span<int, 3> arg1,
                                         base::span<int> arg2,
-                                        base::base::raw_span<int> arg3);
+                                        base::raw_span<int> arg3);
     using AllType2 = AllType1;
     AllType2 p_all = FuncAll;
     int* ret_all = p_all(arr, arr, arr);
