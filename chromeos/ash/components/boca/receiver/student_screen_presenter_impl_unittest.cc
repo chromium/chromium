@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/receiver/student_screen_presenter.h"
+#include "chromeos/ash/components/boca/receiver/student_screen_presenter_impl.h"
 
 #include <optional>
 #include <string_view>

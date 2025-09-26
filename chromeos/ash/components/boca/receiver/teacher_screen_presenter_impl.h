@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_TEACHER_SCREEN_PRESENTER_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_TEACHER_SCREEN_PRESENTER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_TEACHER_SCREEN_PRESENTER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_TEACHER_SCREEN_PRESENTER_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/proto/receiver.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
+#include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 
 namespace google_apis {
 class RequestSender;
@@ -33,24 +34,6 @@ class IdentityManager;
 namespace ash::boca {
 
 class SharedCrdSessionWrapper;
-
-class TeacherScreenPresenter {
- public:
-  TeacherScreenPresenter(const TeacherScreenPresenter&) = delete;
-  TeacherScreenPresenter& operator=(const TeacherScreenPresenter&) = delete;
-
-  virtual ~TeacherScreenPresenter() = default;
-
-  virtual void Start(std::string_view receiver_id,
-                     ::boca::UserIdentity teacher_identity,
-                     base::OnceCallback<void(bool)> success_cb,
-                     base::OnceClosure disconnected_cb) = 0;
-
-  virtual void Stop(base::OnceCallback<void(bool)> success_cb) = 0;
-
- protected:
-  TeacherScreenPresenter() = default;
-};
 
 class TeacherScreenPresenterImpl : public TeacherScreenPresenter {
  public:
@@ -102,4 +85,4 @@ class TeacherScreenPresenterImpl : public TeacherScreenPresenter {
 
 }  // namespace ash::boca
 
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_TEACHER_SCREEN_PRESENTER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_TEACHER_SCREEN_PRESENTER_IMPL_H_

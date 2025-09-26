@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_STUDENT_SCREEN_PRESENTER_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_STUDENT_SCREEN_PRESENTER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_STUDENT_SCREEN_PRESENTER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_STUDENT_SCREEN_PRESENTER_IMPL_H_
 
 #include <memory>
 #include <optional>
@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/boca/proto/receiver.pb.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/receiver/update_kiosk_receiver_state_request.h"
+#include "chromeos/ash/components/boca/student_screen_presenter.h"
 
 namespace google_apis {
 class RequestSender;
@@ -33,27 +34,6 @@ class IdentityManager;
 }  // namespace signin
 
 namespace ash::boca {
-
-class StudentScreenPresenter {
- public:
-  StudentScreenPresenter(const StudentScreenPresenter&) = delete;
-  StudentScreenPresenter& operator=(const StudentScreenPresenter&) = delete;
-
-  virtual ~StudentScreenPresenter() = default;
-
-  virtual void Start(std::string_view receiver_id,
-                     const ::boca::UserIdentity& student_identity,
-                     std::string_view student_device_id,
-                     base::OnceCallback<void(bool)> success_cb,
-                     base::OnceClosure disconnected_cb) = 0;
-
-  virtual void CheckConnection() = 0;
-
-  virtual void Stop(base::OnceCallback<void(bool)> success_cb) = 0;
-
- protected:
-  StudentScreenPresenter() = default;
-};
 
 class StudentScreenPresenterImpl : public StudentScreenPresenter {
  public:
@@ -110,4 +90,4 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
 
 }  // namespace ash::boca
 
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_STUDENT_SCREEN_PRESENTER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_STUDENT_SCREEN_PRESENTER_IMPL_H_

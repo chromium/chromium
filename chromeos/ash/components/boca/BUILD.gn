@@ -24,7 +24,10 @@ static_library("boca") {
     "notifications/boca_notification_handler.cc",
     "notifications/boca_notification_handler.h",
     "retriable_request_sender.h",
+    "screen_presenter_factory.h",
     "shared_crd_session_wrapper.h",
+    "student_screen_presenter.h",
+    "teacher_screen_presenter.h",
     "util.cc",
     "util.h",
   ]

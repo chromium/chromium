@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
-#include "chromeos/ash/components/boca/receiver/screen_presenter_factory.h"
+#include "chromeos/ash/components/boca/receiver/screen_presenter_factory_impl.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
 #include "content/public/browser/web_contents.h"

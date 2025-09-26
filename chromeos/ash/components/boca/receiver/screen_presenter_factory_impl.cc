@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/boca/receiver/screen_presenter_factory.h"
+#include "chromeos/ash/components/boca/receiver/screen_presenter_factory_impl.h"
 
 #include <memory>
 #include <string_view>
@@ -10,9 +10,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
-#include "chromeos/ash/components/boca/receiver/student_screen_presenter.h"
-#include "chromeos/ash/components/boca/receiver/teacher_screen_presenter.h"
+#include "chromeos/ash/components/boca/receiver/student_screen_presenter_impl.h"
+#include "chromeos/ash/components/boca/receiver/teacher_screen_presenter_impl.h"
 #include "chromeos/ash/components/boca/shared_crd_session_wrapper.h"
+#include "chromeos/ash/components/boca/student_screen_presenter.h"
+#include "chromeos/ash/components/boca/teacher_screen_presenter.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

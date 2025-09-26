@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_SCREEN_PRESENTER_FACTORY_H_
-#define CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_SCREEN_PRESENTER_FACTORY_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_SCREEN_PRESENTER_FACTORY_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_SCREEN_PRESENTER_FACTORY_IMPL_H_
 
 #include <memory>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "chromeos/ash/components/boca/screen_presenter_factory.h"
 
 namespace boca {
 class UserIdentity;
@@ -27,25 +28,6 @@ namespace ash::boca {
 
 class StudentScreenPresenter;
 class TeacherScreenPresenter;
-
-class ScreenPresenterFactory {
- public:
-  ScreenPresenterFactory(const ScreenPresenterFactory&) = delete;
-  ScreenPresenterFactory& operator=(const ScreenPresenterFactory&) = delete;
-
-  virtual ~ScreenPresenterFactory() = default;
-
-  virtual std::unique_ptr<StudentScreenPresenter> CreateStudentScreenPresenter(
-      std::string_view session_id,
-      const ::boca::UserIdentity& teacher_identity,
-      std::string_view teacher_device_id) = 0;
-
-  virtual std::unique_ptr<TeacherScreenPresenter> CreateTeacherScreenPresenter(
-      std::string_view teacher_device_id) = 0;
-
- protected:
-  ScreenPresenterFactory() = default;
-};
 
 class ScreenPresenterFactoryImpl : public ScreenPresenterFactory {
  public:
@@ -74,4 +56,4 @@ class ScreenPresenterFactoryImpl : public ScreenPresenterFactory {
 
 }  // namespace ash::boca
 
-#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_SCREEN_PRESENTER_FACTORY_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_BOCA_RECEIVER_SCREEN_PRESENTER_FACTORY_IMPL_H_
