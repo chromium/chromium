@@ -349,7 +349,6 @@ export class SearchboxElement extends SearchboxElementBase {
 
       thumbnailUrl_: {type: String},
       isThumbnailDeletable_: {type: Boolean},
-      queryAutocompleteOnEmptyInput_: {type: Boolean},
 
       /** The value of the input element's 'aria-live' attribute. */
       inputAriaLive_: {type: String},
@@ -387,8 +386,6 @@ export class SearchboxElement extends SearchboxElementBase {
   protected accessor enableThumbnailSizingTweaks_: boolean =
       loadTimeData.getBoolean('enableThumbnailSizingTweaks');
   private accessor isDeletingInput_: boolean = false;
-  private accessor queryAutocompleteOnEmptyInput_: boolean =
-      loadTimeData.getBoolean('queryAutocompleteOnEmptyInput');
   private accessor lastIgnoredEnterEvent_: KeyboardEvent|null = null;
   private accessor lastInput_: Input = {text: '', inline: ''};
   private accessor lastQueriedInput_: string|null = null;
@@ -643,7 +640,7 @@ export class SearchboxElement extends SearchboxElementBase {
     }
     // For lens searchboxes, requery autcomplete for all updates to the input
     // (even if the input is empty).
-    if (inputValue.trim() || this.queryAutocompleteOnEmptyInput_) {
+    if (inputValue.trim() || this.isLensSearchbox_) {
       // TODO(crbug.com/40732045): Rather than disabling inline autocompletion
       // when the input event is fired within a composition session, change the
       // mechanism via which inline autocompletion is shown in the searchbox.

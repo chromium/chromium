@@ -206,7 +206,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "forceHideEllipsis",
       lens::features::GetVisualSelectionUpdatesHideCsbEllipsis());
-  html_source->AddBoolean("queryAutocompleteOnEmptyInput", true);
   html_source->AddBoolean(
       "enableCsbMotionTweaks",
       lens::features::GetVisualSelectionUpdatesEnableCsbMotionTweaks());

@@ -298,7 +298,6 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   // The lens searchboxes overrides this to true to adjust various color and
   // layout options.
   source->AddBoolean("isLensSearchbox", false);
-  source->AddBoolean("queryAutocompleteOnEmptyInput", false);
   source->AddBoolean("forceHideEllipsis", false);
   source->AddBoolean("enableThumbnailSizingTweaks", false);
   source->AddBoolean("enableCsbMotionTweaks", false);

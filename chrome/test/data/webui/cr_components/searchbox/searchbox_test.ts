@@ -126,7 +126,6 @@ suite('NewTabPageRealboxTest', () => {
   setup(() => {
     loadTimeData.overrideValues({
       isLensSearchbox: false,
-      queryAutocompleteOnEmptyInput: false,
       searchboxCyclingPlaceholders: false,
       searchboxDefaultIcon: 'search.svg',
       searchboxSeparator: ' - ',
@@ -1085,7 +1084,7 @@ suite('NewTabPageRealboxTest', () => {
   test('query autocomplete for empty inputs when enabled', async () => {
     // Arrange.
     loadTimeData.overrideValues({
-      queryAutocompleteOnEmptyInput: true,
+      isLensSearchbox: true,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-searchbox');
