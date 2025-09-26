@@ -41,6 +41,11 @@ enum class OnboardingEvents {
   kMaxValue = kFailure,
   // LINT.ThenChange(//tools/metrics/histograms/metadata/webauthn/enums.xml)
 };
+
+void RecordCombinedSelectorShown(int credential_count);
+void RecordCombinedSelectorAccept(int credential_count, bool default_selected);
+void RecordCombinedSelectorCancelButtonClicked();
+
 }  // namespace webauthn::metrics
 
 void ReportConditionalUiPasskeyCount(int passkey_count);

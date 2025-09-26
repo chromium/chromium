@@ -2093,6 +2093,8 @@ CombinedSelectorSheetModel::CombinedSelectorSheetModel(
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kHidden) {
   webauthn::user_actions::RecordCombinedSelectorShown();
+  webauthn::metrics::RecordCombinedSelectorShown(
+      /*credential_count=*/dialog_model->mechanisms.size());
 }
 
 CombinedSelectorSheetModel::SelectionStatus
@@ -2146,7 +2148,15 @@ std::u16string CombinedSelectorSheetModel::GetAcceptButtonLabel() const {
 }
 
 void CombinedSelectorSheetModel::OnAccept() {
+  webauthn::metrics::RecordCombinedSelectorAccept(
+      /*credential_count=*/dialog_model()->mechanisms.size(),
+      /*default_selected=*/selection_index_ == 0);
   const auto& mech = dialog_model()->mechanisms.at(selection_index_);
   webauthn::user_actions::RecordMechanismClick(mech);
   mech.callback.Run();
+}
+
+void CombinedSelectorSheetModel::OnCancel() {
+  webauthn::metrics::RecordCombinedSelectorCancelButtonClicked();
+  AuthenticatorSheetModelBase::OnCancel();
 }

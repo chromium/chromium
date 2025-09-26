@@ -883,6 +883,7 @@ class CombinedSelectorSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetCancelButtonLabel() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+  void OnCancel() override;
 
   size_t selection_index_ = 0;
 };

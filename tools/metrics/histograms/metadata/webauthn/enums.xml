@@ -41,6 +41,20 @@ chromium-metrics-reviews@google.com.
              cancellations."/>
 </enum>
 
+<!-- LINT.IfChange(CombinedSelectorAction) -->
+
+<enum name="CombinedSelectorAction">
+  <int value="0"
+      label="Accept button clicked with a single credential available."/>
+  <int value="1"
+      label="Accept button clicked with the default credential selected."/>
+  <int value="2"
+      label="Accept button clicked with a non-default credential selected."/>
+  <int value="3" label="Cancel button clicked."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/webauthn_metrics_util.cc:CombinedSelectorAction) -->
+
 <enum name="CredManCreateRequestEnum">
   <int value="0" label="A createCredential request was sent to the platform."/>
   <int value="1"
