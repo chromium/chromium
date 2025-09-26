@@ -33,7 +33,7 @@ std::unique_ptr<KeyedService> BuildSearchEngineChoiceService(
       CHECK_DEREF(
           TemplateURLPrepopulateData::ResolverFactory::GetForProfile(&profile)),
       CHECK_DEREF(IdentityManagerFactory::GetForProfile(&profile)),
-      CHECK_DEREF(policy::ManagementServiceFactory::GetForProfile(&profile)));
+      CHECK_DEREF(policy::ManagementServiceFactory::GetForPlatform()));
   service->Init();
   return service;
 }

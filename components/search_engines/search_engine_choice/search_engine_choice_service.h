@@ -99,7 +99,7 @@ class SearchEngineChoiceService : public KeyedService {
       regional_capabilities::RegionalCapabilitiesService& regional_capabilities,
       TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
       signin::IdentityManager& identity_manager,
-      policy::ManagementService& management_service);
+      policy::ManagementService& platform_management_service);
   ~SearchEngineChoiceService() override;
 
   // Runs the initialisation step for this service, checking consistency in the
@@ -278,7 +278,7 @@ class SearchEngineChoiceService : public KeyedService {
   const raw_ref<TemplateURLPrepopulateData::Resolver>
       prepopulate_data_resolver_;
   const raw_ref<signin::IdentityManager> identity_manager_;
-  const raw_ref<policy::ManagementService> management_service_;
+  const raw_ref<policy::ManagementService> platform_management_service_;
   base::ObserverList<Observer> observers_;
 
   // Used to track whether `MaybeRecordChoiceScreenDisplayState()` has already

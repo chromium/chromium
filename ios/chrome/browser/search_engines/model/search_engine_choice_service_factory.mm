@@ -55,7 +55,7 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
       CHECK_DEREF(ios::TemplateURLPrepopulateDataResolverFactory::GetForProfile(
           profile)),
       CHECK_DEREF(IdentityManagerFactory::GetForProfile(profile)),
-      CHECK_DEREF(policy::ManagementServiceIOSFactory::GetForProfile(profile)));
+      CHECK_DEREF(policy::ManagementServiceIOSFactory::GetForPlatform()));
 
   service->Init();
   return service;

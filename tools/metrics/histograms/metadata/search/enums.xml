@@ -436,9 +436,8 @@ chromium-metrics-reviews@google.com.
     currently enabled only in the First Run Experience.
   </int>
   <int value="21" label="Managed">
-    The profile is managed, and the regional program does not treat managed
-    profiles as eligible for the choice screen. This management could be at the
-    device or profile level.
+    There is device-level management, and the regional program does not treat
+    managed profiles as eligible for the choice screen.
   </int>
 </enum>
 
