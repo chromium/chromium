@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<a href=# id=link>Link</a>
+
+<script>
+promise_test(async () => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender.');
+  const kContextMenuEventDefaultPrevented = 5672; // From UseCounter.h
+  let isCounted = () => internals.isUseCounted(document, kContextMenuEventDefaultPrevented);
+  assert_false(isCounted(),'should not be counted to start');
+
+  let eventCount = 0;
+  link.addEventListener('contextmenu',() => (++eventCount));
+
+  // Fire the context menu event
+  link.focus();
+  assert_equals(eventCount,0);
+  eventSender.keyDown('ContextMenu');
+  assert_equals(eventCount,1,'context menu should have fired');
+  assert_false(isCounted(),'event wasn\'t cancelled');
+
+  link.addEventListener('contextmenu',(e) => e.preventDefault());
+
+  eventSender.keyDown('ContextMenu');
+  assert_equals(eventCount,2,'context menu should have fired again');
+  assert_true(isCounted(),'use counter should have fired');
+}, 'context menu preventDefault is use counted');
+</script>

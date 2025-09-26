@@ -113,6 +113,7 @@
 [ Mac ] fast/events/context-menu-key-shift-f10-modifiers.html [ Skip ]
 [ Mac ] fast/events/context-menu-key-shift-f10-prevent-default.html [ Skip ]
 [ Mac ] fast/events/contextmenu-follows-focus.html [ Skip ]
+[ Mac ] fast/events/contextmenu-prevent-use-counter.html [ Skip ]
 [ Mac ] fast/events/menu-key-context-menu-document.html [ Skip ]
 [ Mac ] fast/events/menu-key-context-menu-position.html [ Skip ]
 [ Mac ] fast/events/menu-key-context-menu-reveal-focus.html [ Skip ]

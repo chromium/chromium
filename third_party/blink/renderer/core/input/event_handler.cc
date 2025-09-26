@@ -2144,22 +2144,25 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
   PhysicalOffset position_in_contents(v->ConvertFromRootFrame(
       gfx::ToFlooredPoint(event.PositionInRootFrame())));
   HitTestRequest request(HitTestRequest::kActive);
+  Document& document = *frame_->GetDocument();
   MouseEventWithHitTestResults mev =
-      frame_->GetDocument()->PerformMouseEventHitTest(
-          request, position_in_contents, event);
+      document.PerformMouseEventHitTest(request, position_in_contents, event);
   // Since |Document::performMouseEventHitTest()| modifies layout tree for
   // setting hover element, we need to update layout tree for requirement of
   // |SelectionController::sendContextMenuEvent()|.
-  frame_->GetDocument()->UpdateStyleAndLayout(
-      DocumentUpdateReason::kContextMenu);
+  document.UpdateStyleAndLayout(DocumentUpdateReason::kContextMenu);
 
   Element* target_element =
       override_target_element ? override_target_element : mev.InnerElement();
-  return mouse_event_manager_->DispatchMouseEvent(
+  WebInputEventResult result = mouse_event_manager_->DispatchMouseEvent(
       EffectiveMouseEventTargetElement(target_element),
       event_type_names::kContextmenu, event, nullptr, nullptr, false, event.id,
       PointerEventFactory::PointerTypeNameForWebPointPointerType(
           event.pointer_type));
+  if (result == WebInputEventResult::kHandledApplication) {
+    UseCounter::Count(document, WebFeature::kContextMenuEventDefaultPrevented);
+  }
+  return result;
 }
 
 static bool ShouldShowContextMenuAtSelection(const FrameSelection& selection) {

@@ -4901,10 +4901,12 @@ enum WebFeature {
   kSchedulerYieldNonTrivialInherit = 5590,
   kSchedulerYieldNonTrivialInheritCrossFrameIgnored = 5591,
   kLocalNetworkAccessPrivateAliasUse = 5592,
+  // The items above roughly this point are available in the M138 branch.
   kV8URLPattern_Generate_Method = 5593,
   kSelectMultipleSizeOne = 5594,
   kWebGPUFeatureLevelCompatibility = 5595,
   kOverscrollBehaviorOnNonScrollableScrollContainer = 5596,
+  // The items above roughly this point are available in the M139 branch.
   kInteractiveContentSummaryDescendant = 5597,
   kSpeculationRulesEagernessEager = 5598,
   kCSSSelectorPseudoNot = 5599,
@@ -4937,6 +4939,7 @@ enum WebFeature {
   kSharedWorkerStartOnAndroid = 5626,
   kLocalNetworkAccessWithinSharedWorker = 5627,
   kLocalNetworkAccessWithinDedicatedWorker = 5628,
+  // The items above roughly this point are available in the M140 branch.
   kCSSPseudoParentInScope = 5629,
   kInterestHintPseudoElement = 5630,
   kCookieStoreEmptyPath = 5631,
@@ -4962,6 +4965,7 @@ enum WebFeature {
   kV8WasmCustomDescriptors = 5651,
   kSRIIntegrityAttributeOnInlineScript = 5652,
   kCredentialsGetImmediateMediationWithPasswordsOnly = 5653,
+  // The items above roughly this point are available in the M141 branch.
   kCSSAtRuleRoute = 5654,
   kAbsposPositionTryFallbacksChange = 5655,
   kMulticastControllerJoinGroupFunction = 5656,
@@ -4980,6 +4984,7 @@ enum WebFeature {
   kIndexedDBGetAllRecords = 5669,
   kResolvedColumnRuleWidthWithNoneOrHiddenStyle = 5670,
   kResolvedOutlineWidthWithNoneOrHiddenStyle = 5671,
+  kContextMenuEventDefaultPrevented = 5672,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
