@@ -1021,7 +1021,6 @@ GpuImageDecodeCache::ImageInfo::~ImageInfo() = default;
 
 GpuImageDecodeCache::ImageData::ImageData(
     PaintImage::Id paint_image_id_param,
-    DecodedDataMode mode,
     const gfx::ColorSpace& target_color_space,
     PaintFlags::FilterQuality quality,
     int upload_scale_mip_level_param,
@@ -1032,7 +1031,6 @@ GpuImageDecodeCache::ImageData::ImageData(
     bool speculative_decode,
     base::span<ImageInfo, kAuxImageCount> image_info)
     : paint_image_id(paint_image_id_param),
-      mode(mode),
       target_color_space(target_color_space),
       quality(quality),
       upload_scale_mip_level(upload_scale_mip_level_param),
@@ -2361,8 +2359,8 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
       } else {
         // Decode as RGB.
         DCHECK(info.rgba.has_value());
-        SkImageInfo image_info = info.rgba->makeColorSpace(
-            ColorSpaceForImageDecode(draw_image, image_data->mode));
+        SkImageInfo image_info =
+            info.rgba->makeColorSpace(ColorSpaceForImageDecode(draw_image));
         SkPixmap pixmap(image_info, backing_memory->data(),
                         image_info.minRowBytes());
         if (DrawAndScaleImageRGB(draw_image, aux_image, pixmap,
@@ -2488,7 +2486,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
   // conversions or that some color conversion might have happened at decode
   // time.
   sk_sp<SkColorSpace> decoded_color_space =
-      ColorSpaceForImageDecode(draw_image, image_data->mode);
+      ColorSpaceForImageDecode(draw_image);
   if (target_color_space && decoded_color_space &&
       SkColorSpace::Equals(target_color_space.get(),
                            decoded_color_space.get())) {
@@ -2518,7 +2516,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkColorSpace> color_space) {
-  DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
   DCHECK(image_data->decode.do_hardware_accelerated_decode());
 
@@ -2563,7 +2560,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     sk_sp<SkColorSpace> decoded_color_space,
     const std::optional<gfx::HDRMetadata>& hdr_metadata,
     sk_sp<SkColorSpace> target_color_space) {
-  DCHECK_EQ(image_data->mode, DecodedDataMode::kTransferCache);
   DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
 
@@ -2739,13 +2735,9 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
       sk_image_info.height() > max_texture_size_ ||
       (has_gainmap && (gainmap_sk_image_info.width() > max_texture_size_ ||
                        gainmap_sk_image_info.height() > max_texture_size_));
-  // TODO(crbug.com/391648152): Remove DecodedDataMode entirely, as it is now
-  // always kTransferCache.
-  DecodedDataMode mode = DecodedDataMode::kTransferCache;
-
   // We need to cache the result of color conversion on the cpu if the image
   // will be color converted during the decode.
-  auto decode_color_space = ColorSpaceForImageDecode(draw_image, mode);
+  auto decode_color_space = ColorSpaceForImageDecode(draw_image);
   const bool cache_color_conversion_on_cpu =
       decode_color_space &&
       !SkColorSpace::Equals(decode_color_space.get(),
@@ -2824,8 +2816,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   }
 
   return base::WrapRefCounted(new ImageData(
-      draw_image.paint_image().stable_id(), mode,
-      draw_image.target_color_space(),
+      draw_image.paint_image().stable_id(), draw_image.target_color_space(),
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
       do_hardware_accelerated_decode, speculative_decode, image_info));
@@ -3280,8 +3271,7 @@ bool GpuImageDecodeCache::SupportsColorSpaceConversion() const {
 }
 
 sk_sp<SkColorSpace> GpuImageDecodeCache::ColorSpaceForImageDecode(
-    const DrawImage& image,
-    DecodedDataMode mode) const {
+    const DrawImage& image) const {
   if (!SupportsColorSpaceConversion())
     return nullptr;
 

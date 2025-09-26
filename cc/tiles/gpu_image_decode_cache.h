@@ -255,7 +255,6 @@ class CC_EXPORT GpuImageDecodeCache
   void ReleaseContextLockForTesting();
 
  private:
-  enum class DecodedDataMode { kTransferCache };
   using ImageTaskMap = base::flat_map<ClientId, scoped_refptr<TileTask>>;
 
   // Stores stats tracked by both DecodedImageData and UploadedImageData.
@@ -594,7 +593,6 @@ class CC_EXPORT GpuImageDecodeCache
 
   struct ImageData : public base::RefCountedThreadSafe<ImageData> {
     ImageData(PaintImage::Id paint_image_id,
-              DecodedDataMode mode,
               const gfx::ColorSpace& target_color_space,
               PaintFlags::FilterQuality quality,
               int upload_scale_mip_level,
@@ -636,7 +634,6 @@ class CC_EXPORT GpuImageDecodeCache
     void RecordSpeculativeDecodeRasterTaskTakeover();
 
     const PaintImage::Id paint_image_id;
-    const DecodedDataMode mode;
     const gfx::ColorSpace target_color_space;
     PaintFlags::FilterQuality quality;
     int upload_scale_mip_level;
@@ -873,8 +870,7 @@ class CC_EXPORT GpuImageDecodeCache
 
   void CheckContextLockAcquiredIfNecessary();
 
-  sk_sp<SkColorSpace> ColorSpaceForImageDecode(const DrawImage& image,
-                                               DecodedDataMode mode) const;
+  sk_sp<SkColorSpace> ColorSpaceForImageDecode(const DrawImage& image) const;
 
   // Helper function to add a memory dump to |pmd| for a single texture
   // identified by |gl_id| with size |bytes| and |locked_size| equal to either
