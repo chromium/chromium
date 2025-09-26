@@ -28,8 +28,11 @@ _gclient_path = "//third_party/depot_tools/gclient.py"
 _gn_path = "//buildtools/linux64/gn"
 _ninja_path = "//third_party/ninja/ninja"
 
-assert(!is_component_build)
 assert(is_cronet_build)
+
+assert(!is_component_build)
+assert(use_platform_icu_alternatives,
+       "Cronet only supports being built with ICU alternatives")
 
 generate_jni("cronet_jni_headers") {
   sources = [
@@ -198,7 +201,6 @@ source_set("cronet_static") {
     "//net",
     "//third_party/zlib",
     "//url",
-    "//url:buildflags",
   ]
   if (!is_cronet_for_aosp_build) {
     deps += [ "//components/cronet/native:cronet_native_impl" ]
@@ -239,10 +241,6 @@ source_set("cronet_static") {
     "android",
     "log",
   ]
-
-  if (!use_platform_icu_alternatives) {
-    deps += [ "//base:i18n" ]
-  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
@@ -1190,7 +1188,6 @@ shared_library("cronet_tests") {
     ":cronet_test_apk_jni",
     ":cronet_tests_jni_headers",
     "//base",
-    "//base:i18n",
     "//base/test:test_support",
     "//components/cronet:cronet_common",
     "//components/cronet:cronet_version_header",
@@ -2146,11 +2143,9 @@ if (!using_sanitizer) {
 
 group("cronet_non_test_package") {
   # Target containing all of cronet's non-test targets.
-  # Enforce building with ICU alternatives, crbug.com/611621.
   # Enforce that arm_use_neon==false when building for ARMv7 by
   # not including any deps in cronet_package target otherwise.
-  if (use_platform_icu_alternatives &&
-      (!(target_cpu == "arm" && arm_version == 7) || !arm_use_neon)) {
+  if (!(target_cpu == "arm" && arm_version == 7) || !arm_use_neon) {
     deps = [
       ":cronet_package_copy",
       ":cronet_package_copy_native_headers",

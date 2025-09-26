@@ -51,11 +51,6 @@
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/zlib/zlib.h"
-#include "url/buildflags.h"
-
-#if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-#include "base/i18n/icu_util.h"  // nogncheck
-#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h"
@@ -165,10 +160,6 @@ void InitializePerfetto() {
 void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
                                         jboolean initializePerfetto) {
   logging::InitLogging(logging::LoggingSettings());
-
-#if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-  base::i18n::InitializeICU();
-#endif
 
   if (!base::ThreadPoolInstance::Get()) {
     base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Cronet");
