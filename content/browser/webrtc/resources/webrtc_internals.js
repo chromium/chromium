@@ -371,11 +371,13 @@ function addStandardStats(data) {
   // Create a map from the stats entries so it behaves like a getStats maplike
   // and then sort it.
   const stats = sortStatsReport(new Map(data.reports));
+
+  // This augments stats with [delta] values.
+  statsRatesCalculator.addStatsReport(stats);
   stats.forEach(report => {
     statsTable.addStatsReport(peerConnectionElement, report);
     drawSingleReport(peerConnectionElement, report);
   });
-  statsRatesCalculator.addStatsReport(stats);
 
   let ids = [];
   stats.forEach(report => {
