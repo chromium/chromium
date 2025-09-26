@@ -4797,7 +4797,7 @@
     // requiring a single slash.
     {
       name: "StrictJsonMimeTypeTokenValidation",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "StrictMimeTypesForWorkers",
