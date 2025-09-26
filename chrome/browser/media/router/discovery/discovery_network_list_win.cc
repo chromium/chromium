@@ -9,6 +9,7 @@
 
 #include "chrome/browser/media/router/discovery/discovery_network_list_win.h"
 
+#include <windows.h>
 #include <winsock2.h>
 
 #include <windot11.h>
@@ -22,6 +23,7 @@
 
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -222,6 +224,8 @@ base::small_map<std::map<std::string, std::string>> GetMacSsidMap() {
                                            &wlan_current_version,
                                            &wlan_client_handle.handle);
   if (result != ERROR_SUCCESS) {
+    ::SetLastError(result);
+    PLOG(WARNING) << "Failed to open WLAN handle";
     return {};
   }
 
@@ -229,6 +233,8 @@ base::small_map<std::map<std::string, std::string>> GetMacSsidMap() {
   result = wlan_api->wlan_enum_interfaces(wlan_client_handle.handle, nullptr,
                                           &wlan_interface_list_raw);
   if (result != ERROR_SUCCESS) {
+    ::SetLastError(result);
+    PLOG(WARNING) << "Failed to enumerate WLAN interfaces";
     return {};
   }
 
