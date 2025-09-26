@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
@@ -132,6 +133,9 @@ class HistorySyncOptinHelperBrowserTest
         ProfileManagementDisclaimerServiceFactory::GetForProfile(GetProfile()));
   }
 
+ protected:
+  base::UserActionTester user_action_tester_;
+
  private:
   void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) override {
@@ -181,6 +185,11 @@ IN_PROC_BROWSER_TEST_P(
 
   // Subsequent updates should have no impact.
   UpdateAccountManagementInfo(account_info, /*is_managed=*/false);
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -280,6 +289,11 @@ IN_PROC_BROWSER_TEST_P(
 
   // Subsequent updates should have no impact on the flow.
   UpdateAccountManagementInfo(account_info, /*is_managed=*/true);
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -359,6 +373,11 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinHelperBrowserTest,
       identity_test_env()->identity_manager(), GetProfile(), account_info,
       &delegate, GetParam());
   history_sync_optin_helper->StartHistorySyncOptinFlow();
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            1);
 }
 
 INSTANTIATE_TEST_SUITE_P(

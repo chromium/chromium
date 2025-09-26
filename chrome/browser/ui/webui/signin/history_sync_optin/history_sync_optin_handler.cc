@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -53,16 +55,19 @@ HistorySyncOptinHandler::~HistorySyncOptinHandler() {
     // Runs the callback in case the dialog is not dismissed via the buttons,
     // but e.g. using an accelerator or close button.
     std::move(history_optin_completed_closure_).Run();
+    base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Aborted"));
   }
 }
 
 void HistorySyncOptinHandler::Accept() {
   AddHistorySyncConsent();
   FinishAndCloseDialog();
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Completed"));
 }
 
 void HistorySyncOptinHandler::Reject() {
   FinishAndCloseDialog();
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Declined"));
 }
 
 void HistorySyncOptinHandler::RequestAccountInfo() {
@@ -90,7 +95,6 @@ void HistorySyncOptinHandler::UpdateDialogHeight(uint32_t height) {
 }
 
 void HistorySyncOptinHandler::FinishAndCloseDialog() {
-  // TODO(crbug.com/404806506): Add metrics.
   if (browser_) {
     browser_->GetFeatures().signin_view_controller()->CloseModalSignin();
   }

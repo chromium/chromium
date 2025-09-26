@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -195,6 +196,9 @@ void HistorySyncOptinHelper::NotifyFlowFinished() {
 
 void HistorySyncOptinHelper::StartHistorySyncOptinFlow() {
   account_state_fetcher_->FetchAccountInfo();
+  // TODO(crbug.com/435191375): Add HistorySyncOptIn histograms once the access
+  // point is plumped.
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Started"));
 }
 
 void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
@@ -252,6 +256,7 @@ signin::Tribool HistorySyncOptinHelper::AccountIsManaged(
 void HistorySyncOptinHelper::FinishFlowWithoutHistorySyncOptin() {
   delegate_->FinishFlowWithoutHistorySyncOptin();
   NotifyFlowFinished();
+  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Skipped"));
 }
 
 // HistorySyncOptinHelperInBrowser

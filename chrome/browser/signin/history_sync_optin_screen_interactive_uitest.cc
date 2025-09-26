@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
@@ -21,6 +22,7 @@
 #include "components/sync/service/sync_user_settings_impl.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/events/event_modifiers.h"
 
 namespace {
 const char kMainEmail[] = "main_email@example.com";
@@ -50,7 +52,8 @@ class HistorySyncOptinScreenFromPromoEntryPointInteractiveTest
         ExecuteJsAt(parent_element_id, button_query, "e => e.click()"));
   }
 
- private:
+ protected:
+  base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList feature_list_{
       syncer::kReplaceSyncPromosWithSignInPromos};
 };
@@ -94,6 +97,17 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                   ->GetUserSettings()
                   ->GetSelectedTypes()
                   .Has(syncer::UserSelectableType::kHistory));
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Completed"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Declined"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Aborted"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            0);
 }
 
 IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
@@ -129,4 +143,113 @@ IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
                   ->GetUserSettings()
                   ->GetSelectedTypes()
                   .Has(syncer::UserSelectableType::kHistory));
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Completed"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Declined"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Aborted"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            0);
+}
+
+IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+                       DeclineHistorySyncOptin) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
+  AccountInfo account_info;
+
+  RunTestSequence(
+      Do([&]() {
+        account_info = identity_test_env()->MakePrimaryAccountAvailable(
+            kMainEmail, signin::ConsentLevel::kSignin);
+      }),
+      InstrumentTab(kTabId, 0, browser()), Do([&]() {
+        signin_ui_util::EnableSyncFromSingleAccountPromo(
+            browser()->profile(),
+            /*account=*/account_info,
+            signin_metrics::AccessPoint::kAccountMenu);
+      }),
+      // The user is already signed-in, the history sync optin dialog should
+      // open.
+      WaitForShow(SigninViewController::kHistorySyncOptinViewId),
+      InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
+                              SigninViewController::kHistorySyncOptinViewId),
+      WaitForStateChange(kHistorySyncOptinDialogContentsId,
+                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
+      WaitForStateChange(kHistorySyncOptinDialogContentsId,
+                         UiElementHasAppeared(kHistoryOptinRejectButton)),
+      // Use kFireAndForget because clicking the reject button closes the
+      // dialog immediately, causing the default visibility check to fail.
+      ExecuteJsAt(kHistorySyncOptinDialogContentsId, kHistoryOptinRejectButton,
+                  "e => e.click()",
+                  InteractiveBrowserTestApi::ExecuteJsMode::kFireAndForget),
+      WaitForHide(SigninViewController::kHistorySyncOptinViewId));
+
+  EXPECT_FALSE(SyncServiceFactory::GetForProfile(browser()->profile())
+                   ->GetUserSettings()
+                   ->GetSelectedTypes()
+                   .Has(syncer::UserSelectableType::kHistory));
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Completed"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Declined"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Aborted"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            0);
+}
+
+IN_PROC_BROWSER_TEST_F(HistorySyncOptinScreenFromPromoEntryPointInteractiveTest,
+                       HistorySyncOptinAbortedOnEscapeKey) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
+  AccountInfo account_info;
+
+  RunTestSequence(
+      Do([&]() {
+        account_info = identity_test_env()->MakePrimaryAccountAvailable(
+            kMainEmail, signin::ConsentLevel::kSignin);
+      }),
+      InstrumentTab(kTabId, 0, browser()), Do([&]() {
+        signin_ui_util::EnableSyncFromSingleAccountPromo(
+            browser()->profile(),
+            /*account=*/account_info,
+            signin_metrics::AccessPoint::kAccountMenu);
+      }),
+      // The user is already signed-in, the history sync optin dialog should
+      // open.
+      WaitForShow(SigninViewController::kHistorySyncOptinViewId),
+      InstrumentNonTabWebView(kHistorySyncOptinDialogContentsId,
+                              SigninViewController::kHistorySyncOptinViewId),
+      WaitForStateChange(kHistorySyncOptinDialogContentsId,
+                         UiElementHasAppeared(kHistoryOptinAcceptButton)),
+      WaitForStateChange(kHistorySyncOptinDialogContentsId,
+                         UiElementHasAppeared(kHistoryOptinRejectButton)),
+      // Press the Escape key, dismissing the UI.
+      SendAccelerator(kHistorySyncOptinDialogContentsId,
+                      ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
+      WaitForHide(SigninViewController::kHistorySyncOptinViewId));
+
+  EXPECT_FALSE(SyncServiceFactory::GetForProfile(browser()->profile())
+                   ->GetUserSettings()
+                   ->GetSelectedTypes()
+                   .Has(syncer::UserSelectableType::kHistory));
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Started"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Completed"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Declined"),
+            0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Aborted"),
+            1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Signin_HistorySync_Skipped"),
+            0);
 }

@@ -40809,9 +40809,10 @@ should be able to be added at any place in this file.
   <owner>myuu@google.com</owner>
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <description>
     Recorded when user takes an action on the History Sync Opt-In screen.
-    Recorded on iOS only.
+    Recorded on iOS and Desktop.
   </description>
 </action>
 
