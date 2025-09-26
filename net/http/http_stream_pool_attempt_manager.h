@@ -227,7 +227,7 @@ class HttpStreamPool::AttemptManager
   void OnTcpBasedAttemptComplete(TcpBasedAttempt* raw_attempt, int rv);
   void OnTcpBasedAttemptSlow(TcpBasedAttempt* raw_attempt);
 
-  bool CanUseExistingQuicSession();
+  bool CanUseExistingQuicSession() const;
 
   // Runs the TCP based attempt delay timer if TCP based attempts are blocked
   // and the timer is not running. TcpBasedAttemptDelayBehavior specifies when
@@ -509,7 +509,7 @@ class HttpStreamPool::AttemptManager
 
   bool CanUseTcpBasedProtocols();
 
-  bool CanUseQuic();
+  bool CanUseQuic() const;
 
   bool IsEchEnabled() const;
 
@@ -541,7 +541,7 @@ class HttpStreamPool::AttemptManager
   // attempt for the first time.
   std::optional<InitialAttemptState> initial_attempt_state_;
 
-  NextProtoSet allowed_alpns_ = NextProtoSet::All();
+  NextProtoSet allowed_alpns_;
 
   // Holds request jobs that are waiting for notifications.
   JobQueue request_jobs_;

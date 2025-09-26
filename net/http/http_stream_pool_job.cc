@@ -49,11 +49,21 @@ NextProtoSet CalculateAllowedAlpns(HttpStreamPool::Job::Delegate* delegate,
 
   allowed_alpns = Intersection(allowed_alpns, delegate->allowed_alpns());
 
-  if (!group->pool()->CanUseQuic(
+  // Remove QUIC from the list if QUIC cannot be used for some reason.
+  //
+  // Note that this does not check RequiresHTTP11(), as despite its name, it
+  // only means H2 is not allowed.
+  //
+  // Inlining this logic instead of calling HttpStreamPool::CanUseQuic() is an
+  // optimization, to avoid the extra ShouldForceQuic() call.
+  if (!group->http_network_session()->IsQuicEnabled() ||
+      !delegate->enable_alternative_services() ||
+      !GURL::SchemeIsCryptographic(
+          group->stream_key().destination().scheme()) ||
+      group->pool()->IsQuicBroken(
           group->stream_key().destination(),
-          group->stream_key().network_anonymization_key(),
-          delegate->enable_alternative_services())) {
-    allowed_alpns.Remove(NextProto::kProtoQUIC);
+          group->stream_key().network_anonymization_key())) {
+    allowed_alpns.RemoveAll(HttpStreamPool::kQuicBasedProtocols);
   }
 
   CHECK(!allowed_alpns.empty());
@@ -197,7 +207,13 @@ void HttpStreamPool::Job::OnStreamReady(
   CHECK(!negotiated_protocol_);
   CHECK(attempt_manager_);
 
-  if (!allowed_alpns_.Has(negotiated_protocol)) {
+  // The NextProto::kProtoUnknown check is needed because when establishing a
+  // connection, it means allow any protocol, so needs to be removed if specific
+  // protocols aren't allowed, while once a connection is negotiated, it's an
+  // alias for HTTP/1.x.
+  if (!allowed_alpns_.Has(negotiated_protocol) &&
+      !(negotiated_protocol == NextProto::kProtoUnknown &&
+        allowed_alpns_.Has(NextProto::kProtoHTTP11))) {
     OnStreamFailed(ERR_ALPN_NEGOTIATION_FAILED, NetErrorDetails(),
                    ResolveErrorInfo());
     return;

@@ -80,6 +80,12 @@ base::Value::Dict GetServiceEndpointRequestAsValue(
   return dict;
 }
 
+NextProtoSet AllNextProtosButQuic() {
+  NextProtoSet out = NextProtoSet::All();
+  out.RemoveAll(HttpStreamPool::kQuicBasedProtocols);
+  return out;
+}
+
 }  // namespace
 
 // static
@@ -148,6 +154,10 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
       track_(base::trace_event::GetNextGlobalTraceId()),
       created_time_(base::TimeTicks::Now()),
+      // This must be before the GetTcpBasedAttemptDelay() call, since it needs
+      // to know that QUIC is not allowed, or it will try to create an invalid
+      // QUIC destination and trigger a CHECK.
+      allowed_alpns_(UsingTls() ? NextProtoSet::All() : AllNextProtosButQuic()),
       request_jobs_(NUM_PRIORITIES),
       tcp_based_attempt_delay_(GetTcpBasedAttemptDelay()),
       should_block_tcp_based_attempt_(!tcp_based_attempt_delay_.is_zero()) {
@@ -997,6 +1007,7 @@ void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
   }
 
   quic_version_ = job->quic_version();
+  RestrictAllowedProtocols(job->allowed_alpns());
 
   // JobController should check the existing QUIC/SPDY sessions before starting
   // a Job.
@@ -1007,7 +1018,6 @@ void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
         !HasAvailableSpdySession());
 
   MaybeChangeServiceEndpointRequestPriority();
-  RestrictAllowedProtocols(job->allowed_alpns());
   UpdateTcpBasedAttemptState();
 
   if (service_endpoint_request_ || service_endpoint_request_finished_) {
@@ -2050,16 +2060,15 @@ bool HttpStreamPool::AttemptManager::CanUseTcpBasedProtocols() {
   return allowed_alpns_.HasAny(kTcpBasedProtocols);
 }
 
-bool HttpStreamPool::AttemptManager::CanUseQuic() {
-  return allowed_alpns_.HasAny(kQuicBasedProtocols) &&
-         pool()->CanUseQuic(stream_key().destination(),
-                            stream_key().network_anonymization_key(),
-                            IsAlternativeServiceEnabled());
+bool HttpStreamPool::AttemptManager::CanUseQuic() const {
+  return allowed_alpns_.HasAny(kQuicBasedProtocols);
 }
 
-bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() {
-  return pool()->CanUseExistingQuicSession(quic_session_alias_key(),
-                                           IsAlternativeServiceEnabled());
+bool HttpStreamPool::AttemptManager::CanUseExistingQuicSession() const {
+  const QuicSessionAliasKey& session_alias_key = quic_session_alias_key();
+  return CanUseQuic() &&
+         http_network_session()->quic_session_pool()->CanUseExistingSession(
+             session_alias_key.session_key(), session_alias_key.destination());
 }
 
 bool HttpStreamPool::AttemptManager::IsEchEnabled() const {
