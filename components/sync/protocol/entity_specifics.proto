@@ -11,6 +11,8 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+import "components/sync/protocol/ai_thread_specifics.proto";
+import "components/sync/protocol/contextual_task_specifics.proto";
 import "components/sync/protocol/encryption.proto";
 import "components/sync/protocol/app_list_specifics.proto";
 import "components/sync/protocol/app_setting_specifics.proto";
@@ -65,7 +67,6 @@ import "components/sync/protocol/webauthn_credential_specifics.proto";
 import "components/sync/protocol/wifi_configuration_specifics.proto";
 import "components/sync/protocol/workspace_desk_specifics.proto";
 import "components/sync/protocol/shared_tab_group_account_data_specifics.proto";
-import "components/sync/protocol/ai_thread_specifics.proto";
 
 message EntitySpecifics {
   // If a datatype is encrypted, this field will contain the encrypted
@@ -163,6 +164,7 @@ message EntitySpecifics {
     SharedCommentSpecifics shared_comment = 1484017;
     AccountSettingSpecifics account_setting = 1438954;
     AiThreadSpecifics ai_thread = 1517585;
+    ContextualTaskSpecifics contextual_task = 1518931;
     // When adding a new type, follow the docs below and keep this comment as
     // the last entry.
     // https://www.chromium.org/developers/design-documents/sync/integration-checklist/

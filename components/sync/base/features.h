@@ -39,6 +39,9 @@ BASE_DECLARE_FEATURE(kSyncSharedComment);
 // Enables syncing of AI threads across devices.
 BASE_DECLARE_FEATURE(kSyncAIThread);
 
+// Enables syncing of contextual tasks.
+BASE_DECLARE_FEATURE(kSyncContextualTask);
+
 #if BUILDFLAG(IS_ANDROID)
 // Flag that controls Uno fast-follow features which are:
 // - Batch upload of left-behind bookmarks from the bookmark manager

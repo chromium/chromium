@@ -183,7 +183,10 @@ enum DataType {
   // A user thread when interacting with AI features.
   AI_THREAD,
 
-  LAST_USER_DATA_TYPE = AI_THREAD,
+  // Information about a contextual task.
+  CONTEXTUAL_TASK,
+
+  LAST_USER_DATA_TYPE = CONTEXTUAL_TASK,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -286,7 +289,8 @@ enum class DataTypeForHistograms {
   kSharedComment = 71,
   kAccountSetting = 72,
   kAIThread = 73,
-  kMaxValue = kAIThread,
+  kContextualTask = 74,
+  kMaxValue = kContextualTask,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
@@ -414,7 +418,7 @@ constexpr DataTypeSet SharedTypes() {
 // any pending account data or abort, depending on the platform.
 constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
   static_assert(
-      57 == GetNumDataTypes(),
+      58 == GetNumDataTypes(),
       "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
       "should be a warning when the user signs out and the types have unsynced "
       "data. The warning offers the user to either proceed with sign-out "

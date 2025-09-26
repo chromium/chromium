@@ -936,6 +936,7 @@ chromium-metrics-reviews@google.com.
   <int value="71" label="SharedComment"/>
   <int value="72" label="Account Setting"/>
   <int value="73" label="AI Thread"/>
+  <int value="74" label="Contextual Task"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/base/data_type.h:SyncDataTypes) -->

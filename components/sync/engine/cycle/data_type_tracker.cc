@@ -111,6 +111,7 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(DataType data_type) {
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
     case SHARED_COMMENT:
     case AI_THREAD:
+    case CONTEXTUAL_TASK:
       return kMediumLocalChangeNudgeDelay;
     case UNSPECIFIED:
       NOTREACHED();
@@ -183,6 +184,7 @@ bool CanGetCommitsFromExtensions(DataType data_type) {
     case SHARED_TAB_GROUP_ACCOUNT_DATA:
     case SHARED_COMMENT:
     case AI_THREAD:
+    case CONTEXTUAL_TASK:
       return false;
     case UNSPECIFIED:
       NOTREACHED();

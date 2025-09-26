@@ -42,6 +42,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".BOOKMARK" summary="BOOKMARK"/>
   <variant name=".COLLABORATION_GROUP" summary="COLLABORATION_GROUP"/>
   <variant name=".CONTACT_INFO" summary="CONTACT_INFO"/>
+  <variant name=".CONTEXTUAL_TASK" summary="CONTEXTUAL_TASK"/>
   <variant name=".COOKIE" summary="COOKIE"/>
   <variant name=".DEVICE_INFO" summary="DEVICE_INFO"/>
   <variant name=".DICTIONARY" summary="DICTIONARY"/>

@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(57 == syncer::GetNumDataTypes(),
+static_assert(58 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(57 == syncer::GetNumDataTypes(),
+static_assert(58 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -113,6 +113,7 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
         {sync_pb::EntitySpecifics::kAccountSettingFieldNumber, ACCOUNT_SETTING},
         {sync_pb::EntitySpecifics::kSharedCommentFieldNumber, SHARED_COMMENT},
         {sync_pb::EntitySpecifics::kAiThreadFieldNumber, AI_THREAD},
+        {sync_pb::EntitySpecifics::kContextualTaskFieldNumber, CONTEXTUAL_TASK},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -292,6 +293,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case AI_THREAD:
       specifics->mutable_ai_thread();
       break;
+    case CONTEXTUAL_TASK:
+      specifics->mutable_contextual_task();
+      break;
   }
 }
 
@@ -420,6 +424,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kSharedCommentFieldNumber;
     case AI_THREAD:
       return sync_pb::EntitySpecifics::kAiThreadFieldNumber;
+    case CONTEXTUAL_TASK:
+      return sync_pb::EntitySpecifics::kContextualTaskFieldNumber;
     case NIGORI:
       return sync_pb::EntitySpecifics::kNigoriFieldNumber;
   }
@@ -438,7 +444,7 @@ void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
 }
 
 DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(57 == syncer::GetNumDataTypes(),
+  static_assert(58 == syncer::GetNumDataTypes(),
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark()) {
@@ -609,6 +615,9 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
   if (specifics.has_ai_thread()) {
     return AI_THREAD;
   }
+  if (specifics.has_contextual_task()) {
+    return CONTEXTUAL_TASK;
+  }
 
   // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
@@ -631,7 +640,7 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(57 == syncer::GetNumDataTypes(),
+  static_assert(58 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
@@ -784,6 +793,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "SharedComment";
     case AI_THREAD:
       return "AI Thread";
+    case CONTEXTUAL_TASK:
+      return "Contextual Task";
     case NIGORI:
       return "Encryption Keys";
   }
@@ -903,6 +914,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "SHARED_COMMENT";
     case AI_THREAD:
       return "AI_THREAD";
+    case CONTEXTUAL_TASK:
+      return "CONTEXTUAL_TASK";
     case NIGORI:
       return "NIGORI";
     case ACCOUNT_SETTING:
@@ -1026,6 +1039,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kSharedComment;
     case AI_THREAD:
       return DataTypeForHistograms::kAIThread;
+    case CONTEXTUAL_TASK:
+      return DataTypeForHistograms::kContextualTask;
     case NIGORI:
       return DataTypeForHistograms::kNigori;
   }
@@ -1164,6 +1179,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "shared_comment";
     case AI_THREAD:
       return "ai_thread";
+    case CONTEXTUAL_TASK:
+      return "contextual_task";
     case NIGORI:
       return "nigori";
   }
