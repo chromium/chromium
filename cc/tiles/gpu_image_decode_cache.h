@@ -480,26 +480,9 @@ class CC_EXPORT GpuImageDecodeCache
       return transfer_cache_id_;
     }
 
-    void set_unmipped_image(sk_sp<SkImage> image) {
-      unmipped_image_ = std::move(image);
-    }
     sk_sp<SkImage> take_unmipped_image() {
       DCHECK(!is_locked_);
       return std::move(unmipped_image_);
-    }
-
-    void set_unmipped_yuv_images(sk_sp<SkImage> y_image,
-                                 sk_sp<SkImage> u_image,
-                                 sk_sp<SkImage> v_image) {
-      if (!unmipped_yuv_images_) {
-        unmipped_yuv_images_ = YUVSkImages();
-      }
-      unmipped_yuv_images_->at(static_cast<size_t>(YUVIndex::kY)) =
-          std::move(y_image);
-      unmipped_yuv_images_->at(static_cast<size_t>(YUVIndex::kU)) =
-          std::move(u_image);
-      unmipped_yuv_images_->at(static_cast<size_t>(YUVIndex::kV)) =
-          std::move(v_image);
     }
 
     sk_sp<SkImage> take_unmipped_y_image() {
