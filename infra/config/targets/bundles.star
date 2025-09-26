@@ -6849,7 +6849,7 @@ targets.bundle(
         targets.bundle(
             targets = "tvos_tests",
             variants = [
-                "SIM_APPLE_TV_4K_3RD_GENERATION_18_5",
+                "SIM_APPLE_TV_4K_3RD_GENERATION_26_0",
             ],
         ),
     ],

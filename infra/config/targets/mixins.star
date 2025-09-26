@@ -1401,13 +1401,13 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "tvos_runtime_cache_18_5",
+    name = "tvos_runtime_cache_26_0",
     generate_pyl_entry = False,
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "runtime_tvos_18_5",
-                path = "Runtime-tvos-18.5",
+                name = "runtime_tvos_26_0",
+                path = "Runtime-tvos-26.0",
             ),
         ],
     ),
