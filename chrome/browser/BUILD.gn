@@ -3817,6 +3817,8 @@ static_library("browser") {
       "enterprise/data_protection/data_protection_page_user_data.h",
       "enterprise/data_protection/data_protection_ui_controller.cc",
       "enterprise/data_protection/data_protection_ui_controller.h",
+      "enterprise/data_protection/data_protection_url_lookup_service.cc",
+      "enterprise/data_protection/data_protection_url_lookup_service.h",
       "enterprise/reporting/browser_report_generator_desktop.cc",
       "enterprise/reporting/browser_report_generator_desktop.h",
       "enterprise/reporting/extension_info.cc",

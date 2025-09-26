@@ -14,6 +14,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
@@ -131,23 +132,6 @@ bool SkipUrl(const GURL& url) {
          url.SchemeIs(extensions::kExtensionScheme);
 }
 
-using LookupCallback =
-    base::OnceCallback<void(std::unique_ptr<safe_browsing::RTLookupResponse>)>;
-
-void OnRealTimeLookupComplete(
-    LookupCallback callback,
-    const std::string& identifier,
-    bool is_success,
-    bool is_cached,
-    std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!is_success) {
-    rt_lookup_response.reset();
-  }
-
-  std::move(callback).Run(std::move(rt_lookup_response));
-}
-
 bool IsEnterpriseLookupEnabled(Profile* profile) {
   // Some tests return a non-null pointer for the enterprise lookup service,
   // so we need to defensively check if enterprise lookup is enabled.
@@ -172,19 +156,18 @@ void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
               const std::string& identifier,
               LookupCallback callback,
               content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(web_contents);
-  DCHECK(!callback.is_null());
   DCHECK(IsEnterpriseLookupEnabled(web_contents->GetBrowserContext()));
-  // The referring_app_info parameter to StartLookup is Android-specific.
-  lookup_service->StartMaybeCachedLookup(
-      url,
-      base::BindOnce(&OnRealTimeLookupComplete, std::move(callback),
-                     identifier),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      sessions::SessionTabHelper::IdForTab(web_contents),
-      /*referring_app_info=*/std::nullopt, /*use_cache=*/
-      !base::FeatureList::IsEnabled(kEnableSinglePageAppDataProtection));
+
+  auto* url_lookup_service =
+      DataProtectionUrlLookupServiceFactory::GetInstance()
+          ->GetForBrowserContext(web_contents->GetBrowserContext());
+
+  if (!url_lookup_service) {
+    return;
+  }
+
+  url_lookup_service->DoLookup(lookup_service, url, identifier,
+                               std::move(callback), web_contents);
 }
 
 std::string GetIdentifier(content::BrowserContext* browser_context) {
