@@ -15,10 +15,6 @@
   inset: 0;
 }
 
-:root::view-transition {
-  position: fixed;
-}
-
 ::view-transition-group(*) {
   position: absolute;
   top: 0;
