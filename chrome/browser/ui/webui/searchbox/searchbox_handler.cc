@@ -302,7 +302,8 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
   source->AddBoolean("enableThumbnailSizingTweaks", false);
   source->AddBoolean("enableCsbMotionTweaks", false);
   source->AddString("realboxLayoutMode",
-                    ntp_composebox::kRealboxLayoutModeDefault);
+                    ntp_composebox::RealboxLayoutModeToString(
+                        ntp_composebox::kRealboxLayoutMode.Get()));
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
