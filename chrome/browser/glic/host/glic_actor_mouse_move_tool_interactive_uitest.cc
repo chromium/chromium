@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/geometry/rect.h"
@@ -14,10 +14,9 @@ namespace {
 
 namespace apc = ::optimization_guide::proto;
 using apc::Actions;
-using MultiStep = GlicActorControllerUiTest::MultiStep;
+using MultiStep = GlicActorUiTest::MultiStep;
 
-class GlicActorControllerMouseMoveToolUiTest
-    : public GlicActorControllerUiTest {
+class GlicActorMouseMoveToolUiTest : public GlicActorUiTest {
  public:
   MultiStep MouseMoveAction(std::string_view label,
                             actor::TaskId& task_id,
@@ -28,7 +27,7 @@ class GlicActorControllerMouseMoveToolUiTest
                             ExpectedErrorResult expected_result = {});
 };
 
-MultiStep GlicActorControllerMouseMoveToolUiTest::MouseMoveAction(
+MultiStep GlicActorMouseMoveToolUiTest::MouseMoveAction(
     std::string_view label,
     actor::TaskId& task_id,
     tabs::TabHandle& tab_handle,
@@ -45,15 +44,14 @@ MultiStep GlicActorControllerMouseMoveToolUiTest::MouseMoveAction(
   return ExecuteAction(std::move(move_provider), std::move(expected_result));
 }
 
-MultiStep GlicActorControllerMouseMoveToolUiTest::MouseMoveAction(
+MultiStep GlicActorMouseMoveToolUiTest::MouseMoveAction(
     std::string_view label,
     ExpectedErrorResult expected_result) {
   return MouseMoveAction(label, task_id_, tab_handle_,
                          std::move(expected_result));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest,
-                       NonExistentNode) {
+IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, NonExistentNode) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
 
@@ -74,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest,
           actor::mojom::ActionResultCode::kInvalidDomNodeId));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest, Events) {
+IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, Events) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
 
@@ -93,8 +91,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest, Events) {
                       "DIV#second]"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest,
-                       TargetOutsideViewport) {
+IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, TargetOutsideViewport) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
 
@@ -110,8 +107,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest,
                       "mouseenter[DIV#offscreen],mousemove[DIV#offscreen]"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest,
-                       MoveToCoordinate) {
+IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest, MoveToCoordinate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   gfx::Rect first_bounds;
@@ -132,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest,
                       "mouseenter[DIV#first],mousemove[DIV#first]"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerMouseMoveToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorMouseMoveToolUiTest,
                        MoveToCoordinateOffScreen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/mouse_log.html");

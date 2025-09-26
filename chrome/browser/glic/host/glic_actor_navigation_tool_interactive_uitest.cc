@@ -4,7 +4,7 @@
 
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic::test {
@@ -14,9 +14,9 @@ namespace {
 using optimization_guide::proto::NavigateAction;
 
 using HistoryDirection = ::actor::HistoryToolRequest::Direction;
-using MultiStep = GlicActorControllerUiTest::MultiStep;
+using MultiStep = GlicActorUiTest::MultiStep;
 
-class GlicActorControllerNavigationUiTest : public GlicActorControllerUiTest {
+class GlicActorNavigationUiTest : public GlicActorUiTest {
  public:
   MultiStep HistoryAction(actor::HistoryToolRequest::Direction direction,
                           actor::TaskId& task_id,
@@ -27,7 +27,7 @@ class GlicActorControllerNavigationUiTest : public GlicActorControllerUiTest {
                           ExpectedErrorResult expected_result = {});
 };
 
-MultiStep GlicActorControllerNavigationUiTest::HistoryAction(
+MultiStep GlicActorNavigationUiTest::HistoryAction(
     HistoryDirection direction,
     actor::TaskId& task_id,
     tabs::TabHandle& tab_handle,
@@ -45,14 +45,14 @@ MultiStep GlicActorControllerNavigationUiTest::HistoryAction(
                        std::move(expected_result));
 }
 
-MultiStep GlicActorControllerNavigationUiTest::HistoryAction(
+MultiStep GlicActorNavigationUiTest::HistoryAction(
     HistoryDirection direction,
     ExpectedErrorResult expected_result) {
   return HistoryAction(direction, task_id_, tab_handle_,
                        std::move(expected_result));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerNavigationUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorNavigationUiTest,
                        UsesExistingActorTabOnSubsequentNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerNavigationUiTest,
                   WaitForWebContentsReady(kNewActorTabId, second_navigate_url));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerNavigationUiTest, HistoryTool) {
+IN_PROC_BROWSER_TEST_F(GlicActorNavigationUiTest, HistoryTool) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL url_1 = embedded_test_server()->GetURL("/actor/blank.html?1");
   const GURL url_2 = embedded_test_server()->GetURL("/actor/blank.html?2");

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_CONTROLLER_INTERACTIVE_UITEST_COMMON_H_
-#define CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_CONTROLLER_INTERACTIVE_UITEST_COMMON_H_
+#ifndef CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_INTERACTIVE_UITEST_COMMON_H_
+#define CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_INTERACTIVE_UITEST_COMMON_H_
 
 #include <memory>
 #include <optional>
@@ -28,7 +28,7 @@ namespace glic::test {
 // that changes in Chrome aren't breaking Glic (though this relies on manual
 // intervention anytime Glic changes and so is not a replacement for full
 // end-to-end tests).
-class GlicActorControllerUiTest : public test::InteractiveGlicTest {
+class GlicActorUiTest : public test::InteractiveGlicTest {
  public:
   using InteractiveTestApi::MultiStep;
   using ActionProtoProvider = base::OnceCallback<std::string()>;
@@ -45,8 +45,8 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
       "use ActivateSurface() may be skipped on machine configurations which do "
       "not reliably support them.";
 
-  GlicActorControllerUiTest();
-  ~GlicActorControllerUiTest() override;
+  GlicActorUiTest();
+  ~GlicActorUiTest() override;
 
   void SetUpOnMainThread() override;
 
@@ -203,4 +203,4 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 
 }  // namespace glic::test
 
-#endif  // CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_CONTROLLER_INTERACTIVE_UITEST_COMMON_H_
+#endif  // CHROME_BROWSER_GLIC_HOST_GLIC_ACTOR_INTERACTIVE_UITEST_COMMON_H_

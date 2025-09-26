@@ -4,7 +4,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -16,10 +16,9 @@ namespace glic::test {
 
 namespace {
 
-using MultiStep = GlicActorControllerUiTest::MultiStep;
+using MultiStep = GlicActorUiTest::MultiStep;
 
-class GlicActorControllerWindowManagementUiTest
-    : public GlicActorControllerUiTest {
+class GlicActorWindowManagementUiTest : public GlicActorUiTest {
  public:
   MultiStep CreateWindowAction(actor::TaskId& task_id,
                                ExpectedErrorResult expected_result = {});
@@ -33,7 +32,7 @@ class GlicActorControllerWindowManagementUiTest
                               ExpectedErrorResult expected_result = {});
 };
 
-MultiStep GlicActorControllerWindowManagementUiTest::CreateWindowAction(
+MultiStep GlicActorWindowManagementUiTest::CreateWindowAction(
     actor::TaskId& task_id,
     ExpectedErrorResult expected_result) {
   auto create_window_provider = base::BindLambdaForTesting([&task_id]() {
@@ -46,7 +45,7 @@ MultiStep GlicActorControllerWindowManagementUiTest::CreateWindowAction(
                        std::move(expected_result));
 }
 
-MultiStep GlicActorControllerWindowManagementUiTest::ActivateWindowAction(
+MultiStep GlicActorWindowManagementUiTest::ActivateWindowAction(
     actor::TaskId& task_id,
     SessionID& window_id,
     ExpectedErrorResult expected_result) {
@@ -61,7 +60,7 @@ MultiStep GlicActorControllerWindowManagementUiTest::ActivateWindowAction(
                        std::move(expected_result));
 }
 
-MultiStep GlicActorControllerWindowManagementUiTest::CloseWindowAction(
+MultiStep GlicActorWindowManagementUiTest::CloseWindowAction(
     actor::TaskId& task_id,
     SessionID& window_id,
     ExpectedErrorResult expected_result) {
@@ -76,8 +75,7 @@ MultiStep GlicActorControllerWindowManagementUiTest::CloseWindowAction(
                        std::move(expected_result));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerWindowManagementUiTest,
-                       WindowManagementTools) {
+IN_PROC_BROWSER_TEST_F(GlicActorWindowManagementUiTest, WindowManagementTools) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 
 #include <memory>
 #include <optional>
@@ -51,17 +51,15 @@ using ::content::RenderFrameHost;
 using ::content::WebContents;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
-using MultiStep = GlicActorControllerUiTest::MultiStep;
+using MultiStep = GlicActorUiTest::MultiStep;
 
 // static
-std::string GlicActorControllerUiTest::EncodeActionProto(
-    const Actions& action) {
+std::string GlicActorUiTest::EncodeActionProto(const Actions& action) {
   return base::Base64Encode(action.SerializeAsString());
 }
 
 // static
-std::optional<ActionsResult>
-GlicActorControllerUiTest::DecodeActionsResultProto(
+std::optional<ActionsResult> GlicActorUiTest::DecodeActionsResultProto(
     const std::string& base64_proto) {
   std::string decoded_proto;
   if (!base::Base64Decode(base64_proto, &decoded_proto)) {
@@ -74,7 +72,7 @@ GlicActorControllerUiTest::DecodeActionsResultProto(
   return actions_result;
 }
 
-GlicActorControllerUiTest::GlicActorControllerUiTest() {
+GlicActorUiTest::GlicActorUiTest() {
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {// Increase timeout since tests are timing out with ASAN builds.
@@ -86,22 +84,21 @@ GlicActorControllerUiTest::GlicActorControllerUiTest() {
         {}}},
       /*disabled_features=*/{});
 }
-GlicActorControllerUiTest::~GlicActorControllerUiTest() = default;
+GlicActorUiTest::~GlicActorUiTest() = default;
 
-void GlicActorControllerUiTest::SetUpOnMainThread() {
+void GlicActorUiTest::SetUpOnMainThread() {
   // Add rule for resolving cross origin host names.
   InteractiveGlicTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
 }
 
-const actor::ActorTask* GlicActorControllerUiTest::GetActorTask() {
+const actor::ActorTask* GlicActorUiTest::GetActorTask() {
   auto* actor_service = actor::ActorKeyedService::Get(browser()->profile());
   return actor_service->GetTask(task_id_);
 }
 
-MultiStep GlicActorControllerUiTest::ExecuteAction(
-    ActionProtoProvider proto_provider,
-    ExpectedErrorResult expected_result) {
+MultiStep GlicActorUiTest::ExecuteAction(ActionProtoProvider proto_provider,
+                                         ExpectedErrorResult expected_result) {
   static constexpr int kResultSuccess =
       base::to_underlying(actor::mojom::ActionResultCode::kOk);
   static constexpr std::string_view kSuccessString = "<Success>";
@@ -181,8 +178,8 @@ MultiStep GlicActorControllerUiTest::ExecuteAction(
           expected_result_string, "ExecuteAction"));
 }
 
-MultiStep GlicActorControllerUiTest::CreateTask(actor::TaskId& out_task,
-                                                std::string_view title) {
+MultiStep GlicActorUiTest::CreateTask(actor::TaskId& out_task,
+                                      std::string_view title) {
   return InAnyContext(WithElement(
       kGlicContentsElementId,
       [&out_task, title = std::string(title)](ui::TrackedElement* el) mutable {
@@ -198,7 +195,7 @@ MultiStep GlicActorControllerUiTest::CreateTask(actor::TaskId& out_task,
       }));
 }
 
-MultiStep GlicActorControllerUiTest::CreateTabAction(
+MultiStep GlicActorUiTest::CreateTabAction(
     actor::TaskId& task_id,
     SessionID window_id,
     bool foreground,
@@ -217,9 +214,9 @@ MultiStep GlicActorControllerUiTest::CreateTabAction(
                        std::move(expected_result));
 }
 
-MultiStep GlicActorControllerUiTest::GetClientRect(ui::ElementIdentifier tab_id,
-                                                   std::string_view element_id,
-                                                   gfx::Rect& out_rect) {
+MultiStep GlicActorUiTest::GetClientRect(ui::ElementIdentifier tab_id,
+                                         std::string_view element_id,
+                                         gfx::Rect& out_rect) {
   return Steps(InAnyContext(WithElement(tab_id, [element_id, &out_rect](
                                                     ui::TrackedElement* el) {
     const base::Value result =
@@ -234,13 +231,12 @@ MultiStep GlicActorControllerUiTest::GetClientRect(ui::ElementIdentifier tab_id,
   })));
 }
 
-MultiStep GlicActorControllerUiTest::ClickAction(
-    std::string_view label,
-    ClickType click_type,
-    ClickCount click_count,
-    actor::TaskId& task_id,
-    TabHandle& tab_handle,
-    ExpectedErrorResult expected_result) {
+MultiStep GlicActorUiTest::ClickAction(std::string_view label,
+                                       ClickType click_type,
+                                       ClickCount click_count,
+                                       actor::TaskId& task_id,
+                                       TabHandle& tab_handle,
+                                       ExpectedErrorResult expected_result) {
   auto click_provider = base::BindLambdaForTesting(
       [this, &task_id, &tab_handle, label, click_type, click_count]() {
         int32_t node_id = SearchAnnotatedPageContent(label);
@@ -254,22 +250,20 @@ MultiStep GlicActorControllerUiTest::ClickAction(
   return ExecuteAction(std::move(click_provider), std::move(expected_result));
 }
 
-MultiStep GlicActorControllerUiTest::ClickAction(
-    std::string_view label,
-    ClickType click_type,
-    ClickCount click_count,
-    ExpectedErrorResult expected_result) {
+MultiStep GlicActorUiTest::ClickAction(std::string_view label,
+                                       ClickType click_type,
+                                       ClickCount click_count,
+                                       ExpectedErrorResult expected_result) {
   return ClickAction(label, click_type, click_count, task_id_, tab_handle_,
                      std::move(expected_result));
 }
 
-MultiStep GlicActorControllerUiTest::ClickAction(
-    const gfx::Point& coordinate,
-    ClickType click_type,
-    ClickCount click_count,
-    actor::TaskId& task_id,
-    TabHandle& tab_handle,
-    ExpectedErrorResult expected_result) {
+MultiStep GlicActorUiTest::ClickAction(const gfx::Point& coordinate,
+                                       ClickType click_type,
+                                       ClickCount click_count,
+                                       actor::TaskId& task_id,
+                                       TabHandle& tab_handle,
+                                       ExpectedErrorResult expected_result) {
   auto click_provider = base::BindLambdaForTesting(
       [&task_id, &tab_handle, coordinate, click_type, click_count]() {
         Actions action =
@@ -280,20 +274,18 @@ MultiStep GlicActorControllerUiTest::ClickAction(
   return ExecuteAction(std::move(click_provider), std::move(expected_result));
 }
 
-MultiStep GlicActorControllerUiTest::ClickAction(
-    const gfx::Point& coordinate,
-    ClickType click_type,
-    ClickCount click_count,
-    ExpectedErrorResult expected_result) {
+MultiStep GlicActorUiTest::ClickAction(const gfx::Point& coordinate,
+                                       ClickType click_type,
+                                       ClickCount click_count,
+                                       ExpectedErrorResult expected_result) {
   return ClickAction(coordinate, click_type, click_count, task_id_, tab_handle_,
                      std::move(expected_result));
 }
 
-MultiStep GlicActorControllerUiTest::NavigateAction(
-    GURL url,
-    actor::TaskId& task_id,
-    tabs::TabHandle& tab_handle,
-    ExpectedErrorResult expected_result) {
+MultiStep GlicActorUiTest::NavigateAction(GURL url,
+                                          actor::TaskId& task_id,
+                                          tabs::TabHandle& tab_handle,
+                                          ExpectedErrorResult expected_result) {
   auto navigate_provider =
       base::BindLambdaForTesting([&task_id, &tab_handle, url]() {
         optimization_guide::proto::Actions action =
@@ -305,13 +297,12 @@ MultiStep GlicActorControllerUiTest::NavigateAction(
                        std::move(expected_result));
 }
 
-MultiStep GlicActorControllerUiTest::NavigateAction(
-    GURL url,
-    ExpectedErrorResult expected_result) {
+MultiStep GlicActorUiTest::NavigateAction(GURL url,
+                                          ExpectedErrorResult expected_result) {
   return NavigateAction(url, task_id_, tab_handle_, std::move(expected_result));
 }
 
-MultiStep GlicActorControllerUiTest::StartActorTaskInNewTab(
+MultiStep GlicActorUiTest::StartActorTaskInNewTab(
     const GURL& task_url,
     ui::ElementIdentifier new_tab_id) {
   return Steps(
@@ -337,7 +328,7 @@ MultiStep GlicActorControllerUiTest::StartActorTaskInNewTab(
   );
 }
 
-MultiStep GlicActorControllerUiTest::RoundTrip() {
+MultiStep GlicActorUiTest::RoundTrip() {
   return Steps(
       InAnyContext(
           WithElement(kGlicContentsElementId,
@@ -353,7 +344,7 @@ MultiStep GlicActorControllerUiTest::RoundTrip() {
       })));
 }
 
-MultiStep GlicActorControllerUiTest::StopActorTask() {
+MultiStep GlicActorUiTest::StopActorTask() {
   return Steps(InAnyContext(WithElement(
                    kGlicContentsElementId,
                    [&task_id = task_id_](ui::TrackedElement* el) {
@@ -366,7 +357,7 @@ MultiStep GlicActorControllerUiTest::StopActorTask() {
                RoundTrip());
 }
 
-MultiStep GlicActorControllerUiTest::PauseActorTask() {
+MultiStep GlicActorUiTest::PauseActorTask() {
   return Steps(InAnyContext(WithElement(
                    kGlicContentsElementId,
                    [&task_id = task_id_](ui::TrackedElement* el) {
@@ -379,9 +370,8 @@ MultiStep GlicActorControllerUiTest::PauseActorTask() {
                RoundTrip());
 }
 
-MultiStep GlicActorControllerUiTest::ResumeActorTask(
-    base::Value::Dict context_options,
-    bool expected) {
+MultiStep GlicActorUiTest::ResumeActorTask(base::Value::Dict context_options,
+                                           bool expected) {
   return InAnyContext(CheckElement(
       kGlicContentsElementId,
       [&task_id = task_id_, context_options = std::move(context_options)](
@@ -405,7 +395,7 @@ MultiStep GlicActorControllerUiTest::ResumeActorTask(
       expected));
 }
 
-MultiStep GlicActorControllerUiTest::WaitForActorTaskState(
+MultiStep GlicActorUiTest::WaitForActorTaskState(
     mojom::ActorTaskState expected_state) {
   // WaitForActorTaskState doesn't reliably check the stopped state, since the
   // observable may have already been deleted.
@@ -428,7 +418,7 @@ MultiStep GlicActorControllerUiTest::WaitForActorTaskState(
       }));
 }
 
-MultiStep GlicActorControllerUiTest::PrepareForStopStateChange() {
+MultiStep GlicActorUiTest::PrepareForStopStateChange() {
   return InAnyContext(WithElement(
       kGlicContentsElementId, [&task_id = task_id_](ui::TrackedElement* el) {
         content::WebContents* glic_contents =
@@ -441,7 +431,7 @@ MultiStep GlicActorControllerUiTest::PrepareForStopStateChange() {
       }));
 }
 
-MultiStep GlicActorControllerUiTest::WaitForActorTaskStateChangeToStopped() {
+MultiStep GlicActorUiTest::WaitForActorTaskStateChangeToStopped() {
   return InAnyContext(
       WithElement(kGlicContentsElementId, [](ui::TrackedElement* el) {
         content::WebContents* glic_contents =
@@ -455,12 +445,12 @@ MultiStep GlicActorControllerUiTest::WaitForActorTaskStateChangeToStopped() {
       }));
 }
 
-GlicActorControllerUiTest::ActionProtoProvider
-GlicActorControllerUiTest::ArbitraryStringProvider(std::string_view str) {
+GlicActorUiTest::ActionProtoProvider GlicActorUiTest::ArbitraryStringProvider(
+    std::string_view str) {
   return base::BindLambdaForTesting([str]() { return std::string(str); });
 }
 
-base::Value::Dict GlicActorControllerUiTest::UpdatedContextOptions() {
+base::Value::Dict GlicActorUiTest::UpdatedContextOptions() {
   return base::Value::Dict()
       .Set("annotatedPageContent", true)
 #if BUILDFLAG(IS_LINUX)
@@ -472,7 +462,7 @@ base::Value::Dict GlicActorControllerUiTest::UpdatedContextOptions() {
 #endif
 }
 
-MultiStep GlicActorControllerUiTest::InitializeWithOpenGlicWindow() {
+MultiStep GlicActorUiTest::InitializeWithOpenGlicWindow() {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCurrentActiveTabId);
 
   // Navigate to ensure the initial tab has some valid content loaded that the
@@ -485,7 +475,7 @@ MultiStep GlicActorControllerUiTest::InitializeWithOpenGlicWindow() {
                OpenGlicWindow(GlicWindowMode::kAttached));
 }
 
-MultiStep GlicActorControllerUiTest::GetPageContextFromFocusedTab() {
+MultiStep GlicActorUiTest::GetPageContextFromFocusedTab() {
   return Steps(Do([&]() {
     GlicKeyedService* glic_service =
         GlicKeyedServiceFactory::GetGlicKeyedService(browser()->GetProfile());
@@ -519,9 +509,8 @@ MultiStep GlicActorControllerUiTest::GetPageContextFromFocusedTab() {
   }));
 }
 
-MultiStep GlicActorControllerUiTest::CheckIsActingOnTab(
-    ui::ElementIdentifier tab,
-    bool expected) {
+MultiStep GlicActorUiTest::CheckIsActingOnTab(ui::ElementIdentifier tab,
+                                              bool expected) {
   return InAnyContext(CheckElement(
       tab,
       [](ui::TrackedElement* el) {
@@ -536,9 +525,8 @@ MultiStep GlicActorControllerUiTest::CheckIsActingOnTab(
       expected));
 }
 
-MultiStep GlicActorControllerUiTest::CheckHasTaskForTab(
-    ui::ElementIdentifier tab,
-    bool expected) {
+MultiStep GlicActorUiTest::CheckHasTaskForTab(ui::ElementIdentifier tab,
+                                              bool expected) {
   return InAnyContext(CheckElement(
       tab,
       [](ui::TrackedElement* el) {
@@ -553,9 +541,8 @@ MultiStep GlicActorControllerUiTest::CheckHasTaskForTab(
       expected));
 }
 
-MultiStep GlicActorControllerUiTest::CheckIsWebContentsCaptured(
-    ui::ElementIdentifier tab,
-    bool expected) {
+MultiStep GlicActorUiTest::CheckIsWebContentsCaptured(ui::ElementIdentifier tab,
+                                                      bool expected) {
   return InAnyContext(CheckElement(
       tab,
       [](ui::TrackedElement* el) {
@@ -566,12 +553,11 @@ MultiStep GlicActorControllerUiTest::CheckIsWebContentsCaptured(
       expected));
 }
 
-const std::optional<ActionsResult>&
-GlicActorControllerUiTest::last_execution_result() const {
+const std::optional<ActionsResult>& GlicActorUiTest::last_execution_result()
+    const {
   return last_execution_result_;
 }
-int32_t GlicActorControllerUiTest::SearchAnnotatedPageContent(
-    std::string_view label) {
+int32_t GlicActorUiTest::SearchAnnotatedPageContent(std::string_view label) {
   CHECK(annotated_page_content_)
       << "An observation must be made with GetPageContextFromFocusedTab "
          "before searching annotated page content.";

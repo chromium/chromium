@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -16,17 +16,16 @@ namespace {
 namespace apc = ::optimization_guide::proto;
 
 using apc::ClickAction;
-using MultiStep = GlicActorControllerUiTest::MultiStep;
+using MultiStep = GlicActorUiTest::MultiStep;
 
-class GlicActorControllerTaskManagementToolUiTest
-    : public GlicActorControllerUiTest {
+class GlicActorTaskManagementToolUiTest : public GlicActorUiTest {
  public:
   // Note that CloseTab does not actually wait for the tab to close, as that is
   // done asynchronously.
   MultiStep CloseTab(ui::ElementIdentifier tab);
 };
 
-MultiStep GlicActorControllerTaskManagementToolUiTest::CloseTab(
+MultiStep GlicActorTaskManagementToolUiTest::CloseTab(
     ui::ElementIdentifier tab) {
   return InAnyContext(WithElement(tab, [this](ui::TrackedElement* el) {
                         content::WebContents* contents =
@@ -36,8 +35,7 @@ MultiStep GlicActorControllerTaskManagementToolUiTest::CloseTab(
 }
 
 // Ensure that a task can be stopped and that further actions fail.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
-                       StopActorTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, StopActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -60,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
 }
 
 // Tests that closing a tab that's being acted on stops the associated task.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        StopActorTaskOnTabClose) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
@@ -79,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
 }
 
 // Ensure that a task can be started after a previous task was stopped.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        StopThenStartActTask) {
   constexpr std::string_view kClickableButtonLabel = "clickable";
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
@@ -114,8 +112,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
 }
 
 // Ensure that a task can be paused and that further actions fail.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
-                       PauseActorTask) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, PauseActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -143,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        PauseThenStopActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
@@ -173,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        PauseAlreadyPausedActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
@@ -199,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        PauseThenResumeActorTask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
@@ -230,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        ResumeActorTaskWithoutATask) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
@@ -252,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        ResumeActorTaskWhenAlreadyResumed) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
@@ -266,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
                   ResumeActorTask(UpdatedContextOptions(), false));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest,
                        ActuationSucceedsOnBackgroundTabAfterPauseAndResume) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
@@ -301,8 +298,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
   // clang-format on
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
-                       CreateTaskWithTitle) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, CreateTaskWithTitle) {
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   const std::string task_title = "My test title";
@@ -318,8 +314,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
                       task_title, "Task has title"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerTaskManagementToolUiTest,
-                       CreateTaskNoTitle) {
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementToolUiTest, CreateTaskNoTitle) {
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
 

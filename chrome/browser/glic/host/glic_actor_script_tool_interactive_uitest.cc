@@ -4,7 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -16,13 +16,12 @@ namespace {
 namespace apc = ::optimization_guide::proto;
 using apc::Actions;
 
-class GlicActorControllerWithScriptToolsTest
-    : public GlicActorControllerUiTest {
+class GlicActorWithScriptToolsTest : public GlicActorUiTest {
  public:
-  GlicActorControllerWithScriptToolsTest() {
+  GlicActorWithScriptToolsTest() {
     scoped_feature_list_.InitAndEnableFeature(blink::features::kScriptTools);
   }
-  ~GlicActorControllerWithScriptToolsTest() override = default;
+  ~GlicActorWithScriptToolsTest() override = default;
 
   auto ScriptAction(const std::string& name,
                     const std::string& input_arguments) {
@@ -51,7 +50,7 @@ class GlicActorControllerWithScriptToolsTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerWithScriptToolsTest, Basic) {
+IN_PROC_BROWSER_TEST_F(GlicActorWithScriptToolsTest, Basic) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   const GURL task_url =

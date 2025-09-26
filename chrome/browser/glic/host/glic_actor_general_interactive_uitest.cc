@@ -8,7 +8,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/browser_action_util.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
@@ -21,10 +21,10 @@ using ::base::test::EqualsProto;
 
 namespace apc = ::optimization_guide::proto;
 using ClickAction = apc::ClickAction;
-using MultiStep = GlicActorControllerUiTest::MultiStep;
+using MultiStep = GlicActorUiTest::MultiStep;
 using apc::AnnotatedPageContent;
 
-class GlicActorControllerGeneralUiTest : public GlicActorControllerUiTest {
+class GlicActorGeneralUiTest : public GlicActorUiTest {
  public:
   MultiStep CheckActorTabDataHasAnnotatedPageContentCache();
   MultiStep OpenDevToolsWindow(ui::ElementIdentifier contents_to_inspect);
@@ -33,8 +33,8 @@ class GlicActorControllerGeneralUiTest : public GlicActorControllerUiTest {
   MultiStep WaitAction(ExpectedErrorResult expected_result = {});
 };
 
-MultiStep GlicActorControllerGeneralUiTest::
-    CheckActorTabDataHasAnnotatedPageContentCache() {
+MultiStep
+GlicActorGeneralUiTest::CheckActorTabDataHasAnnotatedPageContentCache() {
   return Steps(Do([&]() {
     // TODO(crbug.com/420669167): Needs to be reconsidered for multi-tab.
     const AnnotatedPageContent* cached_apc =
@@ -46,7 +46,7 @@ MultiStep GlicActorControllerGeneralUiTest::
   }));
 }
 
-MultiStep GlicActorControllerGeneralUiTest::OpenDevToolsWindow(
+MultiStep GlicActorGeneralUiTest::OpenDevToolsWindow(
     ui::ElementIdentifier contents_to_inspect) {
   return InAnyContext(
       WithElement(contents_to_inspect, [](ui::TrackedElement* el) {
@@ -57,7 +57,7 @@ MultiStep GlicActorControllerGeneralUiTest::OpenDevToolsWindow(
       }));
 }
 
-MultiStep GlicActorControllerGeneralUiTest::WaitAction(
+MultiStep GlicActorGeneralUiTest::WaitAction(
     actor::TaskId& task_id,
     ExpectedErrorResult expected_result) {
   auto wait_provider = base::BindLambdaForTesting([&task_id]() {
@@ -68,13 +68,12 @@ MultiStep GlicActorControllerGeneralUiTest::WaitAction(
   return ExecuteAction(std::move(wait_provider), std::move(expected_result));
 }
 
-MultiStep GlicActorControllerGeneralUiTest::WaitAction(
+MultiStep GlicActorGeneralUiTest::WaitAction(
     ExpectedErrorResult expected_result) {
   return WaitAction(task_id_, std::move(expected_result));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
-                       CreateTaskAndNavigate) {
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, CreateTaskAndNavigate) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   const GURL task_url =
@@ -85,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
                   WaitForWebContentsReady(kNewActorTabId, task_url));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
                        CachesLastObservedPageContentAfterActionFinish) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
@@ -98,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
                   CheckActorTabDataHasAnnotatedPageContentCache());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest, ActionProtoInvalid) {
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, ActionProtoInvalid) {
   std::string encodedProto = base::Base64Encode("invalid serialized bytes");
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
@@ -106,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest, ActionProtoInvalid) {
                     mojom::PerformActionsErrorReason::kInvalidProto));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest, ActionTargetNotFound) {
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, ActionTargetNotFound) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
@@ -128,8 +127,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest, ActionTargetNotFound) {
                     actor::mojom::ActionResultCode::kInvalidDomNodeId));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
-                       GetPageContextWithoutFocus) {
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, GetPageContextWithoutFocus) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
 
@@ -150,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
       WaitAction());
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
-                       StartTaskWithDevtoolsOpen) {
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, StartTaskWithDevtoolsOpen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   const GURL task_url =
@@ -167,8 +164,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
 
 // Test that nothing breaks if the first action isn't tab scoped.
 // crbug.com/431239173.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
-                       FirstActionIsntTabScoped) {
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, FirstActionIsntTabScoped) {
   // Wait is an example of an action that isn't tab scoped.
   RunTestSequence(
       // clang-format off
@@ -179,27 +175,25 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
   );
 }
 
-class GlicActorControllerWithActorDisabledUiTest
-    : public test::InteractiveGlicTest {
+class GlicActorWithActorDisabledUiTest : public test::InteractiveGlicTest {
  public:
-  GlicActorControllerWithActorDisabledUiTest() {
+  GlicActorWithActorDisabledUiTest() {
     scoped_feature_list_.InitAndDisableFeature(features::kGlicActor);
   }
-  ~GlicActorControllerWithActorDisabledUiTest() override = default;
+  ~GlicActorWithActorDisabledUiTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerWithActorDisabledUiTest,
-                       ActorNotAvailable) {
+IN_PROC_BROWSER_TEST_F(GlicActorWithActorDisabledUiTest, ActorNotAvailable) {
   RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
                   InAnyContext(CheckJsResult(
                       kGlicContentsElementId,
                       "() => { return !(client.browser.actInFocusedTab); }")));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
                        ActuationSucceedsOnBackgroundTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
@@ -231,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
 
 // Basic test to check that the ActionsResult proto returned from PerformActions
 // is filled in with the window and tab observation fields.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerGeneralUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
                        PerformActionsResultObservations) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);

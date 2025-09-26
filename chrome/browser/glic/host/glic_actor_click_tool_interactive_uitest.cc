@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 
@@ -16,7 +16,7 @@ using apc::ClickAction;
 using ClickType = ClickAction::ClickType;
 using ClickCount = ClickAction::ClickCount;
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ClickActionSucceeds) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ClickActionSucceeds) {
                   WaitForJsResult(kNewActorTabId, "expect_single_left_click"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DblClickActionSucceeds) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DblClickActionSucceeds) {
                   WaitForJsResult(kNewActorTabId, "expect_double_left_click"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, RightClickActionSucceeds) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, RightClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, RightClickActionSucceeds) {
                   WaitForJsResult(kNewActorTabId, "expect_single_right_click"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DblRightClickActionSucceeds) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblRightClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 

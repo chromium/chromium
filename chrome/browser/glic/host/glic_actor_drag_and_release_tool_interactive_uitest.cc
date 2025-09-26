@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
 #include "ui/gfx/geometry/rect.h"
@@ -15,7 +15,7 @@ namespace {
 namespace apc = ::optimization_guide::proto;
 using apc::Actions;
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DragAndReleaseTool_Range) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Range) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/drag.html");
 
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DragAndReleaseTool_Range) {
 }
 
 // Ensure the drag tool sends the expected mouse down, move and up events.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DragAndReleaseTool_Events) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Events) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/drag.html");
 
@@ -78,8 +78,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DragAndReleaseTool_Events) {
 }
 
 // Ensure coordinates outside of the viewport are rejected.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
-                       DragAndReleaseTool_Offscreen) {
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DragAndReleaseTool_Offscreen) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url = embedded_test_server()->GetURL("/actor/drag.html");
 

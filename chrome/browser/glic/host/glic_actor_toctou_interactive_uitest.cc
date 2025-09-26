@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/actor/actor_test_util.h"
-#include "chrome/browser/glic/host/glic_actor_controller_interactive_uitest_common.h"
+#include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
@@ -16,16 +16,16 @@ namespace {
 namespace apc = ::optimization_guide::proto;
 
 using apc::ClickAction;
-using MultiStep = GlicActorControllerUiTest::MultiStep;
+using MultiStep = GlicActorUiTest::MultiStep;
 
-class GlicActorControllerToctouUiTest : public GlicActorControllerUiTest {
+class GlicActorToctouUiTest : public GlicActorUiTest {
  public:
   MultiStep NavigateFrame(ui::ElementIdentifier webcontents_id,
                           const std::string_view frame,
                           const GURL& url);
 };
 
-MultiStep GlicActorControllerToctouUiTest::NavigateFrame(
+MultiStep GlicActorToctouUiTest::NavigateFrame(
     ui::ElementIdentifier webcontents_id,
     const std::string_view frame,
     const GURL& url) {
@@ -34,7 +34,7 @@ MultiStep GlicActorControllerToctouUiTest::NavigateFrame(
                                        "').src='", url.spec(), "';}"})));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailWhenCrossOriginTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailWhenSameSiteTargetFrameChange) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
@@ -108,8 +108,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
-                       ToctouCheckFailWhenNodeRemoved) {
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, ToctouCheckFailWhenNodeRemoved) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
@@ -129,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailForCoordinateTargetWhenNodeMoved) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
@@ -154,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
   );
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest,
                        ToctouCheckFailsWhenNodeInteractionPointObscured) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   const GURL task_url =
@@ -184,8 +183,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
 
 // Ensure the time-of-use check can succeed when clicking on a text node rather
 // than an element.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
-                       TimeOfUseCheckOnTextNode) {
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnTextNode) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
   const GURL task_url =
@@ -219,8 +217,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
 
 // Ensure the time-of-use check can succeed when a click is dispatched to an
 // element within a shadow DOM that overlaps its host.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerToctouUiTest,
-                       TimeOfUseCheckOnShadowDom) {
+IN_PROC_BROWSER_TEST_F(GlicActorToctouUiTest, TimeOfUseCheckOnShadowDom) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   constexpr std::string_view kClickableButtonLabel = "clickable";
 
