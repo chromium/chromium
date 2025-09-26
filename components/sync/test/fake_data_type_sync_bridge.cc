@@ -4,7 +4,6 @@
 
 #include "components/sync/test/fake_data_type_sync_bridge.h"
 
-#include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -25,6 +24,7 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
@@ -196,7 +196,7 @@ std::optional<ModelError> FakeDataTypeSyncBridge::MergeFullSyncData(
     return ModelError(FROM_HERE, syncer::ModelError::Type::kGenericTestError);
   }
 
-  std::set<std::string> remote_storage_keys;
+  absl::flat_hash_set<std::string> remote_storage_keys;
   // Store any new remote entities.
   for (const std::unique_ptr<EntityChange>& change : entity_data) {
     EXPECT_FALSE(change->data().is_deleted());
