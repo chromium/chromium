@@ -36,6 +36,8 @@ test("fuzzing_unittests") {
 
   if (use_fuzzing_engine) {
     sources += [
+      "fuzz_target.cc",
+      "fuzz_target.h",
       "fuzzer_smoke_test.cc",
       "stacktrace_test.cc",
     ]
@@ -43,6 +45,7 @@ test("fuzzing_unittests") {
     deps += [
       "//base",
       "//testing/gmock",
+      "//testing/libfuzzer:buildflags",
     ]
 
     data_deps += [

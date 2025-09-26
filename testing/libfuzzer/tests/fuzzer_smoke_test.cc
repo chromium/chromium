@@ -2,40 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base_paths.h"
-#include "base/command_line.h"
-#include "base/containers/span.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/path_service.h"
-#include "base/process/launch.h"
 #include "base/sanitizer_buildflags.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/libfuzzer/tests/fuzz_target.h"
 
+namespace fuzzing {
 namespace {
 
 using testing::ContainsRegex;
+using testing::ElementsAre;
+using testing::IsEmpty;
 
-base::FilePath FuzzerPath(std::string_view fuzzer_name) {
-  base::FilePath out_dir;
-  base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &out_dir);
+TEST(FuzzerSmokeTest, EmptyFuzzerFindsNoCrashes) {
+  auto target = FuzzTarget::Make("empty_fuzzer");
+  ASSERT_TRUE(target);
 
-  return out_dir.AppendASCII(fuzzer_name);
-}
+  EXPECT_TRUE(target->Fuzz({.timeout_secs = 5})) << target->output();
 
-TEST(FuzzerSmokeTest, EmptyFuzzerRunsForOneSecond) {
-  base::CommandLine cmd(FuzzerPath("empty_fuzzer"));
-  cmd.AppendArg("-max_total_time=1");
-
-  std::string output;
-  EXPECT_TRUE(base::GetAppOutputAndError(cmd, &output));  // No crash.
-
-  EXPECT_THAT(output,
-              ContainsRegex(R"(Done [1-9][0-9]* runs in [0-9]+ second\(s\))"))
-      << output;  // Print unescaped stack trace for easier debugging.
+  EXPECT_THAT(target->GetCrashingInputs(), IsEmpty());
 }
 
 // TODO(https://crbug.com/445826636): Fix and re-enable.
@@ -45,25 +31,13 @@ TEST(FuzzerSmokeTest, EmptyFuzzerRunsForOneSecond) {
 #define MAYBE_FuzzerSolvesStringComparison FuzzerSolvesStringComparison
 #endif
 TEST(FuzzerSmokeTest, MAYBE_FuzzerSolvesStringComparison) {
-  base::ScopedTempDir dir;
-  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  auto target = FuzzTarget::Make("string_compare_fuzzer");
+  ASSERT_TRUE(target);
 
-  base::FilePath solution_path = dir.GetPath().AppendASCII("solution");
+  target->Fuzz({.timeout_secs = 5});
 
-  base::CommandLine cmd(FuzzerPath("string_compare_fuzzer"));
-  cmd.AppendArg("-max_total_time=5");
-  cmd.AppendArg("-exact_artifact_path=" + solution_path.MaybeAsASCII());
-
-  std::string output;
-  EXPECT_FALSE(base::GetAppOutputAndError(cmd, &output));  // Finds the crash.
-
-  EXPECT_THAT(output,
-              ContainsRegex(R"(SUMMARY: libFuzzer: fuzz target exited)"))
-      << output;  // Print unescaped output for easier debugging.
-
-  std::string solution;
-  EXPECT_TRUE(base::ReadFileToString(solution_path, &solution));
-  EXPECT_EQ(solution, "fish");
+  EXPECT_THAT(target->GetCrashingInputs(), ElementsAre("fish"))
+      << target->output();
 }
 
 // TODO(https://crbug.com/445826636): Fix and re-enable.
@@ -75,25 +49,14 @@ TEST(FuzzerSmokeTest, MAYBE_FuzzerSolvesStringComparison) {
   FuzzerSolvesProtoStringComparison
 #endif
 TEST(FuzzerSmokeTest, MAYBE_FuzzerSolvesProtoStringComparison) {
-  base::ScopedTempDir dir;
-  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  auto target = FuzzTarget::Make("string_compare_proto_fuzzer");
+  ASSERT_TRUE(target);
 
-  base::FilePath solution_path = dir.GetPath().AppendASCII("solution");
+  target->Fuzz({.timeout_secs = 5});
 
-  base::CommandLine cmd(FuzzerPath("string_compare_proto_fuzzer"));
-  cmd.AppendArg("-max_total_time=5");
-  cmd.AppendArg("-exact_artifact_path=" + solution_path.MaybeAsASCII());
-
-  std::string output;
-  EXPECT_FALSE(base::GetAppOutputAndError(cmd, &output));  // Finds the crash.
-
-  EXPECT_THAT(output,
-              ContainsRegex(R"(SUMMARY: libFuzzer: fuzz target exited)"))
-      << output;  // Print unescaped output for easier debugging.
-
-  std::string solution;
-  EXPECT_TRUE(base::ReadFileToString(solution_path, &solution));
-  EXPECT_EQ(solution, "\012\004fish");
+  EXPECT_THAT(target->GetCrashingInputs(), ElementsAre("\012\004fish"))
+      << target->output();
 }
 
 }  // namespace
+}  // namespace fuzzing
