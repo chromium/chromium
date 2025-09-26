@@ -28,11 +28,9 @@ class WebContents;
 //
 // The saved_state_version parameter is which version of the saved state format
 // the buffer stores; the known versions are:
-//   0: Chrome <= 18
-//   1: Chrome 18 - 25
+//   0: Chrome <= 18 (Deprecated)
+//   1: Chrome 18 - 25 (Deprecated)
 //   2: Chrome 26+
-// TODO(crbug.com/41493935): Get rid of the old versions and possibly the
-// version field altogether.
 struct WebContentsStateByteBuffer {
   WebContentsStateByteBuffer(base::android::ScopedJavaLocalRef<jobject>
                                  web_contents_byte_buffer_result,

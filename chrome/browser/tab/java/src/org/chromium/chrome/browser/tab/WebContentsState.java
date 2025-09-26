@@ -29,8 +29,8 @@ public class WebContentsState {
      *
      * <pre>
      *   Version labels:
-     *     0 - Chrome m18
-     *     1 - Chrome m25
+     *     0 - Chrome m18 (Deprecated)
+     *     1 - Chrome m25 (Deprecated)
      *     2 - Chrome m26+
      * </pre>
      */

@@ -89,186 +89,6 @@ void WriteStateHeaderToPickle(bool off_the_record,
   pickle->WriteInt(current_entry_index);
 }
 
-// Migrates a pickled SerializedNavigationEntry from Android tab version 0 to
-// 2 or (Chrome 18->26).
-//
-// Due to the fact that all SerializedNavigationEntrys were previously stored
-// in a single pickle on Android, this function has to read the fields exactly
-// how they were written on m18 which is a custom format and different other
-// chromes.
-//
-// This uses the fields from SerializedNavigationEntry/TabNavigation from:
-// https://gerrit-int.chromium.org/gitweb?p=clank/internal/apps.git;
-//              a=blob;f=native/framework/chrome/tab.cc;hb=refs/heads/m18
-//
-// 1. For each tab navigation:
-//   virtual_url
-//   title
-//   content_state
-//   transition_type
-//   type_mask
-//
-// 2. For each tab navigation:
-//   referrer
-//   is_overriding_user_agent
-//
-void UpgradeNavigationFromV0ToV2(
-    std::vector<sessions::SerializedNavigationEntry>* navigations,
-    int entry_count,
-    base::PickleIterator* iterator) {
-  for (int i = 0; i < entry_count; ++i) {
-    base::Pickle v2_pickle;
-    std::string virtual_url_spec;
-    std::string str_referrer;
-    std::u16string title;
-    std::string content_state;
-    int transition_type_int;
-    if (!iterator->ReadString(&virtual_url_spec) ||
-        !iterator->ReadString(&str_referrer) ||
-        !iterator->ReadString16(&title) ||
-        !iterator->ReadString(&content_state) ||
-        !iterator->ReadInt(&transition_type_int)) {
-      return;
-    }
-
-    // Write back the fields that were just read.
-    v2_pickle.WriteInt(i);
-    v2_pickle.WriteString(virtual_url_spec);
-    v2_pickle.WriteString16(title);
-    v2_pickle.WriteString(content_state);
-    v2_pickle.WriteInt(transition_type_int);
-
-    // type_mask
-    v2_pickle.WriteInt(0);
-    // referrer_spec
-    v2_pickle.WriteString(str_referrer);
-    // policy_int
-    v2_pickle.WriteInt(0);
-    // original_request_url_spec
-    v2_pickle.WriteString(std::string());
-    // is_overriding_user_agent
-    v2_pickle.WriteBool(false);
-    // timestamp_internal_value
-    v2_pickle.WriteInt64(0);
-    // search_terms
-    v2_pickle.WriteString16(std::u16string());
-
-    base::PickleIterator tab_navigation_pickle_iterator(v2_pickle);
-    sessions::SerializedNavigationEntry nav;
-    if (nav.ReadFromPickle(&tab_navigation_pickle_iterator)) {
-      navigations->push_back(nav);
-    } else {
-      LOG(ERROR) << "Failed to read SerializedNavigationEntry from pickle "
-                 << "(index=" << i << ", url=" << virtual_url_spec;
-    }
-  }
-
-  for (int i = 0; i < entry_count; ++i) {
-    std::string initial_url;
-    bool user_agent_overridden;
-    if (!iterator->ReadString(&initial_url) ||
-        !iterator->ReadBool(&user_agent_overridden)) {
-      break;
-    }
-  }
-}
-
-// Migrates a pickled SerializedNavigationEntry from Android tab version 0 to 1
-// (or Chrome 25->26)
-//
-// Due to the fact that all SerializedNavigationEntrys were previously stored in
-// a single pickle on Android, this function reads all the old fields,
-// re-outputs them and appends an empty string16, representing the new
-// search_terms field, and ensures that reading a v0 SerializedNavigationEntry
-// won't consume bytes from a subsequent SerializedNavigationEntry.
-//
-// This uses the fields from SerializedNavigationEntry/TabNavigation prior to
-// https://chromiumcodereview.appspot.com/11876045 which are:
-//
-// index
-// virtual_url
-// title
-// content_state
-// transition_type
-// type_mask
-// referrer
-// original_request_url
-// is_overriding_user_agent
-// timestamp
-//
-// And finally search_terms was added and this function appends it.
-void UpgradeNavigationFromV1ToV2(
-    std::vector<sessions::SerializedNavigationEntry>* navigations,
-    int entry_count,
-    base::PickleIterator* iterator) {
-  for (int i = 0; i < entry_count; ++i) {
-    base::Pickle v2_pickle;
-
-    int index;
-    std::string virtual_url_spec;
-    std::u16string title;
-    std::string content_state;
-    int transition_type_int;
-    if (!iterator->ReadInt(&index) ||
-        !iterator->ReadString(&virtual_url_spec) ||
-        !iterator->ReadString16(&title) ||
-        !iterator->ReadString(&content_state) ||
-        !iterator->ReadInt(&transition_type_int)) {
-      return;
-    }
-
-    // Write back the fields that were just read.
-    v2_pickle.WriteInt(index);
-    v2_pickle.WriteString(virtual_url_spec);
-    v2_pickle.WriteString16(title);
-    v2_pickle.WriteString(content_state);
-    v2_pickle.WriteInt(transition_type_int);
-
-    int type_mask = 0;
-    if (!iterator->ReadInt(&type_mask)) {
-      continue;
-    }
-    v2_pickle.WriteInt(type_mask);
-
-    std::string referrer_spec;
-    if (iterator->ReadString(&referrer_spec)) {
-      v2_pickle.WriteString(referrer_spec);
-    }
-
-    int policy_int;
-    if (iterator->ReadInt(&policy_int)) {
-      v2_pickle.WriteInt(policy_int);
-    }
-
-    std::string original_request_url_spec;
-    if (iterator->ReadString(&original_request_url_spec)) {
-      v2_pickle.WriteString(original_request_url_spec);
-    }
-
-    bool is_overriding_user_agent;
-    if (iterator->ReadBool(&is_overriding_user_agent)) {
-      v2_pickle.WriteBool(is_overriding_user_agent);
-    }
-
-    int64_t timestamp_internal_value = 0;
-    if (iterator->ReadInt64(&timestamp_internal_value)) {
-      v2_pickle.WriteInt64(timestamp_internal_value);
-    }
-
-    // Force output of search_terms
-    v2_pickle.WriteString16(std::u16string());
-
-    base::PickleIterator tab_navigation_pickle_iterator(v2_pickle);
-    sessions::SerializedNavigationEntry nav;
-    if (nav.ReadFromPickle(&tab_navigation_pickle_iterator)) {
-      navigations->push_back(nav);
-    } else {
-      LOG(ERROR) << "Failed to read SerializedNavigationEntry from pickle "
-                 << "(index=" << i << ", url=" << virtual_url_spec;
-    }
-  }
-}
-
 base::Pickle WriteSerializedNavigationsAsPickle(
     bool is_off_the_record,
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
@@ -558,37 +378,31 @@ bool WebContentsState::ExtractNavigationEntries(
     return false;
   }
 
-  if (!saved_state_version) {
-    // When |saved_state_version| is 0, it predates our notion of each tab
-    // having a saved version id. For that version of tab serialization, we
-    // used a single pickle for all |SerializedNavigationEntry|s.
-    UpgradeNavigationFromV0ToV2(navigations, entry_count, &iter);
-  } else if (saved_state_version == 1) {
-    // When |saved_state_version| is 1, it predates our notion of each tab
-    // having a saved version id. For that version of tab serialization, we
-    // used a single pickle for all |SerializedNavigationEntry|s.
-    UpgradeNavigationFromV1ToV2(navigations, entry_count, &iter);
-  } else {
-    // |saved_state_version| == 2 and greater.
-    for (int i = 0; i < entry_count; ++i) {
-      // Read each SerializedNavigationEntry as a separate pickle to avoid
-      // optional reads of one tab bleeding into the next tab's data.
-      std::optional<base::span<const uint8_t>> tab_entry = iter.ReadData();
-      if (!tab_entry.has_value()) {
-        LOG(ERROR) << "Failed to restore tab entry from byte array.";
-        return false;  // It's dangerous to keep deserializing now, give up.
-      }
-      base::Pickle tab_navigation_pickle =
-          base::Pickle::WithUnownedBuffer(*tab_entry);
-      base::PickleIterator tab_navigation_pickle_iterator(
-          tab_navigation_pickle);
-      sessions::SerializedNavigationEntry nav;
-      if (!nav.ReadFromPickle(&tab_navigation_pickle_iterator)) {
-        return false;  // If we failed to read a navigation, give up on others.
-      }
+  // Support for versions 0 and 1 is removed in M142/M143. Metrics suggests
+  // in-the-wild usage is virtually non-existent (see crbug.com/41493935).
+  if (saved_state_version < 2) {
+    LOG(ERROR) << "Unsupported saved_state_version: " << saved_state_version;
+    return false;
+  }
 
-      navigations->push_back(nav);
+  // `saved_state_version` == 2 and greater.
+  for (int i = 0; i < entry_count; ++i) {
+    // Read each SerializedNavigationEntry as a separate pickle to avoid
+    // optional reads of one tab bleeding into the next tab's data.
+    std::optional<base::span<const uint8_t>> tab_entry = iter.ReadData();
+    if (!tab_entry.has_value()) {
+      LOG(ERROR) << "Failed to restore tab entry from byte array.";
+      return false;  // It's dangerous to keep deserializing now, give up.
     }
+    base::Pickle tab_navigation_pickle =
+        base::Pickle::WithUnownedBuffer(*tab_entry);
+    base::PickleIterator tab_navigation_pickle_iterator(tab_navigation_pickle);
+    sessions::SerializedNavigationEntry nav;
+    if (!nav.ReadFromPickle(&tab_navigation_pickle_iterator)) {
+      return false;  // If we failed to read a navigation, give up on others.
+    }
+
+    navigations->push_back(nav);
   }
 
   // Validate the data.

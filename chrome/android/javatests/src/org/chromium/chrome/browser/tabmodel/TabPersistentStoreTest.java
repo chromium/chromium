@@ -98,12 +98,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 
 /** Tests for the TabPersistentStore. */
 
@@ -543,7 +541,7 @@ public class TabPersistentStoreTest {
             TabRestoredDetails details = mockObserver.details.get(i);
             assertEquals(i, details.index);
             assertEquals(info.contents[i].tabId, details.id);
-            assertEquals(info.contents[i].url, details.url);
+            assertUrlEqualsIgnoringHttpScheme(info.contents[i].url, details.url);
             assertEquals(details.id == info.selectedTabId, details.isStandardActiveIndex);
             assertEquals(false, details.isIncognitoActiveIndex);
         }
@@ -580,9 +578,10 @@ public class TabPersistentStoreTest {
         Tab[] tabs = storeAndRestoredTabs.second;
         waitForTabStateCleanup(tabs);
 
-        // All Tabs should be a candidate for the FlatBuffer migration as they were restored
-        // using legacy TabState.
-        assertEquals(tabs.length, store.getTabsToMigrateForTesting().size());
+        // Some of the tabs should be a candidates for the FlatBuffer migration as they were
+        // restored using legacy TabState. Some are already migrated.
+        int alreadyMigrated = 3;
+        assertEquals(tabs.length - alreadyMigrated, store.getTabsToMigrateForTesting().size());
         TabPersistentStore.onDeferredStartup();
         setAllTabStatesForTesting(tabs);
 
@@ -598,16 +597,16 @@ public class TabPersistentStoreTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(
-                            store.getTabsToMigrateForTesting().size(),
-                            Matchers.is(tabs.length - TabPersistentStore.MAX_MIGRATIONS_PER_SAVE));
+                    Criteria.checkThat(store.getTabsToMigrateForTesting().size(), Matchers.is(0));
                     Criteria.checkThat(store.getMigrateTabTaskForTesting(), Matchers.nullValue());
                 });
-        // First 5 (= sMaxMigrationsPerSave) Tabs should be migrated.
-        for (Tab tab :
-                Arrays.stream(tabs)
-                        .limit(TabPersistentStore.MAX_MIGRATIONS_PER_SAVE)
-                        .collect(Collectors.toList())) {
+        // All tabs should have a FlatBuffer file now.
+        int i = 0;
+        for (Tab tab : tabs) {
+            // The first 3 tabs are already migrated, but may have mismatched tab ids due to the
+            // directory setup.
+            if (i++ < alreadyMigrated) continue;
+
             File flatBufferFile =
                     TabStateFileManager.getTabStateFile(
                             mMockDirectory.getDataDirectory(),
@@ -666,6 +665,7 @@ public class TabPersistentStoreTest {
                 });
         regularCreator.callback.waitForCallback(0, 1);
         mockObserver.stateLoadedCallback.waitForCallback(0, 1);
+        assertEquals(numExpectedTabs, mockSelector.getModel(false).getCount());
         Tab[] restoredTabs = new Tab[info.numRegularTabs];
         for (int i = 0; i < info.numRegularTabs; i++) {
             restoredTabs[i] = mockSelector.getModel(false).getTabAt(i);
@@ -1091,7 +1091,7 @@ public class TabPersistentStoreTest {
             // TestTabModelDirectory.TAB_MODEL_METADATA_V4_SELECTED_ID,
             //        details.isStandardActiveIndex);
 
-            assertEquals(currentInfo.url, details.url);
+            assertUrlEqualsIgnoringHttpScheme(currentInfo.url, details.url);
             assertEquals(false, details.isIncognitoActiveIndex);
         }
 
@@ -1151,7 +1151,7 @@ public class TabPersistentStoreTest {
             TabRestoredDetails details = mockObserver.details.get(i);
             assertEquals(i, details.index);
             assertEquals(info.contents[i].tabId, details.id);
-            assertEquals(info.contents[i].url, details.url);
+            assertUrlEqualsIgnoringHttpScheme(info.contents[i].url, details.url);
             assertEquals(details.id == info.selectedTabId, details.isStandardActiveIndex);
             assertEquals(false, details.isIncognitoActiveIndex);
         }
@@ -1223,10 +1223,11 @@ public class TabPersistentStoreTest {
     @Feature({"TabPersistentStore"})
     public void testSerializeDuringRestore() throws Exception {
         TabStateInfo regularTab =
-                new TabStateInfo(false, 2, 2, "https://google.com", "Google", null);
-        TabStateInfo regularTab2 = new TabStateInfo(false, 2, 3, "https://foo.com", "Foo", null);
+                new TabStateInfo(false, false, 2, 2, "https://google.com", "Google", null);
+        TabStateInfo regularTab2 =
+                new TabStateInfo(false, false, 2, 3, "https://foo.com", "Foo", null);
         TabStateInfo incognitoTab =
-                new TabStateInfo(true, 2, 17, "https://incognito.com", "Incognito", null);
+                new TabStateInfo(true, false, 2, 17, "https://incognito.com", "Incognito", null);
 
         MockTabModelSelector mockSelector =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -1301,7 +1302,8 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature({"TabPersistentStore"})
     public void testPrefetchActiveTab() throws Exception {
-        final TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V5_NO_M18;
+        final TabModelMetaDataInfo info =
+                TestTabModelDirectory.TAB_MODEL_METADATA_V5_ALTERNATE_ORDER;
         mMockDirectory.writeTabModelFiles(info, true);
 
         // Set to pre-fetch
@@ -1360,7 +1362,8 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature({"TabPersistentStore"})
     public void testUndoCloseAllTabsWritesTabListFile() throws Exception {
-        final TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V5_NO_M18;
+        final TabModelMetaDataInfo info =
+                TestTabModelDirectory.TAB_MODEL_METADATA_V5_ALTERNATE_ORDER;
         mMockDirectory.writeTabModelFiles(info, true);
 
         for (int i = 0; i < 2; i++) {
@@ -1425,7 +1428,8 @@ public class TabPersistentStoreTest {
     @SmallTest
     @Feature({"TabPersistentStore", "MultiWindow"})
     public void testDuplicateTabIdsOnColdStart() throws Exception {
-        final TabModelMetaDataInfo info = TestTabModelDirectory.TAB_MODEL_METADATA_V5_NO_M18;
+        final TabModelMetaDataInfo info =
+                TestTabModelDirectory.TAB_MODEL_METADATA_V5_ALTERNATE_ORDER;
 
         // Write the same data to tab_state0 and tab_state1.
         mMockDirectory.writeTabModelFiles(info, true, 0);
@@ -1541,7 +1545,7 @@ public class TabPersistentStoreTest {
                                     () -> {
                                         return tab.getUrl().getSpec();
                                     });
-                    assertEquals("Unexpected URL on Tab", info.contents[tabInfoIndex].url, url);
+                    assertUrlEqualsIgnoringHttpScheme(info.contents[tabInfoIndex].url, url);
                 }
             }
             tabInfoIndex++;
@@ -1605,5 +1609,26 @@ public class TabPersistentStoreTest {
                     for (Integer id : closedTabIds) regularModel.cancelTabClosure(id);
                 });
         assertEquals(info.numRegularTabs, regularModel.getCount());
+    }
+
+    /**
+     * Getting the http and https schemes to match is now quite difficult as the default is https
+     * and updating pickled or flatbuffer files is non-trivial. As such some of the FBS files list
+     * https schemes when the tab list metadata files lists http.
+     */
+    private static void assertUrlEqualsIgnoringHttpScheme(String expected, String actual) {
+        String httpPrefix = "http://";
+        String httpsPrefix = "https://";
+        if (expected.startsWith(httpPrefix)) {
+            expected = expected.substring(httpPrefix.length());
+        } else if (expected.startsWith(httpsPrefix)) {
+            expected = expected.substring(httpsPrefix.length());
+        }
+        if (actual.startsWith(httpPrefix)) {
+            actual = actual.substring(httpPrefix.length());
+        } else if (actual.startsWith(httpsPrefix)) {
+            actual = actual.substring(httpsPrefix.length());
+        }
+        assertEquals(expected, actual);
     }
 }

@@ -168,6 +168,7 @@ public class IncognitoNotificationServiceTest {
             TabStateInfo incognitoInfo =
                     new TabStateInfo(
                             true,
+                            false,
                             TestTabModelDirectory.V2_TEXTAREA.version,
                             i,
                             TestTabModelDirectory.V2_TEXTAREA.url,

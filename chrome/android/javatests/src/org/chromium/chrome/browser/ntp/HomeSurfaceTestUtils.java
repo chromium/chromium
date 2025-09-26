@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
+import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.V2_GOOGLE_COM_FBS;
 
 import android.graphics.Bitmap;
 import android.util.Base64;
@@ -195,8 +195,8 @@ public class HomeSurfaceTestUtils {
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         tabId,
                         /* encrypted= */ false,
-                        /* isFlatbuffer= */ false);
-        writeFile(file, M26_GOOGLE_COM.encodedTabState);
+                        /* isFlatbuffer= */ true);
+        writeFile(file, V2_GOOGLE_COM_FBS.encodedTabState);
 
         CipherFactory unusedCipherFactory = new CipherFactory();
         TabState tabState =
