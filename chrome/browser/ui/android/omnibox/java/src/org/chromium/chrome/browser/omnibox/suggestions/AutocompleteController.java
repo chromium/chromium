@@ -406,9 +406,8 @@ public class AutocompleteController {
      * @return An existing (if one is available) or new (otherwise) instance of the
      *     AutocompleteController associated with the supplied profile.
      */
-    public static Optional<AutocompleteController> getForProfile(Profile profile) {
-        return Optional.ofNullable(
-                profile == null ? null : AutocompleteControllerJni.get().getForProfile(profile));
+    public static AutocompleteController getForProfile(Profile profile) {
+        return AutocompleteControllerJni.get().getForProfile(profile);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
