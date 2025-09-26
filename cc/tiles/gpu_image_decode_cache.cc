@@ -891,31 +891,19 @@ void GpuImageDecodeCache::DecodedImageData::ReportUsageStats() const {
 // GpuImageDecodeCache::UploadedImageData
 
 GpuImageDecodeCache::UploadedImageData::UploadedImageData() = default;
-GpuImageDecodeCache::UploadedImageData::~UploadedImageData() {
-  DCHECK(!image());
-  DCHECK(!image_yuv_planes_);
-  DCHECK(!gl_plane_ids_);
-}
+GpuImageDecodeCache::UploadedImageData::~UploadedImageData() = default;
 
 void GpuImageDecodeCache::UploadedImageData::SetTransferCacheId(uint32_t id) {
-  DCHECK(mode_ == Mode::kNone);
-  DCHECK(!image_);
   DCHECK(!transfer_cache_id_);
 
-  mode_ = Mode::kTransferCache;
   transfer_cache_id_ = id;
   OnSetLockedData(false /* out_of_raster */);
 }
 
 void GpuImageDecodeCache::UploadedImageData::Reset() {
-  if (mode_ != Mode::kNone)
+  if (transfer_cache_id_) {
     ReportUsageStats();
-  mode_ = Mode::kNone;
-  image_ = nullptr;
-  image_yuv_planes_.reset();
-  gl_plane_ids_.reset();
-  gl_id_ = 0;
-  is_alpha_ = false;
+  }
   transfer_cache_id_.reset();
   OnResetData();
 }
@@ -1619,40 +1607,6 @@ void GpuImageDecodeCache::AddTextureDump(
   // (importance 2), attributing memory here.
   const int kImportance = 3;
   pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
-}
-
-void GpuImageDecodeCache::MemoryDumpYUVImage(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const ImageData* image_data,
-    const std::string& dump_base_name,
-    size_t locked_size) const {
-  using base::trace_event::MemoryAllocatorDump;
-  DCHECK(image_data->info.yuva.has_value());
-  DCHECK(image_data->upload.has_yuv_planes());
-
-  struct PlaneMemoryDumpInfo {
-    size_t byte_size;
-    GrGLuint gl_id;
-  };
-  std::vector<PlaneMemoryDumpInfo> plane_dump_infos;
-  // TODO(crbug.com/40604431): Also include alpha plane if applicable.
-  plane_dump_infos.push_back({image_data->upload.y_image()->textureSize(),
-                              image_data->upload.gl_y_id()});
-  plane_dump_infos.push_back({image_data->upload.u_image()->textureSize(),
-                              image_data->upload.gl_u_id()});
-  plane_dump_infos.push_back({image_data->upload.v_image()->textureSize(),
-                              image_data->upload.gl_v_id()});
-
-  for (size_t i = 0u; i < plane_dump_infos.size(); ++i) {
-    auto plane_dump_info = plane_dump_infos.at(i);
-    // If the image is currently locked, we dump the locked size per plane.
-    AddTextureDump(
-        pmd,
-        dump_base_name +
-            base::StringPrintf("/plane_%0u", base::checked_cast<uint32_t>(i)),
-        plane_dump_info.byte_size, plane_dump_info.gl_id,
-        locked_size ? plane_dump_info.byte_size : 0u);
-  }
 }
 
 bool GpuImageDecodeCache::OnMemoryDump(
@@ -2910,30 +2864,6 @@ sk_sp<SkImage> GpuImageDecodeCache::GetSWImageDecodeForTesting(
   ImageData* image_data = found->second.get();
   DCHECK(!image_data->info.yuva.has_value());
   return image_data->decode.ImageForTesting();
-}
-
-// Used for in-process-raster YUV decoding tests, where we often need the
-// SkImages for each underlying plane because asserting or requesting fields for
-// the YUV SkImage may flatten it to RGB or not be possible to request.
-sk_sp<SkImage> GpuImageDecodeCache::GetUploadedPlaneForTesting(
-    const DrawImage& draw_image,
-    YUVIndex index) {
-  base::AutoLock lock(lock_);
-  ImageData* image_data = GetImageDataForDrawImage(
-      draw_image, InUseCacheKeyFromDrawImage(draw_image));
-  if (!image_data->info.yuva.has_value()) {
-    return nullptr;
-  }
-  switch (index) {
-    case YUVIndex::kY:
-      return image_data->upload.y_image();
-    case YUVIndex::kU:
-      return image_data->upload.u_image();
-    case YUVIndex::kV:
-      return image_data->upload.v_image();
-    default:
-      return nullptr;
-  }
 }
 
 size_t GpuImageDecodeCache::GetDarkModeImageCacheSizeForTesting(
