@@ -130,14 +130,6 @@ if (is_win) {
   }
 }
 
-group("libpng_for_testonly") {
-  testonly = true
-  public_deps = [ ":libpng" ]
-
-  visibility = []
-  visibility = libpng_testonly_visibility
-}
-
 if (build_with_chromium) {
   libpng_ossfuzz_seed_corpuses = [
     "//components/test/data/viz",

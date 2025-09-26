@@ -104,7 +104,7 @@ fuzzer_test("libpng_progressive_read_fuzzer") {
   sources = [ "libpng_read_fuzzer.cc" ]
   deps = [
     "//base",
-    "//third_party/libpng:libpng_for_testonly",
+    "//third_party/libpng",
   ]
   dict = "dicts/png.dict"
   seed_corpuses = libpng_seed_corpuses

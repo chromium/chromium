@@ -906,7 +906,7 @@ test("gfx_unittests") {
     "//skia:skcms",
     "//testing/gtest",
     "//third_party/icu:icuuc",
-    "//third_party/libpng:libpng_for_testonly",
+    "//third_party/libpng",
     "//third_party/zlib",
     "//ui/base",
     "//ui/gfx/animation",

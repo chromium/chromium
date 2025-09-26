@@ -1,62 +1,23 @@
 # This list tracks all current users of libpng.
 # libpng is actively being migrated, and calls to libpng should instead go
-# through Skia's `SkPngRustDecoder`. No new entries should be added to this
-# list.
-
-# Chrome => ... => libpng dependencies.
-#
-# TODO(https://crbug.com/443128323): Stop exposing `libpng` to Chrome
-# (i.e. we should work on removing all entries on the list below).
+# through skia. No new entries should be added to this list.
 visibility = [
-  # Chrome => Skia => libpng dependency.
-  #
-  # TODO(https://crbug.com/381900683): Remove once Skia supports being
-  # built without `libpng`.
+  "//chrome/test:*",
   "//skia/*",
-
-  # Chrome => ... => freetype => libpng dependency.
-  #
-  # TODO(https://crbug.com/42271123): Remove this once `freetype` has been
-  # replaced with Fontations in PDFium and in other Chrome dependencies.
+  "//testing/libfuzzer/fuzzers/*",
+  "//third_party/angle/src/tests/*",
+  "//third_party/angle/third_party/glmark2:*",
+  "//third_party/angle/util:*",
   "//third_party/freetype:*",
-
-  # Chrome => PDFium => libpng dependency.
-  #
-  # TODO(https://crbug.com/444045690): Remove once PDFium => `libpng`
-  # dependency has been made optional.
-  "//third_party:png",  # In standalone PDFium
-  "//third_party/pdfium/third_party:png",  # In Chromium
-
-  # Other dependency edges that seem like Chrome => ... => libpng dependencies
-  # but really aren't.  TODO: Clarify this comment in follow-up CLs.
+  "//third_party/libpng/*",
   "//third_party/libwebp:*",
   "//third_party/weston/*",
-]
-
-# Test/tool-only dependencies under `//third_party/angle`
-# (migrating these to `libpng_testonly_visibility` would require editing
-# ANGLE's `BUILD.gn` files to depend on the `libpng_for_testonly` target).
-visibility += [
-  "//third_party/angle/src/tests:angle_deqp_framework_qphelper",
-  "//third_party/angle/third_party/glmark2:glmark2_common_gl",
-  "//third_party/angle/third_party/glmark2:glmark2_common_gles",
-  "//third_party/angle/util:angle_png_utils",
-]
-
-# Test/tool-only dependencies.
-libpng_testonly_visibility = [
-  "//chrome/test:accessibility_live_site_tests",
-  "//chrome/test:captured_sites_interactive_tests",
-  "//chrome/test:interactive_ui_tests",
-  "//testing/libfuzzer/fuzzers:libpng_progressive_read_fuzzer",
-  "//tools/imagediff",
-
-  # Using a wildcard, to cover template-generated targets (e.g.
-  # `//ui/gfx:gfx_unittests__library__jni_registration__native_sources` or
-  # `//ui/gfx:gfx_unittests__exec`).
+  "//tools/imagediff:*",
   "//ui/gfx:*",
 ]
 
-# Self-dependency (for internal targets defined in
-# `//third_party/libpng/BUILD.gn`).
-visibility += [ "//third_party/libpng/*" ]
+# PDFium dependency.
+visibility += [
+  "//third_party:png",  # In standalone PDFium
+  "//third_party/pdfium/third_party:png",  # In Chromium
+]
