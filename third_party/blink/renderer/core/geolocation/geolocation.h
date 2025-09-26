@@ -28,19 +28,20 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOLOCATION_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/types/expected.h"
 #include "services/device/public/mojom/geolocation.mojom-blink.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_position_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_position_error_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_position_options.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/geolocation/geo_notifier.h"
 #include "third_party/blink/renderer/core/geolocation/geolocation_position_error.h"
 #include "third_party/blink/renderer/core/geolocation/geolocation_watchers.h"
 #include "third_party/blink/renderer/core/geolocation/geoposition.h"
-#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -80,7 +81,8 @@ class CORE_EXPORT Geolocation final
   LocalFrame* GetFrame() const;
 
   // Creates a oneshot and attempts to obtain a position that meets the
-  // constraints of the options.
+  // constraints of the options. This method gets called when the geolocation
+  // API is invoked from V8.
   void getCurrentPosition(V8PositionCallback*,
                           V8PositionErrorCallback* = nullptr,
                           const PositionOptions* = PositionOptions::Create());
@@ -93,6 +95,14 @@ class CORE_EXPORT Geolocation final
 
   // Removes all references to the watcher, it will not be updated again.
   void clearWatch(int watch_id);
+
+  // Creates a oneshot and attempts to obtain a position that meets the
+  // constraints of the options. This method gets called when the geolocation
+  // API is invoked from Blink.
+  void RequestPosition(
+      base::RepeatingCallback<
+          void(base::expected<Geoposition*, GeolocationPositionError*>)>,
+      const PositionOptions* = PositionOptions::Create());
 
   // Notifies this that a new position is available. Must never be called
   // before permission is granted by the user.

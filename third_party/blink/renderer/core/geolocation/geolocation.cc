@@ -41,6 +41,8 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/geolocation/geo_notifier_blink.h"
+#include "third_party/blink/renderer/core/geolocation/geo_notifier_v8.h"
 #include "third_party/blink/renderer/core/geolocation/geolocation_coordinates.h"
 #include "third_party/blink/renderer/core/geolocation/geolocation_error.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -223,8 +225,8 @@ void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
   probe::BreakableLocation(GetExecutionContext(),
                            "Geolocation.getCurrentPosition");
 
-  auto* notifier = MakeGarbageCollected<GeoNotifier>(this, success_callback,
-                                                     error_callback, options);
+  auto* notifier = MakeGarbageCollected<GeoNotifierV8>(
+      this, options, success_callback, error_callback);
 
   if (GetFrame()->IsAdScriptInStack()) {
     notifier->SetCalledWithAdScriptInStack();
@@ -250,8 +252,8 @@ int Geolocation::watchPosition(V8PositionCallback* success_callback,
 
   probe::BreakableLocation(GetExecutionContext(), "Geolocation.watchPosition");
 
-  auto* notifier = MakeGarbageCollected<GeoNotifier>(this, success_callback,
-                                                     error_callback, options);
+  auto* notifier = MakeGarbageCollected<GeoNotifierV8>(
+      this, options, success_callback, error_callback);
 
   if (GetFrame()->IsAdScriptInStack()) {
     notifier->SetCalledWithAdScriptInStack();
@@ -269,6 +271,19 @@ int Geolocation::watchPosition(V8PositionCallback* success_callback,
   StartRequest(notifier);
 
   return watch_id;
+}
+
+void Geolocation::RequestPosition(
+    base::RepeatingCallback<
+        void(base::expected<Geoposition*, GeolocationPositionError*>)> callback,
+    const PositionOptions* options) {
+  if (!GetFrame()) {
+    return;
+  }
+  auto* notifier =
+      MakeGarbageCollected<GeoNotifierBlink>(this, options, callback);
+  one_shots_->insert(notifier);
+  StartRequest(notifier);
 }
 
 void Geolocation::StartRequest(GeoNotifier* notifier) {

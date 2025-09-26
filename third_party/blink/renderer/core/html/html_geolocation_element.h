@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_GEOLOCATION_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_GEOLOCATION_ELEMENT_H_
 
+#include "base/types/expected.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/html/html_permission_element.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/core/geolocation/geolocation_position_error.h"
 #include "third_party/blink/renderer/core/geolocation/geolocation_watchers.h"
 #include "third_party/blink/renderer/core/geolocation/geoposition.h"
+#include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -43,6 +44,13 @@ class CORE_EXPORT HTMLGeolocationElement final : public HTMLPermissionElement {
   CreateEmbeddedPermissionRequestDescriptor() override;
 
  private:
+  // blink::HTMLPermissionElement:
+  void AttributeChanged(const AttributeModificationParams& params) override;
+  void GetCurrentPosition();
+  // Callback for Geolocation::getCurrentPosition. It is called when the
+  // geolocation API returns a position or an error.
+  void CurrentPositionCallback(
+      base::expected<Geoposition*, GeolocationPositionError*>);
   bool precise_ = false;
   bool autolocate_ = false;
   bool watch_ = false;

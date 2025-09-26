@@ -3,16 +3,20 @@
 # found in the LICENSE file.
 
 blink_core_sources_geolocation = [
-    "geo_notifier.cc",
-    "geo_notifier.h",
-    "geolocation.cc",
-    "geolocation.h",
-    "geolocation_coordinates.cc",
-    "geolocation_coordinates.h",
-    "geolocation_error.h",
-    "geolocation_position_error.h",
-    "geolocation_watchers.cc",
-    "geolocation_watchers.h",
-    "geoposition.cc",
-    "geoposition.h",
-  ]
+  "geo_notifier_blink.cc",
+  "geo_notifier_blink.h",
+  "geo_notifier_v8.cc",
+  "geo_notifier_v8.h",
+  "geo_notifier.cc",
+  "geo_notifier.h",
+  "geolocation.cc",
+  "geolocation.h",
+  "geolocation_coordinates.cc",
+  "geolocation_coordinates.h",
+  "geolocation_error.h",
+  "geolocation_position_error.h",
+  "geolocation_watchers.cc",
+  "geolocation_watchers.h",
+  "geoposition.cc",
+  "geoposition.h",
+]

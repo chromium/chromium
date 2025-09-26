@@ -109,6 +109,9 @@ class CORE_EXPORT HTMLPermissionElement
   bool IsHTMLPermissionElement() const final { return true; }
 
  protected:
+  // blink::HTMLElement:
+  void AttributeChanged(const AttributeModificationParams& params) override;
+
   void setType(const AtomicString& type);
   uint16_t GetTranslatedMessageID(uint16_t message_id,
                                   const AtomicString& language_string);
@@ -354,7 +357,6 @@ class CORE_EXPORT HTMLPermissionElement
   void EnsureUnregisterPageEmbeddedPermissionControl();
 
   // blink::Element implements
-  void AttributeChanged(const AttributeModificationParams& params) override;
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void AdjustStyle(ComputedStyleBuilder& builder) override;
   void DidRecalcStyle(const StyleRecalcChange change) override;

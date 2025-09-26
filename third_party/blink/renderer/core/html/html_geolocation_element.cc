@@ -7,6 +7,10 @@
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/permission_element_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -60,6 +64,44 @@ HTMLGeolocationElement::CreateEmbeddedPermissionRequestDescriptor() {
       mojom::blink::GeolocationEmbeddedPermissionRequestDescriptor::New();
   descriptor->geolocation->autolocate = autolocate();
   return descriptor;
+}
+
+void HTMLGeolocationElement::AttributeChanged(
+    const AttributeModificationParams& params) {
+  // The autolocate attribute is exclusive to the geolocation element, other
+  // attributes will be handled by the HTMLPermissionElement.
+  if (params.name == html_names::kAutolocateAttr) {
+    GetCurrentPosition();
+  }
+  HTMLPermissionElement::AttributeChanged(params);
+}
+
+void HTMLGeolocationElement::GetCurrentPosition() {
+  auto* dom_window = GetDocument().domWindow();
+  if (!dom_window) {
+    return;
+  }
+  auto* geolocation = Geolocation::geolocation(*dom_window->navigator());
+  if (!geolocation) {
+    return;
+  }
+  // TODO(@ravjit): Discuss with the team how much timeout we should set.
+  geolocation->RequestPosition(
+      blink::BindRepeating(&HTMLGeolocationElement::CurrentPositionCallback,
+                           WrapWeakPersistent(this)));
+}
+
+void HTMLGeolocationElement::CurrentPositionCallback(
+    base::expected<Geoposition*, GeolocationPositionError*> position) {
+  if (position.has_value()) {
+    position_ = position.value();
+    error_ = nullptr;
+  } else {
+    error_ = position.error();
+    position_ = nullptr;
+  }
+  EnqueueEvent(*Event::CreateCancelableBubble(event_type_names::kLocation),
+               TaskType::kUserInteraction);
 }
 
 }  // namespace blink

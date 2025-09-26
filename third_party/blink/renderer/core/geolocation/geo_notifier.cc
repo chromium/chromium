@@ -13,12 +13,8 @@
 namespace blink {
 
 GeoNotifier::GeoNotifier(Geolocation* geolocation,
-                         V8PositionCallback* success_callback,
-                         V8PositionErrorCallback* error_callback,
                          const PositionOptions* options)
     : geolocation_(geolocation),
-      success_callback_(success_callback),
-      error_callback_(error_callback),
       options_(options),
       timer_(MakeGarbageCollected<Timer>(
           geolocation->DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI),
@@ -26,14 +22,11 @@ GeoNotifier::GeoNotifier(Geolocation* geolocation,
           &GeoNotifier::TimerFired)),
       use_cached_position_(false) {
   DCHECK(geolocation_);
-  DCHECK(success_callback_);
 }
 
 void GeoNotifier::Trace(Visitor* visitor) const {
   visitor->Trace(geolocation_);
   visitor->Trace(options_);
-  visitor->Trace(success_callback_);
-  visitor->Trace(error_callback_);
   visitor->Trace(timer_);
   visitor->Trace(fatal_error_);
 }
@@ -68,12 +61,11 @@ void GeoNotifier::RunSuccessCallback(Geoposition* position) {
     UseCounter::Count(
         win, WebFeature::kGeolocationSucceededWithoutInjectionMitigation);
   }
-  success_callback_->InvokeAndReportException(nullptr, position);
+  RunCallback(position, nullptr);
 }
 
 void GeoNotifier::RunErrorCallback(GeolocationPositionError* error) {
-  if (error_callback_)
-    error_callback_->InvokeAndReportException(nullptr, error);
+  RunCallback(nullptr, error);
 }
 
 void GeoNotifier::StartTimer() {
@@ -134,11 +126,9 @@ void GeoNotifier::TimerFired(TimerBase*) {
     return;
   }
 
-  if (error_callback_) {
-    error_callback_->InvokeAndReportException(
-        nullptr, MakeGarbageCollected<GeolocationPositionError>(
-                     GeolocationPositionError::kTimeout, "Timeout expired"));
-  }
+  RunCallback(nullptr,
+              MakeGarbageCollected<GeolocationPositionError>(
+                  GeolocationPositionError::kTimeout, "Timeout expired"));
 
   geolocation_->RequestTimedOut(this);
 }

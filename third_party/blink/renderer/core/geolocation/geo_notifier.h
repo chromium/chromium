@@ -19,17 +19,14 @@ class Geolocation;
 class GeolocationPositionError;
 class Geoposition;
 
-class GeoNotifier final : public GarbageCollected<GeoNotifier>,
-                          public NameClient {
+// Abstract base class for Geolocation notifier. This class is used for
+// retrieving geolocation position from V8 or Blink.
+class GeoNotifier : public GarbageCollectedMixin, public NameClient {
  public:
-  GeoNotifier(Geolocation*,
-              V8PositionCallback*,
-              V8PositionErrorCallback*,
-              const PositionOptions*);
+  GeoNotifier(Geolocation*, const PositionOptions*);
   ~GeoNotifier() override = default;
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
   const char* GetHumanReadableName() const override { return "GeoNotifier"; }
-
   const PositionOptions* Options() const { return options_.Get(); }
 
   // Sets the given error as the fatal error if there isn't one yet.
@@ -82,9 +79,11 @@ class GeoNotifier final : public GarbageCollected<GeoNotifier>,
   // Otherwise, the notifier has expired, and its error callback is run.
   void TimerFired(TimerBase*);
 
+  // Called when the notifier has a position or an error. The implementation
+  // classes are responsible for running the callbacks.
+  virtual void RunCallback(Geoposition*, GeolocationPositionError*) = 0;
+
   Member<Geolocation> geolocation_;
-  Member<V8PositionCallback> success_callback_;
-  Member<V8PositionErrorCallback> error_callback_;
   Member<const PositionOptions> options_;
   Member<Timer> timer_;
   Member<GeolocationPositionError> fatal_error_;
