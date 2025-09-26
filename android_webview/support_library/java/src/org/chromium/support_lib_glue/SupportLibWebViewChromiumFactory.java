@@ -122,7 +122,7 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.HYPERLINK_CONTEXT_MENU_ITEMS + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS + Features.DEV_SUFFIX,
                 Features.PAGE_IS_PRERENDERING,
-                Features.CUSTOM_REQUEST_HEADERS + Features.DEV_SUFFIX,
+                Features.CUSTOM_REQUEST_HEADERS,
                 // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                 // when they're initially added (this can be removed in a future CL). The final
                 // feature should have a trailing comma for cleaner diffs.
