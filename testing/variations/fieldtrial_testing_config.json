@@ -19670,28 +19670,6 @@
             ]
         }
     ],
-    "ProtectedAudienceMultiThreadedSellerWorklet": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "TwoThreads",
-                    "params": {
-                        "seller_worklet_thread_pool_size": "2"
-                    },
-                    "enable_features": [
-                        "FledgeSellerWorkletThreadPool"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProtectedAudienceNoWasmLazyCompilationStudy": [
         {
             "platforms": [
