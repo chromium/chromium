@@ -81,6 +81,23 @@ ReaderModeDistillerOutcome GetDistillerOutcome(
   }
 }
 
+ReaderModeAccessPointWithMode GetAccessPointWithMode(
+    ReaderModeAccessPoint access_point,
+    bool is_incognito) {
+  switch (access_point) {
+    case ReaderModeAccessPoint::kAIHub:
+      return is_incognito ? ReaderModeAccessPointWithMode::kAIHubInIncognito
+                          : ReaderModeAccessPointWithMode::kAIHubInRegular;
+    case ReaderModeAccessPoint::kToolsMenu:
+      return is_incognito ? ReaderModeAccessPointWithMode::kToolsMenuInIncognito
+                          : ReaderModeAccessPointWithMode::kToolsMenuInRegular;
+    case ReaderModeAccessPoint::kContextualChip:
+      return is_incognito
+                 ? ReaderModeAccessPointWithMode::kContextualChipInIncognito
+                 : ReaderModeAccessPointWithMode::kContextualChipInRegular;
+  }
+}
+
 }  // namespace
 
 ReaderModeMetricsHelper::ReaderModeMetricsHelper(
@@ -136,10 +153,14 @@ void ReaderModeMetricsHelper::RecordReaderHeuristicCompleted(
 }
 
 void ReaderModeMetricsHelper::RecordReaderDistillerTriggered(
-    ReaderModeAccessPoint access_point) {
+    ReaderModeAccessPoint access_point,
+    bool is_incognito) {
   distiller_timer_ = std::make_unique<base::ElapsedTimer>();
   last_reader_mode_state_ = ReaderModeState::kDistillationStarted;
   base::UmaHistogramEnumeration(kReaderModeAccessPointHistogram, access_point);
+  base::UmaHistogramEnumeration(
+      kReaderModeAccessPointWithModeHistogram,
+      GetAccessPointWithMode(access_point, is_incognito));
 }
 
 void ReaderModeMetricsHelper::RecordReaderDistillerTimedOut() {

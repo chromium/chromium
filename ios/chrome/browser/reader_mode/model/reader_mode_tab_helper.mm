@@ -505,7 +505,8 @@ void ReaderModeTabHelper::PageDistillationCompleted(
 
 void ReaderModeTabHelper::CreateReaderModeContent(
     ReaderModeAccessPoint access_point) {
-  metrics_helper_.RecordReaderDistillerTriggered(access_point);
+  bool is_incognito = web_state_->GetBrowserState()->IsOffTheRecord();
+  metrics_helper_.RecordReaderDistillerTriggered(access_point, is_incognito);
 
   if (!reader_mode_web_state_) {
     web::WebState::CreateParams create_params = web::WebState::CreateParams(

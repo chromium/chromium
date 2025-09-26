@@ -105,6 +105,20 @@ enum class ReaderModeAccessPoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeAccessPoint)
 
+// Recorded for IOS.ReaderMode.AccessPointWithMode. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(ReaderModeAccessPointWithMode)
+enum class ReaderModeAccessPointWithMode {
+  kContextualChipInRegular = 0,
+  kContextualChipInIncognito = 1,
+  kToolsMenuInRegular = 2,
+  kToolsMenuInIncognito = 3,
+  kAIHubInRegular = 4,
+  kAIHubInIncognito = 5,
+  kMaxValue = kAIHubInIncognito,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeAccessPointWithMode)
+
 // Recorded for IOS.ReaderMode.Distiller.Result. Entries should not be
 // renumbered and numeric values should never be reused.
 // LINT.IfChange(ReaderModeDistillerOutcome)
@@ -173,6 +187,9 @@ extern const char kReaderModeTimeSpentHistogram[];
 
 // Histogram name for Reader Mode access point for starting distillation.
 extern const char kReaderModeAccessPointHistogram[];
+
+// Histogram name for Reader Mode access point with application mode.
+extern const char kReaderModeAccessPointWithModeHistogram[];
 
 // Returns the Reader mode symbol name.
 NSString* GetReaderModeSymbolName();

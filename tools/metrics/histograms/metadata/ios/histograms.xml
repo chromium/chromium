@@ -4984,6 +4984,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ReaderMode.AccessPointWithMode"
+    enum="ReaderModeAccessPointWithMode" expires_after="2026-03-22">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logs the access point where the user enabled Reading Mode UI on iOS, this
+    does not include situations when the user changes web state (e.g. by
+    switching tabs or closing the browser). The results are further divided by
+    the application mode (Incognito or Regular).
+  </summary>
+</histogram>
+
 <histogram name="IOS.ReaderMode.Customization"
     enum="ReaderModeCustomizationType" expires_after="2026-02-22">
   <owner>fernandex@google.com</owner>

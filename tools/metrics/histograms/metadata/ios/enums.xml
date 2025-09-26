@@ -1684,6 +1684,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeAccessPoint) -->
 
+<!-- LINT.IfChange(ReaderModeAccessPointWithMode) -->
+
+<enum name="ReaderModeAccessPointWithMode">
+  <int value="0" label="Contextual Chip in Regular"/>
+  <int value="1" label="Contextual Chip in Incognito"/>
+  <int value="2" label="Tools Menu in Regular"/>
+  <int value="3" label="Tools Menu in Incognito"/>
+  <int value="4" label="AI Hub in Regular"/>
+  <int value="5" label="AI Hub in Incognito"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/reader_mode/model/constants.h:ReaderModeAccessPointWithMode) -->
+
 <!-- LINT.IfChange(ReaderModeCustomizationType) -->
 
 <enum name="ReaderModeCustomizationType">

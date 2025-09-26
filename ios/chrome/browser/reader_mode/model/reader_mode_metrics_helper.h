@@ -39,7 +39,8 @@ class ReaderModeMetricsHelper
   bool ReaderModeIsRecentlyUsed();
 
   // Records histograms for the Reading Mode distillation event.
-  void RecordReaderDistillerTriggered(ReaderModeAccessPoint access_point);
+  void RecordReaderDistillerTriggered(ReaderModeAccessPoint access_point,
+                                      bool is_incognito);
   void RecordReaderDistillerCompleted(ReaderModeAccessPoint access_point,
                                       ReaderModeDistillerResult result);
 

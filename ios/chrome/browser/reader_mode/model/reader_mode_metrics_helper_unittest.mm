@@ -200,7 +200,7 @@ TEST_F(ReaderModeMetricsHelperTest, DeleteMetricsHelper) {
 // mode state.
 TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerTriggered) {
   metrics_helper()->RecordReaderDistillerTriggered(
-      ReaderModeAccessPoint::kContextualChip);
+      ReaderModeAccessPoint::kContextualChip, /*is_incognito=*/false);
   metrics_helper()->Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
@@ -213,7 +213,7 @@ TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerTriggered) {
 // mode state.
 TEST_F(ReaderModeMetricsHelperTest, ReaderDistillerCompleted) {
   metrics_helper()->RecordReaderDistillerTriggered(
-      ReaderModeAccessPoint::kContextualChip);
+      ReaderModeAccessPoint::kContextualChip, /*is_incognito=*/false);
   task_environment_.AdvanceClock(base::Seconds(1));
 
   metrics_helper()->RecordReaderDistillerCompleted(
@@ -290,7 +290,7 @@ TEST_F(ReaderModeMetricsHelperTest, FlushMultipleReaderModeStates) {
 // Tests that canceling distillation records latency and reader mode state.
 TEST_F(ReaderModeMetricsHelperTest, DistillationCanceledOnTimeout) {
   metrics_helper()->RecordReaderDistillerTriggered(
-      ReaderModeAccessPoint::kAIHub);
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
   task_environment_.AdvanceClock(base::Seconds(1));
 
   // Cancelation triggers a metrics flush.
@@ -305,13 +305,39 @@ TEST_F(ReaderModeMetricsHelperTest, DistillationCanceledOnTimeout) {
 // Tests that Reader Mode access point is recorded when a value is set.
 TEST_F(ReaderModeMetricsHelperTest, ReaderModeAccessPointRecorded) {
   metrics_helper()->RecordReaderDistillerTriggered(
-      ReaderModeAccessPoint::kAIHub);
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
   metrics_helper()->Flush();
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeAccessPointHistogram),
               BucketsAre(Bucket(ReaderModeAccessPoint::kAIHub, 1)));
+}
+
+// Tests that Reader Mode access point with mode is recorded for regular mode.
+TEST_F(ReaderModeMetricsHelperTest, ReaderModeAccessPointWithModeForRegular) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/false);
+  metrics_helper()->Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeAccessPointWithModeHistogram),
+      BucketsAre(Bucket(ReaderModeAccessPointWithMode::kAIHubInRegular, 1)));
+}
+
+// Tests that Reader Mode access point with mode is recorded for incognito mode.
+TEST_F(ReaderModeMetricsHelperTest, ReaderModeAccessPointWithModeForIncognito) {
+  metrics_helper()->RecordReaderDistillerTriggered(
+      ReaderModeAccessPoint::kAIHub, /*is_incognito=*/true);
+  metrics_helper()->Flush();
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
+              BucketsAre(Bucket(ReaderModeState::kDistillationStarted, 1)));
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(kReaderModeAccessPointWithModeHistogram),
+      BucketsAre(Bucket(ReaderModeAccessPointWithMode::kAIHubInIncognito, 1)));
 }
 
 // Tests metrics functionality based on the heuristic result.
