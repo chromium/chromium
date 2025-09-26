@@ -5277,20 +5277,10 @@ public class StripLayoutHelper
             @Nullable StripLayoutTab stripTab, @Nullable String title, boolean isHidden) {
         if (stripTab == null) return;
 
-        @StringRes int resId;
-        if (mIncognito) {
-            resId =
-                    isHidden
-                            ? R.string.accessibility_tabstrip_tab_incognito
-                            : R.string.accessibility_tabstrip_tab_incognito_selected;
-        } else if (isHidden) {
-            resId =
-                    stripTab.getNotificationBubbleShown()
-                            ? R.string.accessibility_tabstrip_tab_notification
-                            : R.string.accessibility_tabstrip_tab;
-        } else {
-            resId = R.string.accessibility_tabstrip_tab_selected;
-        }
+        @StringRes
+        int resId =
+                getTabAccessibilityLabelRes(
+                        stripTab.getIsPinned(), stripTab.getNotificationBubbleShown(), isHidden);
 
         if (!stripTab.needsAccessibilityDescriptionUpdate(title, resId)) {
             // The resulting accessibility description would be the same as the current description,
@@ -5300,6 +5290,45 @@ public class StripLayoutHelper
 
         final String description = mContext.getString(resId, title);
         stripTab.setAccessibilityDescription(description, title, resId);
+    }
+
+    /**
+     * Get the accessibility description string resource of a {@link StripLayoutTab}.
+     *
+     * @param isPinned Whether the tab is pinned.
+     * @param notificationShown Whether the tab has notification shown.
+     * @param isHidden Current visibility state of the Tab.
+     */
+    private @StringRes int getTabAccessibilityLabelRes(
+            boolean isPinned, boolean notificationShown, boolean isHidden) {
+        if (notificationShown) {
+            return R.string.accessibility_tabstrip_tab_notification;
+        }
+
+        @StringRes
+        int pinnedUnselected =
+                mIncognito
+                        ? R.string.accessibility_tabstrip_tab_pinned_incognito
+                        : R.string.accessibility_tabstrip_tab_pinned;
+        @StringRes
+        int pinnedSelected =
+                mIncognito
+                        ? R.string.accessibility_tabstrip_tab_pinned_selected_incognito
+                        : R.string.accessibility_tabstrip_tab_pinned_selected;
+        @StringRes
+        int unpinnedUnselected =
+                mIncognito
+                        ? R.string.accessibility_tabstrip_tab_incognito
+                        : R.string.accessibility_tabstrip_tab;
+        @StringRes
+        int unpinnedSelected =
+                mIncognito
+                        ? R.string.accessibility_tabstrip_tab_selected_incognito
+                        : R.string.accessibility_tabstrip_tab_selected;
+
+        return isPinned
+                ? (isHidden ? pinnedUnselected : pinnedSelected)
+                : (isHidden ? unpinnedUnselected : unpinnedSelected);
     }
 
     // ============================================================================================

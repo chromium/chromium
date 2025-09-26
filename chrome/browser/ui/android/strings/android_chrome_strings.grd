@@ -4832,8 +4832,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_INCOGNITO" desc="Content description for tabs that are not selected in Incognito mode">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Incognito Tab
       </message>
-      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_INCOGNITO_SELECTED" desc="Content description for the tab that is selected in Incognito mode">
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_SELECTED_INCOGNITO" desc="Content description for the tabs that are selected in Incognito mode">
         <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Selected Incognito Tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_PINNED" desc="Content description for tabs that are pinned">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Pinned Tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_PINNED_SELECTED" desc="Content description for pinned tabs that are selected">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Pinned Selected Tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_PINNED_INCOGNITO" desc="Content description for pinned tabs that are not selected in Incognito mode">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Pinned Incognito Tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_TABSTRIP_TAB_PINNED_SELECTED_INCOGNITO" desc="Content description for the pinned tabs that are selected in Incognito mode">
+        <ph name="TAB_TITLE">%1$s<ex>Welcome to Facebook</ex></ph>, Pinned Selected Incognito Tab
       </message>
 
       <!-- Accessibility strings used in both tablet and phone tab strips -->
