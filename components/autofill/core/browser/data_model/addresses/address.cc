@@ -152,8 +152,8 @@ void Address::SetRawInfoWithVerificationStatus(FieldType type,
   Root()->SetValueForType(type, value, status);
 }
 
-void Address::GetMatchingTypes(const std::u16string& text,
-                               const std::string& app_locale,
+void Address::GetMatchingTypes(std::u16string_view text,
+                               std::string_view app_locale,
                                FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 

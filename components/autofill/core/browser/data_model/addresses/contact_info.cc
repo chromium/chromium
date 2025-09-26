@@ -96,7 +96,7 @@ std::u16string GetNameForComparison(
 //     "jean", "jean f", "jean francois", "jf" }
 //
 // Note: Expects that `name` is already normalized for comparison.
-std::set<std::u16string> GetNamePartVariants(const std::u16string& name_part) {
+std::set<std::u16string> GetNamePartVariants(std::u16string_view name_part) {
   static constexpr size_t kMaxSupportedSubNames = 8;
 
   std::vector<std::u16string_view> sub_names = base::SplitStringPiece(
@@ -104,7 +104,7 @@ std::set<std::u16string> GetNamePartVariants(const std::u16string& name_part) {
 
   // Limit the number of sub-names we support (to constrain memory usage);
   if (sub_names.size() > kMaxSupportedSubNames) {
-    return {name_part};
+    return {std::u16string(name_part)};
   }
 
   // Start with the empty string as a variant.
@@ -152,8 +152,8 @@ std::set<std::u16string> GetNamePartVariants(const std::u16string& name_part) {
 // true, "john quincy public" is not a name variant of "john q public".
 //
 // Note: Expects that `full_name` is already normalized for comparison.
-bool IsNormalizedNameVariantOf(const std::u16string& full_name_1,
-                               const std::u16string& full_name_2) {
+bool IsNormalizedNameVariantOf(std::u16string_view full_name_1,
+                               std::u16string_view full_name_2) {
   data_util::NameParts name_1_parts = data_util::SplitName(full_name_1);
 
   // Build the variants of full_name_1`s given, middle and family names.
@@ -418,8 +418,8 @@ void NameInfo::MergeStructuredNameValidationStatuses(const NameInfo& newer) {
   }
 }
 
-bool NameInfo::IsNameVariantOf(const std::u16string& value,
-                               const std::string& app_locale) const {
+bool NameInfo::IsNameVariantOf(std::u16string_view value,
+                               std::string_view app_locale) const {
   return IsNormalizedNameVariantOf(
       normalization::NormalizeForComparison(GetInfo(NAME_FULL, app_locale)),
       normalization::NormalizeForComparison(value));
@@ -696,8 +696,8 @@ FieldTypeSet CompanyInfo::GetSupportedTypes() const {
   return supported_types;
 }
 
-void CompanyInfo::GetMatchingTypes(const std::u16string& text,
-                                   const std::string& app_locale,
+void CompanyInfo::GetMatchingTypes(std::u16string_view text,
+                                   std::string_view app_locale,
                                    FieldTypeSet* matching_types) const {
   if (IsValid()) {
     FormGroup::GetMatchingTypes(text, app_locale, matching_types);

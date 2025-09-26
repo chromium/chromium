@@ -128,8 +128,8 @@ class NameInfo : public FormGroup {
   // `full_name` is "john quincy public" because full_name hold by `this` can be
   // derived from `full_name` by using the middle initial. Note that the reverse
   // is not true, "john quincy public" is not a name variant of "john q public".
-  bool IsNameVariantOf(const std::u16string& full_name,
-                       const std::string& app_locale) const;
+  bool IsNameVariantOf(std::u16string_view full_name,
+                       std::string_view app_locale) const;
 
   // Returns the storable type of `type`, if it exists.
   // It should only be used for `FieldTypeGroup::kName` types.
@@ -249,8 +249,8 @@ class CompanyInfo : public FormGroup {
  private:
   // FormGroup:
   FieldTypeSet GetSupportedTypes() const override;
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& app_locale,
+  void GetMatchingTypes(std::u16string_view text,
+                        std::string_view app_locale,
                         FieldTypeSet* matching_types) const override;
 
   std::u16string company_name_;

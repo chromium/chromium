@@ -110,16 +110,16 @@ void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
   cached_parsed_phone_ = i18n::PhoneObject();
 }
 
-void PhoneNumber::GetMatchingTypes(const std::u16string& text,
-                                   const std::string& app_locale,
+void PhoneNumber::GetMatchingTypes(std::u16string_view text,
+                                   std::string_view app_locale,
                                    FieldTypeSet* matching_types) const {
   // Strip the common phone number non numerical characters before calling the
   // base matching type function. For example, the `text` "(514) 121-1523"
   // would become the stripped text "5141211523". Since the base matching
   // function only does simple canonicalization to match against the stored
   // data, some domain specific cases will be covered below.
-  std::u16string stripped_text = text;
-  base::RemoveChars(stripped_text, u" .()-", &stripped_text);
+  std::u16string stripped_text;
+  base::RemoveChars(text, u" .()-", &stripped_text);
   FormGroup::GetMatchingTypes(stripped_text, app_locale, matching_types);
 
   // TODO(crbug.com/41236729): Investigate the use of PhoneNumberUtil when

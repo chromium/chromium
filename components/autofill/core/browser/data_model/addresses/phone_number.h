@@ -59,8 +59,8 @@ class PhoneNumber : public FormGroup {
   void set_profile(const AutofillProfile* profile) { profile_ = profile; }
 
   // FormGroup implementation:
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& app_locale,
+  void GetMatchingTypes(std::u16string_view text,
+                        std::string_view app_locale,
                         FieldTypeSet* matching_types) const override;
   using FormGroup::GetInfo;
   std::u16string GetInfo(const AutofillType& type,

@@ -172,8 +172,8 @@ class AutofillProfile : public FormGroup {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // FormGroup:
-  void GetMatchingTypes(const std::u16string& text,
-                        const std::string& app_locale,
+  void GetMatchingTypes(std::u16string_view text,
+                        std::string_view app_locale,
                         FieldTypeSet* matching_types) const override;
   using FormGroup::GetInfo;
   std::u16string GetInfo(const AutofillType& type,
@@ -215,7 +215,7 @@ class AutofillProfile : public FormGroup {
   FieldTypeSet GetUserVisibleTypes() const;
 
   // Returns true if there are no values (field types) set.
-  bool IsEmpty(const std::string& app_locale) const;
+  bool IsEmpty(std::string_view app_locale) const;
 
   // Returns true if the |type| of data in this profile is present, but invalid.
   // Otherwise returns false.

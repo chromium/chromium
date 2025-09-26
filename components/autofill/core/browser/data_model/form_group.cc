@@ -23,8 +23,8 @@
 
 namespace autofill {
 
-void FormGroup::GetMatchingTypes(const std::u16string& text,
-                                 const std::string& app_locale,
+void FormGroup::GetMatchingTypes(std::u16string_view text,
+                                 std::string_view app_locale,
                                  FieldTypeSet* matching_types) const {
   if (text.empty()) {
     matching_types->insert(EMPTY_TYPE);
@@ -46,7 +46,7 @@ void FormGroup::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-void FormGroup::GetNonEmptyTypes(const std::string& app_locale,
+void FormGroup::GetNonEmptyTypes(std::string_view app_locale,
                                  FieldTypeSet* non_empty_types) const {
   for (FieldType type : GetSupportedTypes()) {
     if (!GetInfo(type, app_locale).empty()) {

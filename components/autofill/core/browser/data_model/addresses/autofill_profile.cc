@@ -415,8 +415,8 @@ bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
       score, other_score, other->usage_history().use_date());
 }
 
-void AutofillProfile::GetMatchingTypes(const std::u16string& text,
-                                       const std::string& app_locale,
+void AutofillProfile::GetMatchingTypes(std::u16string_view text,
+                                       std::string_view app_locale,
                                        FieldTypeSet* matching_types) const {
   FieldTypeSet matching_types_in_this_profile;
   for (const auto* form_group : FormGroups()) {
@@ -480,7 +480,7 @@ FieldTypeSet AutofillProfile::GetUserVisibleTypes() const {
   return visible_types;
 }
 
-bool AutofillProfile::IsEmpty(const std::string& app_locale) const {
+bool AutofillProfile::IsEmpty(std::string_view app_locale) const {
   FieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();

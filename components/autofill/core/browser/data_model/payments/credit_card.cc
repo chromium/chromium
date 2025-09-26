@@ -110,8 +110,8 @@ std::u16string NetworkForFill(const std::string& network) {
 
 // Returns the last four digits of the credit card `number` (fewer if there are
 // not enough characters in `number`).
-std::u16string GetLastFourDigits(const std::u16string& number) {
-  static const size_t kNumLastDigits = 4;
+std::u16string GetLastFourDigits(std::u16string_view number) {
+  static constexpr size_t kNumLastDigits = 4;
 
   std::u16string stripped = StripCardNumberSeparators(number);
   if (stripped.size() <= kNumLastDigits) {
@@ -590,8 +590,8 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
   }
 }
 
-void CreditCard::GetMatchingTypes(const std::u16string& text,
-                                  const std::string& app_locale,
+void CreditCard::GetMatchingTypes(std::u16string_view text,
+                                  std::string_view app_locale,
                                   FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
