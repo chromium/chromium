@@ -9,10 +9,12 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
+import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -43,8 +45,9 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
-import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
@@ -62,6 +65,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -97,7 +101,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
-                    .setRevision(4)
+                    .setRevision(5)
                     .build();
 
     @Mock private KeyboardAccessoryView mKeyboardAccessoryView;
@@ -166,9 +170,7 @@ public class KeyboardAccessoryChipViewRenderTest {
         // tests.
         runOnUiThreadBlocking(
                 () -> {
-                    for (AutofillSuggestion suggestion : createSuggestionsToRender()) {
-                        createChipViewFromSuggestion(suggestion);
-                    }
+                    layoutViews();
                 });
         mRenderTestRule.render(mContentView, "keyboard_accessory_suggestions");
     }
@@ -181,9 +183,7 @@ public class KeyboardAccessoryChipViewRenderTest {
         // tests.
         runOnUiThreadBlocking(
                 () -> {
-                    for (AutofillSuggestion suggestion : createSuggestionsToRender()) {
-                        createChipViewFromSuggestion(suggestion);
-                    }
+                    layoutViews();
                 });
         mRenderTestRule.render(mContentView, "keyboard_accessory_two_line_suggestions");
     }
@@ -246,9 +246,8 @@ public class KeyboardAccessoryChipViewRenderTest {
                 generatePasswordEntry);
     }
 
-    private void createChipViewFromSuggestion(AutofillSuggestion suggestion) {
-        KeyboardAccessoryData.Action action =
-                new KeyboardAccessoryData.Action(AUTOFILL_SUGGESTION, unused -> {});
+    private ChipView createChipViewFromSuggestion(AutofillSuggestion suggestion) {
+        Action action = new Action(AUTOFILL_SUGGESTION, unused -> {});
         BarItemViewHolder<AutofillBarItem, ChipView> viewHolder =
                 KeyboardAccessoryViewBinder.create(
                         mKeyboardAccessoryView,
@@ -260,6 +259,42 @@ public class KeyboardAccessoryChipViewRenderTest {
         chipView.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mContentView.addView(chipView);
+        return chipView;
+    }
+
+    private ChipView createCredmanEntry() {
+        Action credmanAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, unused -> {});
+        BarItemViewHolder<BarItem, ChipView> viewHolder =
+                KeyboardAccessoryViewBinder.create(
+                        mKeyboardAccessoryView,
+                        mUiConfiguration,
+                        mContentView,
+                        BarItem.Type.ACTION_CHIP);
+        ChipView chipView = (ChipView) viewHolder.itemView;
+        viewHolder.bind(
+                new BarItem(
+                        BarItem.Type.ACTION_CHIP,
+                        credmanAction,
+                        org.chromium.chrome.browser.keyboard_accessory.R.string.select_passkey),
+                chipView);
+        chipView.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        return chipView;
+    }
+
+    private List<View> createKeyboardAccessoryItemsToRender() {
+        List<View> items = new ArrayList<>();
+        for (AutofillSuggestion suggestion : createSuggestionsToRender()) {
+            items.add(createChipViewFromSuggestion(suggestion));
+        }
+        items.add(createCredmanEntry());
+        return items;
+    }
+
+    private void layoutViews() {
+        for (View view : createKeyboardAccessoryItemsToRender()) {
+            mContentView.addView(view);
+        }
     }
 }
