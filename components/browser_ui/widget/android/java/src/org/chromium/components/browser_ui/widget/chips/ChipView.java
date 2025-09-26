@@ -234,6 +234,8 @@ public class ChipView extends LinearLayout {
                 new AppCompatTextView(new ContextThemeWrapper(getContext(), R.style.ChipTextView));
         mPrimaryText.setId(R.id.chip_view_primary_text);
         mPrimaryText.setTextAppearance(primaryTextAppearance);
+        // Reduce font padding if the text is aligned vertically.
+        mPrimaryText.setIncludeFontPadding(!alignTextVertically);
 
         // If false fall back to single line defined in XML styles.
         if (allowMultipleLines) {
@@ -456,6 +458,8 @@ public class ChipView extends LinearLayout {
                             new ContextThemeWrapper(getContext(), R.style.ChipTextView));
             mSecondaryText.setId(R.id.chip_view_secondary_text);
             mSecondaryText.setTextAppearance(mSecondaryTextAppearanceId);
+            // Reduce font padding if the text is aligned vertically.
+            mSecondaryText.setIncludeFontPadding(isSingleLineChip());
             // Ensure that basic state changes are aligned with the ChipView. They update
             // automatically once the view is part of the hierarchy.
             mSecondaryText.setSelected(isSelected());

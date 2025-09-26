@@ -64,6 +64,7 @@ public class ChipViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_MOBILE)
+                    .setRevision(2)
                     .build();
 
     private ViewGroup mContentView;

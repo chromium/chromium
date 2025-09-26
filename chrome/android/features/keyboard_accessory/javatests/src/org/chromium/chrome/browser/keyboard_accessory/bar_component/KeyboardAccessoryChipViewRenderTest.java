@@ -97,7 +97,7 @@ public class KeyboardAccessoryChipViewRenderTest {
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     @Mock private KeyboardAccessoryView mKeyboardAccessoryView;
