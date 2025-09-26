@@ -9,23 +9,17 @@ import functools
 import logging
 import os
 import pathlib
-import queue
-import shutil
 import subprocess
 import sys
 import tempfile
-import time
 
 import constants
 import promptfoo_installation
-import results
 import workers
 
 TESTCASE_EXTENSION = '.promptfoo.yaml'
 _SHARD_INDEX_ENV_VAR = 'GTEST_SHARD_INDEX'
 _TOTAL_SHARDS_ENV_VAR = 'GTEST_TOTAL_SHARDS'
-
-_ALL_TESTS_RUN_POLLING_SLEEP_DURATION = 0.5
 
 
 def _check_uncommitted_changes(cwd):
@@ -250,53 +244,6 @@ def _fetch_sandbox_image() -> bool:
             return False
 
 
-def _run_test_attempt(
-    config: pathlib.Path,
-    args: argparse.Namespace,
-    root_path: pathlib.Path,
-    is_btrfs: bool,
-    console_width: int,
-    promptfoo: 'promptfoo_installation.PromptfooInstallation',
-) -> tuple[subprocess.CompletedProcess, float]:
-    """Runs a single attempt of a test.
-
-    Args:
-        config: The path to the promptfoo config file.
-        args: The parsed command line args.
-        root_path: The path to the gclient root.
-        is_btrfs: Whether the checkout is on a btrfs filesystem.
-        console_width: The width of the console.
-        promptfoo: The promptfoo installation to use.
-
-    Returns:
-        A tuple containing the completed process and the duration of the test.
-    """
-    with workers.WorkDir('workdir', root_path, not args.no_clean, args.verbose,
-                         args.force, is_btrfs) as workdir:
-        command = [
-            'eval',
-            '-j',
-            '1',
-            '--no-cache',
-            # Not useful since we're running one test per eval and the
-            # tables don't render properly in captured logs.
-            '--no-table',
-            '-c',
-            str(config),
-            '--var',
-            f'console_width={console_width}',
-        ]
-        if args.sandbox:
-            command.extend(['--var', 'sandbox=True'])
-        if args.verbose:
-            command.extend(['--var', 'verbose=True'])
-
-        start_time = time.time()
-        proc = promptfoo.run(command, cwd=workdir.path / 'src')
-        duration = time.time() - start_time
-        return proc, duration
-
-
 def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     """Performs all the necessary steps to run prompt evaluation tests.
 
@@ -322,61 +269,42 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     if args.sandbox and not _fetch_sandbox_image():
         return 1
 
-    finished_test_queue = queue.Queue()
-    failed_test_queue = queue.Queue()
-    tests_run = results.AtomicCounter()
-    result_thread = results.ResultThread(
-        input_queue=finished_test_queue,
-        failed_result_queue=failed_test_queue,
-        tests_run=tests_run,
-        print_output_on_success=args.print_output_on_success)
-    result_thread.start()
-
-    console_width = shutil.get_terminal_size().columns
     root_path = _get_gclient_root()
-    is_btrfs = _check_btrfs(root_path)
-    results_to_process = 0
-    for config in configs_to_run:
-        for attempt in range(args.retries + 1):
-            if attempt > 0:
-                logging.info('Retrying test (%d/%d): %s', attempt,
-                             args.retries, str(config))
-            else:
-                logging.info('Running test: %s', str(config))
+    worker_options = workers.WorkerOptions(root_path=root_path,
+                                           clean=not args.no_clean,
+                                           verbose=args.verbose,
+                                           force=args.force,
+                                           is_btrfs=_check_btrfs(root_path),
+                                           sandbox=args.sandbox)
 
-            proc, duration = _run_test_attempt(config, args, root_path,
-                                               is_btrfs, console_width,
-                                               promptfoo)
-
-            r = results.TestResult(test_file=config,
-                                   success=not proc.returncode,
-                                   duration=duration,
-                                   test_log=proc.stdout)
-            finished_test_queue.put(r)
-            results_to_process += 1
-
-            if not proc.returncode:
-                break
-
-    # Wait for all results to be reported.
+    worker_pool = workers.WorkerPool(args.parallel_workers, promptfoo,
+                                     worker_options,
+                                     args.print_output_on_success)
+    configs_for_current_iteration = configs_to_run
     failed_test_results = []
-    while tests_run.get() != results_to_process:
-        result_thread.maybe_reraise_fatal_exception()
-        time.sleep(_ALL_TESTS_RUN_POLLING_SLEEP_DURATION)
+    for iteration in range(args.retries + 1):
+        if iteration != 0:
+            logging.info('Re-running %d failed tests',
+                         len(configs_for_current_iteration))
+        worker_pool.queue_tests(configs_for_current_iteration)
+        configs_for_current_iteration = []
+        failed_test_results = worker_pool.wait_for_all_queued_tests()
+        if not failed_test_results:
+            break
 
-    # Drain the queue and shut down the result thread.
-    while not failed_test_queue.empty():
-        failed_test_results.append(failed_test_queue.get())
-    failed_test_results.sort()
-    result_thread.shutdown()
-    result_thread.join()
+        configs_for_current_iteration = [
+            tr.test_file for tr in failed_test_results
+        ]
 
+    worker_pool.shutdown_blocking()
     returncode = 0
     if failed_test_results:
         returncode = 1
-        logging.warning('%d tests ran successfully and %d failed',
-                        len(configs_to_run) - len(failed_test_results),
-                        len(failed_test_results))
+        logging.warning(
+            '%d tests ran successfully and %d failed after %d additional '
+            'tries',
+            len(configs_to_run) - len(failed_test_results),
+            len(failed_test_results), args.retries)
         logging.warning('Failed tests:')
         for ftr in failed_test_results:
             logging.warning('  %s', ftr.test_file)
@@ -419,6 +347,13 @@ def _parse_args() -> argparse.Namespace:
               'output is only surfaced when a test fails.'))
     parser.add_argument('--filter',
                         help='Only run configs that contain this substring.')
+    parser.add_argument(
+        '--parallel-workers',
+        type=int,
+        default=1,
+        help=('The number of parallel workers to run tests in. Changing this '
+              'is not recommended if the Chromium checkout being used is not '
+              'on btrfs.'))
     parser.add_argument(
         '--shard-index',
         type=int,
