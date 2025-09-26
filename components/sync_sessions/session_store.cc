@@ -256,13 +256,26 @@ void SessionStore::WriteBatch::Commit(std::unique_ptr<WriteBatch> batch) {
 
 // static
 bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
+  // A session tag is always required.
   if (specifics.session_tag().empty()) {
     return false;
   }
+
+  // Only one of header or tab may be set.
+  if (specifics.has_header() && specifics.has_tab()) {
+    return false;
+  }
+
+  // Tabs must have both a valid tab ID and tab node ID.
   if (specifics.has_tab()) {
     return specifics.tab_node_id() >= 0 && specifics.tab().tab_id() > 0;
   }
+
   if (specifics.has_header()) {
+    // A header entity must not have a tab node ID.
+    if (specifics.tab_node_id() != TabNodePool::kInvalidTabNodeID) {
+      return false;
+    }
     // Verify that tab IDs appear only once within a header. Intended to prevent
     // http://crbug.com/360822.
     std::set<int> session_tab_ids;
@@ -274,9 +287,10 @@ bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
         }
       }
     }
-    return !specifics.has_tab() &&
-           specifics.tab_node_id() == TabNodePool::kInvalidTabNodeID;
+    return true;
   }
+
+  // Neither header nor tab.
   return false;
 }
 
