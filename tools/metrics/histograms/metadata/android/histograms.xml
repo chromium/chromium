@@ -1961,18 +1961,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabObjectType" variants="TabObjectType"/>
 </histogram>
 
-<histogram name="Android.DynamicColors.IsAvailable" enum="Boolean"
-    expires_after="2024-06-30">
-  <owner>skym@chromium.org</owner>
-  <owner>clank-sbui-team@google.com</owner>
-  <summary>
-    Recorded during ChromeBaseAppCompatActivity initialization if third_party
-    dynamic colors logic thinks dynamic colors are available. This is often
-    based on Android version and OEM. This metric is not related to whether
-    dynamic colors are desired by features/experiments.
-  </summary>
-</histogram>
-
 <histogram name="Android.DynamicTopChrome.TabStripTransition.Finished"
     enum="Boolean" expires_after="2026-02-22">
   <owner>wenyufu@chromium.org</owner>

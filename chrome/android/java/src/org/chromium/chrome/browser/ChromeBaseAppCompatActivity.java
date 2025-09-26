@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.language.GlobalAppLocaleController;
-import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
@@ -547,19 +546,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (shouldApplyDynamicColors()) {
             applyDynamicColors();
         }
-
-        DeferredStartupHandler.getInstance()
-                .addDeferredTask(
-                        () -> {
-                            // #registerSyntheticFieldTrial requires native.
-                            boolean isDynamicColorAvailable =
-                                    DynamicColors.isDynamicColorAvailable();
-                            RecordHistogram.recordBooleanHistogram(
-                                    "Android.DynamicColors.IsAvailable", isDynamicColorAvailable);
-                            UmaSessionStats.registerSyntheticFieldTrial(
-                                    "IsDynamicColorAvailable",
-                                    isDynamicColorAvailable ? "Enabled" : "Disabled");
-                        });
 
         // TODO(https://crbug.com/392634251): Explore setting elegantTextHeight to 'true' on older
         // OS versions.
