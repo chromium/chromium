@@ -148,6 +148,12 @@ BASE_DECLARE_FEATURE(kLensSearchZeroStateCsb);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensVideoCitations);
 
+// Enables the updated feedback entrypoint in the Lens side panel. This differs
+// from the "kLensSearchSidePanelNewFeedback" because this does not add a new
+// entrypoint, but updates the existing one.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensUpdatedFeedbackEntrypoint);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -981,6 +987,10 @@ extern std::string GetZeroStateCsbQuery();
 // enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensVideoCitationsEnabled();
+
+// Whether to enable the updated feedback entry point in the Lens side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensUpdatedFeedbackEnabled();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_
