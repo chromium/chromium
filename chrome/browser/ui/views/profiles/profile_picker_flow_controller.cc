@@ -586,9 +586,12 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
   std::move(on_error_callback).Run(error);
 }
 
+// TODO(crbug.com/447585139): Rename this function as it is not longer
+// only in PostSigin flow
 void ProfilePickerFlowController::CancelPostSignInFlow() {
   // Triggered from either entreprise welcome or profile switch screens.
-  DCHECK_EQ(Step::kPostSignInFlow, current_step());
+  DCHECK(current_step() == Step::kPostSignInFlow ||
+         current_step() == Step::kAccountSelection);
 
   switch (entry_point_) {
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuManageProfiles:

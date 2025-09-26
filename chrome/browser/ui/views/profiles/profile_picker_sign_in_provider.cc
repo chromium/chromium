@@ -390,7 +390,6 @@ void ProfilePickerSignInProvider::ShowSigninError(
     return;
   }
 
-  // TODO(crbug.com/40276801): Handle other errors in the profile picker.
   if (signin_util::IsForceSigninEnabled() &&
       error.type() ==
           SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
@@ -400,6 +399,20 @@ void ProfilePickerSignInProvider::ShowSigninError(
         ForceSigninUIError::SigninPatternNotMatching(
             base::UTF16ToUTF8(error.email())))));
   }
+
+  if (error.type() ==
+      SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+    GURL profile_switch_url(chrome::kChromeUIProfilePickerUrl);
+    profile_switch_url = profile_switch_url.Resolve("profile-switch");
+    // Appends the `profile_path` to be retrieved in the web page.
+    profile_switch_url =
+        net::AppendQueryParameter(profile_switch_url, "profileSwitchPath",
+                                  base::ToString(error.another_profile_path()));
+
+    host_->ShowScreenInPickerContents(profile_switch_url, base::OnceClosure());
+  }
+
+  // TODO(crbug.com/40276801): Handle other errors in the profile picker.
 }
 
 void ProfilePickerSignInProvider::ResetWebContentsDelegates() {

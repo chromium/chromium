@@ -214,9 +214,13 @@ bool ProcessDiceHeaderDelegateImpl::ShouldEnableHistorySync() {
 bool ProcessDiceHeaderDelegateImpl::AttemptSettingPrimaryAccount(
     const CoreAccountInfo& account_info,
     bool show_signin_error) {
+  // Only disallowed when coming from profile picker.
+  bool allow_account_from_other_profile =
+      (access_point_ != signin_metrics::AccessPoint::kUserManager) &&
+      (access_point_ != signin_metrics::AccessPoint::kForcedSignin);
   const SigninUIError error = CanOfferSignin(
       &profile_.get(), account_info.gaia, account_info.email,
-      /*allow_account_from_other_profile=*/true);
+      /*allow_account_from_other_profile=*/allow_account_from_other_profile);
   if (error.IsOk() ||
       !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)) {
     signin::IdentityManager* identity_manager =

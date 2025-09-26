@@ -546,10 +546,11 @@ class ProfilePickerCreationFlowBrowserTest
       const std::string& given_name,
       const std::string& hosted_domain = kNoHostedDomainFound,
       bool start_on_management_page = false,
-      bool is_supervised_profile = false) {
+      bool is_supervised_profile = false,
+      bool should_have_primary_account = true) {
     Profile* profile_being_created = StartDiceSignIn(start_on_management_page);
     FinishDiceSignIn(profile_being_created, email, given_name, hosted_domain,
-                     is_supervised_profile);
+                     is_supervised_profile, should_have_primary_account);
     WaitForLoadStop(target_url);
     return profile_being_created;
   }
@@ -3172,6 +3173,139 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  const GaiaId test_gaia_id =
+      signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");
+
+  // Create a pre-existing profile syncing with the same account as the profile
+  // being created.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* other_entry =
+      storage.GetProfileAttributesWithPath(other_path);
+  ASSERT_NE(other_entry, nullptr);
+  // Fake sync is enabled in this profile with Joe's account.
+  other_entry->SetAuthInfo(test_gaia_id, u"joe.consumer@gmail.com",
+                           /*is_consented_primary_account=*/true);
+  other_entry->SetGaiaIds({test_gaia_id});
+
+  size_t initial_profile_count = g_browser_process->profile_manager()
+                                     ->GetProfileAttributesStorage()
+                                     .GetNumberOfProfiles();
+
+  GURL expected_switch_url("chrome://profile-picker/profile-switch");
+  // The profile switch path is expected to be appended to the profile picker
+  // switch url.
+  expected_switch_url = net::AppendQueryParameter(
+      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
+
+  // Simulate a successful sign-in and wait for the sign-in to propagate to
+  // the flow, resulting in profile switch screen getting displayed (in
+  // between, chrome://sync-confirmation/loading gets displayed but that
+  // page may not finish loading and anyway is not so relevant).
+
+  bool should_have_primary_account =
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+  Profile* contents_profile =
+      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe",
+                          kNoHostedDomainFound, false, false,
+                          should_have_primary_account);
+
+  base::FilePath contents_profile_path = contents_profile->GetPath();
+
+  // Simulate clicking on the confirm switch button.
+  ProfilePickerHandler* handler = profile_picker_handler();
+  base::Value::List args;
+  args.Append(base::FilePathToValue(other_path));
+  handler->HandleConfirmProfileSwitch(args);
+
+  // Browser for a pre-existing profile is displayed.
+  BrowserWindowInterface* const new_browser = BrowserAddedWaiter(2u).Wait();
+  WaitForLoadStop(GURL("chrome://newtab/"),
+                  new_browser->GetTabStripModel()->GetActiveWebContents());
+  EXPECT_EQ(new_browser->GetProfile()->GetPath(), other_path);
+
+  // Check expectations when the profile creation flow is done.
+  WaitForPickerClosed();
+
+  EXPECT_NE(contents_profile_path, ProfileManager::GetSystemProfilePath());
+  // Profile should be already deleted.
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(contents_profile_path);
+  EXPECT_EQ(entry, nullptr);
+
+  EXPECT_EQ(initial_profile_count, g_browser_process->profile_manager()
+                                       ->GetProfileAttributesStorage()
+                                       .GetNumberOfProfiles());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+  const GaiaId test_gaia_id =
+      signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");
+
+  // Create a pre-existing profile syncing with the same account as the profile
+  // being created.
+  base::FilePath other_path = CreateNewProfileWithoutBrowser();
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* other_entry =
+      storage.GetProfileAttributesWithPath(other_path);
+  ASSERT_NE(other_entry, nullptr);
+  // Fake sync is enabled in this profile with Joe's account.
+  other_entry->SetAuthInfo(test_gaia_id, u"joe.consumer@gmail.com",
+                           /*is_consented_primary_account=*/true);
+  other_entry->SetGaiaIds({test_gaia_id});
+
+  size_t initial_profile_count = g_browser_process->profile_manager()
+                                     ->GetProfileAttributesStorage()
+                                     .GetNumberOfProfiles();
+
+  GURL expected_switch_url("chrome://profile-picker/profile-switch");
+  // The profile switch path is expected to be appended to the profile picker
+  // switch url.
+  expected_switch_url = net::AppendQueryParameter(
+      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
+
+  // Simulate a successful sign-in and wait for the sign-in to propagate to the
+  // flow, resulting in profile switch screen getting displayed (in between,
+  // chrome://sync-confirmation/loading gets displayed but that page may not
+  // finish loading and anyway is not so relevant).
+
+  bool should_have_primary_account =
+      !base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos);
+  Profile* contents_profile =
+      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe",
+                          kNoHostedDomainFound, false, false,
+                          should_have_primary_account);
+  base::FilePath contents_profile_path = contents_profile->GetPath();
+
+  // Simulate clicking on the cancel button.
+  ProfileDeletionObserver observer;
+  ProfilePickerHandler* handler = profile_picker_handler();
+  base::Value::List args;
+  handler->HandleCancelProfileSwitch(args);
+
+  // Check expectations when the profile creation flow is done.
+  WaitForPickerClosed();
+  observer.Wait();
+
+  // Only one browser should be displayed.
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  EXPECT_FALSE(contents_profile->IsSystemProfile());
+  // The sign-in profile should be marked for deletion.
+  IsProfileDirectoryMarkedForDeletion(contents_profile_path);
+
+  EXPECT_EQ(initial_profile_count, g_browser_process->profile_manager()
+                                       ->GetProfileAttributesStorage()
+                                       .GetNumberOfProfiles());
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                        CreateSignedInProfileWithSuggestedTwoFactorAuthSetup) {
   const GURL kTwoFactorIntersitialUrl(
       "https://myaccount.google.com/interstitials/twosvrequired?query=value");
@@ -3461,131 +3595,6 @@ IN_PROC_BROWSER_TEST_F(
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_being_created_path);
   EXPECT_EQ(entry, nullptr);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
-    CreateSignedInProfileSigninAlreadyExists_ConfirmSwitch) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-  const GaiaId test_gaia_id =
-      signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");
-
-  // Create a pre-existing profile syncing with the same account as the profile
-  // being created.
-  base::FilePath other_path = CreateNewProfileWithoutBrowser();
-  ProfileAttributesStorage& storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ProfileAttributesEntry* other_entry =
-      storage.GetProfileAttributesWithPath(other_path);
-  ASSERT_NE(other_entry, nullptr);
-  // Fake sync is enabled in this profile with Joe's account.
-  other_entry->SetAuthInfo(test_gaia_id, u"joe.consumer@gmail.com",
-                           /*is_consented_primary_account=*/true);
-  other_entry->SetGaiaIds({test_gaia_id});
-
-  size_t initial_profile_count = g_browser_process->profile_manager()
-                                     ->GetProfileAttributesStorage()
-                                     .GetNumberOfProfiles();
-
-  GURL expected_switch_url("chrome://profile-picker/profile-switch");
-  // The profile switch path is expected to be appended to the profile picker
-  // switch url.
-  expected_switch_url = net::AppendQueryParameter(
-      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
-
-  // Simulate a successful sign-in and wait for the sign-in to propagate to
-  // the flow, resulting in profile switch screen getting displayed (in
-  // between, chrome://sync-confirmation/loading gets displayed but that
-  // page may not finish loading and anyway is not so relevant).
-  Profile* contents_profile =
-      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe");
-
-  base::FilePath contents_profile_path = contents_profile->GetPath();
-
-  // Simulate clicking on the confirm switch button.
-  ProfilePickerHandler* handler = profile_picker_handler();
-  base::Value::List args;
-  args.Append(base::FilePathToValue(other_path));
-  handler->HandleConfirmProfileSwitch(args);
-
-  // Browser for a pre-existing profile is displayed.
-  BrowserWindowInterface* const new_browser = BrowserAddedWaiter(2u).Wait();
-  WaitForLoadStop(GURL("chrome://newtab/"),
-                  new_browser->GetTabStripModel()->GetActiveWebContents());
-  EXPECT_EQ(new_browser->GetProfile()->GetPath(), other_path);
-
-  // Check expectations when the profile creation flow is done.
-  WaitForPickerClosed();
-
-  EXPECT_NE(contents_profile_path, ProfileManager::GetSystemProfilePath());
-  // Profile should be already deleted.
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(contents_profile_path);
-  EXPECT_EQ(entry, nullptr);
-
-  EXPECT_EQ(initial_profile_count, g_browser_process->profile_manager()
-                                       ->GetProfileAttributesStorage()
-                                       .GetNumberOfProfiles());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
-    CreateSignedInProfileSigninAlreadyExists_CancelSwitch) {
-  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
-  const GaiaId test_gaia_id =
-      signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com");
-
-  // Create a pre-existing profile syncing with the same account as the profile
-  // being created.
-  base::FilePath other_path = CreateNewProfileWithoutBrowser();
-  ProfileAttributesStorage& storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
-  ProfileAttributesEntry* other_entry =
-      storage.GetProfileAttributesWithPath(other_path);
-  ASSERT_NE(other_entry, nullptr);
-  // Fake sync is enabled in this profile with Joe's account.
-  other_entry->SetAuthInfo(test_gaia_id, u"joe.consumer@gmail.com",
-                           /*is_consented_primary_account=*/true);
-  other_entry->SetGaiaIds({test_gaia_id});
-
-  size_t initial_profile_count = g_browser_process->profile_manager()
-                                     ->GetProfileAttributesStorage()
-                                     .GetNumberOfProfiles();
-
-  GURL expected_switch_url("chrome://profile-picker/profile-switch");
-  // The profile switch path is expected to be appended to the profile picker
-  // switch url.
-  expected_switch_url = net::AppendQueryParameter(
-      expected_switch_url, "profileSwitchPath", base::ToString(other_path));
-
-  // Simulate a successful sign-in and wait for the sign-in to propagate to the
-  // flow, resulting in profile switch screen getting displayed (in between,
-  // chrome://sync-confirmation/loading gets displayed but that page may not
-  // finish loading and anyway is not so relevant).
-  Profile* contents_profile =
-      SignInForNewProfile(expected_switch_url, "joe.consumer@gmail.com", "Joe");
-  base::FilePath contents_profile_path = contents_profile->GetPath();
-
-  // Simulate clicking on the cancel button.
-  ProfileDeletionObserver observer;
-  ProfilePickerHandler* handler = profile_picker_handler();
-  base::Value::List args;
-  handler->HandleCancelProfileSwitch(args);
-
-  // Check expectations when the profile creation flow is done.
-  WaitForPickerClosed();
-  observer.Wait();
-
-  // Only one browser should be displayed.
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
-
-  EXPECT_FALSE(contents_profile->IsSystemProfile());
-  // The sign-in profile should be marked for deletion.
-  IsProfileDirectoryMarkedForDeletion(contents_profile_path);
-
-  EXPECT_EQ(initial_profile_count, g_browser_process->profile_manager()
-                                       ->GetProfileAttributesStorage()
-                                       .GetNumberOfProfiles());
 }
 
 class ProfilePickerCreationFlowEphemeralProfileBrowserTest
