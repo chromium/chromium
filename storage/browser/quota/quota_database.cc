@@ -52,8 +52,8 @@ static const int kStaleBucketCutoffInDays = 400;
 // Version 4 - 2011-10-17 - http://crrev.com/105822 (unsupported)
 // Version 5 - 2015-10-19 - https://crrev.com/354932 (unsupported)
 // Version 6 - 2021-04-27 - https://crrev.com/c/2757450 (unsupported)
-// Version 7 - 2021-05-20 - https://crrev.com/c/2910136
-// Version 8 - 2021-09-01 - https://crrev.com/c/3119831
+// Version 7 - 2021-05-20 - https://crrev.com/c/2910136 (unsupported)
+// Version 8 - 2021-09-01 - https://crrev.com/c/3119831 (unsupported)
 // Version 9 - 2022-05-13 - https://crrev.com/c/3601253
 // Version 10 - 2023-04-10 - https://crrev.com/c/4412082
 //
