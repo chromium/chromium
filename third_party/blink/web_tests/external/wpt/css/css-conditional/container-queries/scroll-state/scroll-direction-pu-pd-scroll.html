@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-<title>@container: scroll-state(direction) spacebar click scroll</title>
-<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#container-rule">
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12394">
+<title>@container: scroll-state(direction) PageUp/PageDown keys press scroll</title>
+<link rel="help" href="https://drafts.csswg.org/css-conditional-5/#direction">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -21,12 +20,12 @@
   }
   #target {
     --none: no;
-    --y: no;
+    --top: no;
     @container scroll-state(direction: none) {
       --none: yes;
     }
-    @container scroll-state(direction: y) {
-      --y: yes;
+    @container scroll-state(direction: top) {
+      --top: yes;
     }
   }
 </style>
@@ -39,21 +38,39 @@
   setup(() => assert_implements_scroll_state_container_queries());
 
   promise_test(async t => {
-    assert_equals(getComputedStyle(target).getPropertyValue("--none"), "yes");
-    assert_equals(getComputedStyle(target).getPropertyValue("--y"), "no");
+    const PageUp = '\uE00E';
+    const PageDown = '\uE00F';
     scroller.focus();
     await new test_driver.Actions()
-      .keyDown('\uE00D')
-      .keyUp('\uE00D')
+      .keyDown(PageUp)
+      .keyUp(PageUp)
       .send();
     await new test_driver.Actions()
-      .keyDown('\uE00D')
-      .keyUp('\uE00D')
+      .keyDown(PageUp)
+      .keyUp(PageUp)
       .send();
     await waitForAnimationFrames(2);
-    assert_equals(getComputedStyle(target).getPropertyValue("--none"), "no");
-    assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
+    assert_equals(getComputedStyle(target).getPropertyValue("--none"), "yes");
+    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "no");
 
-  }, "Spacebar scroll");
+  }, "PageUp key shouldn't scroll when scroller is already on top");
+
+  promise_test(async t => {
+    const PageUp = '\uE00E';
+    const PageDown = '\uE00F';
+    scroller.scrollTop = 100;
+    scroller.focus();
+    await new test_driver.Actions()
+      .keyDown(PageUp)
+      .keyUp(PageUp)
+      .send();
+    await new test_driver.Actions()
+      .keyDown(PageUp)
+      .keyUp(PageUp)
+      .send();
+    await waitForAnimationFrames(2);
+    assert_equals(getComputedStyle(target).getPropertyValue("--top"), "yes");
+
+  }, "PageUp key scroll");
 
 </script>
