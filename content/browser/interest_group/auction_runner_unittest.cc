@@ -78,6 +78,7 @@
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
+#include "content/services/auction_worklet/public/cpp/auction_worklet_features.h"
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/cpp/test_bid_builder.h"
@@ -14423,7 +14424,11 @@ TEST_F(AuctionRunnerTest, ExecutionModeGroupByOriginClickiness) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{network::features::kAdAuctionEventRegistration,
                             blink::features::kFledgeClickiness},
-      /*disabled_features=*/{});
+      // The balancing thread selector will split same-origin same-execution
+      // mode across multiple worklets, which messes with the results of this
+      // test.
+      /*disabled_features=*/{
+          features::kFledgeBidderUseBalancingThreadSelector});
   // Test of group-by-origin execution mode at AuctionRunner level;
   // this primarily shows that the sorting actually groups things, and that
   // distinct groups are kept separate.
@@ -28760,6 +28765,11 @@ TEST_F(AuctionRunnerTest, TrustedBiddingSignalsSplitBatchedRequests) {
 }
 
 TEST_F(AuctionRunnerTest, TrustedScoringSignalsJointBatchedRequests) {
+  // Requesting signals one at a time interferes with batching, so disable it
+  // for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kFledgeSellerSignalsRequestsOneAtATime);
   url_loader_factory_.ClearResponses();
   trusted_scoring_signals_url_ =
       GURL("https://adstuff.publisher1.com/seller_signals");
