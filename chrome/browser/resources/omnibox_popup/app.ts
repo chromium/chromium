@@ -9,6 +9,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -80,6 +81,7 @@ export class OmniboxPopupAppElement extends CrLitElement {
   private callbackRouter_: PageCallbackRouter;
   private autocompleteResultChangedListenerId_: number|null = null;
   private selectionChangedListenerId_: number|null = null;
+  private eventTracker_ = new EventTracker();
 
   constructor() {
     super();
@@ -98,10 +100,18 @@ export class OmniboxPopupAppElement extends CrLitElement {
             this.onUpdateSelection_.bind(this));
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
+
+    if (!this.isDebug) {
+      this.eventTracker_.add(
+          document.documentElement, 'contextmenu', (e: Event) => {
+            e.preventDefault();
+          });
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.eventTracker_.removeAll();
     assert(this.autocompleteResultChangedListenerId_);
     this.callbackRouter_.removeListener(
         this.autocompleteResultChangedListenerId_);
