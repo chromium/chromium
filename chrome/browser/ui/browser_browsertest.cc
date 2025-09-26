@@ -990,6 +990,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
 
   // Accept the navigation so we end up on a page without a beforeunload hook.
   alert->view()->AcceptAppModalDialog();
+  EXPECT_TRUE(content::WaitForLoadStop(contents));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
