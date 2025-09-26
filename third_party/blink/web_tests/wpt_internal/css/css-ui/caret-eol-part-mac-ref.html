@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html lang=en>
+<meta charset="utf-8">
+<title>CSS Basic User Interface Test Reference</title>
+<style>
+div {
+    font-size: 40px;
+    font-family: monospace;
+    caret-color: orange;
+    caret-animation: manual;
+    caret-shape: block;
+    width: 5ch;
+    outline: none;
+    white-space: pre;
+    display: inline-block;
+}
+
+#div2 {
+   width: 1ch;
+   position: relative;
+   left: -6px;
+   transform: scaleX(0.5);
+}
+
+</style>
+
+<p>Test passes if you see a orange text insertion caret at the end of the line below.</p>
+
+<div id=test contenteditable spellcheck="false">abcde</div><div id=div2 contenteditable></div>
+
+<script>
+  window.onload = function () {
+    document.getElementById("div2").focus();
+  }
+</script>
