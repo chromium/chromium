@@ -1493,7 +1493,7 @@ gpu.try_.optional_tests_builder(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_pixel_4_telemetry_tests",
+            "gpu_pixel_04_telemetry_tests",
             "android_webview_gpu_telemetry_tests",
         ],
         mixins = [

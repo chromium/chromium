@@ -156,7 +156,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_android_gtests",
-            "gpu_pixel_2_telemetry_tests",
+            "gpu_pixel_02_telemetry_tests",
         ],
         mixins = [
             "chromium_pixel_2_q",
@@ -215,7 +215,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_android_gtests",
-            "gpu_pixel_4_telemetry_tests",
+            "gpu_pixel_04_telemetry_tests",
             "android_webview_gpu_telemetry_tests",
         ],
         mixins = [
@@ -328,7 +328,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "gpu_fyi_android_gtests",
-            "gpu_pixel_6_telemetry_tests",
+            "gpu_pixel_06_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
@@ -396,7 +396,7 @@ ci.thin_tester(
         # should be running the same tests as 'Android FYI Release (Pixel 6)'.
         targets = [
             "gpu_fyi_android_gtests",
-            "gpu_pixel_6_telemetry_tests",
+            "gpu_pixel_06_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
@@ -463,12 +463,31 @@ ci.thin_tester(
     ),
     targets = targets.bundle(
         targets = [
-            "gpu_noop_sleep_telemetry_test",
+            "gpu_fyi_android_gtests",
+            "gpu_pixel_10_telemetry_tests",
+            "android_webview_gpu_telemetry_tests",
         ],
         mixins = [
             "has_native_resultdb_integration",
             "gpu_pixel_10_stable",
         ],
+        per_test_modifications = {
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pixel_10.gl_tests_passthrough.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.remove(
+                reason = [
+                    "Passthrough is default on Pixel 10",
+                ],
+            ),
+            "webcodecs_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 9,  # due to many timeouts crbug.com/447317875
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.ANDROID_CHROMIUM,

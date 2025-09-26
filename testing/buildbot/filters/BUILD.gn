@@ -380,6 +380,7 @@ source_set("gl_tests_filters") {
     "//testing/buildbot/filters/android.emulator_11.gl_tests.filter",
     "//testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
     "//testing/buildbot/filters/android.moto_g_power_5g.gl_tests.filter",
+    "//testing/buildbot/filters/android.pixel_10.gl_tests_passthrough.filter",
     "//testing/buildbot/filters/android.samsung_a13.gl_tests.filter",
     "//testing/buildbot/filters/android.samsung_a23.gl_tests.filter",
     "//testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter",

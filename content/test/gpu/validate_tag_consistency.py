@@ -98,6 +98,7 @@ TAG_SPECIALIZATIONS = {
             'google-0xc0de',
         ],
         'imagination': [],
+        'imagination-technologies': [],
         'intel': [
             # Individual GPUs should technically fit under intel-gen-X, but we
             # only support one level of nesting, so treat the generation tags as
@@ -191,7 +192,7 @@ TAG_HEADER = """\
 # OS
 {OS_TAGS}
 # Devices
-# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1
 #         android-brya android-corsola

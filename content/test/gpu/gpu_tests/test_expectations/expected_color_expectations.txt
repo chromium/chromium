@@ -8,7 +8,7 @@
 #         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
-# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1
 #         android-brya android-corsola
@@ -37,6 +37,7 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
+#         imagination-technologies
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
@@ -126,13 +127,13 @@ crbug.com/425745937 [ fuchsia web-engine-shell fuchsia-board-nelson ] ExpectedCo
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
-
-
 # Flakes on Intel Mac with a larger shifted image
 crbug.com/425653491 [ angle-metal graphite-enabled intel-0x3e9b no-asan no-clang-coverage release sequoia ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 # Flakes on Android DEMUXER_ERROR_COULD_NOT_OPEN
 crbug.com/426594100 [ android android-pixel-2 graphite-disabled ] ExpectedColor_MediaRecorderFromVideoElement [ RetryOnFailure ]
+
+crbug.com/446124895 [ android android-pixel-10 ] ExpectedColor_MediaRecorderFromVideoElement [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

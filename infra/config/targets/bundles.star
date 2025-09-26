@@ -4528,7 +4528,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_2_telemetry_tests",
+    name = "gpu_pixel_02_telemetry_tests",
     targets = [
         "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
@@ -4538,7 +4538,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_4_telemetry_tests",
+    name = "gpu_pixel_04_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_ganesh_telemetry_tests",
@@ -4553,7 +4553,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_6_telemetry_tests",
+    name = "gpu_pixel_06_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_ganesh_telemetry_tests",
@@ -4569,6 +4569,18 @@ targets.bundle(
         "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_graphite_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_pixel_10_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webrtc_telemetry_test",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
     ],
 )
 

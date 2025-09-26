@@ -8,7 +8,7 @@
 #         mac highsierra mojave catalina bigsur monterey ventura sonoma sequoia
 #         win win8 win10 win11 ]
 # Devices
-# tags: [ android-pixel-2 android-pixel-4 android-pixel-6
+# tags: [ android-pixel-2 android-pixel-4 android-pixel-6 android-pixel-10
 #             android-shield-android-tv android-sm-a137f android-sm-a236b
 #             android-sm-s911u1
 #         android-brya android-corsola
@@ -37,6 +37,7 @@
 #         arm
 #         google google-0xffff google-0xc0de
 #         imagination
+#         imagination-technologies
 #         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xa011 intel-0x3e92
 #             intel-0x3e9b intel-0x4680 intel-0x46a8 intel-0x5912 intel-0x9bc5
 #         microsoft microsoft-0xffff
@@ -577,6 +578,23 @@ crbug.com/1288590 [ android android-pixel-6 ] conformance/misc/shader-precision-
 crbug.com/1288603 [ android android-pixel-6 passthrough angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
 crbug.com/40236526 [ android android-pixel-6 no-passthrough ] conformance/rendering/blending.html [ Failure ]
 
+## Pixel 10 ##
+
+crbug.com/446122639 [ android android-pixel-10 imagination-technologies ] WebglExtension_EXT_texture_compression_bptc [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] WebglExtension_OES_texture_float_linear [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/context/context-size-change.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/extensions/webgl-blend-func-extended.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/glsl/functions/glsl-function-cross.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/rendering/gl-scissor-fbo-test.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/misc/texture-srgb-upload.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/misc/texture-upload-cube-maps.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
+crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
 
 ## Misc failures ##
 
