@@ -898,7 +898,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.BiometricAuthPwdFill.AuthResult"
-    enum="DeviceAuthFinalResult" expires_after="2025-09-30">
+    enum="DeviceAuthFinalResult" expires_after="2026-09-30">
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
   <summary>
@@ -1314,7 +1314,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError"
-    enum="PasswordStoreAndroidBackendAPIError" expires_after="2025-10-06">
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2026-03-06">
   <owner>ioanap@chromium.org</owner>
   <owner>izuzic@google.com</owner>
   <summary>
@@ -1329,7 +1329,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.APIError.ConnectionResultCode"
     enum="PasswordStoreAndroidBackendConnectionResultCode"
-    expires_after="2025-10-06">
+    expires_after="2026-03-06">
   <owner>ioanap@chromium.org</owner>
   <owner>izuzic@google.com</owner>
   <summary>
@@ -1357,7 +1357,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PasswordManager.CredentialManager.{ProfileType}.GetIntent.Latency"
-    units="ms" expires_after="2025-10-12">
+    units="ms" expires_after="2026-08-17">
   <owner>ioanap@chromium.org</owner>
   <owner>friedrichh@chromium.org</owner>
   <summary>
