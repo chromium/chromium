@@ -27,6 +27,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -55,6 +56,7 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -65,7 +67,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
@@ -326,7 +327,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool is_pinned,
     PopupDelegate* delegate,
     bool can_show_icon_in_toolbar,
@@ -335,7 +336,7 @@ ExtensionContextMenuModel::ExtensionContextMenuModel(
       extension_id_(extension->id()),
       is_component_(Manifest::IsComponentLocation(extension->location())),
       browser_(browser),
-      profile_(browser->profile()),
+      profile_(browser->GetProfile()),
       delegate_(delegate),
       is_pinned_(is_pinned),
       source_(source) {
@@ -512,7 +513,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     case UNINSTALL: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       UninstallDialogHelper::UninstallExtension(
-          profile_, browser_->window()->GetNativeWindow(), extension);
+          profile_, browser_->GetWindow()->GetNativeWindow(), extension);
 #else
       // TODO(crbug.com/441744719): Make it possible to uninstall extensions
       // from here on Desktop Android.
@@ -545,7 +546,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     }
     case MANAGE_EXTENSIONS: {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      chrome::ShowExtensions(browser_, extension->id());
+      chrome::ShowExtensions(browser_->GetBrowserForMigrationOnly(),
+                             extension->id());
 #else
       const std::string& extension_to_highlight = extension->id();
       GURL url(chrome::kChromeUIExtensionsURL);
@@ -562,7 +564,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     }
     case VIEW_WEB_PERMISSIONS:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-      chrome::ShowSiteSettings(browser_, extension->url());
+      chrome::ShowSiteSettings(browser_->GetBrowserForMigrationOnly(),
+                               extension->url());
 #else
       // TODO(crbug.com/441744719): Show site settings page on Desktop Android.
       NOTIMPLEMENTED();
@@ -641,7 +644,10 @@ void ExtensionContextMenuModel::MenuClosed(ui::SimpleMenuModel* menu) {
 #if !BUILDFLAG(IS_ANDROID)
     if (source_ == ContextMenuSource::kMenuItem &&
         was_side_panel_action_taken) {
-      browser_->window()->GetExtensionsContainer()->CloseOverflowMenuIfOpen();
+      browser_->GetBrowserForMigrationOnly()
+          ->window()
+          ->GetExtensionsContainer()
+          ->CloseOverflowMenuIfOpen();
       // WARNING: The overflow menu was the parent for this menu, so it's
       // possible `this` is now deleted.
     }
@@ -1029,7 +1035,7 @@ void ExtensionContextMenuModel::CreatePageAccessItems(
 
 content::WebContents* ExtensionContextMenuModel::GetActiveWebContents() const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  return browser_->GetActiveTabInterface()->GetContents();
 #else
   return web_contents_;
 #endif

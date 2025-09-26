@@ -17,10 +17,7 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-#if !BUILDFLAG(IS_ANDROID)
-class Browser;
-#endif
-
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -121,7 +118,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // ShowPopupForDevToolsWindow() to be called on `delegate`.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   ExtensionContextMenuModel(const Extension* extension,
-                            Browser* browser,
+                            BrowserWindowInterface* browser,
                             bool is_pinned,
                             PopupDelegate* delegate,
                             bool can_show_icon_in_toolbar,
@@ -199,7 +196,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   raw_ptr<ExtensionAction, DanglingUntriaged> extension_action_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 #else
   raw_ptr<content::WebContents> web_contents_;
 #endif
