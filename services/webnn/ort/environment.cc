@@ -37,6 +37,7 @@ struct EpInfo {
 };
 
 constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
+    // Intel
     {
         "OpenVINOExecutionProvider",
         {
@@ -88,6 +89,40 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
                             }
                         })"},
                 },
+        },
+    },
+    // NVidia
+    {
+        "NvTensorRTRTXExecutionProvider",
+        {
+            .package_family_name = L"MicrosoftCorporationII.WinML.NVIDIA.TRT-"
+                                   L"RTX.EP.1.8_8wekyb3d8bbwe",
+            .library_name = L"onnxruntime_providers_nv_tensorrt_rtx.dll",
+            .package_version =
+                {
+                    .Major = 0,
+                    .Minor = 0,
+                    .Build = 0,
+                    .Revision = 0,
+                },
+            .vendor_id = 0x10de,
+        },
+    },
+    // Qualcomm
+    {
+        "QNNExecutionProvider",
+        {
+            .package_family_name = L"MicrosoftCorporationII.WinML.Qualcomm.QNN."
+                                   L"EP.1.8_8wekyb3d8bbwe",
+            .library_name = L"onnxruntime_providers_qnn.dll",
+            .package_version =
+                {
+                    .Major = 0,
+                    .Minor = 0,
+                    .Build = 0,
+                    .Revision = 0,
+                },
+            .vendor_id = 0x4d4f4351,
         },
     },
 });
