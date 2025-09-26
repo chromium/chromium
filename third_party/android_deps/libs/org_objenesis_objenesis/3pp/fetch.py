@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='objenesis',
                          file_ext='jar',
                          patch_version='cr2',
-                         version_override='3.3',
+                         version_override=None,
                          version_filter=None)
 
 if __name__ == '__main__':

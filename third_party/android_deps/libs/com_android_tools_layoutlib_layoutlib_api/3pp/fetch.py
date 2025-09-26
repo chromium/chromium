@@ -19,7 +19,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          module_name='layoutlib-api',
                          file_ext='jar',
                          patch_version='cr2',
-                         version_override='30.2.0-beta01',
+                         version_override=None,
                          version_filter=None)
 
 if __name__ == '__main__':
