@@ -513,12 +513,14 @@ void ClientTagBasedDataTypeProcessor::Put(
     std::unique_ptr<EntityData> data,
     MetadataChangeList* metadata_change_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DUMP_WILL_BE_CHECK(IsAllowingChanges());
-  DUMP_WILL_BE_CHECK(data);
-  DUMP_WILL_BE_CHECK(!data->is_deleted());
-  DUMP_WILL_BE_CHECK(!data->specifics.has_encrypted());
-  DUMP_WILL_BE_CHECK(!storage_key.empty());
-  DUMP_WILL_BE_CHECK_EQ(type_, GetDataTypeFromSpecifics(data->specifics));
+  CHECK(IsAllowingChanges()) << DataTypeToDebugString(type_);
+  CHECK(data) << DataTypeToDebugString(type_);
+  CHECK(!data->is_deleted()) << DataTypeToDebugString(type_);
+  CHECK(!data->specifics.has_encrypted()) << DataTypeToDebugString(type_);
+  // TODO(crbug.com/408182457): This check sometimes triggers.
+  DUMP_WILL_BE_CHECK(!storage_key.empty()) << DataTypeToDebugString(type_);
+  CHECK_EQ(type_, GetDataTypeFromSpecifics(data->specifics))
+      << DataTypeToDebugString(type_);
 
   if (!entity_tracker_) {
     // Ignore changes before the initial sync is done.
@@ -552,13 +554,14 @@ void ClientTagBasedDataTypeProcessor::Put(
     // The bridge is creating a new entity. The bridge may or may not populate
     // `data->client_tag_hash`, so let's ask for the client tag if needed.
     if (data->client_tag_hash.value().empty()) {
-      DUMP_WILL_BE_CHECK(bridge_->SupportsGetClientTag());
+      CHECK(bridge_->SupportsGetClientTag());
       data->client_tag_hash =
           ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(*data));
     } else if (bridge_->SupportsGetClientTag()) {
       // If the Put() call already included the client tag, let's verify that
       // it's consistent with the bridge's regular GetClientTag() function (if
       // supported by the bridge).
+      // TODO(crbug.com/408182457): This check sometimes triggers.
       DUMP_WILL_BE_CHECK_EQ(
           data->client_tag_hash,
           ClientTagHash::FromUnhashed(type_, bridge_->GetClientTag(*data)));
@@ -570,6 +573,7 @@ void ClientTagBasedDataTypeProcessor::Put(
     // entity.
     entity = entity_tracker_->GetEntityForTagHash(data->client_tag_hash);
     if (entity != nullptr) {
+      // TODO(crbug.com/408182457): This check sometimes triggers.
       DUMP_WILL_BE_CHECK(storage_key != entity->storage_key());
       if (!entity->metadata().is_deleted()) {
         // The bridge overrides an entity that is not deleted. This is
@@ -605,7 +609,7 @@ void ClientTagBasedDataTypeProcessor::Put(
                               std::move(unique_position));
   }
 
-  DUMP_WILL_BE_CHECK(entity->IsUnsynced());
+  CHECK(entity->IsUnsynced());
 
   metadata_change_list->UpdateMetadata(storage_key, entity->metadata());
 
