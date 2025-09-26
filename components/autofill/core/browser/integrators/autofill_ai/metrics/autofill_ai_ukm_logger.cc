@@ -316,13 +316,6 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
   const FieldTypeSet field_types = field.Type().GetTypes();
   const FieldTypeSet ai_field_types = field.Type().GetAutofillAiTypes();
 
-  // TODO(crbug.com/432645177): Emit multiple `field_types` and
-  // `ai_field_types`.
-  const auto field_type = base::to_underlying(
-      !field_types.empty() ? *field_types.begin() : UNKNOWN_TYPE);
-  const auto ai_field_type = base::to_underlying(
-      !ai_field_types.empty() ? *ai_field_types.begin() : UNKNOWN_TYPE);
-
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           client_->GetMqlsUploadService();
       uploader_ &&
@@ -352,8 +345,16 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
     mqls_field_event->set_field_rank(field.rank());
     mqls_field_event->set_field_rank_in_signature_group(
         field.rank_in_signature_group());
-    mqls_field_event->set_field_type(field_type);
-    mqls_field_event->set_ai_field_type(ai_field_type);
+    mqls_field_event->set_field_type(base::to_underlying(
+        !field_types.empty() ? *field_types.begin() : UNKNOWN_TYPE));
+    mqls_field_event->set_ai_field_type(base::to_underlying(
+        !ai_field_types.empty() ? *ai_field_types.begin() : UNKNOWN_TYPE));
+    for (FieldType field_type : field_types) {
+      mqls_field_event->add_field_types(field_type);
+    }
+    for (FieldType ai_field_type : ai_field_types) {
+      mqls_field_event->add_ai_field_types(ai_field_type);
+    }
     mqls_field_event->set_format_string_source(
         GetFormatStringSource(field.format_string_source()));
     mqls_field_event->set_form_control_type(

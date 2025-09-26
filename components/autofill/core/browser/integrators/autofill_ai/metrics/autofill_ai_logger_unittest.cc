@@ -54,6 +54,7 @@ using ::base::BucketsAre;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
+using ::testing::UnorderedElementsAreArray;
 
 constexpr auto kVehicle = EntityType(EntityTypeName::kVehicle);
 constexpr auto kDriversLicense = EntityType(EntityTypeName::kDriversLicense);
@@ -810,6 +811,10 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
                                                   : UNKNOWN_TYPE;
               }()))
         << event;
+    EXPECT_THAT(mqls_field_event.field_types(),
+                UnorderedElementsAreArray(field.Type().GetTypes()));
+    EXPECT_THAT(mqls_field_event.ai_field_types(),
+                UnorderedElementsAreArray(field.Type().GetAutofillAiTypes()));
     EXPECT_EQ(base::to_underlying(mqls_field_event.format_string_source()),
               base::to_underlying(field.format_string_source()))
         << event;
