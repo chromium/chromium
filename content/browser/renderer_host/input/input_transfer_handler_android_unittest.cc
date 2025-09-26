@@ -304,7 +304,6 @@ TEST_F(InputTransferHandlerTest, EmitsTransferInputToVizResultHistogram) {
 TEST_F(InputTransferHandlerTest, RetryTransfer) {
   const std::vector<TransferInputToVizResult> browser_handling_cases = {
       TransferInputToVizResult::kSelectionHandlesActive,
-      TransferInputToVizResult::kCanTriggerBackGesture,
       TransferInputToVizResult::kImeIsActive,
       TransferInputToVizResult::kRequestedByEmbedder,
       TransferInputToVizResult::kMultipleBrowserWindowsOpen};
@@ -463,7 +462,6 @@ TEST_F(InputTransferHandlerTest,
 TEST_F(InputTransferHandlerTest, DoNotRetryTransferIfNoActiveSequence) {
   const std::vector<TransferInputToVizResult> browser_handling_cases = {
       TransferInputToVizResult::kSelectionHandlesActive,
-      TransferInputToVizResult::kCanTriggerBackGesture,
       TransferInputToVizResult::kImeIsActive,
       TransferInputToVizResult::kRequestedByEmbedder,
       TransferInputToVizResult::kMultipleBrowserWindowsOpen};

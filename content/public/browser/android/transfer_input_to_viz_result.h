@@ -18,7 +18,7 @@ enum class TransferInputToVizResult {
   kNonFingerToolType = 2,
   kVizInitializationNotComplete = 3,
   kSelectionHandlesActive = 4,
-  kCanTriggerBackGesture = 5,
+  // Obsolete: kCanTriggerBackGesture = 5,
   kImeIsActive = 6,
   kRequestedByEmbedder = 7,
   kSystemServerDidNotTransfer = 8,

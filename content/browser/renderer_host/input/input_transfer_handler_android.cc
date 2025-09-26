@@ -177,7 +177,6 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
 
   const bool browser_would_have_handled =
       (transfer_result == TransferInputToVizResult::kSelectionHandlesActive) ||
-      (transfer_result == TransferInputToVizResult::kCanTriggerBackGesture) ||
       (transfer_result == TransferInputToVizResult::kImeIsActive) ||
       (transfer_result == TransferInputToVizResult::kRequestedByEmbedder) ||
       (transfer_result ==
