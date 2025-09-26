@@ -2899,7 +2899,24 @@ chromium-metrics-reviews@google.com.
     (because this includes redirects, one user-initiated navigation can result
     in multiple emissions). Intended to monitor what proportion of newly
     recorded visits are 404s when saving page visits with HTTP response code 404
-    to the History database.
+    to the History database. See also
+    `History.VisitedLinks.AdditionCausedBy404`.
+  </summary>
+</histogram>
+
+<histogram name="History.VisitedLinks.AdditionCausedBy404" enum="Boolean"
+    expires_after="2026-09-23">
+  <owner>svend@chromium.org</owner>
+  <owner>kyraseevers@chromium.org</owner>
+  <summary>
+    When we attempt to add a VisitedLink to the in-memory partitioned hashtable,
+    records whether that record is added due to a visit with an HTTP response
+    code 404. Recorded on every attempt to write a VisitedLink entry, including
+    those for redirects (i.e., for a redirect chain ending in a 404, there will
+    be one emission per redirect, all emitted as true, since the 404 is what is
+    causing the redirects' addition to the hashtable). Intended to monitor the
+    proportion of VisitedLink entries that are for 404s, after allowing 404
+    visits to be saved to History. See also `History.VisitAddedDueTo404`.
   </summary>
 </histogram>
 

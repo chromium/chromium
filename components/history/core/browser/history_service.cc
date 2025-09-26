@@ -71,6 +71,11 @@ using base::Time;
 
 namespace history {
 
+void EmitVisitedLinksAdditionCausedBy404Uma(bool was_addition_caused_by_404) {
+  UMA_HISTOGRAM_BOOLEAN("History.VisitedLinks.AdditionCausedBy404",
+                        was_addition_caused_by_404);
+}
+
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
 // "PageTransitionForVisitedLinks" in tools/metrics/histograms/enums.xml.
@@ -651,16 +656,28 @@ void HistoryService::AddPartitionedVisitedLinks(
     // and thus add_page_args.url should be the last element in the array
     // add_page_args.redirects.
     DCHECK_EQ(args.url, args.redirects.back());
-    for (const GURL& redirect : args.redirects) {
+    for (unsigned long i = 0u; i < args.redirects.size(); i++) {
+      const GURL& redirect = args.redirects.at(i);
       // All redirects originate from the same top-level site and frame origin.
       VisitedLink link = {redirect, net::SchemefulSite(*args.top_level_url),
                           url::Origin::Create(*args.frame_url)};
       visit_delegate_->AddVisitedLink(link);
+      // Redirects for chains ending in a 404 are only saved to History if
+      // `history::kVisitedLinksOn404` is enabled, because the final visit is
+      // only saved to History if the flag is enabled. Therefore, VisitedLink
+      // hashtable entries for redirects in chains ending in a 404 are caused by
+      // the 404 visit.
+      EmitVisitedLinksAdditionCausedBy404Uma(
+          /*was_addition_caused_by_404=*/args.response_code_category ==
+          VisitResponseCodeCategory::k404);
     }
   } else {
     VisitedLink link = {args.url, net::SchemefulSite(*args.top_level_url),
                         url::Origin::Create(*args.frame_url)};
     visit_delegate_->AddVisitedLink(link);
+    EmitVisitedLinksAdditionCausedBy404Uma(
+        /*was_addition_caused_by_404=*/args.response_code_category ==
+        VisitResponseCodeCategory::k404);
   }
 }
 
