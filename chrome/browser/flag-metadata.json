@@ -901,11 +901,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "autofill-enable-dynamically-loading-fields-on-input",
-    "owners": [ "vidhanj@google.com" ],
-    "expiry_milestone": 131
-  },
-  {
     "name": "autofill-enable-email-or-loyalty-cards-filling",
     "owners": [ "vizcay@google.com", "tchudakov@google.com"],
     "expiry_milestone": 145

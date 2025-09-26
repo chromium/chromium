@@ -95,12 +95,6 @@ extern const char
 extern const char
     kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription[];
 
-// Title and description for the flag to enable dynamically loading the fields
-// for address input based on the country value.
-extern const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputName[];
-extern const char
-    kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[];
-
 extern const char kAutofillPaymentsFieldSwappingName[];
 extern const char kAutofillPaymentsFieldSwappingDescription[];
 
