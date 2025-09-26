@@ -897,56 +897,6 @@ GpuImageDecodeCache::UploadedImageData::~UploadedImageData() {
   DCHECK(!gl_plane_ids_);
 }
 
-void GpuImageDecodeCache::UploadedImageData::SetImage(
-    sk_sp<SkImage> image,
-    bool represents_yuv_image) {
-  DCHECK(mode_ == Mode::kNone);
-  DCHECK(!image_);
-  DCHECK(!transfer_cache_id_);
-  DCHECK(image);
-
-  mode_ = Mode::kSkImage;
-  image_ = std::move(image);
-  // Calling isTexturedBacked() on the YUV SkImage would flatten it to RGB.
-  if (!represents_yuv_image && image_->isTextureBacked()) {
-    gl_id_ = GlIdFromSkImage(image_.get());
-  } else {
-    gl_id_ = 0;
-  }
-  OnSetLockedData(false /* out_of_raster */);
-}
-
-void GpuImageDecodeCache::UploadedImageData::SetYuvImage(
-    sk_sp<SkImage> y_image_input,
-    sk_sp<SkImage> u_image_input,
-    sk_sp<SkImage> v_image_input) {
-  DCHECK(!image_yuv_planes_);
-  DCHECK(!gl_plane_ids_);
-  DCHECK(!transfer_cache_id_);
-  DCHECK(y_image_input);
-  DCHECK(u_image_input);
-  DCHECK(v_image_input);
-
-  mode_ = Mode::kSkImage;
-  image_yuv_planes_ = std::array<sk_sp<SkImage>, kNumYUVPlanes>();
-  image_yuv_planes_->at(static_cast<size_t>(YUVIndex::kY)) =
-      std::move(y_image_input);
-  image_yuv_planes_->at(static_cast<size_t>(YUVIndex::kU)) =
-      std::move(u_image_input);
-  image_yuv_planes_->at(static_cast<size_t>(YUVIndex::kV)) =
-      std::move(v_image_input);
-  if (y_image()->isTextureBacked() && u_image()->isTextureBacked() &&
-      v_image()->isTextureBacked()) {
-    gl_plane_ids_ = std::array<GrGLuint, kNumYUVPlanes>();
-    gl_plane_ids_->at(static_cast<size_t>(YUVIndex::kY)) =
-        GlIdFromSkImage(y_image().get());
-    gl_plane_ids_->at(static_cast<size_t>(YUVIndex::kU)) =
-        GlIdFromSkImage(u_image().get());
-    gl_plane_ids_->at(static_cast<size_t>(YUVIndex::kV)) =
-        GlIdFromSkImage(v_image().get());
-  }
-}
-
 void GpuImageDecodeCache::UploadedImageData::SetTransferCacheId(uint32_t id) {
   DCHECK(mode_ == Mode::kNone);
   DCHECK(!image_);
@@ -1083,23 +1033,6 @@ size_t GpuImageDecodeCache::ImageData::GetTotalSize() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 // GpuImageDecodeCache
-
-// static
-GrGLuint GpuImageDecodeCache::GlIdFromSkImage(const SkImage* image) {
-  DCHECK(image->isTextureBacked());
-  GrBackendTexture backend_texture;
-  if (!SkImages::GetBackendTextureFromImage(
-          image, &backend_texture, true /* flushPendingGrContextIO */)) {
-    return 0;
-  }
-
-  GrGLTextureInfo info;
-  if (!GrBackendTextures::GetGLTextureInfo(backend_texture, &info)) {
-    return 0;
-  }
-
-  return info.fID;
-}
 
 GpuImageDecodeCache::GpuImageDecodeCache(
     viz::RasterContextProvider* context,

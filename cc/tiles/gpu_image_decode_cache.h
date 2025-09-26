@@ -154,9 +154,6 @@ class CC_EXPORT GpuImageDecodeCache
                                RasterDarkModeFilter* const dark_mode_filter);
   ~GpuImageDecodeCache() override;
 
-  // Returns the GL texture ID backing the given SkImage.
-  static GrGLuint GlIdFromSkImage(const SkImage* image);
-
   static base::TimeDelta get_purge_interval();
   static base::TimeDelta get_max_purge_age();
 
@@ -423,12 +420,6 @@ class CC_EXPORT GpuImageDecodeCache
     UploadedImageData();
     ~UploadedImageData();
 
-    // If |represents_yuv_image| is true, the method knows not to check for a
-    // texture ID for |image|, which would inadvertently flatten it to RGB.
-    void SetImage(sk_sp<SkImage> image, bool represents_yuv_image = false);
-    void SetYuvImage(sk_sp<SkImage> y_image_input,
-                     sk_sp<SkImage> u_image_input,
-                     sk_sp<SkImage> v_image_input);
     void SetTransferCacheId(uint32_t id);
     void Reset();
 
