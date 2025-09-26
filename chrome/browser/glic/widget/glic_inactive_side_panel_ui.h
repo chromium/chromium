@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_INACTIVE_SIDE_PANEL_UI_H_
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
@@ -44,7 +43,6 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
                           GlicSidePanelCoordinator::StateObserver>
       coordinator_observation_{this};
   base::WeakPtr<tabs::TabInterface> tab_;
-  std::unique_ptr<EmptyEmbedderDelegate> empty_embedder_delegate_;
   bool is_showing_ = false;
 };
 

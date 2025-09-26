@@ -354,11 +354,9 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
 
   auto it = embedders_.find(active_embedder_key_.value());
   CHECK(it != embedders_.end());
-  auto inactive_embedder = old_embedder->CreateInactiveEmbedder();
-  // Avoids use-after-free bugs. This is a temporary fix until swapping
-  // delegates is properly supported (crbug.com/446219126).
-  host_.SetDelegate(inactive_embedder.get()->GetHostEmbedderDelegate());
-  it->second.embedder = std::move(inactive_embedder);
+  // Avoid use-after-free.
+  host_.SetDelegate(&empty_embedder_delegate_);
+  it->second.embedder = old_embedder->CreateInactiveEmbedder();
   active_embedder_key_.reset();
 }
 

@@ -25,8 +25,7 @@ std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
 
 GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
     base::WeakPtr<tabs::TabInterface> tab)
-    : tab_(tab),
-      empty_embedder_delegate_(std::make_unique<EmptyEmbedderDelegate>()) {
+    : tab_(tab) {
   if (!tab_ || !tab_->GetTabFeatures()) {
     return;
   }
@@ -46,7 +45,9 @@ std::unique_ptr<views::View> GlicInactiveSidePanelUi::CreateView(
 GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 
 Host::EmbedderDelegate* GlicInactiveSidePanelUi::GetHostEmbedderDelegate() {
-  return empty_embedder_delegate_.get();
+  // This should not be called for an inactive embedder. The delegate is managed
+  // by the GlicInstanceImpl.
+  NOTREACHED();
 }
 
 bool GlicInactiveSidePanelUi::IsShowing() const {

@@ -32,6 +32,7 @@ class TabInterface;
 namespace glic {
 
 class GlicUiEmbedder;
+class EmptyEmbedderDelegate;
 
 // A GlicInstance owns a single host keeping any state that must exist for the
 // lifetime of the host. When a host is showing, the GlicInstance creates a
@@ -202,6 +203,9 @@ class GlicInstanceImpl : public GlicInstance,
   // The single, unambiguous source of truth for the active UI.
   std::optional<EmbedderKey> active_embedder_key_;
 
+  // The empty embedder delegate is owned by this instance and its lifetime is
+  // guaranteed to be longer than `host_` because it is declared before `host_`.
+  glic::EmptyEmbedderDelegate empty_embedder_delegate_;
   Host host_;
   std::optional<ConversationInfo> conversation_info_;
   GlicSharingManagerImpl sharing_manager_;
