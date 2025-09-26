@@ -433,6 +433,12 @@ testing/data/rtl-iframe-inner.html
 testing/data/rtl-iframe.html
 testing/data/rtl-overview-mode.html
 testing/data/scale_oscillate.html
+testing/data/script/nested-script.js
+testing/data/script/not-parser-blocked-async-nested-script.html
+testing/data/script/parser-blocked-defer-nested-script.html
+testing/data/script/parser-blocked-external-nested-script.html
+testing/data/script/parser-blocked-inline-nested-script.html
+testing/data/script/parser-blocked-module-nested-script.html
 testing/data/script_priority.html
 testing/data/scroll-event-handler-window.html
 testing/data/scroll-event-handler.html

@@ -296,11 +296,11 @@ void PendingScript::ExecuteScriptBlockInternal(
     // Implemented as the scope out of IgnoreDestructiveWriteCountIncrementer.
   }
 
-  // NOTE: we do not check m_willBeParserExecuted here, since
-  // m_willBeParserExecuted is false for inline scripts, and we want to
-  // include inline script execution time as part of parser blocked script
-  // execution time.
-  if (!is_controlled_by_script_runner) {
+  // We want to record the time spent executing scripts which is blocking the
+  // parser. If the script is nested, we only want to count the outermost
+  // script execution time.
+  if (context_document->IsCurrentScriptStackEmpty() &&
+      !is_controlled_by_script_runner) {
     DocumentParserTiming::From(element_document)
         .RecordParserBlockedOnScriptExecutionDuration(
             base::TimeTicks::Now() - script_exec_start_time,
