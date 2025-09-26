@@ -192,37 +192,11 @@ constexpr CGFloat preferredCornerRadius = 20;
 
 // Closes the keyboard.
 - (void)closeKeyboard {
-  NSString* activeWebStateIdentifier = self.browser->GetWebStateList()
-                                           ->GetActiveWebState()
-                                           ->GetStableIdentifier();
-  [self onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
-}
-
-- (web::WebState*)activeWebState {
-  if (!self.browser) {
-    return nullptr;
-  }
-  web::WebState* activeWebState =
-      self.browser->GetWebStateList()->GetActiveWebState();
-  if (!activeWebState) {
-    return nullptr;
-  }
-  return activeWebState;
-}
-
-// Helper method which closes the keyboard.
-- (void)onCloseKeyboardWithIdentifier:(NSString*)identifier {
   web::WebState* webState = [self activeWebState];
   if (!webState) {
     return;
   }
-  // Note that it may have changed between the moment the
-  // block was created and its invocation. So check whether
-  // the WebState identifier is the same.
-  NSString* webStateIdentifier = webState->GetStableIdentifier();
-  if (![webStateIdentifier isEqualToString:identifier]) {
-    return;
-  }
+
   password_manager::PasswordManagerJavaScriptFeature* feature =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance();
   web::WebFrame* mainFrame =
@@ -237,6 +211,18 @@ constexpr CGFloat preferredCornerRadius = 20;
   NSString* mainFrameID = base::SysUTF8ToNSString(mainFrame->GetFrameId());
   [handler setLastFocusFormActivityWebFrameID:mainFrameID];
   [handler closeKeyboardWithoutButtonPress];
+}
+
+- (web::WebState*)activeWebState {
+  if (!self.browser) {
+    return nullptr;
+  }
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!activeWebState) {
+    return nullptr;
+  }
+  return activeWebState;
 }
 
 // Increments the password generation bottom sheet dismiss count
