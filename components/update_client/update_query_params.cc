@@ -24,7 +24,7 @@ const char kUnknown[] = "unknown";
 
 // The request extra information is the OS and architecture, this helps
 // the server select the right package to be delivered.
-const char kOs[] =
+constexpr std::string_view kOs =
 #if BUILDFLAG(IS_APPLE)
     "mac";
 #elif BUILDFLAG(IS_WIN)
@@ -43,7 +43,7 @@ const char kOs[] =
 #error "unknown os"
 #endif
 
-const char kArch[] =
+constexpr std::string_view kArch =
 #if defined(ARCH_CPU_X86_64)
     "x64";
 #elif defined(ARCH_CPU_X86)
@@ -109,12 +109,12 @@ const char* UpdateQueryParams::GetProdIdString(UpdateQueryParams::ProdId prod) {
 }
 
 // static
-const char* UpdateQueryParams::GetOS() {
+std::string_view UpdateQueryParams::GetOS() {
   return kOs;
 }
 
 // static
-const char* UpdateQueryParams::GetArch() {
+std::string_view UpdateQueryParams::GetArch() {
   return kArch;
 }
 

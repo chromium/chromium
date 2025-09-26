@@ -62,21 +62,21 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
+namespace {
+
 using extensions::Extension;
 using extensions::ExtensionSystem;
 using extensions::ExtensionUpdater;
 
 using extensions::api::runtime::PlatformInfo;
 
-namespace {
-
 // If an extension reloads itself within this many milliseconds of reloading
 // itself, the reload is considered suspiciously fast.
-const int kFastReloadTime = 10000;
+constexpr int kFastReloadTime = 10000;
 
 // Same as above, but we shorten the fast reload interval for unpacked
 // extensions for ease of testing.
-const int kUnpackedFastReloadTime = 1000;
+constexpr int kUnpackedFastReloadTime = 1000;
 
 // A holder class for the policy we use for exponential backoff of update check
 // requests.
@@ -351,37 +351,37 @@ extensions::api::runtime::PlatformNaclArch GetPlatformInfoNaClArch() {
 }
 
 bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
-  const char* os = update_client::UpdateQueryParams::GetOS();
-  if (UNSAFE_TODO(strcmp(os, "mac")) == 0) {
+  const std::string_view os = update_client::UpdateQueryParams::GetOS();
+  if (os == "mac") {
     info->os = extensions::api::runtime::PlatformOs::kMac;
-  } else if (UNSAFE_TODO(strcmp(os, "win")) == 0) {
+  } else if (os == "win") {
     info->os = extensions::api::runtime::PlatformOs::kWin;
-  } else if (UNSAFE_TODO(strcmp(os, "cros")) == 0) {
+  } else if (os == "cros") {
     info->os = extensions::api::runtime::PlatformOs::kCros;
-  } else if (UNSAFE_TODO(strcmp(os, "linux")) == 0) {
+  } else if (os == "linux") {
     info->os = extensions::api::runtime::PlatformOs::kLinux;
-  } else if (UNSAFE_TODO(strcmp(os, "openbsd")) == 0) {
+  } else if (os == "openbsd") {
     info->os = extensions::api::runtime::PlatformOs::kOpenbsd;
-  } else if (UNSAFE_TODO(strcmp(os, "android")) == 0) {
+  } else if (os == "android") {
     info->os = extensions::api::runtime::PlatformOs::kAndroid;
   } else {
     NOTREACHED() << "Platform not supported: " << os;
   }
 
-  const char* arch = update_client::UpdateQueryParams::GetArch();
-  if (UNSAFE_TODO(strcmp(arch, "arm")) == 0) {
+  const std::string_view arch = update_client::UpdateQueryParams::GetArch();
+  if (arch == "arm") {
     info->arch = extensions::api::runtime::PlatformArch::kArm;
-  } else if (UNSAFE_TODO(strcmp(arch, "arm64")) == 0) {
+  } else if (arch == "arm64") {
     info->arch = extensions::api::runtime::PlatformArch::kArm64;
-  } else if (UNSAFE_TODO(strcmp(arch, "x86")) == 0) {
+  } else if (arch == "x86") {
     info->arch = extensions::api::runtime::PlatformArch::kX86_32;
-  } else if (UNSAFE_TODO(strcmp(arch, "x64")) == 0) {
+  } else if (arch == "x64") {
     info->arch = extensions::api::runtime::PlatformArch::kX86_64;
-  } else if (UNSAFE_TODO(strcmp(arch, "mipsel")) == 0) {
+  } else if (arch == "mipsel") {
     info->arch = extensions::api::runtime::PlatformArch::kMips;
-  } else if (UNSAFE_TODO(strcmp(arch, "mips64el")) == 0) {
+  } else if (arch == "mips64el") {
     info->arch = extensions::api::runtime::PlatformArch::kMips64;
-  } else if (UNSAFE_TODO(strcmp(arch, "riscv64")) == 0) {
+  } else if (arch == "riscv64") {
     info->arch = extensions::api::runtime::PlatformArch::kRiscv64;
   } else {
     NOTREACHED();

@@ -6,6 +6,7 @@
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_QUERY_PARAMS_H_
 
 #include <string>
+#include <string_view>
 
 namespace update_client {
 
@@ -35,11 +36,11 @@ class UpdateQueryParams {
 
   // Returns the value we use for the "os=" parameter. Possible return values
   // include: "mac", "win", "android", "cros", "linux", and "openbsd".
-  static const char* GetOS();
+  static std::string_view GetOS();
 
   // Returns the value we use for the "arch=" parameter. Possible return values
   // include: "x86", "x64", and "arm".
-  static const char* GetArch();
+  static std::string_view GetArch();
 
   // Returns the current version of Chrome/Chromium.
   static std::string GetProdVersion();
