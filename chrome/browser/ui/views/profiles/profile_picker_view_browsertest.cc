@@ -3757,8 +3757,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        SyncConfirmationExitChromeTest) {
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in sync confirmation screen getting displayed.
-  SignInForNewProfile(GetSyncConfirmationURL(), "joe.consumer@gmail.com",
-                      "Joe");
+  GURL target_url =
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? GetHistorySyncOptinURL()
+          : GetSyncConfirmationURL();
+  SignInForNewProfile(target_url, "joe.consumer@gmail.com", "Joe");
   EXPECT_TRUE(ProfilePicker::IsOpen());
 
   // Exit the sync confirmation view (Cmd-Q).
