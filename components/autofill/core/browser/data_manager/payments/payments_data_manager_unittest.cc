@@ -2570,6 +2570,48 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers) {
                            /*price_upper_bound=*/max_price_in_micros)}));
 }
 
+// This test ensures that if the server accidentally returns duplicate linked
+// BNPL issuers it is handled gracefully in Chrome.
+TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_DuplicateIssuers) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableBuyNowPayLaterSyncing);
+  int64_t instrument_id = 1234L;
+  std::string issuer_id = std::string(kBnplAffirmIssuerId);
+  std::string currency = "USD";
+  uint64_t min_price_in_micros = 5'000'000;
+  uint64_t max_price_in_micros = 35'000'000;
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithLinkedBnplIssuer(
+          instrument_id, issuer_id, currency, min_price_in_micros,
+          max_price_in_micros);
+  sync_pb::PaymentInstrument payment_instrument_2 = payment_instrument;
+  payment_instrument_2.set_instrument_id(5678L);
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstruments(
+      {payment_instrument, payment_instrument_2}));
+
+  // Since the PaymentsDataManager was initialized before adding the linked BNPL
+  // issuer payment instruments to the WebDatabase, `GetLinkedBnplIssuers()` is
+  // expected to return an empty list.
+  base::span<const BnplIssuer> linked_bnpl_issuers =
+      payments_data_manager().GetLinkedBnplIssuers();
+  EXPECT_TRUE(linked_bnpl_issuers.empty());
+
+  // `Refresh()` must be called to ensure that the linked BNPL issuer payment
+  // instruments are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  linked_bnpl_issuers = payments_data_manager().GetLinkedBnplIssuers();
+
+  ASSERT_EQ(linked_bnpl_issuers.size(), 1U);
+  EXPECT_EQ(linked_bnpl_issuers[0],
+            BnplIssuer(instrument_id, ConvertToBnplIssuerIdEnum(issuer_id),
+                       /*eligible_price_ranges=*/
+                       {BnplIssuer::EligiblePriceRange(
+                           currency, /*price_lower_bound=*/min_price_in_micros,
+                           /*price_upper_bound=*/max_price_in_micros)}));
+}
+
 // If the conditions are met to return a linked BNPL issuer, but it does not
 // have an eligible price range this test ensures it is not returned.
 TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NoEligiblePriceRange) {
@@ -3788,6 +3830,51 @@ TEST_F(PaymentsDataManagerTest,
 
   ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
       {creation_option}));
+
+  // Since the PaymentsDataManager was initialized before adding the unlinked
+  // BNPL issuer payment instrument creation options to the WebDatabase, we
+  // expect GetUnlinkedBnplIssuers to return an empty list.
+  EXPECT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 0u);
+
+  // We need to call `Refresh()` to ensure that the BNPL issuer payment
+  // instrument creation options are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  // Must match the BnplCreationOption in the payment instrument creation
+  // option.
+  std::vector<BnplIssuer> want_bnpl_issuers = {BnplIssuer(
+      /*instrument_id=*/std::nullopt, BnplIssuer::IssuerId::kBnplAffirm,
+      {BnplIssuer::EligiblePriceRange(/*currency= */ "USD",
+                                      /*price_lower_bound=*/50,
+                                      /*price_upper_bound=*/200)})};
+
+  EXPECT_THAT(payments_data_manager().GetUnlinkedBnplIssuers(),
+              testing::UnorderedElementsAreArray(want_bnpl_issuers));
+}
+
+// This test ensures that if the server accidentally returns duplicate unlinked
+// BNPL issuers it is handled gracefully in Chrome.
+TEST_F(PaymentsDataManagerTest, GetUnlinkedBnplIssuers_DuplicateIssuers) {
+  // Create a BNPL payment creation option.
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+
+  sync_pb::BnplCreationOption* bnpl_option =
+      creation_option.mutable_buy_now_pay_later_option();
+  bnpl_option->set_issuer_id(kBnplAffirmIssuerId);
+
+  sync_pb::EligiblePriceRange eligible_price_range;
+  eligible_price_range.set_currency("USD");
+  eligible_price_range.set_min_price_in_micros(50);
+  eligible_price_range.set_max_price_in_micros(200);
+  *bnpl_option->add_eligible_price_range() = eligible_price_range;
+
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 = creation_option;
+  creation_option_2.set_id("5678");
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option, creation_option_2}));
 
   // Since the PaymentsDataManager was initialized before adding the unlinked
   // BNPL issuer payment instrument creation options to the WebDatabase, we

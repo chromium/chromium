@@ -2291,6 +2291,15 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
     return;
   }
 
+  // Ensures the server does not return any duplicate issuers. Should never
+  // happen, but servers should never be trusted and responses must be handled
+  // gracefully.
+  if (base::Contains(linked_bnpl_issuers_,
+                     ConvertToBnplIssuerIdEnum(bnpl_issuer_details.issuer_id()),
+                     &BnplIssuer::issuer_id)) {
+    return;
+  }
+
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   eligible_price_ranges.reserve(
       bnpl_issuer_details.eligible_price_range_size());
@@ -2397,6 +2406,15 @@ void PaymentsDataManager::CacheIfBnplPaymentInstrumentCreationOption(
   // If `payment_instrument_creation_option` has an unsupported issuer ID, do
   // not cache it.
   if (!payments::BnplManager::IsBnplIssuerSupported(bnpl_issuer.issuer_id())) {
+    return;
+  }
+
+  // Ensures the server does not return any duplicate issuers. Should never
+  // happen, but servers should never be trusted and responses must be handled
+  // gracefully.
+  if (base::Contains(unlinked_bnpl_issuers_,
+                     ConvertToBnplIssuerIdEnum(bnpl_issuer.issuer_id()),
+                     &BnplIssuer::issuer_id)) {
     return;
   }
 
