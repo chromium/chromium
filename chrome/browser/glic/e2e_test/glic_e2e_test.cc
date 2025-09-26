@@ -35,6 +35,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
@@ -85,7 +86,7 @@ GlicE2ETest::GlicE2ETest() {
                             features::kGlicRollout,
                             contextual_cueing::kContextualCueing,
                             mojom::features::kZeroStateSuggestionsV2},
-      /*disabled_features=*/{});
+      /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos});
 }
 
 GlicE2ETest::~GlicE2ETest() = default;
