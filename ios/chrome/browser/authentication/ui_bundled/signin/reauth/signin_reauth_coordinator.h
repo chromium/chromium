@@ -29,7 +29,7 @@ enum class ReauthResult : int {
 @protocol SigninReauthCoordinatorDelegate
 
 // The reauth flow has completed with `result`.
-- (void)reauthFinishedWithResult:(ReauthResult)result;
+- (void)reauthFinishedWithResult:(ReauthResult)result gaiaID:(GaiaId*)gaiaID;
 
 @end
 

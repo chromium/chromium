@@ -645,7 +645,9 @@ void maybeShowSettingsIPH(Browser* browser) {
 
 #pragma mark - SigninReauthCoordinatorDelegate
 
-- (void)reauthFinishedWithResult:(ReauthResult)result {
+- (void)reauthFinishedWithResult:(ReauthResult)result gaiaID:(GaiaId*)gaiaID {
+  // We expect the user reauthentified in the current account, so there is
+  // nothing to do in this callback.
   [self stopReauthCoordinator];
 }
 

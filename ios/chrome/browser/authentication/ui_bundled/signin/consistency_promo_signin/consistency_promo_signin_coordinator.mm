@@ -506,10 +506,18 @@
 
 #pragma mark - SigninReauthCoordinatorDelegate
 
-- (void)reauthFinishedWithResult:(ReauthResult)result {
+- (void)reauthFinishedWithResult:(ReauthResult)result gaiaID:(GaiaId*)gaiaID {
   [self stopReauthCoordinator];
   if (result == ReauthResult::kSuccess) {
-    [self startSignIn];
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
+    BOOL identityValid =
+        accountManagerService->IsValidIdentity(self.selectedIdentity);
+    BOOL identityEqual = [self.defaultAccountCoordinator.selectedIdentity.gaiaID
+        isEqualToString:gaiaID->ToNSString()];
+    if (identityValid && identityEqual && result == ReauthResult::kSuccess) {
+      [self startSignIn];
+    }
   }
 }
 

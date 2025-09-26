@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -259,14 +260,22 @@
 
 #pragma mark - SigninReauthCoordinatorDelegate
 
-- (void)reauthFinishedWithResult:(ReauthResult)result {
+- (void)reauthFinishedWithResult:(ReauthResult)result gaiaID:(GaiaId*)gaiaID {
   [self stopReauthCoordinator];
   if (result == ReauthResult::kSuccess) {
-    [self.delegate
-        accountPickerCoordinator:self
-               didSelectIdentity:self.selectedIdentity
-                    askEveryTime:_accountPickerConfirmationScreenCoordinator
-                                     .askEveryTime];
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForProfile(self.profile);
+    BOOL identityValid =
+        accountManagerService->IsValidIdentity(self.selectedIdentity);
+    BOOL identityEqual =
+        [self.selectedIdentity.gaiaID isEqualToString:gaiaID->ToNSString()];
+    if (identityValid && identityEqual) {
+      [self.delegate
+          accountPickerCoordinator:self
+                 didSelectIdentity:self.selectedIdentity
+                      askEveryTime:_accountPickerConfirmationScreenCoordinator
+                                       .askEveryTime];
+    }
   }
 }
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
+
 #import <concepts>
 #import <type_traits>
 
@@ -14,7 +16,6 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/reauth/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -135,8 +137,13 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfully) {
       .andDo(signin_completion_block_captor.Capture(/*argumentIndex=*/4));
   [reauth_coordinator start];
 
-  OCMExpect([mock_delegate_ reauthFinishedWithResult:ReauthResult::kSuccess])
+  OCMExpect([mock_delegate_ reauthFinishedWithResult:ReauthResult::kSuccess
+                                              gaiaID:static_cast<GaiaId*>(
+                                                         [OCMArg anyPointer])])
       .andDo(^(NSInvocation* invocation) {
+        GaiaId* gaia_id;
+        [invocation getArgument:&gaia_id atIndex:3];
+        EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
         reauth_coordinator = nil;
       });
   SigninCompletionBlock completion_block = signin_completion_block_captor.Get();
@@ -175,9 +182,13 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCancelledByUser) {
       .andDo(signin_completion_block_captor.Capture(/*argumentIndex=*/4));
   [reauth_coordinator start];
 
-  OCMExpect(
-      [mock_delegate_ reauthFinishedWithResult:ReauthResult::kCancelledByUser])
+  OCMExpect([[(id)mock_delegate_ ignoringNonObjectArgs]
+                reauthFinishedWithResult:ReauthResult::kCancelledByUser
+                                  gaiaID:nullptr])
       .andDo(^(NSInvocation* invocation) {
+        GaiaId gaia_id;
+        [invocation getArgument:&gaia_id atIndex:3];
+        EXPECT_EQ(gaia_id, GaiaId());
         reauth_coordinator = nil;
       });
   SigninCompletionBlock completion_block = signin_completion_block_captor.Get();
@@ -215,9 +226,13 @@ TEST_F(SigninReauthCoordinatorTest, ReauthInterrupted) {
                                completion:OCMOCK_ANY]);
   [reauth_coordinator start];
 
-  OCMExpect(
-      [mock_delegate_ reauthFinishedWithResult:ReauthResult::kInterrupted])
+  OCMExpect([[(id)mock_delegate_ ignoringNonObjectArgs]
+                reauthFinishedWithResult:ReauthResult::kInterrupted
+                                  gaiaID:nullptr])
       .andDo(^(NSInvocation* invocation) {
+        GaiaId gaia_id;
+        [invocation getArgument:&gaia_id atIndex:3];
+        EXPECT_EQ(gaia_id, GaiaId());
         reauth_coordinator = nil;
       });
   OCMExpect([mock_interaction_manager_ cancelAuthActivityAnimated:NO]);
@@ -256,8 +271,14 @@ TEST_F(SigninReauthCoordinatorTest, ReauthCompletedSuccessfullyInExplicitFlow) {
       .andDo(signin_completion_block_captor.Capture(/*argumentIndex=*/4));
   [reauth_coordinator start];
 
-  OCMExpect([mock_delegate_ reauthFinishedWithResult:ReauthResult::kSuccess])
+  OCMExpect(
+      [[((id)mock_delegate_) ignoringNonObjectArgs]
+          reauthFinishedWithResult:ReauthResult::kSuccess
+                            gaiaID:static_cast<GaiaId*>([OCMArg anyPointer])])
       .andDo(^(NSInvocation* invocation) {
+        GaiaId* gaia_id;
+        [invocation getArgument:&gaia_id atIndex:3];
+        EXPECT_NSEQ(gaia_id->ToNSString(), identity.gaiaID);
         reauth_coordinator = nil;
       });
   SigninCompletionBlock completion_block = signin_completion_block_captor.Get();

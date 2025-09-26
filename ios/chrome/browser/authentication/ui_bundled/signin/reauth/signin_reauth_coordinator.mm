@@ -104,7 +104,8 @@
     _identityInteractionManager = nil;
     [self recordReauthFlowEvent:signin_metrics::ReauthFlowEvent::kInterrupted];
     // Do not use self after this line, the owner might delete this coordinator.
-    [self.delegate reauthFinishedWithResult:ReauthResult::kInterrupted];
+    [self.delegate reauthFinishedWithResult:ReauthResult::kInterrupted
+                                     gaiaID:nullptr];
   }
 }
 
@@ -135,7 +136,8 @@
   }
 
   // Do not use self after this line, the owner might delete this coordinator.
-  [self.delegate reauthFinishedWithResult:result];
+  GaiaId gaiaId(identity.gaiaID);
+  [self.delegate reauthFinishedWithResult:result gaiaID:&gaiaId];
 }
 
 - (void)recordReauthFlowEvent:(signin_metrics::ReauthFlowEvent)event {
