@@ -1141,16 +1141,14 @@ GpuImageDecodeCache::GpuImageDecodeCache(
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // Note that to compute |allow_accelerated_jpeg_decodes_| and
   // |allow_accelerated_webp_decodes_|, the last thing we check is the feature
-  // flag. That's because we want to ensure that we're in OOP-R mode and the
-  // hardware decoder supports the image type so that finch experiments
-  // involving hardware decode acceleration only count users in that
-  // population (both in the 'control' and the 'enabled' groups).
+  // flag. That's because we want to ensure that the hardware decoder supports
+  // the image type so that finch experiments involving hardware decode
+  // acceleration only count users in that population (both in the 'control'
+  // and the 'enabled' groups).
   allow_accelerated_jpeg_decodes_ =
-      use_transfer_cache_ &&
       context_->ContextSupport()->IsJpegDecodeAccelerationSupported() &&
       base::FeatureList::IsEnabled(features::kVaapiJpegImageDecodeAcceleration);
   allow_accelerated_webp_decodes_ =
-      use_transfer_cache_ &&
       context_->ContextSupport()->IsWebPDecodeAccelerationSupported() &&
       base::FeatureList::IsEnabled(features::kVaapiWebPImageDecodeAcceleration);
 
@@ -1441,7 +1439,6 @@ DecodedDrawImage GpuImageDecodeCache::GetDecodedImageForDraw(
       dark_mode_color_filter = it->second;
   }
 
-  DCHECK(use_transfer_cache_);
   auto id = image_data->upload.transfer_cache_id();
   if (id) {
     image_data->upload.mark_used();
@@ -1828,9 +1825,6 @@ void GpuImageDecodeCache::UploadImageInTask(const DrawImage& draw_image) {
   if (context_->GetLock())
     context_lock.emplace(context_);
 
-  std::optional<ScopedGrContextAccess> gr_context_access;
-  if (!use_transfer_cache_)
-    gr_context_access.emplace(context_);
   base::AutoLock lock(lock_);
 
   auto cache_key = InUseCacheKeyFromDrawImage(draw_image);
@@ -2486,7 +2480,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
                            decoded_color_space.get())) {
     target_color_space = nullptr;
   }
-  DCHECK(use_transfer_cache_);
   if (image_data->decode.do_hardware_accelerated_decode()) {
     UploadImageIfNecessary_TransferCache_HardwareDecode(draw_image, image_data,
                                                         target_color_space);
@@ -2510,7 +2503,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkColorSpace> color_space) {
-  DCHECK(use_transfer_cache_);
   DCHECK(image_data->decode.do_hardware_accelerated_decode());
 
   // The assumption is that scaling is not currently supported for
@@ -2554,7 +2546,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     sk_sp<SkColorSpace> decoded_color_space,
     const std::optional<gfx::HDRMetadata>& hdr_metadata,
     sk_sp<SkColorSpace> target_color_space) {
-  DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
 
   std::array<ClientImageTransferCacheEntry::Image, kAuxImageCount> image;
@@ -2607,7 +2598,6 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
     skgpu::Mipmapped image_needs_mips,
     sk_sp<SkColorSpace> decoded_color_space,
     sk_sp<SkColorSpace> color_space) {
-  DCHECK(!use_transfer_cache_);
   DCHECK(image_data->info.yuva.has_value());
 
   // Grab a reference to our decoded image. For the kCpu path, we will use
@@ -2658,13 +2648,14 @@ void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_YUVA(
                                  std::move(uploaded_v_image));
 }
 
+// TODO(crbug.com/391648152): Confirm that this entire method can now be
+// eliminated and do so.
 void GpuImageDecodeCache::UploadImageIfNecessary_GpuCpu_RGBA(
     const DrawImage& draw_image,
     ImageData* image_data,
     sk_sp<SkImage> uploaded_image,
     skgpu::Mipmapped image_needs_mips,
     sk_sp<SkColorSpace> color_space) {
-  DCHECK(!use_transfer_cache_);
   DCHECK(!image_data->info.yuva.has_value());
 
   // Prevent image_data from being deleted while lock is not held.
@@ -3016,7 +3007,6 @@ bool GpuImageDecodeCache::TryLockImage(HaveContextLock have_context_lock,
   if (data->upload.is_locked())
     return true;
 
-  DCHECK(use_transfer_cache_);
   DCHECK(data->upload.transfer_cache_id());
   if (context_->ContextSupport()->ThreadsafeLockTransferCacheEntry(
           static_cast<uint32_t>(TransferCacheEntryType::kImage),
