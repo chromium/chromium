@@ -19,6 +19,11 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#endif
+
 class Profile;
 
 namespace safe_browsing {
@@ -57,9 +62,20 @@ class SafeBrowsingPrefChangeHandler {
   // settings page. Virtual for tests.
   virtual void MaybeShowEnhancedProtectionSettingChangeNotification();
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  void SetToastControllerForTesting(ToastController* controller);
+#endif
+
  private:
   // Member variable to store the Profile*.
   raw_ptr<Profile> profile_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  raw_ptr<ToastController> toast_controller_for_testing_ = nullptr;
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
   // Called when the consented modal is dismissed.
   void ConsentedMessageDismissed();

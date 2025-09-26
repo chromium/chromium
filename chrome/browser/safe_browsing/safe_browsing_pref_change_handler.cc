@@ -64,12 +64,23 @@ void SafeBrowsingPrefChangeHandler::
       !base::FeatureList::IsEnabled(safe_browsing::kEsbAsASyncedSetting)) {
     return;
   }
+  // Do not show a notification toast if the setting is managed by enterprise
+  // policy.
+  if (safe_browsing::IsSafeBrowsingPolicyManaged(*profile_->GetPrefs())) {
+    return;
+  }
   Browser* const browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser) {
     return;
   }
+
+  // TODO(crbug.com/447592206): The correct long term solution is to refactor
+  // ToastController to use the UnownedUserData factory pattern for testability,
+  // which will be handled in a follow-up CL.
   ToastController* const controller =
-      browser->browser_window_features()->toast_controller();
+      toast_controller_for_testing_
+          ? static_cast<ToastController*>(toast_controller_for_testing_)
+          : browser->browser_window_features()->toast_controller();
   if (!controller) {
     return;
   }
@@ -173,6 +184,14 @@ void SafeBrowsingPrefChangeHandler::
   }
 #endif
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+void SafeBrowsingPrefChangeHandler::SetToastControllerForTesting(
+    ToastController* controller) {
+  toast_controller_for_testing_ = controller;
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 void SafeBrowsingPrefChangeHandler::RetryStateCallback() {

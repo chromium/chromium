@@ -83,7 +83,7 @@ class ToastController : public views::WidgetObserver,
 
   // Attempts to show the toast and returns true if the toast was successfully
   // shown, otherwise return false.
-  bool MaybeShowToast(ToastParams params);
+  virtual bool MaybeShowToast(ToastParams params);
 
   using WidgetDestroyedCallback = base::RepeatingCallback<void(ToastId)>;
   base::CallbackListSubscription RegisterOnWidgetDestroyed(
