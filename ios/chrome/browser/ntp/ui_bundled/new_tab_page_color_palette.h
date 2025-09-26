@@ -52,6 +52,9 @@
 // The color used for the monograms.
 @property(nonatomic, strong) UIColor* monogramColor;
 
+// The color used for the header buttons.
+@property(nonatomic, strong) UIColor* headerButtonColor;
+
 // The color scheme variant that was used along with the seed color to generate
 // the palette.
 @property(nonatomic, assign) ui::ColorProviderKey::SchemeVariant variant;

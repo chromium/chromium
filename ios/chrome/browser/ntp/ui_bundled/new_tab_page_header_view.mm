@@ -807,15 +807,22 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
         CreateThemedButtonConfigurationUpdateHandler(
             unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
               if (palette) {
-                return palette.secondaryColor;
+                return palette.headerButtonColor;
               }
 
-              return IsSignInButtonNoAvatarEnabled()
-                         ? [[UIColor colorNamed:kSolidWhiteColor]
-                               colorWithAlphaComponent:0.75]
-                         : [[UIColor colorNamed:
-                                         @"fake_omnibox_solid_background_color"]
-                               colorWithAlphaComponent:0.8];
+              return [UIColor colorWithDynamicProvider:^UIColor*(
+                                  UITraitCollection* traits) {
+                if (!IsSignInButtonNoAvatarEnabled()) {
+                  return [[UIColor
+                      colorNamed:@"fake_omnibox_solid_background_color"]
+                      colorWithAlphaComponent:0.8];
+                }
+                return traits.userInterfaceStyle == UIUserInterfaceStyleDark
+                           ? [UIColor
+                                 colorNamed:kTabGroupFaviconBackgroundColor]
+                           : [[UIColor colorNamed:kSolidWhiteColor]
+                                 colorWithAlphaComponent:0.75];
+              }];
             });
   }
 

@@ -608,14 +608,8 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
             ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
             : ntp_home::kCustomizationMenuIconSize);
     [customizationMenuButton setImage:icon forState:UIControlStateNormal];
-
-    UIColor* backgroundColor =
-        IsSignInButtonNoAvatarEnabled()
-            ? [[UIColor colorNamed:kSolidWhiteColor]
-                  colorWithAlphaComponent:0.75]
-            : [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-                  colorWithAlphaComponent:0.8];
-    customizationMenuButton.backgroundColor = backgroundColor;
+    customizationMenuButton.backgroundColor =
+        [self defaultButtonBackgroundColor];
 
     UIColor* tintColor = [UIColor
         colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
@@ -673,7 +667,7 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
     UIButtonConfiguration* buttonConfiguration =
         [UIButtonConfiguration plainButtonConfiguration];
     buttonConfiguration.background.backgroundColor =
-        [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.75];
+        [self defaultButtonBackgroundColor];
     NSDictionary* attributes = @{
       NSFontAttributeName : PreferredFontForTextStyle(
           UIFontTextStyleSubheadline, UIFontWeightSemibold,
@@ -711,9 +705,8 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
                                    : [UIColor colorNamed:kBlue600Color];
 
     UIColor* backgroundColor = colorPalette
-                                   ? colorPalette.secondaryColor
-                                   : [[UIColor colorNamed:kSolidWhiteColor]
-                                         colorWithAlphaComponent:0.75];
+                                   ? colorPalette.headerButtonColor
+                                   : [self defaultButtonBackgroundColor];
     // The default avatar icon does not have a background.
     if (colorPalette || IsSignInButtonNoAvatarEnabled()) {
       buttonConfiguration.background.backgroundColor = backgroundColor;
@@ -1085,6 +1078,21 @@ const CGFloat kIdentityDiscAvatarBackgroundSpacing = 5;
 
 #pragma mark - Private
 
+// Returns the default background color for buttons based on the current
+// appearance.
+- (UIColor*)defaultButtonBackgroundColor {
+  return
+      [UIColor colorWithDynamicProvider:^UIColor*(UITraitCollection* traits) {
+        if (!IsSignInButtonNoAvatarEnabled()) {
+          return [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+              colorWithAlphaComponent:0.8];
+        }
+        return traits.userInterfaceStyle == UIUserInterfaceStyleDark
+                   ? [UIColor colorNamed:kTabGroupFaviconBackgroundColor]
+                   : [[UIColor colorNamed:kSolidWhiteColor]
+                         colorWithAlphaComponent:0.75];
+      }];
+}
 // Sets the background using the current color palette, or defaults if none is
 // set.
 - (void)applyBackgroundTheme {
