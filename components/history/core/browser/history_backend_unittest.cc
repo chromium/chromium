@@ -4257,6 +4257,69 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
             annotated_visits[0].context_annotations.on_visit);
 }
 
+TEST_F(HistoryBackendTest, AddPageVisitAddedDueTo404) {
+  // Allow 404s to be saved to History.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  base::HistogramTester histogram_tester;
+
+  // Test a redirect chain ending in a 404.
+  {
+    // Create a redirect chain of length 2 (the last entry in the chain is the
+    // ultimate destination of the chain).
+    RedirectList redirects;
+    redirects.emplace_back("http://example.com/a");
+    redirects.emplace_back("http://example.com/b");
+
+    HistoryAddPageArgs add_page_args(
+        redirects.back(), base::Time::Now(), /*context_id=*/1,
+        /*nav_entry_id=*/1,
+        /*local_navigation_id=*/std::nullopt, GURL(), redirects,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                  ui::PAGE_TRANSITION_CHAIN_END),
+        /*hidden=*/true, SOURCE_BROWSED, VisitResponseCodeCategory::k404,
+        /*did_replace_entry=*/false,
+        /*consider_for_ntp_most_visited=*/false);
+    add_page_args.context_annotations = {.response_code = 404};
+    backend_->AddPage(add_page_args);
+
+    // The redirect visit and the actual 404 are added due to a 404, so both
+    // should go in the `true` bucket and none in the `false` bucket.
+    histogram_tester.ExpectBucketCount("History.VisitAddedDueTo404", true, 2);
+    histogram_tester.ExpectBucketCount("History.VisitAddedDueTo404", false, 0);
+  }
+
+  // Test a redirect chain ending in a non-404.
+  {
+    // Create a redirect chain of length 3 (the last entry in the chain is the
+    // ultimate destination of the chain).
+    RedirectList redirects;
+    redirects.emplace_back("http://example.com/c");
+    redirects.emplace_back("http://example.com/d");
+    redirects.emplace_back("http://example.com/e");
+
+    HistoryAddPageArgs add_page_args(
+        redirects.back(), base::Time::Now(), /*context_id=*/2,
+        /*nav_entry_id=*/2,
+        /*local_navigation_id=*/std::nullopt, GURL(), redirects,
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_SERVER_REDIRECT |
+                                  ui::PAGE_TRANSITION_CHAIN_END),
+        /*hidden=*/false, SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+        /*did_replace_entry=*/false,
+        /*consider_for_ntp_most_visited=*/true);
+    add_page_args.context_annotations = {.response_code = 401};
+    backend_->AddPage(add_page_args);
+
+    // Neither the redirect visits nor the ultimate destination are added due to
+    // a 404, so all three should go in the `false` bucket.
+    histogram_tester.ExpectBucketCount("History.VisitAddedDueTo404", false, 3);
+    // None should go in the `true` bucket, so the count should be the same as
+    // before.
+    histogram_tester.ExpectBucketCount("History.VisitAddedDueTo404", true, 2);
+  }
+}
+
 TEST_F(HistoryBackendTest, GetAnnotatedVisits) {
   auto last_visit_time = base::Time::Now();
   const auto add_url_and_visit = [&](std::string url) {

@@ -2887,6 +2887,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.VisitAddedDueTo404" enum="Boolean"
+    expires_after="2026-09-25">
+  <owner>svend@chromium.org</owner>
+  <owner>kyraseevers@chromium.org</owner>
+  <summary>
+    Whether a page visit recorded in the History DB was added due to a
+    navigation with an HTTP response code of 404. Visits added due to a 404
+    includes a) 404 visits themselves and b) redirects in chains that end in a
+    404 visit. Recorded after a visit is successfully added to the History DB
+    (because this includes redirects, one user-initiated navigation can result
+    in multiple emissions). Intended to monitor what proportion of newly
+    recorded visits are 404s when saving page visits with HTTP response code 404
+    to the History database.
+  </summary>
+</histogram>
+
 <histogram name="History.VisitedLinks.HashTableLengthOnReaderInit"
     units="entries" expires_after="2026-02-22">
   <owner>kyraseevers@chromium.org</owner>

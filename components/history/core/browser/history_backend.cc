@@ -1503,8 +1503,16 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
   if (visit_info.visit_time < first_recorded_time_)
     first_recorded_time_ = visit_info.visit_time;
 
-  // Broadcast a notification of the visit.
   if (visit_info.visit_id) {
+    // For redirect chains that end in a 404 visit, the redirect visits are
+    // saved due to the 404 visit, as with `history::kVisitedLinksOn404`
+    // disabled, the entire chain would be ineligible for History
+    // (`NavigationHandle::ShouldUpdateHistory()` would be false). Here, the
+    // `response_code_category` is always for the final navigation in the chain.
+    bool is_saved_due_to_404 =
+        response_code_category == VisitResponseCodeCategory::k404;
+    UMA_HISTOGRAM_BOOLEAN("History.VisitAddedDueTo404", is_saved_due_to_404);
+    // Broadcast a notification of the visit.
     NotifyURLVisited(url_info, visit_info, local_navigation_id);
   } else {
     DLOG(ERROR) << "Failed to build visit insert statement:  "
