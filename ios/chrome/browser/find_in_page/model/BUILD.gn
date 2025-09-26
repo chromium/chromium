@@ -35,11 +35,7 @@ source_set("model") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [
-    "find_in_page_egtest.mm",
-    "find_in_page_egtest_util.h",
-    "find_in_page_egtest_util.mm",
-  ]
+  sources = [ "find_in_page_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
     "//components/omnibox/browser:pref_names",
