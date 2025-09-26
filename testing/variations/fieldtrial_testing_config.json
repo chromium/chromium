@@ -19311,6 +19311,21 @@
             ]
         }
     ],
+    "ProbeStylusWritingInBackground": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProbeStylusWritingInBackground"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProcessBoundStringEncryption": [
         {
             "platforms": [

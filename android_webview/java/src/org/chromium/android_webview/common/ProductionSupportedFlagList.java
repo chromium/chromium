@@ -1154,7 +1154,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.USE_IS_UNBOUND_CHECK,
                 "Use ChildServiceConnectionController.isUnbound() instead of isConnected() to check"
-                    + " the connection state in ChildProcessConnection."),
+                        + " the connection state in ChildProcessConnection."),
+        Flag.baseFeature(
+                "ProbeStylusWritingInBackground",
+                "Offload probing of stylus writing support to a background thread."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

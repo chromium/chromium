@@ -18,6 +18,8 @@ public class StylusHandwritingFeatureMap extends FeatureMap {
 
     public static final String CACHE_STYLUS_SETTINGS = "CacheStylusSettings";
     public static final String USE_HANDWRITING_INITIATOR = "UseHandwritingInitiator";
+    public static final String PROBE_STYLUS_WRITING_IN_BACKGROUND =
+            "ProbeStylusWritingInBackground";
     private static final StylusHandwritingFeatureMap sInstance = new StylusHandwritingFeatureMap();
 
     // Do not instantiate this class.

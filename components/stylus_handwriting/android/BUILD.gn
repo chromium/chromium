@@ -45,6 +45,7 @@ android_library("java") {
     "//base:base_java",
     "//content/public/android:content_full_java",
     "//mojo/public/mojom/base:base_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
