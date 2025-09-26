@@ -9,6 +9,7 @@ component("prediction") {
     "empty_predictor.cc",
     "empty_predictor.h",
     "input_filter.h",
+    "input_predictor.cc",
     "input_predictor.h",
     "kalman_filter.cc",
     "kalman_filter.h",

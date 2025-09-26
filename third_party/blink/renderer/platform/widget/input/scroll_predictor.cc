@@ -218,6 +218,11 @@ void ScrollPredictor::Reset() {
   metrics_handler_.Reset();
 }
 
+base::TimeDelta ScrollPredictor::ResampleLatency(
+    base::TimeDelta frame_interval) const {
+  return predictor_->ResampleLatency(frame_interval);
+}
+
 void ScrollPredictor::UpdatePredictionForEventAfterSampleTime(
     const WebInputEvent& event) {
   CHECK(event.GetType() == WebInputEvent::Type::kGestureScrollUpdate);

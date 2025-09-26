@@ -156,6 +156,22 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictorNameEmpty[];
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kResamplingScrollEventsExperimentalPrediction);
 
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kResampleLatencyModeFixedMs[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kResampleLatencyModeFractional[];
+
+// Enables experimental configuration of the resample latency for scroll events.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kResampleScrollEventsLatency);
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::FeatureParam<std::string> kResampleLatencyModeParam;
+
+// Param for the value used in the chosen mode.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const base::FeatureParam<double> kResampleLatencyValueParam;
+
 // Uses a ratio of the vsync refresh rate. The timing/ratio can be changed on
 // the command line through a `latency` param.
 COMPONENT_EXPORT(UI_BASE_FEATURES)

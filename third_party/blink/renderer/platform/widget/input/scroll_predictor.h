@@ -56,6 +56,8 @@ class PLATFORM_EXPORT ScrollPredictor {
 
   void UpdatePredictionForEventAfterSampleTime(const WebInputEvent& event);
 
+  base::TimeDelta ResampleLatency(base::TimeDelta frame_interval) const;
+
  private:
   friend class test::InputHandlerProxyEventQueueTest;
   friend class test::ScrollPredictorTest;

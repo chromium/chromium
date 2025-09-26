@@ -1675,10 +1675,11 @@ void InputHandlerProxy::DeliverInputForBeginFrame(
     DispatchQueuedInputEvents(true /* frame_aligned */);
   }
 
-  base::TimeTicks sample_time = update_scroll_predictor_
-                                    ? args.frame_time + ui::kResampleLatency
-                                    : base::TimeTicks::Max();
-
+  base::TimeTicks sample_time = base::TimeTicks::Max();
+  if (update_scroll_predictor_ && scroll_predictor_) {
+    base::TimeDelta latency = scroll_predictor_->ResampleLatency(args.interval);
+    sample_time = args.frame_time + latency;
+  }
   // Determine if we should attempt to generate a synthetic scroll event. This
   // is done in two main scenarios:
   // 1. The queue is empty and kUseScrollPredictorForEmptyQueue mode is enabled.

@@ -13,12 +13,6 @@
 
 namespace ui {
 
-// Align events to a few milliseconds before frame_time. This is to make the
-// resampling either doing interpolation or extrapolating a closer future time
-// so that resampled result is more accurate and has less noise. This adds some
-// latency during resampling but a few ms should be fine.
-inline constexpr auto kResampleLatency = base::Milliseconds(-5);
-
 // This class expects a sequence of inputs with their coordinates and timestamps
 // and models the input path. It then can predict the coordinates at any given
 // time.
@@ -69,6 +63,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
 
   // Return the time interval based on current points.
   virtual base::TimeDelta TimeInterval() const = 0;
+
+  // Returns the latency offset to apply for resampling.
+  // Default implementation returns zero, indicating no offset.
+  virtual base::TimeDelta ResampleLatency(base::TimeDelta frame_interval) const;
 
  protected:
   static constexpr base::TimeDelta kMaxTimeDelta = base::Milliseconds(20);

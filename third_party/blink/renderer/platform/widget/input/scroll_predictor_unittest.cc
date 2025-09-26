@@ -579,5 +579,57 @@ TEST_F(ScrollPredictorTest, FilteringPrediction) {
     EXPECT_NEAR(accumulated_deltas[i], GetLastAccumulatedDelta().y(), 0.00001);
   }
 }
+
+TEST_F(ScrollPredictorTest, ResampleLatencyFixedMs) {
+  base::FieldTrialParams params;
+  params[::features::kResampleLatencyModeParam.name] =
+      ::features::kResampleLatencyModeFixedMs;
+  params[::features::kResampleLatencyValueParam.name] = "-2.0";
+
+  // Explicitly disable filtering to isolate the resampling latency feature.
+  base::FieldTrialParams filter_params;
+  filter_params["filter"] = "";
+  base::test::FeatureRefAndParams resampling_and_filter = {
+      features::kFilteringScrollPrediction, filter_params};
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{::features::kResampleScrollEventsLatency, params}},  // Enabled
+      {features::kFilteringScrollPrediction});               // Disabled
+
+  // Re-initialize ScrollPredictor to pick up the feature flags.
+  scroll_predictor_ = std::make_unique<ScrollPredictor>();
+
+  VerifyPredictorType(::features::kPredictorNameLinearResampling);
+  EXPECT_FALSE(isFilteringEnabled());  // Ensure filtering is off
+  SendGestureScrollBegin();
+
+  // Send 1st GSU, no prediction available.
+  std::unique_ptr<WebInputEvent> gesture_update =
+      CreateGestureScrollUpdate(0, 10, 10 /* ms */);
+  HandleResampleScrollEvents(gesture_update, 10 /* ms */, 60 /* Hz */);
+  EXPECT_EQ(10, static_cast<const WebGestureEvent*>(gesture_update.get())
+                    ->data.scroll_update.delta_y);
+  EXPECT_EQ(
+      WebInputEvent::GetStaticTimeStampForTests() +
+          base::Milliseconds(10 /* ms */),
+      static_cast<const WebGestureEvent*>(gesture_update.get())->TimeStamp());
+
+  gesture_update = CreateGestureScrollUpdate(0, 10, 20 /* ms */);
+  // Resample at 20ms. The sample time should be 20ms - 2ms = 18ms.
+  HandleResampleScrollEvents(gesture_update, 20 /* ms */, 60 /* Hz */);
+
+  const auto* resampled_event =
+      static_cast<const WebGestureEvent*>(gesture_update.get());
+
+  // Sample time should be frame_time - 2ms = 18ms
+  EXPECT_EQ(
+      resampled_event->TimeStamp(),
+      WebInputEvent::GetStaticTimeStampForTests() + base::Milliseconds(18));
+  // Delta should be interpolated to 18ms. The value at 10ms is 10 and at 20ms
+  // is 20, so at 18ms it should be 18.
+  EXPECT_NEAR(resampled_event->data.scroll_update.delta_y, 8, kEpsilon);
+}
+
 }  // namespace test
 }  // namespace blink
