@@ -2038,6 +2038,102 @@ TEST_F(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
+TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_OneIssuer) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString};
+
+  std::vector<BnplIssuer> bnpl_issuers = {
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip)};
+  Suggestion suggestion = CreateBnplSuggestion(
+      bnpl_issuers, /*extracted_amount_in_micros=*/55'000'000);
+
+  EXPECT_THAT(
+      suggestion,
+      EqualsSuggestion(
+          /*type=*/SuggestionType::kBnplEntry,
+          /*main_text=*/
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          /*icon=*/Suggestion::Icon::kBnpl,
+          /*labels=*/
+          {{Suggestion::Text(bnpl_issuers[0].GetDisplayName())}}));
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_TwoIssuers) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString};
+
+  std::vector<BnplIssuer> bnpl_issuers = {
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm)};
+  Suggestion suggestion = CreateBnplSuggestion(
+      bnpl_issuers, /*extracted_amount_in_micros=*/55'000'000);
+
+  EXPECT_THAT(
+      suggestion,
+      EqualsSuggestion(
+          /*type=*/SuggestionType::kBnplEntry,
+          /*main_text=*/
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          /*icon=*/Suggestion::Icon::kBnpl,
+          /*labels=*/
+          {{Suggestion::Text(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_TWO_ISSUERS,
+              // Affirm comes before Zip.
+              bnpl_issuers[1].GetDisplayName(),
+              bnpl_issuers[0].GetDisplayName()))}}));
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_ThreeIssuers) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString};
+
+  std::vector<BnplIssuer> bnpl_issuers = {
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna),
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm)};
+  Suggestion suggestion = CreateBnplSuggestion(
+      bnpl_issuers, /*extracted_amount_in_micros=*/55'000'000);
+
+  EXPECT_THAT(
+      suggestion,
+      EqualsSuggestion(
+          /*type=*/SuggestionType::kBnplEntry,
+          /*main_text=*/
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          /*icon=*/Suggestion::Icon::kBnpl,
+          /*labels=*/
+          {{Suggestion::Text(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_THREE_ISSUERS,
+              // Affirm comes before Zip, and Zip comes before Klarna.
+              bnpl_issuers[2].GetDisplayName(),
+              bnpl_issuers[1].GetDisplayName(),
+              bnpl_issuers[0].GetDisplayName()))}}));
+}
+
+TEST_F(PaymentsSuggestionGeneratorTest, CreateBnplSuggestion_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString);
+
+  std::vector<BnplIssuer> bnpl_issuers = {
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna),
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm)};
+  Suggestion suggestion = CreateBnplSuggestion(
+      bnpl_issuers, /*extracted_amount_in_micros=*/55'000'000);
+
+  EXPECT_THAT(
+      suggestion,
+      EqualsSuggestion(
+          /*type=*/SuggestionType::kBnplEntry,
+          /*main_text=*/
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+          /*icon=*/Suggestion::Icon::kBnpl,
+          /*labels=*/
+          {{Suggestion::Text(l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL, u"$50"))}}));
+}
+
 // Test that the virtual card option is shown when the autofill optimization
 // guide is not present.
 TEST_F(PaymentsSuggestionGeneratorTest,

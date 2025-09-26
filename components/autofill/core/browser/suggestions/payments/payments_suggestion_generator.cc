@@ -958,50 +958,6 @@ std::u16string GetBnplPriceLowerBound(
   }
 }
 
-// Creates a suggestion for the BNPL issuer selection.
-// The suggestion text shows the minimum eligible value of all available
-// BNPL issuers.
-Suggestion CreateBnplSuggestion(
-    const std::vector<BnplIssuer>& bnpl_issuers,
-    std::optional<uint64_t> extracted_amount_in_micros) {
-  Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
-  bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
-  bnpl_suggestion.main_text = Suggestion::Text(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
-      Suggestion::Text::IsPrimary(true));
-  bnpl_suggestion.labels = {{Suggestion::Text(
-      l10n_util::GetStringFUTF16(IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
-                                 GetBnplPriceLowerBound(bnpl_issuers)))}};
-
-#if !BUILDFLAG(IS_ANDROID)
-  using IssuerId = BnplIssuer::IssuerId;
-  auto issuer_present = [&bnpl_issuers](IssuerId issuer_id) {
-    return base::Contains(bnpl_issuers, issuer_id, &BnplIssuer::issuer_id);
-  };
-  bool affirm_present = issuer_present(IssuerId::kBnplAffirm);
-  bool zip_present = issuer_present(IssuerId::kBnplZip);
-  bool klarna_present = issuer_present(IssuerId::kBnplKlarna);
-
-  if (affirm_present && zip_present && klarna_present &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableBuyNowPayLaterForKlarna)) {
-    bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
-        &feature_engagement::
-            kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature);
-  } else if (affirm_present && zip_present) {
-    bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
-        &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  Suggestion::PaymentsPayload payments_payload;
-  payments_payload.extracted_amount_in_micros =
-      std::move(extracted_amount_in_micros);
-  bnpl_suggestion.payload = std::move(payments_payload);
-
-  return bnpl_suggestion;
-}
-
 // Determines whether the "Save and Fill" suggestion should be shown in the
 // credit card autofill dropdown. The suggestion is shown if all of the
 // conditions are met.
@@ -1300,7 +1256,7 @@ std::vector<Suggestion> GetVirtualCardStandaloneCvcFieldSuggestions(
 
 BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
     const base::span<const Suggestion>& current_suggestions,
-    const std::vector<BnplIssuer>& bnpl_issuers,
+    std::vector<BnplIssuer> bnpl_issuers,
     uint64_t extracted_amount_in_micros) {
   // No need to add BNPL suggestion if the current suggestion list is empty.
   if (current_suggestions.empty()) {
@@ -1317,8 +1273,8 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
     }
 
     if (IsCreditCardFooterSuggestion(current_suggestions, index)) {
-      suggestion_update_result.suggestions.push_back(
-          CreateBnplSuggestion(bnpl_issuers, extracted_amount_in_micros));
+      suggestion_update_result.suggestions.push_back(CreateBnplSuggestion(
+          std::move(bnpl_issuers), extracted_amount_in_micros));
       suggestion_update_result.suggestions.insert(
           suggestion_update_result.suggestions.end(),
           current_suggestions.begin() + index, current_suggestions.end());
@@ -1333,6 +1289,90 @@ BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
   // always include at least one footer item if not empty.
   // Therefore, the end of the loop should never be reached.
   NOTREACHED();
+}
+
+Suggestion CreateBnplSuggestion(
+    std::vector<BnplIssuer> bnpl_issuers,
+    std::optional<uint64_t> extracted_amount_in_micros) {
+  Suggestion bnpl_suggestion(SuggestionType::kBnplEntry);
+  bnpl_suggestion.icon = Suggestion::Icon::kBnpl;
+  bnpl_suggestion.main_text = Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
+      Suggestion::Text::IsPrimary(true));
+
+  CHECK(!bnpl_issuers.empty());
+
+  if (base::FeatureList::IsEnabled(
+          features::
+              kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)) {
+    // Calculates the display order in the BNPL chip main text based on rank.
+    // Higher rank will come before lower rank in the text.
+    auto get_rank = [](BnplIssuer::IssuerId id) {
+      switch (id) {
+        case BnplIssuer::IssuerId::kBnplAffirm:
+          return 4;
+        case BnplIssuer::IssuerId::kBnplZip:
+          return 3;
+        case BnplIssuer::IssuerId::kBnplKlarna:
+          return 2;
+        case BnplIssuer::IssuerId::kBnplAfterpay:
+          NOTREACHED();
+      }
+    };
+    std::ranges::sort(
+        bnpl_issuers, [&](const BnplIssuer& a, const BnplIssuer& b) {
+          return get_rank(a.issuer_id()) > get_rank(b.issuer_id());
+        });
+
+    if (bnpl_issuers.size() == 1) {
+      bnpl_suggestion.labels = {
+          {Suggestion::Text(bnpl_issuers[0].GetDisplayName())}};
+    } else if (bnpl_issuers.size() == 2) {
+      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_TWO_ISSUERS,
+          bnpl_issuers[0].GetDisplayName(),
+          bnpl_issuers[1].GetDisplayName()))}};
+    } else if (bnpl_issuers.size() == 3) {
+      bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL_THREE_ISSUERS,
+          bnpl_issuers[0].GetDisplayName(), bnpl_issuers[1].GetDisplayName(),
+          bnpl_issuers[2].GetDisplayName()))}};
+    } else {
+      NOTREACHED();
+    }
+  } else {
+    bnpl_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL,
+        GetBnplPriceLowerBound(bnpl_issuers)))}};
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  using IssuerId = BnplIssuer::IssuerId;
+  auto issuer_present = [&bnpl_issuers](IssuerId issuer_id) {
+    return base::Contains(bnpl_issuers, issuer_id, &BnplIssuer::issuer_id);
+  };
+  bool affirm_present = issuer_present(IssuerId::kBnplAffirm);
+  bool zip_present = issuer_present(IssuerId::kBnplZip);
+  bool klarna_present = issuer_present(IssuerId::kBnplKlarna);
+
+  if (affirm_present && zip_present && klarna_present &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableBuyNowPayLaterForKlarna)) {
+    bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::
+            kIPHAutofillBnplAffirmZipOrKlarnaSuggestionFeature);
+  } else if (affirm_present && zip_present) {
+    bnpl_suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHAutofillBnplAffirmOrZipSuggestionFeature);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  Suggestion::PaymentsPayload payments_payload;
+  payments_payload.extracted_amount_in_micros =
+      std::move(extracted_amount_in_micros);
+  bnpl_suggestion.payload = std::move(payments_payload);
+
+  return bnpl_suggestion;
 }
 
 std::vector<CreditCard> GetTouchToFillCardsToSuggest(

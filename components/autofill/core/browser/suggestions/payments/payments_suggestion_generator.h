@@ -123,8 +123,17 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
 // is true if a BNPL suggestion is inserted successfully.
 BnplSuggestionUpdateResult MaybeUpdateDesktopSuggestionsWithBnpl(
     const base::span<const Suggestion>& current_suggestions,
-    const std::vector<BnplIssuer>& bnpl_issuers,
+    std::vector<BnplIssuer> bnpl_issuers,
     uint64_t extracted_amount_in_micros);
+
+// Creates a suggestion for the BNPL issuer selection. `bnpl_issuers` is used to
+// set various properties of the suggestion including but not limited to the
+// second line of text, as well as what IPH bubble should be shown.
+// `extracted_amount_in_micros` is used to set the extracted amount in the BNPL
+// suggestion to be used where necessary for the BNPL flow.
+Suggestion CreateBnplSuggestion(
+    std::vector<BnplIssuer> bnpl_issuers,
+    std::optional<uint64_t> extracted_amount_in_micros);
 
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and

@@ -549,7 +549,7 @@ void BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl(
     return;
   }
 
-  const std::vector<BnplIssuer>& bnpl_issuers =
+  std::vector<BnplIssuer> bnpl_issuers =
       payments_autofill_client().GetPaymentsDataManager().GetBnplIssuers();
 
   if (std::none_of(bnpl_issuers.begin(), bnpl_issuers.end(),
@@ -573,7 +573,7 @@ void BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl(
   BnplSuggestionUpdateResult update_suggestions_result =
       ::autofill::MaybeUpdateDesktopSuggestionsWithBnpl(
           /*current_suggestions=*/std::get<0>(*suggestions_shown_response),
-          bnpl_issuers, extracted_amount->value());
+          std::move(bnpl_issuers), extracted_amount->value());
 
   if (!update_suggestions_result.is_bnpl_suggestion_added) {
     // No need to update the pop up, if no BNPL suggestion is added.
