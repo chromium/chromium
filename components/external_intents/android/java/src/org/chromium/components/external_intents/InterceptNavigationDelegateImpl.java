@@ -672,12 +672,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void onDidAsyncActionInSubFrame(AsyncActionTakenParams params) {
+        if (mWebContents == null) return;
         GURL redirectUrl =
                 (params.actionType == AsyncActionTakenParams.AsyncActionTakenType.NAVIGATE)
                         ? params.targetUrl
                         : null;
         InterceptNavigationDelegateImplJni.get()
-                .onSubframeAsyncActionTaken(assumeNonNull(mWebContents), redirectUrl);
+                .onSubframeAsyncActionTaken(mWebContents, redirectUrl);
     }
 
     private void onDidFinishMainFrameIntentLaunch(boolean canCloseTab, GURL escapedUrl) {
