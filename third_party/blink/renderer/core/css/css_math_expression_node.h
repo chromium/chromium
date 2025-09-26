@@ -99,14 +99,16 @@ class CSSMathType final {
   DISALLOW_NEW();
 
   // https://drafts.css-houdini.org/css-typed-om-1/#cssnumericvalue-base-type
+  // kPercent should always be the last one as it's used to do a percent hint
+  // trick in Category().
   enum BaseType : uint8_t {
-    kPercent,
     kLength,
     kAngle,
     kTime,
     kFrequency,
     kResolution,
     kFlex,
+    kPercent,
     kNumTypes
   };
 
@@ -139,6 +141,9 @@ class CSSMathType final {
   CORE_EXPORT friend CSSMathType operator/(CSSMathType type1,
                                            CSSMathType type2);
   CORE_EXPORT CSSMathType operator-() const;
+#if DCHECK_IS_ON()
+  friend std::ostream& operator<<(std::ostream& os, const CSSMathType& type);
+#endif
 
  private:
   using BaseTypePowers =

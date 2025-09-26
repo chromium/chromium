@@ -342,10 +342,58 @@ CalculationResultCategory CSSMathType::Category() const {
   for (uint8_t type_index = 0u; type_index < BaseType::kNumTypes;
        ++type_index) {
     int8_t type_power = base_type_powers_[type_index];
-    types_sum += type_power;
-    if (type_power != 0) {
-      type = BaseType(type_index);
+    if (!type_power) {
+      continue;
     }
+    // If more than one base type has a non-zero power, it's intermediate.
+    if (types_sum != 0) {
+      if (type_index != kPercent) {
+        return kCalcIntermediate;
+      }
+      DCHECK(!percentage_hint_.has_value());
+      // Because we don't provide the percent hint from the "outside"
+      // as css-values expects [1], it's possible for the percentage
+      // hint to be unset even for expressions that involve percentages
+      // as well some other type, e.g.:
+      //
+      //  width: (1% * 1%) / 1px;
+      //
+      // The CSSMathType for the above expression would contain
+      // [percent -> 2, length -> -1] with a null percent hint.
+      // However, the expression is clearly valid for 'width', since
+      // the percentages resolve against lengths. To address this,
+      // we effectively deduce what the percent hint should have been
+      // from the other (non-percent) base type powers:
+      //
+      // If there is more than one non-percent base type with non-zero power,
+      // it's intermediate (handled by early-out above).
+      //
+      // Otherwise, if there is exactly *one* other (non-percent) base type
+      // with a non-zero power, then we assume that percentages were intended
+      // to resolve against that base type, and basically move the powers from
+      // "percent" to the other base type. Continuing the example from before:
+      //
+      //   [percent -> 2, length -> -1] => [percent -> 0, length -> 1]
+      //
+      // However, we do not actually need to modify `base_type_powers_`
+      // according to the above; the remainder of this function only
+      // checks `types_sum`, so it's enough to "pretend" that these numbers
+      // were combined all along.
+      //
+      // Note: This relies on kPercent appearing *last* in the enum.
+      //
+      // Note: Whether or not this deduced category is valid for
+      //       the relevant context will be determined by the call
+      //       site. For example, "width:(1% * 1%) / 1deg" would produce
+      //       kAngle for this algorithm, but ultimately be rejected.
+      //
+      // [1]
+      // https://drafts.csswg.org/css-values-4/#determine-the-type-of-a-calculation
+      types_sum += type_power;
+      break;
+    }
+    type = BaseType(type_index);
+    types_sum += type_power;
   }
   if (types_sum == 0) {
     return kCalcNumber;
@@ -507,6 +555,35 @@ CSSMathType CSSMathType::operator-() const {
   }
   return type;
 }
+
+#if DCHECK_IS_ON()
+std::ostream& operator<<(std::ostream& os, const CSSMathType& type) {
+  if (!type.IsValid()) {
+    os << "InvalidType ";
+  }
+  os << "CSSMathType(";
+  bool first = true;
+  for (uint8_t type_index = 0; type_index < CSSMathType::BaseType::kNumTypes;
+       ++type_index) {
+    int8_t power = type.base_type_powers_[type_index];
+    if (power != 0) {
+      if (!first) {
+        os << ", ";
+      }
+      first = false;
+      os << static_cast<int>(type_index) << "^" << static_cast<int>(power);
+    }
+  }
+  if (type.percentage_hint_) {
+    if (!first) {
+      os << ", ";
+    }
+    os << "percent_hint=" << static_cast<int>(type.percentage_hint_.value());
+  }
+  os << ")";
+  return os;
+}
+#endif
 
 namespace {
 
