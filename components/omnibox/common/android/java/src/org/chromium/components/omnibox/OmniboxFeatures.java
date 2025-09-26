@@ -151,7 +151,7 @@ public class OmniboxFeatures {
                     sRemoveSearchReadyOmnibox, "remove_sro_including_verbatim_match", false);
 
     public static final BooleanCachedFeatureParam sOmniboxParityRetrieveBuiltInEngineIcon =
-            newBooleanParam(sOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false);
+            newBooleanParam(sOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", true);
 
     public static final IntCachedFeatureParam sGeolocationRequestTimeoutMinutes =
             newIntParam(

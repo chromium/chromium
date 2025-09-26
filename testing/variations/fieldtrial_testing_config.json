@@ -16868,22 +16868,6 @@
             ]
         }
     ],
-    "OmniboxMobileParityUpdateV2": [
-        {
-            "platforms": [
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxMobileParityUpdateV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxMobileParityUpdateV3": [
         {
             "platforms": [
