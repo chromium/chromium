@@ -125,7 +125,7 @@ class AutocompleteMediator
     private @Nullable AutocompleteResult mAutocompleteResult;
     private @Nullable Runnable mCurrentAutocompleteRequest;
     private @Nullable Runnable mDeferredLoadAction;
-    private Optional<PropertyModel> mDeleteDialogModel = Optional.empty();
+    private @Nullable PropertyModel mDeleteDialogModel;
 
     private boolean mNativeInitialized;
     private long mUrlFocusTime;
@@ -778,7 +778,7 @@ class AutocompleteMediator
 
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
-                        mDeleteDialogModel = Optional.empty();
+                        mDeleteDialogModel = null;
                     }
                 };
 
@@ -789,26 +789,22 @@ class AutocompleteMediator
         }
 
         mDeleteDialogModel =
-                Optional.of(
-                        new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                                .with(ModalDialogProperties.CONTROLLER, dialogController)
-                                .with(ModalDialogProperties.TITLE, titleText)
-                                .with(ModalDialogProperties.TITLE_MAX_LINES, 1)
-                                .with(
-                                        ModalDialogProperties.MESSAGE_PARAGRAPH_1,
-                                        resources.getString(dialogMessageId))
-                                .with(
-                                        ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                        resources,
-                                        R.string.ok)
-                                .with(
-                                        ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                        resources,
-                                        R.string.cancel)
-                                .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
-                                .build());
+                new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                        .with(ModalDialogProperties.CONTROLLER, dialogController)
+                        .with(ModalDialogProperties.TITLE, titleText)
+                        .with(ModalDialogProperties.TITLE_MAX_LINES, 1)
+                        .with(
+                                ModalDialogProperties.MESSAGE_PARAGRAPH_1,
+                                resources.getString(dialogMessageId))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources, R.string.ok)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.cancel)
+                        .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
+                        .build();
 
-        manager.showDialog(mDeleteDialogModel.get(), ModalDialogManager.ModalDialogType.APP);
+        manager.showDialog(mDeleteDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
     /**
@@ -818,7 +814,9 @@ class AutocompleteMediator
      */
     private void dismissDeleteDialog(@DialogDismissalCause int cause) {
         var manager = mModalDialogManagerSupplier.get();
-        mDeleteDialogModel.ifPresent(model -> assumeNonNull(manager).dismissDialog(model, cause));
+        if (mDeleteDialogModel != null) {
+            assumeNonNull(manager).dismissDialog(mDeleteDialogModel, cause);
+        }
     }
 
     /**
