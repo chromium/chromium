@@ -210,6 +210,10 @@ class AvatarToolbarButtonStateManager
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
+
+  // WARNING: Check `AvatarToolbarButton::ForceShowingPromoForTesting()` before
+  // using.
+  void ForceShowingPromoForTesting();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:

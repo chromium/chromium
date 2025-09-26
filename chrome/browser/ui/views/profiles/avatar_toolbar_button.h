@@ -163,6 +163,11 @@ class AvatarToolbarButton : public ToolbarButton,
   // `TriggerTimeoutForTesting()` not enough for testing.
   [[nodiscard]] static base::AutoReset<std::optional<base::TimeDelta>>
   CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
+
+  // WARNING: Do not use this method to test the Promo flows. Only used when
+  // necessary to bypass resetting the profile - e.g. when attempting to reach
+  // the limit counts.
+  void ForceShowingPromoForTesting();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:

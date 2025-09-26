@@ -42,6 +42,7 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -50,8 +51,6 @@
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -848,6 +847,11 @@ class HistorySyncOptinCoordinator
 
   void ClearForTesting() { Collapse(); }
 
+  void ForceShowingPromoForTesting() {
+    Trigger(
+        signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
+  }
+
   // AvatarToolbarButtonStateManager::Observer:
   void OnButtonStateChanged(std::optional<ButtonState> old_state,
                             ButtonState new_state) override {
@@ -922,16 +926,6 @@ class HistorySyncOptinCoordinator
         sync_promo_identity_pill_manager_(
             IdentityManagerFactory::GetForProfile(&profile),
             profile.GetPrefs()) {
-    UserEducationService* user_education_service =
-        UserEducationServiceFactory::GetForBrowserContext(&profile_.get());
-    CHECK(user_education_service);
-    new_session_callback_subscription_ =
-        user_education_service->user_education_session_manager()
-            .AddNewSessionCallback(base::BindRepeating(
-                &HistorySyncOptinCoordinator::OnNewSession,
-                // This is safe because `HistorySyncOptinCoordinator`
-                // owns `CallbackListSubscription`.
-                base::Unretained(this)));
     identity_manager_observation_.Observe(
         IdentityManagerFactory::GetForProfile(&profile));
   }
@@ -992,32 +986,6 @@ class HistorySyncOptinCoordinator
                                          base::Unretained(this)));
   }
 
-  void OnNewSession() {
-    // Do not trigger the Sync promo on activity for this feature.
-    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
-      return;
-    }
-
-    // NOTE: All history sync opt-in triggers for enterprise badging are
-    // considered "on inactivity" (`kHistorySyncOptinExpansionPillOnInactivity`
-    // access point).
-    if (!enterprise_util::CanShowEnterpriseBadgingForAvatar(&profile_.get())) {
-      if (!has_been_shown_since_startup_) {
-        // If the history sync opt-in has not been shown since startup,
-        // do NOT trigger it. This avoids a subtle race condition on startup
-        // when the greetings are about to show roughly at the same time as the
-        // new session is detected (greetings are followed by the history sync
-        // opt-in anyway).
-        //
-        // NOTE: We assume that we are notified about the new session before the
-        // first history sync opt-in collapses (~60 seconds).
-        return;
-      }
-    }
-    Trigger(signin_metrics::AccessPoint::
-                kHistorySyncOptinExpansionPillOnInactivity);
-  }
-
   signin_metrics::AccessPoint access_point_ =
       signin_metrics::AccessPoint::kUnknown;
   bool triggered_ = false;
@@ -1030,12 +998,6 @@ class HistorySyncOptinCoordinator
   const raw_ref<Profile> profile_;
 
   signin::SyncPromoIdentityPillManager sync_promo_identity_pill_manager_;
-
-  // New (user education) session callback subscription. The callback is
-  // triggered whenever a new user education session starts (i.e. after a
-  // 'certain' period of inactivity, see
-  // `user_education::features::GetIdleTimeBetweenSessions()`).
-  base::CallbackListSubscription new_session_callback_subscription_;
 
   // Callbacks to be triggered when the history sync opt-in state (`triggered_`)
   // changes.
@@ -1091,6 +1053,10 @@ class HistorySyncOptinStateProvider : public StateProvider {
   }
 
   void ClearForTesting() override { coordinator_->ClearForTesting(); }
+
+  void ForceShowingPromoForTesting() {
+    coordinator_->ForceShowingPromoForTesting();
+  }
 
  private:
   void OnButtonClick(bool is_source_accelerator) {
@@ -2006,6 +1972,13 @@ AvatarToolbarButtonStateManager::
     CreateScopedZeroDelayOverrideSigninPendingTextForTesting() {
   return base::AutoReset<std::optional<base::TimeDelta>>(
       &g_show_signin_pending_text_delay_for_testing, base::Seconds(0));
+}
+
+void AvatarToolbarButtonStateManager::ForceShowingPromoForTesting() {
+  HistorySyncOptinStateProvider* history_sync_optin_state_provider =
+      static_cast<HistorySyncOptinStateProvider*>(
+          states_[ButtonState::kHistorySyncOptin].get());
+  history_sync_optin_state_provider->ForceShowingPromoForTesting();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

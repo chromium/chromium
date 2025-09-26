@@ -624,10 +624,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromHistorySyncOptinExpansionPillOnStartup"));
       break;
-    case AccessPoint::kHistorySyncOptinExpansionPillOnInactivity:
-      base::RecordAction(base::UserMetricsAction(
-          "Signin_Signin_FromHistorySyncOptinExpansionPillOnInactivity"));
-      break;
     case AccessPoint::kNonModalSigninPasswordPromo:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromNonModalSigninPasswordPromo"));
@@ -831,7 +827,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
     case AccessPoint::kWidget:
     case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
-    case AccessPoint::kHistorySyncOptinExpansionPillOnInactivity:
     case AccessPoint::kHistorySyncEducationalTip:
     case AccessPoint::kManagedProfileAutoSigninIos:
     case AccessPoint::kNonModalSigninPasswordPromo:

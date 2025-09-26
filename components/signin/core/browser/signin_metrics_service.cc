@@ -186,8 +186,6 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
     case signin_metrics::AccessPoint::kWidget:
     case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
-    case signin_metrics::AccessPoint::
-        kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
     case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
     case signin_metrics::AccessPoint::kNonModalSigninPasswordPromo:
@@ -314,9 +312,7 @@ void SigninMetricsService::OnPrimaryAccountChanged(
           event_details.GetSetPrimaryAccountAccessPoint();
       CHECK(access_point.has_value());
       if (access_point == signin_metrics::AccessPoint::
-                              kHistorySyncOptinExpansionPillOnStartup ||
-          access_point == signin_metrics::AccessPoint::
-                              kHistorySyncOptinExpansionPillOnInactivity) {
+                              kHistorySyncOptinExpansionPillOnStartup) {
         SigninPrefs signin_prefs(pref_service_.get());
         const CoreAccountInfo& account =
             event_details.GetCurrentState().primary_account;

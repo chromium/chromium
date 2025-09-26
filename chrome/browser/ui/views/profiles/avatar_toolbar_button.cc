@@ -713,6 +713,11 @@ base::AutoReset<std::optional<base::TimeDelta>> AvatarToolbarButton::
   return AvatarToolbarButtonStateManager::
       CreateScopedZeroDelayOverrideSigninPendingTextForTesting();
 }
+
+void AvatarToolbarButton::ForceShowingPromoForTesting() {
+  CHECK(state_manager_);
+  state_manager_->ForceShowingPromoForTesting();
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BEGIN_METADATA(AvatarToolbarButton)

@@ -231,8 +231,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "Widget";
       case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
         return "CollaborationLeaveOrDeleteTabGroup";
-      case AccessPoint::kHistorySyncOptinExpansionPillOnInactivity:
-        return "HistorySyncOptinExpansionPillOnInactivity";
       case AccessPoint::kHistorySyncEducationalTip:
         return "HistorySyncEducationalTip";
       case AccessPoint::kManagedProfileAutoSigninIos:
@@ -276,13 +274,11 @@ TEST_F(SigninMetricsTest, RecordSigninImpressionUserAction) {
 TEST(LogSyncOptInOfferedTest, RecordsHistogram) {
   base::HistogramTester histogram_tester;
   const AccessPoint access_point =
-      AccessPoint::kHistorySyncOptinExpansionPillOnInactivity;
+      AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
   LogSyncOptInOffered(access_point);
   LogSyncOptInOffered(access_point);
-  histogram_tester.ExpectUniqueSample(
-      "Signin.SyncOptIn.Offered",
-      AccessPoint::kHistorySyncOptinExpansionPillOnInactivity,
-      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered", access_point,
+                                      /*expected_bucket_count=*/2);
 }
 
 }  // namespace
