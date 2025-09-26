@@ -6,19 +6,23 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/slim/texture_layer.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/skia_span_util.h"
 
@@ -226,6 +230,51 @@ void NavigationEntryScreenshot::OnContextLost() {
   ResetContextProvider();
 }
 
+std::pair<scoped_refptr<cc::slim::TextureLayer>, base::ScopedClosureRunner>
+NavigationEntryScreenshot::CreateTextureLayer() {
+  CHECK(shared_image_);
+  CHECK(texture_transferable_resource_.is_empty());
+  // By the time the screenshot is created, the shared_image is already
+  // finalized, so no sync token is necessary.
+  gpu::SyncToken sync_token;
+  texture_transferable_resource_ = viz::TransferableResource::Make(
+      shared_image_, viz::TransferableResource::ResourceSource::kUI,
+      sync_token);
+  // Storing a reference to the shared image in the callback so that it's alive
+  // while it's still in use.
+  texture_release_callback_ = base::BindOnce(
+      [](scoped_refptr<gpu::ClientSharedImage> shared_image,
+         const gpu::SyncToken& sync_token, bool lost_resource) {
+        shared_image->UpdateDestructionSyncToken(sync_token);
+      },
+      shared_image_);
+  auto layer = cc::slim::TextureLayer::Create(this);
+  layer->SetContentsOpaque(true);
+  layer->NotifyUpdatedResource();
+  return std::make_pair(
+      std::move(layer),
+      base::ScopedClosureRunner(
+          base::BindOnce(&NavigationEntryScreenshot::OnTextureLayerToBeDeleted,
+                         weak_factory_.GetMutableWeakPtr())));
+}
+
+bool NavigationEntryScreenshot::PrepareTransferableResource(
+    viz::TransferableResource* transferable_resource,
+    viz::ReleaseCallback* release_callback) {
+  CHECK(!texture_transferable_resource_.is_empty());
+  if (!texture_release_callback_) {
+    return false;
+  }
+  *transferable_resource = texture_transferable_resource_;
+  *release_callback = std::move(texture_release_callback_);
+  return true;
+}
+
+void NavigationEntryScreenshot::OnTextureLayerToBeDeleted() {
+  DCHECK(!texture_transferable_resource_.is_empty());
+  texture_transferable_resource_ = viz::TransferableResource();
+}
+
 SkBitmap NavigationEntryScreenshot::GetBitmapForTesting() const {
   return GetBitmap().GetBitmapForTesting();  // IN-TEST
 }
@@ -331,6 +380,10 @@ void NavigationEntryScreenshot::OnReadBack(SkBitmap bitmap, bool success) {
       SkBitmap override_unused;
       screenshot_callback_.Run({}, false, override_unused);
     }
+    if (cache_) {
+      // Destroys this.
+      cache_->RemoveFailedScreenshot(this);
+    }
     return;
   }
   if (screenshot_callback_) {
@@ -367,6 +420,10 @@ void NavigationEntryScreenshot::OnCompressionFinished(
     bitmap_.reset();
     cache_->OnScreenshotCompressed(unique_id_, GetBitmap().SizeInBytes());
   }
+}
+
+bool NavigationEntryScreenshot::IsValid() const {
+  return shared_image_ || IsBitmapReady();
 }
 
 bool NavigationEntryScreenshot::IsBitmapReady() const {

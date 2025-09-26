@@ -8,18 +8,24 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
+#include "cc/layers/texture_layer_client.h"
 #include "cc/resources/ui_resource_bitmap.h"
 #include "cc/resources/ui_resource_client.h"
 #include "components/performance_manager/scenario_api/performance_scenario_observer.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
+#include "components/viz/common/resources/transferable_resource.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_data.h"
 #include "content/common/content_export.h"
 
 class SkBitmap;
 
+namespace cc::slim {
+class TextureLayer;
+}
+
 namespace gpu {
 class ClientSharedImage;
-}
+}  // namespace gpu
 
 namespace viz {
 class RasterContextProvider;
@@ -59,7 +65,8 @@ class CONTENT_EXPORT NavigationEntryScreenshot
     : public cc::UIResourceClient,
       public base::SupportsUserData::Data,
       public performance_scenarios::MatchingScenarioObserver,
-      public viz::ContextLostObserver {
+      public viz::ContextLostObserver,
+      private cc::TextureLayerClient {
  public:
   using ScreenshotCallback = base::RepeatingCallback<
       void(const SkBitmap& bitmap, bool requested, SkBitmap& out_override)>;
@@ -72,7 +79,7 @@ class CONTENT_EXPORT NavigationEntryScreenshot
                             NavigationTransitionData::UniqueId unique_id,
                             bool supports_etc_non_power_of_two);
   NavigationEntryScreenshot(
-      scoped_refptr<gpu::ClientSharedImage> shared_image_holder,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
       NavigationTransitionData::UniqueId unique_id,
       bool supports_etc_non_power_of_two,
       scoped_refptr<viz::RasterContextProvider> context_provider,
@@ -82,6 +89,9 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   NavigationEntryScreenshot& operator=(const NavigationEntryScreenshot&) =
       delete;
   ~NavigationEntryScreenshot() override;
+
+  // Whether the bitmap is ready or there is a shared image pending read back.
+  bool IsValid() const;
 
   // Returns true when a bitmap (compressed or not) is ready for consumption.
   // A bitmap isn't ready when a read back is still pending or it failed.
@@ -102,6 +112,11 @@ class CONTENT_EXPORT NavigationEntryScreenshot
                               bool matches_pattern) override;
 
   void OnContextLost() override;
+
+  // Creates a texture layer that uses the shared image in this screenshot.
+  // This can't be called again until the returned closure runs.
+  std::pair<scoped_refptr<cc::slim::TextureLayer>, base::ScopedClosureRunner>
+  CreateTextureLayer();
 
   // Returns true if the screenshot is being managed by a cache. This is not the
   // case when it's being displayed in the UI.
@@ -129,6 +144,16 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   void ResetContextProvider();
 
   const cc::UIResourceBitmap& GetBitmap() const;
+
+  // cc::TextureLayerClient
+  // Prepares a transferable resource for the shared image in this screenshot.
+  // This can only be called after running CreateTextureLayer and before the
+  // returned closure runs.
+  bool PrepareTransferableResource(
+      viz::TransferableResource* transferable_resource,
+      viz::ReleaseCallback* release_callback) override;
+
+  void OnTextureLayerToBeDeleted();
 
   // The uncompressed bitmap cached when navigating away from this navigation
   // entry.
@@ -165,6 +190,9 @@ class CONTENT_EXPORT NavigationEntryScreenshot
   base::OnceClosure compression_task_;
 
   ScreenshotCallback screenshot_callback_;
+
+  viz::TransferableResource texture_transferable_resource_;
+  viz::ReleaseCallback texture_release_callback_;
 
   base::WeakPtrFactory<NavigationEntryScreenshot> weak_factory_{this};
 };

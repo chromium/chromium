@@ -14,6 +14,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
+#include "cc/slim/texture_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/navigation_transitions/progress_bar.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/url_constants.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/android/window_android.h"
 #include "ui/base/prediction/linear_resampling.h"
@@ -114,14 +116,10 @@ bool ShouldUseFallbackScreenshot(
     gfx::Size screen_size = animation_manager->web_contents_view_android()
                                 ->GetNativeView()
                                 ->GetPhysicalBackingSize();
-    use_fallback_screenshot =
-        screenshot_size != screen_size || !screenshot->IsBitmapReady();
+    use_fallback_screenshot = screenshot_size != screen_size;
     if (screenshot_size != screen_size) {
       cache_hit_or_miss_reason = NavigationTransitionData::
           CacheHitOrMissReason::kCacheMissScreenshotOrientation;
-    } else if (!screenshot->IsBitmapReady()) {
-      cache_hit_or_miss_reason = NavigationTransitionData::
-          CacheHitOrMissReason::kCacheMissPendingOrFailedReadBack;
     } else {
       // TODO(crbug.com/377566662): Identify why the cache hit or miss reason is
       // not set correctly at this point. This is to avoid the crashes addressed
@@ -460,13 +458,15 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
     screenshot_layer_->RemoveFromParent();
     screenshot_layer_.reset();
+    screenshot_layer_closure_.RunAndReset();
   }
 
   ResetLiveOverlayLayer();
 
   if (!fallback_ux_) {
-    CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
-    DeleteUIResource(ui_resource_id_);
+    if (ui_resource_id_) {
+      DeleteUIResource(ui_resource_id_);
+    }
 
     if (navigation_state_ != NavigationState::kCommitted) {
       CHECK(screenshot_);
@@ -1706,10 +1706,15 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
     auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
     screenshot_ = cache->RemoveScreenshot(destination_entry);
 
-    ui_resource_id_ = CreateUIResource(screenshot_.get());
-    auto screenshot_layer = cc::slim::UIResourceLayer::Create();
-    screenshot_layer->SetUIResourceId(ui_resource_id_);
-    screenshot_layer_ = std::move(screenshot_layer);
+    if (screenshot_->IsBitmapReady()) {
+      ui_resource_id_ = CreateUIResource(screenshot_.get());
+      auto screenshot_layer = cc::slim::UIResourceLayer::Create();
+      screenshot_layer->SetUIResourceId(ui_resource_id_);
+      screenshot_layer_ = std::move(screenshot_layer);
+    } else {
+      std::tie(screenshot_layer_, screenshot_layer_closure_) =
+          screenshot_->CreateTextureLayer();
+    }
   }
   screenshot_layer_->SetIsDrawable(true);
   screenshot_layer_->SetPosition(gfx::PointF(0.f, 0.f));

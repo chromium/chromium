@@ -530,7 +530,7 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="Not capture non primary main frames"/>
   <int value="18" label="Captured Empty Bitmap From Embedder"/>
   <int value="19" label="Forward transition animation not supported"/>
-  <int value="20" label="Pending or failed read back"/>
+  <int value="20" label="Failed read back"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_transitions/navigation_transition_data.h:CacheHitOrMissReason)-->

@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "cc/base/region.h"
+#include "cc/layers/texture_layer_client.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/slim/layer.h"
@@ -21,6 +23,7 @@
 #include "cc/slim/test_frame_sink_impl.h"
 #include "cc/slim/test_layer_tree_client.h"
 #include "cc/slim/test_layer_tree_impl.h"
+#include "cc/slim/texture_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -28,18 +31,23 @@
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/test/draw_quad_matchers.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace cc::slim {
@@ -48,6 +56,73 @@ namespace {
 
 using testing::AllOf;
 using testing::ElementsAre;
+using testing::SizeIs;
+
+class StubSharedImageTextureLayerClient : public TextureLayerClient {
+ public:
+  StubSharedImageTextureLayerClient(gpu::SharedImageInterface* si_interface,
+                                    const gfx::Size& image_size) {
+    gpu::SharedImageInfo info(viz::SinglePlaneFormat::kRGBA_8888, image_size,
+                              gfx::ColorSpace::CreateSRGB(),
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
+                              "StubSharedImage");
+    std::vector<uint8_t> data(image_size.Area64() * 4);
+    shared_image_ = si_interface->CreateSharedImage(info, data);
+  }
+
+  scoped_refptr<cc::slim::TextureLayer> CreateTextureLayer() {
+    layer_ = cc::slim::TextureLayer::Create(this);
+    pending_resource_ = true;
+    return layer_;
+  }
+
+  void UpdateResource() {
+    pending_resource_ = true;
+    layer_->NotifyUpdatedResource();
+  }
+
+  bool PrepareTransferableResource(
+      viz::TransferableResource* transferable_resource,
+      viz::ReleaseCallback* release_callback) override {
+    CHECK(layer_);
+    if (!pending_resource_) {
+      return false;
+    }
+    pending_resource_ = false;
+    *transferable_resource = viz::TransferableResource::Make(
+        shared_image_, viz::TransferableResource::ResourceSource::kUI,
+        gpu::SyncToken());
+    ++shared_image_refs_;
+    *release_callback =
+        base::BindOnce(&StubSharedImageTextureLayerClient::Release,
+                       weak_factory_.GetWeakPtr(), shared_image_);
+    return true;
+  }
+
+  int shared_image_refs() { return shared_image_refs_; }
+
+ private:
+  void Release(scoped_refptr<gpu::ClientSharedImage> shared_image,
+               const gpu::SyncToken& sync_token,
+               bool lost_resource) {
+    shared_image->UpdateDestructionSyncToken(sync_token);
+    --shared_image_refs_;
+  }
+  scoped_refptr<cc::slim::TextureLayer> layer_;
+  bool pending_resource_;
+  scoped_refptr<gpu::ClientSharedImage> shared_image_;
+  int shared_image_refs_ = 0;
+
+  base::WeakPtrFactory<StubSharedImageTextureLayerClient> weak_factory_{this};
+};
+
+void AppendResourcesToReturn(std::vector<viz::ReturnedResource>& resources,
+                             const viz::CompositorFrame& frame) {
+  for (const auto& resource : frame.resource_list) {
+    resources.emplace_back(resource.id, gpu::SyncToken(), gfx::GpuFenceHandle(),
+                           1, false);
+  }
+}
 
 class SlimLayerTreeCompositorFrameTest : public testing::Test {
  public:
@@ -855,6 +930,113 @@ TEST_F(SlimLayerTreeCompositorFrameTest, SurfaceLayerAppendQuads) {
     EXPECT_EQ(metadata.deadline.deadline_in_frames(), 2u);
     EXPECT_FALSE(metadata.deadline.use_default_lower_bound_deadline());
   }
+}
+
+TEST_F(SlimLayerTreeCompositorFrameTest, TextureLayerAppendQuads) {
+  auto* sii = frame_sink_->context_provider()->SharedImageInterface();
+  StubSharedImageTextureLayerClient shared_image_texture_layer_client(
+      sii, viewport_.size());
+
+  auto texture_layer = shared_image_texture_layer_client.CreateTextureLayer();
+  texture_layer->SetBounds(viewport_.size());
+  texture_layer->SetIsDrawable(true);
+  texture_layer->SetContentsOpaque(true);
+  layer_tree_->SetRoot(texture_layer);
+
+  std::vector<viz::ReturnedResource> resources_to_return;
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsTextureQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_))));
+    EXPECT_EQ(frame.resource_list.size(), 1u);
+
+    EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
+    AppendResourcesToReturn(resources_to_return, frame);
+  }
+
+  // Even after removing the layer from the tree and reclaiming resources, the
+  // layer still holds a reference to the resource.
+  layer_tree_->SetRoot(nullptr);
+  frame_sink_->ReclaimResources(std::move(resources_to_return));
+  EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
+
+  // A frame can be produced if the layer is put back into the tree.
+  layer_tree_->SetRoot(texture_layer);
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsTextureQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_))));
+    EXPECT_EQ(frame.resource_list.size(), 1u);
+
+    EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
+    AppendResourcesToReturn(resources_to_return, frame);
+  }
+  frame_sink_->ReclaimResources(std::move(resources_to_return));
+
+  // A new layer can also use the texture.
+  texture_layer = shared_image_texture_layer_client.CreateTextureLayer();
+  texture_layer->SetBounds(viewport_.size());
+  texture_layer->SetIsDrawable(true);
+  texture_layer->SetContentsOpaque(true);
+  layer_tree_->SetRoot(texture_layer);
+  // The destroyed layer releases the resource, the new layer hasn't requested
+  // them yet.
+  EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 0);
+  {
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsTextureQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_))));
+    EXPECT_EQ(frame.resource_list.size(), 1u);
+    EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
+    AppendResourcesToReturn(resources_to_return, frame);
+  }
+
+  {
+    // The next frame, using the same layer, should still contain the texture.
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsTextureQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_))));
+    EXPECT_EQ(frame.resource_list.size(), 1u);
+    EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
+    AppendResourcesToReturn(resources_to_return, frame);
+  }
+
+  {
+    // When a new resource is available, an additional reference is kept.
+    shared_image_texture_layer_client.UpdateResource();
+    viz::CompositorFrame frame = ProduceFrame();
+    ASSERT_EQ(frame.render_pass_list.size(), 1u);
+    auto& pass = frame.render_pass_list.back();
+    ASSERT_THAT(pass->quad_list,
+                ElementsAre(AllOf(viz::IsTextureQuad(), viz::HasRect(viewport_),
+                                  viz::HasVisibleRect(viewport_))));
+    EXPECT_EQ(frame.resource_list.size(), 1u);
+    EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 2);
+
+    // The previous reference is released as resources are reclaimed.
+    frame_sink_->ReclaimResources(std::move(resources_to_return));
+    EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
+
+    AppendResourcesToReturn(resources_to_return, frame);
+  }
+
+  // The hold on the image is released when resources are returned.
+  texture_layer->ClearTexture();
+  EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 1);
+  frame_sink_->ReclaimResources(std::move(resources_to_return));
+  EXPECT_EQ(shared_image_texture_layer_client.shared_image_refs(), 0);
 }
 
 TEST_F(SlimLayerTreeCompositorFrameTest, SimpleHitTestRegionList) {

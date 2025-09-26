@@ -160,6 +160,14 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
   CHECK(cached_screenshots_.find(transition_data.unique_id()) ==
         cached_screenshots_.end());
   CHECK(!screenshot->is_cached());
+
+  if (!screenshot->IsValid()) {
+    transition_data.set_cache_hit_or_miss_reason(
+        NavigationTransitionData::CacheHitOrMissReason::
+            kCacheMissFailedReadBack);
+    return;
+  }
+
   const size_t size = screenshot->SetCache(this);
 
   entry->SetUserData(NavigationEntryScreenshot::kUserDataKey,
@@ -197,6 +205,24 @@ NavigationEntryScreenshotCache::RemoveScreenshot(
   manager_->OnScreenshotRemoved(this, size);
 
   return screenshot;
+}
+
+void NavigationEntryScreenshotCache::RemoveFailedScreenshot(
+    NavigationEntryScreenshot* screenshot) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  int index =
+      NavigationTransitionUtils::FindEntryIndexForNavigationTransitionID(
+          nav_controller_, screenshot->unique_id());
+  NavigationEntryImpl* entry = nav_controller_->GetEntryAtIndex(index);
+  if (!entry) {
+    // The entry was deleted by the time we did the readback.
+    return;
+  }
+
+  RemoveScreenshotFromEntry(entry);
+  auto& transition_data = entry->navigation_transition_data();
+  transition_data.set_cache_hit_or_miss_reason(
+      NavigationTransitionData::CacheHitOrMissReason::kCacheMissFailedReadBack);
 }
 
 void NavigationEntryScreenshotCache::OnNavigationEntryGone(

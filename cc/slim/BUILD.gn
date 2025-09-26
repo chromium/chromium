@@ -34,6 +34,8 @@ component("slim") {
     "solid_color_layer.h",
     "surface_layer.cc",
     "surface_layer.h",
+    "texture_layer.cc",
+    "texture_layer.h",
     "ui_resource_layer.cc",
     "ui_resource_layer.h",
   ]

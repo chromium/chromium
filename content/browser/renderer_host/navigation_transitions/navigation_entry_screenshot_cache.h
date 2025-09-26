@@ -80,6 +80,8 @@ class CONTENT_EXPORT NavigationEntryScreenshotCache
   std::unique_ptr<NavigationEntryScreenshot> RemoveScreenshot(
       NavigationEntry* navigation_entry);
 
+  void RemoveFailedScreenshot(NavigationEntryScreenshot* screenshot);
+
   // Called by the `NavigationScreenshot` when the hosting navigation entry is
   // deleted.
   void OnNavigationEntryGone(NavigationTransitionData::UniqueId screenshot_id);
