@@ -441,10 +441,13 @@ class StyleBuilderConverter {
   static ScopedCSSNameList* ConvertTimelineScope(StyleResolverState&,
                                                  const CSSValue&);
 
-  static PositionArea ConvertPositionArea(StyleResolverState&, const CSSValue&);
+  static PositionArea ConvertPositionArea(StyleResolverState&,
+                                          const CSSValue&,
+                                          bool allow_any_keyword = false);
   static PositionTryFallback ConvertSinglePositionTryFallback(
       StyleResolverState&,
-      const CSSValue&);
+      const CSSValue&,
+      bool allow_any_keyword_in_position_area = false);
   static FitText ConvertFitText(StyleResolverState&, const CSSValue&);
   static TextOverflowData ConvertTextOverflow(StyleResolverState&,
                                               const CSSValue&);

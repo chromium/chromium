@@ -1713,7 +1713,8 @@ static bool FallbackMediaFeatureEval(const MediaQueryExpValue& value,
   StyleResolverState state(container->GetDocument(), *container);
   PositionTryFallback query_fallback =
       StyleBuilderConverter::ConvertSinglePositionTryFallback(
-          state, value.GetCSSValue());
+          state, value.GetCSSValue(),
+          /*allow_any_keyword_in_position_area=*/true);
   query_fallback = ToPhysicalFallback(query_fallback, media_values);
   fallback = ToPhysicalFallback(fallback, media_values);
   return fallback.Matches(query_fallback);

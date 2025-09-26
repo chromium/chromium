@@ -3837,7 +3837,8 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineScope(
 
 PositionArea StyleBuilderConverter::ConvertPositionArea(
     StyleResolverState& state,
-    const CSSValue& value) {
+    const CSSValue& value,
+    bool allow_any_keyword) {
   auto extract_position_area_span = [](CSSValueID value)
       -> std::pair<PositionAreaRegion, PositionAreaRegion> {
     PositionAreaRegion start = PositionAreaRegion::kNone;
@@ -4026,18 +4027,21 @@ PositionArea StyleBuilderConverter::ConvertPositionArea(
     return std::make_pair(start, end);
   };
 
-  if (const auto* first_value = DynamicTo<CSSIdentifierValue>(value)) {
-    CSSValueID first_keyword = first_value->GetValueID();
-    if (first_keyword == CSSValueID::kNone) {
+  if (const auto* single_keyword_value = DynamicTo<CSSIdentifierValue>(value)) {
+    CSSValueID single_keyword = single_keyword_value->GetValueID();
+    if (single_keyword == CSSValueID::kNone) {
       return PositionArea();
     }
     PositionAreaRegion span[2];
-    std::tie(span[0], span[1]) = extract_position_area_span(first_keyword);
-    if (css_parsing_utils::IsRepeatedPositionAreaValue(first_keyword)) {
+    std::tie(span[0], span[1]) = extract_position_area_span(single_keyword);
+    if (css_parsing_utils::IsRepeatedPositionAreaValue(single_keyword)) {
       return PositionArea(span[0], span[1], span[0], span[1]);
     } else {
-      return PositionArea(span[0], span[1], PositionAreaRegion::kAll,
-                          PositionAreaRegion::kAll);
+      PositionAreaRegion default_second_span = allow_any_keyword
+                                                   ? PositionAreaRegion::kAny
+                                                   : PositionAreaRegion::kAll;
+      return PositionArea(span[0], span[1], default_second_span,
+                          default_second_span);
     }
   }
 
@@ -4053,10 +4057,12 @@ PositionArea StyleBuilderConverter::ConvertPositionArea(
 
 PositionTryFallback StyleBuilderConverter::ConvertSinglePositionTryFallback(
     StyleResolverState& state,
-    const CSSValue& value) {
+    const CSSValue& value,
+    bool allow_any_keyword_in_position_area) {
   // <'position-area'>
   if (IsA<CSSValuePair>(value) || IsA<CSSIdentifierValue>(value)) {
-    return PositionTryFallback(ConvertPositionArea(state, value));
+    return PositionTryFallback(
+        ConvertPositionArea(state, value, allow_any_keyword_in_position_area));
   }
   // [<dashed-ident> || <try-tactic>]
   const ScopedCSSName* scoped_name = nullptr;
