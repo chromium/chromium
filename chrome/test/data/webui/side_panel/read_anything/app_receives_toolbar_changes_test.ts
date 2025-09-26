@@ -5,7 +5,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -310,50 +310,6 @@ suite('AppReceivesToolbarChanges', () => {
     });
   });
 
-  suite('on highlight toggle', () => {
-    function highlightColor(): string {
-      return window.getComputedStyle(app.$.container)
-          .getPropertyValue('--current-highlight-bg-color');
-    }
-
-    function emitHighlight(highlightOn: boolean) {
-      const highlightValue = highlightOn ? chrome.readingMode.autoHighlighting :
-                                           chrome.readingMode.noHighlighting;
-      chrome.readingMode.onHighlightGranularityChanged(highlightValue);
-      emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
-        detail: {data: highlightValue},
-      });
-    }
-
-    setup(() => {
-      emitColorTheme(chrome.readingMode.defaultTheme);
-      app.updateContent();
-      emitPlayPause();
-    });
-
-    test('on hide, uses transparent highlight', () => {
-      emitHighlight(false);
-      assertEquals('transparent', highlightColor());
-    });
-
-    test('on show, uses colored highlight', () => {
-      emitHighlight(true);
-      assertNotEquals('transparent', highlightColor());
-    });
-
-    test('new theme uses colored highlight with highlights on', () => {
-      emitHighlight(true);
-      emitColorTheme(chrome.readingMode.blueTheme);
-      assertNotEquals('transparent', highlightColor());
-    });
-
-    test('new theme uses transparent highlight with highlights off', () => {
-      emitHighlight(false);
-      emitColorTheme(chrome.readingMode.yellowTheme);
-      assertEquals('transparent', highlightColor());
-    });
-  });
-
   suite('with highlight granularity menu', () => {
     function highlightColor(): string {
       return window.getComputedStyle(app.$.container)
@@ -361,38 +317,18 @@ suite('AppReceivesToolbarChanges', () => {
     }
 
     function emitHighlight(granularity: number) {
+      chrome.readingMode.onHighlightGranularityChanged(granularity);
       emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
         detail: {data: granularity},
       });
     }
 
     setup(() => {
-      chrome.readingMode.isPhraseHighlightingEnabled = true;
-      WordBoundaries.getInstance().updateBoundary(7);
       app.updateContent();
     });
 
-    test('updates highlight', () => {
-      emitHighlight(chrome.readingMode.wordHighlighting);
-      emitPlayPause();
-
-      assertEquals(
-          chrome.readingMode.wordHighlighting,
-          chrome.readingMode.highlightGranularity);
-
-      emitHighlight(chrome.readingMode.phraseHighlighting);
-      assertEquals(
-          chrome.readingMode.phraseHighlighting,
-          chrome.readingMode.highlightGranularity);
-
-      emitHighlight(chrome.readingMode.noHighlighting);
-      assertEquals(
-          chrome.readingMode.noHighlighting,
-          chrome.readingMode.highlightGranularity);
-    });
-
     test('new theme uses colored highlight with highlights on', () => {
-      emitHighlight(chrome.readingMode.phraseHighlighting);
+      emitHighlight(chrome.readingMode.wordHighlighting);
       emitColorTheme(chrome.readingMode.blueTheme);
       assertNotEquals('transparent', highlightColor());
     });

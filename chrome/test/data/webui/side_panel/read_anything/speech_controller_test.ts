@@ -579,20 +579,14 @@ suite('SpeechController', () => {
     assertTrue(movedToPrevious);
   });
 
-  test('onHighlightGranularityChange', async () => {
-    const granularity1 = chrome.readingMode.noHighlighting;
-    const granularity2 = chrome.readingMode.wordHighlighting;
+  test('onHighlightGranularityChange draws highlight', () => {
+    const granularity = chrome.readingMode.wordHighlighting;
+    setSimpleTreeWithText('no more melon cake');
+    assertFalse(highlighter.hasCurrentGranularity());
 
-    speechController.onHighlightGranularityChange(granularity1);
-    assertEquals(granularity1, chrome.readingMode.highlightGranularity);
-    assertEquals(
-        granularity1, await metrics.whenCalled('recordHighlightGranularity'));
+    speechController.onHighlightGranularityChange(granularity);
 
-    metrics.reset();
-    speechController.onHighlightGranularityChange(granularity2);
-    assertEquals(granularity2, chrome.readingMode.highlightGranularity);
-    assertEquals(
-        granularity2, await metrics.whenCalled('recordHighlightGranularity'));
+    assertTrue(highlighter.hasCurrentGranularity());
   });
 
   test('onLockScreen while paused does nothing', () => {

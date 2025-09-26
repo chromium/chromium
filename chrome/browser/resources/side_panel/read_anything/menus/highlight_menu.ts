@@ -9,6 +9,8 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SettingsPrefs} from '../common.js';
+import {ReadAloudSettingsChange} from '../metrics_browser_proxy.js';
+import {ReadAnythingLogger} from '../read_anything_logger.js';
 
 import {getHtml} from './highlight_menu.html.js';
 import {getIndexOfSetting} from './menu_util.js';
@@ -69,6 +71,8 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
     },
   ];
 
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
+
   open(anchor: HTMLElement) {
     this.$.menu.open(anchor);
   }
@@ -76,6 +80,13 @@ export class HighlightMenuElement extends HighlightMenuElementBase {
   protected restoredHighlightIndex_(): number {
     return getIndexOfSetting(
         this.options_, this.settingsPrefs['highlightGranularity']);
+  }
+
+  protected onHighlightChange_(event: CustomEvent<{data: number}>) {
+    chrome.readingMode.onHighlightGranularityChanged(event.detail.data);
+    this.logger_.logSpeechSettingsChange(
+        ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
+    this.logger_.logHighlightGranularity(event.detail.data);
   }
 }
 

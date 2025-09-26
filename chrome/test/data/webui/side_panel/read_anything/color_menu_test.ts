@@ -6,7 +6,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ColorMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -71,5 +72,39 @@ suite('ColorMenuElement', () => {
         ReadAnythingSettingsChange.THEME_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
     assertEquals(7, metrics.getCallCount('recordTextSettingsChange'));
+  });
+
+  test('restores saved color option', async () => {
+    const color = chrome.readingMode.yellowTheme;
+    const startingIndex = colorMenu.$.menu.currentSelectedIndex;
+    assertNotEquals(color, startingIndex);
+
+    colorMenu.settingsPrefs = {
+      letterSpacing: 0,
+      lineSpacing: 0,
+      theme: color,
+      speechRate: 0,
+      font: '',
+      highlightGranularity: 0,
+    };
+    await microtasksFinished();
+
+    assertNotEquals(startingIndex, colorMenu.$.menu.currentSelectedIndex);
+  });
+
+  test('does nothing if saved color is the same', async () => {
+    const startingIndex = colorMenu.$.menu.currentSelectedIndex;
+
+    colorMenu.settingsPrefs = {
+      letterSpacing: 100,
+      lineSpacing: 101,
+      theme: 0,
+      speechRate: 103,
+      font: 'font',
+      highlightGranularity: 103,
+    };
+    await microtasksFinished();
+
+    assertEquals(startingIndex, colorMenu.$.menu.currentSelectedIndex);
   });
 });

@@ -177,6 +177,8 @@ suite('SpeechController', () => {
     const text = 'And I am a massive deal';
     const node: Node = setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(
         chrome.readingMode.sentenceHighlighting);
     speechController.onPlayPauseToggle(node as HTMLElement);
@@ -426,6 +428,8 @@ suite('SpeechController', () => {
     const text = 'But I took your hand';
     setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(
         chrome.readingMode.sentenceHighlighting);
     onPlayPauseToggle(text);
@@ -446,6 +450,8 @@ suite('SpeechController', () => {
     const text = 'And promised I\'d withstand';
     setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
+    chrome.readingMode.onHighlightGranularityChanged(
+        chrome.readingMode.sentenceHighlighting);
     speechController.onHighlightGranularityChange(
         chrome.readingMode.sentenceHighlighting);
     onPlayPauseToggle(text);
