@@ -248,6 +248,8 @@ TEST_F(QuickAnswersControllerTest,
 
   chromeos::test::FakeMagicBoostState fake_magic_boost_state;
   fake_magic_boost_state.SetAvailability(true);
+  fake_magic_boost_state.SetMagicBoostEnabled(true);
+  fake_magic_boost_state.AsyncWriteHMREnabled(true);
   fake_magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kUnset);
 
@@ -276,6 +278,8 @@ TEST_F(
 
   chromeos::test::FakeMagicBoostState fake_magic_boost_state;
   fake_magic_boost_state.SetAvailability(false);
+  fake_magic_boost_state.SetMagicBoostEnabled(true);
+  fake_magic_boost_state.AsyncWriteHMREnabled(true);
   fake_magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kUnset);
 

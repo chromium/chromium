@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "chromeos/components/kiosk/kiosk_test_utils.h"
@@ -22,6 +24,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace quick_answers {
+
 namespace {
 
 class FakeObserver : public QuickAnswersStateObserver {
@@ -66,6 +69,26 @@ class QuickAnswersStateWithMagicBoostTest : public testing::Test {
 };
 
 }  // namespace
+
+struct PrefsConversionTestCase {
+  static std::string ToVariantName(
+      const testing::TestParamInfo<PrefsConversionTestCase>& info) {
+    return base::StringPrintf(
+        "MagicBoost%sHmr%s%s", (info.param.magic_boost_enabled ? "On" : "Off"),
+        (info.param.hmr_enabled ? "On" : "Off"),
+        base::ToString(info.param.hmr_consent_status).c_str());
+  }
+
+  bool magic_boost_enabled;
+  bool hmr_enabled;
+  chromeos::HMRConsentStatus hmr_consent_status;
+  bool expected_quick_answers_enabled;
+  quick_answers::prefs::ConsentStatus expected_consent_status;
+};
+
+class QuickAnswersStatePrefsConversionTest
+    : public QuickAnswersStateWithMagicBoostTest,
+      public testing::WithParamInterface<PrefsConversionTestCase> {};
 
 TEST(QuickAnswersStateTest, IsEligible) {
   FakeQuickAnswersState quick_answers_state;
@@ -193,6 +216,8 @@ TEST(QuickAnswersStateTest, IsEnabledObserverInit) {
 TEST_F(QuickAnswersStateWithMagicBoostTest, IsEnabledUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
   magic_boost_state.SetAvailability(true);
+  magic_boost_state.SetMagicBoostEnabled(true);
+
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");
   quick_answers_state.SetSettingsEnabled(true);
@@ -273,11 +298,16 @@ TEST(QuickAnswersStateTest, GetConsentStatus) {
 
 TEST_F(QuickAnswersStateWithMagicBoostTest, GetConsentStatusUnderMagicBoost) {
   chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetMagicBoostEnabled(true);
   magic_boost_state.SetAvailability(true);
+  magic_boost_state.AsyncWriteHMREnabled(true);
+
   FakeObserver observer;
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.AddObserver(&observer);
   quick_answers_state.SetApplicationLocale("en");
+  ASSERT_EQ(QuickAnswersState::FeatureType::kHmr,
+            QuickAnswersState::GetFeatureType());
 
   EXPECT_EQ(base::unexpected(QuickAnswersState::Error::kUninitialized),
             QuickAnswersState::GetConsentStatus());
@@ -306,10 +336,10 @@ TEST_F(QuickAnswersStateWithMagicBoostTest, PendingUnderMagicBoost) {
   magic_boost_state.AsyncWriteConsentStatus(
       chromeos::HMRConsentStatus::kPendingDisclaimer);
 
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       quick_answers_state.IsEnabledAs(QuickAnswersState::FeatureType::kHmr))
-      << "Quick Answers capability can be enabled with kPendingDisclaimer "
-         "state.";
+      << "Quick Answers capability should not be enabled with "
+         "kPendingDisclaimer state.";
   EXPECT_FALSE(quick_answers_state.IsEnabledAs(
       QuickAnswersState::FeatureType::kQuickAnswers))
       << "Expect that Quick Answers capability is enabled only as HMR if it's "
@@ -433,5 +463,95 @@ TEST_F(QuickAnswersStateWithMagicBoostTest, IsIntentEligibleUnderMagicBoost) {
       << "An intent is always eligible for kHmr regardless the respective "
          "value in kQuickAnswers";
 }
+
+TEST_P(QuickAnswersStatePrefsConversionTest, TestPrefsConversion) {
+  const PrefsConversionTestCase& test_case = GetParam();
+
+  chromeos::test::FakeMagicBoostState magic_boost_state;
+  magic_boost_state.SetAvailability(true);
+  magic_boost_state.SetMagicBoostEnabled(test_case.magic_boost_enabled);
+  FakeQuickAnswersState quick_answers_state;
+  quick_answers_state.SetApplicationLocale("en");
+
+  magic_boost_state.AsyncWriteHMREnabled(test_case.hmr_enabled);
+  magic_boost_state.AsyncWriteConsentStatus(test_case.hmr_consent_status);
+
+  EXPECT_EQ(
+      test_case.expected_quick_answers_enabled,
+      QuickAnswersState::IsEnabledAs(QuickAnswersState::FeatureType::kHmr));
+  EXPECT_EQ(test_case.expected_consent_status,
+            QuickAnswersState::GetConsentStatusAs(
+                QuickAnswersState::FeatureType::kHmr));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    QuickAnswersStatePrefsConversionTest,
+    testing::Values(
+        PrefsConversionTestCase{
+            .magic_boost_enabled = true,
+            .hmr_enabled = false,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kUnset,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kRejected},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = true,
+            .hmr_enabled = false,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kApproved,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kRejected},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = true,
+            .hmr_enabled = true,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kUnset,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kUnknown},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = true,
+            .hmr_enabled = true,
+            .hmr_consent_status =
+                chromeos::HMRConsentStatus::kPendingDisclaimer,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kUnknown},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = true,
+            .hmr_enabled = true,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kApproved,
+            .expected_quick_answers_enabled = true,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kAccepted},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = true,
+            .hmr_enabled = true,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kDeclined,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kRejected},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = false,
+            .hmr_enabled = false,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kUnset,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kRejected},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = false,
+            .hmr_enabled = true,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kApproved,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kRejected},
+        PrefsConversionTestCase{
+            .magic_boost_enabled = false,
+            .hmr_enabled = true,
+            .hmr_consent_status = chromeos::HMRConsentStatus::kUnset,
+            .expected_quick_answers_enabled = false,
+            .expected_consent_status =
+                quick_answers::prefs::ConsentStatus::kRejected}),
+    &PrefsConversionTestCase::ToVariantName);
 
 }  // namespace quick_answers

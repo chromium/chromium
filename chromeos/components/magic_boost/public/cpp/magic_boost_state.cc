@@ -137,4 +137,20 @@ void MagicBoostState::NotifyOnIsDeleting() {
   }
 }
 
+std::ostream& operator<<(std::ostream& os, HMRConsentStatus status) {
+  switch (status) {
+    case HMRConsentStatus::kApproved:
+      return os << "kApproved";
+    case HMRConsentStatus::kDeclined:
+      return os << "kDeclined";
+    case HMRConsentStatus::kPendingDisclaimer:
+      return os << "kPendingDisclaimer";
+    case HMRConsentStatus::kUnset:
+      return os << "kUnset";
+  }
+
+  CHECK(false) << "Invalid HMRConsentStatus enum class value provided: "
+               << static_cast<int>(status);
+}
+
 }  // namespace chromeos

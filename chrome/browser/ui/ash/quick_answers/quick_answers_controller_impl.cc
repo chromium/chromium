@@ -223,7 +223,14 @@ void QuickAnswersControllerImpl::OnTextAvailable(
     const gfx::Rect& anchor_bounds,
     const std::string& selected_text,
     const std::string& surrounding_text) {
+  base::ScopedClosureRunner runner(
+      std::move(on_text_available_callback_for_testing_));
+  if (runner) {
+    CHECK_IS_TEST();
+  }
+
   if (!ShouldShowQuickAnswers()) {
+    visibility_ = QuickAnswersVisibility::kClosed;
     return;
   }
 
@@ -567,6 +574,12 @@ void QuickAnswersControllerImpl::OverrideTimeTickNowForTesting(
   CHECK(time_tick_now_function_.is_null());
 
   time_tick_now_function_ = time_tick_now_function;
+}
+
+void QuickAnswersControllerImpl::SetOnTextAvailableCallbackForTesting(
+    base::OnceClosure callback) {
+  CHECK_IS_TEST();
+  on_text_available_callback_for_testing_ = std::move(callback);
 }
 
 base::WeakPtr<QuickAnswersControllerImpl>

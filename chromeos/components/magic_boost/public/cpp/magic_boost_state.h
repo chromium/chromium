@@ -40,7 +40,38 @@ enum class HMRConsentStatus : int {
   kUnset = 3,
 };
 
+COMPONENT_EXPORT(MAGIC_BOOST)
+std::ostream& operator<<(std::ostream& os, HMRConsentStatus status);
+
 // A class that holds MagicBoost related prefs and states.
+//
+// ## Magic Boost prefs model
+//
+// The table below shows the behavior of the HMR feature based on its three
+// main preference values. Other features should follow the same logic.
+//
+// Note that this model is different from Quick Answers prefs model. Refer
+// `quick_answers_state.h` for its prefs model. QuickAnswersState is a class to
+// abstract these differences for Quick Answers code base.
+//
+// | magic_boost_enabled | hmr_enabled    | consent_status     | HMR Behavior |
+// |:--------------------|:---------------|:-------------------|:-------------|
+// | false               | false          | kUnset             | Disabled     |
+// | false               | false          | kPendingDisclaimer | Disabled     |
+// | false               | false          | kApproved          | Disabled     |
+// | false               | false          | kDeclined          | Disabled     |
+// | false               | true           | kUnset             | Disabled     |
+// | false               | true           | kPendingDisclaimer | Disabled     |
+// | false               | true           | kApproved          | Disabled     |
+// | false               | true           | kDeclined          | Disabled     |
+// | true                | false          | kUnset             | Disabled     |
+// | true                | false          | kPendingDisclaimer | Disabled     |
+// | true                | false          | kApproved          | Disabled     |
+// | true                | false          | kDeclined          | Disabled     |
+// | true (default)      | true (default) | kUnset (default)   | Show consent |
+// | true                | true           | kPendingDisclaimer | Show consent |
+// | true                | true           | kApproved          | Show HMR     |
+// | true                | true           | kDeclined          | Disabled     |
 class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
  public:
   // A checked observer which receives MagicBoost state changes.
