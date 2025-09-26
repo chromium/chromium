@@ -37,7 +37,8 @@ class MessagingBackendServiceFactory : public ProfileKeyedServiceFactory {
   // Disallow copy/assign.
   MessagingBackendServiceFactory(const MessagingBackendServiceFactory&) =
       delete;
-  void operator=(const MessagingBackendServiceFactory&) = delete;
+  MessagingBackendServiceFactory& operator=(
+      const MessagingBackendServiceFactory&) = delete;
 
  private:
   friend base::NoDestructor<MessagingBackendServiceFactory>;

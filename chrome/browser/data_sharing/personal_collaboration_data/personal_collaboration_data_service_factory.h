@@ -36,7 +36,8 @@ class PersonalCollaborationDataServiceFactory
   // Disallow copy/assign.
   PersonalCollaborationDataServiceFactory(
       const PersonalCollaborationDataServiceFactory&) = delete;
-  void operator=(const PersonalCollaborationDataServiceFactory&) = delete;
+  PersonalCollaborationDataServiceFactory& operator=(
+      const PersonalCollaborationDataServiceFactory&) = delete;
 
  private:
   friend base::NoDestructor<PersonalCollaborationDataServiceFactory>;

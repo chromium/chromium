@@ -30,7 +30,8 @@ class MigratableSyncServiceCoordinatorFactory
   // Disallow copy/assign.
   MigratableSyncServiceCoordinatorFactory(
       const MigratableSyncServiceCoordinatorFactory&) = delete;
-  void operator=(const MigratableSyncServiceCoordinatorFactory&) = delete;
+  MigratableSyncServiceCoordinatorFactory& operator=(
+      const MigratableSyncServiceCoordinatorFactory&) = delete;
 
  private:
   friend base::NoDestructor<MigratableSyncServiceCoordinatorFactory>;
