@@ -2048,6 +2048,11 @@ if (is_android) {
 
     extra_args = []
 
+    if (is_desktop_android) {
+      deps +=
+          [ "//chrome/browser/ui/browser_window/internal:android_browsertests" ]
+    }
+
     if (enable_chrome_android_internal) {
       data_deps += [ "//clank/build/bot/filters:android_browsertests_filters" ]
     }

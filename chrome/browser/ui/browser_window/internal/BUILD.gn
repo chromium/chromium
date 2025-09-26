@@ -245,4 +245,17 @@ if (is_android) {
       "//ui/android:ui_no_recycler_view_java",
     ]
   }
+
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "android/create_browser_window_android_browsertest.cc" ]
+    deps = [
+      "//chrome/browser/profiles",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/test:test_support_ui_android",
+      "//testing/gtest",
+    ]
+  }
 }
