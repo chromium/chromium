@@ -36,76 +36,28 @@ group("ios_web_view_unittests") {
   deps = [ "//ios/web_view/test:ios_web_view_unittests" ]
 }
 
-config("config") {
-  # TODO(crbug.com/40120082): This will only guarantee ios/web_view source files
-  # are extension safe. We also need to pass this flag to all all dependencies.
-  common_flags = [ "-fapplication-extension" ]
-  cflags_objc = common_flags
-  cflags_objcc = common_flags
-  defines = [ "CWV_IMPLEMENTATION" ]
-  frameworks = [
-    "CoreGraphics.framework",
-    "Foundation.framework",
-    "MobileCoreServices.framework",
-    "UIKit.framework",
-  ]
+# Target used to avoid breaking internal builders. Will be removed when all
+# references to the old target label has been fixed.
+group("web_view") {
+  public_deps = [ "//ios/web_view/framework:web_view" ]
 }
 
-source_set("web_view_sources") {
-  sources = ios_web_view_public_headers
-  sources += ios_web_view_sources
-
-  public_deps = ios_web_view_deps
-  deps = [
-    "//components/autofill/ios/common",
-    "//components/version_info:channel",
-  ]
-  configs += [ ":config" ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+# Target used to avoid breaking internal builders. Will be removed when all
+# references to the old target label has been fixed.
+group("web_view+link") {
+  public_deps = [ "//ios/web_view/framework:web_view+link" ]
 }
 
-action("web_view_umbrella_header") {
-  script = "//build/config/ios/generate_umbrella_header.py"
-
-  full_header_path = target_gen_dir + "/" + ios_web_view_output_name + ".h"
-  outputs = [ full_header_path ]
-
-  args = [
-    "--output-path",
-    rebase_path(full_header_path, root_build_dir),
-  ]
-
-  args += rebase_path(ios_web_view_public_headers, root_build_dir)
+# Target used to avoid breaking internal builders. Will be removed when all
+# references to the old target label has been fixed.
+group("web_view+bundle") {
+  public_deps = [ "//ios/web_view/framework:web_view+bundle" ]
 }
 
-tweak_info_plist("info_plist") {
-  info_plists = [ "Info.plist" ]
-}
-
-ios_framework_bundle("web_view") {
-  output_name = ios_web_view_output_name
-  info_plist_target = ":info_plist"
-
-  ldflags = [ "-fapplication-extension" ]
-
-  public_headers = get_target_outputs(":web_view_umbrella_header")
-  public_headers += ios_web_view_public_headers
-
-  sources = ios_web_view_public_headers
-  sources += [ "internal/cwv_global_state.mm" ]
-
-  deps = [
-    ":web_view_sources",
-    "//ios/third_party/webkit",
-    "//ios/web/public/init",
-    "//testing/gtest:ios_coverage_utils",
-  ]
-  deps += [ ":web_view_umbrella_header" ]
-
-  configs += [ ":config" ]
+# Target used to avoid breaking internal builders. Will be removed when all
+# references to the old target label has been fixed.
+group("web_view_sources") {
+  public_deps = [ "//ios/web_view/framework:web_view_sources" ]
 }
 
 _package_dir = "$root_out_dir/ios_web_view"
@@ -120,7 +72,7 @@ action("ios_web_view_generate_license") {
     "license_file",
     rebase_path(_license_path, root_build_dir),
     "--gn-target",
-    "//ios/web_view",
+    "//ios/web_view/framework:web_view",
     "--gn-out-dir",
     ".",
     "--target-os",
@@ -136,7 +88,7 @@ copy("ios_web_view_package_copy") {
   ]
   outputs = [ "$_package_dir/{{source_file_part}}" ]
 
-  deps = [ ":web_view" ]
+  deps = [ "//ios/web_view/framework:web_view" ]
 }
 
 if (enable_dsyms) {
@@ -158,7 +110,7 @@ if (enable_dsyms) {
     args = [ rebase_path(_output, root_build_dir) ] +
            rebase_path(_dsyms, root_build_dir)
 
-    deps = [ ":web_view" ]
+    deps = [ "//ios/web_view/framework:web_view" ]
   }
 } else {
   group("ios_web_view_dsym_archive") {

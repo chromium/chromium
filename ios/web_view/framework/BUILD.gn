@@ -1,0 +1,78 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/rules.gni")
+import("//ios/web_view/features.gni")
+import("//ios/web_view/framework/sources.gni")
+
+config("config") {
+  # TODO(crbug.com/40120082): This will only guarantee ios/web_view source files
+  # are extension safe. We also need to pass this flag to all all dependencies.
+  common_flags = [ "-fapplication-extension" ]
+  cflags_objc = common_flags
+  cflags_objcc = common_flags
+  defines = [ "CWV_IMPLEMENTATION" ]
+  frameworks = [
+    "CoreGraphics.framework",
+    "Foundation.framework",
+    "MobileCoreServices.framework",
+    "UIKit.framework",
+  ]
+}
+
+tweak_info_plist("info_plist") {
+  info_plists = [ "Info.plist" ]
+}
+
+action("web_view_umbrella_header") {
+  script = "//build/config/ios/generate_umbrella_header.py"
+
+  _header_path = "$target_gen_dir/$ios_web_view_output_name.h"
+  outputs = [ _header_path ]
+
+  args = [
+    "--output-path",
+    rebase_path(_header_path, root_build_dir),
+  ]
+
+  args += rebase_path(ios_web_view_public_headers, root_build_dir)
+}
+
+source_set("web_view_sources") {
+  sources = ios_web_view_public_headers + ios_web_view_sources
+
+  public_deps = ios_web_view_deps
+  deps = [
+    "//components/autofill/ios/common",
+    "//components/version_info:channel",
+  ]
+  configs += [ ":config" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+ios_framework_bundle("web_view") {
+  output_name = ios_web_view_output_name
+  info_plist_target = ":info_plist"
+
+  ldflags = [ "-fapplication-extension" ]
+
+  public_headers = get_target_outputs(":web_view_umbrella_header")
+  public_headers += ios_web_view_public_headers
+
+  sources = [ "../internal/cwv_global_state.mm" ] + ios_web_view_public_headers
+
+  deps = [
+    ":web_view_sources",
+    ":web_view_umbrella_header",
+    "//ios/third_party/webkit",
+    "//ios/web/public/init",
+    "//testing/gtest:ios_coverage_utils",
+  ]
+
+  configs += [ ":config" ]
+}

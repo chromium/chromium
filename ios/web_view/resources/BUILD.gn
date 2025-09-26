@@ -6,7 +6,7 @@ import("//ios/web_view/resources/repack.gni")
 import("//tools/grit/repack.gni")
 
 group("resources") {
-  visibility = [ "//ios/web_view:*" ]
+  visibility = [ "//ios/web_view/*" ]
   deps = [
     ":repack_locales",
     ":repack_resources",
