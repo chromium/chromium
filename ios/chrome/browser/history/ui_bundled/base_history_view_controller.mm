@@ -699,10 +699,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
     return;  // UI has been updated in the meaning time.
   }
 
-  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
-  // check doesn't fail.
-  CHECK_EQ(_indicatorState, IndicatorState::FETCHING_RESULTS,
-           base::NotFatalUntil::M139);
+  CHECK_EQ(_indicatorState, IndicatorState::FETCHING_RESULTS);
   _indicatorState = IndicatorState::SHOWING_LOADING_INDICATOR;
   [self startLoadingIndicatorWithLoadingMessage:l10n_util::GetNSString(
                                                     IDS_HISTORY_NO_RESULTS)];
@@ -719,10 +716,7 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
 // removes the loading indicator and updates the UI with the results. If the
 // query hasn't returned, then no-op.
 - (void)maybeRemoveLoadingIndicator {
-  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
-  // check doesn't fail.
-  CHECK_EQ(_indicatorState, IndicatorState::SHOWING_LOADING_INDICATOR,
-           base::NotFatalUntil::M139);
+  CHECK_EQ(_indicatorState, IndicatorState::SHOWING_LOADING_INDICATOR);
   _indicatorState = IndicatorState::WAITING_FOR_RESULTS;
 
   // If results have returned, then the UI is updated right away.
@@ -744,11 +738,8 @@ static const base::TimeDelta kDelayUntilReadyToRemoveLoadingIndicatorsMs =
     return;
   }
 
-  // TODO(crbug.com/371568658): Remove NotFatalUntil when we're sure this
-  // check doesn't fail.
   CHECK(_indicatorState == IndicatorState::WAITING_FOR_RESULTS ||
-            _indicatorState == IndicatorState::FETCHING_RESULTS,
-        base::NotFatalUntil::M139);
+        _indicatorState == IndicatorState::FETCHING_RESULTS);
   _indicatorState = IndicatorState::IDLE;
 
   // Cancel all pending callbacks related to loading indicator.
