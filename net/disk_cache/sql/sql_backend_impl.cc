@@ -1003,6 +1003,10 @@ void SqlBackendImpl::HandleTriggerEvictionOperation(
 }
 
 void SqlBackendImpl::TriggerDeleteDoomedEntries() {
+  // TODO(crbug.com/443171275): Get information on whether a doomed entry
+  // exists when initializing SqlPersistentStore, and if it does not exist, do
+  // not execute TriggerDeleteDoomedEntries.
+  // TODO(crbug.com/443171275): Execute only when the browser is idle.
   exclusive_operation_coordinator_.PostOrRunExclusiveOperation(base::BindOnce(
       base::BindOnce(&SqlBackendImpl::HandleDeleteDoomedEntriesOperation,
                      weak_factory_.GetWeakPtr())));

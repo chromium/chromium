@@ -356,6 +356,17 @@ inline constexpr const char
     kCalculateTotalSize_SelectTotalSizeFromLiveResources[] =
         "SELECT SUM(bytes_usage) FROM resources WHERE doomed=0";
 
+inline constexpr const char
+    kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources[] =
+        // clang-format off
+    "SELECT "
+        "res_id, "          // 0
+        "cache_key_hash, "  // 1
+        "doomed "           // 2
+    "FROM resources "
+    "ORDER BY cache_key_hash";
+// clang-format on
+
 }  // namespace internal
 
 // An enum for all SQL queries. This helps ensure that all queries are tested.
@@ -394,8 +405,9 @@ enum class Query {
   kRunEviction_DeleteFromResources,
   kCalculateResourceEntryCount_SelectCountFromLiveResources,
   kCalculateTotalSize_SelectTotalSizeFromLiveResources,
+  kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources,
 
-  kMaxValue = kCalculateTotalSize_SelectTotalSizeFromLiveResources,
+  kMaxValue = kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources,
 };
 
 inline base::cstring_view GetQuery(Query query) {
@@ -468,6 +480,8 @@ inline base::cstring_view GetQuery(Query query) {
           kCalculateResourceEntryCount_SelectCountFromLiveResources;
     case Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources:
       return internal::kCalculateTotalSize_SelectTotalSizeFromLiveResources;
+    case Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources:
+      return internal::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources;
   }
   NOTREACHED();
 }

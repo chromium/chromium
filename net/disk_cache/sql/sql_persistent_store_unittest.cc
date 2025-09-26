@@ -1594,6 +1594,17 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   ASSERT_EQ(GetEntryCount(), 5);
   int64_t initial_total_size = GetSizeOfAllEntries();
 
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey4.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey5.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
   // Delete entries between kTime1 (inclusive) and kTime3 (exclusive).
   // kKey2 should be excluded.
   // Expected to delete: kKey1.
@@ -1601,6 +1612,16 @@ TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   base::flat_set<CacheEntryKey> excluded_keys = {kKey2};
   ASSERT_EQ(DeleteLiveEntriesBetween(kTime1, kTime3, excluded_keys),
             SqlPersistentStore::Error::kOk);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey3.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey4.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey5.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
 
   EXPECT_EQ(GetEntryCount(), 4);
   const int64_t expected_size_after_delete =
@@ -3455,6 +3476,8 @@ TEST_F(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
   // Verify oldest entries are gone.
   int evicted_count = count_before_eviction - count_after_eviction;
   for (int j = 0; j < evicted_count; ++j) {
+    EXPECT_EQ(store_->GetIndexStateForHash(keys[j].hash()),
+              SqlPersistentStore::IndexState::kHashNotFound);
     auto result = OpenEntry(keys[j]);
     ASSERT_TRUE(result.has_value());
     EXPECT_FALSE(result->has_value());
@@ -3462,6 +3485,8 @@ TEST_F(SqlPersistentStoreTest, StartEvictionReducesSizeToLowWatermark) {
 
   // Verify newest entries are still there.
   for (size_t j = evicted_count; j < keys.size(); ++j) {
+    EXPECT_EQ(store_->GetIndexStateForHash(keys[j].hash()),
+              SqlPersistentStore::IndexState::kHashFound);
     auto result = OpenEntry(keys[j]);
     ASSERT_TRUE(result.has_value());
     EXPECT_TRUE(result->has_value());
@@ -3710,6 +3735,109 @@ TEST_F(SqlPersistentStoreTest, WalCheckpoint) {
   test_helper->SetLoadingScenario(ScenarioScope::kGlobal,
                                   LoadingScenario::kNoPageLoading);
   MaybeRunCheckpoint(/*expected_result=*/true);
+}
+
+TEST_F(SqlPersistentStoreTest, IndexState) {
+  const CacheEntryKey kKey1("key1");
+  const CacheEntryKey kKey2("key2");
+
+  CreateStore();
+
+  // Before initialization, index is not ready.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+
+  base::test::TestFuture<SqlPersistentStore::Error> future;
+  store_->Initialize(future.GetCallback());
+  // During initialization, index is not ready.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+  ASSERT_EQ(future.Get(), SqlPersistentStore::Error::kOk);
+
+  // After initialization with an empty store, hash is not found.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // Create an entry.
+  SqlPersistentStore::EntryInfoOrError result = this->CreateEntry(kKey1);
+  ASSERT_TRUE(result.has_value());
+  SqlPersistentStore::ResId res_id1 = result->res_id;
+
+  // Now the hash for key1 should be found.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  // Key2 should still not be found.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // Create another entry.
+  result = this->CreateEntry(kKey2);
+  ASSERT_TRUE(result.has_value());
+
+  // Both hashes should be found.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Doom the first entry.
+  ASSERT_EQ(SqlPersistentStore::Error::kOk, this->DoomEntry(kKey1, res_id1));
+
+  // The hash for the doomed entry should be removed from the index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Delete the second entry.
+  ASSERT_EQ(SqlPersistentStore::Error::kOk, this->DeleteLiveEntry(kKey2));
+
+  // The hash for the deleted entry should be removed.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+
+  // Re-create entry for key1.
+  result = this->CreateEntry(kKey1);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Delete all entries.
+  ASSERT_EQ(SqlPersistentStore::Error::kOk, this->DeleteAllEntries());
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+}
+
+// Test index reloading from a non-empty database.
+TEST_F(SqlPersistentStoreTest, IndexReloads) {
+  const CacheEntryKey kKey1("key1");
+  const CacheEntryKey kKey2("key2");
+
+  CreateAndInitStore();
+
+  // Create two entries.
+  ASSERT_TRUE(this->CreateEntry(kKey1).has_value());
+  ASSERT_TRUE(this->CreateEntry(kKey2).has_value());
+
+  // The hashes should be found.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Close and reopen the store.
+  ClearStore();
+  CreateAndInitStore();
+
+  // The index should be re-populated.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey2.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetIndexStateForHash(CacheEntryKey("other").hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
 }
 
 }  // namespace disk_cache

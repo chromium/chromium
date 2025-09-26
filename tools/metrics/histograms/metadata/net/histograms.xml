@@ -7716,6 +7716,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SqlDiskCache.Backend.IndexMismatch"
+    enum="SqlDiskCacheIndexMismatchLocation" expires_after="2026-03-22">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the location where an in-memory index mismatch is detected in the
+    SQL-based disk cache. This helps identify the operations that are most prone
+    to causing inconsistencies between the in-memory index and the on-disk
+    database.
+  </summary>
+</histogram>
+
+<histogram name="Net.SqlDiskCache.Backend.LoadInMemoryIndexTime"
+    units="microseconds" expires_after="2025-12-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the time taken to load the in memory index of the SQL-based disk
+    cache backend. This metric is recorded immediately after the in-memory index
+    is loaded from the database. The histogram is not reported on Windows
+    machines without high resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Net.SqlDiskCache.Backend.MaxSize" units="MB"
     expires_after="2026-03-22">
   <owner>horo@chromium.org</owner>

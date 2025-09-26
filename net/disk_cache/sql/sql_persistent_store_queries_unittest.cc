@@ -208,7 +208,10 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
             "COVERING INDEX index_live_resources_last_used"},
            {Query::kCalculateTotalSize_SelectTotalSizeFromLiveResources,
             "`--SCAN resources USING "
-            "INDEX index_live_resources_last_used"}});
+            "INDEX index_live_resources_last_used"},
+           {Query::kGetCacheKeyHashes_SelectCacheKeyHashFromLiveResources,
+            "`--SCAN resources USING COVERING INDEX "
+            "index_resources_cache_key_hash_doomed"}});
   static_assert(kAllQueriesAndPlans.size() + kSchemaAndIndexQueries.size() ==
                 static_cast<int>(Query::kMaxValue) + 1);
   for (const auto& it : kAllQueriesAndPlans) {

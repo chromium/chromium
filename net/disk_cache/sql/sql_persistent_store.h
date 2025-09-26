@@ -318,6 +318,20 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // kSqlDiskCacheIdleCheckpointThreshold, a checkpoint is executed.
   virtual void MaybeRunCheckpoint(base::OnceCallback<void(bool)> callback) = 0;
 
+  enum class IndexState {
+    // The in-memory index is not available (e.g., not yet loaded or
+    // invalidated).
+    kNotReady,
+    // The index is ready and the hash was found. This may be a false positive.
+    kHashFound,
+    // The index is ready, but the hash was not found.
+    kHashNotFound,
+  };
+
+  // Synchronously checks the state of a key hash against the in-memory index.
+  virtual IndexState GetIndexStateForHash(
+      CacheEntryKey::Hash key_hash) const = 0;
+
   // Enables a strict corruption checking mode for testing purposes.
   virtual void EnableStrictCorruptionCheckForTesting() = 0;
 

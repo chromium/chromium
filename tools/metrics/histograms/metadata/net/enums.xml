@@ -2998,6 +2998,19 @@ Called by update_net_trust_anchors.py.-->
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_backend_impl.h:FakeIndexFileError) -->
 
+<!-- LINT.IfChange(SqlDiskCacheIndexMismatchLocation) -->
+
+<enum name="SqlDiskCacheIndexMismatchLocation">
+  <int value="0" label="OpenOrCreateEntry"/>
+  <int value="1" label="CreateEntry"/>
+  <int value="2" label="DoomEntry"/>
+  <int value="3" label="StartEviction"/>
+  <int value="4" label="DeleteLiveEntry"/>
+  <int value="5" label="DeleteLiveEntriesBetween"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_persistent_store.cc:IndexMismatchLocation) -->
+
 <!-- LINT.IfChange(SqlDiskCacheStoreError) -->
 
 <enum name="SqlDiskCacheStoreError">
