@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SearchboxDropdownElement} from './searchbox_dropdown.js';
+
+export function getHtml(this: SearchboxDropdownElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="content" part="dropdown-content">
   ${this.sideTypes_().map(sideType => html`
     <div class="${this.sideTypeClass_(sideType)}">
@@ -24,3 +35,6 @@
     </div>
   `)}
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

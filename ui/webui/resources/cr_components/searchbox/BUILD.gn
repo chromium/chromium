@@ -9,17 +9,22 @@ assert(!is_android && !is_ios)
 
 build_webui("build") {
   grd_prefix = "cr_components_searchbox"
-  web_component_files = [
-    "searchbox.ts",
-    "searchbox_action.ts",
-    "searchbox_compose_button.ts",
-    "searchbox_dropdown.ts",
-    "searchbox_icon.ts",
-    "searchbox_match.ts",
-    "searchbox_thumbnail.ts",
-  ]
   ts_files = [
+    "searchbox_action.html.ts",
+    "searchbox_action.ts",
     "searchbox_browser_proxy.ts",
+    "searchbox_compose_button.html.ts",
+    "searchbox_compose_button.ts",
+    "searchbox_dropdown.html.ts",
+    "searchbox_dropdown.ts",
+    "searchbox_icon.html.ts",
+    "searchbox_icon.ts",
+    "searchbox_match.html.ts",
+    "searchbox_match.ts",
+    "searchbox_thumbnail.html.ts",
+    "searchbox_thumbnail.ts",
+    "searchbox.html.ts",
+    "searchbox.ts",
     "utils.ts",
   ]
   css_files = [

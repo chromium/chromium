@@ -1,3 +1,14 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SearchboxElement} from './searchbox.js';
+
+export function getHtml(this: SearchboxElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout_}"
     @keydown="${this.onInputWrapperKeydown_}">
   <input id="input" class="truncate" type="search" autocomplete="off"
@@ -81,3 +92,6 @@
       ?show-thumbnail="${this.showThumbnail}">
   </cr-searchbox-dropdown>
 </div>
+<!--_html_template_end_-->`;
+  // clang-format on
+}
