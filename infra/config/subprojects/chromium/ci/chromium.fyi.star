@@ -2505,43 +2505,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-crossbench",
-    description_html = "Run Crossbench Smoke tests on Linux.",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(config = "chromium"),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "release_builder",
-            "remoteexec",
-            "linux",
-            "x64",
-        ],
-    ),
-    targets = targets.bundle(
-        targets = [
-            "crossbench_smoketests",
-        ],
-        mixins = [
-            "linux-jammy",
-            "x86-64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-    ),
-    contact_team_email = "crossbench-infra-vteam@google.com",
-)
-
-ci.builder(
     name = "win-no-safe-browsing-rel",
     description_html = "Builds for Windows with `safe_browsing_mode = 0`.",
     builder_spec = builder_config.builder_spec(

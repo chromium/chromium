@@ -13,7 +13,7 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "crossbench",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -60,6 +60,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
+  "builder_group": "crossbench",
   "recipe": "chromium"
 }
