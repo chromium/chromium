@@ -690,7 +690,7 @@ CookieAccessScheme ProvisionalAccessScheme(const GURL& source_url) {
                                        : CookieAccessScheme::kNonCryptographic;
 }
 
-bool IsDomainMatch(const std::string& domain, const std::string& host) {
+bool IsDomainMatch(const std::string_view domain, const std::string_view host) {
   // Can domain match in two ways; as a domain cookie (where the cookie
   // domain begins with ".") or as a host cookie (where it doesn't).
 
@@ -723,7 +723,7 @@ bool IsDomainMatch(const std::string& domain, const std::string& host) {
                        domain) == 0);
 }
 
-bool IsOnPath(const std::string& cookie_path, const std::string& url_path) {
+bool IsOnPath(const std::string_view cookie_path, const std::string_view url_path) {
   // A zero length would be unsafe for our trailing '/' checks, and
   // would also make no sense for our prefix match.  The code that
   // creates a CanonicalCookie should make sure the path is never zero length,

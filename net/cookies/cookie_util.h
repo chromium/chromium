@@ -250,15 +250,15 @@ NET_EXPORT CookieAccessScheme ProvisionalAccessScheme(const GURL& source_url);
 // |domain| is the output of cookie.Domain() for some cookie. This returns true
 // if a |domain| indicates that the cookie can be accessed by |host|.
 // See comment on CanonicalCookie::IsDomainMatch().
-NET_EXPORT bool IsDomainMatch(const std::string& domain,
-                              const std::string& host);
+NET_EXPORT bool IsDomainMatch(const std::string_view domain,
+                              const std::string_view host);
 
 // Returns true if the given |url_path| path-matches |cookie_path|
 // as described in section 5.1.4 in RFC 6265. This returns true if |cookie_path|
 // and |url_path| are identical, or if |url_path| is a subdirectory of
 // |cookie_path|.
-NET_EXPORT bool IsOnPath(const std::string& cookie_path,
-                         const std::string& url_path);
+NET_EXPORT bool IsOnPath(const std::string_view cookie_path,
+                         const std::string_view url_path);
 
 // Returns the CookiePrefix (or COOKIE_PREFIX_NONE if none) that
 // applies to the given cookie |name|.
