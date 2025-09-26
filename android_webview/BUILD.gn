@@ -627,6 +627,7 @@ if (_is_default_toolchain) {
       ":crash_client_java",
       ":resources",
       "//android_webview/proto:metrics_bridge_records_proto_java",
+      "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
       "//base:base_java",
       "//base:content_uri_utils_java",
       "//base/version_info/android:version_constants_java",

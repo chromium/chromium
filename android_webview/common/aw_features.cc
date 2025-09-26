@@ -282,4 +282,9 @@ BASE_FEATURE(kWebViewEarlyStartupTracing, base::FEATURE_DISABLED_BY_DEFAULT);
 // calling content code.
 BASE_FEATURE(kWebViewEarlyPerfettoInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Caches reflective methods in AndroidX instead of looking them up every time.
+// This should make calling AndroidX methods faster.
+BASE_FEATURE(kWebViewCacheBoundaryInterfaceMethods,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

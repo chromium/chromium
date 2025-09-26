@@ -1158,6 +1158,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "ProbeStylusWritingInBackground",
                 "Offload probing of stylus writing support to a background thread."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_CACHE_BOUNDARY_INTERFACE_METHODS,
+                "Use a cache for reflective method instances in the AndroidX boundary interface"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

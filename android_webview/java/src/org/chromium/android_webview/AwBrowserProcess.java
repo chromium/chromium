@@ -19,9 +19,10 @@ import android.os.Process;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.storage.StorageManager;
+import android.util.LruCache;
+import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
@@ -69,6 +70,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -78,10 +80,12 @@ import org.chromium.content_public.browser.BrowserStartupController.StartupCallb
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.util.Arrays;
 import java.util.List;
@@ -89,6 +93,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /** Wrapper for the steps needed to initialize the java and native sides of webview chromium. */
 @JNINamespace("android_webview")
@@ -268,6 +273,36 @@ public final class AwBrowserProcess {
                 if (classifier != null && AwSupervisedUserSafeModeAction.isSupervisionEnabled()) {
                     classifier.checkIfNeedRestrictedContentBlocking();
                 }
+            }
+
+            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CACHE_BOUNDARY_INTERFACE_METHODS)) {
+                // There are currently less than 200 methods in the boundary interfaces.
+                // This cache should only start evicting elements if the cache keys somehow don't
+                // have value semantics.
+                LruCache<Pair<Method, @Nullable ClassLoader>, @Nullable Method> cache =
+                        new LruCache<>(200) {
+                            @Override
+                            protected void entryRemoved(
+                                    boolean evicted,
+                                    Pair<Method, ClassLoader> key,
+                                    Method oldValue,
+                                    Method newValue) {
+                                super.entryRemoved(evicted, key, oldValue, newValue);
+                                // This is a counting histogram.
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Android.WebView.AndroidX.MethodCacheEviction", true);
+                            }
+                        };
+
+                // The LruCache.get method is final, so we have to do logging of the lookup result
+                // as a separate consumer.
+                Consumer<Boolean> getResultLogger =
+                        gotCacheResult ->
+                                RecordHistogram.recordBooleanHistogram(
+                                        "Android.WebView.AndroidX.MethodCacheGetResult",
+                                        gotCacheResult);
+
+                BoundaryInterfaceReflectionUtil.setMethodCache(cache, getResultLogger);
             }
 
             PostTask.postTask(

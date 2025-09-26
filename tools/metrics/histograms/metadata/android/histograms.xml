@@ -5974,6 +5974,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.AndroidX.MethodCacheEviction" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    This histogram emits true when an entry is evicted from the AndroidX method
+    cache. This histogram never emits false.
+
+    This histogram is not expected to be logged, since the cache should be
+    larger than the number of methods in the boundary interface. It exists as a
+    failure detection signal.
+
+    This histogram is only emitted when the WebViewCacheBoundaryInterfaceMethods
+    feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AndroidX.MethodCacheGetResult"
+    enum="BooleanCacheHit" expires_after="2026-03-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    This histograms records whether a lookup for a cached method in the AndroidX
+    boundary interface method cache was a hit or a miss.
+
+    The purpose is to measure the effectiveness of the method cache.
+
+    This histogram is logged every time a lookup is performed on the method
+    cache, but only when the WebViewCacheBoundaryInterfaceMethods feature is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.AndroidX.Profile.ExtraHeaderAttached"
     enum="BooleanUsage" expires_after="2026-05-01">
   <owner>pbirk@chromium.org</owner>
