@@ -945,9 +945,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.DelayFromOriginalReportTime"
     units="ms" expires_after="2026-02-22">
-  <owner>dmcardle@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the duration of time between a request's original scheduled report
     time and the actual send completion time. This delay may be expected, e.g.
@@ -961,7 +961,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.AggregationService.ScheduledRequests.NumRetriesBeforeSuccess"
-    units="retries" expires_after="2025-12-28">
+    units="retries" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -996,10 +996,10 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Scheduler.TimerFireDelay"
-    units="ms" expires_after="2025-10-26">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the difference between the time the AggregatableReportScheduler
     timer actually fires and when it was supposed to fire. A large positive
@@ -1625,7 +1625,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.BudgetStorage.BeginInitializationCount"
-    units="units" expires_after="2025-11-01">
+    units="units" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1644,7 +1644,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize"
     units="KiB" expires_after="2026-02-01">
-  <owner>dmcardle@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the size of the PrivateAggregationBudgetStorage database on disk.
@@ -1666,10 +1666,10 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 </histogram>
 
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitTime"
-    units="ms" expires_after="2025-12-28">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the time spent initializing the PrivateAggregationBudgetStorage,
     i.e. between running CreateAsync() and FinishInitializationOnMainSequence().
@@ -1707,7 +1707,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
     name="PrivacySandbox.PrivateAggregation.Host.NumContributionMergeKeysInPipe{ApiAndDelay}"
     units="contributions if merged" expires_after="2026-03-01">
   <owner>alexmt@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the number of contributions sent through a host's mojo pipe,
     including contributions dropped due to the contribution limit. (To avoid
@@ -1782,9 +1782,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Host.TimeToGenerateReportRequestWithContextId"
-    units="ms" expires_after="2025-12-28">
-  <owner>dmcardle@chromium.org</owner>
+    units="ms" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the duration of time that elapses from the moment that
     PrivateAggregationHost is notified of a timeout or mojo pipe disconnection
@@ -1821,9 +1821,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.NumContributionMergeKeys{ApiAndDelay}"
-    units="contributions if merged" expires_after="2025-11-01">
+    units="contributions if merged" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the number of contributions processed by one pending contributions
     object (i.e. corresponding to a single mojo pipe of the host), including
@@ -1854,9 +1854,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.NumFinalUnmergedContributions{ApiAndDelay}"
-    units="unmerged contributions" expires_after="2025-11-01">
+    units="unmerged contributions" expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the number of contributions processed by one pending contributions
     object (i.e. corresponding to a single mojo pipe of the host). This does not
@@ -1887,9 +1887,9 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="PrivacySandbox.PrivateAggregation.TruncationResult"
     enum="PrivacySandboxPrivateAggregationTruncationResult"
-    expires_after="2025-11-01">
+    expires_after="2026-05-01">
   <owner>alexmt@chromium.org</owner>
-  <owner>dmcardle@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Record whether truncation was applied to the contributions processed by one
     pending contributions object (i.e. corresponding to a single mojo pipe of
