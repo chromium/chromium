@@ -233,6 +233,10 @@ suite('OtherGoogleDataDialog', function() {
 
     const url = await testOpenWindowProxy.whenCalled('openUrl');
     assertEquals(loadTimeData.getString('myActivityGeminiAppsUrl'), url);
+
+    assertEquals(
+        'Settings.DeleteBrowsingData.GeminiAppsActivityLinkClick',
+        await testMetricsBrowserProxy.whenCalled('recordAction'));
   });
 
   test('GeminiAppsActivityVisibility', async function() {

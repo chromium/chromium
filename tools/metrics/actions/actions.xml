@@ -37168,6 +37168,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.DeleteBrowsingData.GeminiAppsActivityLinkClick">
+  <owner>rainhard@chromium.com</owner>
+  <owner>zalmashni@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    User clicks on the &quot;Gemini Apps Activity&quot; link in the &quot;Other
+    Google data&quot; dialog.
+  </description>
+</action>
+
 <action name="Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick">
   <owner>hkamila@google.com</owner>
   <owner>zalmashni@chromium.org</owner>
