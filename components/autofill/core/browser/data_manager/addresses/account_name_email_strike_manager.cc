@@ -6,10 +6,13 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/prefs/pref_service.h"
 
 namespace autofill {
 
@@ -20,8 +23,26 @@ AccountNameEmailStrikeManager::AccountNameEmailStrikeManager(
 }
 
 AccountNameEmailStrikeManager::~AccountNameEmailStrikeManager() {
-  // TODO(crbug.com/356845298): Use the recorded members to set prefs correctly
-  // in `AccountNameEmailStore`.
+  PrefService* pref_service = client_->GetPrefs();
+  if (!pref_service || !was_name_email_profile_suggestion_shown_) {
+    return;
+  }
+  if (pref_service->GetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed)) {
+    return;
+  }
+
+  if (was_name_email_profile_filled_) {
+    pref_service->SetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed, true);
+    return;
+  }
+
+  // TODO(crbug.com/356845298): React to the pref changes in
+  // `AccountNameEmailStore` and possibly delete the profile.
+  pref_service->SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+      pref_service->GetInteger(
+          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) +
+          1);
 }
 
 void AccountNameEmailStrikeManager::OnSuggestionsShown(

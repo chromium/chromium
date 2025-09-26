@@ -12,9 +12,10 @@ namespace autofill {
 
 // This class is responsible for reacting to suggestions that are offered and
 // filled with `kAccountNameEmail` profiles. On destruction (i.e. navigation)
-// it may notify the `AccountNameEmailStore`, if the suggestion with
-// kAccountNameEmail profile was showed and whether it was filled.
-// Owned by the `BrowserAutofillManger`, destroyed and recreated on navigation.
+// it will record prefs related to the ussage of those suggestions (if the
+// suggestion with kAccountNameEmail profile was showed and whether it was
+// filled). Owned by the `BrowserAutofillManger`, destroyed and recreated on
+// navigation.
 class AccountNameEmailStrikeManager : AutofillManager::Observer {
  public:
   explicit AccountNameEmailStrikeManager(AutofillManager& autofill_manager);
@@ -37,7 +38,7 @@ class AccountNameEmailStrikeManager : AutofillManager::Observer {
  private:
   friend class AccountNameEmailStrikeManagerTestApi;
 
-  base::raw_ref<const AutofillClient> client_;
+  base::raw_ref<AutofillClient> client_;
 
   bool was_name_email_profile_suggestion_shown_ = false;
   bool was_name_email_profile_filled_ = false;

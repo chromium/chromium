@@ -144,6 +144,7 @@ enum {
   kAutofillNameAndEmailProfileNotSelectedCounter = 94,
   kAutofillAiLastVersionDeduped = 96,
   kCrossDeviceOmniboxIsInBottomPosition = 97,
+  kAutofillWasNameAndEmailProfileUsed = 98,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -179,6 +180,11 @@ constexpr auto kCommonSyncablePrefsAllowlist =
           MergeBehavior::kNone}},
         {autofill::prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
          {syncable_prefs_ids::kAutofillNameAndEmailProfileNotSelectedCounter,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+          MergeBehavior::kNone}},
+        {autofill::prefs::kAutofillWasNameAndEmailProfileUsed,
+         {syncable_prefs_ids::kAutofillWasNameAndEmailProfileUsed,
           syncer::PRIORITY_PREFERENCES,
           PrefSensitivity::kExemptFromUserControlWhileSignedIn,
           MergeBehavior::kNone}},

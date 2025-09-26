@@ -78,6 +78,15 @@ TEST_F(AccountNameEmailStrikeManagerTest,
       FormData(), FieldGlobalId(), base::DoNothing());
   EXPECT_FALSE(test_api(GetAccountNameEmailStrikeManager())
                    .was_name_email_profile_suggestion_shown());
+  EXPECT_FALSE(test_api(GetAccountNameEmailStrikeManager())
+                   .was_name_email_profile_filled());
+
+  autofill_manager().Reset();
+  EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+  EXPECT_FALSE(autofill_client().GetPrefs()->GetBoolean(
+      prefs::kAutofillWasNameAndEmailProfileUsed));
 }
 
 TEST_F(AccountNameEmailStrikeManagerTest,
@@ -90,6 +99,13 @@ TEST_F(AccountNameEmailStrikeManagerTest,
                   .was_name_email_profile_suggestion_shown());
   EXPECT_FALSE(test_api(GetAccountNameEmailStrikeManager())
                    .was_name_email_profile_filled());
+
+  autofill_manager().Reset();
+  EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            1);
+  EXPECT_FALSE(autofill_client().GetPrefs()->GetBoolean(
+      prefs::kAutofillWasNameAndEmailProfileUsed));
 }
 
 TEST_F(AccountNameEmailStrikeManagerTest,
@@ -108,6 +124,13 @@ TEST_F(AccountNameEmailStrikeManagerTest,
                   .was_name_email_profile_suggestion_shown());
   EXPECT_FALSE(test_api(GetAccountNameEmailStrikeManager())
                    .was_name_email_profile_filled());
+
+  autofill_manager().Reset();
+  EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            1);
+  EXPECT_FALSE(autofill_client().GetPrefs()->GetBoolean(
+      prefs::kAutofillWasNameAndEmailProfileUsed));
 }
 
 TEST_F(AccountNameEmailStrikeManagerTest,
@@ -126,6 +149,13 @@ TEST_F(AccountNameEmailStrikeManagerTest,
                   .was_name_email_profile_suggestion_shown());
   EXPECT_TRUE(test_api(GetAccountNameEmailStrikeManager())
                   .was_name_email_profile_filled());
+
+  autofill_manager().Reset();
+  EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+  EXPECT_TRUE(autofill_client().GetPrefs()->GetBoolean(
+      prefs::kAutofillWasNameAndEmailProfileUsed));
 }
 
 TEST_F(AccountNameEmailStrikeManagerTest,
@@ -148,6 +178,13 @@ TEST_F(AccountNameEmailStrikeManagerTest,
                   .was_name_email_profile_suggestion_shown());
   EXPECT_FALSE(test_api(GetAccountNameEmailStrikeManager())
                    .was_name_email_profile_filled());
+
+  autofill_manager().Reset();
+  EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            1);
+  EXPECT_FALSE(autofill_client().GetPrefs()->GetBoolean(
+      prefs::kAutofillWasNameAndEmailProfileUsed));
 }
 
 }  // namespace

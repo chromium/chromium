@@ -33,9 +33,6 @@ namespace autofill {
 // (create, update, remove) kAccountNameEmail profile. In code
 // `AccountNameEmailStore` is owned by and has the same lifetime as
 // `AddressDataManager`.
-// TODO(441657422): `AccountNameEmailStrikeManager` should notify this class if
-// a suggestion with kAccountNameEmail profile was showed and whether it was
-// accepted.
 class AccountNameEmailStore : public signin::IdentityManager::Observer,
                               public AddressDataManager::Observer,
                               public syncer::SyncServiceObserver {

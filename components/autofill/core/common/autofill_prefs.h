@@ -118,6 +118,12 @@ inline constexpr char kAutofillNameAndEmailProfileSignature[] =
 // accept `kAccountNameEmail` profile suggestion.
 inline constexpr char kAutofillNameAndEmailProfileNotSelectedCounter[] =
     "autofill.name_and_email_profile_not_selected_counter";
+// Boolean responsible for storing if kAccountNameEmail profile suggestion was
+// filled and submitted. The use_count (and other types of `AutofillProfile`
+// metadata) are not synced for kAccountNameEmail profile, thus making the
+// tracking of the usage pref based.
+inline constexpr char kAutofillWasNameAndEmailProfileUsed[] =
+    "autofill.was_name_and_email_profile_used";
 // Integer that is set to the last major version where the Autocomplete
 // retention policy was run.
 inline constexpr char kAutocompleteLastVersionRetentionPolicy[] =
