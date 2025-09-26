@@ -337,7 +337,8 @@ void VdVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 void VdVideoDecodeAccelerator::OnDecodeDone(int32_t bitstream_buffer_id,
                                             DecoderStatus status) {
-  status.DebugLog(4);
+  DVLOGF(4) << "status: " << status.group() << ":"
+            << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
 

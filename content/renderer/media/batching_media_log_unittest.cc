@@ -248,8 +248,7 @@ TEST_F(BatchingMediaLogTest, OnlyKeepsFirstErrorStringMessage) {
   AddMessage(media::MediaLogMessageLevel::kERROR, "second error");
   log_.NotifyError(media::PipelineStatus(media::DEMUXER_ERROR_DETECTED_HLS));
 
-  ASSERT_EQ(log_.GetErrorMessage(),
-            "PipelineStatus::DEMUXER_ERROR_DETECTED_HLS: first error");
+  ASSERT_EQ(log_.GetErrorMessage(), "DEMUXER_ERROR_DETECTED_HLS: first error");
 }
 
 }  // namespace content

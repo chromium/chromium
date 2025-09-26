@@ -60,11 +60,12 @@ void StatusData::RenderToLogWriter(logging::LogSeverity severity) const {
   DCHECK(line);
 
   auto log_writer = logging::LogMessage(file->c_str(), *line, severity);
-  log_writer.stream() << group;
 
   if (message.size()) {
-    log_writer.stream() << ": " << message;
+    log_writer.stream() << message << ": ";
   }
+
+  log_writer.stream() << group << "::" << static_cast<uint16_t>(code);
 
   if (data.GetDict().size()) {
     log_writer.stream()
