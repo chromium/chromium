@@ -14,6 +14,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager_test_utils.h"
@@ -21,6 +22,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/test_profiles.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -301,6 +303,49 @@ TEST_F(AddressDataManagerTest, GetProfiles_Order) {
                   AddressDataManager::ProfileOrder::kMostRecentlyModifiedDesc),
               testing::ElementsAre(Pointee(profile1), Pointee(profile2),
                                    Pointee(profile3)));
+}
+
+TEST_F(AddressDataManagerTest, GetProfilesToSuggest_NameEmailOrder) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnableSupportForNameAndEmail};
+  base::Time now = base::Time::Now();
+  AutofillProfile profile1 = test::GetFullProfile();
+  profile1.usage_history().set_use_date(now - base::Hours(2));
+  profile1.usage_history().set_use_count(1);
+  AutofillProfile profile2 = test::GetFullProfile2();
+  profile2.usage_history().set_use_date(now);
+  profile2.usage_history().set_use_count(1234);
+  AutofillProfile profile_name_email = test::AccountNameEmailProfile();
+  profile_name_email.usage_history().set_use_date(now - base::Hours(1));
+  profile_name_email.usage_history().set_use_count(1);
+
+  AddProfileToAddressDataManager(profile1);
+  AddProfileToAddressDataManager(profile2);
+  AddProfileToAddressDataManager(profile_name_email);
+
+  // Based solely on the default suggestion order, the `profile_name_email`
+  // should be placed in the middle.
+  ASSERT_THAT(
+      address_data_manager().GetProfiles(
+          AddressDataManager::ProfileOrder::kHighestFrecencyDesc),
+      testing::ElementsAre(Pointee(profile2), Pointee(profile_name_email),
+                           Pointee(profile1)));
+  ASSERT_EQ(
+      prefs_->GetInteger(prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+      0);
+  // Verify that calling the GetProfilesToSuggest() checks the counter, which
+  // will make the `profile_name_email` to be suggested first, because
+  // `prefs::kAutofillNameAndEmailProfileNotSelectedCounter` is 0.
+  EXPECT_THAT(address_data_manager().GetProfilesToSuggest(),
+              testing::ElementsAre(Pointee(profile_name_email),
+                                   Pointee(profile2), Pointee(profile1)));
+
+  prefs_->SetInteger(prefs::kAutofillNameAndEmailProfileNotSelectedCounter, 1);
+  // After the pref changes to a non zero value the kAccountNameEmail should be
+  // last.
+  EXPECT_THAT(address_data_manager().GetProfilesToSuggest(),
+              testing::ElementsAre(Pointee(profile2), Pointee(profile1),
+                                   Pointee(profile_name_email)));
 }
 
 // Test that profiles are not shown if |kAutofillProfileEnabled| is set to

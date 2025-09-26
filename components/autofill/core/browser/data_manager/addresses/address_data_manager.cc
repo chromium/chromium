@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
@@ -233,7 +234,47 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfilesToSuggest()
   if (!IsAutofillProfileEnabled()) {
     return {};
   }
-  return GetProfiles(ProfileOrder::kHighestFrecencyDesc);
+
+  std::vector<const AutofillProfile*> profiles =
+      GetProfiles(ProfileOrder::kHighestFrecencyDesc);
+
+  // If the `pref_service_` doesn't exits the special logic which depends on
+  // prefs shouldn't run.
+  if (!pref_service_) {
+    CHECK_IS_TEST();
+    return profiles;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForNameAndEmail)) {
+    return profiles;
+  }
+
+  // `prefs::kAutofillNameAndEmailProfileNotSelectedCounter` counts how many
+  // times the suggestion for kAccountNameEmail profile was shown and wasn't
+  // accepted.
+  // TODO(crbug.com/441657423): If the profile was accepted, the counter will
+  // remain 0, yet the profile should be moved to the end. This will be fixed
+  // once a pref indicating the acceptance is added.
+  const bool name_email_profile_suggestion_was_shown_before =
+      pref_service_->GetInteger(
+          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) == 0;
+  // Move the kAccountNameEmail profile to the front (or back) depending on
+  // the `name_email_profile_suggestion_was_shown_before`.
+  std::ranges::stable_partition(
+      profiles, [name_email_profile_suggestion_was_shown_before](
+                    const AutofillProfile* p) {
+        bool is_name_email_profile =
+            p->record_type() == AutofillProfile::RecordType::kAccountNameEmail;
+        // stable_partition() moves all elements where the predicate returns
+        // true to the front. The name/email profile should be in front when
+        // it hasn't been used before and in the back otherwise.
+        return name_email_profile_suggestion_was_shown_before
+                   ? is_name_email_profile
+                   : !is_name_email_profile;
+      });
+
+  return profiles;
 }
 
 std::vector<const AutofillProfile*> AddressDataManager::GetProfilesForSettings()

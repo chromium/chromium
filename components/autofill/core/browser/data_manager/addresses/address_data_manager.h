@@ -131,6 +131,8 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
 
   // Returns the profiles to suggest to the user for filling, ordered by
   // frecency.
+  // If kAccountNameEmail is present in `profiles_`, it is always moved to the
+  // end of the vector unless this is the first time it is suggested.
   std::vector<const AutofillProfile*> GetProfilesToSuggest() const;
 
   // Returns all `GetProfiles()` in the order that the should be shown in the
