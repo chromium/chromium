@@ -25,7 +25,8 @@ found in the LICENSE file.
             android:hint="@string/sync_enter_custom_passphrase_hint"
             android:inputType="textPassword"
             android:singleLine="true"
-            android:imeOptions="actionNext" />
+            android:imeOptions="actionNext"
+            android:textAlignment="viewStart" />
         <!--
         Sets this TextView as a polite accessibility live region. Changes to
         its text, such as "Verifying..." or "Incorrect passphrase", will be
