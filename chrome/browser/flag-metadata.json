@@ -4863,11 +4863,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enforce-system-echo-cancellation",
-    "owners": ["henrika@chromium.org", "olka@chromium.org" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "enhanced-calendar",
     "owners": [
       "nicolasmacbeth@google.com",

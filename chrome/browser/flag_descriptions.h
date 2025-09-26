@@ -3595,9 +3595,6 @@ extern const char kBlockRootWindowAccessibleNameChangeEventDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-extern const char kEnforceSystemEchoCancellationName[];
-extern const char kEnforceSystemEchoCancellationDescription[];
-
 extern const char kLocationProviderManagerName[];
 extern const char kLocationProviderManagerDescription[];
 
