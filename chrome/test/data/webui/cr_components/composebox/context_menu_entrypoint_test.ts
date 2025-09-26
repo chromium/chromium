@@ -62,7 +62,9 @@ suite('ContextMenuEntrypoint', () => {
         // Arrange.
         const refreshTabs =
             eventToPromise('refresh-tab-suggestions', entrypoint);
-        entrypoint.tabSuggestions = [
+        $$(entrypoint, '#entrypoint')!.click();
+        const e = await refreshTabs;
+        e.detail.onRefreshComplete([
           {
             title: 'Tab 1',
             url: {url: 'https://www.google.com'},
@@ -75,10 +77,7 @@ suite('ContextMenuEntrypoint', () => {
             tabId: 2,
             lastActive: { internalValue: BigInt(2) },
           },
-        ];
-        $$(entrypoint, '#entrypoint')!.click();
-        const e = await refreshTabs;
-        e.detail.onRefreshComplete();
+        ]);
         await microtasksFinished();
         assertTrue(entrypoint.$.menu.open);
 

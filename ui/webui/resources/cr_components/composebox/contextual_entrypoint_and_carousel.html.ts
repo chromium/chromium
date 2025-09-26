@@ -1,0 +1,82 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import '//resources/cr_elements/cr_icons.css.js';
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoint_and_carousel.js';
+
+export function getHtml(this: ContextualEntrypointAndCarouselElement) {
+  // clang-format off
+  return html`<!--_html_template_start_-->
+  ${this.showFileCarousel_ ? html`
+    <ntp-composebox-file-carousel
+      id="carousel"
+      .files=${Array.from(this.files_.values())}
+      @delete-file=${this.onDeleteFile_}>
+    </ntp-composebox-file-carousel> ` : ''}
+  ${this.showDropdown && this.showFileCarousel_ ? html`
+  <div class="carousel-divider"></div>` : ''}
+  <!-- Suggestions are slotted in from the parent component. -->
+  <slot id="dropdownMatches"></slot>
+  ${this.contextMenuEnabled_ ? html`
+    <div id="contextMenuContainer">
+      <composebox-context-menu-entrypoint id="contextEntrypoint"
+          class="upload-icon no-overlap"
+          @open-image-upload="${this.openImageUpload_}"
+          @open-file-upload="${this.openFileUpload_}"
+          @add-tab-context="${this.addTabContext_}"
+          @deep-search-click="${this.onDeepSearchClick_}"
+          ?inputs-disabled="${this.inputsDisabled_}"
+          ?show-context-menu-description="${this.showContextMenuDescription_}">
+      </composebox-context-menu-entrypoint>
+    ${this.inDeepSearchMode_ ? html`
+      <cr-button id="deepSearchButton" class="upload-icon no-overlap"
+          @click="${this.onDeepSearchClick_}">
+        <div class="icon-container" slot="prefix-icon">
+          <cr-icon class="deep-search-icon" icon="composebox:deepSearch">
+          </cr-icon>
+          <cr-icon class="close-icon" icon="cr:close"></cr-icon>
+        </div>
+        <div>${this.i18n('deepSearch')}</div>
+      </cr-button>` : ''}
+    </div>
+  ` : html`
+    <div id="uploadContainer" class="icon-fade">
+        <cr-icon-button
+            class="upload-icon no-overlap"
+            id="imageUploadButton"
+            iron-icon="composebox:imageUpload"
+            title="${this.i18n('composeboxImageUploadButtonTitle')}"
+            .disabled="${this.inputsDisabled_}"
+            @click="${this.openImageUpload_}">
+        </cr-icon-button>
+        ${this.composeboxShowPdfUpload_ ? html`
+        <cr-icon-button
+            class="upload-icon no-overlap"
+            id="fileUploadButton"
+            iron-icon="composebox:fileUpload"
+            title="${this.i18n('composeboxPdfUploadButtonTitle')}"
+            .disabled="${this.inputsDisabled_}"
+            @click="${this.openFileUpload_}">
+        </cr-icon-button>
+        `: ''}
+    </div>
+  `}
+  <input type="file"
+      accept="${this.imageFileTypes_}"
+      id="imageInput"
+      @change="${this.onFileChange_}"
+      hidden>
+  </input>
+  <input type="file"
+      accept="${this.attachmentFileTypes_}"
+      id="fileInput"
+      @change="${this.onFileChange_}"
+      hidden>
+  </input>
+<!--_html_template_end_-->`;
+  // clang-format on
+}

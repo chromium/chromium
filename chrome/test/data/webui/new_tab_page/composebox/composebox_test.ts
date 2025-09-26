@@ -82,8 +82,9 @@ suite('NewTabPageComposeboxTest', () => {
   }
 
   function getInputForFileType(fileType: string): HTMLInputElement {
-    return fileType === 'application/pdf' ? composeboxElement.$.fileInput :
-                                            composeboxElement.$.imageInput;
+    return fileType === 'application/pdf' ?
+        composeboxElement.$.context.$.fileInput :
+        composeboxElement.$.context.$.imageInput;
   }
 
   function getMockFileChangeEventForType(fileType: string): Event {
@@ -94,7 +95,7 @@ suite('NewTabPageComposeboxTest', () => {
     const mockFileChange = new Event('change', {bubbles: true});
     Object.defineProperty(mockFileChange, 'target', {
       writable: false,
-      value: composeboxElement.$.imageInput,
+      value: composeboxElement.$.context.$.imageInput,
     });
     return mockFileChange;
   }
@@ -165,7 +166,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   async function uploadFileAndVerify(token: Object, file: File) {
     // Assert no files.
-    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+    assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
 
     searchboxHandler.setResultFor(ADD_FILE_CONTEXT_FN,
                                   Promise.resolve({token: token}));
@@ -187,7 +188,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   async function verifyFileUpload(file: File) {
     // Assert one file.
-    const files = composeboxElement.$.carousel.files;
+    const files = composeboxElement.$.context.$.carousel.files;
     assertEquals(files.length, 1);
 
     assertEquals(files[0]!.type, file.type);
@@ -218,15 +219,15 @@ suite('NewTabPageComposeboxTest', () => {
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(
         new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
-    composeboxElement.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.context.$.fileInput.dispatchEvent(new Event('change'));
 
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
     // Check submit button enabled and file uploaded.
     assertStyle(composeboxElement.$.submitIcon, 'cursor', 'pointer');
-    assertEquals(composeboxElement.$.carousel.files.length, 1);
+    assertEquals(composeboxElement.$.context.$.carousel.files.length, 1);
 
     // Clear input.
     $$<HTMLElement>(composeboxElement, '#cancelIcon')!.click();
@@ -237,7 +238,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Check submit button disabled and files empty.
     assertStyle(composeboxElement.$.submitIcon, 'cursor', 'default');
-    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+    assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
 
     // Close composebox.
     const whenCloseComposebox =
@@ -280,14 +281,15 @@ suite('NewTabPageComposeboxTest', () => {
         id, FileUploadStatus.kUploadSuccessful, null);
 
     // Delete the uploaded file.
-    const deletedId = composeboxElement.$.carousel.files[0]!.uuid;
-    composeboxElement.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
-      detail: {
-        uuid: deletedId,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    const deletedId = composeboxElement.$.context.$.carousel.files[0]!.uuid;
+    composeboxElement.$.context.$.carousel.dispatchEvent(
+        new CustomEvent('delete-file', {
+          detail: {
+            uuid: deletedId,
+          },
+          bubbles: true,
+          composed: true,
+        }));
 
     await microtasksFinished();
 
@@ -399,7 +401,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert no files uploaded or rendered on the carousel
     assertEquals(searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
-    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+    assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
     assertEquals(
         1,
         metrics.count(
@@ -425,7 +427,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert no files uploaded or rendered on the carousel
     assertEquals(searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN), 0);
-    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+    assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
     assertEquals(
         1,
         metrics.count(
@@ -459,7 +461,8 @@ suite('NewTabPageComposeboxTest', () => {
           await searchboxCallbackRouterRemote.$.flushForTesting();
 
           // Assert no files in the carousel.
-          assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+          assertFalse(
+              !!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
         });
   });
 
@@ -470,20 +473,21 @@ suite('NewTabPageComposeboxTest', () => {
         Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // Assert no files.
-    assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+    assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
 
     // Arrange.
     const dataTransfer = new DataTransfer();
     const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
     dataTransfer.items.add(file);
-    composeboxElement.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.context.$.fileInput.dispatchEvent(
+        new Event('change'));
 
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
     // Assert one pdf file.
-    const files = composeboxElement.$.carousel.files;
+    const files = composeboxElement.$.context.$.carousel.files;
     assertEquals(files.length, 1);
     assertEquals(files[0]!.type, 'application/pdf');
     assertEquals(files[0]!.name, 'foo.pdf');
@@ -496,7 +500,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert file is uploaded.
     assertEquals(searchboxHandler.getCallCount(ADD_FILE_CONTEXT_FN), 1);
-    const [[fileInfo, fileData]] = searchboxHandler.getArgs(ADD_FILE_CONTEXT_FN);
+    const [[fileInfo, fileData]] =
+        searchboxHandler.getArgs(ADD_FILE_CONTEXT_FN);
     assertEquals(fileInfo.fileName, 'foo.pdf');
     assertDeepEquals(fileData.bytes, fileArray);
   });
@@ -522,33 +527,34 @@ suite('NewTabPageComposeboxTest', () => {
     const mockFileChange = new Event('change', {bubbles: true});
     Object.defineProperty(mockFileChange, 'target', {
       writable: false,
-      value: composeboxElement.$.fileInput,
+      value: composeboxElement.$.context.$.fileInput,
     });
 
-    composeboxElement.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.fileInput.dispatchEvent(mockFileChange);
+    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.context.$.fileInput.dispatchEvent(mockFileChange);
 
     await waitForAddFileCallCount(2);
     await composeboxElement.updateComplete;
     await microtasksFinished();
 
     // Assert two files are present initially.
-    assertEquals(composeboxElement.$.carousel.files.length, 2);
+    assertEquals(composeboxElement.$.context.$.carousel.files.length, 2);
 
     // Act.
-    const deletedId = composeboxElement.$.carousel.files[0]!.uuid;
-    composeboxElement.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
-      detail: {
-        uuid: deletedId,
-      },
-      bubbles: true,
-      composed: true,
-    }));
+    const deletedId = composeboxElement.$.context.$.carousel.files[0]!.uuid;
+    composeboxElement.$.context.$.carousel.dispatchEvent(
+        new CustomEvent('delete-file', {
+          detail: {
+            uuid: deletedId,
+          },
+          bubbles: true,
+          composed: true,
+        }));
 
     await microtasksFinished();
 
     // Assert.
-    assertEquals(composeboxElement.$.carousel.files.length, 1);
+    assertEquals(composeboxElement.$.context.$.carousel.files.length, 1);
     assertEquals(searchboxHandler.getCallCount('deleteContext'), 1);
     const [idArg] = searchboxHandler.getArgs('deleteContext');
     assertEquals(idArg, deletedId);
@@ -569,9 +575,9 @@ suite('NewTabPageComposeboxTest', () => {
       'composeboxShowContextMenu': false,
     });
     createComposeboxElement();
-    const imageUploadEventPromise =
-        eventToPromise('click', composeboxElement.$.imageInput);
-    composeboxElement.$.imageUploadButton.click();
+    const imageUploadEventPromise = eventToPromise(
+        'click', composeboxElement.$.context.$.imageInput);
+    composeboxElement.$.context.$.imageUploadButton.click();
 
     // Assert.
     await imageUploadEventPromise;
@@ -583,9 +589,9 @@ suite('NewTabPageComposeboxTest', () => {
       'composeboxShowContextMenu': false,
     });
     createComposeboxElement();
-    const fileUploadClickEventPromise =
-        eventToPromise('click', composeboxElement.$.fileInput);
-    composeboxElement.$.fileUploadButton.click();
+    const fileUploadClickEventPromise = eventToPromise(
+        'click', composeboxElement.$.context.$.fileInput);
+    composeboxElement.$.context.$.fileUploadButton.click();
 
     // Assert.
     await fileUploadClickEventPromise;
@@ -598,7 +604,8 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert
     assertFalse(
-        !!composeboxElement.shadowRoot.querySelector('#fileUploadButton'));
+        !!composeboxElement.$.context.shadowRoot.querySelector(
+            '#fileUploadButton'));
   });
 
   test('file upload buttons disabled when max files uploaded', async () => {
@@ -610,22 +617,22 @@ suite('NewTabPageComposeboxTest', () => {
         Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
     // File upload buttons are not disabled when there are no files.
-    assertFalse(composeboxElement.$.fileUploadButton.disabled);
-    assertFalse(composeboxElement.$.imageUploadButton.disabled);
+    assertFalse(composeboxElement.$.context.$.fileUploadButton.disabled);
+    assertFalse(composeboxElement.$.context.$.imageUploadButton.disabled);
 
     // Arrange.
     const dataTransfer = new DataTransfer();
     const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
     dataTransfer.items.add(file);
-    composeboxElement.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.fileInput.dispatchEvent(new Event('change'));
+    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
+    composeboxElement.$.context.$.fileInput.dispatchEvent(new Event('change'));
 
     await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
     await microtasksFinished();
 
     // Assert.
-    assertTrue(composeboxElement.$.fileUploadButton.disabled);
-    assertTrue(composeboxElement.$.imageUploadButton.disabled);
+    assertTrue(composeboxElement.$.context.$.fileUploadButton.disabled);
+    assertTrue(composeboxElement.$.context.$.imageUploadButton.disabled);
   });
 
   test('session abandoned on esc click', async () => {
@@ -1268,9 +1275,11 @@ suite('NewTabPageComposeboxTest', () => {
     test('context button replaces upload container', () => {
       createComposeboxElement();
 
-      const uploadContainer = $$(composeboxElement, '#uploadContainer');
+      const uploadContainer = $$(
+          composeboxElement.$.context, '#uploadContainer');
       assertFalse(!!uploadContainer);
-      const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
+      const contextMenuButton = $$(
+          composeboxElement.$.context, '#contextEntrypoint');
       assertTrue(!!contextMenuButton);
     });
 
@@ -1281,9 +1290,10 @@ suite('NewTabPageComposeboxTest', () => {
           Promise.resolve({token: {low: BigInt(1), high: BigInt(2)}}));
 
       // Assert no files.
-      assertFalse(!!$$<HTMLElement>(composeboxElement, '#carousel'));
+      assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
 
-      const contextMenuButton = $$(composeboxElement, '#contextEntrypoint');
+      const contextMenuButton = $$(
+          composeboxElement.$.context, '#contextEntrypoint');
       assertTrue(!!contextMenuButton);
       const sampleTabTitle = 'Sample Tab';
       contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
@@ -1294,7 +1304,7 @@ suite('NewTabPageComposeboxTest', () => {
 
       await searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
       await microtasksFinished();
-      const files = composeboxElement.$.carousel.files;
+      const files = composeboxElement.$.context.$.carousel.files;
       assertEquals(files.length, 1);
       assertEquals(files[0]!.type, 'tab');
       assertEquals(files[0]!.name, sampleTabTitle);

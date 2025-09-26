@@ -27,9 +27,9 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     `}
 
   <cr-action-menu id="menu" role-description="${this.i18n('menu')}">
-    ${this.tabSuggestions.length > 0 ? html`
+    ${this.tabSuggestions_.length > 0 ? html`
       <h4 id="tabHeader">${this.i18n('addTab')}</h4>
-      ${this.tabSuggestions.map((tab, index) => html`
+      ${this.tabSuggestions_.map((tab, index) => html`
         <button class="dropdown-item" title="${tab.title}"
             data-index="${index}" @click="${this.addTabContext}">
           <composebox-tab-favicon .url="${tab.url.url}">

@@ -49,7 +49,7 @@ export class ContextMenuEntrypointElement extends
     return {
       inputsDisabled: {type: Boolean},
       showContextMenuDescription: {type: Boolean},
-      tabSuggestions: {type: Array},
+      tabSuggestions_: {type: Array},
       showDeepSearch_ : {
         reflect: true,
         type: Boolean,
@@ -59,7 +59,7 @@ export class ContextMenuEntrypointElement extends
 
   accessor inputsDisabled: boolean = false;
   accessor showContextMenuDescription: boolean = false;
-  accessor tabSuggestions: TabInfo[] = [];
+  protected accessor tabSuggestions_: TabInfo[] = [];
   protected accessor showDeepSearch_: boolean =
       loadTimeData.getBoolean('composeboxShowDeepSearchButton');
 
@@ -69,7 +69,8 @@ export class ContextMenuEntrypointElement extends
 
   protected onEntrypointClick_() {
     this.fire('refresh-tab-suggestions', {
-      onRefreshComplete: () => {
+      onRefreshComplete: (tabs: TabInfo[]) => {
+        this.tabSuggestions_ = tabs;
         const entrypoint =
             this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
         assert(entrypoint);
@@ -78,15 +79,14 @@ export class ContextMenuEntrypointElement extends
           width: MENU_WIDTH_PX,
           anchorAlignmentX: AnchorAlignment['AFTER_START'],
         });
-      },
-    });
+      }});
   }
 
   protected addTabContext(e: Event) {
     e.stopPropagation();
 
     const tabElement = e.currentTarget! as HTMLButtonElement;
-    const tabInfo = this.tabSuggestions[Number(tabElement.dataset['index'])];
+    const tabInfo = this.tabSuggestions_[Number(tabElement.dataset['index'])];
 
     if (!tabInfo) {
       return;
