@@ -289,6 +289,7 @@ BASE_FEATURE(kGlicActor, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicActorUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kGlicActorUiTaskIconName[] = "glic-actor-ui-task-icon";
+const char kGlicActorUiNudgeRedesignName[] = "glic-actor-ui-nudge-redesign";
 const char kGlicActorUiOverlayName[] = "glic-actor-ui-overlay";
 const char kGlicActorUiOverlayMagicCursorName[] =
     "glic-actor-ui-overlay-magic-cursor";
@@ -302,6 +303,10 @@ const char kGlicActorUiCompletedTaskExpiryDelaySecondsName[] =
 // Controls whether the task icon in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiTaskIcon{
     &kGlicActorUi, kGlicActorUiTaskIconName, true};
+// Controls whether the new Nudge UI is enabled. No-op if `kGlicActorUiTaskIcon`
+// is false.
+const base::FeatureParam<bool> kGlicActorUiNudgeRedesign{
+    &kGlicActorUi, kGlicActorUiNudgeRedesignName, false};
 // Controls whether the Actor Overlay in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiOverlay{
     &kGlicActorUi, kGlicActorUiOverlayName, true};

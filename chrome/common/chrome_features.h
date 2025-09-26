@@ -223,6 +223,8 @@ COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicActorUi);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiTaskIconName[];
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const char kGlicActorUiNudgeRedesignName[];
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiOverlayName[];
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const char kGlicActorUiOverlayMagicCursorName[];
@@ -239,6 +241,8 @@ extern const char kGlicActorUiCompletedTaskExpiryDelaySecondsName[];
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiTaskIcon);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiNudgeRedesign);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiOverlay);
 COMPONENT_EXPORT(CHROME_FEATURES)
