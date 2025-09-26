@@ -10,11 +10,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
-#include "content/public/test/browser_task_environment.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,17 +51,22 @@ void OnNotificationClosed(bool expected_by_user, bool by_user) {
 }
 
 class ExtensionRequestNotificationTest
-    : public BrowserWithTestWindowTest,
+    : public InProcessBrowserTest,
       public testing::WithParamInterface<
           ExtensionRequestNotification::NotifyType> {
  public:
   ExtensionRequestNotificationTest() = default;
   ~ExtensionRequestNotificationTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     display_service_tester_ =
-        std::make_unique<NotificationDisplayServiceTester>(profile());
+        std::make_unique<NotificationDisplayServiceTester>(GetProfile());
+  }
+
+  void TearDownOnMainThread() override {
+    display_service_tester_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   ExtensionRequestNotification::NotifyType GetNotifyType() {
@@ -81,9 +88,10 @@ INSTANTIATE_TEST_SUITE_P(
                       ExtensionRequestNotification::kRejected,
                       ExtensionRequestNotification::kForceInstalled));
 
-TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
+IN_PROC_BROWSER_TEST_P(ExtensionRequestNotificationTest,
+                       HasExtensionAndClickedByUser) {
   ExtensionRequestNotification request_notification(
-      profile(), GetNotifyType(),
+      GetProfile(), GetNotifyType(),
       ExtensionRequestNotification::ExtensionIds({kFakeExtensionId}));
   base::RunLoop show_run_loop;
   display_service_tester_->SetNotificationAddedClosure(
@@ -110,13 +118,15 @@ TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClickedByUser) {
   EXPECT_FALSE(GetNotification().has_value());
   std::string expected_url =
       std::string(kChromeWebstoreUrl) + std::string(kFakeExtensionId);
-  EXPECT_EQ(GURL(expected_url),
-            browser()->tab_strip_model()->GetWebContentsAt(0)->GetVisibleURL());
+  EXPECT_EQ(
+      GURL(expected_url),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
-TEST_P(ExtensionRequestNotificationTest, HasExtensionAndClosedByBrowser) {
+IN_PROC_BROWSER_TEST_P(ExtensionRequestNotificationTest,
+                       HasExtensionAndClosedByBrowser) {
   ExtensionRequestNotification request_notification(
-      profile(), GetNotifyType(),
+      GetProfile(), GetNotifyType(),
       ExtensionRequestNotification::ExtensionIds({kFakeExtensionId}));
   base::RunLoop show_run_loop;
   display_service_tester_->SetNotificationAddedClosure(
