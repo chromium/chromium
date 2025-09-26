@@ -29,7 +29,7 @@ MockLibraryCdm::MockLibraryCdm(HostInterface* host,
 }
 
 MockLibraryCdm::~MockLibraryCdm() {
-  DCHECK(g_mock_library_cdm);
+  CHECK(g_mock_library_cdm);
   g_mock_library_cdm = nullptr;
 }
 
@@ -49,7 +49,7 @@ void* CreateMockLibraryCdm(int cdm_interface_version,
                            GetCdmHostFunc get_cdm_host_func,
                            void* user_data) {
   DVLOG(1) << __func__;
-  DCHECK(!g_mock_library_cdm);
+  CHECK(!g_mock_library_cdm);
 
   std::string key_system_string(key_system, key_system_size);
 

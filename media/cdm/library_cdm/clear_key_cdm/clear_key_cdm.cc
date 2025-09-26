@@ -72,7 +72,7 @@ static bool g_is_cdm_module_initialized = false;
 static scoped_refptr<media::DecoderBuffer> CopyDecoderBufferFrom(
     const cdm::InputBuffer_2& input_buffer) {
   if (!input_buffer.data) {
-    DCHECK(!input_buffer.data_size);
+    CHECK(!input_buffer.data_size);
     return media::DecoderBuffer::CreateEOSBuffer();
   }
 
@@ -348,7 +348,7 @@ ClearKeyCdm::ClearKeyCdm(HostInterface* host, const std::string& key_system)
           base::BindRepeating(&ClearKeyCdm::OnSessionExpirationUpdate,
                               base::Unretained(this)))),
       key_system_(key_system) {
-  DCHECK(g_is_cdm_module_initialized);
+  CHECK(g_is_cdm_module_initialized);
 }
 
 ClearKeyCdm::~ClearKeyCdm() = default;
@@ -425,7 +425,7 @@ void ClearKeyCdm::LoadSession(uint32_t promise_id,
                               uint32_t session_id_length) {
   DVLOG(1) << __func__;
   DCHECK_EQ(session_type, cdm::kPersistentLicense);
-  DCHECK(allow_persistent_state_);
+  CHECK(allow_persistent_state_);
   std::string web_session_str(session_id, session_id_length);
 
   auto promise = std::make_unique<CdmCallbackPromise<std::string>>(
@@ -541,7 +541,7 @@ void ClearKeyCdm::SetServerCertificate(uint32_t promise_id,
 
 void ClearKeyCdm::TimerExpired(void* context) {
   DVLOG(1) << __func__;
-  DCHECK(has_set_timer_);
+  CHECK(has_set_timer_);
   std::string renewal_message;
 
   if (key_system_ == kExternalClearKeyMessageTypeTestKeySystem) {
@@ -575,7 +575,7 @@ static void CopyDecryptResults(Decryptor::Status* status_copy,
 cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
                                  cdm::DecryptedBlock* decrypted_block) {
   DVLOG(1) << __func__;
-  DCHECK(encrypted_buffer.data);
+  CHECK(encrypted_buffer.data);
 
   scoped_refptr<DecoderBuffer> buffer;
   cdm::Status status = DecryptToMediaDecoderBuffer(encrypted_buffer, &buffer);
@@ -585,7 +585,7 @@ cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
   }
 
   auto buffer_span = base::span(*buffer);
-  DCHECK(!buffer_span.empty());
+  CHECK(!buffer_span.empty());
   decrypted_block->SetDecryptedBuffer(
       cdm_host_proxy_->Allocate(buffer_span.size()));
   memcpy(reinterpret_cast<void*>(decrypted_block->DecryptedBuffer()->Data()),
@@ -758,7 +758,7 @@ void ClearKeyCdm::ScheduleNextTimer() {
 cdm::Status ClearKeyCdm::DecryptToMediaDecoderBuffer(
     const cdm::InputBuffer_2& encrypted_buffer,
     scoped_refptr<DecoderBuffer>* decrypted_buffer) {
-  DCHECK(decrypted_buffer);
+  CHECK(decrypted_buffer);
 
   scoped_refptr<DecoderBuffer> buffer = CopyDecoderBufferFrom(encrypted_buffer);
 

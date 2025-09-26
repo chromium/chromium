@@ -258,7 +258,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   }
 
   if (!output_timestamp_helper_->base_timestamp() && !is_end_of_stream) {
-    DCHECK(timestamp != kNoTimestamp);
+    CHECK(timestamp != kNoTimestamp);
     output_timestamp_helper_->SetBaseTimestamp(timestamp);
   }
 

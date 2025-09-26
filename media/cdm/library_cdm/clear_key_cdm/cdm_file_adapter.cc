@@ -35,9 +35,9 @@ CdmFileAdapter::CdmFileAdapter(CdmHostProxy* cdm_host_proxy) {
 }
 
 CdmFileAdapter::~CdmFileAdapter() {
-  DCHECK(!open_cb_);
-  DCHECK(!read_cb_);
-  DCHECK(!write_cb_);
+  CHECK(!open_cb_);
+  CHECK(!read_cb_);
+  CHECK(!write_cb_);
   file_io_->Close();
 }
 

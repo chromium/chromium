@@ -341,7 +341,7 @@ void ClearKeyPersistentSessionCdm::OnFileWrittenForRemoveSession(
     std::unique_ptr<CdmFileAdapter> file,
     std::unique_ptr<SimpleCdmPromise> promise,
     bool success) {
-  DCHECK(success);
+  CHECK(success);
 }
 
 CdmContext* ClearKeyPersistentSessionCdm::GetCdmContext() {
