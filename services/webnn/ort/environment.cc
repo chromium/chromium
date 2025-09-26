@@ -425,10 +425,39 @@ const OrtEpDevice* SelectFirstEpDeviceForDeviceType(
   return nullptr;
 }
 
-// Select the first CPU device and also append the default CPU EP device if the
-// selected device is not the default one.
+// Returns true if the EP name and hardware vendor id of both devices match.
+// Used for selecting a device that is compatible with another device.
+// Note: The order of lhs_device and rhs_device does not matter.
+bool MatchEpNameAndHardwareVendor(const OrtEpDevice* lhs_device,
+                                  const OrtEpDevice* rhs_device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  const char* lhs_ep_name = ort_api->EpDevice_EpName(lhs_device);
+  const char* rhs_ep_name = ort_api->EpDevice_EpName(rhs_device);
+  // SAFETY: ORT guarantees that EP names are valid and null-terminated.
+  base::cstring_view lhs_ep_name_view =
+      UNSAFE_BUFFERS(base::cstring_view(lhs_ep_name));
+  base::cstring_view rhs_ep_name_view =
+      UNSAFE_BUFFERS(base::cstring_view(rhs_ep_name));
+  if (lhs_ep_name_view != rhs_ep_name_view) {
+    return false;
+  }
+
+  uint32_t lhs_vendor_id =
+      ort_api->HardwareDevice_VendorId(ort_api->EpDevice_Device(lhs_device));
+  uint32_t rhs_vendor_id =
+      ort_api->HardwareDevice_VendorId(ort_api->EpDevice_Device(rhs_device));
+  return lhs_vendor_id == rhs_vendor_id;
+}
+
+// If `primary_device` is nullptr, selects the first CPU device.
+// If `primary_device` is not nullptr, selects the first CPU device that matches
+// the hardware vendor id and EP name of `primary_device`.
+// In both cases, also appends the default CPU EP device if the selected device
+// is not the default one.
 std::vector<const OrtEpDevice*> SelectEpDevicesForCpu(
-    base::span<const OrtEpDevice* const> sorted_devices) {
+    base::span<const OrtEpDevice* const> sorted_devices,
+    const OrtEpDevice* primary_device = nullptr) {
   std::vector<const OrtEpDevice*> selected_devices;
 
   const OrtEpDevice* first_cpu = SelectFirstEpDeviceForDeviceType(
@@ -440,7 +469,10 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForCpu(
     return selected_devices;
   }
 
-  selected_devices.push_back(first_cpu);
+  if (!primary_device || (primary_device && MatchEpNameAndHardwareVendor(
+                                                primary_device, first_cpu))) {
+    selected_devices.push_back(first_cpu);
+  }
 
   // Add the default CPU EP device to ensure maximum coverage of opsets and
   // operators.
@@ -455,17 +487,21 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForCpu(
 // Select the first GPU device with CPU fallback.
 std::vector<const OrtEpDevice*> SelectEpDevicesForGpu(
     base::span<const OrtEpDevice* const> sorted_devices) {
-  std::vector<const OrtEpDevice*> selected_devices;
-
   const OrtEpDevice* first_gpu = SelectFirstEpDeviceForDeviceType(
       sorted_devices, OrtHardwareDeviceType_GPU);
 
-  if (first_gpu) {
-    selected_devices.push_back(first_gpu);
+  if (!first_gpu) {
+    return SelectEpDevicesForCpu(sorted_devices);
   }
 
+  std::vector<const OrtEpDevice*> selected_devices;
+  selected_devices.push_back(first_gpu);
+
+  // To ensure the maximum compatibility of CPU fallback, always add the ORT CPU
+  // EP, but only add an additional CPU EP from the same vendor as the GPU
+  // device.
   std::vector<const OrtEpDevice*> cpu_fallback_devices =
-      SelectEpDevicesForCpu(sorted_devices);
+      SelectEpDevicesForCpu(sorted_devices, first_gpu);
   selected_devices.insert(selected_devices.end(), cpu_fallback_devices.begin(),
                           cpu_fallback_devices.end());
 
@@ -487,8 +523,11 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForNpu(
   std::vector<const OrtEpDevice*> selected_devices;
   selected_devices.push_back(first_npu);
 
+  // To ensure the maximum compatibility of CPU fallback, always add the ORT CPU
+  // EP, but only add an additional CPU EP from the same vendor as the NPU
+  // device.
   std::vector<const OrtEpDevice*> cpu_fallback_devices =
-      SelectEpDevicesForCpu(sorted_devices);
+      SelectEpDevicesForCpu(sorted_devices, first_npu);
   selected_devices.insert(selected_devices.end(), cpu_fallback_devices.begin(),
                           cpu_fallback_devices.end());
 
