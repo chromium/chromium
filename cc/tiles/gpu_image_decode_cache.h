@@ -480,32 +480,6 @@ class CC_EXPORT GpuImageDecodeCache
       return transfer_cache_id_;
     }
 
-    sk_sp<SkImage> take_unmipped_image() {
-      DCHECK(!is_locked_);
-      return std::move(unmipped_image_);
-    }
-
-    sk_sp<SkImage> take_unmipped_y_image() {
-      return take_unmipped_yuv_image_internal(YUVIndex::kY);
-    }
-
-    sk_sp<SkImage> take_unmipped_u_image() {
-      return take_unmipped_yuv_image_internal(YUVIndex::kU);
-    }
-
-    sk_sp<SkImage> take_unmipped_v_image() {
-      return take_unmipped_yuv_image_internal(YUVIndex::kV);
-    }
-
-    sk_sp<SkImage> take_unmipped_yuv_image_internal(const YUVIndex yuv_index) {
-      DCHECK(!is_locked_);
-      const size_t index = static_cast<size_t>(yuv_index);
-      if (unmipped_yuv_images_ && unmipped_yuv_images_->size() > index) {
-        return std::move(unmipped_yuv_images_->at(index));
-      }
-      return nullptr;
-    }
-
    private:
     // Used for internal DCHECKs only.
     enum class Mode {
@@ -547,13 +521,6 @@ class CC_EXPORT GpuImageDecodeCache
 
     // Used if |mode_| == kTransferCache.
     std::optional<uint32_t> transfer_cache_id_;
-
-    // The original un-mipped image, for RGBX, or the representative image
-    // backed by three planes for YUV. It is retained until it can be safely
-    // deleted.
-    sk_sp<SkImage> unmipped_image_;
-    // Used for YUV decoding and null otherwise.
-    std::optional<YUVSkImages> unmipped_yuv_images_;
   };
 
   // A structure to represent either an RGBA or a YUVA image info.

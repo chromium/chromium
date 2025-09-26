@@ -2756,27 +2756,7 @@ void GpuImageDecodeCache::UnlockImage(ImageData* image_data) {
   DCHECK(image_data->HasUploadedData());
   ids_pending_unlock_.push_back(*image_data->upload.transfer_cache_id());
   image_data->upload.OnUnlock();
-
-  // If we were holding onto an unmipped image for deferring deletion, do it now
-  // it is guaranteed to have no-refs.
-  auto unmipped_image = image_data->upload.take_unmipped_image();
-  if (unmipped_image) {
-    if (image_data->info.yuva.has_value()) {
-      auto unmipped_y_image = image_data->upload.take_unmipped_y_image();
-      auto unmipped_u_image = image_data->upload.take_unmipped_u_image();
-      auto unmipped_v_image = image_data->upload.take_unmipped_v_image();
-      DCHECK(unmipped_y_image);
-      DCHECK(unmipped_u_image);
-      DCHECK(unmipped_v_image);
-      images_pending_deletion_.push_back(std::move(unmipped_y_image));
-      images_pending_deletion_.push_back(std::move(unmipped_u_image));
-      images_pending_deletion_.push_back(std::move(unmipped_v_image));
-      yuv_images_pending_deletion_.push_back(std::move(unmipped_image));
-    } else {
-      images_pending_deletion_.push_back(std::move(unmipped_image));
-    }
   }
-}
 
 // YUV images are handled slightly differently because they are not themselves
 // registered with the discardable memory system. We cannot use
