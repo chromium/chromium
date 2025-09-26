@@ -1673,10 +1673,15 @@ INSTANTIATE_TEST_SUITE_P(
 class DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest
     : public DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest {
  public:
-  DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest() = default;
+  DiceWebSigninInterceptorWithUnoEnabledAndPREDisabledBrowserTest() {
+    // With kForcedDiceMigration enabled, am implicit signed-in user is signed
+    // out leaving the test a no-op.
+    feature_list_.InitAndDisableFeature(switches::kForcedDiceMigration);
+  }
 
  protected:
   const std::string email_ = "alice@example.com";
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Signing in to Chrome while explicit signin is disabled, to simulate a signed

@@ -34,6 +34,12 @@ const char kAccountImageUrl[] = "ACCOUNT_IMAGE_URL";
 
 class DiceMigrationServicePixelBrowserTest : public InteractiveBrowserTest {
  public:
+  DiceMigrationServicePixelBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kOfferMigrationToDiceUsers},
+        /*disabled_features=*/{switches::kForcedDiceMigration});
+  }
+
   DiceMigrationService* GetDiceMigrationService() {
     return DiceMigrationServiceFactory::GetForProfile(GetProfile());
   }
@@ -58,8 +64,7 @@ class DiceMigrationServicePixelBrowserTest : public InteractiveBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kOfferMigrationToDiceUsers};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This dialog is shown during all but the final time the migration is offered.

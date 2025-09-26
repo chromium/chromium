@@ -84,6 +84,14 @@ bool ContainsViewWithId(const views::View* view, ui::ElementIdentifier id) {
 
 class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
  public:
+  DiceMigrationServiceBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kOfferMigrationToDiceUsers},
+        // DICe migration dialog is not shown when forced migration flag is
+        // enabled.
+        /*disabled_features=*/{switches::kForcedDiceMigration});
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     disclaimer_service_resetter_ =
@@ -147,8 +155,7 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kOfferMigrationToDiceUsers};
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedClosureRunner disclaimer_service_resetter_;
   base::HistogramTester histogram_tester_;
 };
@@ -841,7 +848,11 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
 
 class DiceMigrationServiceSyncTest : public SyncTest {
  public:
-  DiceMigrationServiceSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  DiceMigrationServiceSyncTest() : SyncTest(SINGLE_CLIENT) {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{switches::kOfferMigrationToDiceUsers},
+        /*disabled_features=*/{switches::kForcedDiceMigration});
+  }
 
   signin::IdentityManager* GetIdentityManager() {
     return IdentityManagerFactory::GetForProfile(GetProfile(0));
@@ -873,8 +884,7 @@ class DiceMigrationServiceSyncTest : public SyncTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kOfferMigrationToDiceUsers};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceSyncTest, PRE_MigrateUser) {
