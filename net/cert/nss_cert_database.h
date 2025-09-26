@@ -46,34 +46,6 @@ class NET_EXPORT NSSCertDatabase {
     Observer() = default;
   };
 
-  // Holds an NSS certificate along with additional information.
-  struct CertInfo {
-    CertInfo();
-    CertInfo(CertInfo&& other);
-    ~CertInfo();
-    CertInfo& operator=(CertInfo&& other);
-
-    // The certificate itself.
-    ScopedCERTCertificate cert;
-
-    // The certificate is stored on a read-only slot.
-    bool on_read_only_slot = false;
-
-    // The certificate is untrusted.
-    bool untrusted = false;
-
-    // The certificate is trusted for web navigations according to the trust
-    // bits stored in the database.
-    bool web_trust_anchor = false;
-
-    // The certificate is hardware-backed.
-    bool hardware_backed = false;
-
-    // The certificate is device-wide.
-    // Note: can be true only on Chrome OS.
-    bool device_wide = false;
-  };
-
   // Stores per-certificate error codes for import failures.
   struct NET_EXPORT ImportCertFailure {
    public:
@@ -112,11 +84,6 @@ class NET_EXPORT NSSCertDatabase {
     DISTRUSTED_OBJ_SIGN   = 1 << 5,
   };
 
-  using CertInfoList = std::vector<CertInfo>;
-
-  using ListCertsInfoCallback =
-      base::OnceCallback<void(CertInfoList certs_info)>;
-
   using ListCertsCallback =
       base::OnceCallback<void(ScopedCERTCertificateList certs)>;
 
@@ -149,22 +116,6 @@ class NET_EXPORT NSSCertDatabase {
   // be called on the IO thread. This does not block by retrieving the certs
   // asynchronously on a worker thread.
   virtual void ListCertsInSlot(ListCertsCallback callback, PK11SlotInfo* slot);
-
-  enum class NSSRootsHandling {
-    kInclude,
-    // TODO(crbug.com/390333881): kExclude is only used by the old cert
-    // manager. Remove this and any other no-longer needed NSSCertDatabase
-    // features once the new cert manager is fully launched.
-    kExclude,
-  };
-  // Asynchronously get a list of certificates along with additional
-  // information. Note that the callback may be run even after the database is
-  // deleted.
-  // The `nss_roots_handling` parameter controls whether to include or exclude
-  // NSS built-in roots from the returned list.
-  // TODO(crbug.com/40890963): remove the `nss_roots_handling` parameter.
-  virtual void ListCertsInfo(ListCertsInfoCallback callback,
-                             NSSRootsHandling nss_roots_handling);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Get the slot for system-wide key data. May be NULL if the system token was
@@ -265,18 +216,6 @@ class NET_EXPORT NSSCertDatabase {
   void DeleteCertAndKeyAsync(ScopedCERTCertificate cert,
                              DeleteCertCallback callback);
 
-  // IsUntrusted returns true if |cert| is specifically untrusted. These
-  // certificates are stored in the database for the specific purpose of
-  // rejecting them.
-  // TODO(mattm): that's not actually what this method does. (It also marks
-  // certs that are self-issued and don't have any specific trust as untrusted,
-  // which is wrong.)
-  static bool IsUntrusted(const CERTCertificate* cert);
-
-  // IsWebTrustAnchor returns true if |cert| is explicitly trusted for web
-  // navigations according to the trust bits stored in the database.
-  static bool IsWebTrustAnchor(const CERTCertificate* cert);
-
   // Check whether cert is stored in a readonly slot.
   // TODO(mattm): this is ill-defined if the cert exists on both readonly and
   // non-readonly slots.
@@ -300,27 +239,11 @@ class NET_EXPORT NSSCertDatabase {
   void RemoveObserver(Observer* observer);
 
  protected:
-  // Returns a list of certificates extracted from |certs_info| list ignoring
-  // additional information.
-  static ScopedCERTCertificateList ExtractCertificates(CertInfoList certs_info);
-
   // Certificate listing implementation used by |ListCerts*|. Static so it may
   // safely be used on the worker thread. If |slot| is nullptr, obtains the
   // certs of all slots, otherwise only of |slot|.
   static ScopedCERTCertificateList ListCertsImpl(crypto::ScopedPK11Slot slot);
 
-  // Implements the logic behind returning a list of certificates along with
-  // additional information about every certificate.
-  // If |add_certs_info| is false, doesn't compute the certificate additional
-  // information, the corresponding CertInfo struct fields will be left on their
-  // default values.
-  // Static so it may safely be used on the worker thread. If |slot| is nullptr,
-  // obtains the certs of all slots, otherwise only of |slot|.
-  // The |nss_roots_handling| parameter controls whether to include or exclude
-  // NSS built-in roots from the resulting cert list.
-  static CertInfoList ListCertsInfoImpl(crypto::ScopedPK11Slot slot,
-                                        bool add_certs_info,
-                                        NSSRootsHandling nss_roots_handling);
 
   // Broadcasts notifications to all registered observers.
   void NotifyObserversTrustStoreChanged();

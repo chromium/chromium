@@ -220,13 +220,6 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 }
 
 std::vector<TrustStoreNSS::ListCertsResult>
-TrustStoreNSS::ListCertsIgnoringNSSRoots() {
-  // In this path, the returned certs could include client certificates, so we
-  // should not skip the chaps module.
-  return ListCertsIgnoringNSSRootsImpl(/*ignore_chaps_module=*/false);
-}
-
-std::vector<TrustStoreNSS::ListCertsResult>
 TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
