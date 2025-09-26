@@ -1152,6 +1152,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.SEPARATE_DEFER_MODULE_SCRIPT_TASKS,
                 "Enables yielding to the event loop between executing deferred module scripts to"
                         + " improve responsiveness."),
+        Flag.baseFeature(
+                BaseFeatures.USE_IS_UNBOUND_CHECK,
+                "Use ChildServiceConnectionController.isUnbound() instead of isConnected() to check"
+                    + " the connection state in ChildProcessConnection."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

@@ -320,6 +320,12 @@ public class ChildProcessConnection {
     // have it flip half way in the middle.
     private final boolean mIsEffectiveBindingStateEnabled;
 
+    // Whether the UseIsUnboundCheck feature is enabled.
+    //
+    // The feature status has to stay consistent throughout the lifetime of this object, and can't
+    // have it flip half way in the middle.
+    private final boolean mUseIsUnboundCheck;
+
     public ChildProcessConnection(
             Context context,
             ComponentName serviceName,
@@ -370,6 +376,7 @@ public class ChildProcessConnection {
         mIndependentFallback = independentFallback;
         mIsSandboxedForHistograms = isSandboxedForHistograms;
         mIsEffectiveBindingStateEnabled = BaseFeatureList.sEffectiveBindingState.isEnabled();
+        mUseIsUnboundCheck = BaseFeatureList.sUseIsUnboundCheck.isEnabled();
 
         // Incremental install does not work with isolatedProcess, and externalService requires
         // isolatedProcess, so both need to be turned off for incremental install.
@@ -980,7 +987,7 @@ public class ChildProcessConnection {
 
     public void addStrongBinding() {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) {
+        if (isUnboundForStateChange()) {
             Log.w(TAG, "The connection is not bound for %d", getPid());
             return;
         }
@@ -994,7 +1001,7 @@ public class ChildProcessConnection {
 
     public void removeStrongBinding() {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) {
+        if (isUnboundForStateChange()) {
             return;
         }
         assert mStrongBindingCount > 0;
@@ -1018,7 +1025,7 @@ public class ChildProcessConnection {
 
     public void addVisibleBinding() {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) {
+        if (isUnboundForStateChange()) {
             Log.w(TAG, "The connection is not bound for %d", getPid());
             return;
         }
@@ -1032,7 +1039,7 @@ public class ChildProcessConnection {
 
     public void removeVisibleBinding() {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) {
+        if (isUnboundForStateChange()) {
             return;
         }
         assert mVisibleBindingCount > 0;
@@ -1051,7 +1058,7 @@ public class ChildProcessConnection {
 
     public void addNotPerceptibleBinding() {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) {
+        if (isUnboundForStateChange()) {
             Log.w(TAG, "The connection is not bound for %d", getPid());
             return;
         }
@@ -1065,7 +1072,7 @@ public class ChildProcessConnection {
 
     public void removeNotPerceptibleBinding() {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) {
+        if (isUnboundForStateChange()) {
             return;
         }
         assert mNotPerceptibleBindingCount > 0;
@@ -1079,7 +1086,7 @@ public class ChildProcessConnection {
 
     private void applyEffectiveBindingState() {
         assert isRunningOnLauncherThread();
-        assert isConnected();
+        assert !isUnboundForStateChange();
         @ChildBindingState int effectiveBindingState = ChildBindingState.WAIVED;
         if (mStrongBindingCount > 0) {
             effectiveBindingState = ChildBindingState.STRONG;
@@ -1201,5 +1208,18 @@ public class ChildProcessConnection {
         } catch (RemoteException ex) {
             // Ignore
         }
+    }
+
+    /**
+     * Returns whether we can update binding state.
+     *
+     * <p>Historically, we used `isConnected()`. But mConnectionController.isUnbound() is more
+     * accurate.
+     *
+     * <p>TODO(crbug.com/447057423): Remove the flag and always use
+     * mConnectionController.isUnbound() after verifying it's safe.
+     */
+    private boolean isUnboundForStateChange() {
+        return mUseIsUnboundCheck ? mConnectionController.isUnbound() : !isConnected();
     }
 }

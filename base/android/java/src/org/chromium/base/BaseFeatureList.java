@@ -33,6 +33,10 @@ public class BaseFeatureList {
                     BaseFeatures.UPDATE_STATE_BEFORE_UNBINDING,
                     false);
 
+    public static final MutableFlagWithSafeDefault sUseIsUnboundCheck =
+            new MutableFlagWithSafeDefault(
+                    BaseFeatureMap.getInstance(), BaseFeatures.USE_IS_UNBOUND_CHECK, false);
+
     public static final MutableFlagWithSafeDefault sUseSharedRebindServiceConnection =
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),
