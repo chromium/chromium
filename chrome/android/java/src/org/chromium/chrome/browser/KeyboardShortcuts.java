@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser;
 
-import static org.chromium.ui.KeyboardUtils.ALT;
-import static org.chromium.ui.KeyboardUtils.CTRL;
-import static org.chromium.ui.KeyboardUtils.NO_MODIFIER;
-import static org.chromium.ui.KeyboardUtils.SHIFT;
+import static org.chromium.base.ui.KeyboardUtils.ALT;
+import static org.chromium.base.ui.KeyboardUtils.CTRL;
+import static org.chromium.base.ui.KeyboardUtils.NO_MODIFIER;
+import static org.chromium.base.ui.KeyboardUtils.SHIFT;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -21,6 +21,7 @@ import androidx.annotation.StringRes;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
@@ -39,7 +40,6 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.device.gamepad.GamepadList;
-import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.lang.annotation.Retention;
