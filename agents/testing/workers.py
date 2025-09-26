@@ -15,6 +15,7 @@ import subprocess
 import threading
 import time
 
+import checkout_helpers
 import promptfoo_installation
 import results
 
@@ -36,14 +37,13 @@ class WorkDir(contextlib.AbstractContextManager):
         clean: bool,
         verbose: bool,
         force: bool,
-        btrfs: bool,
     ):
         self.path = src_root_dir.parent.joinpath(name)
         self.src_root_dir = src_root_dir
         self.clean = clean
         self.verbose = verbose
         self.force = force
-        self.btrfs = btrfs
+        self.btrfs = checkout_helpers.check_btrfs(src_root_dir)
 
     def __enter__(self) -> 'WorkDir':
         if self.path.exists():
@@ -100,18 +100,12 @@ class WorkDir(contextlib.AbstractContextManager):
 @dataclasses.dataclass
 class WorkerOptions:
     """Options for configuring a single worker."""
-    # The path to the gclient root to clone.
-    root_path: pathlib.Path
     # Whether to clean the workdir after a test.
     clean: bool
     # Whether to log verbosely.
     verbose: bool
     # Whether to force cleaning.
     force: bool
-    # Whether |root_path| is expected to be on a btrfs partition.
-    # TODO(crbug.com/445459870): Move btrfs code out of eval_prompts and just
-    # check this directly.
-    is_btrfs: bool
     # Whether to run tests in a sandbox.
     sandbox: bool
 
@@ -135,13 +129,7 @@ class WorkerPool:
         # Create a copy so that options cannot be externally modified.
         worker_options = copy.deepcopy(worker_options)
 
-        self._finished_test_queue = queue.Queue()
-        self._failed_test_queue = queue.Queue()
-        self._total_tests_run = results.AtomicCounter()
         self._result_thread = results.ResultThread(
-            input_queue=self._finished_test_queue,
-            failed_result_queue=self._failed_test_queue,
-            tests_run=self._total_tests_run,
             print_output_on_success=print_output_on_success)
         self._result_thread.start()
 
@@ -149,9 +137,13 @@ class WorkerPool:
         self._test_input_queue = queue.Queue()
         self._workers = []
         for i in range(num_workers):
-            worker_thread = WorkerThread(i, promptfoo, worker_options,
-                                         self._test_input_queue,
-                                         self._finished_test_queue)
+            worker_thread = WorkerThread(
+                i,
+                promptfoo,
+                worker_options,
+                test_input_queue=self._test_input_queue,
+                test_result_queue=self._result_thread.result_input_queue,
+            )
             worker_thread.start()
             self._workers.append(worker_thread)
 
@@ -176,15 +168,17 @@ class WorkerPool:
             A list of failed TestResults that were produced since the last time
             this method was called.
         """
-        while self._total_tests_run.get() != self._total_tests_queued:
+        while (self._result_thread.total_results_reported.get()
+               != self._total_tests_queued):
             self._result_thread.maybe_reraise_fatal_exception()
             for w in self._workers:
                 w.maybe_reraise_fatal_exception()
             time.sleep(_ALL_QUEUED_TESTS_RUN_POLLING_SLEEP_DURATION)
 
         failed_tests = []
-        while not self._failed_test_queue.empty():
-            failed_tests.append(self._failed_test_queue.get())
+        failed_test_queue = self._result_thread.failed_result_output_queue
+        while not failed_test_queue.empty():
+            failed_tests.append(failed_test_queue.get())
         return failed_tests
 
     def shutdown_blocking(self, timeout: float | None = None) -> None:
@@ -258,11 +252,10 @@ class WorkerThread(threading.Thread):
         """
         with WorkDir(
                 f'workdir-{self._worker_index}',
-                self._worker_options.root_path,
+                checkout_helpers.get_gclient_root(),
                 self._worker_options.clean,
                 self._worker_options.verbose,
                 self._worker_options.force,
-                self._worker_options.is_btrfs,
         ) as workdir:
             command = [
                 'eval',

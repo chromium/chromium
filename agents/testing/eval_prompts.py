@@ -5,7 +5,6 @@
 """A script to evaluate prompts using promptfoo."""
 
 import argparse
-import functools
 import logging
 import os
 import pathlib
@@ -13,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 
+import checkout_helpers
 import constants
 import promptfoo_installation
 import workers
@@ -51,24 +51,6 @@ def _build_chromium(cwd):
     logging.info('Running `autoninja -C out/Default`')
     subprocess.check_call(['autoninja', '-C', 'out/Default'], cwd=cwd)
     logging.info('Finished building')
-
-
-@functools.cache
-def _check_btrfs(root_path) -> bool:
-    result = subprocess.run(
-        ['stat', '-c', '%i', root_path],
-        capture_output=True,
-        check=True,
-    )
-    inode_number = int(result.stdout.strip())
-    btrfs = inode_number == 256
-    logging.debug('btrfs (%d)' if btrfs else 'Not in btrfs (%d)', inode_number)
-    if not btrfs:
-        logging.warning(
-            'Warning: This is not running in a btrfs environment which will '
-            'lead to a much slower runtime. Please see the README.md for '
-            'btrfs setup instructions.')
-    return btrfs
 
 
 def _discover_testcase_files() -> list[pathlib.Path]:
@@ -178,23 +160,6 @@ def _get_tests_to_run(
     return configs_to_run
 
 
-@functools.cache
-def _get_gclient_root() -> pathlib.Path:
-    """Retrieves the gclient root for the current checkout.
-
-    Returns:
-        A Path containing the absolute path to the gclient root for the current
-        checkout.
-    """
-    result = subprocess.run(
-        ['gclient', 'root'],
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    return pathlib.Path(result.stdout.strip())
-
-
 def _perform_chromium_setup(force: bool, build: bool) -> None:
     """Performs setup steps related to the Chromium checkout.
 
@@ -202,8 +167,8 @@ def _perform_chromium_setup(force: bool, build: bool) -> None:
         force: Whether to force execution.
         build: Whether to build Chromium as part of setup.
     """
-    root_path = _get_gclient_root()
-    is_btrfs = _check_btrfs(root_path)
+    root_path = checkout_helpers.get_gclient_root()
+    is_btrfs = checkout_helpers.check_btrfs(root_path)
     if is_btrfs and not force:
         subprocess.run(['sudo', '-v'], check=True)
 
@@ -269,12 +234,9 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     if args.sandbox and not _fetch_sandbox_image():
         return 1
 
-    root_path = _get_gclient_root()
-    worker_options = workers.WorkerOptions(root_path=root_path,
-                                           clean=not args.no_clean,
+    worker_options = workers.WorkerOptions(clean=not args.no_clean,
                                            verbose=args.verbose,
                                            force=args.force,
-                                           is_btrfs=_check_btrfs(root_path),
                                            sandbox=args.sandbox)
 
     worker_pool = workers.WorkerPool(args.parallel_workers, promptfoo,

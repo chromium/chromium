@@ -72,25 +72,16 @@ def report_result(result_sink_client: result_sink.ResultSinkClient,
 class ResultThread(threading.Thread):
     """Class for reporting test results from a queue."""
 
-    def __init__(self, input_queue: queue.Queue[TestResult],
-                 failed_result_queue: queue.Queue[TestResult],
-                 tests_run: AtomicCounter, print_output_on_success: bool,
-                 **kwargs):
+    def __init__(self, print_output_on_success: bool, **kwargs):
         """
         Args:
-            input_queue: The queue that test results to report will be read
-                from.
-            failed_result_queue: A queue that any failing test results will be
-                copied to.
-            tests_run: An AtomicCounter that will be incremented every time a
-                test result is processed.
             print_output_on_success: If true, test logs will always be printed
                 to stdout instead of only for failed tests.
         """
         super().__init__(daemon=True, **kwargs)
-        self._input_queue = input_queue
-        self._failed_result_queue = failed_result_queue
-        self._tests_run = tests_run
+        self.result_input_queue = queue.Queue()
+        self.failed_result_output_queue = queue.Queue()
+        self.total_results_reported = AtomicCounter()
         self._print_output_on_success = print_output_on_success
         self._shutdown_event = threading.Event()
         self._result_sink_client = result_sink.TryInitClient()
@@ -105,7 +96,7 @@ class ResultThread(threading.Thread):
     def _process_incoming_results_until_shutdown(self) -> None:
         while not self._shutdown_event.is_set():
             try:
-                test_result = self._input_queue.get(
+                test_result = self.result_input_queue.get(
                     timeout=_RESULT_THREAD_POLLING_SLEEP_DURATION)
             except queue.Empty:
                 continue
@@ -121,9 +112,9 @@ class ResultThread(threading.Thread):
                 logging.warning('Test failed in %.2f seconds: %s',
                                 test_result.duration,
                                 str(test_result.test_file))
-                self._failed_result_queue.put(test_result)
+                self.failed_result_output_queue.put(test_result)
 
-            self._tests_run.increment()
+            self.total_results_reported.increment()
 
     def shutdown(self) -> None:
         """Tells the thread to shut down gracefully."""

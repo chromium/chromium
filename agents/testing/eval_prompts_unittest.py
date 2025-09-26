@@ -79,35 +79,6 @@ class BuildChromiumUnittest(fake_filesystem_unittest.TestCase):
         ])
 
 
-class CheckBtrfsUnittest(fake_filesystem_unittest.TestCase):
-    """Unit tests for the `_check_btrfs` function."""
-
-    def setUp(self):
-        self.setUpPyfakefs()
-
-    def tearDown(self):
-        eval_prompts._check_btrfs.cache_clear()
-
-    @mock.patch('subprocess.run')
-    def test_check_btrfs_is_btrfs(self, mock_run):
-        """Tests that btrfs is detected correctly."""
-        mock_run.return_value = subprocess.CompletedProcess(
-            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='256\n')
-        with self.assertNoLogs():
-            self.assertTrue(eval_prompts._check_btrfs('/tmp'))
-
-    @mock.patch('subprocess.run')
-    def test_check_btrfs_is_not_btrfs(self, mock_run):
-        """Tests that non-btrfs is detected correctly."""
-        mock_run.return_value = subprocess.CompletedProcess(
-            args=['stat', '-c', '%i', '/tmp'], returncode=0, stdout='123\n')
-        with self.assertLogs(level='WARNING') as cm:
-            self.assertFalse(eval_prompts._check_btrfs('/tmp'))
-            self.assertIn(
-                'Warning: This is not running in a btrfs environment',
-                cm.output[0])
-
-
 class DiscoverTestcaseFilesUnittest(fake_filesystem_unittest.TestCase):
     """Unit tests for the `_discover_testcase_files` function."""
 
@@ -369,36 +340,14 @@ class GetTestsToRunUnittest(fake_filesystem_unittest.TestCase):
         self.assertEqual(len(result), 0)
 
 
-class GetGclientRootUnittest(unittest.TestCase):
-    """Unit tests for the `_get_gclient_root` function."""
-
-    def tearDown(self):
-        eval_prompts._get_gclient_root.cache_clear()
-
-    @mock.patch('subprocess.run')
-    def test_get_gclient_root_success(self, mock_run):
-        """Tests that the gclient root is returned on success."""
-        mock_run.return_value = subprocess.CompletedProcess(
-            args=['gclient', 'root'], returncode=0, stdout='/path/to/root\n')
-        result = eval_prompts._get_gclient_root()
-        self.assertEqual(result, pathlib.Path('/path/to/root'))
-
-    @mock.patch('subprocess.run')
-    def test_get_gclient_root_failure(self, mock_run):
-        """Tests that an exception is raised on failure."""
-        mock_run.side_effect = subprocess.CalledProcessError(1, 'gclient root')
-        with self.assertRaises(subprocess.CalledProcessError):
-            eval_prompts._get_gclient_root()
-
-
 class PerformChromiumSetupUnittest(unittest.TestCase):
     """Unit tests for the `_perform_chromium_setup` function."""
 
     @mock.patch('eval_prompts._build_chromium')
     @mock.patch('eval_prompts._check_uncommitted_changes')
     @mock.patch('subprocess.run')
-    @mock.patch('eval_prompts._check_btrfs')
-    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('checkout_helpers.check_btrfs')
+    @mock.patch('checkout_helpers.get_gclient_root')
     def test_perform_chromium_setup_build_btrfs(self, mock_get_gclient_root,
                                                 mock_check_btrfs,
                                                 mock_subprocess_run,
@@ -420,8 +369,8 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
     @mock.patch('eval_prompts._build_chromium')
     @mock.patch('eval_prompts._check_uncommitted_changes')
     @mock.patch('subprocess.run')
-    @mock.patch('eval_prompts._check_btrfs')
-    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('checkout_helpers.check_btrfs')
+    @mock.patch('checkout_helpers.get_gclient_root')
     def test_perform_chromium_setup_no_build_no_btrfs(
             self, mock_get_gclient_root, mock_check_btrfs, mock_subprocess_run,
             mock_check_uncommitted_changes, mock_build_chromium):
@@ -441,8 +390,8 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
     @mock.patch('eval_prompts._build_chromium')
     @mock.patch('eval_prompts._check_uncommitted_changes')
     @mock.patch('subprocess.run')
-    @mock.patch('eval_prompts._check_btrfs')
-    @mock.patch('eval_prompts._get_gclient_root')
+    @mock.patch('checkout_helpers.check_btrfs')
+    @mock.patch('checkout_helpers.get_gclient_root')
     def test_perform_chromium_setup_btrfs_force(self, mock_get_gclient_root,
                                                 mock_check_btrfs,
                                                 mock_subprocess_run,
@@ -514,16 +463,6 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         ]
         self.addCleanup(get_tests_to_run_patcher.stop)
 
-        get_gclient_root_patcher = mock.patch('eval_prompts._get_gclient_root')
-        self.mock_get_gclient_root = get_gclient_root_patcher.start()
-        self.mock_get_gclient_root.return_value = pathlib.Path('/root')
-        self.addCleanup(get_gclient_root_patcher.stop)
-
-        check_btrfs_patcher = mock.patch('eval_prompts._check_btrfs')
-        self.mock_check_btrfs = check_btrfs_patcher.start()
-        self.mock_check_btrfs.return_value = True
-        self.addCleanup(check_btrfs_patcher.stop)
-
         subprocess_run_patcher = mock.patch('subprocess.run')
         self.mock_subprocess_run = subprocess_run_patcher.start()
         self.addCleanup(subprocess_run_patcher.stop)
@@ -556,7 +495,6 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
 
     def test_run_prompt_eval_tests_one_test_fail(self):
         """Tests running a single failing test."""
-        self.mock_check_btrfs.return_value = False
         failed_test = results.TestResult(test_file='test',
                                          success=False,
                                          duration=1,

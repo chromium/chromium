@@ -44,14 +44,18 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
         self.mock_check_call = check_call_patcher.start()
         self.addCleanup(check_call_patcher.stop)
 
+        check_btrfs_patcher = mock.patch('checkout_helpers.check_btrfs')
+        self.mock_check_btrfs = check_btrfs_patcher.start()
+        self.addCleanup(check_btrfs_patcher.stop)
+
     def test_enter_btrfs(self):
         """Tests that a btrfs snapshot is created when btrfs is true."""
+        self.mock_check_btrfs.return_value = True
         workdir = workers.WorkDir('workdir',
                                   pathlib.Path('/tmp/src'),
                                   clean=False,
                                   verbose=False,
-                                  force=False,
-                                  btrfs=True)
+                                  force=False)
         with workdir as w:
             self.assertEqual(w, workdir)
 
@@ -69,12 +73,12 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
 
     def test_enter_no_btrfs(self):
         """Tests that gclient-new-workdir is called when btrfs is false."""
+        self.mock_check_btrfs.return_value = False
         workdir = workers.WorkDir('workdir',
                                   pathlib.Path('/tmp/src'),
                                   clean=False,
                                   verbose=False,
-                                  force=False,
-                                  btrfs=False)
+                                  force=False)
         with workdir as w:
             self.assertEqual(w, workdir)
 
@@ -91,12 +95,12 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
     def test_enter_exists_no_force(self):
         """Tests that an error is raised if the workdir exists."""
         self.fs.create_dir('/tmp/workdir')
+        self.mock_check_btrfs.return_value = False
         workdir = workers.WorkDir('workdir',
                                   pathlib.Path('/tmp/src'),
                                   clean=False,
                                   verbose=False,
-                                  force=False,
-                                  btrfs=False)
+                                  force=False)
         with self.assertRaises(FileExistsError):
             with workdir:
                 pass
@@ -104,12 +108,12 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
     def test_enter_exists_force(self):
         """Tests that the workdir is removed if it exists and force is on."""
         self.fs.create_dir('/tmp/workdir')
+        self.mock_check_btrfs.return_value = True
         workdir = workers.WorkDir('workdir',
                                   pathlib.Path('/tmp/src'),
                                   clean=False,
                                   verbose=False,
-                                  force=True,
-                                  btrfs=True)
+                                  force=True)
         with workdir:
             pass
 
@@ -128,12 +132,12 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
 
     def test_exit_clean_btrfs(self):
         """Tests that the workdir is removed when clean is true w/ btrfs ."""
+        self.mock_check_btrfs.return_value = True
         workdir = workers.WorkDir('workdir',
                                   pathlib.Path('/tmp/src'),
                                   clean=True,
                                   verbose=False,
-                                  force=False,
-                                  btrfs=True)
+                                  force=False)
         with workdir:
             pass
 
@@ -151,12 +155,12 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
 
     def test_exit_clean_no_btrfs(self):
         """Tests that the workdir is removed when clean is True w/o btrfs."""
+        self.mock_check_btrfs.return_value = False
         workdir = workers.WorkDir('workdir',
                                   pathlib.Path('/tmp/src'),
                                   clean=True,
                                   verbose=False,
-                                  force=False,
-                                  btrfs=False)
+                                  force=False)
         with workdir:
             pass
 
@@ -164,12 +168,12 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
 
     def test_exit_no_clean(self):
         """Tests that the workdir is not cleaned up when clean is False."""
+        self.mock_check_btrfs.return_value = False
         workdir = workers.WorkDir('workdir',
                                   pathlib.Path('/tmp/src'),
                                   clean=False,
                                   verbose=False,
-                                  force=False,
-                                  btrfs=False)
+                                  force=False)
         with workdir:
             pass
 
@@ -191,11 +195,9 @@ class WorkerThreadUnittest(unittest.TestCase):
         self.mock_promptfoo.run.return_value = subprocess.CompletedProcess(
             args=[], returncode=0, stdout='Success')
         self.worker_options = workers.WorkerOptions(
-            root_path=pathlib.Path('/root'),
             clean=True,
             verbose=False,
             force=False,
-            is_btrfs=True,
             sandbox=False,
         )
         self.test_input_queue = queue.Queue()
@@ -215,6 +217,12 @@ class WorkerThreadUnittest(unittest.TestCase):
             _POLLING_INTERVAL)
         polling_patcher.start()
         self.addCleanup(polling_patcher.stop)
+
+        get_gclient_root_patcher = mock.patch(
+            'checkout_helpers.get_gclient_root')
+        self.mock_get_gclient_root = get_gclient_root_patcher.start()
+        self.mock_get_gclient_root.return_value = pathlib.Path('/root')
+        self.addCleanup(get_gclient_root_patcher.stop)
 
     def _create_and_run_worker(self, test_paths):
         """Helper to create and run a worker thread."""
@@ -245,7 +253,7 @@ class WorkerThreadUnittest(unittest.TestCase):
 
         self.mock_workdir.assert_called_once_with('workdir-0',
                                                   pathlib.Path('/root'), True,
-                                                  False, False, True)
+                                                  False, False)
         self.mock_promptfoo.run.assert_called_once()
         self.assertEqual(self.test_result_queue.qsize(), 1)
         result = self.test_result_queue.get()
@@ -317,11 +325,9 @@ class WorkerPoolUnittest(unittest.TestCase):
         self.mock_promptfoo = mock.Mock(
             spec=promptfoo_installation.PromptfooInstallation)
         self.worker_options = workers.WorkerOptions(
-            root_path=pathlib.Path('/root'),
             clean=True,
             verbose=False,
             force=False,
-            is_btrfs=True,
             sandbox=False,
         )
 
@@ -336,12 +342,20 @@ class WorkerPoolUnittest(unittest.TestCase):
 
             return thread_join_side_effect
 
+        atomic_counter_patcher = mock.patch('workers.results.AtomicCounter')
+        self.mock_atomic_counter = atomic_counter_patcher.start()
+        self.addCleanup(atomic_counter_patcher.stop)
+
         result_thread_patcher = mock.patch('workers.results.ResultThread')
         self.mock_result_thread = result_thread_patcher.start()
         mock_result_thread_instance = self.mock_result_thread.return_value
         mock_result_thread_instance.is_alive.return_value = True
         mock_result_thread_instance.join.side_effect = (
             create_thread_join_side_effect(mock_result_thread_instance))
+        mock_result_thread_instance.total_results_reported = (
+            self.mock_atomic_counter.return_value)
+        mock_result_thread_instance.failed_result_output_queue = mock.Mock(
+            spec=queue.Queue)
         self.addCleanup(result_thread_patcher.stop)
 
         worker_thread_patcher = mock.patch('workers.WorkerThread')
@@ -351,10 +365,6 @@ class WorkerPoolUnittest(unittest.TestCase):
         mock_worker_thread_instance.join.side_effect = (
             create_thread_join_side_effect(mock_worker_thread_instance))
         self.addCleanup(worker_thread_patcher.stop)
-
-        atomic_counter_patcher = mock.patch('workers.results.AtomicCounter')
-        self.mock_atomic_counter = atomic_counter_patcher.start()
-        self.addCleanup(atomic_counter_patcher.stop)
 
         polling_patcher = mock.patch(
             'workers._ALL_QUEUED_TESTS_RUN_POLLING_SLEEP_DURATION',
@@ -417,22 +427,22 @@ class WorkerPoolUnittest(unittest.TestCase):
                                          success=False,
                                          duration=1,
                                          test_log='')
-        with mock.patch('workers.queue.Queue') as mock_queue:
-            mock_failed_queue = mock_queue.return_value
-            mock_failed_queue.empty.side_effect = [False, True]
-            mock_failed_queue.get.return_value = failed_test
+        mock_failed_queue = (
+            self.mock_result_thread.return_value.failed_result_output_queue)
+        mock_failed_queue.empty.side_effect = [False, True]
+        mock_failed_queue.get.return_value = failed_test
 
-            pool = workers.WorkerPool(
-                num_workers=1,
-                promptfoo=self.mock_promptfoo,
-                worker_options=self.worker_options,
-                print_output_on_success=False,
-            )
-            pool.queue_tests([pathlib.Path('fail.yaml')])
-            failed_tests = pool.wait_for_all_queued_tests()
-            self.assertEqual(len(failed_tests), 1)
-            self.assertEqual(failed_tests[0], failed_test)
-            pool.shutdown_blocking(1)
+        pool = workers.WorkerPool(
+            num_workers=1,
+            promptfoo=self.mock_promptfoo,
+            worker_options=self.worker_options,
+            print_output_on_success=False,
+        )
+        pool.queue_tests([pathlib.Path('fail.yaml')])
+        failed_tests = pool.wait_for_all_queued_tests()
+        self.assertEqual(len(failed_tests), 1)
+        self.assertEqual(failed_tests[0], failed_test)
+        pool.shutdown_blocking(1)
 
     def test_shutdown_blocking(self):
         """Tests that shutdown_blocking shuts down all threads."""

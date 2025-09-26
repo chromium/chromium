@@ -4,7 +4,6 @@
 """Unittests for the results module."""
 
 import pathlib
-import queue
 import sys
 import threading
 import time
@@ -134,9 +133,6 @@ class ResultThreadTest(unittest.TestCase):
     def setUp(self):
         self._setUpPatches()
 
-        self.input_queue = queue.Queue()
-        self.failed_result_queue = queue.Queue()
-        self.tests_run = results.AtomicCounter()
         self.print_output_on_success = False
 
     def _setUpPatches(self):
@@ -161,9 +157,6 @@ class ResultThreadTest(unittest.TestCase):
 
     def _create_result_thread(self):
         return results.ResultThread(
-            input_queue=self.input_queue,
-            failed_result_queue=self.failed_result_queue,
-            tests_run=self.tests_run,
             print_output_on_success=self.print_output_on_success,
         )
 
@@ -173,36 +166,37 @@ class ResultThreadTest(unittest.TestCase):
         thread.start()
 
         for r in results_to_send:
-            self.input_queue.put(r)
+            thread.result_input_queue.put(r)
 
         # Wait for all results to be processed.
-        while self.tests_run.get() < len(results_to_send):
+        while thread.total_results_reported.get() < len(results_to_send):
             thread.maybe_reraise_fatal_exception()
             time.sleep(_POLLING_INTERVAL / 1e9)
 
         thread.shutdown()
         thread.join(1)
+        return thread
 
     def test_successful_result(self):
         test_result = results.TestResult(test_file='test.yaml',
                                          success=True,
                                          duration=1.0,
                                          test_log='log')
-        self._run_test_with_results([test_result])
+        thread = self._run_test_with_results([test_result])
 
-        self.assertEqual(self.tests_run.get(), 1)
-        self.assertTrue(self.failed_result_queue.empty())
+        self.assertEqual(thread.total_results_reported.get(), 1)
+        self.assertTrue(thread.failed_result_output_queue.empty())
 
     def test_failed_result(self):
         test_result = results.TestResult(test_file='test.yaml',
                                          success=False,
                                          duration=1.0,
                                          test_log='log')
-        self._run_test_with_results([test_result])
+        thread = self._run_test_with_results([test_result])
 
-        self.assertEqual(self.tests_run.get(), 1)
-        self.assertEqual(self.failed_result_queue.qsize(), 1)
-        self.assertEqual(self.failed_result_queue.get(), test_result)
+        self.assertEqual(thread.total_results_reported.get(), 1)
+        self.assertEqual(thread.failed_result_output_queue.qsize(), 1)
+        self.assertEqual(thread.failed_result_output_queue.get(), test_result)
 
     def test_multiple_results(self):
         results_to_send = [
@@ -219,11 +213,12 @@ class ResultThreadTest(unittest.TestCase):
                                duration=3.0,
                                test_log='log3'),
         ]
-        self._run_test_with_results(results_to_send)
+        thread = self._run_test_with_results(results_to_send)
 
-        self.assertEqual(self.tests_run.get(), 3)
-        self.assertEqual(self.failed_result_queue.qsize(), 1)
-        self.assertEqual(self.failed_result_queue.get(), results_to_send[1])
+        self.assertEqual(thread.total_results_reported.get(), 3)
+        self.assertEqual(thread.failed_result_output_queue.qsize(), 1)
+        self.assertEqual(thread.failed_result_output_queue.get(),
+                         results_to_send[1])
 
     def test_shutdown(self):
         thread = self._create_result_thread()
