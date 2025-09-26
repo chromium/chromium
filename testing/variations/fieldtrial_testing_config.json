@@ -5883,6 +5883,24 @@
             ]
         }
     ],
+    "ChromnientReinvocationAffordance": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensSearchReinvocationAffordance"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientSidePanelOpenInNewTab": [
         {
             "platforms": [
@@ -5981,6 +5999,24 @@
             ]
         }
     ],
+    "ChromnientUpdatedFeedbackEntrypoint": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensUpdatedFeedbackEntrypoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientUpdatedVisuals": [
         {
             "platforms": [
@@ -6012,6 +6048,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "LensOverlayUploadChunking"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ChromnientVideoCitations": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensVideoCitations"
                     ]
                 }
             ]
