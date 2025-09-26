@@ -281,13 +281,18 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
           : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
 #endif
 
-  if (key_exchange_compliance_.IsManaged() &&
-      key_exchange_compliance_.GetValue() == kPrefStringValueCnsa2) {
+  bool cnsa_feature_enabled =
+      base::FeatureList::IsEnabled(features::kCryptographyComplianceCnsa);
+
+  if (cnsa_feature_enabled ||
+      (key_exchange_compliance_.IsManaged() &&
+       key_exchange_compliance_.GetValue() == kPrefStringValueCnsa2)) {
     config->named_groups_preset = network::mojom::SSLNamedGroupsPreset::kCnsa2;
   }
 
-  if (tls13_cipher_compliance_.IsManaged() &&
-      tls13_cipher_compliance_.GetValue() == kPrefStringValueCnsa) {
+  if (cnsa_feature_enabled ||
+      (tls13_cipher_compliance_.IsManaged() &&
+       tls13_cipher_compliance_.GetValue() == kPrefStringValueCnsa)) {
     config->tls13_cipher_prefer_aes_256 = true;
   }
 

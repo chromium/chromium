@@ -2103,6 +2103,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "cryptography-compliance-cnsa",
+    "owners": [ "chlily@chromium.org", "//crypto/OWNERS" ],
+    // This flag is intended to be temporary for testing. The enterprise
+    // policies should be used instead for permanently configuring this
+    // functionality.
+    "expiry_milestone": 150
+  },
+  {
     "name": "css-gamut-mapping",
     "owners": ["ccameron@google.com", "aaronhk@google.com", "chrome-canvas-team@google.com"],
     "expiry_milestone": 126

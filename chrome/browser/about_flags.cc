@@ -13275,6 +13275,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString)},
 
+    {"cryptography-compliance-cnsa",
+     flag_descriptions::kCryptographyComplianceCnsaName,
+     flag_descriptions::kCryptographyComplianceCnsaDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kCryptographyComplianceCnsa)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

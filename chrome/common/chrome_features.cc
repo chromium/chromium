@@ -140,7 +140,13 @@ BASE_FEATURE(kCrostiniAnsibleSoftwareManagement,
 
 // Enables support for sideloading android apps into Arc via crostini.
 BASE_FEATURE(kCrostiniArcSideload, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Enables stricter cryptography settings for CNSA2 compliance. This is not
+// needed for security, but may be required by some organizations.
+BASE_FEATURE(kCryptographyComplianceCnsa, base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_CHROMEOS)
 // Enables distributed model for TPM1.2, i.e., using tpm_managerd and
 // attestationd.
 BASE_FEATURE(kCryptohomeDistributedModel, base::FEATURE_DISABLED_BY_DEFAULT);

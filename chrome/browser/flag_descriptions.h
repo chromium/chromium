@@ -246,6 +246,9 @@ extern const char kCrosSwitcherName[];
 extern const char kCrosSwitcherDescription[];
 #endif  // IS_CHROMEOS
 
+extern const char kCryptographyComplianceCnsaName[];
+extern const char kCryptographyComplianceCnsaDescription[];
+
 extern const char kCssGamutMappingName[];
 extern const char kCssGamutMappingDescription[];
 

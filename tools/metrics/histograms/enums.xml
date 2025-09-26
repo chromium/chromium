@@ -12887,6 +12887,7 @@ from previous Chrome versions.
   <int value="-455413094" label="FilesJsModules:enabled"/>
   <int value="-455203267" label="use_new_features_summary"/>
   <int value="-454549390" label="force-high-performance-gpu"/>
+  <int value="-454532863" label="CryptographyComplianceCnsa:disabled"/>
   <int value="-454459100" label="ReadAnythingWithAlgorithm:enabled"/>
   <int value="-454362199" label="HelpAppV2:disabled"/>
   <int value="-454359275" label="kQuickAnswersMaterialNextUI:disabled"/>
@@ -13162,6 +13163,7 @@ from previous Chrome versions.
   <int value="-349380607" label="AndroidNightMode:disabled"/>
   <int value="-349057743" label="extensions-on-chrome-urls"/>
   <int value="-348720922" label="FedCmIdpSigninStatusEnabled:enabled"/>
+  <int value="-348408686" label="CryptographyComplianceCnsa:enabled"/>
   <int value="-348141551" label="IgnoreUiGains:enabled"/>
   <int value="-348051342" label="AccessibilityOnScreenAXMode:enabled"/>
   <int value="-347654657" label="CSSColorSchemeUARendering:enabled"/>

@@ -11,7 +11,9 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -442,4 +444,33 @@ TEST_F(SSLConfigServiceManagerTest, Tls13CiphersCompliancePrefCnsa) {
   ASSERT_NO_FATAL_FAILURE(WaitForUpdate());
 
   EXPECT_TRUE(observed_configs_[0]->tls13_cipher_prefer_aes_256);
+}
+
+TEST_F(SSLConfigServiceManagerTest, KeyExchangeComplianceFeatureCnsa) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kCryptographyComplianceCnsa);
+
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  // Because the Feature is enabled, the SSLConfig has the same value as would
+  // be configured by the pref.
+  EXPECT_EQ(initial_config_->named_groups_preset,
+            network::mojom::SSLNamedGroupsPreset::kCnsa2);
+}
+
+TEST_F(SSLConfigServiceManagerTest, Tls13CiphersComplianceFeatureCnsa) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kCryptographyComplianceCnsa);
+
+  TestingPrefServiceSimple local_state;
+  SSLConfigServiceManager::RegisterPrefs(local_state.registry());
+  std::unique_ptr<SSLConfigServiceManager> config_manager =
+      SetUpConfigServiceManager(&local_state);
+
+  // Because the Feature is enabled, the SSLConfig has the same value as would
+  // be configured by the pref.
+  EXPECT_TRUE(initial_config_->tls13_cipher_prefer_aes_256);
 }
