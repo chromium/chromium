@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
@@ -291,7 +292,7 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
 
 void SaveUpdatePasswordMessageDelegate::SavePassword() {
   if (!device_lock_bridge_->ShouldShowDeviceLockUi()) {
-    passwords_state_.form_manager()->Save();
+    SaveFormManager();
     return;
   }
   device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
@@ -305,9 +306,25 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
     bool is_device_lock_requirement_met) {
   CHECK(device_lock_bridge_->RequiresDeviceLock());
   if (is_device_lock_requirement_met) {
-    passwords_state_.form_manager()->Save();
+    SaveFormManager();
   }
   ClearState();
+}
+
+void SaveUpdatePasswordMessageDelegate::SaveFormManager() {
+  passwords_state_.form_manager()->Save();
+
+  const password_manager::PasswordForm* changed_password_form_with_backup =
+      password_manager_util::FindChangedPasswordLoginWithBackup(
+          *passwords_state_.form_manager());
+  if (changed_password_form_with_backup &&
+      changed_password_form_with_backup->GetPasswordBackup() ==
+          passwords_state_.form_manager()
+              ->GetPendingCredentials()
+              .password_value) {
+    password_manager::metrics_util::LogPrimaryPasswordUpdatedWithBackup(
+        web_contents_->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  }
 }
 
 void SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked() {
