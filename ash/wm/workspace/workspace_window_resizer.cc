@@ -333,11 +333,6 @@ std::unique_ptr<WindowResizer> CreateWindowResizerForTabletMode(
            SplitViewController::Get(Shell::GetPrimaryRootWindow())
                ->InTabletSplitViewMode());
 
-  if (SplitViewController::Get(Shell::GetPrimaryRootWindow())
-          ->InSplitViewMode()) {
-    return nullptr;
-  }
-
   window_state->CreateDragDetails(point_in_parent, window_component, source);
   auto resizer = std::make_unique<TabletModeWindowResizer>(
       window_state, std::make_unique<TabletModeWindowDragDelegate>());

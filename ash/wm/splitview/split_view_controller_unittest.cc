@@ -4741,8 +4741,9 @@ TEST_F(SplitViewDraggingTest, TabDraggingFromSnapped) {
   EXPECT_TRUE(WindowState::Get(other_window.get())->IsSnapped());
 
   auto [resizer, _] = StartTabDrag(source_window.get());
-  // Not yet supported.
-  EXPECT_FALSE(resizer.get());
+  EXPECT_TRUE(resizer.get());
+  DragWithOffset(resizer.get(), 100, 100);
+  CompleteTabDrag(std::move(resizer));
 }
 
 TEST_F(SplitViewDraggingTest, NoBackDropDuringTabDragging) {

@@ -107,6 +107,10 @@ void TabletModeWindowDragDelegate::StartWindowDrag(
   initial_location_in_screen_ = location_in_screen;
 
   WindowBackdrop::Get(dragged_window_)->DisableBackdrop();
+  // We don't really need to call SplitViewController::OnWindowDragStarted as
+  // long as we don't allow dragging entire windows (and even then I'm not
+  // sure). Do it anyways in order to match the later OnWindowDragEnded call.
+  split_view_controller_->OnWindowDragStarted(dragged_window_);
   split_view_drag_indicators_->SetDraggedWindow(dragged_window_);
 }
 
@@ -142,6 +146,7 @@ void TabletModeWindowDragDelegate::EndWindowDrag(
           ? GetSnapPosition(location_in_screen)
           : SnapPosition::kNone;
 
+  // Notify SplitViewController so it can do its work (e.g. snap the window).
   split_view_controller_->OnWindowDragEnded(
       dragged_window_, snap_position, gfx::ToRoundedPoint(location_in_screen),
       WindowSnapActionSource::kDragDownFromTopToSnap);
@@ -156,6 +161,14 @@ SnapPosition TabletModeWindowDragDelegate::GetSnapPosition(
   if (!split_view_controller_->CanSnapWindow(dragged_window_,
                                              chromeos::kDefaultSnapRatio)) {
     return SnapPosition::kNone;
+  }
+
+  // If we're already in split view, determine the snap position simply based on
+  // which side of the split view `location_in_screen` is. As a consequence, the
+  // snap indicator will show even if not dragging to the screen edge.
+  if (split_view_controller_->InSplitViewMode()) {
+    return split_view_controller_->ComputeSnapPosition(
+        gfx::ToRoundedPoint(location_in_screen));
   }
 
   const gfx::Rect area =

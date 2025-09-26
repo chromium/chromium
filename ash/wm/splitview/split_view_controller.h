@@ -377,6 +377,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   friend class SplitViewOverviewSessionTest;
   friend class SplitViewOverviewSession;
   class DividerSnapAnimation;
+  class TabDragWindowObserver;
   class ToBeSnappedWindowsObserver;
 
   // Reason that a snapped window is detached from the splitview.
@@ -668,6 +669,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // A flag indicates the window bounds is currently changed due to the virtual
   // keyboard.
   bool changing_bounds_by_vk_ = false;
+
+  // Used to delay snapping a drag window until we know the drag window
+  // survives the drag.
+  std::unique_ptr<TabDragWindowObserver> tab_drag_window_observer_;
 };
 
 }  // namespace ash
