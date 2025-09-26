@@ -763,8 +763,7 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
 }
 
 void ClientSideDetectionHost::RegisterPermissionRequestManager() {
-  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
-      base::FeatureList::IsEnabled(kClientSideDetectionNotificationPrompt)) {
+  if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     permission_request_observation_.Observe(
         permissions::PermissionRequestManager::FromWebContents(web_contents()));
   }

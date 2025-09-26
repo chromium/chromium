@@ -2362,7 +2362,6 @@ class ClientSideDetectionHostNotificationTest
     ClientSideDetectionHostTest::SetUp();
 
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-    SetFeatures({kClientSideDetectionNotificationPrompt}, {});
 
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     auto* manager =

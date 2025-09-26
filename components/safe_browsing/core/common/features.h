@@ -80,10 +80,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 BASE_DECLARE_FEATURE(
     kClientSideDetectionLlamaForcedTriggerInfoForScamDetection);
 
-// Expand CSD-Phishing beyond phishing and trigger when a notification prompt
-// occurs on the page.
-BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);
-
 // Extract only the visual features during the phishing classifier.
 BASE_DECLARE_FEATURE(kClientSideDetectionOnlyExtractVisualFeatures);
 
