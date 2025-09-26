@@ -725,13 +725,9 @@ void AddCachedAutofillAiPredictions(const AutofillAiModelCache& cache,
       server_prediction.set_source(ServerPrediction::SOURCE_AUTOFILL_AI);
       field->MaybeAddServerPrediction(std::move(server_prediction));
     }
-    if (!prediction.format_string.empty()) {
-      // TODO(crbug.com/389625753): Either implement format strings properly
-      // in the model or remove this here.
+    if (prediction.format_string) {
       field->set_format_string_unless_overruled(
-          AutofillFormatString(std::move(prediction.format_string),
-                               FormatString_Type_DATE),
-          AutofillFormatStringSource::kModelResult);
+          *prediction.format_string, AutofillFormatStringSource::kModelResult);
     }
   }
 }

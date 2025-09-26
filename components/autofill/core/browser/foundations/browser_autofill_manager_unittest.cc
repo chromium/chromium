@@ -7848,10 +7848,12 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel, CacheResultUsed) {
   using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
   auto predictions = base::flat_map<FieldIdentifier, ModelFieldPrediction>(
       {std::pair{FieldIdentifier{.signature = field_signature1},
-                 ModelFieldPrediction{.field_type = PASSPORT_NUMBER}},
-       std::pair{FieldIdentifier{.signature = field_signature2},
-                 ModelFieldPrediction{.field_type = PASSPORT_ISSUE_DATE,
-                                      .format_string = u"D.M.YYYY"}}});
+                 ModelFieldPrediction(PASSPORT_NUMBER)},
+       std::pair{
+           FieldIdentifier{.signature = field_signature2},
+           ModelFieldPrediction(
+               PASSPORT_ISSUE_DATE,
+               AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE))}});
 
   EXPECT_CALL(cache(), Contains(form_signature)).WillOnce(Return(true));
   EXPECT_CALL(cache(), GetFieldPredictions(form_signature))
@@ -7899,10 +7901,12 @@ TEST_F(BrowserAutofillManagerTest_AutofillAi_WithModel,
   using ModelFieldPrediction = AutofillAiModelCache::FieldPrediction;
   auto predictions = base::flat_map<FieldIdentifier, ModelFieldPrediction>(
       {std::pair{FieldIdentifier{.signature = field_signature1},
-                 ModelFieldPrediction{.field_type = PASSPORT_NUMBER}},
-       std::pair{FieldIdentifier{.signature = field_signature2},
-                 ModelFieldPrediction{.field_type = PASSPORT_ISSUE_DATE,
-                                      .format_string = u"D.M.YYYY"}}});
+                 ModelFieldPrediction(PASSPORT_NUMBER)},
+       std::pair{
+           FieldIdentifier{.signature = field_signature2},
+           ModelFieldPrediction(
+               PASSPORT_ISSUE_DATE,
+               AutofillFormatString(u"D.M.YYYY", FormatString_Type_DATE))}});
 
   ON_CALL(cache(), Contains(form_signature)).WillByDefault(Return(true));
   EXPECT_CALL(cache(), GetFieldPredictions(form_signature)).Times(0);

@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "components/autofill/core/browser/data_model/data_model_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_service.h"
@@ -111,15 +112,24 @@ AutofillAiModelCacheImpl::GetFieldPredictions(
         cache_entry->field_identifiers(i);
     const optimization_guide::proto::FieldTypeResponse& prediction =
         server_response.field_responses(i);
+
+    // TODO(crbug.com/389625753): Either implement format strings properly and
+    // include more types than just date in the model or remove them completely.
+    std::optional<AutofillFormatString> format_string;
+    if (std::u16string format_string_u16 =
+            base::UTF8ToUTF16(prediction.formatting_meta());
+        data_util::IsValidDateFormat(format_string_u16)) {
+      format_string.emplace(std::move(format_string_u16),
+                            FormatString_Type_DATE);
+    }
     result.emplace_back(
         FieldIdentifier{
             .signature = FieldSignature(identifier.field_signature()),
             .rank_in_signature_group =
                 identifier.field_rank_in_signature_group()},
-        FieldPrediction{
-            .field_type =
-                ToSafeFieldType(prediction.field_type(), NO_SERVER_DATA),
-            .format_string = base::UTF8ToUTF16(prediction.formatting_meta())});
+        FieldPrediction(
+            ToSafeFieldType(prediction.field_type(), NO_SERVER_DATA),
+            std::move(format_string)));
   }
   return std::move(result);
 }
