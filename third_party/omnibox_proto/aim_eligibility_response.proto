@@ -11,8 +11,10 @@ option java_outer_classname = 'AimEligibilityResponseProto';
 package omnibox;
 
 // AIM Eligibility Response.
-// Next ID: 3
+// Next ID: 5
 message AimEligibilityResponse {
   optional bool is_eligible = 1;
   optional bool is_pdf_upload_eligible = 2;
+  optional bool is_deep_search_eligible = 3;
+  optional bool is_canvas_eligible = 4;
 }
