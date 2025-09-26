@@ -99,6 +99,12 @@ if (is_win && is_component_build && (!use_custom_libcxx || libcxx_is_shared)) {
   use_allocator_shim_default = false
 }
 
+# When Cronet builds within Android this is not supported. See
+# https://crrev.com/c/6179216.
+if (is_cronet_for_aosp_build) {
+  use_allocator_shim_default = false
+}
+
 shim_supports_sized_dealloc_default = use_sized_deallocation
 
 use_partition_alloc_as_malloc_default =
