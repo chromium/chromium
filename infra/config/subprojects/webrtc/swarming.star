@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/swarming.star", "swarming")
+load("@chromium-luci//swarming.star", "swarming")
 
 # WebRTC pools have additional ACLs to allow LED for project-webrtc-admins.
 swarming.pool_realm(

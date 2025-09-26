@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//console-header.star", "HEADER")
+load("//console-header.star", "get_header")
 
 luci.console_view(
     name = "chromium.webrtc.fyi",
     repo = "https://webrtc.googlesource.com/src",
     refs = ["refs/heads/master", "refs/heads/main"],
-    header = HEADER,
+    header = get_header(),
     entries = [
         luci.console_view_entry(
             builder = "webrtc.fyi/WebRTC Chromium FYI Android Builder (dbg)",

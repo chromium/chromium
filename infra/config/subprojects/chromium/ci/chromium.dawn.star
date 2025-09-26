@@ -3,25 +3,29 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.dawn builder group."""
 
-load("//lib/args.star", "args")
-load("//lib/branches.star", "branches")
-load("//lib/builder_config.star", "builder_config")
-load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "cpu", "gardener_rotations", "siso")
-load("//lib/ci.star", "ci")
-load("//lib/consoles.star", "consoles")
-load("//lib/gn_args.star", "gn_args")
-load("//lib/targets.star", "targets")
+load("@chromium-luci//args.star", "args")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builder_config.star", "builder_config")
+load("@chromium-luci//builder_health_indicators.star", "health_spec")
+load("@chromium-luci//builders.star", "cpu")
+load("@chromium-luci//ci.star", "ci")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//gn_args.star", "gn_args")
+load("@chromium-luci//targets.star", "targets")
+load("//lib/ci_constants.star", "ci_constants")
+load("//lib/gardener_rotations.star", "gardener_rotations")
+load("//lib/gpu.star", "gpu")
+load("//lib/siso.star", "siso")
 load("//project.star", "settings")
 
 ci.defaults.set(
-    executable = ci.DEFAULT_EXECUTABLE,
+    executable = ci_constants.DEFAULT_EXECUTABLE,
     builder_group = "chromium.dawn",
-    pool = ci.gpu.POOL,
+    pool = gpu.ci.POOL,
     gardener_rotations = gardener_rotations.DAWN,
     contact_team_email = "chrome-gpu-infra@google.com",
-    execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-    health_spec = health_spec.DEFAULT,
+    execution_timeout = ci_constants.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.default(),
     # This property is read by the the dawn_top_of_tree gclient config and must
     # be set for branched builders in order to check out the appropriate branch.
     # Setting it for the non-branched builders and/or builders not using
@@ -29,9 +33,8 @@ ci.defaults.set(
     properties = {
         "dawn_ref": settings.dawn_ref,
     },
-    service_account = ci.gpu.SERVICE_ACCOUNT,
-    shadow_service_account = ci.gpu.SHADOW_SERVICE_ACCOUNT,
-    siso_enabled = True,
+    service_account = gpu.ci.SERVICE_ACCOUNT,
+    shadow_service_account = gpu.ci.SHADOW_SERVICE_ACCOUNT,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
     thin_tester_cores = 2,
@@ -65,7 +68,7 @@ consoles.console_view(
     },
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Chromium Presubmit",
     branch_selector = [
         branches.selector.ANDROID_BRANCHES,
@@ -120,7 +123,7 @@ ci.gpu.linux_builder(
     execution_timeout = 30 * time.minute,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Linux x64 Builder",
     description_html = "Builds Linux x64 binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -160,7 +163,7 @@ ci.gpu.linux_builder(
     ),
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Linux x64 DEPS Builder",
     branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = "Builds Linux x64 binaries using DEPS-ed in Dawn",
@@ -201,7 +204,7 @@ ci.gpu.linux_builder(
     cq_mirrors_console_view = "mirrors",
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Android arm DEPS Builder",
     description_html = "Builds Android arm binaries using DEPS-ed in Dawn",
     builder_spec = builder_config.builder_spec(
@@ -243,7 +246,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Android arm64 DEPS Builder",
     description_html = "Builds Android arm64 binaries using DEPS-ed in Dawn",
     builder_spec = builder_config.builder_spec(
@@ -610,7 +613,7 @@ ci.thin_tester(
     cq_mirrors_console_view = "mirrors",
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Linux TSAN Release",
     description_html = "Runs ToT Dawn tests on stable Linux/NVIDIA GTX 1660 configs with TSan enabled",
     builder_spec = builder_config.builder_spec(
@@ -668,7 +671,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Android arm Builder",
     description_html = "Builds Android arm binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -711,7 +714,7 @@ ci.gpu.linux_builder(
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn Android arm64 Builder",
     description_html = "Builds Android arm64 binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -1116,7 +1119,7 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.linux_builder(
+gpu.ci.linux_builder(
     name = "Dawn ChromeOS Skylab Release (volteer)",
     description_html = "Runs ToT Dawn tests on Skylab-hosted volteer devices",
     builder_spec = builder_config.builder_spec(
@@ -1476,7 +1479,7 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "Dawn Mac arm64 Builder",
     description_html = "Builds Mac arm64 binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -1515,7 +1518,7 @@ ci.gpu.mac_builder(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "Dawn Mac arm64 DEPS Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds Mac arm64 binaries using DEPS-ed in Dawn",
@@ -1691,7 +1694,7 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "Dawn Mac x64 Builder",
     description_html = "Builds Mac x64 binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -1732,7 +1735,7 @@ ci.gpu.mac_builder(
     ),
 )
 
-ci.gpu.mac_builder(
+gpu.ci.mac_builder(
     name = "Dawn Mac x64 DEPS Builder",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Builds Mac x64 binaries using DEPS-ed in Dawn",
@@ -2108,7 +2111,7 @@ ci.thin_tester(
     ),
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "Dawn Win10 x64 ASAN Builder",
     description_html = "Builds Windows x64 binaries with ASan enabled using ToT Dawn",
     # One build every 2 hours.
@@ -2327,7 +2330,7 @@ ci.thin_tester(
     execution_timeout = 4 * time.hour,
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "Dawn Win10 x64 Builder",
     description_html = "Builds Windows x64 binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -2369,7 +2372,7 @@ ci.gpu.windows_builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "Dawn Win10 x64 DEPS Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Builds Windows x64 binaries using DEPS-ed in Dawn",
@@ -2410,7 +2413,7 @@ ci.gpu.windows_builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "Dawn Win11 arm64 Builder",
     description_html = "Builds Windows arm64 binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -2461,7 +2464,7 @@ ci.gpu.windows_builder(
     ),
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "Dawn Win11 arm64 DEPS Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Builds Windows arm64 binaries using DEPS-ed in Dawn",
@@ -2896,7 +2899,7 @@ ci.thin_tester(
     execution_timeout = 4 * time.hour,
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "Dawn Win10 x86 Builder",
     description_html = "Builds Windows x86 binaries using ToT Dawn",
     builder_spec = builder_config.builder_spec(
@@ -2937,7 +2940,7 @@ ci.gpu.windows_builder(
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CI,
 )
 
-ci.gpu.windows_builder(
+gpu.ci.windows_builder(
     name = "Dawn Win10 x86 DEPS Builder",
     branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Builds Windows x86 binaries using DEPS-ed in Dawn",

@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builders", "os")
-load("//lib/consoles.star", "consoles")
+load("@chromium-luci//builders.star", "builders", "os")
+load("@chromium-luci//consoles.star", "consoles")
 
 consoles.defaults.set(
     repo = "https://chromium.googlesource.com/chromium/src",

@@ -9,7 +9,7 @@
 # suite is no longer needed in //testing/buildbot, targets.bundle (which does
 # not yet exist) can be used for grouping tests in a more flexible manner.
 
-load("//lib/targets.star", "targets")
+load("@chromium-luci//targets.star", "targets")
 
 targets.legacy_matrix_compound_suite(
     name = "chromeos_vmlab_tests",
