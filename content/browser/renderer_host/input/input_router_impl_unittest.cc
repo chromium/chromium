@@ -1682,7 +1682,15 @@ TEST_F(InputRouterImplTest, AsyncTouchMoveAckedImmediately) {
   EXPECT_EQ(WebInputEvent::Type::kTouchMove,
             disposition_handler_->ack_event_type());
   EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
-  EXPECT_EQ(1U, GetAndResetDispatchedMessages().size());
+
+  // When `SendEmptyGestureScrollUpdate` is enabled, `TouchMove` events are
+  // queued and not dispatched immediately. Otherwise, the `TouchMove` is
+  // dispatched right away.
+  if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate)) {
+    EXPECT_EQ(0U, GetAndResetDispatchedMessages().size());
+  } else {
+    EXPECT_EQ(1U, GetAndResetDispatchedMessages().size());
+  }
 
   // To catch crbug/1072364 send another scroll which returns kNoConsumerExists
   // and ensure we're still async scrolling since we've already started the
@@ -1707,7 +1715,14 @@ TEST_F(InputRouterImplTest, AsyncTouchMoveAckedImmediately) {
   EXPECT_EQ(WebInputEvent::Type::kTouchMove,
             disposition_handler_->ack_event_type());
   EXPECT_EQ(1U, disposition_handler_->GetAndResetAckCount());
-  EXPECT_EQ(1U, GetAndResetDispatchedMessages().size());
+
+  // Verify the number of dispatched messages again, which depends on whether
+  // the `SendEmptyGestureScrollUpdate` feature is active.
+  if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate)) {
+    EXPECT_EQ(0U, GetAndResetDispatchedMessages().size());
+  } else {
+    EXPECT_EQ(1U, GetAndResetDispatchedMessages().size());
+  }
 }
 
 // Test that the double tap gesture depends on the touch action of the first
