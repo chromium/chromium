@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionInstallDialogBridge_jni.h"
@@ -73,6 +74,8 @@ void ExtensionInstallDialogViewAndroid::ShowDialog(
 
   Java_ExtensionInstallDialogBridge_showDialog(
       env, java_object,
+      ConvertUTF16ToJavaString(env, prompt_->GetDialogTitle()),
+      gfx::ConvertToJavaBitmap(prompt_->icon().AsBitmap()),
       ConvertUTF16ToJavaString(env, prompt_->GetAcceptButtonLabel()),
       ConvertUTF16ToJavaString(env, prompt_->GetAbortButtonLabel()));
 }

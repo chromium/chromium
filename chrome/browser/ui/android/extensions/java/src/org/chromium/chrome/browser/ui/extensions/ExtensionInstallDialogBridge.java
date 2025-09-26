@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.ui.extensions;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -105,13 +108,17 @@ public class ExtensionInstallDialogBridge {
      * @param cancelButtonLabel Label for the negative button which acts as the cancel button.
      */
     @CalledByNative
-    public void showDialog(String acceptButtonLabel, String cancelButtonLabel) {
+    public void showDialog(
+            String title, Bitmap iconBitmap, String acceptButtonLabel, String cancelButtonLabel) {
         View extensionInstallDialogContentView =
                 LayoutInflater.from(mContext).inflate(R.layout.extension_install_dialog, null);
+        Drawable iconDrawable = new BitmapDrawable(mContext.getResources(), iconBitmap);
 
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, mModalDialogController)
+                        .with(ModalDialogProperties.TITLE, title)
+                        .with(ModalDialogProperties.TITLE_ICON, iconDrawable)
                         .with(ModalDialogProperties.CUSTOM_VIEW, extensionInstallDialogContentView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, acceptButtonLabel)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, cancelButtonLabel);

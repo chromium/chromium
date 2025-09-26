@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -34,9 +35,11 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 public class ExtensionInstallDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private static final String TITLE = "Add 'extension name'?";
     private static final String ACCEPT_BUTTON_LABEL = "Add extension";
     private static final String CANCEL_BUTTON_LABEL = "Cancel";
     private static final long NATIVE_INSTALL_EXTENSION_DIALOG_VIEW = 100L;
+    private static final Bitmap ICON = Bitmap.createBitmap(24, 24, Bitmap.Config.ARGB_8888);
 
     @Mock private Natives mNativeMock;
 
@@ -45,7 +48,8 @@ public class ExtensionInstallDialogBridgeTest {
     private ExtensionInstallDialogBridge mExtensionInstallDialogBridge;
 
     private void showExtensionInstallDialog() {
-        mExtensionInstallDialogBridge.showDialog(ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL);
+        mExtensionInstallDialogBridge.showDialog(
+                TITLE, ICON, ACCEPT_BUTTON_LABEL, CANCEL_BUTTON_LABEL);
     }
 
     @Before
