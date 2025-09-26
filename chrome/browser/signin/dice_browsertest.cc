@@ -1145,24 +1145,9 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Incognito) {
       incognito_browser->profile()));
 }
 
-// TODO(crbug.com/447150278): Fix the tests to work with the feature enabled and
-// move them back to DiceBrowserTest.
-class DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos
-    : public DiceBrowserTest {
- public:
-  DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos() {
-    feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that Sync is enabled if the ENABLE_SYNC response is received after the
 // refresh token.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
-                       EnableSyncAfterToken) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
@@ -1223,8 +1208,14 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
   // Check that the tab was navigated to the NTP.
   ntp_run_loop.Run();
 
-  // Dismiss the Sync confirmation UI.
-  EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
+  // Wait for the Sync confirmation UI and click through. This is only needed
+  // when `syncer::kReplaceSyncPromosWithSignInPromos` is disabled, because
+  // otherwise it is a sign-in flow without involving the Sync confirmation
+  // dialog.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
+  }
 
   // Expect that metrics related to the browser signin stage are recorded.
   histogram_tester.ExpectBucketCount(
@@ -1256,8 +1247,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
 // Tests that the account is signed in if the ENABLE_SYNC response is received
 // before the refresh token, and the Sync opt-in is offered.
 // https://crbug.com/1082858
-IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
-                       EnableSyncBeforeToken) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncBeforeToken) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
@@ -1306,11 +1296,19 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
                                GetDeviceId().c_str()),
             dice_request_header_);
 
-  // Wait for the Sync confirmation UI and click through.
-  EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
-
-  EXPECT_EQ(signin::ConsentLevel::kSync,
-            signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
+  // Wait for the Sync confirmation UI and click through. This is only needed
+  // when `syncer::kReplaceSyncPromosWithSignInPromos` is disabled, because
+  // otherwise it is a sign-in flow without involving the Sync confirmation
+  // dialog.
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    EXPECT_EQ(signin::ConsentLevel::kSignin,
+              signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
+  } else {
+    EXPECT_TRUE(login_ui_test_utils::ConfirmSyncConfirmationDialog(browser()));
+    EXPECT_EQ(signin::ConsentLevel::kSync,
+              signin::GetPrimaryAccountConsentLevel(GetIdentityManager()));
+  }
 
   // The interception bubble should not have been shown.
   histogram_tester.ExpectBucketCount(
@@ -1324,6 +1322,18 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
   histogram_tester.ExpectTotalCount(
       "Signin.SigninManager.SyncHeaderArrivalTimeWindowAfterLst", 1);
 }
+
+class DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos
+    : public DiceBrowserTest {
+ public:
+  DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos() {
+    feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Verifies that Chrome doesn't crash on browser window close when the sync
 // confirmation dialog is waiting for its size.
