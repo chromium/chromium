@@ -10,9 +10,7 @@ import("//components/grpc_support/include/headers.gni")
 import("//ios/build/config.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//ios/web_view/features.gni")
-import("//ios/web_view/repack.gni")
 import("//testing/test.gni")
-import("//tools/grit/repack.gni")
 
 group("all_tests") {
   testonly = true
@@ -317,7 +315,6 @@ ios_web_view_sources = [
 ]
 
 ios_web_view_deps = [
-  ":web_view_resources",
   "//base",
   "//components/affiliations/core/browser:affiliations",
   "//components/autofill/core/browser",
@@ -429,6 +426,7 @@ ios_web_view_deps = [
   "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
   "//ios/web/webui",
   "//ios/web_view/internal/js_messaging:cwv_messaging_js",
+  "//ios/web_view/resources",
   "//net",
   "//net:extras",
   "//services/metrics/public/cpp:metrics_cpp",
@@ -598,64 +596,6 @@ test("ios_web_view_inttests") {
   bundle_deps = [ ":web_view+bundle" ]
 
   assert_no_deps = ios_assert_no_deps
-}
-
-repack_locales("repack_locales") {
-  visibility = [ ":web_view_resources" ]
-  source_patterns = [
-    "${root_gen_dir}/components/strings/components_strings_",
-    "${root_gen_dir}/components/strings/components_locale_settings_",
-    "${root_gen_dir}/ui/strings/app_locale_settings_",
-    "${root_gen_dir}/ui/strings/ax_strings_",
-    "${root_gen_dir}/ui/strings/ui_strings_",
-  ]
-
-  deps = [
-    "//components/strings:components_locale_settings",
-    "//components/strings:components_strings",
-    "//ui/strings:app_locale_settings",
-    "//ui/strings:ax_strings",
-    "//ui/strings:ui_strings",
-  ]
-  input_locales = platform_pak_locales
-  output_locales = locales_as_apple_outputs
-  copy_data_to_bundle = true
-}
-
-repack("repack_resources") {
-  visibility = [ ":web_view_resources" ]
-  deps = [
-    "//components/resources:components_resources",
-    "//components/sync/service/resources",
-    "//ios/web:resources",
-    "//ui/webui/resources",
-  ]
-  sources = [
-    "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
-    "$root_gen_dir/ios/web/ios_web_resources.pak",
-    "$root_gen_dir/ui/webui/resources/webui_resources.pak",
-  ]
-  output = "$target_gen_dir/web_view_resources.pak"
-  copy_data_to_bundle = true
-}
-
-ios_web_view_repack_all_scales("repack_scalable_resources") {
-  visibility = [ ":web_view_resources" ]
-  scales = [
-    "100",
-    "200",
-    "300",
-  ]
-}
-
-group("web_view_resources") {
-  visibility = [ "//ios/web_view:*" ]
-  deps = [
-    ":repack_locales",
-    ":repack_resources",
-    ":repack_scalable_resources",
-  ]
 }
 
 _package_dir = "$root_out_dir/ios_web_view"
