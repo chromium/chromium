@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
@@ -141,6 +142,16 @@ void GlicInstanceImpl::RegisterConversation(
                                 kInstanceAlreadyHasConversationId);
     return;
   }
+  if (!info) {
+    // This point shouldn't be hit, because empty info triggers switching to a
+    // new conversation and the glic api enforces non-empty conversation info
+    // for `registerConversation`.
+    LOG(ERROR) << "RegisterConversation called with null info.";
+    std::move(callback).Run(
+        mojom::RegisterConversationErrorReason::kDefaultValue);
+    return;
+  }
+
   conversation_info_ =
       ConversationInfo{info->conversation_id, info->conversation_title};
   std::move(callback).Run(std::nullopt);

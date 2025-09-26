@@ -454,7 +454,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
       target_instance = current_instance->conversation_id()
                             ? CreateGlicInstance()
                             : current_instance;
-      target_instance->RegisterConversation(std::move(info), /*callback=*/{});
+      target_instance->RegisterConversation(std::move(info), base::DoNothing());
     }
   }
 
