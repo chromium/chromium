@@ -75,6 +75,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
@@ -535,6 +536,9 @@ void ProfileMenuView::OnAutofillSettingsButtonClicked() {
   if (!perform_menu_actions()) {
     return;
   }
+  base::UmaHistogramEnumeration(
+      "Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer",
+      autofill::autofill_metrics::AutofillSettingsReferrer::kProfileMenu);
   chrome::ShowSettingsSubPage(&browser(), chrome::kAutofillSubPage);
 }
 

@@ -11,9 +11,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import type {SettingsAutofillSectionElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
 import {AutofillManagerImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {resetRouterForTesting} from 'chrome://settings/settings.js';
 import type {CrLinkRowElement, SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, OpenWindowProxyImpl, PasswordManagerImpl, SettingsPluralStringProxyImpl, PasswordManagerPage} from 'chrome://settings/settings.js';
+import {AutofillSettingsReferrer, CrSettingsPrefs, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
@@ -21,22 +20,23 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 
 import {AutofillManagerExpectations, createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, PaymentsManagerExpectations, STUB_USER_ACCOUNT_INFO, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
-suite('PasswordsAndForms', function() {
-  /**
-   * Creates a new passwords and forms element.
-   */
-  function createAutofillElement(prefsElement: SettingsPrefsElement):
-      SettingsAutofillPageElement {
-    const element = document.createElement('settings-autofill-page');
-    element.prefs = prefsElement.prefs;
-    document.body.appendChild(element);
-    flush();
-    return element;
-  }
+/**
+ * Creates a new passwords and forms element.
+ */
+function createAutofillElement(prefsElement: SettingsPrefsElement):
+    SettingsAutofillPageElement {
+  const element = document.createElement('settings-autofill-page');
+  element.prefs = prefsElement.prefs;
+  document.body.appendChild(element);
+  flush();
+  return element;
+}
 
+suite('PasswordsAndForms', function() {
   function createPaymentSectionElement(prefsElement: SettingsPrefsElement) {
     const element = document.createElement('settings-payments-section');
     element.prefs = prefsElement.prefs!;
@@ -327,5 +327,79 @@ suite('PasswordsUITest', function() {
     autofillSection.$.passwordManagerButton.click();
     const param = await passwordManager.whenCalled('showPasswordManager');
     assertEquals(PasswordManagerPage.PASSWORDS, param);
+  });
+});
+
+suite('AutofillPageMetricsTest', function() {
+  let autofillPage: SettingsAutofillPageElement;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+    loadTimeData.overrideValues({
+      showAutofillAiControl: false,
+    });
+    resetRouterForTesting();
+
+    autofillPage = document.createElement('settings-autofill-page');
+    document.body.appendChild(autofillPage);
+    return flushTasks();
+  });
+
+  test('recordMetricsWhenClickingAddresses', async function() {
+    const addressesManagerButton =
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(
+            '#addressesManagerButton');
+    assertTrue(!!addressesManagerButton);
+    addressesManagerButton.click();
+
+    const [histogramName, referrer] = await metricsBrowserProxy.whenCalled(
+        'recordAutofillSettingsReferrer');
+    assertEquals('Autofill.AddressesSettingsPage.VisitReferrer', histogramName);
+    assertEquals(
+        AutofillSettingsReferrer.AUTOFILL_AND_PASSWORDS_PAGE, referrer);
+  });
+
+  test('recordMetricsWhenClickingPayments', async function() {
+    const paymentManagerButton =
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(
+            '#paymentManagerButton');
+    assertTrue(!!paymentManagerButton);
+    paymentManagerButton.click();
+
+    const [histogramName, referrer] = await metricsBrowserProxy.whenCalled(
+        'recordAutofillSettingsReferrer');
+    assertEquals('Autofill.PaymentMethodsSettingsPage.VisitReferrer',
+      histogramName);
+    assertEquals(
+        AutofillSettingsReferrer.AUTOFILL_AND_PASSWORDS_PAGE, referrer);
+  });
+
+  test('recordMetricsWhenClickingAutofillAi', async function() {
+    loadTimeData.overrideValues({
+      showAutofillAiControl: true,
+    });
+    resetRouterForTesting();
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const prefs = document.createElement('settings-prefs');
+    autofillPage = createAutofillElement(prefs);
+    autofillPage = document.createElement('settings-autofill-page');
+    document.body.appendChild(autofillPage);
+    await flushTasks();
+
+    const autofillAiManagerButton =
+        autofillPage.shadowRoot!.querySelector<HTMLElement>(
+            '#autofillAiManagerButton');
+    assertTrue(!!autofillAiManagerButton);
+    autofillAiManagerButton.click();
+
+    const [histogramName, referrer] = await metricsBrowserProxy.whenCalled(
+        'recordAutofillSettingsReferrer');
+    assertEquals('Autofill.FormsAiSettingsPage.VisitReferrer', histogramName);
+    assertEquals(
+        AutofillSettingsReferrer.AUTOFILL_AND_PASSWORDS_PAGE, referrer);
   });
 });

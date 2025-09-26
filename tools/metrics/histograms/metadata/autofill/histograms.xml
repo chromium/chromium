@@ -961,6 +961,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.AddressesSettingsPage.VisitReferrer"
+    enum="AutofillSettingsReferrer" expires_after="2026-09-15">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the entry point (referrer) every time the user visits the
+    'Addresses' settings page from a tracked entry point. This metric is emitted
+    on navigation to the page, with the enum values distinguishing the entry
+    points (different ways of reaching the page).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.AddressesSuppressedForDisuse" units="addresses"
     expires_after="2026-03-01">
   <owner>battre@chromium.org</owner>
@@ -1701,6 +1713,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <summary>
     Records initializing the AutofillAI model cache was successful. Recorded
     when the model cache is created, i.e., at profile creation.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer"
+    enum="AutofillSettingsReferrer" expires_after="2026-09-15">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the entry point (referrer) every time the user visits the 'Autofill
+    and Passwords' settings page from a tracked entry point. This metric is
+    emitted on navigation to the page, with the enum values distinguishing the
+    entry points (different ways of reaching the page).
   </summary>
 </histogram>
 
@@ -3770,6 +3794,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormsAiSettingsPage.VisitReferrer"
+    enum="AutofillSettingsReferrer" expires_after="2026-09-15">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the entry point (referrer) every time the user visits the 'Forms AI'
+    settings page from a tracked entry point. This metric is emitted on
+    navigation to the page, with the enum values distinguishing the entry points
+    (different ways of reaching the page).
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormSubmission.PerProfileType"
     enum="BrowserProfileType" expires_after="2026-03-01">
   <owner>arabm@google.com</owner>
@@ -5239,6 +5275,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     new credit card through the Chrome payment methods settings page and there
     is a credit card scanner shown to the user on the payments methods settings
     page.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.PaymentMethodsSettingsPage.VisitReferrer"
+    enum="AutofillSettingsReferrer" expires_after="2026-09-15">
+  <owner>ireneuszszulc@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the entry point (referrer) every time the user visits the 'Payment
+    methods' settings page from a tracked entry point. This metric is emitted on
+    navigation to the page, with the enum values distinguishing the entry points
+    (different ways of reaching the page).
   </summary>
 </histogram>
 

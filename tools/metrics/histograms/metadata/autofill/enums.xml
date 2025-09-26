@@ -2881,6 +2881,17 @@ Called by update_autofill_enums.py.-->
              (ERROR)"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillSettingsReferrer) -->
+
+<enum name="AutofillSettingsReferrer">
+  <int value="0" label="ProfileMenu"/>
+  <int value="1" label="SettingsMenu"/>
+  <int value="2" label="AutofillAndPasswordsPage"/>
+  <int value="3" label="FillingFlowDropdown"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/autofill_settings_metrics.h:AutofillSettingsReferrer,/chrome/browser/resources/settings/metrics_browser_proxy.ts:AutofillSettingsReferrer) -->
+
 <enum name="AutofillSettingsVisibleTypes">
   <int value="0" label="Undefined"/>
   <int value="1" label="Name"/>

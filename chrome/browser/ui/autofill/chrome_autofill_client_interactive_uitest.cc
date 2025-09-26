@@ -4,6 +4,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -229,6 +231,25 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest, SuggestionUiSessionId) {
     EXPECT_EQ(client()->GetSessionIdForCurrentAutofillSuggestions(),
               std::nullopt);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
+                       ShowAutofillSettings_RecordsMetrics) {
+  base::HistogramTester histogram_tester;
+  client()->ShowAutofillSettings(SuggestionType::kManageAddress);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AddressesSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+
+  client()->ShowAutofillSettings(SuggestionType::kManageCreditCard);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 1);
+
+  client()->ShowAutofillSettings(SuggestionType::kManageIban);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethodsSettingsPage.VisitReferrer",
+      autofill_metrics::AutofillSettingsReferrer::kFillingFlowDropdown, 2);
 }
 
 }  // namespace

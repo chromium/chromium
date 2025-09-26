@@ -411,6 +411,23 @@ export enum AiPageTabOrganizationInteractions {
 }
 // LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageTabOrganizationInteractions)
 
+/**
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the AutofillSettingsReferrer enum in
+ * histograms/metadata/autofill/enums.xml
+ */
+// LINT.IfChange(AutofillSettingsReferrer)
+export enum AutofillSettingsReferrer {
+  // PROFILE_MENU = 0,
+  SETTINGS_MENU = 1,
+  AUTOFILL_AND_PASSWORDS_PAGE = 2,
+  // FILLING_FLOW_DROPDOWN = 3,
+  MAX_VALUE = 4,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSettingsReferrer)
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
@@ -597,6 +614,12 @@ export interface MetricsBrowserProxy {
    */
   recordAiPageTabOrganizationInteractions(
       interaction: AiPageTabOrganizationInteractions): void;
+
+  /**
+   * Records a referrer to one of Autofill settings pages.
+   */
+  recordAutofillSettingsReferrer(
+      histogramName: string, referrer: AutofillSettingsReferrer): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -827,6 +850,13 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       interaction,
       AiPageTabOrganizationInteractions.MAX_VALUE,
     ]);
+  }
+
+  recordAutofillSettingsReferrer(
+      histogramName: string, referrer: AutofillSettingsReferrer) {
+    chrome.send(
+        'metricsHandler:recordInHistogram',
+        [histogramName, referrer, AutofillSettingsReferrer.MAX_VALUE]);
   }
 
   static getInstance(): MetricsBrowserProxy {
