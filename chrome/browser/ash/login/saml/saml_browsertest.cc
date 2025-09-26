@@ -134,6 +134,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/event_generator.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -399,6 +400,13 @@ class SamlTestBase : public OobeBaseTest {
     test::OobeJS().ClickOnPath(kPrimaryButton);
 
     test::WaitForPrimaryUserSessionStart();
+  }
+
+  void PressEscButton() {
+    gfx::NativeWindow login_window =
+        LoginDisplayHost::default_host()->GetNativeWindow();
+    ui::test::EventGenerator generator(login_window->GetRootWindow());
+    generator.PressAndReleaseKey(ui::VKEY_ESCAPE);
   }
 
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_mixin_; }
@@ -1247,6 +1255,7 @@ class SAMLPolicyTest : public SamlTestBase {
   void SetSAMLOfflineSigninTimeLimitPolicy(int limit);
   void EnableTransferSAMLCookiesPolicy();
   void SetLoginBehaviorPolicyToSAMLInterstitial();
+  void SetLoginBehaviorPolicy(bool go_directly_to_saml_idp);
   void SetLoginVideoCaptureAllowedUrls(const std::vector<GURL>& allowed);
   void SetPolicyToHideUserPods();
   // SSO_profile in device policy blob is responsible for per-OU IdP
@@ -1392,6 +1401,11 @@ void SAMLPolicyTest::EnableTransferSAMLCookiesPolicy() {
 }
 
 void SAMLPolicyTest::SetLoginBehaviorPolicyToSAMLInterstitial() {
+  SAMLPolicyTest::SetLoginBehaviorPolicy(true);
+}
+
+void SAMLPolicyTest::SetLoginBehaviorPolicy(
+    const bool go_directly_to_saml_idp) {
   base::test::TestFuture<void> test_future;
   base::CallbackListSubscription subscription =
       CrosSettings::Get()->AddSettingsObserver(
@@ -1400,9 +1414,12 @@ void SAMLPolicyTest::SetLoginBehaviorPolicyToSAMLInterstitial() {
   std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
       device_state_.RequestDevicePolicyUpdate();
   em::ChromeDeviceSettingsProto& proto(*device_policy_update->policy_payload());
+  auto policy_value =
+      go_directly_to_saml_idp
+          ? em::LoginAuthenticationBehaviorProto_LoginBehavior_SAML_INTERSTITIAL
+          : em::LoginAuthenticationBehaviorProto_LoginBehavior_GAIA;
   proto.mutable_login_authentication_behavior()
-      ->set_login_authentication_behavior(
-          em::LoginAuthenticationBehaviorProto_LoginBehavior_SAML_INTERSTITIAL);
+      ->set_login_authentication_behavior(policy_value);
   device_policy_update.reset();
   ASSERT_TRUE(test_future.Wait());
 }
@@ -2034,6 +2051,38 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SsoProfileInHiddenUserPodsFlow) {
   // navigated to the IdP page based on SSO profile since we've set domain-based
   // redirection to not work above.
   SigninFrameJS().ExpectVisible("Email");
+}
+
+// Tests that changing the value of the LoginAuthenticationBehavior policy
+// before the user managed to sign in works correctly when the user tries
+// to exit the gaia screen via Esc button.
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest,
+                       ReloadingScreenWithEscButtonOnPolicyChange) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  SetLoginBehaviorPolicyToSAMLInterstitial();
+  SetPolicyToHideUserPods();
+
+  // Wait for online authentication screen to show up.
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
+  test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
+
+  // Expect that we are in the SAML flow.
+  test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
+  // Verify Gaia path used by the Gaia screen.
+  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
+
+  SetLoginBehaviorPolicy(/*go_directly_to_saml_idp=*/false);
+  PressEscButton();
+
+  // Gaia page is expected to reload.
+  WaitForGaiaPageReload();
+  WaitForGaiaUiUpdate();
+
+  test::OobeJS().ExpectAttributeEQ("isSamlAuthFlowForTesting()",
+                                   {"gaia-signin"}, false);
+  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kDefault);
 }
 
 // Tests that we land on 3P IdP page corresponding to sso_profile from the

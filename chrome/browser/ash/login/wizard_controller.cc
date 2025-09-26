@@ -1520,14 +1520,17 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
         }
       }
 
+      GetScreen<GaiaScreen>()->Reset();
       // If a default redirection to third party IdP is set we can hide the
       // dialog.
       const bool gaia_page_defaults_to_saml = IsGaiaPageDefaultsToSAML();
-      if ((LoginDisplayHost::default_host()->HasUserPods() &&
-           !wizard_context_->is_user_creation_enabled) ||
-          (!LoginDisplayHost::default_host()->HasUserPods() &&
-           gaia_page_defaults_to_saml)) {
-        GetScreen<GaiaScreen>()->Reset();
+      const bool no_previous_screen =
+          LoginDisplayHost::default_host()->HasUserPods() &&
+          !wizard_context_->is_user_creation_enabled;
+      const bool new_user_saml_redirect =
+          !LoginDisplayHost::default_host()->HasUserPods() &&
+          gaia_page_defaults_to_saml;
+      if (no_previous_screen || new_user_saml_redirect) {
         LoginDisplayHost::default_host()->HideOobeDialog(
             gaia_page_defaults_to_saml);
       } else {

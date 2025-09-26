@@ -228,6 +228,7 @@ source_set("browser_tests") {
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:mojom_platform_shared_cpp_sources",
     "//ui/base",
+    "//ui/events:test_support",
     "//url",
   ]
 }
