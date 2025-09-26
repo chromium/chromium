@@ -1574,8 +1574,8 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
   }
 
   _resultsPagePresenter.delegate = self;
-  _resultMediator.presentationDelegate = _resultsPagePresenter;
-  _mediator.presentationDelegate = _resultsPagePresenter;
+  _resultMediator.bottomSheetCommands = _resultsPagePresenter;
+  _mediator.bottomSheetCommands = _resultsPagePresenter;
 }
 
 // Presents the result botom sheet.

@@ -8,13 +8,13 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_sheet_detent_state.h"
-#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_commands.h"
 
 @protocol LensOverlayResultsPagePresenterDelegate;
 
 // Protocol for presenting the Lens results bottom sheet.
 @protocol LensOverlayResultsPagePresenting <
-    LensOverlayBottomSheetPresentationDelegate>
+    LensOverlayBottomSheetPresentationCommands>
 
 // Whether the results page is currently presented.
 @property(nonatomic, assign, readonly) BOOL isResultPageVisible;

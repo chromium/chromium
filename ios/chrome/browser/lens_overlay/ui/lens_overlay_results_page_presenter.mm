@@ -578,7 +578,7 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   }
 }
 
-#pragma mark - LensOverlayBottomSheetPresentationDelegate
+#pragma mark - LensOverlayBottomSheetPresentationCommands
 
 // Request resizing the bottom sheet to maximum size.
 - (void)requestMaximizeBottomSheet {
@@ -590,14 +590,14 @@ const CGFloat kSidePanelHorizontalOcclusionInset = 24.0f;
   [_detentsManager requestMinimizeBottomSheet];
 }
 
-- (void)didLoadSelectionResult {
+- (void)adjustForSelectionResult {
   _detentsManager.presentationStrategy =
       SheetDetentPresentationStategySelection;
   [_presentationNavigationController popToRootViewControllerAnimated:YES];
   [self adjustSelectionOcclusionInsets];
 }
 
-- (void)didLoadTranslateResult {
+- (void)adjustForTranslateResult {
   _detentsManager.presentationStrategy =
       SheetDetentPresentationStategyTranslate;
   [_presentationNavigationController popToRootViewControllerAnimated:YES];

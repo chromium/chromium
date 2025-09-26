@@ -197,7 +197,7 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self.omniboxCoordinator focusOmnibox];
   [self.toolbarConsumer setOmniboxFocused:YES];
   [self.omniboxCoordinator.animatee setClearButtonFaded:NO];
-  [self.presentationDelegate requestMaximizeBottomSheet];
+  [self.bottomSheetCommands requestMaximizeBottomSheet];
 }
 
 - (void)defocusOmnibox {
@@ -257,13 +257,13 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
       // bottom sheet hidden, as no auto selection happens at this stage.
       [self.lensHandler resetSelectionAreaToInitialPosition:^{
       }];
-      [self.presentationDelegate
+      [self.bottomSheetCommands
           showInfoMessage:LensOverlayBottomSheetInfoMessageType::
                               kImageTranslatedIndication];
     } else if (noSelectionInTranslate) {
       // A missing selection without a switch in modes indicates the user
       // intended to dismiss the current selection.
-      [self.presentationDelegate
+      [self.bottomSheetCommands
           showInfoMessage:LensOverlayBottomSheetInfoMessageType::
                               kImageTranslatedIndication];
     }
@@ -282,8 +282,8 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   };
   [self.toolbarConsumer setOmniboxEnabled:YES];
   // Make sure the bottom sheet is dismissed before triggering any alert.
-  if (self.presentationDelegate) {
-    [self.presentationDelegate hideBottomSheetWithCompletion:completion];
+  if (self.bottomSheetCommands) {
+    [self.bottomSheetCommands hideBottomSheetWithCompletion:completion];
   } else {
     completion();
   }
@@ -482,9 +482,9 @@ typedef NS_ENUM(NSUInteger, LensOverlayFilterState) {
   [self updateOmniboxText:result.queryText];
 
   if (result.isGeneratedInTranslate) {
-    [self.presentationDelegate didLoadTranslateResult];
+    [self.bottomSheetCommands adjustForTranslateResult];
   } else {
-    [self.presentationDelegate didLoadSelectionResult];
+    [self.bottomSheetCommands adjustForSelectionResult];
   }
 }
 

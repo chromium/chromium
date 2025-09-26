@@ -1,9 +1,9 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_DELEGATE_H_
-#define IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_COMMANDS_H_
+#define IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_COMMANDS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -15,10 +15,10 @@ enum class LensOverlayBottomSheetInfoMessageType {
   kImageTranslatedIndication,
 };
 
-// Presentation delegate for the bottom sheet.
+// Presentation commands for the bottom sheet.
 // Bottom sheet content may request the container to be maximized or minimized,
 // e.g. when the user selects a result that opens an image viewer.
-@protocol LensOverlayBottomSheetPresentationDelegate <NSObject>
+@protocol LensOverlayBottomSheetPresentationCommands <NSObject>
 
 // Request resizing the bottom sheet to maximum size.
 - (void)requestMaximizeBottomSheet;
@@ -27,10 +27,10 @@ enum class LensOverlayBottomSheetInfoMessageType {
 - (void)requestMinimizeBottomSheet;
 
 // Handle a selection result loaded in the bottom sheet.
-- (void)didLoadSelectionResult;
+- (void)adjustForSelectionResult;
 
 // Handle a translation result loaded in the bottom sheet.
-- (void)didLoadTranslateResult;
+- (void)adjustForTranslateResult;
 
 // Hides the bottom sheet without destroying the presentation.
 - (void)hideBottomSheetWithCompletion:(void (^)(void))completion;
@@ -40,4 +40,4 @@ enum class LensOverlayBottomSheetInfoMessageType {
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_BOTTOM_SHEET_PRESENTATION_COMMANDS_H_

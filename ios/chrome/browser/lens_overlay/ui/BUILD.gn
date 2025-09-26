@@ -18,7 +18,7 @@ source_set("ui") {
 
 source_set("protocols") {
   sources = [
-    "lens_overlay_bottom_sheet_presentation_delegate.h",
+    "lens_overlay_bottom_sheet_presentation_commands.h",
     "lens_overlay_error_handler.h",
     "lens_overlay_result_consumer.h",
     "lens_overlay_results_page_presenting.h",

@@ -331,7 +331,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     }
 
     if (IsMaximizeBottomSheetURL(URL)) {
-      [self.presentationDelegate requestMaximizeBottomSheet];
+      [self.bottomSheetCommands requestMaximizeBottomSheet];
       return;
     }
 

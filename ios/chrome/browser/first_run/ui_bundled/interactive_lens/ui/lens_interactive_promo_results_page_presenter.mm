@@ -164,7 +164,7 @@ const CGFloat kOpacityAnimationDuration = 0.4;
                    completion:dismissalCompletion];
 }
 
-#pragma mark - LensOverlayBottomSheetPresentationDelegate
+#pragma mark - LensOverlayBottomSheetPresentationCommands
 
 - (void)requestMaximizeBottomSheet {
   // No-op. Sheet size is constant in this presentation.
@@ -174,11 +174,11 @@ const CGFloat kOpacityAnimationDuration = 0.4;
   // No-op. Sheet size is constant in this presentation.
 }
 
-- (void)didLoadSelectionResult {
+- (void)adjustForSelectionResult {
   [self adjustSelectionOcclusionInsets];
 }
 
-- (void)didLoadTranslateResult {
+- (void)adjustForTranslateResult {
   // No-op.
 }
 
