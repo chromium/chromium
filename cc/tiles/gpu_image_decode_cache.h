@@ -699,16 +699,6 @@ class CC_EXPORT GpuImageDecodeCache
 
   sk_sp<SkColorSpace> ColorSpaceForImageDecode(const DrawImage& image) const;
 
-  // Helper function to add a memory dump to |pmd| for a single texture
-  // identified by |gl_id| with size |bytes| and |locked_size| equal to either
-  // |bytes| or 0 depending on whether the texture is currently locked.
-  void AddTextureDump(base::trace_event::ProcessMemoryDump* pmd,
-                      const std::string& texture_dump_name,
-                      const size_t bytes,
-                      const GrGLuint gl_id,
-                      const size_t locked_size) const
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   // |persistent_cache_| represents the long-lived cache, keeping a certain
   // budget of ImageDatas alive even when their ref count reaches zero.
   using PersistentCache = base::HashingLRUCache<PaintImage::FrameKey,

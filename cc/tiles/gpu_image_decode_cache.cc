@@ -1583,32 +1583,6 @@ size_t GpuImageDecodeCache::GetMaximumMemoryLimitBytes() const {
   return max_working_set_bytes_;
 }
 
-void GpuImageDecodeCache::AddTextureDump(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& texture_dump_name,
-    const size_t bytes,
-    const GrGLuint gl_id,
-    const size_t locked_size) const {
-  using base::trace_event::MemoryAllocatorDump;
-  using base::trace_event::MemoryAllocatorDumpGuid;
-
-  MemoryAllocatorDump* dump = pmd->CreateAllocatorDump(texture_dump_name);
-  dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                  MemoryAllocatorDump::kUnitsBytes, bytes);
-
-  // Dump the "locked_size" as an additional column.
-  dump->AddScalar("locked_size", MemoryAllocatorDump::kUnitsBytes, locked_size);
-
-  MemoryAllocatorDumpGuid guid;
-  guid = gl::GetGLTextureClientGUIDForTracing(
-      context_->ContextSupport()->ShareGroupTracingGUID(), gl_id);
-  pmd->CreateSharedGlobalAllocatorDump(guid);
-  // Importance of 3 gives this dump priority over the dump made by Skia
-  // (importance 2), attributing memory here.
-  const int kImportance = 3;
-  pmd->AddOwnershipEdge(dump->guid(), guid, kImportance);
-}
-
 bool GpuImageDecodeCache::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
