@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/external_registry_loader_win.h"
 
+#include <windows.h>
+
 #include <memory>
 #include <utility>
 
@@ -12,6 +14,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -229,7 +232,8 @@ void ExternalRegistryLoader::CompleteLoadAndStartWatchingRegistry(
                        base::Unretained(this), base::Unretained(&hklm_key_));
     hklm_key_.StartWatching(std::move(callback));
   } else {
-    LOG(WARNING) << "Error observing HKLM: " << result;
+    ::SetLastError(result);
+    PLOG(WARNING) << "Error observing HKLM";
   }
 
   if ((result = hkcu_key_.Create(HKEY_CURRENT_USER, kRegistryExtensions,
@@ -239,7 +243,8 @@ void ExternalRegistryLoader::CompleteLoadAndStartWatchingRegistry(
                        base::Unretained(this), base::Unretained(&hkcu_key_));
     hkcu_key_.StartWatching(std::move(callback));
   } else {
-    LOG(WARNING) << "Error observing HKCU: " << result;
+    ::SetLastError(result);
+    PLOG(WARNING) << "Error observing HKCU";
   }
 
   attempted_watching_registry_ = true;
