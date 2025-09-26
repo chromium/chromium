@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@1.9.22.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@1.9.22.cr2
 package: chromium/third_party/android_deps/libs/org_jetbrains_kotlin_kotlin_parcelize_runtime
 description: "Parcelize Runtime"
 data:
-- file: kotlin-parcelize-runtime-1.9.22.jar
+- file: kotlin-parcelize-runtime.jar

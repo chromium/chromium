@@ -18,7 +18,7 @@ SPEC = fetch_common.Spec(repo_url=_REPO_URL,
                          group_name='com/google/android/apps/common/testing/accessibility/framework',
                          module_name='accessibility-test-framework',
                          file_ext='aar',
-                         patch_version='cr1',
+                         patch_version='cr2',
                          version_override=None,
                          version_filter=None)
 

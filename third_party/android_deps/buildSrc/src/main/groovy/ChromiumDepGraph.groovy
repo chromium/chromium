@@ -22,7 +22,7 @@ import java.nio.file.Paths
  */
 class ChromiumDepGraph {
 
-    private static final String DEFAULT_CIPD_SUFFIX = 'cr1'
+    private static final String DEFAULT_CIPD_SUFFIX = 'cr2'
 
     // Some libraries don't properly fill their POM with the appropriate licensing information. It is provided here from
     // manual lookups. Note that licenseUrl must provide textual content rather than be an html page.
@@ -631,7 +631,7 @@ class ChromiumDepGraph {
                 children: Collections.unmodifiableList(new ArrayList<>(childModules)),
                 licenses: licenses,
                 directoryName: id.toLowerCase(),
-                fileName: artifact.file.name,
+                fileName: dependency.module.id.name + "." + artifact.extension,
                 fileUrl: fileUrl,
                 repoUrl: repoUrl,
                 description: description,
