@@ -118,7 +118,7 @@ void ShapeResultBloberizer::CommitText() {
   unsigned size = to - from;
   Vector<uint32_t, 256> pending_utf8_character_index_from_character_index(size);
   if (current_text_.Is8Bit()) {
-    const LChar* latin1 = UNSAFE_TODO(current_text_.Characters8());
+    const LChar* latin1 = current_text_.Span8().data();
     wtf_size_t utf8_size = pending_utf8_.size();
     for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;
@@ -128,7 +128,7 @@ void ShapeResultBloberizer::CommitText() {
       UNSAFE_TODO(U8_APPEND_UNSAFE(pending_utf8_.begin(), utf8_size, cp));
     }
   } else {
-    const UChar* utf16 = UNSAFE_TODO(current_text_.Characters16());
+    const UChar* utf16 = current_text_.Span16().data();
     wtf_size_t utf8_size = pending_utf8_.size();
     for (unsigned i = from; i < to;) {
       pending_utf8_character_index_from_character_index[i - from] = utf8_size;

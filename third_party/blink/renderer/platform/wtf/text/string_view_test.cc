@@ -12,6 +12,18 @@
 
 namespace blink {
 
+const LChar* Address8(const StringImpl& impl, size_t offset = 0) {
+  return offset ? impl.Span8().subspan(offset).data() : impl.Span8().data();
+}
+
+const LChar* Address8(const String& str, size_t offset = 0) {
+  return offset ? str.Span8().subspan(offset).data() : str.Span8().data();
+}
+
+const LChar* Address8(StringView view, size_t offset = 0) {
+  return offset ? view.Span8().subspan(offset).data() : view.Span8().data();
+}
+
 const char kChars[] = "12345";
 const char16_t kCharsU[] = u"12345";
 const LChar* const kChars8 = reinterpret_cast<const LChar*>(kChars);
@@ -24,16 +36,14 @@ TEST(StringViewTest, ConstructionStringImpl8) {
   // StringView(StringImpl*);
   ASSERT_TRUE(StringView(impl8_bit.get()).Is8Bit());
   EXPECT_FALSE(StringView(impl8_bit.get()).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl8_bit->Characters8(),
-                        StringView(impl8_bit.get()).Characters8()));
+  EXPECT_EQ(Address8(*impl8_bit), Address8(StringView(impl8_bit.get())));
   EXPECT_EQ(impl8_bit->length(), StringView(impl8_bit.get()).length());
   EXPECT_EQ(kChars, StringView(impl8_bit.get()));
 
   // StringView(StringImpl*, unsigned offset);
   ASSERT_TRUE(StringView(impl8_bit.get(), 2).Is8Bit());
   EXPECT_FALSE(StringView(impl8_bit.get(), 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl8_bit->Characters8() + 2,
-                        StringView(impl8_bit.get(), 2).Characters8()));
+  EXPECT_EQ(Address8(*impl8_bit, 2u), Address8(StringView(impl8_bit.get(), 2)));
   EXPECT_EQ(3u, StringView(impl8_bit.get(), 2).length());
   EXPECT_EQ(StringView("345"), StringView(impl8_bit.get(), 2));
   EXPECT_EQ("345", StringView(impl8_bit.get(), 2));
@@ -41,8 +51,8 @@ TEST(StringViewTest, ConstructionStringImpl8) {
   // StringView(StringImpl*, unsigned offset, unsigned length);
   ASSERT_TRUE(StringView(impl8_bit.get(), 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(impl8_bit.get(), 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl8_bit->Characters8() + 2,
-                        StringView(impl8_bit.get(), 2, 1).Characters8()));
+  EXPECT_EQ(Address8(*impl8_bit, 2u),
+            Address8(StringView(impl8_bit.get(), 2, 1)));
   EXPECT_EQ(1u, StringView(impl8_bit.get(), 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(impl8_bit.get(), 2, 1));
   EXPECT_EQ("3", StringView(impl8_bit.get(), 2, 1));
@@ -86,16 +96,14 @@ TEST(StringViewTest, ConstructionStringImplRef8) {
   // StringView(StringImpl&);
   ASSERT_TRUE(StringView(*impl8_bit).Is8Bit());
   EXPECT_FALSE(StringView(*impl8_bit).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl8_bit->Characters8(),
-                        StringView(*impl8_bit).Characters8()));
+  EXPECT_EQ(Address8(*impl8_bit), Address8(StringView(*impl8_bit)));
   EXPECT_EQ(impl8_bit->length(), StringView(*impl8_bit).length());
   EXPECT_EQ(kChars, StringView(*impl8_bit));
 
   // StringView(StringImpl&, unsigned offset);
   ASSERT_TRUE(StringView(*impl8_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(*impl8_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl8_bit->Characters8() + 2,
-                        StringView(*impl8_bit, 2).Characters8()));
+  EXPECT_EQ(Address8(*impl8_bit, 2u), Address8(StringView(*impl8_bit, 2)));
   EXPECT_EQ(3u, StringView(*impl8_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(*impl8_bit, 2));
   EXPECT_EQ("345", StringView(*impl8_bit, 2));
@@ -103,8 +111,7 @@ TEST(StringViewTest, ConstructionStringImplRef8) {
   // StringView(StringImpl&, unsigned offset, unsigned length);
   ASSERT_TRUE(StringView(*impl8_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(*impl8_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl8_bit->Characters8() + 2,
-                        StringView(*impl8_bit, 2, 1).Characters8()));
+  EXPECT_EQ(Address8(*impl8_bit, 2u), Address8(StringView(*impl8_bit, 2, 1)));
   EXPECT_EQ(1u, StringView(*impl8_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(*impl8_bit, 2, 1));
   EXPECT_EQ("3", StringView(*impl8_bit, 2, 1));
@@ -147,16 +154,14 @@ TEST(StringViewTest, ConstructionString8) {
   // StringView(const String&);
   ASSERT_TRUE(StringView(string8_bit).Is8Bit());
   EXPECT_FALSE(StringView(string8_bit).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(string8_bit.Characters8(),
-                        StringView(string8_bit).Characters8()));
+  EXPECT_EQ(Address8(string8_bit), Address8(StringView(string8_bit)));
   EXPECT_EQ(string8_bit.length(), StringView(string8_bit).length());
   EXPECT_EQ(kChars, StringView(string8_bit));
 
   // StringView(const String&, unsigned offset);
   ASSERT_TRUE(StringView(string8_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(string8_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(string8_bit.Characters8() + 2,
-                        StringView(string8_bit, 2).Characters8()));
+  EXPECT_EQ(Address8(string8_bit, 2u), Address8(StringView(string8_bit, 2)));
   EXPECT_EQ(3u, StringView(string8_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(string8_bit, 2));
   EXPECT_EQ("345", StringView(string8_bit, 2));
@@ -164,8 +169,7 @@ TEST(StringViewTest, ConstructionString8) {
   // StringView(const String&, unsigned offset, unsigned length);
   ASSERT_TRUE(StringView(string8_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(string8_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(string8_bit.Characters8() + 2,
-                        StringView(string8_bit, 2, 1).Characters8()));
+  EXPECT_EQ(Address8(string8_bit, 2u), Address8(StringView(string8_bit, 2, 1)));
   EXPECT_EQ(1u, StringView(string8_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(string8_bit, 2, 1));
   EXPECT_EQ("3", StringView(string8_bit, 2, 1));
@@ -268,16 +272,14 @@ TEST(StringViewTest, ConstructionStringView8) {
   // StringView(StringView&);
   ASSERT_TRUE(StringView(view8_bit).Is8Bit());
   EXPECT_FALSE(StringView(view8_bit).IsNull());
-  UNSAFE_TODO(
-      EXPECT_EQ(view8_bit.Characters8(), StringView(view8_bit).Characters8()));
+  EXPECT_EQ(Address8(view8_bit), Address8(StringView(view8_bit)));
   EXPECT_EQ(view8_bit.length(), StringView(view8_bit).length());
   EXPECT_EQ(kChars, StringView(view8_bit));
 
   // StringView(const StringView&, unsigned offset);
   ASSERT_TRUE(StringView(view8_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(view8_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(view8_bit.Characters8() + 2,
-                        StringView(view8_bit, 2).Characters8()));
+  EXPECT_EQ(Address8(view8_bit, 2u), Address8(StringView(view8_bit, 2)));
   EXPECT_EQ(3u, StringView(view8_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(view8_bit, 2));
   EXPECT_EQ("345", StringView(view8_bit, 2));
@@ -285,8 +287,7 @@ TEST(StringViewTest, ConstructionStringView8) {
   // StringView(const StringView&, unsigned offset, unsigned length);
   ASSERT_TRUE(StringView(view8_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(view8_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(view8_bit.Characters8() + 2,
-                        StringView(view8_bit, 2, 1).Characters8()));
+  EXPECT_EQ(Address8(view8_bit, 2u), Address8(StringView(view8_bit, 2, 1)));
   EXPECT_EQ(1u, StringView(view8_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(view8_bit, 2, 1));
   EXPECT_EQ("3", StringView(view8_bit, 2, 1));
@@ -343,7 +344,7 @@ TEST(StringViewTest, ConstructionLiteral8) {
   // StringView(const char* chars);
   ASSERT_TRUE(StringView(kChars).Is8Bit());
   EXPECT_FALSE(StringView(kChars).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(kChars8, StringView(kChars).Characters8()));
+  EXPECT_EQ(kChars8, Address8(StringView(kChars)));
   EXPECT_EQ(5u, StringView(kChars).length());
   EXPECT_EQ(kChars, StringView(kChars));
 
@@ -380,7 +381,7 @@ TEST(StringViewTest, ConstructionSpan8) {
   const auto kCharsSpan8 = base::byte_span_from_cstring(kChars);
   ASSERT_TRUE(StringView(kCharsSpan8).Is8Bit());
   EXPECT_FALSE(StringView(kCharsSpan8).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(kChars8, StringView(kCharsSpan8).Characters8()));
+  EXPECT_EQ(kChars8, Address8(StringView(kCharsSpan8)));
   EXPECT_EQ(5u, StringView(kCharsSpan8).length());
   EXPECT_EQ(kChars, StringView(kCharsSpan8));
 }

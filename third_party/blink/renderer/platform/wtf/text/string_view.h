@@ -199,12 +199,6 @@ class WTF_EXPORT StringView {
   }
 
   // Use Span16() instead.
-  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
-    DCHECK(Is8Bit());
-    return static_cast<const LChar*>(bytes_);
-  }
-
-  // Use Span16() instead.
   UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
     DCHECK(!Is8Bit());
     return static_cast<const UChar*>(bytes_);
@@ -328,9 +322,9 @@ inline StringView::StringView(const StringView& view,
   // SAFETY: Invariants are checked last two line.
   UNSAFE_BUFFERS({
     if (Is8Bit()) {
-      bytes_ = view.Characters8() + offset;
+      bytes_ = view.Span8().data() + offset;
     } else {
-      bytes_ = view.Characters16() + offset;
+      bytes_ = view.Span16().data() + offset;
     }
   });
 }
