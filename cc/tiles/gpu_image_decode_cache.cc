@@ -2758,39 +2758,6 @@ void GpuImageDecodeCache::UnlockImage(ImageData* image_data) {
   image_data->upload.OnUnlock();
   }
 
-// YUV images are handled slightly differently because they are not themselves
-// registered with the discardable memory system. We cannot use
-// GlIdFromSkImage on these YUV SkImages to flush pending operations because
-// doing so will flatten it to RGB.
-void GpuImageDecodeCache::FlushYUVImages(
-    std::vector<sk_sp<SkImage>>* yuv_images) {
-  CheckContextLockAcquiredIfNecessary();
-  GrDirectContext* ctx = context_->GrContext();
-  for (auto& image : *yuv_images) {
-    ctx->flushAndSubmit(image);
-  }
-  yuv_images->clear();
-}
-
-// We always run pending operations in the following order:
-//   > Lock
-//   > Flush YUV images that will be unlocked
-//   > Unlock
-//   > Flush YUV images that will be deleted
-//   > Delete
-// This ensures that:
-//   a) We never fully unlock an image that's pending lock (lock before unlock)
-//   b) We never delete an image that has pending locks/unlocks.
-//   c) We never unlock or delete the underlying texture planes for a YUV
-//      image before all operations referencing it have completed.
-//
-// As this can be run at-raster, to unlock/delete an image that was just used,
-// we need to call GlIdFromSkImage, which flushes pending IO on the image,
-// rather than just using a cached GL ID.
-// YUV images are handled slightly differently because they are backed by
-// texture images but are not themselves registered with the discardable memory
-// system. We wait to delete the pointer to a YUV image until we have a context
-// lock and its textures have been deleted.
 void GpuImageDecodeCache::RunPendingContextThreadOperations() {
   CheckContextLockAcquiredIfNecessary();
 
@@ -2799,16 +2766,6 @@ void GpuImageDecodeCache::RunPendingContextThreadOperations() {
         static_cast<uint32_t>(TransferCacheEntryType::kImage), id)});
   }
   ids_pending_unlock_.clear();
-
-  FlushYUVImages(&yuv_images_pending_deletion_);
-  for (auto& image : images_pending_deletion_) {
-    uint32_t texture_id = GlIdFromSkImage(image.get());
-    if (context_->RasterInterface()->LockDiscardableTextureCHROMIUM(
-            texture_id)) {
-      context_->RasterInterface()->DeleteGpuRasterTexture(texture_id);
-    }
-  }
-  images_pending_deletion_.clear();
 
   for (auto id : ids_pending_deletion_) {
     if (context_->ContextSupport()->ThreadsafeLockTransferCacheEntry(

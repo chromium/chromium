@@ -794,11 +794,6 @@ class CC_EXPORT GpuImageDecodeCache
       const std::optional<gfx::HDRMetadata>& hdr_metadata,
       sk_sp<SkColorSpace> target_color_space) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  // Flush pending operations on context_->GrContext() for each element of
-  // |yuv_images| and then clear the vector.
-  void FlushYUVImages(std::vector<sk_sp<SkImage>>* yuv_images)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
   // Runs pending operations that required the |context_| lock to be held, but
   // were queued up during a time when the |context_| lock was unavailable.
   // These including deleting, unlocking, and locking textures.
@@ -915,13 +910,6 @@ class CC_EXPORT GpuImageDecodeCache
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
   RAW_PTR_EXCLUSION RasterDarkModeFilter* const dark_mode_filter_;
 
-  // We can't modify GPU backed SkImages without holding the context lock, so
-  // we queue up operations to run the next time the lock is held.
-  std::vector<sk_sp<SkImage>> images_pending_deletion_;
-  // Images that are backed by planar textures must be handled differently
-  // to avoid inadvertently flattening to RGB and creating additional textures.
-  // See comment in RunPendingContextThreadOperations().
-  std::vector<sk_sp<SkImage>> yuv_images_pending_deletion_;
   const sk_sp<SkColorSpace> target_color_space_;
 
   std::vector<uint32_t> ids_pending_unlock_;
