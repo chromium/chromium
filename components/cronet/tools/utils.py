@@ -24,8 +24,7 @@ GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
 MIN_SDK_VERSION_FOR_AOSP = 30
 ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
-AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_nss_certs=false',
-                   'use_allocator_shim=false',
+AOSP_EXTRA_ARGS = ('is_cronet_for_aosp_build=true', 'use_allocator_shim=false',
                    f'default_min_sdk_version={MIN_SDK_VERSION_FOR_AOSP}')
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
 
