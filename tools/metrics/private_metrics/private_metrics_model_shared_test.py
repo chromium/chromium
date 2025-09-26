@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-# Copyright 2024 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import unittest
 
-import dwa_model
+import private_metrics_model_shared
 
 PRETTY_XML = """
 <!-- Comment1 -->
 
-<dwa-configuration>
+<test-configuration>
 
 <event name="Event1">
   <owner>owner@chromium.org</owner>
@@ -29,12 +29,12 @@ PRETTY_XML = """
   <metric name="Metric3"/>
 </event>
 
-</dwa-configuration>
+</test-configuration>
 """.strip()
 
 UNPRETTIFIED_XML = """
 <!-- Comment1 -->
-<dwa-configuration>
+<test-configuration>
 <event name="Event1">
 <metric name="Metric3"/>
 <metric name="Metric1">
@@ -53,11 +53,11 @@ UNPRETTIFIED_XML = """
 <study name="Study1"/>
 
 </event>
-</dwa-configuration>
+</test-configuration>
 """.strip()
 
 CONFIG_EVENT_NAMES_SORTED = """
-<dwa-configuration>
+<test-configuration>
 
 <event name="Event1"/>
 
@@ -65,11 +65,11 @@ CONFIG_EVENT_NAMES_SORTED = """
 
 <event name="Event3"/>
 
-</dwa-configuration>
+</test-configuration>
 """.strip()
 
 CONFIG_EVENT_NAMES_UNSORTED = """
-<dwa-configuration>
+<test-configuration>
 
 <event name="Event2"/>
 
@@ -77,34 +77,42 @@ CONFIG_EVENT_NAMES_UNSORTED = """
 
 <event name="Event1"/>
 
-</dwa-configuration>
+</test-configuration>
 """.strip()
 
+TEST_XML_TYPE = private_metrics_model_shared.create_event_based_document_type(
+    'test-configuration')
 
-class DwaXmlTest(unittest.TestCase):
+
+def prettify_xml(original_xml):
+  config = TEST_XML_TYPE.Parse(original_xml)
+  return TEST_XML_TYPE.PrettyPrint(config)
+
+
+class ConfigurationXmlTest(unittest.TestCase):
 
   def __init__(self, *args, **kwargs) -> None:
-    super(DwaXmlTest, self).__init__(*args, **kwargs)
+    super(ConfigurationXmlTest, self).__init__(*args, **kwargs)
     self.maxDiff = None
 
   def testPrettify(self) -> None:
-    result = dwa_model.PrettifyXML(PRETTY_XML)
+    result = prettify_xml(PRETTY_XML)
     self.assertMultiLineEqual(PRETTY_XML, result.strip())
-    result = dwa_model.PrettifyXML(UNPRETTIFIED_XML)
+    result = prettify_xml(UNPRETTIFIED_XML)
     self.assertMultiLineEqual(PRETTY_XML, result.strip())
 
   def testHasBadEventName(self) -> None:
     # Name containing illegal character.
     bad_xml = PRETTY_XML.replace('Event1', 'Event:1')
     with self.assertRaises(ValueError) as context:
-      dwa_model.PrettifyXML(bad_xml)
+      prettify_xml(bad_xml)
     self.assertIn('Event:1', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
     # Name starting with a digit.
     bad_event_name_xml = PRETTY_XML.replace('Event1', '1Event')
     with self.assertRaises(ValueError) as context:
-      dwa_model.PrettifyXML(bad_event_name_xml)
+      prettify_xml(bad_event_name_xml)
     self.assertIn('1Event', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
@@ -112,14 +120,14 @@ class DwaXmlTest(unittest.TestCase):
     # Name containing illegal character.
     bad_xml = PRETTY_XML.replace('Metric1', 'Metric:1')
     with self.assertRaises(ValueError) as context:
-      dwa_model.PrettifyXML(bad_xml)
+      prettify_xml(bad_xml)
     self.assertIn('Metric:1', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
     # Name starting with a digit.
     bad_metric_name_xml = PRETTY_XML.replace('Metric3', '3rdPartyCookie')
     with self.assertRaises(ValueError) as context:
-      dwa_model.PrettifyXML(bad_metric_name_xml)
+      prettify_xml(bad_metric_name_xml)
     self.assertIn('3rdPartyCookie', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
@@ -127,21 +135,21 @@ class DwaXmlTest(unittest.TestCase):
     # Name containing illegal character.
     bad_xml = PRETTY_XML.replace('Study1', 'Study:1')
     with self.assertRaises(ValueError) as context:
-      dwa_model.PrettifyXML(bad_xml)
+      prettify_xml(bad_xml)
     self.assertIn('Study:1', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
     # Name starting with a digit.
     bad_study_name_xml = PRETTY_XML.replace('Study2', '3rdPartyCookie')
     with self.assertRaises(ValueError) as context:
-      dwa_model.PrettifyXML(bad_study_name_xml)
+      prettify_xml(bad_study_name_xml)
     self.assertIn('3rdPartyCookie', str(context.exception))
     self.assertIn('does not match regex', str(context.exception))
 
   def testSortByEventName(self) -> None:
-    result = dwa_model.PrettifyXML(CONFIG_EVENT_NAMES_SORTED)
+    result = prettify_xml(CONFIG_EVENT_NAMES_SORTED)
     self.assertMultiLineEqual(CONFIG_EVENT_NAMES_SORTED, result.strip())
-    result = dwa_model.PrettifyXML(CONFIG_EVENT_NAMES_UNSORTED)
+    result = prettify_xml(CONFIG_EVENT_NAMES_UNSORTED)
     self.assertMultiLineEqual(CONFIG_EVENT_NAMES_SORTED, result.strip())
 
 

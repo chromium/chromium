@@ -1,4 +1,4 @@
-# Copyright 2024 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,16 +15,20 @@ import histogram_paths
 import merge_xml
 
 
-class DwaXmlValidation(xml_validations.UkmXmlValidation):
-  """Validations for the content of dwa.xml."""
+class EventBasedXmlValidation(xml_validations.UkmXmlValidation):
+  """Validations for the content of event-based Private Metrics configurations.
+  """
 
-  def __init__(self, dwa_config: xml.dom.minidom.Element) -> None:
+  def __init__(self, config_xml: xml.dom.minidom.Element,
+               config_type: str) -> None:
     """Attributes:
 
-    config: A XML minidom Element representing the root node of the DWA config
-        tree.
+    config_xml: A XML minidom Element representing the root node of the config
+      tree.
+    config_type: Type of the configuration, e.g. "DWA" for DWA
     """
-    super().__init__(dwa_config)
+    super().__init__(config_xml)
+    self.config_type = config_type
 
   def checkMetricTypeIsSpecified(self):
     """Checks each metric is either specified with an enum or a unit."""
@@ -39,10 +43,23 @@ class DwaXmlValidation(xml_validations.UkmXmlValidation):
           enum_name = metric_node.getAttribute('enum')
           # Check if the enum is defined in enums.xml.
           if enum_name not in enums:
-            errors.append("Unknown enum %s in dwa metric %s:%s." %
-                          (enum_name, event_node.getAttribute('name'),
-                           metric_node.getAttribute('name')))
+            errors.append(
+                "Unknown enum %s in %s metric %s:%s." %
+                (enum_name, self.config_type, event_node.getAttribute('name'),
+                 metric_node.getAttribute('name')))
 
     is_success = not errors
 
     return (is_success, errors)
+
+
+class DwaXmlValidation(EventBasedXmlValidation):
+  """Validations for the content of dwa.xml."""
+
+  def __init__(self, dwa_config: xml.dom.minidom.Element) -> None:
+    """Attributes:
+
+    dwa_config: A XML minidom Element representing the root node of the DWA
+        config tree.
+    """
+    super().__init__(dwa_config, "DWA")

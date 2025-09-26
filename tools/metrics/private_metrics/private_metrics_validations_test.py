@@ -1,35 +1,37 @@
-# Copyright 2024 The Chromium Authors
+#!/usr/bin/env python3
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import unittest
-import dwa_xml_validations
 import xml.dom.minidom
+import private_metrics_validations
 
 
-class DwaXmlValidationTest(unittest.TestCase):
+class EventBasedXmlValidationTest(unittest.TestCase):
 
-  def toDwaConfig(self, xml_string: str) -> xml.dom.minidom.Element:
+  def parseConfig(self, xml_string: str) -> xml.dom.minidom.Element:
     dom = xml.dom.minidom.parseString(xml_string)
-    [dwa_config] = dom.getElementsByTagName('dwa-configuration')
+    [dwa_config] = dom.getElementsByTagName('test-configuration')
     return dwa_config
 
   def testEventsHaveOwners(self) -> None:
-    dwa_config = self.toDwaConfig("""
-        <dwa-configuration>
+    dwa_config = self.parseConfig("""
+        <test-configuration>
           <event name="Event1">
             <owner>dev@chromium.org</owner>
           </event>
-        </dwa-configuration>
+        </test-configuration>
         """.strip())
-    validator = dwa_xml_validations.DwaXmlValidation(dwa_config)
+    validator = private_metrics_validations.EventBasedXmlValidation(
+        dwa_config, "test")
     success, errors = validator.checkEventsHaveOwners()
     self.assertTrue(success)
     self.assertListEqual([], errors)
 
   def testEventsMissingOwners(self) -> None:
-    dwa_config = self.toDwaConfig("""
-        <dwa-configuration>
+    dwa_config = self.parseConfig("""
+        <test-configuration>
           <event name="Event1"/>
           <event name="Event2">
             <owner></owner>
@@ -37,7 +39,7 @@ class DwaXmlValidationTest(unittest.TestCase):
           <event name="Event3">
             <owner>johndoe</owner>
           </event>
-        </dwa-configuration>
+        </test-configuration>
         """.strip())
     expected_errors = [
         "<owner> tag is required for event 'Event1'.",
@@ -46,14 +48,15 @@ class DwaXmlValidationTest(unittest.TestCase):
         "address.",
     ]
 
-    validator = dwa_xml_validations.DwaXmlValidation(dwa_config)
+    validator = private_metrics_validations.EventBasedXmlValidation(
+        dwa_config, "test")
     success, errors = validator.checkEventsHaveOwners()
     self.assertFalse(success)
     self.assertListEqual(expected_errors, errors)
 
   def testMetricHasUndefinedEnum(self) -> None:
-    dwa_config = self.toDwaConfig("""
-        <dwa-configuration>
+    config_xml = self.parseConfig("""
+        <test-configuration>
           <event name="Event1">
             <metric name="Metric2" enum="FeatureObserver"/>
           </event>
@@ -63,13 +66,14 @@ class DwaXmlValidationTest(unittest.TestCase):
             <metric name="Metric3"/>
             <metric name="Metric4"/>
           </event>
-        </dwa-configuration>
+        </test-configuration>
         """.strip())
     expected_errors = [
-        "Unknown enum BadEnum in dwa metric Event2:Metric1.",
+        "Unknown enum BadEnum in test metric Event2:Metric1.",
     ]
 
-    validator = dwa_xml_validations.DwaXmlValidation(dwa_config)
+    validator = private_metrics_validations.EventBasedXmlValidation(
+        config_xml, "test")
     success, errors = validator.checkMetricTypeIsSpecified()
     self.assertFalse(success)
     self.assertListEqual(expected_errors, errors)

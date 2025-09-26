@@ -6,6 +6,7 @@
 import os
 import sys
 import dwa_model
+import private_metrics_model_shared
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import codegen_shared
@@ -56,10 +57,10 @@ class Template(object):
     event_info = EventInfo(event)
     metric_code = "".join(
         self._StampMetricCode(file_info, event_info, metric)
-        for metric in event[dwa_model._METRIC_TYPE.tag])
+        for metric in event[private_metrics_model_shared.METRIC_TYPE.tag])
     study_code = "".join(
         self._StampStudyCode(file_info, event_info, study)
-        for study in event[dwa_model._STUDY_TYPE.tag])
+        for study in event[private_metrics_model_shared.STUDY_TYPE.tag])
     return self.event_template.format(file=file_info,
                                       event=event_info,
                                       metric_code=metric_code,
@@ -69,7 +70,7 @@ class Template(object):
     file_info = codegen_shared.FileInfo(relpath, self.basename)
     event_code = "".join(
         self._StampEventCode(file_info, event)
-        for event in data[dwa_model._EVENT_TYPE.tag])
+        for event in data[private_metrics_model_shared.EVENT_TYPE.tag])
     return self.file_template.format(file=file_info, event_code=event_code)
 
   def WriteFile(self, outdir: str, relpath: str, data: dict) -> None:
