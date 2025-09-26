@@ -253,23 +253,21 @@ std::vector<const AutofillProfile*> AddressDataManager::GetProfilesToSuggest()
   // `prefs::kAutofillNameAndEmailProfileNotSelectedCounter` counts how many
   // times the suggestion for kAccountNameEmail profile was shown and wasn't
   // accepted.
-  // TODO(crbug.com/441657423): If the profile was accepted, the counter will
-  // remain 0, yet the profile should be moved to the end. This will be fixed
-  // once a pref indicating the acceptance is added.
-  const bool name_email_profile_suggestion_was_shown_before =
-      pref_service_->GetInteger(
-          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) == 0;
+  const bool should_promote_name_email_profile =
+      !pref_service_->GetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed) &&
+      (pref_service_->GetInteger(
+          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) == 0);
   // Move the kAccountNameEmail profile to the front (or back) depending on
-  // the `name_email_profile_suggestion_was_shown_before`.
+  // the `should_promote_name_email_profile`.
   std::ranges::stable_partition(
-      profiles, [name_email_profile_suggestion_was_shown_before](
+      profiles, [should_promote_name_email_profile](
                     const AutofillProfile* p) {
         bool is_name_email_profile =
             p->record_type() == AutofillProfile::RecordType::kAccountNameEmail;
         // stable_partition() moves all elements where the predicate returns
         // true to the front. The name/email profile should be in front when
         // it hasn't been used before and in the back otherwise.
-        return name_email_profile_suggestion_was_shown_before
+        return should_promote_name_email_profile
                    ? is_name_email_profile
                    : !is_name_email_profile;
       });

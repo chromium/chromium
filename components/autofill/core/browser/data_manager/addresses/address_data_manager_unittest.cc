@@ -346,6 +346,14 @@ TEST_F(AddressDataManagerTest, GetProfilesToSuggest_NameEmailOrder) {
   EXPECT_THAT(address_data_manager().GetProfilesToSuggest(),
               testing::ElementsAre(Pointee(profile2), Pointee(profile1),
                                    Pointee(profile_name_email)));
+
+  prefs_->ClearPref(prefs::kAutofillNameAndEmailProfileNotSelectedCounter);
+  prefs_->SetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed, true);
+  // If the profile suggestion was accepted after the first time it was shown,
+  // the profile should albo be moved to the last place.
+  EXPECT_THAT(address_data_manager().GetProfilesToSuggest(),
+              testing::ElementsAre(Pointee(profile2), Pointee(profile1),
+                                   Pointee(profile_name_email)));
 }
 
 // Test that profiles are not shown if |kAutofillProfileEnabled| is set to
