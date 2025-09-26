@@ -1825,6 +1825,14 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "ondevice_model_benchmark_tests",
+    label = "//components/optimization_guide/internal/testing:ondevice_model_benchmark_tests",
+    args = [
+        "--benchmark_binary_dir=./",
+    ],
+)
+
+targets.binaries.generated_script(
     name = "opt_target_coverage_test",
     label = "//components/optimization_guide/internal/testing:opt_target_coverage_test",
 )

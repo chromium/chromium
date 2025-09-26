@@ -1303,6 +1303,17 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "ondevice_model_benchmark_tests_suite",
+    tests = {
+        "ondevice_model_benchmark_tests": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "opt_target_coverage_test_suite",
     tests = {
         "opt_target_coverage_test": targets.legacy_test_config(

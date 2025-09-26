@@ -2036,6 +2036,14 @@
       'views_unittests': {},
     },
 
+    'ondevice_model_benchmark_tests_suite': {
+      'ondevice_model_benchmark_tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+    },
+
     'ondevice_stability_tests_light_suite': {
       'ondevice_stability_tests_light': {
         'mixins': [
@@ -2908,6 +2916,7 @@
     'optimization_guide_mac_script_tests': {
       'model_validation_tests_light_suite': {},
       'model_validation_tests_suite': {},
+      'ondevice_model_benchmark_tests_suite': {},
       'ondevice_stability_tests_suite': {},
     },
 
