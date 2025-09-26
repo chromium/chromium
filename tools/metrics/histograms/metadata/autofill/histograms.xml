@@ -2708,7 +2708,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.CreditCardUpload.ConfirmationResult.{IsCardUploaded}"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2026-03-08">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason for closing the save card confirmation bubble which is
@@ -2727,7 +2727,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.CreditCardUpload.ConfirmationShown.{IsCardUploaded}"
     enum="Boolean" expires_after="2026-03-08">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records if the save card confirmation bubble is shown after credit card
@@ -2747,7 +2747,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.CreditCardUpload.LoadingResult"
     enum="AutofillSavePaymentMethodPromptResultEnum" expires_after="2026-03-08">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason for closing the save card loading bubble which is shown
@@ -2758,7 +2758,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.CreditCardUpload.LoadingShown" enum="Boolean"
     expires_after="2026-03-08">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records if the save card loading bubble is shown during credit card upload.
@@ -2770,7 +2770,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.CreditCardUpload.RanLocalSaveFallback" enum="Boolean"
     expires_after="2026-03-08">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records if a new card is locally added during a local card save fallback on
@@ -4733,7 +4733,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 <histogram name="Autofill.Message.{MessageType}.{Event}" enum="BooleanShown"
     expires_after="2025-11-02">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Emits true when an autofill Android Message event occurs (shown, dismissed,
     etc.) and does not emit any value otherwise. See event variants for
@@ -5190,7 +5190,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded"
     units="cards" expires_after="2026-10-01">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Tracks the number of stored credit cards (both local and server) after a
     user adds a new local card through the Chrome payment methods settings page.
@@ -5306,7 +5306,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.PaymentsNetworkInterface.RequestLatency.GetCardUploadDetails{Result}"
     units="ms" expires_after="2026-03-15">
   <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Logs the roundtrip latency of a GetCardUploadDetailsRequest in the
     PaymentsNetworkInterface. This is recorded when the response is received
@@ -5324,7 +5324,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.PaymentsNetworkInterface.{PaymentsRequestType}.ClientSideTimedOut"
     enum="Boolean" expires_after="2025-11-02">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     For an API call to Google Payments servers of type {PaymentsRequestType},
     denotes whether or not that API call triggered the client-side timeout.
@@ -6452,7 +6452,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     name="Autofill.SaveCreditCardPromptResult.IOS.{SaveDestination}.{OverlayType}.NumStrikes.{Strikes}.{FixFlow}{SaveType}"
     enum="SaveCreditCardPromptResultIOS" expires_after="2026-02-22">
   <owner>kavitasoni@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     The relative frequency with which the credit card prompt on iOS of the type
@@ -6852,7 +6852,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>osaul@google.com</owner>
   <owner>darwinyang@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Emits true when the action button on the autofill snackbar is clicked and
     does not emit any value otherwise.
@@ -6866,7 +6866,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <owner>osaul@google.com</owner>
   <owner>darwinyang@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Emits true when the autofill snackbar is displayed and does not emit any
     value otherwise.
@@ -8247,7 +8247,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2026-03-22">
   <owner>darwinyang@google.com</owner>
   <owner>kavitasoni@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the reason for closing the virtual card confirmation bubble.
@@ -8268,7 +8268,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2025-11-16">
   <owner>darwinyang@google.com</owner>
   <owner>kavitasoni@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records if the virtual card confirmation bubble is shown after credit card

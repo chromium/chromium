@@ -150,7 +150,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ServiceWorker.AbortPaymentEvent.Time" units="ms"
     expires_after="2024-10-18">
   <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>jinho.bang@samsung.com</owner>
   <summary>
     The time taken between dispatching an AbortPaymentEvent to a Service Worker
@@ -257,7 +257,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ServiceWorker.CanMakePaymentEvent.Time" units="ms"
     expires_after="2024-10-18">
   <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>jinho.bang@samsung.com</owner>
   <summary>
     The time taken between dispatching an CanMakePaymentEvent to a Service
@@ -1315,7 +1315,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ServiceWorker.PaymentRequestEvent.Time" units="ms"
     expires_after="2026-08-25">
   <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <owner>jinho.bang@samsung.com</owner>
   <summary>
     The time taken between dispatching an PaymentRequestEvent to a Service

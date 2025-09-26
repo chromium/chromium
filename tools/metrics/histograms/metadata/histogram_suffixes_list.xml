@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="AutofillStoredCardHasInvalidCardNumber" separator=".">
   <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <suffix name="WithInvalidCardNumber" label="Card with an invalid number"/>
 <!-- Server cards always have valid card numbers, so this is local only. -->
 

@@ -19403,7 +19403,7 @@ be describing additional metrics about the same event.
 
 <event name="PaymentApp.CheckoutEvents">
   <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records checkout events as well as completion status for the invoked payment
     app when its origin is shown inside the payment handler modal window. This
@@ -19428,7 +19428,7 @@ be describing additional metrics about the same event.
 
 <event name="PaymentRequest.CheckoutEvents">
   <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <metric name="CompletionStatus">
     <summary>
       How the Payment Request ended. Values defined in the CompletionStatus enum
@@ -19446,7 +19446,7 @@ be describing additional metrics about the same event.
 
 <event name="PaymentRequest.TransactionAmount">
   <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <metric name="Category">
     <summary>
       Tranaction size can be zero, micro, or regular. Values defined in the
