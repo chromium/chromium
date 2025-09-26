@@ -174,7 +174,12 @@ public class TabModelMultiWindowTest {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < numberOfTabs; i++) tabs.add(createTab());
         ThreadUtils.runOnUiThreadBlocking(
-                () -> filter.mergeListOfTabsToGroup(tabs, tabs.get(0), /* notify= */ false));
+                () ->
+                        filter.mergeListOfTabsToGroup(
+                                tabs,
+                                tabs.get(0),
+                                /* notify= */ TabGroupModelFilter.MergeNotificationType
+                                        .DONT_NOTIFY));
         return tabs;
     }
 

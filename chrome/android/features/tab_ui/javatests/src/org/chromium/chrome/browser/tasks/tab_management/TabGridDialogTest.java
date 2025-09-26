@@ -142,6 +142,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -462,7 +463,9 @@ public class TabGridDialogTest {
                     selector.getTabGroupModelFilterProvider()
                             .getTabGroupModelFilter(false)
                             .mergeListOfTabsToGroup(
-                                    List.of(tab), destinationTab, /* notify= */ false);
+                                    List.of(tab),
+                                    destinationTab,
+                                    /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 });
         CriteriaHelper.pollUiThread(() -> isDialogFullyVisible(cta));
         verifyShowingDialog(cta, 3, null);

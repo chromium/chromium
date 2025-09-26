@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDele
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 
@@ -130,7 +131,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                     selectedTabs,
                     primaryTab,
                     /* indexInGroup= */ primaryTabIndexInGroup,
-                    /* notify= */ false);
+                    /* notify= */ MergeNotificationType.DONT_NOTIFY);
         } else {
             ungroupInteractingBlock();
             int primaryTabModelIndex = mModel.indexOf(primaryTab);
@@ -416,7 +417,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 getSortedSelectedTabs(stripTabs),
                 adjTab,
                 /* indexInGroup= */ towardEnd ? 0 : null,
-                /* notify= */ false);
+                /* notify= */ MergeNotificationType.DONT_NOTIFY);
         animateGroupIndicatorForTabReorder(adjTitle, /* isMovingOutOfGroup= */ false, towardEnd);
     }
 

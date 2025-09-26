@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY;
+import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_ALWAYS;
+import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
 
 import android.app.Activity;
@@ -1029,7 +1032,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (tabGroupId == null) {
             ungroup(tabs);
             Tab destinationTab = tabs.get(0);
-            mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ false);
+            mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ DONT_NOTIFY);
             return destinationTab.getTabGroupId();
         }
 
@@ -1044,7 +1047,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
         ungroup(tabsToUngroup);
-        mergeListOfTabsToGroup(tabs, tabsInGroup.get(0), /* notify= */ false);
+        mergeListOfTabsToGroup(tabs, tabsInGroup.get(0), /* notify= */ DONT_NOTIFY);
         return tabGroupId;
     }
 
@@ -1239,7 +1242,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         assertOnUiThread();
         assert tab.getTabGroupId() == null;
 
-        mergeListOfTabsToGroup(Collections.singletonList(tab), tab, /* notify= */ true);
+        mergeListOfTabsToGroup(
+                Collections.singletonList(tab), tab, /* notify= */ NOTIFY_IF_NOT_NEW_GROUP);
     }
 
     @Override
@@ -1247,7 +1251,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (tabs.isEmpty()) return;
 
         mergeListOfTabsToGroupInternal(
-                tabs, tabs.get(0), /* notify= */ false, /* indexInGroup= */ null, tabGroupId);
+                tabs, tabs.get(0), /* notify= */ DONT_NOTIFY, /* indexInGroup= */ null, tabGroupId);
     }
 
     @Override
@@ -1269,12 +1273,18 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         // TODO(crbug.com/441933200): skipUpdateTabModel should be renamed to "notify" to match the
         // signature of mergeListOfTabsToGroupInternal(). It is no longer used to skip updating the
         // tab model as that often left the tab model in an invalid intermediate state.
-        mergeListOfTabsToGroup(tabsToMerge, destinationTab, !skipUpdateTabModel);
+        mergeListOfTabsToGroup(
+                tabsToMerge,
+                destinationTab,
+                skipUpdateTabModel ? DONT_NOTIFY : NOTIFY_IF_NOT_NEW_GROUP);
     }
 
     @Override
     public void mergeListOfTabsToGroup(
-            List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, boolean notify) {
+            List<Tab> tabs,
+            Tab destinationTab,
+            @Nullable Integer indexInGroup,
+            @MergeNotificationType int notify) {
         mergeListOfTabsToGroupInternal(
                 tabs,
                 destinationTab,
@@ -1743,7 +1753,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void mergeListOfTabsToGroupInternal(
             List<Tab> tabs,
             Tab destinationTab,
-            boolean notify,
+            @MergeNotificationType int notify,
             @Nullable Integer indexInGroup,
             @Nullable Token tabGroupIdForNewGroup) {
         assertOnUiThread();
@@ -1928,7 +1938,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                         Tab.INVALID_TAB_ID, tabGroupId, DidRemoveTabGroupReason.MERGE);
             }
         }
-        if (notify && !willCreateNewGroup) {
+
+        if ((notify == NOTIFY_IF_NOT_NEW_GROUP && !willCreateNewGroup) || notify == NOTIFY_ALWAYS) {
             for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
                 observer.showUndoGroupSnackbar(undoGroupMetadata);
             }

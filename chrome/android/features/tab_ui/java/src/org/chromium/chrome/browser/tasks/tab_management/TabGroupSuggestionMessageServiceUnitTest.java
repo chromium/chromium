@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -226,7 +225,11 @@ public class TabGroupSuggestionMessageServiceUnitTest {
 
         reviewAction.action();
         verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
-        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(tabs, mTab1, true);
+        verify(mTabGroupModelFilter)
+                .mergeListOfTabsToGroup(
+                        tabs,
+                        mTab1,
+                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabGroupSuggestionMessageService).dismissMessage(any());
         verify(mSuggestionMetricsService)
                 .onSuggestionAccepted(
@@ -250,7 +253,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         reviewAction.action();
 
         verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
         verify(mTabGroupSuggestionMessageService).dismissMessage(any());
     }
 
@@ -306,7 +309,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         inOrder.verify(mStartMergeAnimation)
                 .start(eq(TAB1_ID), eq(shiftedTabIds), onAnimationEndCaptor.capture());
         verify(mTabGroupSuggestionMessageService, never()).dismissMessage(any());
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
 
         // Simulate tab group ID being set.
         doAnswer(
@@ -315,13 +318,20 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                             return null;
                         })
                 .when(mTabGroupModelFilter)
-                .mergeListOfTabsToGroup(tabs, mTab1, true);
+                .mergeListOfTabsToGroup(
+                        tabs,
+                        mTab1,
+                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
         // Simulate animation end.
         onAnimationEndCaptor.getValue().run();
 
         // After animation, tabs are grouped and message is dismissed.
-        inOrder.verify(mTabGroupModelFilter).mergeListOfTabsToGroup(tabs, mTab1, true);
+        inOrder.verify(mTabGroupModelFilter)
+                .mergeListOfTabsToGroup(
+                        tabs,
+                        mTab1,
+                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         inOrder.verify(mTabGroupSuggestionMessageService).dismissMessage(any());
     }
 

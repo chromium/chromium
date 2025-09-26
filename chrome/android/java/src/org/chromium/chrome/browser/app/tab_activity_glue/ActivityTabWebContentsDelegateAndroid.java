@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -326,7 +327,9 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     && tabGroupModelFilter.isTabInTabGroup(sourceTab)
                     && tabGroupModelFilter.isTabModelRestored()) {
                 tabGroupModelFilter.mergeListOfTabsToGroup(
-                        Arrays.asList(newTab), sourceTab, /* notify= */ false);
+                        Arrays.asList(newTab),
+                        sourceTab,
+                        /* notify= */ MergeNotificationType.DONT_NOTIFY);
                 if (mChromeActivityNativeDelegate != null) {
                     assert Objects.equals(newTab.getTabGroupId(), sourceTab.getTabGroupId());
                     assert tabGroupModelFilter

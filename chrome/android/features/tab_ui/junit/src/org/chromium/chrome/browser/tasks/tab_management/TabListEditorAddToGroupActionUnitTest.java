@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -245,7 +245,7 @@ public class TabListEditorAddToGroupActionUnitTest {
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
 
         assertTrue(mAction.performAction(tabs, Collections.emptyList()));
-        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyBoolean());
+        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyInt());
         verify(mTabGroupCreationDialogManager)
                 .showDialog(eq(mTab1.getTabGroupId()), eq(mTabGroupModelFilter));
         verify(mCoordinator, never()).showBottomSheet(tabs);

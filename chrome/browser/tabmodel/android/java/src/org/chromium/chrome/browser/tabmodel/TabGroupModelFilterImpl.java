@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_ALWAYS;
+import static org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP;
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
@@ -277,7 +279,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
         if (tabs.size() == 1) return;
 
-        mergeListOfTabsToGroup(tabs, rootTab, /* notify= */ false);
+        mergeListOfTabsToGroup(tabs, rootTab, /* notify= */ MergeNotificationType.DONT_NOTIFY);
     }
 
     private void createSingleTabGroupInternal(Tab tab, Token tabGroupId) {
@@ -319,7 +321,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int lastTabIndexInGroup = getLastTabIndexInGroup(destinationTab);
 
         if (!skipUpdateTabModel && needToUpdateTabModel(tabsToMerge, lastTabIndexInGroup)) {
-            mergeListOfTabsToGroup(tabsToMerge, destinationTab, /* notify= */ true);
+            mergeListOfTabsToGroup(
+                    tabsToMerge, destinationTab, /* notify= */ NOTIFY_IF_NOT_NEW_GROUP);
         } else {
             int destinationRootId = destinationTab.getRootId();
             List<Tab> tabsIncludingDestination = new ArrayList<>();
@@ -438,7 +441,10 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public void mergeListOfTabsToGroup(
-            List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, boolean notify) {
+            List<Tab> tabs,
+            Tab destinationTab,
+            @Nullable Integer indexInGroup,
+            @MergeNotificationType int notify) {
         // Check whether the destination tab is in a tab group before getOrCreateTabGroupId so we
         // send the correct signal for whether a tab group was newly created.
         List<Tab> tabsToMerge = new ArrayList<>();
@@ -590,8 +596,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 observer.didCreateNewGroup(destinationTab, this);
             }
 
-            // Do not show a snackbar for new tab group creations as they launch a dialog.
-            if (notify && !willMergingCreateNewGroup) {
+            if ((notify == NOTIFY_IF_NOT_NEW_GROUP && !willMergingCreateNewGroup)
+                    || notify == NOTIFY_ALWAYS) {
                 observer.showUndoGroupSnackbar(undoGroupMetadata);
             } else {
                 for (int i = 0; i < mergedTabs.size(); i++) {

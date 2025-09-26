@@ -45,6 +45,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -244,7 +245,10 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
                 .onClick(mock(View.class));
 
         verify(mTabGroupModelFilter)
-                .mergeListOfTabsToGroup(eq(Arrays.asList(mTab1, mTab2)), eq(mTab1), eq(true));
+                .mergeListOfTabsToGroup(
+                        eq(Arrays.asList(mTab1, mTab2)),
+                        eq(mTab1),
+                        eq(MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));
         assertNull(mMediator.getCurrentSheetContent());
         assertEquals(UserResponse.ACCEPTED, userResponse.get());
@@ -280,7 +284,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
                 .onClick(mock(View.class));
 
         verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyBoolean());
+                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyInt());
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));
         assertNull(mMediator.getCurrentSheetContent());
         assertEquals(UserResponse.REJECTED, userResponse.get());
@@ -315,7 +319,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         mBottomSheetObserver.getValue().onSheetClosed(0);
 
         verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyBoolean());
+                .mergeListOfTabsToGroup(any(List.class), any(Tab.class), anyInt());
         verify(mBottomSheetController, never())
                 .hideContent(any(GroupSuggestionsBottomSheetContent.class), anyBoolean());
         assertNull(mMediator.getCurrentSheetContent());

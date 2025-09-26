@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
@@ -106,7 +107,11 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
         var tabModel = tabGroupModelFilter.getTabModel();
         List<Tab> tabsToGroup =
                 TabModelUtils.getTabsById(tabIdList, tabModel, /* allowClosing= */ false);
-        tabGroupModelFilter.mergeListOfTabsToGroup(tabsToGroup, tab, /* notify= */ true);
+        tabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToGroup,
+                tab,
+                /* indexInGroup= */ null,
+                /* notify= */ MergeNotificationType.NOTIFY_ALWAYS);
 
         SuggestionMetricsService metricsService =
                 SuggestionMetricsServiceFactory.getForProfile(tab.getProfile());

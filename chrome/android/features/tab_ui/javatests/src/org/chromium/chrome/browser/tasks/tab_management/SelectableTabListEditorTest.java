@@ -324,7 +324,9 @@ public class SelectableTabListEditorTest {
                     }
                     // Don't notify to avoid snackbar appearing.
                     filter.mergeListOfTabsToGroup(
-                            tabs.subList(1, tabs.size()), tabs.get(0), /* notify= */ false);
+                            tabs.subList(1, tabs.size()),
+                            tabs.get(0),
+                            /* notify= */ TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
                 });
     }
 

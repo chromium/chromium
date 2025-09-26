@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tasks.tab_management.MoveTabUtils;
 import org.chromium.content_public.browser.WebContents;
 
@@ -1029,7 +1030,7 @@ public class TabModelImpl extends TabModelJniBridge {
             // TODO(crbug.com/427929717): Ensure any pinned tabs get unpinned.
             ungroup(tabs);
             Tab destinationTab = tabs.get(0);
-            filter.mergeListOfTabsToGroup(tabs, destinationTab, false);
+            filter.mergeListOfTabsToGroup(tabs, destinationTab, MergeNotificationType.DONT_NOTIFY);
             return destinationTab.getTabGroupId();
         }
         List<Tab> tabsInGroup = filter.getTabsInGroup(tabGroupId);
@@ -1044,7 +1045,8 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         // Ungroup the tabs first to ensure they are not in any groups.
         ungroup(tabsToGroup);
-        filter.mergeListOfTabsToGroup(tabsToGroup, tabsInGroup.get(0), false);
+        filter.mergeListOfTabsToGroup(
+                tabsToGroup, tabsInGroup.get(0), MergeNotificationType.DONT_NOTIFY);
         return tabsInGroup.get(0).getTabGroupId();
     }
 

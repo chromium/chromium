@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -194,7 +195,7 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         Tab expectedPrimaryTab = mModel.getTabById(mGroupedTab2.getTabId());
         verify(mTabGroupModelFilter)
                 .mergeListOfTabsToGroup(
-                        mergeCaptor.capture(), eq(expectedPrimaryTab), anyInt(), anyBoolean());
+                        mergeCaptor.capture(), eq(expectedPrimaryTab), anyInt(), anyInt());
         assertEquals("Should merge 2 tabs.", 2, mergeCaptor.getValue().size());
 
         // Verify no reorder operations took place.
@@ -284,7 +285,8 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
         drag(DRAG_INTO_GROUP_SUCCESS);
 
         verify(mTabGroupModelFilter)
-                .mergeListOfTabsToGroup(anyList(), any(Tab.class), eq(0), eq(false));
+                .mergeListOfTabsToGroup(
+                        anyList(), any(Tab.class), eq(0), eq(MergeNotificationType.DONT_NOTIFY));
         verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
     }
 

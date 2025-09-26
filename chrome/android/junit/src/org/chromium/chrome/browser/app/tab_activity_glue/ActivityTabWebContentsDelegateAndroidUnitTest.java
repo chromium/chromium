@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -264,7 +265,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 WindowOpenDisposition.NEW_FOREGROUND_TAB,
                 new WindowFeatures(),
                 false);
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
     }
 
     @Test
@@ -291,7 +292,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 new WindowFeatures(),
                 false);
         verify(mTabGroupModelFilter)
-                .mergeListOfTabsToGroup(Arrays.asList(newTab), parentTab, false);
+                .mergeListOfTabsToGroup(
+                        Arrays.asList(newTab), parentTab, MergeNotificationType.DONT_NOTIFY);
     }
 
     @Test

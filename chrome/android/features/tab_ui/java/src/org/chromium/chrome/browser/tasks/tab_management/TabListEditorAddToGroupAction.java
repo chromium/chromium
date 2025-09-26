@@ -20,6 +20,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -205,7 +206,10 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         if (tabs.size() == 1) {
             filter.createSingleTabGroup(destinationTab);
         } else {
-            filter.mergeListOfTabsToGroup(tabs, destinationTab, /* notify= */ true);
+            filter.mergeListOfTabsToGroup(
+                    tabs,
+                    destinationTab,
+                    /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         }
         mTabGroupCreationDialogManager.showDialog(
                 assumeNonNull(destinationTab.getTabGroupId()), filter);

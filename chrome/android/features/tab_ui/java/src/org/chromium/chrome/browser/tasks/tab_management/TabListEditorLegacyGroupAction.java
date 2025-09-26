@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
@@ -138,7 +139,10 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
         }
 
         boolean willMergingCreateNewGroup = tabGroupModelFilter.willMergingCreateNewGroup(tabs);
-        tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, /* notify= */ true);
+        tabGroupModelFilter.mergeListOfTabsToGroup(
+                sortedTabs,
+                destinationTab,
+                /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
         if (willMergingCreateNewGroup) {
             mTabGroupCreationDialogManager.showDialog(
