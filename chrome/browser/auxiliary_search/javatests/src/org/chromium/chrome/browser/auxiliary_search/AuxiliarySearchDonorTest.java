@@ -93,16 +93,6 @@ public final class AuxiliarySearchDonorTest {
         testDonateTabsImpl();
     }
 
-    @Test
-    @MediumTest
-    @EnableFeatures({
-        "AndroidAppIntegrationMultiDataSource:multi_data_source_skip_schema_check/true"
-    })
-    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.S, message = "The donation API is for S+.")
-    public void testDonateTabs_MultiDataSource() {
-        testDonateTabsImpl();
-    }
-
     private void testDonateTabsImpl() {
         ThreadUtils.runOnUiThreadBlocking(() -> mAuxiliarySearchDonor.createSessionAndInit());
         CriteriaHelper.pollUiThread(() -> mAuxiliarySearchDonor.getIsSchemaSetForTesting());
