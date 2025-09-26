@@ -67,13 +67,14 @@ public class ListMenuHost
     private int mMenuMaxWidth;
 
     // A list of the windows, paired with the parent `ListItem` if the window is a flyout.
-    private ArrayList<FlyoutPopupEntry<AnchoredPopupWindow>> mPopupMenus;
+    private final ArrayList<FlyoutPopupEntry<AnchoredPopupWindow>> mPopupMenus;
 
     private @Nullable ListMenuDelegate mDelegate;
     private final ObserverList<PopupMenuShownListener> mPopupListeners = new ObserverList<>();
     private boolean mTryToFitLargestItem;
     private final boolean mPositionedAtStart;
     private final boolean mPositionedAtEnd;
+    private boolean mRemovingPopups;
 
     /**
      * Creates a new {@link ListMenuHost}.
@@ -123,10 +124,7 @@ public class ListMenuHost
     /** Called to dismiss any popup menu that might be showing for this button. */
     public void dismiss() {
         if (mPopupMenus.size() != 0) {
-            for (FlyoutPopupEntry<AnchoredPopupWindow> entry : mPopupMenus) {
-                entry.popupWindow.dismiss();
-            }
-            mPopupMenus = new ArrayList<>();
+            removeFlyoutWindows(0);
 
             if (sPopupMenuHelperForTesting != null) {
                 sPopupMenuHelperForTesting.injectPopupMenu(null);
@@ -225,24 +223,31 @@ public class ListMenuHost
 
     @Override
     public void removeFlyoutWindows(int clearFromIndex) {
-        assert clearFromIndex < mPopupMenus.size();
+        if (clearFromIndex >= mPopupMenus.size()) {
+            return;
+        }
+
+        // We want to avoid the dismiss listener calling this method when the dismissal
+        // originates from this method, to avoid loops.
+        mRemovingPopups = true;
 
         for (int i = clearFromIndex; i < mPopupMenus.size(); i++) {
             mPopupMenus.get(i).popupWindow.dismiss();
         }
 
+        mRemovingPopups = false;
+
         mPopupMenus.subList(clearFromIndex, mPopupMenus.size()).clear();
     }
 
     @Override
-    public void addFlyoutWindow(ListItem item, View view) {
+    public void addFlyoutWindow(ListItem item, View view, int levelOfHoveredItem) {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
         ListMenu menu = mDelegate.getListMenuFromParentListItem(item);
         if (menu == null) {
             return;
         }
 
-        menu.addContentViewClickRunnable(this::dismiss);
         final View contentView = menu.getContentView();
 
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
@@ -263,6 +268,12 @@ public class ListMenuHost
                         .setAnimationStyle(R.style.PopupWindowAnimFade)
                         .setSpecCalculator(new FlyoutPopupSpecCalculator())
                         .setDesiredContentWidth(menu.getMaxItemWidth() + lateralPadding)
+                        .addOnDismissListener(
+                                () -> {
+                                    if (!mRemovingPopups) {
+                                        removeFlyoutWindows(levelOfHoveredItem + 1);
+                                    }
+                                })
                         .build();
 
         popupMenu.show();

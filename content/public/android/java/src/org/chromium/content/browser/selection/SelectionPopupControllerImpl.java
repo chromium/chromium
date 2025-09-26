@@ -791,7 +791,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                             }
 
                             @Override
-                            public void addFlyoutWindow(ListItem item, View view) {}
+                            public void addFlyoutWindow(
+                                    ListItem item, View view, int levelOfHoveredItem) {}
 
                             @Override
                             public void removeFlyoutWindows(int removeFromIndex) {}

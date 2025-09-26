@@ -6,6 +6,7 @@ package org.chromium.ui.listmenu;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -140,13 +141,13 @@ public class ListMenuFlyoutControllerUnitTest {
         triggerHoverEnter(mSubmenuLevel0, 0, List.of(mSubmenuLevel0));
 
         // Verify that before the delay, no new window is added.
-        verify(mFlyoutHandler, never()).addFlyoutWindow(any(), any());
+        verify(mFlyoutHandler, never()).addFlyoutWindow(any(), any(), eq(0));
 
         // Wait for the UI delay.
         waitForUiDelay();
 
         // Verify that the call to create a new popup (level 1) is called.
-        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel0, mListView);
+        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel0, mListView, 0);
         dialogs.add(new FlyoutPopupEntry(mSubmenuLevel0, new Object()));
 
         // Hover on an item inside the level 1 popup for long enough.
@@ -154,7 +155,7 @@ public class ListMenuFlyoutControllerUnitTest {
         waitForUiDelay();
 
         // Verify that the call to create another popup (level 2) is called.
-        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel1, mListView);
+        verify(mFlyoutHandler).addFlyoutWindow(mSubmenuLevel1, mListView, 1);
     }
 
     @Test

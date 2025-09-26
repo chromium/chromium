@@ -284,7 +284,8 @@ public class ContextMenuDialogUnitTest {
                 0,
                 mSpyDragDispatchingDestinationView,
                 new Rect(0, 0, 0, 0),
-                /* shouldPadForWindowInsets= */ true);
+                /* shouldPadForWindowInsets= */ true,
+                /* onDismissCallback */ null);
     }
 
     private void requestLayoutForRootView() {

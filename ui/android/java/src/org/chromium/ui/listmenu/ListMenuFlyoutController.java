@@ -73,8 +73,10 @@ public class ListMenuFlyoutController<T> {
          *
          * @param item The ListItem that got the hover.
          * @param view The View that got the hover.
+         * @param levelOfHoveredItem The depth of the item within the menu hierarchy (e.g., 0 for
+         *     root items, 1 for sub-menu items).
          */
-        void addFlyoutWindow(ListItem item, View view);
+        void addFlyoutWindow(ListItem item, View view, int levelOfHoveredItem);
 
         /**
          * Remove popups with indices above removeFromIndex.
@@ -210,7 +212,7 @@ public class ListMenuFlyoutController<T> {
 
         // Create a new child popup if the item has submenu and we removed the child window.
         if (item.model.containsKey(SUBMENU_ITEMS) && !keepChildWindow) {
-            mFlyoutHandler.addFlyoutWindow(item, view);
+            mFlyoutHandler.addFlyoutWindow(item, view, levelOfHoveredItem);
         }
     }
 

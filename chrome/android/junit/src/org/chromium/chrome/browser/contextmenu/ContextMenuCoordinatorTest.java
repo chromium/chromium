@@ -397,7 +397,7 @@ public class ContextMenuCoordinatorTest {
                                 .with(SUBMENU_ITEMS, new ArrayList<>())
                                 .build());
         View mockAnchorView = mock(View.class);
-        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView);
+        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView, 0);
 
         Assert.assertEquals(
                 "There should be 2 dialogs after adding a flyout.",
@@ -433,7 +433,7 @@ public class ContextMenuCoordinatorTest {
                                 .with(SUBMENU_ITEMS, new ArrayList<>())
                                 .build());
         View mockAnchorView = mock(View.class);
-        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView);
+        mCoordinator.addFlyoutWindow(parentItem, mockAnchorView, 0);
 
         // Remove the flyout popup.
         mCoordinator.removeFlyoutWindows(1);
@@ -465,7 +465,8 @@ public class ContextMenuCoordinatorTest {
                 0,
                 0,
                 webContentView,
-                new Rect(0, 0, 0, 0));
+                new Rect(0, 0, 0, 0),
+                null);
     }
 
     private ContextMenuDialog displayContextMenuDialogAtLocation(

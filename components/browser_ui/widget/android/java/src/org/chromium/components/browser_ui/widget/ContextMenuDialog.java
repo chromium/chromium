@@ -68,6 +68,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private final @Nullable Integer mPopupMargin;
     private final @Nullable Integer mDesiredPopupContentWidth;
 
+    private final @Nullable Runnable mOnDismissCallback;
+
     /**
      * View that is showing behind the context menu. If menu is shown as a popup without scrim, this
      * view will be used to dispatch touch events other than ACTION_DOWN.
@@ -114,7 +116,8 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
             Rect rect,
-            boolean shouldPadForWindowInsets) {
+            boolean shouldPadForWindowInsets,
+            @Nullable Runnable onDismissCallback) {
         super(ownerActivity, theme, shouldPadForWindowInsets);
         mActivity = ownerActivity;
         mTopMarginPx = topMarginPx;
@@ -128,6 +131,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
+        mOnDismissCallback = onDismissCallback;
     }
 
     @Override
@@ -229,7 +233,13 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                                             // well. This is required when the popup is dismissed
                                             // through backpress / hardware accessories where the
                                             // #dismiss is not triggered by #onTouchEvent.
-                                            .addOnDismissListener(ContextMenuDialog.this::dismiss);
+                                            .addOnDismissListener(
+                                                    () -> {
+                                                        if (mOnDismissCallback != null) {
+                                                            mOnDismissCallback.run();
+                                                        }
+                                                        ContextMenuDialog.this.dismiss();
+                                                    });
 
                             if (mPopupMargin != null) {
                                 builder.setMargin(mPopupMargin);
