@@ -20,16 +20,19 @@ SELECT
   root_page AS origin,
   url AS request_url,
   type AS request_type,
+  rank as site_rank,
 FROM
   `httparchive.latest.requests`
 WHERE
   -- httparchive's database includes data from sub-pages. Our filter list has
   -- historically only dealt with requests that originate from root pages, so we
   -- need to filter the sub-page requests out.
-  is_root_page = true
+  is_root_page = true AND
+  rank < 5000000 AND
   -- Use a partition elimination filter to prevent querying the entire dataset.
   -- 61 days to account for July 1-August 31 range.
-  AND date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 61 DAY) AND CURRENT_DATE()
+  date BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 61 DAY) AND
+  CURRENT_DATE()
 ```
 
 Since the output is too large (>32GB) to display on the page, the results will
