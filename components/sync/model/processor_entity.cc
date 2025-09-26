@@ -28,7 +28,7 @@ namespace syncer {
 namespace {
 
 bool MetadataIsValid(const sync_pb::EntityMetadata& metadata) {
-  return metadata.has_client_tag_hash() && metadata.has_creation_time() &&
+  return !metadata.client_tag_hash().empty() && metadata.has_creation_time() &&
          metadata.sequence_number() >= metadata.acked_sequence_number();
 }
 
