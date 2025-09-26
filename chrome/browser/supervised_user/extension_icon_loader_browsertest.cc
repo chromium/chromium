@@ -6,40 +6,24 @@
 
 #include <memory>
 
-#include "base/command_line.h"
-#include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/json/json_file_value_serializer.h"
-#include "base/memory/raw_ptr.h"
-#include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/values.h"
-#include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"
 
-class ExtensionIconLoaderTest : public BrowserWithTestWindowTest {
+class ExtensionIconLoaderTest : public extensions::ExtensionBrowserTest {
  public:
   ExtensionIconLoaderTest() = default;
   ExtensionIconLoaderTest(const ExtensionIconLoaderTest&) = delete;
   ExtensionIconLoaderTest& operator=(const ExtensionIconLoaderTest&) = delete;
   ~ExtensionIconLoaderTest() override = default;
-
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    extensions::TestExtensionSystem* extension_system =
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(profile()));
-    extension_system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-  }
 
   void OnIconFetched(base::RunLoop* run_loop, const gfx::ImageSkia& icon) {
     run_loop->Quit();
@@ -48,30 +32,15 @@ class ExtensionIconLoaderTest : public BrowserWithTestWindowTest {
 
   const gfx::ImageSkia& loaded_icon() { return loaded_icon_; }
 
-  extensions::ExtensionRegistrar* extension_registrar() {
-    return extensions::ExtensionRegistrar::Get(profile());
-  }
-
  protected:
   gfx::ImageSkia loaded_icon_;
 };
 
-TEST_F(ExtensionIconLoaderTest, LoadExtensionWithIcon) {
+IN_PROC_BROWSER_TEST_F(ExtensionIconLoaderTest, LoadExtensionWithIcon) {
   // Create and add an extension from a test manifest with an icon.
-  base::FilePath test_file;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_file));
-  test_file = test_file.AppendASCII("extensions/simple_with_icon");
-  int error_code = 0;
-  std::string error;
-  JSONFileValueDeserializer deserializer(
-      test_file.AppendASCII("manifest.json"));
-  std::unique_ptr<base::Value> valid_value =
-      deserializer.Deserialize(&error_code, &error);
-  scoped_refptr<extensions::Extension> extension =
-      extensions::Extension::Create(
-          test_file, extensions::mojom::ManifestLocation::kUnpacked,
-          valid_value->GetDict(), extensions::Extension::NO_FLAGS, &error);
-  extension_registrar()->AddExtension(extension);
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
+  ASSERT_TRUE(extension);
 
   extensions::ExtensionIconLoader loader;
 
@@ -89,7 +58,7 @@ TEST_F(ExtensionIconLoaderTest, LoadExtensionWithIcon) {
             extensions::util::GetDefaultAppIcon().bitmap());
 }
 
-TEST_F(ExtensionIconLoaderTest, LoadDefaultAppIcon) {
+IN_PROC_BROWSER_TEST_F(ExtensionIconLoaderTest, LoadDefaultAppIcon) {
   // Create an app with no icon.
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(
@@ -110,7 +79,7 @@ TEST_F(ExtensionIconLoaderTest, LoadDefaultAppIcon) {
             extensions::util::GetDefaultAppIcon().bitmap());
 }
 
-TEST_F(ExtensionIconLoaderTest, LoadDefaultExtensionIcon) {
+IN_PROC_BROWSER_TEST_F(ExtensionIconLoaderTest, LoadDefaultExtensionIcon) {
   // Create an extension with no icon.
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension").Build();
