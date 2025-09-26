@@ -73,28 +73,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
           client_certificates,
       net::NSSCertDatabase* nssdb);
 
-  // Synchronously imports all server/authority and client certificates from
-  // |certificates| into |nssdb|. This will be executed on the
-  // |io_task_runner_|.
-  // TODO(crbug.com/40928765): Remove ability for server certs to be imported
-  // into NSS after features::kEnableCertManagementUIV2Write is defaulted to on
-  // for ChromeOS.
-  static bool StoreAllCertificatesUserInitiated(
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate>&
-          server_or_authority_certificates,
-      const std::vector<
-          chromeos::onc::OncParsedCertificates::ClientCertificate>&
-          client_certificates,
-      net::NSSCertDatabase* nssdb);
-
-  // Imports the Server or CA certificate |certificate|. Web trust is only
-  // applied if the certificate requests the TrustBits attribute "Web".
-  static bool StoreServerOrCaCertificateUserInitiated(
-      const chromeos::onc::OncParsedCertificates::ServerOrAuthorityCertificate&
-          certificate,
-      net::NSSCertDatabase* nssdb);
-
   static bool StoreClientCertificate(
       const chromeos::onc::OncParsedCertificates::ClientCertificate&
           certificate,
