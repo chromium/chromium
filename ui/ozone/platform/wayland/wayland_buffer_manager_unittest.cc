@@ -358,8 +358,7 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
   const std::vector<uint64_t> kFormatModifiers{DRM_FORMAT_MOD_INVALID,
                                                kFormatModiferLinear};
 
-  // Tests that fourcc format is added, but invalid modifier is ignored first.
-  // Then, when valid modifier comes, it is stored.
+  // Tests that fourcc format is added.
   for (const auto& modifier : kFormatModifiers) {
     PostToServerAndWait([modifier](wl::TestWaylandServerThread* server) {
       uint32_t modifier_hi = modifier >> 32;
@@ -368,20 +367,17 @@ TEST_P(WaylandBufferManagerTest, VerifyModifiers) {
           server->zwp_linux_dmabuf_v1()->resource(), kFourccFormatR8,
           modifier_hi, modifier_lo);
     });
+  }
 
-    auto buffer_formats =
-        connection_->buffer_factory()->GetSupportedBufferFormats();
-    ASSERT_EQ(buffer_formats.size(), 1u);
-    ASSERT_EQ(buffer_formats.begin()->first,
-              GetBufferFormatFromFourCCFormat(kFourccFormatR8));
-
-    auto modifiers = buffer_formats.begin()->second;
-    if (modifier == DRM_FORMAT_MOD_INVALID) {
-      ASSERT_EQ(modifiers.size(), 0u);
-    } else {
-      ASSERT_EQ(modifiers.size(), 1u);
-      ASSERT_EQ(modifiers[0], modifier);
-    }
+  auto buffer_formats =
+      connection_->buffer_factory()->GetSupportedBufferFormats();
+  ASSERT_EQ(buffer_formats.size(), 1u);
+  ASSERT_EQ(buffer_formats.begin()->first,
+            GetBufferFormatFromFourCCFormat(kFourccFormatR8));
+  auto modifiers = buffer_formats.begin()->second;
+  ASSERT_EQ(modifiers.size(), 2u);
+  for (size_t i = 0; i < kFormatModifiers.size(); ++i) {
+    ASSERT_EQ(modifiers[i], kFormatModifiers[i]);
   }
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {

@@ -173,6 +173,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Returns supported modifiers for the supplied |buffer_format|.
   const std::vector<uint64_t> GetModifiersForBufferFormat(
       gfx::BufferFormat buffer_format) const;
+  // Returns whether implicit modifier is allowed.
+  bool AllowsImplicitModifierForBufferFormat(
+      gfx::BufferFormat buffer_format) const;
 
   // Allocates a unique buffer ID.
   uint32_t AllocateBufferID();
@@ -300,6 +303,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Supported buffer formats and modifiers sent by the Wayland compositor to
   // the client. Corresponds to the map stored in WaylandZwpLinuxDmabuf and
   // passed from it during initialization of this gpu host.
+  // If `DRM_FORMAT_MOD_INVALID` is in the modifiers list, it means implicit
+  // modifier is also supported as fallback if creation with explicit modifier
+  // fails, the effective modifier will be derived from dmabuf.
   base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>
       supported_buffer_formats_with_modifiers_;
 
