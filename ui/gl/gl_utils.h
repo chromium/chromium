@@ -45,7 +45,6 @@ struct GlWorkarounds {
   bool disable_d3d11 = false;
   bool disable_metal = false;
   bool disable_es3gl_context = false;
-  bool disable_es3gl_context_for_testing = false;
   bool disable_direct_composition_video_overlays = false;
   bool disable_vp_auto_hdr = false;
 };
