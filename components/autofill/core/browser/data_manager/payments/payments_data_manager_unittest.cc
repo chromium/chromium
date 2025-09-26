@@ -2629,7 +2629,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NonUsdPriceRangeRejected) {
   EXPECT_TRUE(payments_data_manager().GetLinkedBnplIssuers().empty());
 }
 
-// Tests that `action_required` is not set for BNPL issuers if flag
+// Tests that externally linked BNPL issuer will not be added  if flag
 // `AutofillEnableBuyNowPayLaterForExternallyLinked` is disabled.
 TEST_F(PaymentsDataManagerTest,
        GetLinkedBnplIssuers_IssuerLinkedExternally_FlagDisabled) {
@@ -2654,15 +2654,7 @@ TEST_F(PaymentsDataManagerTest,
   base::span<const BnplIssuer> linked_bnpl_issuers =
       payments_data_manager().GetLinkedBnplIssuers();
 
-  ASSERT_EQ(linked_bnpl_issuers.size(), 1U);
-  EXPECT_EQ(
-      linked_bnpl_issuers[0],
-      BnplIssuer(
-          /*instrument_id=*/1234L, BnplIssuer::IssuerId::kBnplKlarna,
-          /*eligible_price_ranges=*/
-          {BnplIssuer::EligiblePriceRange("USD", /*price_lower_bound=*/0,
-                                          /*price_upper_bound=*/35'000'000)},
-          /*action_required=*/DenseSet<PaymentInstrument::ActionRequired>()));
+  ASSERT_EQ(linked_bnpl_issuers.size(), 0U);
 }
 
 // Tests that `action_required` is set for BNPL issuers if flag

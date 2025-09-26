@@ -2316,9 +2316,14 @@ void PaymentsDataManager::CacheIfLinkedBnplPaymentInstrument(
   // and flag 'kAutofillEnableBuyNowPayLaterForExternallyLinked` is enabled.
   // Note: `action_required_size()` is checked first so that the experiment
   // groups only contain users having nonempty`action_required` info.
-  if (payment_instrument.action_required_size() > 0 &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillEnableBuyNowPayLaterForExternallyLinked)) {
+  if (payment_instrument.action_required_size() > 0) {
+    // Issuers with `action_required` are not supported when flag
+    // `kAutofillEnableBuyNowPayLaterForExternallyLinked` is disabled. Skip
+    // adding the current issuer.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableBuyNowPayLaterForExternallyLinked)) {
+      return;
+    }
     for (int action_required_sync : payment_instrument.action_required()) {
       switch (action_required_sync) {
         case sync_pb::PaymentInstrument_ActionRequired_ACTION_REQUIRED_UNKNOWN:
