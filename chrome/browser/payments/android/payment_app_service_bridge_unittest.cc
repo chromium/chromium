@@ -16,6 +16,8 @@
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/const_csp_checker.h"
+#include "components/payments/core/payment_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -162,6 +164,51 @@ TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {
 
   // |bridge| cleans itself up after NotifyDoneCreatingPaymentApps().
   CHECK_EQ(nullptr, bridge.get());
+}
+
+TEST_P(PaymentAppServiceBridgeUnitTest, PrefsCanMakePayment) {
+  PaymentRequestSpec spec(mojom::PaymentOptions::New(),
+                          mojom::PaymentDetails::New(), {},
+                          /*observer=*/nullptr, /*app_locale=*/"en-US");
+  ConstCSPChecker const_csp_checker(/*allow=*/true);
+  MockCallback mock_callback;
+  base::WeakPtr<PaymentAppServiceBridge> bridge =
+      PaymentAppServiceBridge::Create(
+          std::make_unique<PaymentAppService>(
+              web_contents_->GetBrowserContext()),
+          web_contents_->GetPrimaryMainFrame(), top_origin_, spec.AsWeakPtr(),
+          /*twa_package_name=*/GetParam(), web_data_service_,
+          /*is_off_the_record=*/false, const_csp_checker.GetWeakPtr(),
+          base::BindRepeating(&MockCallback::NotifyCanMakePaymentCalculated,
+                              base::Unretained(&mock_callback)),
+          base::BindRepeating(&MockCallback::NotifyPaymentAppCreated,
+                              base::Unretained(&mock_callback)),
+          base::BindRepeating(&MockCallback::NotifyPaymentAppCreationError,
+                              base::Unretained(&mock_callback)),
+          base::BindOnce(&MockCallback::NotifyDoneCreatingPaymentApps,
+                         base::Unretained(&mock_callback)),
+          base::BindRepeating(&MockCallback::SetCanMakePaymentEvenWithoutApps,
+                              base::Unretained(&mock_callback)),
+          base::BindRepeating(&MockCallback::SetOptOutOffered,
+                              base::Unretained(&mock_callback)))
+          ->GetWeakPtrForTest();
+
+  PrefService* prefs = browser_context_.GetPrefs();
+  prefs->SetBoolean(kCanMakePaymentEnabled, false);
+  EXPECT_FALSE(bridge->PrefsCanMakePayment());
+
+  prefs->SetBoolean(kCanMakePaymentEnabled, true);
+  EXPECT_TRUE(bridge->PrefsCanMakePayment());
+
+  test_web_contents_factory_.DestroyWebContents(web_contents_);
+  EXPECT_FALSE(bridge->PrefsCanMakePayment());
+
+  // Clean up the bridge.
+  bridge->OnDoneCreatingPaymentApps();
+  bridge->OnDoneCreatingPaymentApps();
+  EXPECT_CALL(mock_callback, NotifyDoneCreatingPaymentApps());
+  bridge->OnDoneCreatingPaymentApps();
+  EXPECT_EQ(nullptr, bridge.get());
 }
 
 // An empty string indicates running outside of a TWA. A non-empty string is the

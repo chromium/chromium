@@ -56,6 +56,7 @@ static_library("android") {
     "//components/prefs",
     "//components/ukm/content",
     "//components/url_formatter",
+    "//components/user_prefs",
     "//components/webauthn/android",
     "//components/webdata/common",
     "//components/webdata_services",

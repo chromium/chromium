@@ -45,9 +45,7 @@ public interface PaymentAppFactoryDelegate {
     /**
      * @return Whether the "can make payment" preference is enabled.
      */
-    default boolean prefsCanMakePayment() {
-        return true;
-    }
+    boolean prefsCanMakePayment();
 
     /**
      * Called when the factory has finished creating all payment apps. A factory should call this
