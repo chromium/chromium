@@ -289,13 +289,11 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
   if (ShouldShowNewTabButton(browser)) {
     std::unique_ptr<TabStripControlButton> tab_strip_control_button =
-        std::make_unique<TabStripControlButton>(
+        std::make_unique<NewTabButton>(
             tab_strip_->controller(),
             base::BindRepeating(&TabStrip::NewTabButtonPressed,
                                 base::Unretained(tab_strip_)),
-            vector_icons::kAddIcon, Edge::kNone);
-    tab_strip_control_button->SetProperty(views::kElementIdentifierKey,
-                                          kNewTabButtonElementId);
+            vector_icons::kAddIcon, Edge::kNone, Edge::kNone, browser);
 
     new_tab_button_ = AddChildView(std::move(tab_strip_control_button));
 

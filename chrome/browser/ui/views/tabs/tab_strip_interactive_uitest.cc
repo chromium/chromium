@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
@@ -12,6 +14,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/polling_view_observer.h"
 #include "url/gurl.h"
@@ -43,6 +46,10 @@ class TabStripInteractiveUiTest
     EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
+
+  BrowserView* GetBrowserView() {
+    return BrowserView::GetBrowserViewForBrowser(browser());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, HoverEffectShowsOnMouseOver) {
@@ -63,3 +70,34 @@ IN_PROC_BROWSER_TEST_F(TabStripInteractiveUiTest, HoverEffectShowsOnMouseOver) {
                }),
       WaitForState(kTabStripHoverState, true));
 }
+
+class TabStripTabGroupMenuMoreEntryPointsEnabled
+    : public TabStripInteractiveUiTest {
+ public:
+  TabStripTabGroupMenuMoreEntryPointsEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kTabGroupMenuMoreEntryPoints);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// TODO (crbug.com/447617263) rewrite this test so that it works on mac and
+// re-enable it.
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(TabStripTabGroupMenuMoreEntryPointsEnabled,
+                       VerifyNewTabButtonContextMenu) {
+  RunTestSequence(
+      FinishTabstripAnimations(), EnsurePresent(kNewTabButtonElementId),
+      MoveMouseTo(kNewTabButtonElementId),
+      MayInvolveNativeContextMenu(ClickMouse(ui_controls::RIGHT)),
+      EnsurePresent(NewTabButtonMenuModel::kNewTab),
+      EnsurePresent(NewTabButtonMenuModel::kNewWindow),
+      EnsurePresent(NewTabButtonMenuModel::kNewIncognitoWindow), Do([this]() {
+        static_cast<BrowserTabStripController*>(
+            GetBrowserView()->tabstrip()->controller())
+            ->CloseContextMenuForTesting();
+      }));
+}
+#endif  // !BUILDFLAG(IS_MAC)
