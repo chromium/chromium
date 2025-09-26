@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/fake_tab_collection_consumer.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 
+using collaboration::messaging::PersistentNotificationType;
 using testing::_;
 using testing::Return;
 
@@ -305,8 +306,7 @@ TEST_F(RegularGridMediatorTest, ActivityLabelDataForGroupAfterStartup) {
       std::make_optional(collaboration::messaging::TabMessageMetadata());
   message.attribution.tab_group_metadata = std::make_optional(metadata);
   metadata.local_tab_group_id = std::make_optional(tab_group_id);
-  message.type =
-      collaboration::messaging::PersistentNotificationType::DIRTY_TAB;
+  message.type = PersistentNotificationType::DIRTY_TAB;
   message.collaboration_event =
       collaboration::messaging::CollaborationEvent::TAB_UPDATED;
 
@@ -316,12 +316,9 @@ TEST_F(RegularGridMediatorTest, ActivityLabelDataForGroupAfterStartup) {
   EXPECT_EQ(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
 
   ON_CALL(messaging_backend_, IsInitialized).WillByDefault(Return(true));
-  ON_CALL(
-      messaging_backend_,
-      GetMessagesForGroup(
-          tab_groups::EitherGroupID(tab_group_id),
-          std::make_optional(
-              collaboration::messaging::PersistentNotificationType::DIRTY_TAB)))
+  ON_CALL(messaging_backend_,
+          GetMessagesForGroup(tab_groups::EitherGroupID(tab_group_id),
+                              PersistentNotificationType::DIRTY_TAB))
       .WillByDefault(Return(std::vector{message}));
 
   // Fake the initialization of the service.
@@ -338,12 +335,9 @@ TEST_F(RegularGridMediatorTest, ActivityLabelDataForGroupAfterStartup) {
           activityLabelDataForGroup:tab_groups::TabGroupId::GenerateNew()]);
 
   // Simulate the tab message being removed.
-  ON_CALL(
-      messaging_backend_,
-      GetMessagesForGroup(
-          tab_groups::EitherGroupID(tab_group_id),
-          std::make_optional(
-              collaboration::messaging::PersistentNotificationType::DIRTY_TAB)))
+  ON_CALL(messaging_backend_,
+          GetMessagesForGroup(tab_groups::EitherGroupID(tab_group_id),
+                              PersistentNotificationType::DIRTY_TAB))
       .WillByDefault(
           Return(std::vector<collaboration::messaging::PersistentMessage>{}));
   // Fake the update of the service.
@@ -371,8 +365,7 @@ TEST_F(RegularGridMediatorTest,
   collaboration::messaging::PersistentMessage message;
   collaboration::messaging::TabGroupMessageMetadata metadata;
   metadata.local_tab_group_id = std::make_optional(tab_group_id);
-  message.type =
-      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP;
+  message.type = PersistentNotificationType::DIRTY_TAB_GROUP;
   message.attribution.tab_group_metadata = std::make_optional(metadata);
 
   // The activity label data should be nil by default.
@@ -423,8 +416,7 @@ TEST_F(RegularGridMediatorTest, ActivityLabelDataForGroupAfterTabRemoved) {
       std::make_optional(collaboration::messaging::TabMessageMetadata());
   message.attribution.tab_group_metadata = std::make_optional(metadata);
   metadata.local_tab_group_id = std::make_optional(tab_group_id);
-  message.type =
-      collaboration::messaging::PersistentNotificationType::TOMBSTONED;
+  message.type = PersistentNotificationType::TOMBSTONED;
   message.collaboration_event =
       collaboration::messaging::CollaborationEvent::TAB_REMOVED;
 
@@ -432,10 +424,8 @@ TEST_F(RegularGridMediatorTest, ActivityLabelDataForGroupAfterTabRemoved) {
   EXPECT_EQ(nil, [mediator_ activityLabelDataForGroup:tab_group_id]);
 
   ON_CALL(messaging_backend_,
-          GetMessagesForGroup(
-              tab_groups::EitherGroupID(tab_group_id),
-              std::make_optional(collaboration::messaging::
-                                     PersistentNotificationType::TOMBSTONED)))
+          GetMessagesForGroup(tab_groups::EitherGroupID(tab_group_id),
+                              PersistentNotificationType::TOMBSTONED))
       .WillByDefault(Return(std::vector{message}));
 
   // Fake the update of the service.

@@ -19,7 +19,6 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.PersistentNotificationType;
 
 import java.util.List;
-import java.util.Optional;
 
 /** Pushes label updates to UI for tab groups. */
 @NullMarked
@@ -50,8 +49,7 @@ public class TabGroupLabeller extends TabObjectLabeller {
 
     @Override
     protected List<PersistentMessage> getAllMessages() {
-        return mMessagingBackendService.getMessages(
-                Optional.of(PersistentNotificationType.DIRTY_TAB_GROUP));
+        return mMessagingBackendService.getMessages(PersistentNotificationType.DIRTY_TAB_GROUP);
     }
 
     @Override

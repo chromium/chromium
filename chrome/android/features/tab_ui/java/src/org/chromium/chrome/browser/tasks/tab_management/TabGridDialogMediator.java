@@ -116,7 +116,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -1462,9 +1461,7 @@ public class TabGridDialogMediator
         assumeNonNull(mMessagingBackendService);
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessagesForGroup(
-                        eitherGroupId,
-                        /* type= */ Optional.of(PersistentNotificationType.DIRTY_TAB));
-
+                        eitherGroupId, /* type= */ PersistentNotificationType.DIRTY_TAB);
         Map<Integer, Integer> collaborationEventCounts = new HashMap<>();
         for (PersistentMessage message : messages) {
             collaborationEventCounts.merge(message.collaborationEvent, 1, Integer::sum);
@@ -1476,8 +1473,7 @@ public class TabGridDialogMediator
 
         // Query for tombstoned entries from backend and look for the tab removals.
         List<PersistentMessage> tombstonedMessages =
-                mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED));
+                mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED);
         int tabsClosed = 0;
         for (PersistentMessage message : tombstonedMessages) {
             if (message.collaborationEvent != CollaborationEvent.TAB_REMOVED) continue;

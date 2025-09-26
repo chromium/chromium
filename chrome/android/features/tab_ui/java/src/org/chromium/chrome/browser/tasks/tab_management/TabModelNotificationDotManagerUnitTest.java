@@ -55,7 +55,6 @@ import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** Unit tests for {@link TabModelNotificationDotManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -317,8 +316,7 @@ public class TabModelNotificationDotManagerUnitTest {
             messages.add(message);
         }
 
-        when(mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.DIRTY_TAB)))
+        when(mMessagingBackendService.getMessages(PersistentNotificationType.DIRTY_TAB))
                 .thenReturn(messages);
     }
 

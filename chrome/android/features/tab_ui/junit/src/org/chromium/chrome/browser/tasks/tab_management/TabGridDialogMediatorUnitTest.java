@@ -155,7 +155,6 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Tests for {@link TabGridDialogMediator}. */
@@ -2162,15 +2161,14 @@ public class TabGridDialogMediatorUnitTest {
             messageList.add(makePersistentMessage(CollaborationEvent.TAB_UPDATED));
         }
         when(mMessagingBackendService.getMessagesForGroup(
-                        any(), eq(Optional.of(PersistentNotificationType.DIRTY_TAB))))
+                        any(), eq(PersistentNotificationType.DIRTY_TAB)))
                 .thenReturn(messageList);
 
         List<PersistentMessage> tombstonedMessageList = new ArrayList<>();
         for (int i = 0; i < removed; i++) {
             tombstonedMessageList.add(makePersistentMessage(CollaborationEvent.TAB_REMOVED));
         }
-        when(mMessagingBackendService.getMessages(
-                        eq(Optional.of(PersistentNotificationType.TOMBSTONED))))
+        when(mMessagingBackendService.getMessages(eq(PersistentNotificationType.TOMBSTONED)))
                 .thenReturn(tombstonedMessageList);
     }
 

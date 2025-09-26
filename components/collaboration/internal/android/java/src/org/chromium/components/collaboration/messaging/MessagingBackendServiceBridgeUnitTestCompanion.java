@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.junit.Assert;
 import org.mockito.ArgumentCaptor;
 
@@ -28,7 +29,6 @@ import org.chromium.google_apis.gaia.GaiaId;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /** A companion object to the native MessagingBackendServiceBridgeTest. */
@@ -82,13 +82,11 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
 
     @CalledByNative
     private void invokeGetMessagesAndVerify(
-            @PersistentNotificationType int type, int[] expectedCollaborationEvents) {
-        List<PersistentMessage> messages;
-        if (type == -1) {
-            messages = mService.getMessages(Optional.empty());
-        } else {
-            messages = mService.getMessages(Optional.of(type));
-        }
+            @JniType("collaboration::messaging::PersistentNotificationType")
+                    @PersistentNotificationType
+                    int type,
+            int[] expectedCollaborationEvents) {
+        List<PersistentMessage> messages = mService.getMessages(type);
         Assert.assertEquals(expectedCollaborationEvents.length, messages.size());
         for (int i = 0; i < expectedCollaborationEvents.length; ++i) {
             Assert.assertEquals(expectedCollaborationEvents[i], messages.get(i).collaborationEvent);
@@ -99,7 +97,9 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     private void invokeGetMessagesForGroupAndVerify(
             LocalTabGroupId localGroupId,
             @Nullable String syncId,
-            @PersistentNotificationType int type,
+            @JniType("collaboration::messaging::PersistentNotificationType")
+                    @PersistentNotificationType
+                    int type,
             int[] expectedCollaborationEvents) {
         EitherId.EitherGroupId groupId;
         if (syncId == null) {
@@ -107,12 +107,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         } else {
             groupId = EitherId.EitherGroupId.createSyncId(syncId);
         }
-        List<PersistentMessage> messages;
-        if (type == -1) {
-            messages = mService.getMessagesForGroup(groupId, Optional.empty());
-        } else {
-            messages = mService.getMessagesForGroup(groupId, Optional.of(type));
-        }
+        List<PersistentMessage> messages = mService.getMessagesForGroup(groupId, type);
         Assert.assertEquals(expectedCollaborationEvents.length, messages.size());
         for (int i = 0; i < expectedCollaborationEvents.length; ++i) {
             Assert.assertEquals(expectedCollaborationEvents[i], messages.get(i).collaborationEvent);
@@ -129,7 +124,9 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     private void invokeGetMessagesForTabAndVerify(
             int localTabId,
             @Nullable String syncId,
-            @PersistentNotificationType int type,
+            @JniType("collaboration::messaging::PersistentNotificationType")
+                    @PersistentNotificationType
+                    int type,
             int[] expectedCollaborationEvents) {
         EitherId.EitherTabId tabId;
         if (syncId == null) {
@@ -137,12 +134,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
         } else {
             tabId = EitherId.EitherTabId.createSyncId(syncId);
         }
-        List<PersistentMessage> messages;
-        if (type == -1) {
-            messages = mService.getMessagesForTab(tabId, Optional.empty());
-        } else {
-            messages = mService.getMessagesForTab(tabId, Optional.of(type));
-        }
+        List<PersistentMessage> messages = mService.getMessagesForTab(tabId, type);
         Assert.assertEquals(expectedCollaborationEvents.length, messages.size());
         for (int i = 0; i < expectedCollaborationEvents.length; ++i) {
             Assert.assertEquals(expectedCollaborationEvents[i], messages.get(i).collaborationEvent);
@@ -175,7 +167,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
                 tgmm.localTabGroupId);
         Assert.assertEquals("a1b2c3d4-e5f6-7890-1234-567890abcdef", tgmm.syncTabGroupId);
         Assert.assertEquals("last known group title", tgmm.lastKnownTitle);
-        Assert.assertEquals(TabGroupColorId.ORANGE, tgmm.lastKnownColor.get().intValue());
+        Assert.assertEquals(TabGroupColorId.ORANGE, tgmm.lastKnownColor.intValue());
 
         // TabMessageMetadata.
         TabMessageMetadata tmm = attribution.tabMetadata;
@@ -219,7 +211,7 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
                 tgmm.localTabGroupId);
         Assert.assertEquals("a1b2c3d4-e5f6-7890-1234-567890abcdef", tgmm.syncTabGroupId);
         Assert.assertEquals("last known group title", tgmm.lastKnownTitle);
-        Assert.assertEquals(TabGroupColorId.ORANGE, tgmm.lastKnownColor.get().intValue());
+        Assert.assertEquals(TabGroupColorId.ORANGE, tgmm.lastKnownColor.intValue());
 
         // TabMessageMetadata of attribution 1.
         TabMessageMetadata tmm = attribution1.tabMetadata;

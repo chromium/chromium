@@ -40,7 +40,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /** A mediator for the tab group removed message card for use in {@link TabGroupListCoordinator}. */
 @NullMarked
@@ -156,7 +155,7 @@ public class TabGroupRemovedMessageMediator {
             @Nullable String messageId = message.attribution.id;
             assert messageId != null && !TextUtils.isEmpty(messageId);
             mMessagingBackendService.clearPersistentMessage(
-                    messageId, Optional.of(PersistentNotificationType.TOMBSTONED));
+                    messageId, PersistentNotificationType.TOMBSTONED);
         }
         removeMessageCard();
     }
@@ -180,8 +179,7 @@ public class TabGroupRemovedMessageMediator {
     private List<PersistentMessage> getTabGroupRemovedMessageList() {
         List<PersistentMessage> tabGroupRemovedMessages = new ArrayList<>();
         List<PersistentMessage> messages =
-                mMessagingBackendService.getMessages(
-                        Optional.of(PersistentNotificationType.TOMBSTONED));
+                mMessagingBackendService.getMessages(PersistentNotificationType.TOMBSTONED);
 
         for (PersistentMessage message : messages) {
             if (message.collaborationEvent != CollaborationEvent.TAB_GROUP_REMOVED

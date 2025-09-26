@@ -4,7 +4,6 @@
 
 #include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 
-#include <optional>
 #include <vector>
 
 #include "components/collaboration/public/messaging/message.h"
@@ -31,19 +30,19 @@ bool EmptyMessagingBackendService::IsInitialized() {
 
 std::vector<PersistentMessage> EmptyMessagingBackendService::GetMessagesForTab(
     tab_groups::EitherTabID tab_id,
-    std::optional<PersistentNotificationType> type) {
+    PersistentNotificationType type) {
   return std::vector<PersistentMessage>();
 }
 
 std::vector<PersistentMessage>
 EmptyMessagingBackendService::GetMessagesForGroup(
     tab_groups::EitherGroupID group_id,
-    std::optional<PersistentNotificationType> type) {
+    PersistentNotificationType type) {
   return std::vector<PersistentMessage>();
 }
 
 std::vector<PersistentMessage> EmptyMessagingBackendService::GetMessages(
-    std::optional<PersistentNotificationType> type) {
+    PersistentNotificationType type) {
   return std::vector<PersistentMessage>();
 }
 
@@ -57,7 +56,7 @@ void EmptyMessagingBackendService::ClearDirtyTabMessagesForGroup(
 
 void EmptyMessagingBackendService::ClearPersistentMessage(
     const base::Uuid& message_id,
-    std::optional<PersistentNotificationType> type) {}
+    PersistentNotificationType type) {}
 
 void EmptyMessagingBackendService::RemoveMessages(
     const std::vector<base::Uuid>& message_ids) {}

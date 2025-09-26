@@ -25,15 +25,13 @@ class MockMessagingBackendService : public MessagingBackendService {
   MOCK_METHOD(bool, IsInitialized, ());
   MOCK_METHOD(std::vector<PersistentMessage>,
               GetMessagesForTab,
-              (tab_groups::EitherTabID,
-               std::optional<PersistentNotificationType>));
+              (tab_groups::EitherTabID, PersistentNotificationType));
   MOCK_METHOD(std::vector<PersistentMessage>,
               GetMessagesForGroup,
-              (tab_groups::EitherGroupID,
-               std::optional<PersistentNotificationType>));
+              (tab_groups::EitherGroupID, PersistentNotificationType));
   MOCK_METHOD(std::vector<PersistentMessage>,
               GetMessages,
-              (std::optional<PersistentNotificationType>));
+              (PersistentNotificationType));
   MOCK_METHOD(std::vector<ActivityLogItem>,
               GetActivityLog,
               (const ActivityLogQueryParams&));
@@ -42,7 +40,7 @@ class MockMessagingBackendService : public MessagingBackendService {
               (const data_sharing::GroupId&));
   MOCK_METHOD(void,
               ClearPersistentMessage,
-              (const base::Uuid&, std::optional<PersistentNotificationType>));
+              (const base::Uuid&, PersistentNotificationType));
   MOCK_METHOD(void, RemoveMessages, (const std::vector<base::Uuid>&));
   MOCK_METHOD(void,
               AddActivityLogForTesting,

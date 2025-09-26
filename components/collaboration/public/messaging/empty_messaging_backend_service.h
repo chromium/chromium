@@ -28,19 +28,18 @@ class EmptyMessagingBackendService : public MessagingBackendService {
   bool IsInitialized() override;
   std::vector<PersistentMessage> GetMessagesForTab(
       tab_groups::EitherTabID tab_id,
-      std::optional<PersistentNotificationType> type) override;
+      PersistentNotificationType type) override;
   std::vector<PersistentMessage> GetMessagesForGroup(
       tab_groups::EitherGroupID group_id,
-      std::optional<PersistentNotificationType> type) override;
+      PersistentNotificationType type) override;
   std::vector<PersistentMessage> GetMessages(
-      std::optional<PersistentNotificationType> type) override;
+      PersistentNotificationType type) override;
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
   void ClearDirtyTabMessagesForGroup(
       const data_sharing::GroupId& collaboration_group_id) override;
-  void ClearPersistentMessage(
-      const base::Uuid& message_id,
-      std::optional<PersistentNotificationType> type) override;
+  void ClearPersistentMessage(const base::Uuid& message_id,
+                              PersistentNotificationType type) override;
   void RemoveMessages(const std::vector<base::Uuid>& message_ids) override;
   void AddActivityLogForTesting(
       data_sharing::GroupId collaboration_id,

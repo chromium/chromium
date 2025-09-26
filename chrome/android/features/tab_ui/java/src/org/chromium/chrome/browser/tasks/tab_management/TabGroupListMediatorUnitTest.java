@@ -100,7 +100,6 @@ import org.chromium.ui.test.util.MockitoHelper;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /** Tests for {@link TabGroupListMediator}. */
@@ -745,7 +744,7 @@ public class TabGroupListMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testNoTabGroupRemovedMessageCard() {
         List<PersistentMessage> messageList = List.of();
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
         createMediator();
         assertEquals(0, mModelList.size());
     }
@@ -755,7 +754,7 @@ public class TabGroupListMediatorUnitTest {
     public void testNoGroupRemovedMessageCard_NullId() {
         PersistentMessage messageWithoutId = new PersistentMessage();
         messageWithoutId.attribution = new MessageAttribution();
-        when(mMessagingBackendService.getMessages(any())).thenReturn(List.of(messageWithoutId));
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(List.of(messageWithoutId));
 
         createMediator();
 
@@ -767,7 +766,7 @@ public class TabGroupListMediatorUnitTest {
     public void testTabGroupRemovedMessageCard() {
         List<PersistentMessage> messageList =
                 List.of(makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1));
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         createMediator();
 
@@ -785,7 +784,7 @@ public class TabGroupListMediatorUnitTest {
                 List.of(
                         makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
                         makeTabGroupRemovedMessage(MESSAGE_ID2, ""));
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         createMediator();
 
@@ -804,7 +803,7 @@ public class TabGroupListMediatorUnitTest {
                         makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
                         makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2),
                         makeTabGroupRemovedMessage(MESSAGE_ID3, GROUP_NAME3));
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         createMediator();
 
@@ -819,7 +818,7 @@ public class TabGroupListMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testTabGroupRemovedMessageCardWithOneUnnamedGroupTitle() {
         List<PersistentMessage> messageList = List.of(makeTabGroupRemovedMessage(MESSAGE_ID1, ""));
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         createMediator();
 
@@ -837,8 +836,7 @@ public class TabGroupListMediatorUnitTest {
                 List.of(
                         makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
                         makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2));
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
-
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
         SavedTabGroup fooGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
         fooGroup.title = "Foo";
         fooGroup.color = TabGroupColorId.BLUE;
@@ -890,7 +888,7 @@ public class TabGroupListMediatorUnitTest {
                 List.of(
                         makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
                         makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2));
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         SavedTabGroup fooGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
         fooGroup.title = "Foo";
@@ -940,7 +938,7 @@ public class TabGroupListMediatorUnitTest {
                 List.of(
                         makeTabGroupRemovedMessage(MESSAGE_ID1, GROUP_NAME1),
                         makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2));
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         SavedTabGroup fooGroup = mSyncedGroupTestHelper.newTabGroup(SYNC_GROUP_ID1);
         fooGroup.title = "Foo";
@@ -967,11 +965,9 @@ public class TabGroupListMediatorUnitTest {
 
         assertEquals(2, mModelList.size());
         verify(mMessagingBackendService)
-                .clearPersistentMessage(
-                        MESSAGE_ID1, Optional.of(PersistentNotificationType.TOMBSTONED));
+                .clearPersistentMessage(MESSAGE_ID1, PersistentNotificationType.TOMBSTONED);
         verify(mMessagingBackendService)
-                .clearPersistentMessage(
-                        MESSAGE_ID2, Optional.of(PersistentNotificationType.TOMBSTONED));
+                .clearPersistentMessage(MESSAGE_ID2, PersistentNotificationType.TOMBSTONED);
 
         PropertyModel barModel = mModelList.get(0).model;
         assertEquals(
@@ -994,13 +990,13 @@ public class TabGroupListMediatorUnitTest {
         PersistentMessage newMessageCard = makeTabGroupRemovedMessage(MESSAGE_ID2, GROUP_NAME2);
 
         // Set up backend to return the initial message.
-        when(mMessagingBackendService.getMessages(any())).thenReturn(List.of(originalMessage));
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(List.of(originalMessage));
 
         createMediator();
         assertEquals(1, mModelList.size());
 
         // Invoke displayPersistentMessage from backend which adds one more message.
-        when(mMessagingBackendService.getMessages(any()))
+        when(mMessagingBackendService.getMessages(anyInt()))
                 .thenReturn(List.of(originalMessage, newMessageCard));
         verify(mMessagingBackendService)
                 .addPersistentMessageObserver(mPersistentMessageObserverCaptor.capture());
@@ -1011,7 +1007,7 @@ public class TabGroupListMediatorUnitTest {
 
         // Disable sync which should clear all the backend messages.
         when(mSyncService.getActiveDataTypes()).thenReturn(Set.of());
-        when(mMessagingBackendService.getMessages(any())).thenReturn(List.of());
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(List.of());
         mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
         assertEquals(0, mModelList.size());
     }

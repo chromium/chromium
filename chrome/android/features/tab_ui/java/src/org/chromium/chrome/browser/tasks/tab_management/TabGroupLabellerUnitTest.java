@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -117,7 +118,7 @@ public class TabGroupLabellerUnitTest {
     @Test
     public void testShowAll_Added() {
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         mTabGroupLabeller.showAll();
 
@@ -129,7 +130,7 @@ public class TabGroupLabellerUnitTest {
     public void testShowAll_WrongTabModel() {
         when(mTabGroupModelFilter.getGroupLastShownTabId(any())).thenReturn(Tab.INVALID_TAB_ID);
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         mTabGroupLabeller.showAll();
         verify(mTabListNotificationHandler, never()).updateTabCardLabels(any());
@@ -140,7 +141,7 @@ public class TabGroupLabellerUnitTest {
         PersistentMessage message = makeStandardMessage();
         message.attribution.tabGroupMetadata.localTabGroupId = null;
         List<PersistentMessage> messageList = List.of(message);
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         mTabGroupLabeller.showAll();
         verify(mTabListNotificationHandler, never()).updateTabCardLabels(any());
@@ -151,7 +152,7 @@ public class TabGroupLabellerUnitTest {
         PersistentMessage message = makeStandardMessage();
         message.type = PersistentNotificationType.DIRTY_TAB;
         List<PersistentMessage> messageList = List.of(message);
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         mTabGroupLabeller.showAll();
         verify(mTabListNotificationHandler, never()).updateTabCardLabels(any());
@@ -161,7 +162,7 @@ public class TabGroupLabellerUnitTest {
     public void testShowAll_OffTheRecord() {
         when(mTabModel.isOffTheRecord()).thenReturn(true);
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         mTabGroupLabeller.showAll();
         verify(mTabListNotificationHandler, never()).updateTabCardLabels(any());
@@ -171,7 +172,7 @@ public class TabGroupLabellerUnitTest {
     public void testShowAll_NullFilter() {
         mTabGroupModelFilterSupplier.set(null);
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         mTabGroupLabeller.showAll();
         verify(mTabListNotificationHandler, never()).updateTabCardLabels(any());
@@ -200,7 +201,7 @@ public class TabGroupLabellerUnitTest {
     @Test
     public void testOnMessagingBackendServiceInitialized() {
         List<PersistentMessage> messageList = List.of(makeStandardMessage());
-        when(mMessagingBackendService.getMessages(any())).thenReturn(messageList);
+        when(mMessagingBackendService.getMessages(anyInt())).thenReturn(messageList);
 
         verify(mMessagingBackendService)
                 .addPersistentMessageObserver(mPersistentMessageObserverCaptor.capture());

@@ -28,6 +28,7 @@
 #include "components/tabs/public/tab_group.h"
 
 using collaboration::messaging::MessagingBackendServiceFactory;
+using collaboration::messaging::PersistentNotificationType;
 
 namespace tab_groups {
 namespace {
@@ -208,7 +209,7 @@ CollaborationMessagingObserver::~CollaborationMessagingObserver() {
 
 void CollaborationMessagingObserver::OnMessagingBackendServiceInitialized() {
   CHECK(service_);
-  auto messages = service_->GetMessages(std::nullopt);
+  auto messages = service_->GetMessages(PersistentNotificationType::UNDEFINED);
   for (const auto& message : messages) {
     DispatchMessage(message, MessageDisplayStatus::kDisplay);
   }
