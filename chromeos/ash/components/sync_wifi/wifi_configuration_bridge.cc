@@ -297,6 +297,26 @@ std::string WifiConfigurationBridge::GetStorageKey(
       .SerializeToString();
 }
 
+bool WifiConfigurationBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  const sync_pb::WifiConfigurationSpecifics& specifics =
+      entity_data.specifics.wifi_configuration();
+  if (specifics.hex_ssid().empty()) {
+    return false;
+  }
+  // Only security types PSK and WEP are supported, see
+  // sync_wifi::SecurityTypeStringFromProto().
+  switch (specifics.security_type()) {
+    case sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_UNSPECIFIED:
+    case sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_NONE:
+      return false;
+    case sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_PSK:
+    case sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_WEP:
+      return true;
+  }
+  NOTREACHED();
+}
+
 void WifiConfigurationBridge::ApplyDisableSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
   // Since bridge and DataTypeStore state represents the synced networks state,
