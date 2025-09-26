@@ -235,6 +235,21 @@ public class ButtonVisibilityRule {
     }
 
     /**
+     * Removes a button from the visibility rule. The button will be treated as non-existent.
+     *
+     * @param index Index of the button to remove.
+     */
+    public void removeButton(@ButtonId int index) {
+        if (!mActivated) return;
+
+        // This is safe because mButtons is a SparseArray, and we always check whether .get()
+        // results are null.
+        mButtons.remove(index);
+        // No refresh call is needed. This is equivalent to addButton, and we only refresh when the
+        // button is visible. When we are removing a button, it's not visible.
+    }
+
+    /**
      * Return {@code true} if the given button was suppressed (hidden) by this rule checker.
      *
      * @param index Index of the button.
