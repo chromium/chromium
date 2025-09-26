@@ -12,11 +12,18 @@
 namespace contextual_tasks {
 class ContextualTasksService;
 
+}  // namespace contextual_tasks
+
+class AimEligibilityService;
+
+namespace contextual_tasks {
+
 class ContextualTasksContextControllerImpl
     : public ContextualTasksContextController {
  public:
-  explicit ContextualTasksContextControllerImpl(
-      ContextualTasksService* service);
+  ContextualTasksContextControllerImpl(
+      ContextualTasksService* service,
+      AimEligibilityService* aim_eligibility_service);
   ~ContextualTasksContextControllerImpl() override;
 
   // ContextualTasksController implementation.
@@ -31,9 +38,11 @@ class ContextualTasksContextControllerImpl
       SessionID tab_session_id,
       base::OnceCallback<void(std::optional<ContextualTask>)>
           selected_task_callback) override;
+  FeatureEligibility GetFeatureEligibility() override;
 
  private:
   raw_ptr<ContextualTasksService> service_;
+  raw_ptr<AimEligibilityService> aim_eligibility_service_;
 };
 
 }  // namespace contextual_tasks

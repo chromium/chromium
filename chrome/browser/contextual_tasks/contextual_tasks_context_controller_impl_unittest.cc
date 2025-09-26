@@ -5,10 +5,15 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller_impl.h"
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/prefs/testing_pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,6 +22,20 @@ namespace {
 
 using ::testing::_;
 using ::testing::Return;
+
+class MockAimEligibilityService : public AimEligibilityService {
+ public:
+  explicit MockAimEligibilityService(PrefService* pref_service)
+      : AimEligibilityService(*pref_service, nullptr, nullptr, nullptr) {}
+  MOCK_METHOD(bool, IsAimEligible, (), (const, override));
+
+  // The following methods are marked as pure virtual in AimEligibilityService,
+  // as they are implemented in ChromeAimEligibilityService which is the one
+  // provided by the KeyedService factory. We therefore need to implement them
+  // in this unit test.
+  std::string GetCountryCode() const override { return "US"; }
+  std::string GetLocale() const override { return "en-US"; }
+};
 
 class MockContextualTasksService : public ContextualTasksService {
  public:
@@ -69,8 +88,11 @@ class MockContextualTasksService : public ContextualTasksService {
 class ContextualTasksContextControllerImplTest : public testing::Test {
  public:
   void SetUp() override {
-    controller_ =
-        std::make_unique<ContextualTasksContextControllerImpl>(&mock_service_);
+    AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
+    mock_aim_eligibility_service_ =
+        std::make_unique<MockAimEligibilityService>(&pref_service_);
+    controller_ = std::make_unique<ContextualTasksContextControllerImpl>(
+        &mock_service_, mock_aim_eligibility_service_.get());
   }
 
   void TearDown() override { controller_.reset(); }
@@ -124,8 +146,12 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple pref_service_;
   // Mock service to control the behavior of ContextualTasksService.
   MockContextualTasksService mock_service_;
+  // Mock service to control the behavior of AimEligibilityService.
+  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service_;
   // The controller under test.
   std::unique_ptr<ContextualTasksContextControllerImpl> controller_;
 };
@@ -210,6 +236,31 @@ TEST_F(ContextualTasksContextControllerImplTest,
 
   std::optional<ContextualTask> task = GetSelectedTaskForTab(tab_session_id);
   EXPECT_FALSE(task.has_value());
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, GetFeatureEligibility) {
+  // Test case 1: Feature flag enabled, AIM eligible.
+  feature_list_.InitAndEnableFeature(kContextualTasks);
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_TRUE(controller_->GetFeatureEligibility().IsEligible());
+
+  // Test case 2: Feature flag enabled, AIM not eligible.
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(false));
+  EXPECT_FALSE(controller_->GetFeatureEligibility().IsEligible());
+
+  feature_list_.Reset();
+  // Test case 3: Feature flag disabled, AIM eligible.
+  feature_list_.InitAndDisableFeature(kContextualTasks);
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(true));
+  EXPECT_FALSE(controller_->GetFeatureEligibility().IsEligible());
+
+  // Test case 4: Feature flag disabled, AIM not eligible.
+  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
+      .WillOnce(Return(false));
+  EXPECT_FALSE(controller_->GetFeatureEligibility().IsEligible());
 }
 
 }  // namespace
