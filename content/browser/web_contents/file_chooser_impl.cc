@@ -170,6 +170,12 @@ void FileChooserImpl::OpenFileChooser(blink::mojom::FileChooserParamsPtr params,
     return;
   }
 
+  // Do not allow open dialogs to have renderer-controlled default_file_name.
+  // See https://crbug.com/433800617 for context.
+  if (params->mode != blink::mojom::FileChooserParams::Mode::kSave) {
+    params->default_file_name = base::FilePath();
+  }
+
   // Don't allow page with open FileChooser to enter BackForwardCache to avoid
   // any unexpected behaviour from BackForwardCache.
   BackForwardCache::DisableForRenderFrameHost(
