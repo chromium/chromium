@@ -156,3 +156,12 @@ bool IsPersistTabContextEnabled() {
   }
   return base::FeatureList::IsEnabled(kPersistTabContext);
 }
+
+BASE_FEATURE(kGeminiNavigationPromo, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiNavigationPromoEnabled() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kGeminiNavigationPromo);
+}

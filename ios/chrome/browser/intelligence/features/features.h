@@ -130,4 +130,10 @@ bool IsPersistTabContextEnabled();
 // Feature flag to persist tab context.
 BASE_DECLARE_FEATURE(kPersistTabContext);
 
+// Feature flag for the automatic Gemini promo shown on navigation.
+BASE_DECLARE_FEATURE(kGeminiNavigationPromo);
+
+// Returns true if the Gemini navigation promo is enabled.
+bool IsGeminiNavigationPromoEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

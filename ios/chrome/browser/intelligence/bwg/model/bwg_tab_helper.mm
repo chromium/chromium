@@ -210,7 +210,9 @@ void BwgTabHelper::PageLoaded(
   bool floaty_shown = profile->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent);
   bool bwg_promo_shown =
       profile->GetPrefs()->GetInteger(prefs::kIOSBWGPromoImpressionCount) > 0;
-  if ((!IsFirstRunRecent(base::Days(1)) || ShouldSkipBWGPromoNewUserDelay()) &&
+  bool should_wait_for_new_user =
+      !ShouldSkipBWGPromoNewUserDelay() && IsFirstRunRecent(base::Days(1));
+  if (IsGeminiNavigationPromoEnabled() && !should_wait_for_new_user &&
       !floaty_shown && !bwg_promo_shown) {
     [bwg_commands_handler_ showBWGPromoIfPageIsEligible];
   }

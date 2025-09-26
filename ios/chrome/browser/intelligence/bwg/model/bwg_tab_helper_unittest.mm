@@ -216,6 +216,11 @@ TEST_F(BwgTabHelperTest, TestWasHidden_BackgroundsSession) {
 }
 
 TEST_F(BwgTabHelperTest, TestPageLoaded_ShowsPromo) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab,
+                            kGeminiNavigationPromo},
+      /*disabled_features=*/{});
+
   OCMExpect([mock_bwg_handler_ showBWGPromoIfPageIsEligible]);
 
   // Set prefs to a state where the promo should be shown.
