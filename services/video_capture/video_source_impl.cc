@@ -9,7 +9,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "services/video_capture/push_video_stream_subscription_impl.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 
 namespace video_capture {
 
@@ -140,13 +139,7 @@ void VideoSourceImpl::OnCreateDeviceResponse(
       scoped_trace->AddStep("StartDevice");
 
     // Device was created successfully.
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    auto context = media::VideoEffectsContext(
-        std::move(pending_video_effects_processor_),
-        std::move(pending_readonly_video_effects_manager_));
-#else
     auto context = media::VideoEffectsContext();
-#endif
     info.device->StartInProcess(device_start_settings_,
                                 broadcaster_.GetWeakPtr(), std::move(context));
     UmaHistogramTimes("Media.VideoCapture.StartSourceSuccessLatency",

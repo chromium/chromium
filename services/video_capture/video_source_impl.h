@@ -22,11 +22,6 @@
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 namespace video_capture {
 
@@ -90,18 +85,6 @@ class VideoSourceImpl : public mojom::VideoSource {
   raw_ptr<Device, AcrossTasksDanglingUntriaged> device_{nullptr};
   media::VideoCaptureParams device_start_settings_;
   bool restart_device_once_when_stop_complete_ = false;
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  // Video effects processor that will be used to start the capture on the
-  // `device_`.
-  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-      pending_video_effects_processor_;
-
-  // Video effects manager that will be used to check / observe configuration
-  // state as we as report errors.
-  mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-      pending_readonly_video_effects_manager_;
-#endif
 
   base::TimeTicks device_startup_start_time_;
 
