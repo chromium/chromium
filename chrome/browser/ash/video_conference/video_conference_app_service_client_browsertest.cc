@@ -144,6 +144,10 @@ class FakeAppInstance {
 
 class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
  public:
+  using AppState = VideoConferenceAppServiceClient::AppState;
+  using VideoConferencePermissions =
+      VideoConferenceAppServiceClient::VideoConferencePermissions;
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kFeatureManagementVideoConference);
@@ -186,7 +190,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
                           bool has_microphone_permission) {
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(MakeApp(app_id, has_camera_permission,
-                             has_microphone_permission, GetAppType(app_id)));
+                             has_microphone_permission, apps::AppType::kArc));
     app_service_proxy_->OnApps(std::move(deltas), apps::AppType::kUnknown,
                                /*should_notify_initialized=*/false);
   }
@@ -206,8 +210,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   }
 
   // Adds {id, state} pair to client_->id_to_app_state_.
-  void AddAppState(const AppIdString& app_id,
-                   const VideoConferenceAppServiceClient::AppState& state) {
+  void AddAppState(const AppIdString& app_id, const AppState& state) {
     (client_->id_to_app_state_)[app_id] = state;
   }
 
@@ -276,8 +279,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppType) {
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppPermission) {
   InstallApp(kAppId1);
 
-  VideoConferenceAppServiceClient::VideoConferencePermissions permission =
-      GetAppPermission(kAppId1);
+  VideoConferencePermissions permission = GetAppPermission(kAppId1);
   EXPECT_FALSE(permission.has_camera_permission);
   EXPECT_FALSE(permission.has_microphone_permission);
 
@@ -309,14 +311,12 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetAppPermission) {
 IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, GetMediaApps) {
   // Add {kAppId1, state1} pair to the client_.
   const base::UnguessableToken token1 = base::UnguessableToken::Create();
-  const VideoConferenceAppServiceClient::AppState state1{
-      token1, base::Time::Now(), true, true};
+  const AppState state1{token1, base::Time::Now(), true, true};
   AddAppState(kAppId1, state1);
 
   // Add {kAppId2, state2} pair to the client_.
   const base::UnguessableToken token2 = base::UnguessableToken::Create();
-  const VideoConferenceAppServiceClient::AppState state2{
-      token2, base::Time::Now(), true, false};
+  const AppState state2{token2, base::Time::Now(), true, false};
   AddAppState(kAppId2, state2);
 
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> media_app_info =
@@ -373,8 +373,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest, ReturnToApp) {
   EXPECT_FALSE(window2->IsVisible());
 
   // Add pair {token1, state1} to client_->id_to_app_state_.
-  const VideoConferenceAppServiceClient::AppState state1{
-      token1, base::Time::Now(), true, true};
+  const AppState state1{token1, base::Time::Now(), true, true};
   AddAppState(kAppId1, state1);
 
   // Return to token1 should show all instances associated with kAppId1.
