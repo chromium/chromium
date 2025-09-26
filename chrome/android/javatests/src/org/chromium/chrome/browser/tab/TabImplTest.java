@@ -144,7 +144,10 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @DisableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS})
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_PINNED_TABS,
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP
+    })
     public void testSetIsPinned_TrueBecomesFalseWhenFeatureDisabled() {
         TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(() -> tab.setIsPinned(true));

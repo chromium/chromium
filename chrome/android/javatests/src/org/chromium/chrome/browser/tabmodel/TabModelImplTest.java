@@ -1714,7 +1714,10 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS})
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_PINNED_TABS,
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP
+    })
     public void removePinState_WhenFeatureDisabled() {
         createTabs(2);
 
