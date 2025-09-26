@@ -1354,6 +1354,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // autofill. The warning is shown even if there are no autofill suggestions
   // available.
   if (IsFormMixedContent(client(), form) &&
+      client().GetPrefs()->FindPreference(
+          ::prefs::kMixedFormsWarningsEnabled) &&
       client().GetPrefs()->GetBoolean(::prefs::kMixedFormsWarningsEnabled)) {
     LOG_AF(log_manager()) << LoggingScope::kFilling
                           << LogMessage::kSuggestionSuppressed
