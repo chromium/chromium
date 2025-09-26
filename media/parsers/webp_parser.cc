@@ -1,12 +1,6 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/webp_parser.h"
 
 #include <limits.h>
@@ -15,13 +9,10 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/containers/span_reader.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "media/parsers/vp8_parser.h"
-
-#if !defined(ARCH_CPU_LITTLE_ENDIAN)
-#error Big-Endian architecture not supported.
-#endif
 
 namespace media {
 
@@ -47,19 +38,21 @@ constexpr size_t kWebPFileAndVp8ChunkHeaderSizeInBytes = 20u;
 // https://developers.google.com/speed/webp/docs/riff_container#webp_file_header
 constexpr uint32_t kMaxWebPFileSize = (1ull << 32) - 10u;
 
-constexpr size_t kSizeOfUint32t = sizeof(uint32_t);
+constexpr std::string_view kRiffHeader = "RIFF";
+constexpr std::string_view kLossyHeader = "WEBPVP8 ";
 
 }  // namespace
 
 bool IsLossyWebPImage(base::span<const uint8_t> encoded_data) {
-  if (encoded_data.size() < kWebPFileAndVp8ChunkHeaderSizeInBytes)
+  if (encoded_data.size() < kWebPFileAndVp8ChunkHeaderSizeInBytes) {
     return false;
+  }
 
-  DCHECK(encoded_data.data());
+  auto riff_header = base::as_bytes(base::span(kRiffHeader));
+  auto lossy_header = base::as_bytes(base::span(kLossyHeader));
 
-  return !memcmp(encoded_data.data(), "RIFF", 4) &&
-         !memcmp(encoded_data.data() + kWebPFileBeginBytePosition, "WEBPVP8 ",
-                 8);
+  return encoded_data.first(4u) == riff_header &&
+         encoded_data.subspan(kWebPFileBeginBytePosition, 8u) == lossy_header;
 }
 
 std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
@@ -68,15 +61,14 @@ std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
     return nullptr;
 
   static_assert(CHAR_BIT == 8, "Size of a char is not 8 bits.");
-  static_assert(kSizeOfUint32t == 4u, "Size of uint32_t is not 4 bytes.");
 
   // Try to acquire the WebP file size. IsLossyWebPImage() has ensured
   // that we have enough data to read the file size.
-  DCHECK_GE(encoded_data.size(), kFileSizeBytePosition + kSizeOfUint32t);
-
-  // No need to worry about endianness because we assert little-endianness.
-  const uint32_t file_size = *reinterpret_cast<const uint32_t*>(
-      encoded_data.data() + kFileSizeBytePosition);
+  uint32_t file_size = 0;
+  if (!base::SpanReader(encoded_data.subspan(kFileSizeBytePosition))
+           .ReadU32LittleEndian(file_size)) {
+    return nullptr;
+  }
 
   // Check that |file_size| is even, per the WebP spec:
   // https://developers.google.com/speed/webp/docs/riff_container#webp_file_header
@@ -96,10 +88,11 @@ std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
 
   // Try to acquire the VP8 key frame size and validate that it fits within the
   // encoded data's size.
-  DCHECK_GE(encoded_data.size(), kVp8FrameSizePosition + kSizeOfUint32t);
-
-  const uint32_t vp8_frame_size = *reinterpret_cast<const uint32_t*>(
-      encoded_data.data() + kVp8FrameSizePosition);
+  uint32_t vp8_frame_size = 0;
+  if (!base::SpanReader(encoded_data.subspan(kVp8FrameSizePosition))
+           .ReadU32LittleEndian(vp8_frame_size)) {
+    return nullptr;
+  }
 
   // Check that the VP8 frame size is bounded by the WebP size.
   if (base::strict_cast<size_t>(file_size) - kWebPFileHeaderByteSize <
@@ -117,8 +110,7 @@ std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
 
   // Check that the last byte is 0 if |vp8_frame_size| is odd per WebP specs:
   // https://developers.google.com/speed/webp/docs/riff_container#riff_file_format
-  if (vp8_frame_size % 2 &&
-      encoded_data.data()[encoded_data.size() - 1] != 0u) {
+  if (vp8_frame_size % 2 && encoded_data[encoded_data.size() - 1] != 0u) {
     return nullptr;
   }
 
@@ -126,7 +118,7 @@ std::unique_ptr<Vp8FrameHeader> ParseWebPImage(
   Vp8Parser vp8_parser;
   auto result = std::make_unique<Vp8FrameHeader>();
   if (vp8_parser.ParseFrame(
-          encoded_data.data() + kWebPFileAndVp8ChunkHeaderSizeInBytes,
+          encoded_data.subspan(kWebPFileAndVp8ChunkHeaderSizeInBytes).data(),
           base::strict_cast<size_t>(vp8_frame_size), result.get())) {
     return result;
   }
