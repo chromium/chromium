@@ -1321,6 +1321,21 @@
             ]
         }
     ],
+    "AnnotatorMode": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AnnotatorMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApiPrintingMarginsAndScale": [
         {
             "platforms": [
@@ -3903,6 +3918,36 @@
                     "name": "Enabled",
                     "enable_features": [
                         "BocaOnTaskLockedQuizMigration"
+                    ]
+                }
+            ]
+        }
+    ],
+    "BocaScreenSharingStudent": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BocaScreenSharingStudent"
+                    ]
+                }
+            ]
+        }
+    ],
+    "BocaScreenSharingTeacher": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BocaScreenSharingTeacher"
                     ]
                 }
             ]
@@ -22560,36 +22605,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ScreenCaptureKitMacScreen"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScreenSharingStudent": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScreenSharingStudent"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ScreenSharingTeacher": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScreenSharingTeacher"
                     ]
                 }
             ]
