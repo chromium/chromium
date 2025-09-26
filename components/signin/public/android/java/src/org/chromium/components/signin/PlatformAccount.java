@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.components.signin;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.MainThread;
 import androidx.annotation.WorkerThread;
 
@@ -14,7 +15,7 @@ import org.chromium.google_apis.gaia.GaiaId;
 @NullMarked
 public interface PlatformAccount {
     /** Returns gaiaId of the PlatformAccount. */
-    @MainThread
+    @AnyThread
     GaiaId getId();
 
     /** Returns email of the PlatformAccount. */

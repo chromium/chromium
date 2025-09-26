@@ -33,8 +33,6 @@ import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
  */
 @NullMarked
 final class ProfileOAuth2TokenServiceDelegate {
-    private static final String OAUTH2_SCOPE_PREFIX = "oauth2:";
-
     private final long mNativePtr;
     private final AccountManagerFacade mAccountManagerFacade;
 
@@ -51,7 +49,7 @@ final class ProfileOAuth2TokenServiceDelegate {
      * Called by native method AndroidAccessTokenFetcher::Start() to retrieve OAuth2 tokens.
      *
      * @param coreAccountInfo The account info.
-     * @param scope The scope to get an auth token for (without Android-style 'oauth2:' prefix).
+     * @param scope The scope to get an auth token for.
      * @param nativeCallback The pointer to the native callback that should be run upon completion.
      */
     @MainThread
@@ -73,10 +71,9 @@ final class ProfileOAuth2TokenServiceDelegate {
                     });
             return;
         }
-        String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
         mAccountManagerFacade.getAccessToken(
                 coreAccountInfo,
-                oauth2Scope,
+                scope,
                 new AccountManagerFacade.GetAccessTokenCallback() {
                     @Override
                     public void onGetTokenSuccess(AccessTokenData token) {

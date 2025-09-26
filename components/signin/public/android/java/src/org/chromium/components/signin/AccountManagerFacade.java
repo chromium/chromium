@@ -84,11 +84,10 @@ public interface AccountManagerFacade {
 
     /**
      * Asynchronously gets OAuth2 access token for the given account and scope. May return a cached
-     * version, use {@link #invalidateAccessToken} to invalidate a token in the cache. Please note
-     * that this method expects a scope with 'oauth2:' prefix.
+     * version, use {@link #invalidateAccessToken} to invalidate a token in the cache.
      *
      * @param account the account to get the access token for.
-     * @param scope The scope to get an auth token for (with Android-style 'oauth2:' prefix).
+     * @param scope The scope to get an auth token for.
      * @param callback called on successful and unsuccessful fetching of auth token.
      */
     @MainThread

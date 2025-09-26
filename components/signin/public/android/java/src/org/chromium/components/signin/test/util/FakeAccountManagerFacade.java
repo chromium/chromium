@@ -25,6 +25,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
+import org.chromium.components.signin.PlatformAccount;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
@@ -39,6 +41,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -107,7 +110,12 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     // `mAccountHolders` can be read from non-UI threads (this is used by `getAccessToken`), but
     // should only be changed from the UI thread to guarantee the consistency of the observed state.
+    // TODO(crbug.com/429143376): Deprecate AccountHolder after sMigrateAccountManagerDelegate is
+    // enabled by default.
     private final Set<AccountHolder> mAccountHolders =
+            Collections.synchronizedSet(new LinkedHashSet<>());
+
+    private final Set<PlatformAccount> mPlatformAccounts =
             Collections.synchronizedSet(new LinkedHashSet<>());
 
     /** Can be used to cause {@link #getAccessToken} method to fail. */
@@ -155,6 +163,30 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void getAccessToken(
             CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback) {
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            @Nullable FakePlatformAccount account = getPlatformAccount(coreAccountInfo.getGaiaId());
+            if (account == null) {
+                Log.w(TAG, "Cannot find account:" + coreAccountInfo.toString());
+                ThreadUtils.postOnUiThread(
+                        () ->
+                                callback.onGetTokenFailure(
+                                        new GoogleServiceAuthError(
+                                                GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP)));
+                return;
+            }
+
+            GoogleServiceAuthError authError = mGetAccessTokenError.get(coreAccountInfo.getId());
+            if (authError != null) {
+                ThreadUtils.postOnUiThread(() -> callback.onGetTokenFailure(authError));
+            } else {
+                ThreadUtils.postOnUiThread(
+                        () ->
+                                callback.onGetTokenSuccess(
+                                        account.getAccessTokenOrGenerateNew(scope)));
+            }
+            return;
+        }
+
         @Nullable AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
         if (accountHolder == null) {
             Log.w(TAG, "Cannot find account:" + coreAccountInfo.toString());
@@ -255,6 +287,17 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
 
     /** Adds an account represented by {@link AccountInfo}. */
     public void addAccount(AccountInfo accountInfo) {
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mPlatformAccounts.add(new FakePlatformAccount(accountInfo));
+                        if (mBlockedGetAccountsPromise == null) {
+                            fireOnAccountsChangedNotification();
+                        }
+                    });
+            return;
+        }
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAccountHolders.add(new AccountHolder(accountInfo));
@@ -269,11 +312,38 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
      * equality to search for the account to update. Throws if the account can't be found.
      */
     public void updateAccount(AccountInfo accountInfo) {
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        synchronized (mPlatformAccounts) {
+                            @Nullable FakePlatformAccount platformAccount =
+                                    (FakePlatformAccount)
+                                            mPlatformAccounts.stream()
+                                                    .filter(
+                                                            (account) ->
+                                                                    Objects.equals(
+                                                                            account.getId(),
+                                                                            accountInfo
+                                                                                    .getGaiaId()))
+                                                    .findFirst()
+                                                    .orElse(null);
+                            if (platformAccount == null) {
+                                throw new IllegalArgumentException(
+                                        "Account " + accountInfo.getEmail() + " can't be found!");
+                            }
+                            mPlatformAccounts.remove(platformAccount);
+                            mPlatformAccounts.add(new FakePlatformAccount(accountInfo));
+                        }
+                        if (mBlockedGetAccountsPromise == null) {
+                            fireOnAccountsChangedNotification();
+                        }
+                    });
+            return;
+        }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     synchronized (mAccountHolders) {
-                        @Nullable
-                        AccountHolder accountHolder =
+                        @Nullable AccountHolder accountHolder =
                                 mAccountHolders.stream()
                                         .filter(
                                                 (ah) ->
@@ -442,6 +512,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
                                     accountId.equals(accountHolder.getAccountInfo().getId()))
                     .findFirst()
                     .orElse(null);
+        }
+    }
+
+    @AnyThread
+    private @Nullable FakePlatformAccount getPlatformAccount(GaiaId gaiaId) {
+        synchronized (mPlatformAccounts) {
+            return (FakePlatformAccount)
+                    mPlatformAccounts.stream()
+                            .filter(
+                                    platformAccount ->
+                                            Objects.equals(gaiaId, platformAccount.getId()))
+                            .findFirst()
+                            .orElse(null);
         }
     }
 

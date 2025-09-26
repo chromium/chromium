@@ -66,6 +66,8 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     // Time, in milliseconds, between two attempts to fetch the accounts.
     private static final long GET_ACCOUNTS_BACKOFF_DELAY = 1000L;
 
+    private static final String OAUTH2_SCOPE_PREFIX = "oauth2:";
+
     private static final String TAG = "AccountManager";
 
     private final AccountManagerDelegate mDelegate;
@@ -157,12 +159,56 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         }
 
         pendingRequestStarted();
+
+        if (!SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            String oauth2Scope = OAUTH2_SCOPE_PREFIX + scope;
+            ConnectionRetry.runAuthTask(
+                    new AuthTask() {
+                        @Override
+                        public AccessTokenData run() throws AuthException {
+                            return mDelegate.getAccessToken(
+                                    CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo),
+                                    oauth2Scope);
+                        }
+
+                        @Override
+                        public void onSuccess(@Nullable AccessTokenData token) {
+                            assert token != null : "AccessTokenData must not be null on success.";
+                            callback.onGetTokenSuccess(token);
+                            pendingRequestFinished();
+                        }
+
+                        @Override
+                        public void onFailure(GoogleServiceAuthError authError) {
+                            callback.onGetTokenFailure(authError);
+                            pendingRequestFinished();
+                        }
+                    });
+            return;
+        }
+
+        getAccounts()
+                .then(
+                        unused -> {
+                            getAccessTokenHelper(coreAccountInfo, scope, callback);
+                        });
+    }
+
+    private void getAccessTokenHelper(
+            CoreAccountInfo coreAccountInfo, String scope, GetAccessTokenCallback callback) {
+        PlatformAccount platformAccount = getPlatformAccount(coreAccountInfo.getGaiaId());
+        if (platformAccount == null) {
+            callback.onGetTokenFailure(
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP));
+            pendingRequestFinished();
+            return;
+        }
+
         ConnectionRetry.runAuthTask(
                 new AuthTask() {
                     @Override
                     public AccessTokenData run() throws AuthException {
-                        return mDelegate.getAccessToken(
-                                CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo), scope);
+                        return mDelegate.getAccessTokenForPlatformAccount(platformAccount, scope);
                     }
 
                     @Override
@@ -210,6 +256,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 new AuthTask() {
                     @Override
                     public @Nullable AccessTokenData run() throws AuthException {
+                        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+                            mDelegate.invalidateAccessTokenForPlatformAccount(accessToken);
+                            return null;
+                        }
+
                         mDelegate.invalidateAccessToken(accessToken);
                         return null;
                     }

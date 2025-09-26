@@ -84,7 +84,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     /** Adds an AccountHolder. */
     public PlatformAccount addAccount(AccountInfo accountInfo) {
         boolean added = false;
-        PlatformAccount account = new FakePlatformAccount(accountInfo);
+        FakePlatformAccount account = new FakePlatformAccount(accountInfo);
         if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
             added = mPlatformAccounts.add(account);
         } else {
@@ -137,6 +137,14 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
+    public AccessTokenData getAccessTokenForPlatformAccount(
+            PlatformAccount account, String authTokenScopes) throws AuthException {
+        FakePlatformAccount platformAccount = (FakePlatformAccount) account;
+        assert platformAccount != null;
+        return platformAccount.getAccessTokenOrGenerateNew(authTokenScopes);
+    }
+
+    @Override
     public void invalidateAccessToken(String authToken) {
         if (authToken == null) {
             throw new IllegalArgumentException("AuthToken can not be null");
@@ -150,6 +158,20 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         }
     }
 
+    @Override
+    public void invalidateAccessTokenForPlatformAccount(String authToken) throws AuthException {
+        if (authToken == null) {
+            throw new IllegalArgumentException("AuthToken can not be null");
+        }
+        synchronized (mPlatformAccounts) {
+            for (PlatformAccount account : mPlatformAccounts) {
+                FakePlatformAccount fakePlatformAccount = (FakePlatformAccount) account;
+                if (fakePlatformAccount.removeAccessToken(authToken)) {
+                    break;
+                }
+            }
+        }
+    }
 
     @Override
     public @CapabilityResponse int hasCapability(Account account, String capability) {
