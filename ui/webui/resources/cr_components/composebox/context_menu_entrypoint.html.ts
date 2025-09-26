@@ -9,7 +9,7 @@ import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
 export function getHtml(this: ContextMenuEntrypointElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-    ${this.showEntrypointDescription ? html`
+    ${this.showContextMenuDescription ? html`
     <cr-button id="entrypoint"
         @click="${this.onEntrypointClick_}"
         ?disabled="${this.inputsDisabled}"

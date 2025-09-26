@@ -18,13 +18,13 @@ import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbo
 import {getCss} from './context_menu_entrypoint.css.js';
 import {getHtml} from './context_menu_entrypoint.html.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {assert} from '//resources/js/assert.js';
 
 /** The width of the dropdown menu in pixels. */
 const MENU_WIDTH_PX = 190;
 
 export interface ContextMenuEntrypointElement {
   $: {
-    entrypoint: HTMLElement,
     menu: CrActionMenuElement,
   };
 }
@@ -48,7 +48,7 @@ export class ContextMenuEntrypointElement extends
   static override get properties() {
     return {
       inputsDisabled: {type: Boolean},
-      showEntrypointDescription: {type: Boolean},
+      showContextMenuDescription: {type: Boolean},
       tabSuggestions: {type: Array},
       showDeepSearch_ : {
         reflect: true,
@@ -58,7 +58,7 @@ export class ContextMenuEntrypointElement extends
   }
 
   accessor inputsDisabled: boolean = false;
-  accessor showEntrypointDescription: boolean = false;
+  accessor showContextMenuDescription: boolean = false;
   accessor tabSuggestions: TabInfo[] = [];
   protected accessor showDeepSearch_: boolean =
       loadTimeData.getBoolean('composeboxShowDeepSearchButton');
@@ -68,13 +68,18 @@ export class ContextMenuEntrypointElement extends
   }
 
   protected onEntrypointClick_() {
-    this.fire('refresh-tab-suggestions', {onRefreshComplete: () => {
-      this.$.menu.showAt(this.$.entrypoint, {
-        top: this.$.entrypoint.getBoundingClientRect().bottom,
-        width: MENU_WIDTH_PX,
-        anchorAlignmentX: AnchorAlignment['AFTER_START'],
-      });
-    }});
+    this.fire('refresh-tab-suggestions', {
+      onRefreshComplete: () => {
+        const entrypoint =
+            this.shadowRoot.querySelector<HTMLElement>('#entrypoint');
+        assert(entrypoint);
+        this.$.menu.showAt(entrypoint, {
+          top: entrypoint.getBoundingClientRect().bottom,
+          width: MENU_WIDTH_PX,
+          anchorAlignmentX: AnchorAlignment['AFTER_START'],
+        });
+      },
+    });
   }
 
   protected addTabContext(e: Event) {

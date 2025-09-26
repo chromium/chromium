@@ -336,6 +336,7 @@
 
 #contextEntrypoint {
   color: var(--color-searchbox-results-foreground);
+  padding-inline-end: 8px;
 }
 
 #uploadContainer {

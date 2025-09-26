@@ -561,6 +561,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected onDeepSearchClick_() {
+    this.showContextMenuDescription_ = !this.showContextMenuDescription_;
     this.inputsDisabled_ = !this.inputsDisabled_;
     this.inDeepSearchMode_ = !this.inDeepSearchMode_;
     this.pageHandler_.setDeepSearchMode(this.inDeepSearchMode_);

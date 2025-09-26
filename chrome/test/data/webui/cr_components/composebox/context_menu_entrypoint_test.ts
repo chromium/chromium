@@ -27,7 +27,7 @@ suite('ContextMenuEntrypoint', () => {
   test('clicking entrypoint shows context menu', async () => {
     // Act.
     const refreshTabs = eventToPromise('refresh-tab-suggestions', entrypoint);
-    entrypoint.$.entrypoint.click();
+    $$(entrypoint, '#entrypoint')!.click();
     const e = await refreshTabs;
     e.detail.onRefreshComplete();
     await microtasksFinished();
@@ -42,7 +42,7 @@ suite('ContextMenuEntrypoint', () => {
         // Arrange & Act.
         const refreshTabs =
             eventToPromise('refresh-tab-suggestions', entrypoint);
-        entrypoint.$.entrypoint.click();
+        $$(entrypoint, '#entrypoint')!.click();
         const e = await refreshTabs;
         e.detail.onRefreshComplete();
         await microtasksFinished();
@@ -76,7 +76,7 @@ suite('ContextMenuEntrypoint', () => {
             lastActive: { internalValue: BigInt(2) },
           },
         ];
-        entrypoint.$.entrypoint.click();
+        $$(entrypoint, '#entrypoint')!.click();
         const e = await refreshTabs;
         e.detail.onRefreshComplete();
         await microtasksFinished();
@@ -104,7 +104,7 @@ suite('ContextMenuEntrypoint', () => {
               // Arrange.
               const refreshTabs =
                   eventToPromise('refresh-tab-suggestions', entrypoint);
-              entrypoint.$.entrypoint.click();
+              $$(entrypoint, '#entrypoint')!.click();
               const e = await refreshTabs;
               e.detail.onRefreshComplete();
               await microtasksFinished();

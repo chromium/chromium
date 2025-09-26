@@ -80,7 +80,7 @@ export function getHtml(this: ComposeboxElement) {
             @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
             @deep-search-click="${this.onDeepSearchClick_}"
             ?inputs-disabled="${this.inputsDisabled_}"
-            ?show-entrypoint-description="${this.showContextMenuDescription_}">
+            ?show-context-menu-description="${this.showContextMenuDescription_}">
         </composebox-context-menu-entrypoint>
       ${this.inDeepSearchMode_ ? html`
         <cr-button id="deepSearchButton" class="upload-icon no-overlap"
