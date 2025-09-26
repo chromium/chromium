@@ -13,14 +13,7 @@ dictionary GPUTextureViewDescriptor : GPUObjectDescriptorBase {
     GPUIntegerCoordinate baseArrayLayer = 0;
     GPUIntegerCoordinate arrayLayerCount;
     GPUTextureUsageFlags usage = 0;
-    [RuntimeEnabled=WebGPUExperimentalFeatures] GPUTextureComponentSwizzle swizzle;
-};
-
-dictionary GPUTextureComponentSwizzle {
-    GPUComponentSwizzle r = "r";
-    GPUComponentSwizzle g = "g";
-    GPUComponentSwizzle b = "b";
-    GPUComponentSwizzle a = "a";
+    [RuntimeEnabled=WebGPUExperimentalFeatures] DOMString swizzle = "rgba";
 };
 
 enum GPUTextureViewDimension {
@@ -36,13 +29,4 @@ enum GPUTextureAspect {
     "all",
     "stencil-only",
     "depth-only"
-};
-
-enum GPUComponentSwizzle {
-    "zero",
-    "one",
-    "r",
-    "g",
-    "b",
-    "a",
 };
