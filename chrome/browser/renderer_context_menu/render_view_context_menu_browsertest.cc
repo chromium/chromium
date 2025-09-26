@@ -2721,8 +2721,17 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   }));
 }
 
+// This test is flaky on the linux-chromeos-chrome bot.
+// TODO(crbug.com/445698141): Enable the test on ChromeOS bots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SearchForTextContextMenuOpensLensOverlay \
+  DISABLED_SearchForTextContextMenuOpensLensOverlay
+#else
+#define MAYBE_SearchForTextContextMenuOpensLensOverlay \
+  SearchForTextContextMenuOpensLensOverlay
+#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
-                       SearchForTextContextMenuOpensLensOverlay) {
+                       MAYBE_SearchForTextContextMenuOpensLensOverlay) {
   GURL page("data:text/html,text");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
