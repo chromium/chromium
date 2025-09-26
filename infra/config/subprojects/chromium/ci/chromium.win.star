@@ -30,7 +30,6 @@ ci.defaults.set(
     contact_team_email = "chrome-desktop-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
-    reclient_enabled = False,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
@@ -317,10 +316,6 @@ ci.builder(
         short_name = "32",
     ),
     cq_mirrors_console_view = "mirrors",
-    # TODO(crbug.com/40926931): Remove once the bug is closed.
-    reclient_bootstrap_env = {
-        "RBE_experimental_exit_on_stuck_actions": "true",
-    },
 )
 
 ci.builder(
@@ -671,10 +666,6 @@ ci.builder(
     # 20min (bot update) + 3hr (compile time without cache) +
     # 40min (isolate tests) with 1hr buffer
     execution_timeout = 5 * time.hour,
-    # Increase timeout for connecting to dependency scanner
-    reclient_bootstrap_env = {
-        "RBE_depsscan_connect_timeout": "120s",
-    },
 )
 
 ci.thin_tester(
@@ -917,11 +908,6 @@ ci.builder(
         short_name = "det",
     ),
     execution_timeout = 12 * time.hour,
-    reclient_bootstrap_env = {
-        "RBE_ip_timeout": "10m",
-    },
-    # TODO: crbug.com/379584977 - Remove this after fixing the recipe. https://crrev.com/c/6242260
-    reclient_enabled = True,
 )
 
 ci.builder(

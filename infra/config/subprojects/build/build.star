@@ -108,12 +108,20 @@ def cq_build_perf_builder(description_html, **kwargs):
     # Use CQ RBE instance and high remote_jobs/cores to simulate CQ builds.
     if not "siso_configs" in kwargs:
         kwargs["siso_configs"] = ["builder", "remote-link"]
+    props = {}
+    if not kwargs.get("siso_enabled", True):
+        props["$build/reclient"] = {
+            "instance": siso.project.DEFAULT_UNTRUSTED,
+            "jobs": 500,
+            "metrics_project": "chromium-reclient-metrics",
+            "scandeps_server": True,
+        }
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
-        reclient_jobs = 500,
         siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         use_clang_coverage = True,
+        properties = props,
         **kwargs
     )
 
@@ -560,15 +568,24 @@ cq_build_perf_builder(
     xcode = xcode.xcode_default,
 )
 
-def developer_build_perf_builder(description_html, **kwargs):
+def developer_build_perf_builder(description_html, reclient_jobs = None, **kwargs):
     # Use CQ siso.project and high siso_remote_jobs/cores to simulate CQ builds.
     if not "siso_configs" in kwargs:
         kwargs["siso_configs"] = ["remote-link"]
+    props = {
+        "$build/reclient": {
+            "instance": siso.project.DEFAULT_UNTRUSTED,
+            "jobs": reclient_jobs,
+            "metrics_project": "chromium-reclient-metrics",
+            "scandeps_server": True,
+        },
+    }
     return ci.builder(
         description_html = description_html + "<br>Build stats is show in http://shortn/_gaAdI3x6o6.",
         executable = "recipe:chrome_build/build_perf_developer",
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         shadow_siso_project = None,
+        properties = props,
         **kwargs
     )
 

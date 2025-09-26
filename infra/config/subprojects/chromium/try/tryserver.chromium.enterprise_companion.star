@@ -15,7 +15,6 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     builderless = True,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    reclient_enabled = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
