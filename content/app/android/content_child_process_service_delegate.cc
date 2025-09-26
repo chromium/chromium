@@ -87,7 +87,7 @@ class ChildProcessSurfaceManager : public gpu::GpuSurfaceLookup,
   // input::InputTokenForwarder overrides.
   void ForwardVizInputTransferToken(
       int surface_id,
-      base::android::ScopedJavaGlobalRef<jobject> viz_input_token) override {
+      const jni_zero::JavaRef<>& viz_input_token) override {
     JNIEnv* env = base::android::AttachCurrentThread();
     content::Java_ContentChildProcessServiceDelegate_forwardInputTransferToken(
         env, service_impl_, surface_id, viz_input_token);

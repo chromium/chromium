@@ -251,7 +251,7 @@ void ModalDialogWrapper::BuildPropertyModel() {
   if (!menu_item_icons.empty()) {
     ScopedJavaLocalRef<jclass> bitmap_class =
         base::android::GetClass(env, "android/graphics/Bitmap");
-    ScopedJavaLocalRef<jobjectArray> java_icons_array(
+    auto java_icons_array = ScopedJavaLocalRef<jobjectArray>::Adopt(
         env, env->NewObjectArray(menu_item_icons.size(), bitmap_class.obj(),
                                  nullptr));
     for (size_t i = 0; i < menu_item_icons.size(); ++i) {

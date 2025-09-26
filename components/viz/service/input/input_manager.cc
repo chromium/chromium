@@ -52,11 +52,10 @@ void ForwardVizInputTransferToken(
     const input::ScopedInputTransferToken& viz_input_token,
     const gpu::SurfaceHandle& surface_handle) {
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
-      base::android::ScopedJavaLocalRef<jobject>(
-          env, base::AndroidInputReceiverCompat::GetInstance()
-                   .AInputTransferToken_toJavaFn(
-                       env, viz_input_token.a_input_transfer_token())));
+  auto viz_input_token_java = base::android::ScopedJavaLocalRef<>::Adopt(
+      env, base::AndroidInputReceiverCompat::GetInstance()
+               .AInputTransferToken_toJavaFn(
+                   env, viz_input_token.a_input_transfer_token()));
 
   input::InputTokenForwarder::GetInstance()->ForwardVizInputTransferToken(
       surface_handle, viz_input_token_java);
@@ -674,19 +673,18 @@ bool InputManager::ReturnInputBackToBrowser() {
     return false;
   }
   JNIEnv* env = jni_zero::AttachCurrentThread();
-  base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
-      base::android::ScopedJavaLocalRef<jobject>(
-          env,
-          base::AndroidInputReceiverCompat::GetInstance()
-              .AInputTransferToken_toJavaFn(
-                  env,
-                  receiver_data_->viz_input_token().a_input_transfer_token())));
-  base::android::ScopedJavaGlobalRef<jobject> browser_input_token_java(
-      base::android::ScopedJavaLocalRef<jobject>(
-          env, base::AndroidInputReceiverCompat::GetInstance()
-                   .AInputTransferToken_toJavaFn(
-                       env, receiver_data_->browser_input_token()
-                                .a_input_transfer_token())));
+  auto viz_input_token_java(base::android::ScopedJavaLocalRef<>::Adopt(
+      env,
+      base::AndroidInputReceiverCompat::GetInstance()
+          .AInputTransferToken_toJavaFn(
+              env,
+              receiver_data_->viz_input_token().a_input_transfer_token())));
+  auto browser_input_token_java(base::android::ScopedJavaLocalRef<>::Adopt(
+      env,
+      base::AndroidInputReceiverCompat::GetInstance()
+          .AInputTransferToken_toJavaFn(
+              env,
+              receiver_data_->browser_input_token().a_input_transfer_token())));
 
   return static_cast<bool>(Java_InputTransferHandlerViz_transferInput(
       env, viz_input_token_java, browser_input_token_java));
