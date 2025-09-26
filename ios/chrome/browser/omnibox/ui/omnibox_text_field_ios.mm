@@ -1045,8 +1045,6 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
          autocompleteLength == 0);
   }
   if (updateText) {
-    self.attributedText = fieldText;
-
     // TODO(crbug.com/330964534): Remove DUMP_WILL_BE_CHECK after investigating
     // crash.
     if (!self.endOfDocument || !self.beginningOfDocument) {
@@ -1055,6 +1053,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
           << " text length: " << text.length << " has text position: "
           << (self.beginningOfDocument || self.endOfDocument);
     } else {
+      self.attributedText = fieldText;
+
       UITextPosition* endOfUserText =
           [self positionFromPosition:self.beginningOfDocument
                               offset:beginningOfAutocomplete];
