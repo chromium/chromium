@@ -4133,7 +4133,7 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonClickEvents) {
           mojom::blink::AIPageContentClickabilityReason::kClickEvents));
 }
 
-TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseEvents) {
+TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseHover) {
   // An element with various mouse event listeners.
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -4149,6 +4149,36 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseEvents) {
 
   const auto& div_node = *ContentRootNode().children_nodes[0];
   ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      div_node.content_attributes->node_interaction_info->clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kMouseHover));
+  EXPECT_THAT(
+      div_node.content_attributes->node_interaction_info->clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kMouseEvents));
+}
+
+TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseClick) {
+  // An element with various mouse event listeners.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body><div id='testDiv'>Mouse Events</div>"
+      "<script>"
+      "  const div = document.getElementById('testDiv');"
+      "  div.onmousedown = function(){};"
+      "</script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& div_node = *ContentRootNode().children_nodes[0];
+  ASSERT_TRUE(div_node.content_attributes->node_interaction_info);
+  EXPECT_THAT(
+      div_node.content_attributes->node_interaction_info->clickability_reasons,
+      testing::Contains(
+          mojom::blink::AIPageContentClickabilityReason::kMouseClick));
   EXPECT_THAT(
       div_node.content_attributes->node_interaction_info->clickability_reasons,
       testing::Contains(
@@ -4239,6 +4269,7 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMultipleReasons) {
       "  const btn = document.getElementById('multiReasonBtn');"
       "  btn.onclick = function(){};"
       "  btn.onmouseover = function(){};"
+      "  btn.onmouseup = function(){};"
       "  btn.onkeydown = function(){};"
       "</script>"
       "</body>",
@@ -4255,6 +4286,8 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMultipleReasons) {
           mojom::blink::AIPageContentClickabilityReason::kClickableControl,
           mojom::blink::AIPageContentClickabilityReason::kClickEvents,
           mojom::blink::AIPageContentClickabilityReason::kMouseEvents,
+          mojom::blink::AIPageContentClickabilityReason::kMouseHover,
+          mojom::blink::AIPageContentClickabilityReason::kMouseClick,
           mojom::blink::AIPageContentClickabilityReason::kKeyEvents,
           mojom::blink::AIPageContentClickabilityReason::kEditable,
           mojom::blink::AIPageContentClickabilityReason::kCursorPointer,

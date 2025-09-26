@@ -380,10 +380,21 @@ void AddClickabilityReasons(
     interaction_info.clickability_reasons.push_back(Reason::kClickEvents);
   }
 
-  if (element.HasJSBasedEventListeners(event_type_names::kMouseover) ||
-      element.HasJSBasedEventListeners(event_type_names::kMouseenter) ||
+  const bool has_mouse_hover =
+      element.HasJSBasedEventListeners(event_type_names::kMouseover) ||
+      element.HasJSBasedEventListeners(event_type_names::kMouseenter);
+  const bool has_mouse_click =
       element.HasJSBasedEventListeners(event_type_names::kMouseup) ||
-      element.HasJSBasedEventListeners(event_type_names::kMousedown)) {
+      element.HasJSBasedEventListeners(event_type_names::kMousedown);
+  if (has_mouse_hover) {
+    interaction_info.clickability_reasons.push_back(Reason::kMouseHover);
+  }
+  if (has_mouse_click) {
+    interaction_info.clickability_reasons.push_back(Reason::kMouseClick);
+  }
+  // TODO(linnan): Remove this once consumers move to use kMouseClick and
+  // kMouseHover.
+  if (has_mouse_hover || has_mouse_click) {
     interaction_info.clickability_reasons.push_back(Reason::kMouseEvents);
   }
 
