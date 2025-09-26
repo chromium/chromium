@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -14,7 +15,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 class LocationBarView;
 class OmniboxController;
@@ -26,7 +26,6 @@ class OmniboxController;
 // logic concerns and communication between native omnibox code and the WebUI
 // code, work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenter : public views::WebView,
-                              public views::WidgetObserver,
                               public views::ViewObserver {
   METADATA_HEADER(OmniboxPopupPresenter, views::WebView)
 
@@ -51,9 +50,6 @@ class OmniboxPopupPresenter : public views::WebView,
   // views::View:
   void AddedToWidget() override;
 
-  // views::WidgetObserver:
-  void OnWidgetDestroyed(views::Widget* widget) override;
-
   // views::ViewObserver:
   void OnViewBoundsChanged(View* observed_view) override;
 
@@ -69,19 +65,17 @@ class OmniboxPopupPresenter : public views::WebView,
   // Tells whether the WebUI handler is loaded and ready to receive calls.
   bool IsHandlerReady();
 
-  // Remove observation and reset widget, optionally requesting it to close.
-  void ReleaseWidget(bool close);
-
   // The location bar view that owns `this`.
   const raw_ptr<LocationBarView> location_bar_view_;
 
-  // The popup widget that contains this WebView. Created and closed by `this`;
-  // owned and destroyed by the OS.
-  // TODO(crbug.com/40232479): Migrate this to CLIENT_OWNS_WIDGET.
-  raw_ptr<views::Widget> widget_ = nullptr;
+  // The popup widget that contains this WebView.
+  std::unique_ptr<views::Widget> widget_;
 
   // Whether any call to `GetHandler` has been made.
   bool requested_handler_ = false;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      location_bar_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
