@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -287,6 +288,29 @@ public class NtpCustomizationMediatorUnitTest {
         observer.onSheetClosed(0); // Closes the sheet by clicking the system back button.
         verify(mBottomSheetContent).onSheetClosed();
         verify(mBottomSheetController).removeObserver(eq(observer));
+
+        NtpThemeStateProvider.setInstanceForTesting(null);
+    }
+
+    @Test
+    public void testBottomSheetObserver_notifyApplyThemeChanges() {
+        BottomSheetObserver observer = mMediator.getBottomSheetObserverForTesting();
+        NtpThemeStateProvider ntpThemeStateProvider = mock(NtpThemeStateProvider.class);
+        NtpThemeStateProvider.setInstanceForTesting(ntpThemeStateProvider);
+
+        // Verifies notifyApplyThemeChanges() is called when a different theme color is selected.
+        mMediator.onNewColorSelected(/* isDifferentColor= */ true);
+        observer.onSheetClosed(2);
+        verify(ntpThemeStateProvider).notifyApplyThemeChanges();
+
+        clearInvocations(ntpThemeStateProvider);
+
+        // Verifies notifyApplyThemeChanges() is NOT called when theme color isn't changed.
+        mMediator.onNewColorSelected(/* isDifferentColor= */ false);
+        observer.onSheetClosed(2);
+        verify(ntpThemeStateProvider, never()).notifyApplyThemeChanges();
+
+        NtpThemeStateProvider.setInstanceForTesting(null);
     }
 
     @Test

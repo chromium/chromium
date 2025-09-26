@@ -24,12 +24,12 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ViewFlipper;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -108,10 +108,10 @@ public class NtpCustomizationMediator {
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                         mBottomSheetContent.onSheetClosed();
                         mBottomSheetController.removeObserver(mBottomSheetObserver);
-                        // Recreates the activity if a new customized theme color is selected or
-                        // removed.
+                        // Notify to recreate activities if a new customized theme color is selected
+                        // or removed.
                         if (mShouldRecreate) {
-                            assumeNonNull(ContextUtils.activityFromContext(context)).recreate();
+                            NtpThemeStateProvider.getInstance().notifyApplyThemeChanges();
                         }
                     }
                 };
