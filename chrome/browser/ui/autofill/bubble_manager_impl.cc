@@ -344,8 +344,7 @@ bool BubbleManagerImpl::ShouldReplaceExistingBubble(
 
 void BubbleManagerImpl::TabWillEnterBackground(
     tabs::TabInterface* tab_interface) {
-  if (active_bubble_controller_ &&
-      active_bubble_controller_->IsShowingBubble()) {
+  if (active_bubble_controller_) {
     AddToPendingQueue(active_bubble_controller_);
     active_bubble_controller_->HideBubble(/*show_next_bubble=*/false);
     active_bubble_controller_ = nullptr;
@@ -354,7 +353,12 @@ void BubbleManagerImpl::TabWillEnterBackground(
 
 void BubbleManagerImpl::TabDidEnterForeground(
     tabs::TabInterface* tab_interface) {
-  ProcessPendingBubbles();
+  if (!active_bubble_controller_) {
+    ProcessPendingBubbles();
+  } else if (!active_bubble_controller_->IsShowingBubble()) {
+    // This can happen if a tab created in background becomes visible.
+    active_bubble_controller_->ShowBubble();
+  }
 }
 
 }  // namespace autofill
