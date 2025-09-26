@@ -393,8 +393,7 @@ void DrmThread::TakeDisplayControl(base::OnceCallback<void(bool)> callback) {
 void DrmThread::RelinquishDisplayControl(
     base::OnceCallback<void(bool)> callback) {
   TRACE_EVENT0("drm", "DrmThread::RelinquishDisplayControl");
-  display_manager_->RelinquishDisplayControl();
-  std::move(callback).Run(true);
+  std::move(callback).Run(display_manager_->RelinquishDisplayControl());
 }
 
 void DrmThread::ShouldDisplayEventTriggerConfiguration(

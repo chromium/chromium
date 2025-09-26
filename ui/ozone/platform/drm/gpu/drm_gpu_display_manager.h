@@ -52,7 +52,7 @@ class DrmGpuDisplayManager {
 
   // Takes/releases the control of the DRM devices.
   bool TakeDisplayControl();
-  void RelinquishDisplayControl();
+  bool RelinquishDisplayControl();
 
   // Whether or not a udev display change event triggered by a DRM property
   // should go through or get blocked.

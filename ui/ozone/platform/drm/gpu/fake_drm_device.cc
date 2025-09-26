@@ -971,8 +971,8 @@ bool FakeDrmDevice::SetMaster() {
 }
 
 bool FakeDrmDevice::DropMaster() {
-  has_master_ = false;
-  return true;
+  has_master_ = !succeed_drm_master_drop_;
+  return succeed_drm_master_drop_;
 }
 
 bool FakeDrmDevice::has_master() const {

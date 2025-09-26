@@ -422,14 +422,14 @@ bool DrmGpuDisplayManager::TakeDisplayControl() {
   return status;
 }
 
-void DrmGpuDisplayManager::RelinquishDisplayControl() {
+bool DrmGpuDisplayManager::RelinquishDisplayControl() {
   const bool detach_planes_before_dropping =
       display::features::IsFastDrmMasterDropEnabled();
   if (detach_planes_before_dropping &&
       !screen_manager_->DetachPlanesFromAllControllers()) {
     LOG(ERROR) << __func__
                << ": unable to detach planes from all enabled controllers.";
-    return;
+    return false;
   }
 
   const DrmDeviceVector& devices = drm_device_manager_->GetDrmDevices();
@@ -437,6 +437,7 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
     if (!drm->DropMaster()) {
       LOG(ERROR) << __func__ << "Drm drop master failed for: "  // nocheck
                  << drm->device_path().value();
+      return false;
     }
   }
 
@@ -446,6 +447,8 @@ void DrmGpuDisplayManager::RelinquishDisplayControl() {
   if (detach_planes_before_dropping) {
     screen_manager_->UpdateControllerToWindowMapping();
   }
+
+  return true;
 }
 
 bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(

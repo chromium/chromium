@@ -2042,8 +2042,48 @@ TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControl) {
                                  display::ModesetFlag::kCommitModeset}));
 
   EXPECT_TRUE(drm->has_master());
-  drm_gpu_display_manager_->RelinquishDisplayControl();
+  EXPECT_TRUE(drm_gpu_display_manager_->RelinquishDisplayControl());
   EXPECT_FALSE(drm->has_master());
+}
+
+TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControlFail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(display::features::kFastDrmMasterDrop);
+  ASSERT_FALSE(display::features::IsFastDrmMasterDropEnabled());
+
+  auto drm = AddDrmDevice();
+  drm->ResetStateWithAllProperties();
+
+  // Add 2 connectors, each with one active display.
+  for (size_t i = 0; i < 2; ++i) {
+    drm->AddCrtcWithPrimaryAndCursorPlanes();
+
+    auto& encoder = drm->AddEncoder();
+    encoder.possible_crtcs = 1 << i;
+
+    auto& connector = drm->AddConnector();
+    connector.connection = true;
+    connector.modes = std::vector<ResolutionAndRefreshRate>{
+        kStandardModes[i % kStandardModes.size()]};
+    connector.encoders = std::vector<uint32_t>{encoder.id};
+    connector.edid_blob =
+        std::vector<uint8_t>(kHPz32x, kHPz32x + kHPz32xLength);
+  }
+  drm->InitializeState(/* use_atomic */ true);
+
+  MovableDisplaySnapshots display_snapshots =
+      drm_gpu_display_manager_->GetDisplays();
+  ASSERT_EQ(display_snapshots.size(), 2u);
+
+  // Make sure configuration on the returned snapshots is possible.
+  ASSERT_TRUE(ConfigureDisplays(display_snapshots,
+                                {display::ModesetFlag::kTestModeset,
+                                 display::ModesetFlag::kCommitModeset}));
+
+  EXPECT_TRUE(drm->has_master());
+  drm->set_succeed_drm_master_drop(false);
+  EXPECT_FALSE(drm_gpu_display_manager_->RelinquishDisplayControl());
+  EXPECT_TRUE(drm->has_master());
 }
 
 TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControlFastDrop) {
@@ -2100,7 +2140,7 @@ TEST_F(DrmGpuDisplayManagerTest, RelinquishDisplayControlFastDrop) {
 
   EXPECT_TRUE(drm->has_master());
   int modeset_count = drm->get_commit_modeset_count();
-  drm_gpu_display_manager_->RelinquishDisplayControl();
+  EXPECT_TRUE(drm_gpu_display_manager_->RelinquishDisplayControl());
 
   EXPECT_FALSE(drm->has_master());
   EXPECT_EQ(drm->get_commit_modeset_count(), modeset_count + 1);
@@ -2166,7 +2206,7 @@ TEST_F(DrmGpuDisplayManagerTest,
   EXPECT_TRUE(drm->has_master());
   int modeset_count = drm->get_commit_modeset_count();
   drm->set_modeset_expectation(false);
-  drm_gpu_display_manager_->RelinquishDisplayControl();
+  EXPECT_FALSE(drm_gpu_display_manager_->RelinquishDisplayControl());
 
   EXPECT_TRUE(drm->has_master());
   EXPECT_EQ(drm->get_commit_modeset_count(), modeset_count + 1);
