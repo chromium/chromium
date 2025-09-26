@@ -69,7 +69,7 @@ void PixManager::OnPixCodeCopiedToClipboard(
   }
   has_payflow_started_ = true;
   client_->SetUiEventListener(base::BindRepeating(
-      &PixManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
+      &PixManager::OnUiScreenEvent, weak_ptr_factory_.GetWeakPtr()));
   pix_code_copied_timestamp_ = base::TimeTicks::Now();
   ukm_source_id_ = ukm_source_id;
   LogPixCodeCopied(ukm_source_id_);
@@ -347,7 +347,7 @@ void PixManager::OnPurchaseActionResult(base::TimeTicks start_time,
       result, base::TimeTicks::Now() - pix_code_copied_timestamp_);
 }
 
-void PixManager::OnUiEvent(UiEvent ui_event_type) {
+void PixManager::OnUiScreenEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
       CHECK_NE(ui_state_, UiState::kHidden);

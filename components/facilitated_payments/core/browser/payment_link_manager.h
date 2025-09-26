@@ -154,9 +154,8 @@ class PaymentLinkManager {
   void OnTransactionResult(base::TimeTicks start_time,
                            PurchaseActionResult result);
 
-  // TODO(crbug.com/420735186): Rename to OnUiScreenEvent.
   // Called by the view to communicate UI events.
-  void OnUiEvent(UiEvent ui_event_type);
+  void OnUiScreenEvent(UiEvent ui_event_type);
 
   // Updates the `ui_state_` value and triggers dismissal.
   void DismissPrompt();

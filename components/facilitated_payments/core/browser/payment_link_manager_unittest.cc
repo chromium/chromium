@@ -985,7 +985,7 @@ TEST_F(PaymentLinkManagerTest,
   // Simulate that the FOP selector was shown successfully.
   test_api(*payment_link_manager_)
       .ShowPaymentLinkPrompt({supported_ewallet}, {}, base::DoNothing());
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   // Verify that when the eWallet FOP selector is shown, latency histogram is
   // logged.
@@ -1061,7 +1061,7 @@ TEST_P(PaymentLinkManagerTestForUiScreens, NewScreenShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   // Verify feature has updated the UI state.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), ui_state());
@@ -1081,7 +1081,8 @@ TEST_P(PaymentLinkManagerTestForUiScreens, NewScreenCouldNotBeShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen could not be shown.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
@@ -1102,9 +1103,10 @@ TEST_P(PaymentLinkManagerTestForUiScreens, ScreenClosedNotByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed, but it was not due to a user action.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
@@ -1125,9 +1127,10 @@ TEST_P(PaymentLinkManagerTestForUiScreens, ScreenClosedByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
@@ -1389,9 +1392,10 @@ TEST_F(PaymentLinkManagerTest, ScreenClosedByUser_FopSelectorRejected) {
   test_api(*payment_link_manager_)
       .ShowPaymentLinkPrompt(std::move(ewallets), {}, base::DoNothing());
   // Simulate new screen was shown successfully.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedByUser);
 
   auto ukm_entries = ukm_recorder_.GetEntries(
       ukm::builders::FacilitatedPayments_Ewallet_FopSelectorResult::kEntryName,
@@ -1642,7 +1646,7 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, A2APaymentPromptShown) {
   // Fully mocked time, does not advance by itself.
   FastForwardBy(base::Seconds(2));
 
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.A2AOnly.FopSelectorShown."
@@ -1695,7 +1699,7 @@ TEST_F(PaymentLinkManagerTestForA2AFlow, PaymentPromptShown_A2AAndEwallet) {
   // Fully mocked time, does not advance by itself.
   FastForwardBy(base::Seconds(2));
 
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.EwalletAndA2A.FopSelectorShown."
@@ -2131,9 +2135,10 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
       ukm::UkmRecorder::GetNewSourceID());
 
   // Simulate FOP selector was shown.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate FOP selector was closed not by user.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.A2A.PayflowExitedReason",
@@ -2162,9 +2167,10 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
       ukm::UkmRecorder::GetNewSourceID());
 
   // Simulate FOP selector was shown.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kNewScreenShown);
+  test_api(*payment_link_manager_).OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate FOP selector was closed by user.
-  test_api(*payment_link_manager_).OnUiEvent(UiEvent::kScreenClosedByUser);
+  test_api(*payment_link_manager_)
+      .OnUiScreenEvent(UiEvent::kScreenClosedByUser);
 
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.A2A.PayflowExitedReason",

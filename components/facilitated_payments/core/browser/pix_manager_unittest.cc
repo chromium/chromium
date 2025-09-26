@@ -1067,7 +1067,7 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
       autofill::test::CreatePixBankAccount(100L)};
   pix_manager_->ShowPixPaymentPrompt(std::move(bank_accounts),
                                      base::DoNothing());
-  pix_manager_->OnUiEvent(UiEvent::kNewScreenShown);
+  pix_manager_->OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   // Verify that when the Pix FOP selector is shown, related metrics are
   // logged.
@@ -1179,7 +1179,7 @@ TEST_P(PixManagerTestForUiScreens, NewScreenShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  pix_manager_->OnUiEvent(UiEvent::kNewScreenShown);
+  pix_manager_->OnUiScreenEvent(UiEvent::kNewScreenShown);
 
   // Verify feature has updated the UI state.
   EXPECT_EQ(pix_manager_->ui_state_, ui_state());
@@ -1201,7 +1201,7 @@ TEST_P(PixManagerTestForUiScreens, NewScreenCouldNotBeShown) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen could not be shown.
-  pix_manager_->OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  pix_manager_->OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);
@@ -1218,9 +1218,9 @@ TEST_P(PixManagerTestForUiScreens, ScreenClosedNotByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  pix_manager_->OnUiEvent(UiEvent::kNewScreenShown);
+  pix_manager_->OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed, but it was not due to a user action.
-  pix_manager_->OnUiEvent(UiEvent::kScreenClosedNotByUser);
+  pix_manager_->OnUiScreenEvent(UiEvent::kScreenClosedNotByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);
@@ -1237,9 +1237,9 @@ TEST_P(PixManagerTestForUiScreens, ScreenClosedByUser) {
   base::HistogramTester histogram_tester;
 
   // Simulate new screen was shown successfully.
-  pix_manager_->OnUiEvent(UiEvent::kNewScreenShown);
+  pix_manager_->OnUiScreenEvent(UiEvent::kNewScreenShown);
   // Simulate UI screen was closed by the user.
-  pix_manager_->OnUiEvent(UiEvent::kScreenClosedByUser);
+  pix_manager_->OnUiScreenEvent(UiEvent::kScreenClosedByUser);
 
   // Verify that the UI state is hidden.
   EXPECT_EQ(pix_manager_->ui_state_, UiState::kHidden);

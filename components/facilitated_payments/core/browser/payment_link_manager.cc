@@ -90,7 +90,7 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   initiate_payment_request_details_->payment_link_ = payment_link_url.spec();
 
   client_->SetUiEventListener(base::BindRepeating(
-      &PaymentLinkManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
+      &PaymentLinkManager::OnUiScreenEvent, weak_ptr_factory_.GetWeakPtr()));
 
   if (CanTriggerEwalletPaymentFlow(page_url)) {
     RetrieveSupportedEwallets(payment_link_url);
@@ -419,7 +419,7 @@ void PaymentLinkManager::OnTransactionResult(base::TimeTicks start_time,
       is_device_bound_for_logging_);
 }
 
-void PaymentLinkManager::OnUiEvent(UiEvent ui_event_type) {
+void PaymentLinkManager::OnUiScreenEvent(UiEvent ui_event_type) {
   switch (ui_event_type) {
     case UiEvent::kNewScreenShown: {
       CHECK_NE(ui_state_, UiState::kHidden);

@@ -94,8 +94,8 @@ class PaymentLinkManagerTestApi {
 
   UiState ui_state() { return payment_link_manager_->ui_state_; }
 
-  void OnUiEvent(UiEvent ui_event_type) {
-    payment_link_manager_->OnUiEvent(ui_event_type);
+  void OnUiScreenEvent(UiEvent ui_event_type) {
+    payment_link_manager_->OnUiScreenEvent(ui_event_type);
   }
 
   void ShowPaymentLinkPrompt(
