@@ -45,7 +45,6 @@
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -424,8 +423,6 @@ std::unique_ptr<glic::GlicButton> TabStripActionContainer::CreateGlicButton(
                               base::Unretained(this)),
           base::BindRepeating(&TabStripActionContainer::OnGlicButtonMouseDown,
                               base::Unretained(this)),
-          glic::GlicVectorIconManager::GetVectorIcon(
-              IDR_GLIC_BUTTON_VECTOR_ICON),
           tooltip_text);
 
   glic_button->SetProperty(views::kCrossAxisAlignmentKey,

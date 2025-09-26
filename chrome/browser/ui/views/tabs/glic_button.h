@@ -36,7 +36,6 @@ class GlicButton : public TabStripNudgeButton,
                       PressedCallback close_pressed_callback,
                       base::RepeatingClosure hovered_callback,
                       base::RepeatingClosure mouse_down_callback,
-                      const gfx::VectorIcon& icon,
                       const std::u16string& tooltip);
   GlicButton(const GlicButton&) = delete;
   GlicButton& operator=(const GlicButton&) = delete;

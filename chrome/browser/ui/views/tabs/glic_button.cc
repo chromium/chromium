@@ -12,6 +12,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -30,6 +31,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -41,8 +43,15 @@
 namespace glic {
 namespace {
 
+constexpr int kIconLeftMargin = 6;
+constexpr gfx::Size kAltIconSize{16, 16};
+
+bool EntrypointVariationsEnabled() {
+  return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
+}
+
 bool ShouldShowLabel() {
-  return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations) &&
+  return EntrypointVariationsEnabled() &&
          features::kGlicEntrypointVariationsShowLabel.Get();
 }
 
@@ -52,6 +61,22 @@ std::u16string GetLabelText() {
              : std::u16string();
 }
 
+bool ShouldUseAltIcon() {
+  return EntrypointVariationsEnabled() &&
+         features::kGlicEntrypointVariationsAltIcon.Get();
+}
+
+const gfx::VectorIcon& GetIconForTabStripControlButton() {
+  if (ShouldUseAltIcon()) {
+    // If using the alt icon, set it up in GlicButton's constructor body and
+    // pass an empty icon to TabStripNudgeButton.
+    return gfx::VectorIcon::EmptyIcon();
+  } else {
+    return glic::GlicVectorIconManager::GetVectorIcon(
+        IDR_GLIC_BUTTON_VECTOR_ICON);
+  }
+}
+
 }  // namespace
 
 GlicButton::GlicButton(TabStripController* tab_strip_controller,
@@ -59,7 +84,6 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                        PressedCallback close_pressed_callback,
                        base::RepeatingClosure hovered_callback,
                        base::RepeatingClosure mouse_down_callback,
-                       const gfx::VectorIcon& icon,
                        const std::u16string& tooltip)
     : TabStripNudgeButton(tab_strip_controller,
                           std::move(pressed_callback),
@@ -67,13 +91,27 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                           GetLabelText(),
                           kGlicNudgeButtonElementId,
                           Edge::kNone,
-                          icon,
+                          GetIconForTabStripControlButton(),
                           /*show_close_button=*/true),
       menu_model_(CreateMenuModel()),
       tab_strip_controller_(tab_strip_controller),
       hovered_callback_(std::move(hovered_callback)),
       mouse_down_callback_(std::move(mouse_down_callback)) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
+
+  if (ShouldUseAltIcon()) {
+    const ui::ImageModel icon_image_model = ui::ImageModel::FromImageSkia(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GLIC_BUTTON_ALT_ICON));
+    SetImageModel(views::Button::STATE_NORMAL, icon_image_model);
+    SetImageModel(views::Button::STATE_HOVERED, icon_image_model);
+    SetImageModel(views::Button::STATE_PRESSED, icon_image_model);
+
+    auto* image_view = static_cast<views::ImageView*>(image_container_view());
+    image_view->SetImageSize(kAltIconSize);
+    image_view->SetProperty(views::kMarginsKey,
+                            gfx::Insets().set_left(kIconLeftMargin));
+  }
 
   set_context_menu_controller(this);
 

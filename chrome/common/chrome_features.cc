@@ -735,6 +735,8 @@ extern const base::FeatureParam<std::string> kGlicCaaGuestRedirectPatterns{
 BASE_FEATURE(kGlicEntrypointVariations, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicEntrypointVariationsShowLabel{
     &kGlicEntrypointVariations, "glic-entrypoint-variations-show-label", false};
+const base::FeatureParam<bool> kGlicEntrypointVariationsAltIcon{
+    &kGlicEntrypointVariations, "glic-entrypoint-variations-alt-icon", false};
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
