@@ -22,7 +22,7 @@ class FacilitatedPaymentsInitiatePaymentRequestDetails {
       const FacilitatedPaymentsInitiatePaymentRequestDetails&) = delete;
   ~FacilitatedPaymentsInitiatePaymentRequestDetails();
 
-  // Returns true if everything that's required for making a PIX payment request
+  // Returns true if everything that's required for making a Pix payment request
   // is available.
   bool IsReadyForPixPayment();
 

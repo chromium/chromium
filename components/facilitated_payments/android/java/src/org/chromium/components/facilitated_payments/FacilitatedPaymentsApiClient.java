@@ -10,7 +10,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
- * Client for facilitated payment APIs, such as PIX. The default implementation cannot invoke
+ * Client for facilitated payment APIs, such as Pix. The default implementation cannot invoke
  * payments. An implementing subclass must provide a factory that builds its instances. Example
  * usage:
  *

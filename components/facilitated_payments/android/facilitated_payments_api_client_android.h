@@ -23,7 +23,7 @@ class RenderFrameHost;
 
 namespace payments::facilitated {
 
-// Android implementation for facilitated payment APIs, such as PIX. Uses
+// Android implementation for facilitated payment APIs, such as Pix. Uses
 // Android APIs through JNI.
 class FacilitatedPaymentsApiClientAndroid
     : public FacilitatedPaymentsApiClient {

@@ -42,7 +42,7 @@ enum class AvailableEwalletsConfiguration {
   kSingleBoundEwallet = 0,
   // Only one eWallet is available, and it’s not bound to the device.
   kSingleUnboundEwallet = 1,
-  // Mutilple eWallets are available..
+  // Multiple eWallets are available.
   kMultipleEwallets = 2,
 };
 

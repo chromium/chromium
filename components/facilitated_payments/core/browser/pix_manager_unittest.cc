@@ -160,7 +160,7 @@ TEST_F(PixManagerTestWithAccountLinkingEnabled,
                                           /*is_api_available=*/false);
 }
 
-// If the facilitated payment API is available, then the manager shows the PIX
+// If the facilitated payment API is available, then the manager shows the Pix
 // payment prompt.
 TEST_F(PixManagerTestWithAccountLinkingEnabled,
        ShowsPixPaymentPromptWhenApiClientAvailable) {

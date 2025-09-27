@@ -102,7 +102,7 @@ std::string FacilitatedPaymentsInitiatePaymentRequest::GetRequestContent() {
   base::Value::Dict payment_details;
   if (request_details_->pix_code_.has_value()) {
     // TODO(b/332602034): Pass the payment rail to be used for payment as an
-    // enum. In future, some other payment rail could also support PIX codes.
+    // enum. In future, some other payment rail could also support Pix codes.
     payment_details.Set("payment_rail", "PIX");
     payment_details.Set("qr_code", request_details_->pix_code_.value());
   }

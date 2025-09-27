@@ -7,7 +7,7 @@
 
 namespace payments::facilitated {
 
-// The regular expression pattern for a valid PIX code, as used by the fuzzer
+// The regular expression pattern for a valid Pix code, as used by the fuzzer
 // tests to generate more test cases.
 extern const char kPixCodeValidatorFuzzerDomainRegexPattern[];
 

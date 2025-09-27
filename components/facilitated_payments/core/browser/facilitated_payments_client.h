@@ -100,8 +100,8 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // because it's outside the screen bounds.
   virtual bool IsWebContentsVisibleOrOccluded() = 0;
 
-  // Shows the user's PIX accounts from their Google Wallet, and prompts to pay.
-  // `bank_account_suggestions` is the list of PIX accounts to be shown to the
+  // Shows the user's Pix accounts from their Google Wallet, and prompts to pay.
+  // `bank_account_suggestions` is the list of Pix accounts to be shown to the
   // user for payment. `on_payment_account_selected` is the callback called with
   // the instrument id of the bank account selected by the user for payment.
   virtual void ShowPixPaymentPrompt(
@@ -141,7 +141,7 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   virtual void InitPixAccountLinkingFlow(
       const url::Origin& pix_payment_page_origin) = 0;
 
-  // Shows the PIX account linking prompt.
+  // Shows the Pix account linking prompt.
   virtual void ShowPixAccountLinkingPrompt(
       base::OnceCallback<void()> on_accepted,
       base::OnceCallback<void()> on_declined) = 0;

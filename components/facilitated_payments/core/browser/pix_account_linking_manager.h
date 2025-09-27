@@ -56,7 +56,7 @@ class PixAccountLinkingManager {
   // Called by the view to communicate UI events.
   void OnUiScreenEvent(UiEvent ui_event_type);
 
-  // Callback for when the payments request to check pix account linking
+  // Callback for when the payments request to check Pix account linking
   // eligibility is completed.
   void OnGetDetailsForCreatePaymentInstrumentResponseReceived(
       base::TimeTicks start_time,
@@ -66,7 +66,7 @@ class PixAccountLinkingManager {
   // Owner.
   const raw_ref<FacilitatedPaymentsClient> client_;
 
-  // Optional bool to indicate whether the user is eligible for pix account
+  // Optional bool to indicate whether the user is eligible for Pix account
   // linking based on the response from payments backend. This field is set to
   // optional to be able to differentiate between the case where the server
   // response is not received yet.

@@ -24,8 +24,8 @@ struct SectionInfo {
   std::string_view section_value;
 };
 
-// Returns true if `code` starts with a valid PIX `code` section.
-// A valid PIX code section comprises:
+// Returns true if `code` starts with a valid Pix `code` section.
+// A valid Pix code section comprises:
 // 1) Two digits of section ID.
 // 2) Two digits of section size |N|.
 // 3) Section value of length |N|.
@@ -46,7 +46,7 @@ bool ParseNextSection(std::string_view* code, SectionInfo* section_info) {
   return true;
 }
 
-// Returns true if the `input` string consists of valid PIX code sections.
+// Returns true if the `input` string consists of valid Pix code sections.
 bool ContainsValidSections(std::string_view input) {
   if (input.empty()) {
     return false;
@@ -100,7 +100,7 @@ bool PixCodeValidator::IsValidPixCode(std::string_view code) {
       // presence of the dynamic url section id is sufficient to determine
       // whether the Pix code is a static vs dynamic code.
       SectionInfo dynamic_url_section_info;
-      // We expect the dynamic url id to start right after the pix code
+      // We expect the dynamic url id to start right after the Pix code
       // indicator.
       std::string_view dynamic_url_section_string =
           section_info.section_value.substr(strlen(kPixCodeIndicatorLowercase));

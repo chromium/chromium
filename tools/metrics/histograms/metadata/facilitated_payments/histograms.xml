@@ -182,7 +182,7 @@ reviewer.
   </summary>
   <token key="AvailableEwalletsConfiguration">
     <variant name="MultipleEwallets"
-        summary="Mutilple eWallets are available."/>
+        summary="Multiple eWallets are available."/>
     <variant name="SingleBoundEwallet"
         summary="Only one eWallet is available, and it's bound to the device."/>
     <variant name="SingleUnboundEwallet"
