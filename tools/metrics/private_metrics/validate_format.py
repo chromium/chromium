@@ -4,23 +4,37 @@
 # found in the LICENSE file.
 """Verifies that the DWA XML file is well-formatted."""
 
-import os
 import sys
-import private_metrics_validations
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
-import path_util
-
+import argparse
 from xml.dom import minidom
 
-_DWA_XML = path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml')
+import private_metrics_validations
 
 
 def main():
-  with open(_DWA_XML, 'r') as config_file:
+  parser = argparse.ArgumentParser()
+  parser.add_argument('filepath', help="relative path to XML file")
+  # The following optional flags are used by common/presubmit_util.py
+  parser.add_argument('--presubmit', action="store_true")
+
+  args = parser.parse_args()
+
+  filepath = args.filepath
+
+  if filepath.endswith('dwa.xml'):
+    root_tag = 'dwa-configuration'
+    validation = private_metrics_validations.DwaXmlValidation
+  elif filepath.endswith('dkm.xml'):
+    root_tag = 'dkm-configuration'
+    validation = private_metrics_validations.DkmXmlValidation
+  else:
+    print(f'Unsupported file: {filepath}', file=sys.stderr)
+    sys.exit(1)
+
+  with open(filepath, 'r') as config_file:
     document = minidom.parse(config_file)
-    [config] = document.getElementsByTagName('dwa-configuration')
-    validator = private_metrics_validations.DwaXmlValidation(config)
+    [config] = document.getElementsByTagName(root_tag)
+    validator = validation(config)
 
     owner_check_success, owner_check_errors = validator.checkEventsHaveOwners()
     metric_check_success, metric_check_errors = (

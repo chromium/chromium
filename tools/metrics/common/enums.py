@@ -17,6 +17,7 @@ import merge_xml
 
 _METRIC_FILES_WITH_ENUMS = [
     path_util.GetInputFile('tools/metrics/ukm/ukm.xml'),
+    path_util.GetInputFile('tools/metrics/private_metrics/dkm.xml'),
     path_util.GetInputFile('tools/metrics/private_metrics/dwa.xml'),
 ]
 
@@ -59,7 +60,7 @@ def get_enums_used_in_files() -> set[str]:
 
   metric_enum_names = (
       _get_enums_referenced_by_metric_nodes(_METRIC_FILES_WITH_ENUMS))
-  logging.info(f'Found {len(metric_enum_names)} enums from ukm and dwa.')
+  logging.info(f'Found {len(metric_enum_names)} enums from ukm, dkm, and dwa.')
 
   enum_names.update(metric_enum_names)
   logging.info(f'Found {len(enum_names)} enums total.')

@@ -7,6 +7,7 @@ import os
 import sys
 import argparse
 
+import dkm_model
 import dwa_model
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
@@ -14,7 +15,7 @@ import presubmit_util
 
 
 def main():
-  """Pretty-prints the DWA Chrome metrics in dwa.xml file.
+  """Pretty-prints Private Metrics' XML configuration files.
 
   Args:
     --non-interactive: (Optional) Does not print log info messages and does not
@@ -28,6 +29,7 @@ def main():
     pretty_print.py --diff --cleanup
   """
   parser = argparse.ArgumentParser()
+  parser.add_argument('filepath', help="relative path to XML file")
   # The following optional flags are used by common/presubmit_util.py
   parser.add_argument('--non-interactive', action="store_true")
   parser.add_argument('--presubmit', action="store_true")
@@ -36,9 +38,22 @@ def main():
                       action="store_true",
                       help="Remove the backup file after a successful run.")
 
-  presubmit_util.DoPresubmitMain(sys.argv, 'dwa.xml', 'dwa.old.xml',
-                                 dwa_model.PrettifyXML)
+  args = parser.parse_args()
 
+  filepath = args.filepath
+
+  status = 0
+  if filepath.endswith('dwa.xml'):
+    status = presubmit_util.DoPresubmit(sys.argv, filepath, 'dwa.old.xml',
+                                        dwa_model.PrettifyXML)
+  elif filepath.endswith('dkm.xml'):
+    status = presubmit_util.DoPresubmit(sys.argv, filepath, 'dkm.old.xml',
+                                        dkm_model.prettify_xml)
+  else:
+    print(f'Unsupported file: {filepath}', file=sys.stderr)
+    return 1
+
+  return status
 
 if __name__ == '__main__':
   sys.exit(main())

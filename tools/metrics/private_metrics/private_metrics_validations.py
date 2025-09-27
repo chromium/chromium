@@ -53,6 +53,18 @@ class EventBasedXmlValidation(xml_validations.UkmXmlValidation):
     return (is_success, errors)
 
 
+class DkmXmlValidation(EventBasedXmlValidation):
+  """Validations for the content of dkm.xml."""
+
+  def __init__(self, dkm_config: xml.dom.minidom.Element) -> None:
+    """Attributes:
+
+    dkm_config: A XML minidom Element representing the root node of the DKM
+        config tree.
+    """
+    super().__init__(dkm_config, "DKM")
+
+
 class DwaXmlValidation(EventBasedXmlValidation):
   """Validations for the content of dwa.xml."""
 
