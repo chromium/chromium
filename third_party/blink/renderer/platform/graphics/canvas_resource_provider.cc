@@ -815,7 +815,7 @@ void CanvasResourceProviderSharedImage::ExternalCanvasDrawHelper(
     // conditional WillDraw(), but we are getting memory leak on CreatePattern
     // with it. There should be a better way to solve this.
     if (cached_snapshot_) {
-      WillDraw();
+      WillDrawInternal(true);
     }
   }
 
