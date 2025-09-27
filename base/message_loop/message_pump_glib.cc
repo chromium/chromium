@@ -18,6 +18,10 @@
 #include "base/task/current_thread.h"
 #include "base/threading/platform_thread.h"
 
+#if !BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_FUCHSIA)
+#include "base/notimplemented.h"
+#endif  // !BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_FUCHSIA)
+
 namespace base {
 
 namespace {
@@ -291,6 +295,14 @@ class IOWatcherImpl : public IOWatcher {
       FdWatchMode mode,
       IOWatcher::FdWatcher& watcher,
       const Location& location) override {
+    // CurrentThreadForUI::WatchFileDescriptor is an Ozone-only feature.
+    // On ChromeOS, the libchrome package is built with use_glib=true, which
+    // includes this file. However, its configuration does not have
+    // BUILDFLAG(IS_OZONE) enabled, so WatchFileDescriptor is not declared. This
+    // guard prevents a compile error. Please note that while libchrome is
+    // ChromeOS specific and is used extensively by various components within
+    // ChromeOS, libchrome is not part of Ash-chrome.
+#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA)
     MessagePumpForIO::Mode io_mode;
     switch (mode) {
       case FdWatchMode::kRead:
@@ -310,6 +322,10 @@ class IOWatcherImpl : public IOWatcher {
       return nullptr;
     }
     return watch;
+#else
+    NOTIMPLEMENTED();
+    return nullptr;
+#endif  // BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA)
   }
 
  private:
