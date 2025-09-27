@@ -2163,6 +2163,12 @@
       base_feature: "none",
     },
     {
+      name: "FedCmErrorAttribute",
+      depends_on: ["FedCm"],
+      public: true,
+      base_feature: "none",
+    },
+    {
       name: "FedCmIdPRegistration",
       depends_on: ["FedCm"],
       public: true,

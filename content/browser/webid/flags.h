@@ -60,6 +60,10 @@ bool IsWellKnownEndpointValidationEnabled();
 
 // Whether preserving ports for testing is enabled.
 bool IsPreservePortsForTestingEnabled();
+
+// Whether accessing error attribute is enabled.
+bool IsErrorAttributeEnabled();
+
 }  // namespace content::webid
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

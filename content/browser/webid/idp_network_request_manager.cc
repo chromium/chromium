@@ -948,7 +948,9 @@ void OnTokenRequestParsed(
       GetTokenResponseType(token_value, continue_on, response_error);
 
   if (response_error) {
-    std::string error_code = ExtractString(*response_error, kErrorCodeKey);
+    const char* key =
+        webid::IsErrorAttributeEnabled() ? kErrorKey : kErrorCodeKey;
+    std::string error_code = ExtractString(*response_error, key);
     const std::string* url = response_error->FindString(kErrorUrlKey);
     GURL error_url;
     std::optional<ErrorUrlType> error_url_type;

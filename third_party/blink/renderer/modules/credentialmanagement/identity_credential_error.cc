@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/credentialmanagement/identity_credential_error.h"
+
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_error_init.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -19,14 +22,34 @@ IdentityCredentialError::IdentityCredentialError(
     const String& message,
     const IdentityCredentialErrorInit* options)
     : DOMException(DOMExceptionCode::kIdentityCredentialError, message),
-      code_(options->hasCode() ? options->code() : ""),
+      error_code_(RuntimeEnabledFeatures::FedCmErrorAttributeEnabled()
+                      ? (options->hasError() ? options->error() : "")
+                      : (options->hasCode() ? options->code() : "")),
       url_(options->hasUrl() ? options->url() : "") {}
 
 IdentityCredentialError::IdentityCredentialError(const String& message,
                                                  const String& code,
                                                  const String& url)
     : DOMException(DOMExceptionCode::kIdentityCredentialError, message),
-      code_(code),
+      error_code_(code),
       url_(url) {}
+
+String IdentityCredentialError::code(ExceptionState& exception_state) const {
+  if (RuntimeEnabledFeatures::FedCmErrorAttributeEnabled()) {
+    // Throw an exception when feature flag is enabled
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The 'code' attribute is deprecated and disabled when "
+        "FedCmErrorAttribute feature is enabled. Use 'error' attribute "
+        "instead.");
+    return String();
+  }
+
+  return error_code_;
+}
+
+String IdentityCredentialError::error() const {
+  return error_code_;
+}
 
 }  // namespace blink

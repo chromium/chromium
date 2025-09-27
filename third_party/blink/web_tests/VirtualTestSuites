@@ -1064,6 +1064,27 @@
     "expires": "Aug 1, 2026"
   },
   {
+    "prefix": "fedcm-error-attribute",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/fedcm/fedcm-error-attribute"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=FedCmErrorAttribute"
+    ],
+    "owners": [
+      "npm@chromium.org",
+      "cbiesinger@chromium.org",
+      "goto@chromium.org"
+    ],
+    "expires": "Aug 1, 2026"
+  },
+  {
     "prefix": "fenced-frame-mparch",
     "owners": [
       "shivanisha@chromium.org",

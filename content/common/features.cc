@@ -185,7 +185,6 @@ BASE_FEATURE(kFedCmNonStringToken, base::FEATURE_DISABLED_BY_DEFAULT);
 // files when client_metadata is used. When enabled, accounts_endpoint and
 // login_url must be present in .well-known/web-identity for privacy validation.
 BASE_FEATURE(kFedCmWellKnownEndpointValidation,
-             "FedCmWellKnownEndpointValidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether FedCM preserves ports in well-known URLs during testing.
@@ -195,9 +194,11 @@ BASE_FEATURE(kFedCmWellKnownEndpointValidation,
 // and the well-known endpoint needs to be fetched from the same port.
 // Production FedCM strips ports for security reasons to ensure well-known
 // files are served from the canonical domain.
-BASE_FEATURE(kFedCmPreservePortsForTesting,
-             "FedCmPreservePortsForTesting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFedCmPreservePortsForTesting, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the spec-compliant 'error' attribute in IdentityCredentialError while
+// deprecating the legacy 'code' attribute.
+BASE_FEATURE(kFedCmErrorAttribute, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables installed web app matching for getInstalledRelatedApps API.
 BASE_FEATURE(kFilterInstalledAppsWebAppMatching,
