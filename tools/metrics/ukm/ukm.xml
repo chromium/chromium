@@ -9174,7 +9174,6 @@ be describing additional metrics about the same event.
 <event name="FacilitatedPayments.Ewallet.FopSelectorResult">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged when the eWallet FoP selector UI is closed.
@@ -9202,7 +9201,6 @@ be describing additional metrics about the same event.
 <event name="FacilitatedPayments.Ewallet.FopSelectorShown">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after the eWallet FoP selector UI is shown.
@@ -9230,7 +9228,6 @@ be describing additional metrics about the same event.
 <event name="FacilitatedPayments.PaymentLinkDetected">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after a given payment link in a certain page for an
@@ -9249,7 +9246,6 @@ be describing additional metrics about the same event.
 
 <event name="FacilitatedPayments.Pix.FopSelectorResult">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged when the FoP selector UI for Pix is closed.
@@ -9264,7 +9260,6 @@ be describing additional metrics about the same event.
 
 <event name="FacilitatedPayments.Pix.FopSelectorShown">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after the FoP selector UI is shown.
@@ -9279,7 +9274,6 @@ be describing additional metrics about the same event.
 
 <event name="FacilitatedPayments.Pix.InitiatePurchaseActionResult">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after getting response from the
@@ -9301,7 +9295,6 @@ be describing additional metrics about the same event.
 
 <event name="FacilitatedPayments.PixCodeCopied">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after a likely Pix code is copied to the clipboard
@@ -19402,7 +19395,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentApp.CheckoutEvents">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records checkout events as well as completion status for the invoked payment
@@ -19427,7 +19420,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentRequest.CheckoutEvents">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <metric name="CompletionStatus">
     <summary>
@@ -19445,7 +19438,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentRequest.TransactionAmount">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <metric name="Category">
     <summary>

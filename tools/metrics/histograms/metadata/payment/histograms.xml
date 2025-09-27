@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaymentRequest.CheckoutFunnel"
     enum="PaymentRequestCheckoutFunnelSteps" expires_after="2026-03-22">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Counts the number of Payment Requests (PR) that go through each checkout
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaymentRequest.Events2" units="bitfield value"
     expires_after="2026-02-01">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The 2.0 version of Events. A bitfield representing the different events that
@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
     expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The number of suggestions shown to the user during a payment request.
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaymentRequest.NumberOfSupportedMethods.AndroidApp"
     units="methods" expires_after="2023-07-14">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     The number of payment methods that an installed Android payment app declares
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
     enum="Boolean" expires_after="2026-03-22">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an invoked Android payment app sends updated payment method
@@ -188,7 +188,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingAddress"
     enum="Boolean" expires_after="2025-11-23">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an Android payment app sends updated shipping address to the
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingOption"
     enum="Boolean" expires_after="2025-11-23">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an Android payment app sends updated shipping option (e.g.,
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PaymentRequest.PaymentHandlerInstallSuccess"
     enum="BooleanSuccess" expires_after="2026-03-08">
-  <owner>rouslan@chromium.org</owner>
+  <owner>smcgruer@chromium.org</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Whether an attempted just-in-time payment handler installation was

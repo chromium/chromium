@@ -71,7 +71,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the latency for
@@ -89,7 +88,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the latency for
@@ -107,7 +105,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the reasons why
@@ -121,7 +118,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the reasons why
@@ -137,7 +133,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the overall
@@ -156,7 +151,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the overall
@@ -176,7 +170,6 @@ reviewer.
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage that is eligible for eWallet transactions on Chrome, this
@@ -203,7 +196,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the latency for
@@ -219,7 +211,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the latency for
@@ -236,7 +227,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to fetch the client token. The client token is fetched
@@ -252,7 +242,6 @@ reviewer.
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when a request is sent to the Initiate Payment backend endpoint.
@@ -268,7 +257,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the latency for the InitiatePayment backend endpoint and breaks it down
@@ -284,7 +272,6 @@ reviewer.
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when a request is sent to to payments platform (client) which
@@ -302,7 +289,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the latency for the call made to payments platform (client) which
@@ -327,7 +313,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to check whether the FacilitatedPayments API client is
@@ -345,7 +330,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to fetch risk data which was a {Result}. The payment is
@@ -363,7 +347,6 @@ reviewer.
     expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the reasons why
@@ -377,7 +360,6 @@ reviewer.
     expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the reasons why
@@ -391,7 +373,6 @@ reviewer.
     enum="FacilitatedPayments.UiScreen" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage with a valid payment link, this histogram logs the UI screens
@@ -407,7 +388,6 @@ reviewer.
     expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when a payment link is detected on a merchant webpage. [Trigger] A
@@ -490,7 +470,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.FopSelected.Latency" units="ms"
     expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage that is eligible for Pix payments, this histogram logs the time
@@ -504,7 +483,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.FopSelector.UserAction"
     enum="FacilitatedPayments.FopSelectorAction" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage that is eligible for Pix transactions on Chrome, this histogram
@@ -517,7 +495,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.FopSelectorShown.LatencyAfterCopy"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage that is eligible for Pix payments, this histogram logs the
@@ -532,7 +509,6 @@ reviewer.
     name="FacilitatedPayments.Pix.InitiatePurchaseAction.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the latency for the call made to payments platform (client) which
@@ -548,7 +524,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.PayflowExitedReason"
     enum="FacilitatedPayments.PixFlowExitedReason" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage that is eligible for facilitated payments, this histogram logs
@@ -561,7 +536,6 @@ reviewer.
     name="FacilitatedPayments.Pix.PaymentCodeValidation.{PaymentCodeValidationResult}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the Pix payment code validation with
@@ -584,7 +558,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.PixCodeCopied" enum="Boolean"
     expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     A Pix specific histogram. Emits true when a likely Pix code is copied to the
@@ -600,7 +573,6 @@ reviewer.
 <histogram name="FacilitatedPayments.Pix.Transaction.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the overall latency for the Pix transaction as experienced by the user
@@ -625,7 +597,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when the toggle for A2A is enabled and false otherwise. Does not
@@ -641,7 +612,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when the toggle for Ewallet is enabled and false otherwise. Does
@@ -657,7 +627,6 @@ reviewer.
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits true when the &quot;Pay with non-card payment methods&quot; settings
@@ -670,7 +639,6 @@ reviewer.
 <histogram name="FacilitatedPayments.SettingsPage.Shown" enum="BooleanShown"
     expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Emits true when the FacilitatedPayments settings page is shown. Does not
@@ -684,7 +652,6 @@ reviewer.
     name="FacilitatedPayments.SettingsPage.{FacilitatedPaymentsType}.ToggleUpdated"
     enum="Boolean" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when the toggle for {FacilitatedPaymentsType} is enabled and false
@@ -699,7 +666,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.GetClientToken.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to fetch the client token. The client token is fetched
@@ -717,7 +683,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Attempt"
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when a request is sent to the Initiate Payment backend endpoint.
@@ -732,7 +697,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs the latency for the InitiatePayment backend endpoint and breaks it down
@@ -749,7 +713,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePurchaseAction.Attempt"
     enum="BooleanAttempted" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs true when a request is sent to to payments platform (client) which
@@ -766,7 +729,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.IsApiAvailable.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to check whether the FacilitatedPayments API client is
@@ -784,7 +746,6 @@ reviewer.
     name="FacilitatedPayments.{FacilitatedPaymentsType}.LoadRiskData.{Result}.Latency"
     units="ms" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Latency for the call to fetch risk data which was a {Result}. The risk data
@@ -800,7 +761,6 @@ reviewer.
 <histogram name="FacilitatedPayments.{FacilitatedPaymentsType}.UiScreenShown"
     enum="FacilitatedPayments.UiScreen" expires_after="2026-06-01">
   <owner>siashah@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     On a webpage that is eligible for facilitated payments, this histogram logs
@@ -818,7 +778,6 @@ reviewer.
     expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>tushartushar@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -840,7 +799,6 @@ reviewer.
     expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>tushartushar@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -862,7 +820,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>tushartushar@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -881,7 +838,6 @@ reviewer.
     units="ms" expires_after="2026-06-01">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@google.com</owner>
   <owner>tushartushar@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
