@@ -331,6 +331,56 @@ TEST(RuleSetTest, FindBestBucketAndAdd_ShadowPseudoAfterPart) {
   ASSERT_EQ(0u, part_rules.size());
 }
 
+TEST(RuleSetTest, FindBestBucketAndAdd_PartBefore) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules("::part(p)::before { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const base::span<const RuleData> part_rules = rule_set.PartPseudoRules();
+  ASSERT_EQ(1u, part_rules.size());
+}
+
+TEST(RuleSetTest, FindBestBucketAndAdd_PartFocus) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules("::part(p):focus { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const base::span<const RuleData> part_rules = rule_set.PartPseudoRules();
+  ASSERT_EQ(1u, part_rules.size());
+}
+
+TEST(RuleSetTest, FindBestBucketAndAdd_Slotted) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules("::slotted(.a) { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const base::span<const RuleData> rules = rule_set.SlottedPseudoElementRules();
+  ASSERT_EQ(1u, rules.size());
+}
+
+TEST(RuleSetTest, FindBestBucketAndAdd_SlottedBefore) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules("::slotted(.a)::before { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const base::span<const RuleData> rules = rule_set.SlottedPseudoElementRules();
+  ASSERT_EQ(1u, rules.size());
+}
+
+TEST(RuleSetTest, FindBestBucketAndAdd_SlottedUAShadow) {
+  test::TaskEnvironment task_environment;
+  css_test_helpers::TestStyleSheet sheet;
+
+  sheet.AddCSSRules("::slotted(.a)::file-selector-button { }");
+  RuleSet& rule_set = sheet.GetRuleSet();
+  const base::span<const RuleData> rules = rule_set.SlottedPseudoElementRules();
+  ASSERT_EQ(1u, rules.size());
+}
+
 TEST(RuleSetTest, FindBestBucketAndAdd_IsSingleArg) {
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;

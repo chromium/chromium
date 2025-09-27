@@ -642,9 +642,6 @@ class CORE_EXPORT CSSSelector {
   static bool IsElementBackedPseudoElement(CSSSelector::PseudoType pseudo);
   bool IsAllowedAfterPart() const;
 
-  // Returns true if the immediately preceding simple selector is ::slotted.
-  bool FollowsSlotted() const;
-
   // Returns true if any preceding selectors have combinators that cross tree
   // scopes.
   bool CrossesTreeScopes() const;

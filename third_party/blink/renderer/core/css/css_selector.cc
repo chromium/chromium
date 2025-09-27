@@ -1945,14 +1945,6 @@ static bool ForAnyInComplexSelector(const Functor& functor,
   return false;
 }
 
-bool CSSSelector::FollowsSlotted() const {
-  const CSSSelector* previous = NextSimpleSelector();
-  if (!previous) {
-    return false;
-  }
-  return previous->GetPseudoType() == kPseudoSlotted;
-}
-
 bool CSSSelector::CrossesTreeScopes() const {
   for (const CSSSelector* s = this; s; s = s->NextSimpleSelector()) {
     switch (s->Relation()) {

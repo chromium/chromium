@@ -326,8 +326,9 @@ struct BucketingValues {
   AtomicString custom_pseudo_element_name;
   AtomicString tag_name;
   AtomicString part_name;
-  AtomicString picker_name;
+  AtomicString ua_shadow_pseudo;
   CSSSelector::PseudoType pseudo_type = CSSSelector::kPseudoUnknown;
+  bool has_slotted = false;
 };
 
 }  // namespace
@@ -375,6 +376,9 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
         case CSSSelector::kPseudoActiveViewTransition:
           // Pseudo classes.
           values.pseudo_type = selector->GetPseudoType();
+          if (values.pseudo_type == CSSSelector::kPseudoSlotted) {
+            values.has_slotted = true;
+          }
           break;
         case CSSSelector::kPseudoPlaceholder:
         case CSSSelector::kPseudoDetailsContent:
@@ -389,6 +393,9 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
           // (in particular, :host).
           if (values.pseudo_type == CSSSelector::kPseudoUnknown) {
             values.pseudo_type = selector->GetPseudoType();
+            values.ua_shadow_pseudo =
+                shadow_element_utils::StringForUAShadowPseudoId(
+                    CSSSelector::GetPseudoId(values.pseudo_type));
           }
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
@@ -399,7 +406,9 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
           values.part_name = selector->Value();
           break;
         case CSSSelector::kPseudoPicker:
-          values.picker_name = selector->Argument();
+          if (selector->Argument() == "select") {
+            values.ua_shadow_pseudo = shadow_element_names::kPickerSelect;
+          }
           break;
         case CSSSelector::kPseudoIs:
         case CSSSelector::kPseudoWhere:
@@ -472,23 +481,49 @@ static bool ExtractBucketingValues(const CSSSelector* selector,
 
 // For a (possibly compound) selector, extract the values used for determining
 // its buckets (e.g. for “.foo[baz]”, will return foo for class_name and
-// baz for attr_name). Returns the last subselector in the group, which is also
-// the one given the highest priority.
-static const CSSSelector* ExtractBestBucketingValues(
-    const CSSSelector& component,
-    const StyleScope* style_scope,
-    BucketingValues& values) {
-  const CSSSelector* it = &component;
-  for (; it && it->Relation() == CSSSelector::kSubSelector;
-       it = it->NextSimpleSelector()) {
+// baz for attr_name).
+static void ExtractBestBucketingValues(const CSSSelector& component,
+                                       const StyleScope* style_scope,
+                                       BucketingValues& values) {
+  for (const CSSSelector* it = &component; it; it = it->NextSimpleSelector()) {
     if (!ExtractBucketingValues(it, style_scope, values)) {
-      return it;
+      return;
+    }
+    switch (it->Relation()) {
+      case CSSSelector::kSubSelector:
+        continue;
+      case CSSSelector::kUAShadow: {
+        // Any selector containing ::slotted() currently *must* go in
+        // the slotted bucket. Since we allow UA-shadow pseudo-element
+        // selectors after ::slotted(), and because such selectors exist
+        // in a different compound from ::slotted() (effectively [1]),
+        // we have to check if the originating compound contains ::slotted()
+        // as well.
+        //
+        // Note that the same is not true for ::part(); selectors on
+        // on the form ::part(p)::ua-shadow must bucket according
+        // to ::ua-shadow.
+        //
+        // This discrepancy comes from the fact that StyleResolver::
+        // MatchOuterScopeRules (which handles parts and UA shadow
+        // pseudos) does look in the UA shadow bucket across trees,
+        // but MatchSlottedRules *only* looks in the slotted bucket.
+        // TODO(crbug.com/40068507): This discrepancy is weird.
+        //
+        // [1] CSSSelectorParser::SplitCompoundAtImplicitCombinator
+        const CSSSelector* originating = it->NextSimpleSelector();
+        CHECK(originating);
+        BucketingValues originating_values;
+        ExtractBestBucketingValues(*originating, style_scope,
+                                   originating_values);
+        values.has_slotted |= originating_values.has_slotted;
+        return;
+      };
+      default:
+        // We reached the end of the compound selector.
+        return;
     }
   }
-  if (it) {
-    ExtractBucketingValues(it, style_scope, values);
-  }
-  return it;
 }
 
 template <class Func>
@@ -538,55 +573,79 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
   all_rules_.push_back(rule_data);
 #endif  // DCHECK_IS_ON()
 
-  const CSSSelector* it =
-      ExtractBestBucketingValues(component, style_scope, values);
+  ExtractBestBucketingValues(component, style_scope, values);
 
-  // Prefer rule sets in order of most likely to apply infrequently.
+  // ::slotted() selectors *must* go in the slotted-bucket; we only look
+  // for rules in that bucket across shadows.
+  if (values.has_slotted) {
+    AddToBucket(slotted_pseudo_element_rules_, rule_data);
+    return;
+  }
 
-  // NOTE: For ::part:focus and similar, we need to go into the ::part bucket
-  // (see below). This isn't a problem for #id::part and similar, since there is
-  // a hidden combinator that stops ExtractBestBucketingValues() before it finds
-  // the #id.
-  if (values.part_name.empty()) {
-    if (values.pseudo_type == CSSSelector::kPseudoFocus) {
-      if (bucket_coverage == BucketCoverage::kCompute) {
-        MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
-          return selector.Match() == CSSSelector::kPseudoClass &&
-                 selector.GetPseudoType() == CSSSelector::kPseudoFocus;
-        });
-      }
-      AddToBucket(focus_pseudo_class_rules_, rule_data);
-      return;
+  // Similarly, UA-shadow pseudo-element selectors and ::part() selectors
+  // must go in their respective buckets, even when there's another selector
+  // that is normally considered more specific for bucketing, e.g.
+  // ::part(a):hover.
+
+  if (!values.ua_shadow_pseudo.empty()) {
+    // Note that `ua_shadow_pseudo` and `part_name` may never be set
+    // at the same time due to the implicit combinators [1] inserted before
+    // such selectors. This means that it doesn't matter if we try to bucket
+    // for `ua_shadow_pseudo` first or for `part_name` first.
+    // [1] CSSSelectorParser:: SplitCompoundAtImplicitCombinator.
+    CHECK(values.part_name.empty());
+    AddToBucket(values.ua_shadow_pseudo, ua_shadow_pseudo_element_rules_,
+                rule_data);
+    return;
+  }
+
+  if (!values.part_name.empty()) {
+    CHECK(values.ua_shadow_pseudo.empty()); // See ua_shadow_pseudo branch above.
+    // TODO: Mark as covered by bucketing?
+    AddToBucket(part_pseudo_rules_, rule_data);
+    return;
+  }
+
+  // Prefer buckets in order of most likely to apply infrequently.
+
+  if (values.pseudo_type == CSSSelector::kPseudoFocus) {
+    if (bucket_coverage == BucketCoverage::kCompute) {
+      MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+        return selector.Match() == CSSSelector::kPseudoClass &&
+               selector.GetPseudoType() == CSSSelector::kPseudoFocus;
+      });
     }
-    if (values.pseudo_type == CSSSelector::kPseudoFocusVisible) {
-      if (bucket_coverage == BucketCoverage::kCompute) {
-        MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
-          return selector.Match() == CSSSelector::kPseudoClass &&
-                 selector.GetPseudoType() == CSSSelector::kPseudoFocusVisible;
-        });
-      }
-      AddToBucket(focus_visible_pseudo_class_rules_, rule_data);
-      return;
+    AddToBucket(focus_pseudo_class_rules_, rule_data);
+    return;
+  }
+  if (values.pseudo_type == CSSSelector::kPseudoFocusVisible) {
+    if (bucket_coverage == BucketCoverage::kCompute) {
+      MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+        return selector.Match() == CSSSelector::kPseudoClass &&
+               selector.GetPseudoType() == CSSSelector::kPseudoFocusVisible;
+      });
     }
-    if (values.pseudo_type == CSSSelector::kPseudoScrollbarButton ||
-        values.pseudo_type == CSSSelector::kPseudoScrollbarCorner ||
-        values.pseudo_type == CSSSelector::kPseudoScrollbarThumb ||
-        values.pseudo_type == CSSSelector::kPseudoScrollbarTrack ||
-        values.pseudo_type == CSSSelector::kPseudoScrollbarTrackPiece) {
-      AddToBucket(scrollbar_rules_, rule_data);
-      return;
+    AddToBucket(focus_visible_pseudo_class_rules_, rule_data);
+    return;
+  }
+  if (values.pseudo_type == CSSSelector::kPseudoScrollbarButton ||
+      values.pseudo_type == CSSSelector::kPseudoScrollbarCorner ||
+      values.pseudo_type == CSSSelector::kPseudoScrollbarThumb ||
+      values.pseudo_type == CSSSelector::kPseudoScrollbarTrack ||
+      values.pseudo_type == CSSSelector::kPseudoScrollbarTrackPiece) {
+    AddToBucket(scrollbar_rules_, rule_data);
+    return;
+  }
+  if (values.pseudo_type == CSSSelector::kPseudoActiveViewTransition) {
+    if (bucket_coverage == BucketCoverage::kCompute) {
+      MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+        return selector.Match() == CSSSelector::kPseudoClass &&
+               selector.GetPseudoType() ==
+                   CSSSelector::kPseudoActiveViewTransition;
+      });
     }
-    if (values.pseudo_type == CSSSelector::kPseudoActiveViewTransition) {
-      if (bucket_coverage == BucketCoverage::kCompute) {
-        MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
-          return selector.Match() == CSSSelector::kPseudoClass &&
-                 selector.GetPseudoType() ==
-                     CSSSelector::kPseudoActiveViewTransition;
-        });
-      }
-      AddToBucket(active_view_transition_rules_, rule_data);
-      return;
-    }
+    AddToBucket(active_view_transition_rules_, rule_data);
+    return;
   }
 
   if (!values.id.empty()) {
@@ -645,41 +704,6 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
     return;
   }
 
-  auto get_ua_shadow_pseudo = [&]() -> const AtomicString& {
-    if (values.picker_name == "select") {
-      return shadow_element_names::kPickerSelect;
-    } else if (values.pseudo_type != CSSSelector::kPseudoUnknown) {
-      return shadow_element_utils::StringForUAShadowPseudoId(
-          CSSSelector::GetPseudoId(values.pseudo_type));
-    }
-    return g_null_atom;
-  };
-
-  AtomicString ua_shadow_pseudo = get_ua_shadow_pseudo();
-
-  // Any selector with or following ::part() or a UA shadow pseudo-element
-  // must go in the bucket for the *innermost* such pseudo-element.
-
-  // TODO(dbaron): Should this eventually check kShadowSlot as well?
-  if (values.part_name.empty() && ua_shadow_pseudo == g_null_atom && it &&
-      (it->Relation() == CSSSelector::RelationType::kUAShadow ||
-       it->Relation() == CSSSelector::RelationType::kShadowPart)) {
-    const CSSSelector* previous = it->NextSimpleSelector();
-    if (previous->Match() == CSSSelector::kPseudoElement) {
-      ExtractBucketingValues(previous, style_scope, values);
-      ua_shadow_pseudo = get_ua_shadow_pseudo();
-    }
-  }
-
-  // Any selector with or following ::part() must go in the part bucket,
-  // because we look in that bucket in higher scopes to find rules that need
-  // to match inside the shadow tree.
-  if (!values.part_name.empty()) {
-    // TODO: Mark as covered by bucketing?
-    AddToBucket(part_pseudo_rules_, rule_data);
-    return;
-  }
-
   if (!values.custom_pseudo_element_name.empty()) {
     // Custom pseudos come before ids and classes in the order of
     // NextSimpleSelector(), and have a relation of ShadowPseudo between them.
@@ -690,19 +714,6 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
     AddToBucket(values.custom_pseudo_element_name,
                 ua_shadow_pseudo_element_rules_, rule_data);
     // TODO: Mark as covered by bucketing?
-    return;
-  }
-
-  if (ua_shadow_pseudo != g_null_atom) {
-    // TODO(dbaron): This needs further work to support multiple
-    // pseudo-elements after ::slotted().  This likely requires reorganization
-    // of how MatchSlottedRules interacts with MatchOuterScopeRules.
-    CHECK(it);
-    if (it->FollowsSlotted()) {
-      AddToBucket(slotted_pseudo_element_rules_, rule_data);
-    } else {
-      AddToBucket(ua_shadow_pseudo, ua_shadow_pseudo_element_rules_, rule_data);
-    }
     return;
   }
 
@@ -740,7 +751,8 @@ void RuleSet::FindBestBucketAndAdd(CSSSelector& component,
       AddToBucket(shadow_host_rules_, rule_data);
       return;
     case CSSSelector::kPseudoSlotted:
-      AddToBucket(slotted_pseudo_element_rules_, rule_data);
+      // Handled above.
+      NOTREACHED();
       return;
     case CSSSelector::kPseudoRoot:
       if (bucket_coverage == BucketCoverage::kCompute) {
