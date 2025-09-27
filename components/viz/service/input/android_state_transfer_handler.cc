@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "base/notreached.h"
+#include "components/viz/service/input/input_on_viz_state_processing_result.h"
 #include "ui/events/android/events_android_utils.h"
 #include "ui/events/android/motion_event_android_factory.h"
 
@@ -62,6 +63,9 @@ void AndroidStateTransferHandler::StateOnTouchTransfer(
     // of order. But it's possible the timestamps provided by Android platform
     // are the issue.
     TRACE_EVENT_INSTANT("viz", "OutOfOrderTransferStateDropped");
+    base::UmaHistogramEnumeration(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kDroppedOutOfOrderDownTime);
     return;
   }
 
@@ -69,6 +73,9 @@ void AndroidStateTransferHandler::StateOnTouchTransfer(
 
   pending_transferred_states_.emplace(rir_support, std::move(state));
   if (pending_transferred_states_.size() > kMaxPendingTransferredStates) {
+    base::UmaHistogramEnumeration(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kDroppedTooManyPendingStates);
     pending_transferred_states_.pop();
   }
 
@@ -182,6 +189,9 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
   while (!pending_transferred_states_.empty() &&
          (pending_transferred_states_.front().transfer_state->down_time_ms <
           event_down_time)) {
+    base::UmaHistogramEnumeration(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kDroppedUnusedOlderStates);
     pending_transferred_states_.pop();
   }
 
@@ -197,6 +207,9 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
       client_->TransferInputBackToBrowser();
       ignore_remaining_touch_sequence_ = true;
     }
+    base::UmaHistogramEnumeration(
+        kStateProcessingResultHistogram,
+        InputOnVizStateProcessingResult::kProcessedSuccessfully);
     state_for_curr_sequence_.emplace(std::move(state));
     pending_transferred_states_.pop();
     return true;

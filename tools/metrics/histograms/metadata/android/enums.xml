@@ -1188,6 +1188,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CouldNotFindViewForFrameSinkId"/>
   <int value="2" label="FrameSinkIdCorrespondsToChildView"/>
   <int value="3" label="FrameSinkIdNotAttachedToRootCFS"/>
+  <int value="4" label="DroppedOutOfOrderDownTime"/>
+  <int value="5" label="DroppedTooManyPendingStates"/>
+  <int value="6" label="DroppedUnusedOlderStates"/>
 </enum>
 
 <enum name="LightTheme">

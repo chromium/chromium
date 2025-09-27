@@ -28,6 +28,7 @@
 #include "components/input/android/scoped_input_transfer_token.h"
 #include "components/input/features.h"
 #include "components/viz/service/input/fling_scheduler_android.h"
+#include "components/viz/service/input/input_on_viz_state_processing_result.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 #include "ui/gfx/android/achoreographer_compat.h"
@@ -92,8 +93,6 @@ constexpr char kParentInputSCName[] = "ChromeParentInputSurfaceControl";
 
 constexpr char kInputReceiverCreationResultHistogram[] =
     "Android.InputOnViz.InputReceiverCreationResult";
-constexpr char kStateProcessingResultHistogram[] =
-    "Android.InputOnViz.Viz.StateProcessingResult";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -118,15 +117,6 @@ enum class CreateAndroidInputReceiverResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:CreateAndroidInputReceiverResult)
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class InputOnVizStateProcessingResult {
-  kProcessedSuccessfully = 0,
-  kCouldNotFindViewForFrameSinkId = 1,
-  kFrameSinkIdCorrespondsToChildView = 2,
-  kFrameSinkIdNotAttachedToRootCFS = 3,
-  kMaxValue = kFrameSinkIdNotAttachedToRootCFS,
-};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -555,9 +545,6 @@ void InputManager::StateOnTouchTransfer(
 
   auto* support_android = static_cast<RenderInputRouterSupportAndroid*>(
       iter->second.rir_support.get());
-  UMA_HISTOGRAM_ENUMERATION(
-      kStateProcessingResultHistogram,
-      InputOnVizStateProcessingResult::kProcessedSuccessfully);
   android_state_transfer_handler_.StateOnTouchTransfer(
       std::move(state), support_android->GetWeakPtr());
 #endif
