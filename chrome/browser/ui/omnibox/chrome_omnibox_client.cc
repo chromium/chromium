@@ -560,10 +560,10 @@ void ChromeOmniboxClient::OnResultChanged(
     } else {
       const TemplateURL* turl = nullptr;
       if (match.associated_keyword) {
-        turl = match.associated_keyword->GetTemplateURL(GetTemplateURLService(),
-                                                        false);
+        turl =
+            match.associated_keyword->GetTemplateURL(GetTemplateURLService());
       } else if (!match.keyword.empty()) {
-        turl = match.GetTemplateURL(GetTemplateURLService(), false);
+        turl = match.GetTemplateURL(GetTemplateURLService());
       }
       // Fetch the favicon if the `TemplateURL` is from the enterprise search
       // aggregator policy. This covers both cases:

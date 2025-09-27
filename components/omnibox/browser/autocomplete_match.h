@@ -620,14 +620,10 @@ struct AutocompleteMatch {
       const TemplateURL* template_url,
       bool is_history_embeddings_enabled);
 
-  // Returns the TemplateURL associated with this match.  This may be NULL if
-  // the match has no keyword OR if the keyword no longer corresponds to a valid
-  // TemplateURL.  See comments on |keyword| below.
-  // If |allow_fallback_to_destination_host| is true and the keyword does
-  // not map to a valid TemplateURL, we'll then check for a TemplateURL that
-  // corresponds to the destination_url's hostname.
-  TemplateURL* GetTemplateURL(TemplateURLService* template_url_service,
-                              bool allow_fallback_to_destination_host) const;
+  // Returns the `TemplateURL` associated with this match. This may be nullptr
+  // if the match has no keyword OR if the keyword no longer corresponds to a
+  // valid `TemplateURL`. See comments on `keyword` below.
+  TemplateURL* GetTemplateURL(TemplateURLService* template_url_service) const;
 
   // Gets the URL for the match image (whether it be an answer or entity). If
   // there isn't an image URL, returns an empty GURL (test with is_empty()).

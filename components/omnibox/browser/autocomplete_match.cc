@@ -1137,7 +1137,7 @@ void AutocompleteMatch::LogSearchEngineUsed(
     TemplateURLService* template_url_service) {
   DCHECK(template_url_service);
 
-  TemplateURL* template_url = match.GetTemplateURL(template_url_service, false);
+  TemplateURL* template_url = match.GetTemplateURL(template_url_service);
   if (!template_url) {
     return;
   }
@@ -1270,8 +1270,7 @@ bool AutocompleteMatch::HasInstantKeyword(
   if (!associated_keyword) {
     return false;
   }
-  TemplateURL* turl =
-      associated_keyword->GetTemplateURL(template_url_service, false);
+  TemplateURL* turl = associated_keyword->GetTemplateURL(template_url_service);
   return turl && (turl->starter_pack_id() != 0 || turl->featured_by_policy());
 }
 
@@ -1286,9 +1285,8 @@ void AutocompleteMatch::GetKeywordUIState(
       *is_keyword_hint
           ? associated_keyword->keyword
           : GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
-  *keyword_placeholder_out =
-      GetKeywordPlaceholder(GetTemplateURL(template_url_service, false),
-                            is_history_embeddings_enabled);
+  *keyword_placeholder_out = GetKeywordPlaceholder(
+      GetTemplateURL(template_url_service), is_history_embeddings_enabled);
 }
 
 std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
@@ -1298,7 +1296,7 @@ std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
     return std::u16string();
   }
 
-  const TemplateURL* t_url = GetTemplateURL(template_url_service, false);
+  const TemplateURL* t_url = GetTemplateURL(template_url_service);
   return (t_url &&
           t_url->SupportsReplacement(template_url_service->search_terms_data()))
              ? keyword
@@ -1350,12 +1348,8 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
 }
 
 TemplateURL* AutocompleteMatch::GetTemplateURL(
-    TemplateURLService* template_url_service,
-    bool allow_fallback_to_destination_host) const {
-  return GetTemplateURLWithKeyword(template_url_service, keyword,
-                                   allow_fallback_to_destination_host
-                                       ? destination_url.host()
-                                       : std::string());
+    TemplateURLService* template_url_service) const {
+  return GetTemplateURLWithKeyword(template_url_service, keyword, "");
 }
 
 GURL AutocompleteMatch::ImageUrl() const {

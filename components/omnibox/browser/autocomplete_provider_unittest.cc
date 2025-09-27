@@ -296,7 +296,7 @@ void TestProvider::AddResultsWithSearchTermsArgs(
     if (!match_keyword_.empty()) {
       match.keyword = match_keyword_;
       ASSERT_NE(nullptr,
-                match.GetTemplateURL(client_->GetTemplateURLService(), false));
+                match.GetTemplateURL(client_->GetTemplateURLService()));
     }
 
     matches_.push_back(match);

@@ -1708,7 +1708,7 @@ gfx::Image OmniboxEditModel::GetMatchIconIfExtension(
     const AutocompleteMatch& match) const {
   // Return an empty image if not an extension match.
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  const TemplateURL* template_url = match.GetTemplateURL(service, false);
+  const TemplateURL* template_url = match.GetTemplateURL(service);
   if (!template_url ||
       template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION) {
     return gfx::Image();
@@ -2019,7 +2019,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       // with information from the keyword match, rather than the current match.
       CHECK(match.associated_keyword) << match.keyword;
       const TemplateURL* turl = match.associated_keyword->GetTemplateURL(
-          controller_->client()->GetTemplateURLService(), false);
+          controller_->client()->GetTemplateURLService());
       std::u16string replacement_string =
           turl ? turl->short_name() : match.contents;
       bool ask_keyword = turl && turl->is_ask_starter_pack();
@@ -2601,7 +2601,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
 
   TemplateURLService* service = controller_->client()->GetTemplateURLService();
-  TemplateURL* template_url = match.GetTemplateURL(service, false);
+  TemplateURL* template_url = match.GetTemplateURL(service);
   if (template_url) {
     // |match| is a Search navigation or a URL navigation in keyword mode; log
     // search engine usage metrics.

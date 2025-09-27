@@ -432,7 +432,7 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
   if (AutocompleteMatch::IsSearchType(match.type) && match.search_terms_args) {
     temp = BaseSearchProvider::CreateShortcutSearchSuggestion(
         match.search_terms_args->search_terms, match_type,
-        match.GetTemplateURL(template_url_service, false), *search_terms_data);
+        match.GetTemplateURL(template_url_service), *search_terms_data);
     normalized_match = &temp;
   } else if (!match.keyword.empty()) {
     // Remove the keyword from `fill_into_edit` and `transition` since

@@ -490,7 +490,7 @@ void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
   }
 
   const TemplateURL* template_url =
-      match.GetTemplateURL(client_->GetTemplateURLService(), false);
+      match.GetTemplateURL(client_->GetTemplateURLService());
   // This may be nullptr if the template corresponding to the keyword has been
   // deleted or there is no keyword set.
   if (template_url != nullptr) {

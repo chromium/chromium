@@ -307,8 +307,7 @@ void ChromeOmniboxNavigationObserver::DidFinishNavigation(
 void ChromeOmniboxNavigationObserver::On404() {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  const TemplateURL* template_url = match_.GetTemplateURL(
-      template_url_service, false /* allow_fallback_to_destination_host */);
+  const TemplateURL* template_url = match_.GetTemplateURL(template_url_service);
   // If the omnibox navigation was to a URL (and hence did not involve a
   // TemplateURL / search at all) or the invoked search engine has been
   // deleted or otherwise modified, doing nothing is the right thing.

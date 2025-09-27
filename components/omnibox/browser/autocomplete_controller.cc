@@ -1049,7 +1049,7 @@ void AutocompleteController::SetMatchDestinationURL(
       base::UTF16ToUTF8(match->search_terms_args->search_terms));
 
   // Append an extra header to navigations from the @gemini scope.
-  const TemplateURL* turl = match->GetTemplateURL(template_url_service_, false);
+  const TemplateURL* turl = match->GetTemplateURL(template_url_service_);
   if (turl &&
       turl->starter_pack_id() == template_url_starter_pack_data::kGemini &&
       !encoded_search_terms.empty() &&
@@ -1922,7 +1922,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
       bool is_contextual = i->IsContextualSearchSuggestion();
       if (i->keyword != last_keyword || is_contextual != last_contextual) {
         const TemplateURL* template_url =
-            i->GetTemplateURL(template_url_service_, false);
+            i->GetTemplateURL(template_url_service_);
         if (template_url) {
           // The search keyword description is applied except in these cases:
           // - For extension keywords, the description is the extension name.
@@ -2074,7 +2074,7 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
   for (size_t index = 0; index < result->size(); ++index) {
     AutocompleteMatch* match = result->match_at(index);
     const TemplateURL* template_url =
-        match->GetTemplateURL(template_url_service_, false);
+        match->GetTemplateURL(template_url_service_);
     if (!template_url || !match->search_terms_args) {
       continue;
     }
@@ -2124,7 +2124,7 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
       if (action_in_suggest != nullptr) {
         action_in_suggest->template_action.set_action_uri(
             ComputeURLFromSearchTermsArgs(
-                match->GetTemplateURL(template_url_service_, false),
+                match->GetTemplateURL(template_url_service_),
                 *search_terms_args)
                 .spec());
       }
@@ -2139,7 +2139,7 @@ void AutocompleteController::UpdateSearchboxStats(AutocompleteResult* result) {
       if (contextual_takover_action) {
         contextual_takover_action->set_fulfillment_url(
             ComputeURLFromSearchTermsArgs(
-                match->GetTemplateURL(template_url_service_, false),
+                match->GetTemplateURL(template_url_service_),
                 *match->search_terms_args));
       }
     }

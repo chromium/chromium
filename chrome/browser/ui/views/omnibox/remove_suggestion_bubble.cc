@@ -55,7 +55,7 @@ class RemoveSuggestionBubbleDialogDelegateView
     // Get the Search Provider name associated with this match.
     std::u16string search_provider_short_name;
     const TemplateURL* template_url =
-        match.GetTemplateURL(template_url_service, false);
+        match.GetTemplateURL(template_url_service);
     // If the match has no associated Search Provider, get the default one,
     // although this may still fail if it's forbidden by policy.
     if (!template_url) {

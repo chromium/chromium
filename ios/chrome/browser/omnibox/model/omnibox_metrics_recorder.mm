@@ -188,7 +188,7 @@ constexpr base::TimeDelta kDefaultTimeDelta = base::Milliseconds(-1);
   omnibox::answer_data_parser::LogAnswerUsed(match.answer_type);
 
   TemplateURLService* service = _omniboxClient->GetTemplateURLService();
-  TemplateURL* templateURL = match.GetTemplateURL(service, false);
+  TemplateURL* templateURL = match.GetTemplateURL(service);
   if (templateURL) {
     // `match` is a Search navigation; log search engine usage metrics.
     AutocompleteMatch::LogSearchEngineUsed(match, service);
