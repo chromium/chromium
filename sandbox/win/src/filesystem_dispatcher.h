@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -73,7 +74,7 @@ class FilesystemDispatcher : public Dispatcher {
 
   // Evaluate the sandbox policy for the file system call.
   EvalResult EvalPolicy(IpcTag ipc_tag,
-                        const std::wstring& name,
+                        std::wstring_view name,
                         uint32_t desired_access = 0,
                         bool open_only = true);
 

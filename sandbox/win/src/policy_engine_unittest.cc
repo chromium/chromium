@@ -57,7 +57,8 @@ TEST(PolicyEngineTest, Rules1) {
   opcode_maker.MakeOpAction(FAKE_ACCESS_DENIED, kPolNone);
   policy->opcode_count = 7;
 
-  const wchar_t* filename = L"c:\\Documents and Settings\\Microsoft\\BLAH.txt";
+  std::wstring_view filename =
+      L"c:\\Documents and Settings\\Microsoft\\BLAH.txt";
   uint32_t creation_mode = OPEN_EXISTING;
   uint32_t flags = FILE_ATTRIBUTE_NORMAL;
   void* security_descriptor = nullptr;
@@ -94,7 +95,7 @@ TEST(PolicyEngineTest, Rules1) {
   EXPECT_EQ(FAKE_ACCESS_DENIED, pol_ev.GetAction());
 
   // Cope ok with nullptr string fields.
-  filename = nullptr;
+  filename = std::wstring_view();
   pr = pol_ev.Evaluate(kShortEval, eval_params, _countof(eval_params));
   EXPECT_EQ(NO_POLICY_MATCH, pr);
 

@@ -62,7 +62,7 @@ TEST(PolicyEngineTest, SimpleStrMatch) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = L"Z:\\Directory\\domo.txt";
+  std::wstring_view filename = L"Z:\\Directory\\domo.txt";
 
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
@@ -93,7 +93,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatch) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
   POLPARAMS_END;
@@ -129,7 +129,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild1) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
   POLPARAMS_END;
@@ -160,7 +160,7 @@ TEST(PolicyEngineTest, SimpleIfNotStrMatchWild2) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
   POLPARAMS_END;
@@ -197,7 +197,7 @@ TEST(PolicyEngineTest, IfNotStrMatchTwoRulesWild1) {
   EXPECT_TRUE(policyGen.AddRule(kFakeService, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = nullptr;
+  std::wstring_view filename;
   uint32_t access = 0;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(filename)  // Argument 0
@@ -247,7 +247,8 @@ TEST(PolicyEngineTest, OneRuleTest) {
   EXPECT_TRUE(policyGen.AddRule(kNtFakeCreateFile, &pr));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* filename = L"c:\\Documents and Settings\\Microsoft\\BLAH.txt";
+  std::wstring_view filename =
+      L"c:\\Documents and Settings\\Microsoft\\BLAH.txt";
   uint32_t creation_mode = OPEN_EXISTING;
   uint32_t flags = FILE_ATTRIBUTE_NORMAL;
   void* security_descriptor = nullptr;
@@ -402,7 +403,7 @@ TEST(PolicyEngineTest, ThreeRulesTest) {
 
   // Test the policy evaluation.
 
-  const wchar_t* filename = L"";
+  std::wstring_view filename = L"";
   uint32_t creation_mode = OPEN_EXISTING;
   uint32_t flags = FILE_ATTRIBUTE_NORMAL;
   void* security_descriptor = nullptr;
@@ -494,7 +495,7 @@ TEST(PolicyEngineTest, PolicyRuleCopyConstructorTwoStrings) {
   EXPECT_TRUE(policyGen.AddRule(IpcTag::PING2, &pr_copy));
   EXPECT_TRUE(policyGen.Done());
 
-  const wchar_t* name = nullptr;
+  std::wstring_view name;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(name)
   POLPARAMS_END;
@@ -552,7 +553,7 @@ TEST(PolicyEngineTest, PolicyGenDoneCalledTwice) {
             policy->entry[static_cast<size_t>(IpcTag::PING2)]->opcode_count);
 
   // Confirm the rules work as before.
-  const wchar_t* name = nullptr;
+  std::wstring_view name;
   POLPARAMS_BEGIN(eval_params)
     POLPARAM(name)
   POLPARAMS_END;

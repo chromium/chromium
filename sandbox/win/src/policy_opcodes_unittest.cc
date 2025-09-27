@@ -41,11 +41,11 @@ TEST(PolicyEngineTest, ParameterSetTest) {
   EXPECT_EQ(number, result2);
 
   // Test that we can store and retrieve a string:
-  const wchar_t* txt = L"S231L";
+  std::wstring_view txt = L"S231L";
   ParameterSet pset4 = ParamPickerMake(txt);
-  const wchar_t* result3 = nullptr;
+  std::wstring_view result3;
   EXPECT_TRUE(pset4.Get(&result3));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(txt, result3)));
+  EXPECT_EQ(txt, result3);
 }
 
 TEST(PolicyEngineTest, OpcodeConstraints) {
@@ -132,15 +132,16 @@ TEST(PolicyEngineTest, OpcodeMakerCase2) {
   // supplied buffer. It should only be able to make 'count' opcodes.
   // The difference with the previous test is that this opcodes allocate
   // the string 'txt2' inside the same buffer.
-  const wchar_t* txt1 = L"1234";
-  const wchar_t txt2[] = L"123";
+  std::wstring_view txt1 = L"1234";
+  std::wstring_view txt2 = L"123";
 
   ParameterSet ppb1 = ParamPickerMake(txt1);
   MatchContext mc1;
 
   char memory[kOpcodeMemory];
   OpcodeFactory opcode_maker(memory, sizeof(memory));
-  size_t count = sizeof(memory) / (sizeof(PolicyOpcode) + sizeof(txt2));
+  size_t count =
+      sizeof(memory) / (sizeof(PolicyOpcode) + txt2.size() * sizeof(wchar_t));
 
   // Test that it does not overrun the buffer.
   for (size_t ix = 0; ix != count; ++ix) {
@@ -157,7 +158,7 @@ TEST(PolicyEngineTest, OpcodeMakerCase2) {
 }
 
 TEST(PolicyEngineTest, IntegerOpcodes) {
-  const wchar_t* txt = L"abcdef";
+  std::wstring_view txt = L"abcdef";
   uint32_t num1 = 42;
   uint32_t num2 = 113377;
 
@@ -204,12 +205,12 @@ TEST(PolicyEngineTest, LogicalOpcodes) {
 }
 
 TEST(PolicyEngineTest, WCharOpcodes1) {
-  const wchar_t* txt1 = L"the quick fox jumps over the lazy dog";
-  const wchar_t txt2[] = L"the quick";
-  const wchar_t txt3[] = L" fox jumps";
-  const wchar_t txt4[] = L"the lazy dog";
-  const wchar_t txt5[] = L"jumps over";
-  const wchar_t txt6[] = L"g";
+  std::wstring_view txt1 = L"the quick fox jumps over the lazy dog";
+  std::wstring_view txt2 = L"the quick";
+  std::wstring_view txt3 = L" fox jumps";
+  std::wstring_view txt4 = L"the lazy dog";
+  std::wstring_view txt5 = L"jumps over";
+  std::wstring_view txt6 = L"g";
 
   ParameterSet pp_tc1 = ParamPickerMake(txt1);
   char memory[kOpcodeMemory];
@@ -223,11 +224,11 @@ TEST(PolicyEngineTest, WCharOpcodes1) {
   // and the match context should be updated.
   MatchContext mc1;
   EXPECT_EQ(EVAL_TRUE, op1->Evaluate(&pp_tc1, 1, &mc1));
-  EXPECT_TRUE(_countof(txt2) == mc1.position + 1);
+  EXPECT_EQ(txt2.size(), mc1.position);
 
   // Matching again should fail and the context should be unmodified.
   EXPECT_EQ(EVAL_FALSE, op1->Evaluate(&pp_tc1, 1, &mc1));
-  EXPECT_TRUE(_countof(txt2) == mc1.position + 1);
+  EXPECT_EQ(txt2.size(), mc1.position);
 
   // Using the same match context we should continue where we left
   // in the previous successful match,
@@ -235,7 +236,7 @@ TEST(PolicyEngineTest, WCharOpcodes1) {
       opcode_maker.MakeOpWStringMatch(0, txt3, 0, kPolNone, false);
   ASSERT_NE(nullptr, op3);
   EXPECT_EQ(EVAL_TRUE, op3->Evaluate(&pp_tc1, 1, &mc1));
-  EXPECT_TRUE(_countof(txt3) + _countof(txt2) == mc1.position + 2);
+  EXPECT_EQ(txt3.size() + txt2.size(), mc1.position);
 
   // We now keep on matching but now we skip 6 characters which means
   // we skip the string ' over '. And we zero the match context. This is

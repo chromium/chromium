@@ -13,12 +13,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 
-#include <optional>
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/win/pe_image.h"
+#include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_factory.h"
@@ -628,6 +629,19 @@ UNICODE_STRING* ExtractModuleName(const UNICODE_STRING* module_path) {
 
   out_string->Buffer[out_string->Length / sizeof(wchar_t)] = L'\0';
   return out_string;
+}
+
+std::optional<bool> EqualUnicodeString(std::wstring_view left,
+                                       std::wstring_view right) {
+  UNICODE_STRING left_ustr;
+  UNICODE_STRING right_ustr;
+  if (!base::win::ViewToUnicodeString(left, left_ustr) ||
+      !base::win::ViewToUnicodeString(right, right_ustr)) {
+    return std::nullopt;
+  }
+
+  return GetNtExports()->RtlCompareUnicodeString(&left_ustr, &right_ustr,
+                                                 TRUE) == 0;
 }
 
 NTSTATUS AutoProtectMemory::ChangeProtection(void* address,

@@ -30,23 +30,20 @@ namespace {
 // - The path looks like a short-name path.
 // - Whether the details match the policy.
 bool ShouldAskBroker(IpcTag ipc_tag,
-                     const std::unique_ptr<wchar_t, NtAllocDeleter>& name,
-                     size_t name_len,
+                     std::wstring_view name,
                      uint32_t desired_access = 0,
                      bool open_only = true) {
-  const wchar_t* name_ptr = name.get();
-  if (name_len >= 4 && name_ptr[0] == L'\\' && name_ptr[1] == L'?' &&
-      name_ptr[2] == L'?' && name_ptr[3] == L'\\') {
+  if (name.size() >= 4 && name[0] == L'\\' && name[1] == L'?' &&
+      name[2] == L'?' && name[3] == L'\\') {
     return true;
   }
 
-  for (size_t index = 0; index < name_len; ++index) {
-    if (name_ptr[index] == L'~')
-      return true;
+  if (name.find(L'~') != std::wstring_view::npos) {
+    return true;
   }
 
   CountedParameterSet<OpenFile> params;
-  params[OpenFile::NAME] = ParamPickerMake(name_ptr);
+  params[OpenFile::NAME] = ParamPickerMake(name);
   params[OpenFile::ACCESS] = ParamPickerMake(desired_access);
   uint32_t open_only_int = open_only;
   params[OpenFile::OPENONLY] = ParamPickerMake(open_only_int);
@@ -106,7 +103,8 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     if (!NT_SUCCESS(ret) || !name || !name_len) {
       break;
     }
-    if (!ShouldAskBroker(IpcTag::NTCREATEFILE, name, name_len, desired_access,
+    std::wstring_view name_view(name.get(), name_len);
+    if (!ShouldAskBroker(IpcTag::NTCREATEFILE, name_view, desired_access,
                          disposition == FILE_OPEN)) {
       break;
     }
@@ -115,8 +113,7 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     CrossCallReturn answer = {0};
     // The following call must match in the parameters with
     // FilesystemDispatcher::ProcessNtCreateFile.
-    ResultCode code = CrossCall(ipc, IpcTag::NTCREATEFILE,
-                                std::wstring_view(name.get(), name_len),
+    ResultCode code = CrossCall(ipc, IpcTag::NTCREATEFILE, name_view,
                                 attributes, desired_access, file_attributes,
                                 sharing, disposition, options, &answer);
     if (SBOX_ALL_OK != code) {
@@ -175,16 +172,15 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
         CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
     if (!NT_SUCCESS(ret) || !name || !name_len)
       break;
-    if (!ShouldAskBroker(IpcTag::NTOPENFILE, name, name_len, desired_access,
-                         true)) {
+    std::wstring_view name_view(name.get(), name_len);
+    if (!ShouldAskBroker(IpcTag::NTOPENFILE, name_view, desired_access, true)) {
       break;
     }
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(
-        ipc, IpcTag::NTOPENFILE, std::wstring_view(name.get(), name_len),
-        attributes, desired_access, sharing, options, &answer);
+    ResultCode code = CrossCall(ipc, IpcTag::NTOPENFILE, name_view, attributes,
+                                desired_access, sharing, options, &answer);
     if (SBOX_ALL_OK != code)
       break;
 
@@ -233,15 +229,16 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
         CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
     if (!NT_SUCCESS(ret) || !name || !name_len)
       break;
-    if (!ShouldAskBroker(IpcTag::NTQUERYATTRIBUTESFILE, name, name_len))
+    std::wstring_view name_view(name.get(), name_len);
+    if (!ShouldAskBroker(IpcTag::NTQUERYATTRIBUTESFILE, name_view)) {
       break;
+    }
 
     InOutCountedBuffer file_info(file_attributes,
                                  sizeof(FILE_BASIC_INFORMATION));
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE,
-                                std::wstring_view(name.get(), name_len),
+    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE, name_view,
                                 attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
@@ -284,16 +281,17 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
         CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
     if (!NT_SUCCESS(ret) || !name || !name_len)
       break;
-    if (!ShouldAskBroker(IpcTag::NTQUERYFULLATTRIBUTESFILE, name, name_len))
+    std::wstring_view name_view(name.get(), name_len);
+    if (!ShouldAskBroker(IpcTag::NTQUERYFULLATTRIBUTESFILE, name_view)) {
       break;
+    }
 
     InOutCountedBuffer file_info(file_attributes,
                                  sizeof(FILE_NETWORK_OPEN_INFORMATION));
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code = CrossCall(ipc, IpcTag::NTQUERYFULLATTRIBUTESFILE,
-                                std::wstring_view(name.get(), name_len),
-                                attributes, file_info, &answer);
+                                name_view, attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
       break;
@@ -356,8 +354,10 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
     NTSTATUS ret = CopyNameAndAttributes(&object_attributes, &name, &name_len);
     if (!NT_SUCCESS(ret) || !name || !name_len)
       break;
-    if (!ShouldAskBroker(IpcTag::NTSETINFO_RENAME, name, name_len))
+    std::wstring_view name_view(name.get(), name_len);
+    if (!ShouldAskBroker(IpcTag::NTSETINFO_RENAME, name_view)) {
       break;
+    }
 
     InOutCountedBuffer io_status_buffer(io_status, sizeof(IO_STATUS_BLOCK));
     // This is actually not an InOut buffer, only In, but using InOut facility

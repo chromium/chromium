@@ -16,6 +16,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -189,6 +190,14 @@ bool IsValidImageSection(HANDLE section,
 
 // Converts an ansi string to an UNICODE_STRING.
 UNICODE_STRING* AnsiToUnicode(const char* string);
+
+// Use the RtlCompareUnicodeString API to compares two strings for equality. The
+// comparison always ignores case.
+// Returns true if equal. Returns std::nullopt if either string is too large to
+// be represented as a UNICODE_STRING. This has the advantage of working inside
+// function hooks where calling the standard library could be impossible.
+std::optional<bool> EqualUnicodeString(std::wstring_view left,
+                                       std::wstring_view right);
 
 // Provides a simple way to temporarily change the protection of a memory page.
 class AutoProtectMemory {

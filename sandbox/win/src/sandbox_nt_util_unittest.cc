@@ -344,5 +344,20 @@ TEST(SandboxNtUtil, GetCurrentClientId) {
             reinterpret_cast<LPVOID>(::GetCurrentThreadId()));
 }
 
+TEST(SandboxNtUtil, EqualUnicodeString) {
+  EXPECT_TRUE(*EqualUnicodeString({}, {}));
+  EXPECT_TRUE(*EqualUnicodeString(L"", L""));
+  EXPECT_TRUE(*EqualUnicodeString(L"ABC", L"ABC"));
+  EXPECT_TRUE(*EqualUnicodeString(L"ABC", L"abc"));
+  EXPECT_FALSE(*EqualUnicodeString(L"ABC", L"XYZ"));
+  EXPECT_FALSE(*EqualUnicodeString(L"", L"ABC"));
+  EXPECT_FALSE(*EqualUnicodeString(L"ABC", L""));
+  std::wstring long_str(UINT16_MAX / sizeof(WCHAR), L'A');
+  EXPECT_TRUE(*EqualUnicodeString(long_str, long_str));
+  long_str += L"A";
+  EXPECT_FALSE(EqualUnicodeString(long_str, L"ABC"));
+  EXPECT_FALSE(EqualUnicodeString(L"ABC", long_str));
+}
+
 }  // namespace
 }  // namespace sandbox

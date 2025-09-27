@@ -322,7 +322,7 @@ class OpcodeFactory {
   // current implementation.
   // All comparisons are case-insensitive.
   PolicyOpcode* MakeOpWStringMatch(uint8_t selected_param,
-                                   const wchar_t* match_str,
+                                   std::wstring_view match_str,
                                    int start_position,
                                    uint32_t options,
                                    bool final_token);
@@ -343,9 +343,9 @@ class OpcodeFactory {
                          uint32_t options,
                          uint8_t selected_param);
 
-  // Allocates (and copies) a string (of size length) inside the buffer and
-  // returns the displacement with respect to start.
-  ptrdiff_t AllocRelative(void* start, const wchar_t* str, size_t length);
+  // Allocates (and copies) a string inside the buffer and returns the
+  // displacement with respect to start.
+  ptrdiff_t AllocRelative(void* start, std::wstring_view str);
 
   // Points to the lowest currently available address of the memory
   // used to make the opcodes. This pointer increments as opcodes are made.

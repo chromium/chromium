@@ -254,12 +254,11 @@ bool FilesystemDispatcher::NtSetInformationFile(IPCInfo* ipc,
 }
 
 EvalResult FilesystemDispatcher::EvalPolicy(IpcTag ipc_tag,
-                                            const std::wstring& name,
+                                            std::wstring_view name,
                                             uint32_t desired_access,
                                             bool open_only) {
   CountedParameterSet<OpenFile> params;
-  const wchar_t* name_ptr = name.c_str();
-  params[OpenFile::NAME] = ParamPickerMake(name_ptr);
+  params[OpenFile::NAME] = ParamPickerMake(name);
   params[OpenFile::ACCESS] = ParamPickerMake(desired_access);
   uint32_t open_only_int = open_only;
   params[OpenFile::OPENONLY] = ParamPickerMake(open_only_int);
