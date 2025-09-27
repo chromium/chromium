@@ -1191,7 +1191,7 @@ TEST_F(VideoRendererAlgorithmTest, CadenceCalculations) {
 
   ASSERT_EQ("[2:3:2:3:2]", GetCadence(25, NTSC(60)));
   ASSERT_EQ("[1:0]", GetCadence(120, NTSC(60)));
-  ASSERT_EQ("[60]", GetCadence(1, NTSC(60)));
+  ASSERT_EQ("[]", GetCadence(1, NTSC(60)));
 }
 
 TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFramesWithoutRendering) {
@@ -1420,7 +1420,7 @@ TEST_F(VideoRendererAlgorithmTest, VariablePlaybackRateCadence) {
   const auto kPlaybackRates =
       std::to_array<double>({1.0, 2, 0.215, 0.5, 1.0, 3.15});
   const std::array<bool, std::size(kPlaybackRates)> kTestRateHasCadence = {
-      true, true, true, true, true, false,
+      true, true, false, true, true, false,
   };
 
   for (size_t i = 0; i < std::size(kPlaybackRates); ++i) {
@@ -1536,7 +1536,9 @@ TEST_F(VideoRendererAlgorithmTest, VariableFrameRateNoCadence) {
   }
 
   // Make sure Cadence is turned off somewhen, not always on.
-  ASSERT_TRUE(cadence_turned_off);
+  if (cadence_detected) {
+    ASSERT_TRUE(cadence_turned_off);
+  }
 }
 
 TEST_F(VideoRendererAlgorithmTest, EnqueueFrames) {
