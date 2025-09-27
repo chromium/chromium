@@ -58,6 +58,7 @@ class StudentScreenPresenterImpl : public StudentScreenPresenter {
              base::OnceClosure disconnected_cb) override;
   void CheckConnection() override;
   void Stop(base::OnceCallback<void(bool)> success_cb) override;
+  bool IsPresenting() override;
 
  private:
   void OnStartResponse(base::OnceCallback<void(bool)> success_cb,

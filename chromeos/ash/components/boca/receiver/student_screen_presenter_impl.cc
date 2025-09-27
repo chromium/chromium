@@ -149,6 +149,10 @@ void StudentScreenPresenterImpl::Stop(
       std::move(stop_request));
 }
 
+bool StudentScreenPresenterImpl::IsPresenting() {
+  return receiver_id_.has_value();
+}
+
 void StudentScreenPresenterImpl::OnStartResponse(
     base::OnceCallback<void(bool)> success_cb,
     std::optional<std::string> connection_id) {

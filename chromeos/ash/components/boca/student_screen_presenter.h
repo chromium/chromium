@@ -32,6 +32,8 @@ class StudentScreenPresenter {
 
   virtual void Stop(base::OnceCallback<void(bool)> success_cb) = 0;
 
+  virtual bool IsPresenting() = 0;
+
  protected:
   StudentScreenPresenter() = default;
 };

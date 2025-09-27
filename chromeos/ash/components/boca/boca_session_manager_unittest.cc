@@ -214,6 +214,8 @@ class MockStudentScreenPresenter : public StudentScreenPresenter {
   MOCK_METHOD(void, CheckConnection, (), (override));
 
   MOCK_METHOD(void, Stop, (base::OnceCallback<void(bool)>), (override));
+
+  MOCK_METHOD(bool, IsPresenting, (), (override));
 };
 
 class MockTeacherScreenPresenter : public TeacherScreenPresenter {
