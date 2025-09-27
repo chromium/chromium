@@ -83,6 +83,13 @@ class KeystoneInstallTest : public testing::Test {
             base::FILE_PERMISSION_EXECUTE_BY_USER));
   }
 
+  void TearDown() override {
+    base::DeleteFile(base::FilePath(getenv("HOME"))
+                         .AppendUTF8("Library")
+                         .AppendUTF8("Google")
+                         .AppendUTF8("Google Chrome Brand"));
+  }
+
   // There is no simple API in base/launch.h for providing environment
   // variables and capturing all of stdout, stderr, and the exit code.
   void RunExecutable(const base::CommandLine& cmd,
@@ -261,9 +268,9 @@ TEST_F(KeystoneInstallTest, CBCMBrandSubstitution) {
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCCA\n");
 
-  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPAF"));
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPAZ"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
-  ASSERT_EQ(ReadLibraryBrand(), "FPJF\n");
+  ASSERT_EQ(ReadLibraryBrand(), "FPJZ\n");
 }
 
 TEST_F(KeystoneInstallTest, CBCMReverseBrandSubstitution) {
@@ -273,9 +280,9 @@ TEST_F(KeystoneInstallTest, CBCMReverseBrandSubstitution) {
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCEA\n");
 
-  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPJF"));
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPJZ"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
-  ASSERT_EQ(ReadLibraryBrand(), "FPAF\n");
+  ASSERT_EQ(ReadLibraryBrand(), "FPAZ\n");
 }
 
 TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpUnenrolled) {
@@ -285,9 +292,9 @@ TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpUnenrolled) {
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCEA\n");
 
-  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPAF"));
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPAZ"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
-  ASSERT_EQ(ReadLibraryBrand(), "FPAF\n");
+  ASSERT_EQ(ReadLibraryBrand(), "FPAZ\n");
 }
 
 TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpEnrolled) {
@@ -297,9 +304,9 @@ TEST_F(KeystoneInstallTest, CBCMBrandSubstitutionNoOpEnrolled) {
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
   ASSERT_EQ(ReadLibraryBrand(), "GCCA\n");
 
-  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPJF"));
+  ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("FPJZ"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
-  ASSERT_EQ(ReadLibraryBrand(), "FPJF\n");
+  ASSERT_EQ(ReadLibraryBrand(), "FPJZ\n");
 
   ASSERT_NO_FATAL_FAILURE(SetLibraryBrand("GGLS"));
   ASSERT_NO_FATAL_FAILURE(RunInstallScript(0));
