@@ -6116,6 +6116,24 @@
             ]
         }
     ],
+    "ChromnientZeroStateCsb": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensSearchZeroStateCsb"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClampAutoScaling": [
         {
             "platforms": [

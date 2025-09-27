@@ -740,7 +740,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
           }},
          {lens::features::kLensOverlaySurvey, {}},
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
   }
 
   const SkBitmap CreateNonEmptyBitmap(int width, int height) {
@@ -4640,7 +4640,8 @@ class LensOverlayControllerEntrypointsBrowserTest
     //   kAiModeOmniboxEntryPoint.
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{omnibox::kAiModeOmniboxEntryPoint});
+        /*disabled_features=*/{omnibox::kAiModeOmniboxEntryPoint,
+                               lens::features::kLensSearchZeroStateCsb});
   }
 
   void VerifyEntrypoints(bool expected_visible) {
@@ -5187,10 +5188,12 @@ class LensOverlayControllerBrowserFullscreenDisabled
     : public LensOverlayControllerBrowserTest {
  protected:
   void SetupFeatureList() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay, {
-                                          {"enable-in-fullscreen", "false"},
-                                      });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {
+              {"enable-in-fullscreen", "false"},
+          }}},
+        {{lens::features::kLensSearchZeroStateCsb}});
   }
 };
 
@@ -5297,6 +5300,7 @@ class LensOverlayControllerBrowserPDFTest
     auto disabled = PDFExtensionTestBase::GetDisabledFeatures();
     disabled.emplace_back(lens::features::kLensOverlayContextualSearchbox);
     disabled.emplace_back(lens::features::kLensOverlayKeyboardSelection);
+    disabled.emplace_back(lens::features::kLensSearchZeroStateCsb);
     return disabled;
   }
 
@@ -5532,7 +5536,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {};
+    return {lens::features::kLensSearchZeroStateCsb};
   }
 
  protected:
@@ -6189,7 +6193,7 @@ class LensOverlayControllerBrowserPDFUpdatedContentFieldsTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {};
+    return {lens::features::kLensSearchZeroStateCsb};
   }
 
  protected:
@@ -6244,7 +6248,7 @@ class LensOverlayControllerBrowserPDFIncreaseLimitTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {};
+    return {lens::features::kLensSearchZeroStateCsb};
   }
 
  protected:
@@ -6310,7 +6314,8 @@ class LensOverlayControllerBrowserWithPixelsTest
   void SetupFeatureList() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{}, /*disabled_features=*/{
-            lens::features::kLensOverlayVisualSelectionUpdates});
+            lens::features::kLensOverlayVisualSelectionUpdates,
+            lens::features::kLensSearchZeroStateCsb});
   }
 
   bool IsNotEmptyAndNotTransparentBlack(SkBitmap bitmap) {
@@ -7881,12 +7886,12 @@ class LensOverlayControllerIframeBrowserTest
     // Set the results search URL to the test server URL so that the iframe
     // navigations are allowed by the iframe CORS policy and the navigation
     // throttle.
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay,
-        {
-            {"results-search-url",
-             embedded_test_server()->GetURL(kDocumentWithNamedElement).spec()},
-        });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {{"results-search-url", embedded_test_server()
+                                      ->GetURL(kDocumentWithNamedElement)
+                                      .spec()}}}},
+        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
   }
 };
 
@@ -8006,13 +8011,14 @@ class LensOverlayControllerInnerTextEnabledSmallByteLimitTest
     : public LensOverlayControllerBrowserTest {
  protected:
   void SetupFeatureList() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlayContextualSearchbox,
-        {
-            {"use-inner-text-as-context", "true"},
-            {"use-apc-as-context", "false"},
-            {"file-upload-limit-bytes", "10"},
-        });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlayContextualSearchbox,
+          {
+              {"use-inner-text-as-context", "true"},
+              {"use-apc-as-context", "false"},
+              {"file-upload-limit-bytes", "10"},
+          }}},
+        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
   }
 };
 
@@ -8093,12 +8099,14 @@ class LensOverlayControllerApcOnlyTest
     : public LensOverlayControllerBrowserTest {
  protected:
   void SetupFeatureList() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlayContextualSearchbox,
-        {
-            {"use-inner-text-as-context", "false"},
-            {"use-apc-as-context", "true"},
-        });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlayContextualSearchbox,
+          {
+              {"use-inner-text-as-context", "false"},
+              {"use-apc-as-context", "true"},
+          }},
+         {lens::features::kLensSearchProtectedPage, {}}},
+        {lens::features::kLensSearchZeroStateCsb});
   }
 };
 
@@ -8244,7 +8252,7 @@ class LensOverlayControllerInnerTextAndApc
               {"use-updated-content-fields", "true"},
           }},
          {lens::features::kLensSearchProtectedPage, {}}},
-        {});
+        {lens::features::kLensSearchZeroStateCsb});
   }
 };
 
@@ -8492,8 +8500,8 @@ class LensOverlayControllerContextualFeaturesDisabledTest
   void SetupFeatureList() override {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{
-            lens::features::kLensOverlayContextualSearchbox});
+        /*disabled_features=*/{lens::features::kLensOverlayContextualSearchbox,
+                               lens::features::kLensSearchZeroStateCsb});
   }
 };
 
@@ -8744,7 +8752,7 @@ class LensOverlayControllerOverlaySearchbox
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{lens::features::kLensOverlay,
                               lens::features::kLensOverlayContextualSearchbox},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
   }
 
   void VerifyContextualSearchQueryParameters(const GURL& url_to_process) {
@@ -8953,7 +8961,7 @@ class LensOverlayControllerSideBySideBrowserTest
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {{"use-blur", "true"}}},
          {features::kSideBySide, {}}},
-        {});
+        {lens::features::kLensSearchZeroStateCsb});
   }
 
   bool AreAnyRoundedCornersShowing() {
