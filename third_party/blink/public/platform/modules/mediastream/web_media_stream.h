@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_H_
 
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -80,8 +81,8 @@ class BLINK_PLATFORM_EXPORT WebMediaStream {
   // the WebMediaStream. Observers cannot be null, cannot be added or removed
   // more than once, and cannot invoke AddObserver/RemoveObserver in their
   // TrackAdded/TrackRemoved callbacks.
-  void AddObserver(WebMediaStreamObserver*);
-  void RemoveObserver(WebMediaStreamObserver*);
+  void AddObserver(base::WeakPtr<WebMediaStreamObserver>);
+  void RemoveObserver(base::WeakPtr<WebMediaStreamObserver>);
 
 #if INSIDE_BLINK
   explicit WebMediaStream(MediaStreamDescriptor*);
