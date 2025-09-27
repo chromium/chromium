@@ -15,6 +15,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
@@ -24,7 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -72,14 +73,12 @@ public class HubSearchBoxBackgroundViewBinderUnitTest {
     public void testSearchBoxBackground_checkColorScheme() {
         mModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
         assertEquals(
-                SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
-                        mActivity, /* isIncognito= */ false),
+                SemanticColorUtils.getDefaultBgColor(mActivity),
                 ((ColorDrawable) mSearchBoxBackgroundView.getBackground()).getColor());
 
         mModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
         assertEquals(
-                SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
-                        mActivity, /* isIncognito= */ true),
+                ContextCompat.getColor(mActivity, R.color.default_bg_color_dark),
                 ((ColorDrawable) mSearchBoxBackgroundView.getBackground()).getColor());
     }
 }

@@ -48,11 +48,9 @@ public final class HubColors {
             Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
-                        context, /* isIncognito= */ false);
+                return SemanticColorUtils.getDefaultBgColor(context);
             case HubColorScheme.INCOGNITO:
-                return SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
-                        context, /* isIncognito= */ true);
+                return ContextCompat.getColor(context, R.color.default_bg_color_dark);
             default:
                 assert false;
                 return Color.TRANSPARENT;

@@ -365,14 +365,4 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                 SemanticColorUtils.getColorSurface(mActivity),
                 ((ColorDrawable) buttonContainer.getBackground()).getColor());
     }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE)
-    public void testCloseAllTabsButtonBackgroundColorUpdate() {
-        mCoordinator.show(mOnTabSelectingListener);
-        FrameLayout buttonContainer = mCoordinator.getCloseAllTabsButtonContainer();
-        assertEquals(
-                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
-                ((ColorDrawable) buttonContainer.getBackground()).getColor());
-    }
 }

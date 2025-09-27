@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCard
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -512,12 +511,6 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mShadowView = mDialogView.findViewById(R.id.close_all_tabs_button_container_shadow);
         mShadowView.init(
                 mActivity.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_BOTTOM);
-
-        // TODO(crbug.com/410040707): Set the color in the layout file.
-        getCloseAllTabsButtonContainer()
-                .setBackgroundColor(
-                        SurfaceColorUpdateUtils.getGridTabSwitcherBackgroundColor(
-                                mActivity, /* isIncognito= */ false));
 
         // Initialize the confirmation dialog for when the last archived tab is removed.
         mActionConfirmationDialog = new ActionConfirmationDialog(mActivity, mModalDialogManager);

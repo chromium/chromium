@@ -61,27 +61,6 @@ public class SurfaceColorUpdateUtils {
     }
 
     /**
-     * Returns the background color for the grid tab switcher based on the enabled flag and
-     * incognito.
-     *
-     * @param context {@link Context} used to retrieve colors.
-     * @return The background color.
-     */
-    public static @ColorInt int getGridTabSwitcherBackgroundColor(
-            Context context, boolean isIncognito) {
-        // TODO(crbug.com/414404094): Add semantic color for incognito.
-        if (useNewGtsSurfaceColor()) {
-            return isIncognito
-                    ? ContextCompat.getColor(
-                            context, R.color.gm3_baseline_surface_container_high_dark)
-                    : SemanticColorUtils.getColorSurfaceContainerHigh(context);
-        }
-        return isIncognito
-                ? ContextCompat.getColor(context, R.color.default_bg_color_dark)
-                : SemanticColorUtils.getDefaultBgColor(context);
-    }
-
-    /**
      * Returns the background color for the card view in grid tab switcher on the enabled flag and
      * incognito.
      *
