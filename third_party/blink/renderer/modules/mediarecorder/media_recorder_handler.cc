@@ -289,7 +289,8 @@ MediaRecorderHandler::MediaRecorderHandler(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
     KeyFrameRequestProcessor::Configuration key_frame_config)
     : key_frame_config_(key_frame_config),
-      main_thread_task_runner_(std::move(main_thread_task_runner)) {}
+      main_thread_task_runner_(std::move(main_thread_task_runner)),
+      media_stream_observer_(std::make_unique<MediaStreamObserver>(this)) {}
 
 bool MediaRecorderHandler::CanSupportMimeType(const String& type,
                                               const String& web_codecs) {
@@ -568,7 +569,7 @@ bool MediaRecorderHandler::Start(int timeslice,
   DCHECK(!muxer_adapter_);
 
   DCHECK(!is_media_stream_observer_);
-  media_stream_->AddObserver(this);
+  media_stream_->AddObserver(media_stream_observer_->AsWeakPtr());
   is_media_stream_observer_ = true;
 
   timeslice_ = base::Milliseconds(timeslice);
@@ -714,7 +715,7 @@ void MediaRecorderHandler::Stop() {
 
   // Unregister from media stream notifications.
   if (media_stream_ && is_media_stream_observer_) {
-    media_stream_->RemoveObserver(this);
+    media_stream_->RemoveObserver(media_stream_observer_->AsWeakPtr());
   }
   is_media_stream_observer_ = false;
 
