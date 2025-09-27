@@ -865,7 +865,10 @@ void It2MeHost::ValidateConnectionDetails(
   }
 
   // Check the client domain policy.
-  if (!required_client_domain_list_.empty()) {
+  // Skip this check for class management sessions, as they use the device
+  // specific robot account as client, and we should not expect the customers to
+  // add this internal account to their client domain list.
+  if (!required_client_domain_list_.empty() && !is_class_management_session()) {
     bool matched = false;
     for (const auto& domain : required_client_domain_list_) {
       if (base::EndsWith(client_username, std::string("@") + domain,
@@ -881,6 +884,15 @@ void It2MeHost::ValidateConnectionDetails(
       DisconnectOnNetworkThread();
       return;
     }
+  }
+
+  if (is_class_management_session() && authorized_helper_.empty()) {
+    LOG(ERROR) << "Rejecting class management connection request from ("
+               << client_username << "as an authorized_helper was not provided";
+    std::move(result_callback)
+        .Run(ValidationResult::ERROR_UNAUTHORIZED_ACCOUNT);
+    DisconnectOnNetworkThread();
+    return;
   }
 
   if (!authorized_helper_.empty() &&

@@ -112,6 +112,13 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   bool is_enterprise_session() const {
     return chrome_os_enterprise_params_.has_value();
   }
+  // Indicates whether this support session was initiated by Class tools
+  // for a managed Chrome OS device.
+  bool is_class_management_session() const {
+    return chrome_os_enterprise_params_.has_value() &&
+           chrome_os_enterprise_params_->request_origin ==
+               remoting::ChromeOsEnterpriseRequestOrigin::kClassManagement;
+  }
 
   // If set, only |authorized_helper| will be allowed to connect to this host.
   void set_authorized_helper(const std::string& authorized_helper);
