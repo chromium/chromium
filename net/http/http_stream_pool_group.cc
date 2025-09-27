@@ -264,13 +264,12 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
 }
 
 size_t HttpStreamPool::Group::ConnectingStreamSocketCount() const {
-  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptSlotCount() : 0;
+  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptCount() : 0;
 }
 
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
   return handed_out_stream_count_ + idle_stream_sockets_.size() +
-         (attempt_manager_ ? attempt_manager_->NonSlowTcpBasedAttemptCount()
-                           : 0);
+         ConnectingStreamSocketCount();
 }
 
 bool HttpStreamPool::Group::ReachedMaxStreamLimit() const {
