@@ -1288,28 +1288,7 @@ void MoveTabsToNewWindow(Browser* browser,
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
-  int indices_size = tab_indices.size();
-  int active_index = browser->tab_strip_model()->active_index();
-  for (int i = 0; i < indices_size; i++) {
-    // Adjust tab index to account for tabs already moved.
-    int adjusted_index = tab_indices[i] - i;
-    bool pinned = browser->tab_strip_model()->IsTabPinned(adjusted_index);
-    std::unique_ptr<tabs::TabModel> tab_model =
-        browser->tab_strip_model()->DetachTabAtForInsertion(adjusted_index);
-
-    int add_types = pinned ? AddTabTypes::ADD_PINNED : 0;
-    // The last tab made active takes precedence, so activate the last active
-    // tab, with a fallback for the first tab (i == 0) if the active tab isn’t
-    // in the set of tabs being moved.
-    if (i == 0 || tab_indices[i] == active_index) {
-      add_types = add_types | AddTabTypes::ADD_ACTIVE;
-    }
-
-    new_browser->tab_strip_model()->AddTab(
-        std::move(tab_model), -1, ui::PAGE_TRANSITION_TYPED, add_types);
-  }
-
-  new_browser->window()->Show();
+  MoveTabsToExistingWindow(browser, new_browser, tab_indices);
 }
 
 bool CanCloseTabsToRight(const Browser* browser) {
@@ -1377,16 +1356,24 @@ void MoveTabsToExistingWindow(Browser* source,
   }
 
   int indices_size = tab_indices.size();
+  int active_index = source->tab_strip_model()->active_index();
   for (int i = 0; i < indices_size; i++) {
     // Adjust tab index to account for tabs already moved.
     int adjusted_index = tab_indices[i] - i;
     bool pinned = source->tab_strip_model()->IsTabPinned(adjusted_index);
     std::unique_ptr<tabs::TabModel> tab_model =
         source->tab_strip_model()->DetachTabAtForInsertion(adjusted_index);
-    int add_types =
-        AddTabTypes::ADD_ACTIVE | (pinned ? AddTabTypes::ADD_PINNED : 0);
-    target->tab_strip_model()->AddTab(std::move(tab_model), -1,
-                                      ui::PAGE_TRANSITION_TYPED, add_types);
+
+    int add_types = pinned ? AddTabTypes::ADD_PINNED : 0;
+    // The last tab made active takes precedence, so activate the last active
+    // tab, with a fallback for the first tab (i == 0) if the active tab isn’t
+    // in the set of tabs being moved.
+    if (i == 0 || tab_indices[i] == active_index) {
+      add_types = add_types | AddTabTypes::ADD_ACTIVE;
+    }
+
+    target->tab_strip_model()->AddTab(
+        std::move(tab_model), -1, ui::PAGE_TRANSITION_TYPED, add_types);
   }
   target->window()->Show();
 }

@@ -452,6 +452,76 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
   ASSERT_TRUE(second_window->tab_strip_model()->count() == 1);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       MoveTabsToExistingWindow_ActiveTabMoved) {
+  auto AddTabs = [](Browser* browser, int count) {
+    for (int i = 0; i < count; ++i) {
+      chrome::NewTab(browser);
+    }
+  };
+
+  // Source browser: 0(NTP),1,2(active),3
+  AddTabs(browser(), 3);
+  browser()->tab_strip_model()->ActivateTabAt(2);
+  content::WebContents* src_active_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(2);
+  // Target browser: 0
+  Browser* target_browser =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  AddTabs(target_browser, 1);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 4);
+  ASSERT_EQ(target_browser->tab_strip_model()->count(), 1);
+
+  // Move tabs: includes active tab.
+  std::vector<int> indices = {1, 2, 3};
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, indices);
+
+  // Verify tab counts after move.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(4, target_browser->tab_strip_model()->count());
+
+  // Verify active tab in target matches the original active tab.
+  // 0,1,2(active),3
+  EXPECT_EQ(2, target_browser->tab_strip_model()->active_index());
+  EXPECT_EQ(src_active_tab,
+            target_browser->tab_strip_model()->GetActiveWebContents());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
+                       MoveTabsToExistingWindow_ActiveTabNotMoved) {
+  auto AddTabs = [](Browser* browser, int count) {
+    for (int i = 0; i < count; ++i) {
+      chrome::NewTab(browser);
+    }
+  };
+
+  // Source browser: 0(NTP,active),1,2,3
+  AddTabs(browser(), 3);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  // Target browser: 0
+  Browser* target_browser =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  AddTabs(target_browser, 1);
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 4);
+  ASSERT_EQ(target_browser->tab_strip_model()->count(), 1);
+
+  // Move tabs: does NOT include active tab.
+  std::vector<int> indices = {1, 2, 3};
+  content::WebContents* first_moved_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  chrome::MoveTabsToExistingWindow(browser(), target_browser, indices);
+
+  // Verify tab counts after move.
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(4, target_browser->tab_strip_model()->count());
+
+  // Fallback to the first moved tab.
+  // 0,1(active),2,3
+  EXPECT_EQ(1, target_browser->tab_strip_model()->active_index());
+  EXPECT_EQ(first_moved_tab,
+            target_browser->tab_strip_model()->GetActiveWebContents());
+}
+
 // Tests IDC_MOVE_TAB_TO_NEW_WINDOW. This is a browser test and not a unit test
 // since it needs to create a new browser window, which doesn't work with a
 // TestingProfile.
