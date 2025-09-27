@@ -846,6 +846,11 @@ source_set("unit_tests") {
     sources -= [ "input_monitor/local_input_monitor_unittest.cc" ]
   }
 
+  # TODO(447203893): Re-enable this on Linux once the bug is fixed.
+  if (is_linux) {
+    sources -= [ "host_power_save_blocker_unittest.cc" ]
+  }
+
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
