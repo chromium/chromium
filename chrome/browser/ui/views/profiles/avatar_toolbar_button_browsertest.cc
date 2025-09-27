@@ -1323,11 +1323,19 @@ class AvatarToolbarButtonSyncPromoBaseBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-class AvatarToolbarButtonSyncPromoBrowserTest
+// TODO(crbug.com/331746545): Check the flaky test suite issue on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AvatarToolbarButtonSyncPromoBrowserTest \
+  DISABLED_AvatarToolbarButtonSyncPromoBrowserTest
+#else
+#define MAYBE_AvatarToolbarButtonSyncPromoBrowserTest \
+  AvatarToolbarButtonSyncPromoBrowserTest
+#endif
+class MAYBE_AvatarToolbarButtonSyncPromoBrowserTest
     : public AvatarToolbarButtonSyncPromoBaseBrowserTest,
       public testing::WithParamInterface<FeaturePromoType> {
  protected:
-  AvatarToolbarButtonSyncPromoBrowserTest()
+  MAYBE_AvatarToolbarButtonSyncPromoBrowserTest()
       : AvatarToolbarButtonSyncPromoBaseBrowserTest(GetParam()) {}
 
   std::u16string GetExpectedPromoText() {
@@ -1338,8 +1346,7 @@ class AvatarToolbarButtonSyncPromoBrowserTest
   }
 };
 
-
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                        PRE_HistorySyncOptinNotShownIfGreetingNotShown) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // Explicitly sign in without an image.
@@ -1355,7 +1362,7 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                        HistorySyncOptinNotShownIfGreetingNotShown) {
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -1381,13 +1388,11 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
   EXPECT_EQ(avatar->GetText(), std::u16string());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 // TODO(crbug.com/407964657): Merge this test with
 // AvatarToolbarButtonBrowserTest.SyncError once the feature is enabled by
 // default.
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinNotShownWhenSyncEnabled) {
   SetHistoryAndTabsSyncingPreference(/*enable_sync=*/true);
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
@@ -1414,13 +1419,10 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-// TODO(crbug.com/331746545): Re-enable this test
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_LINUX)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinNotShownWhenPromotionsDisabled) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
       prefs::kPromotionsEnabled, false);
@@ -1435,10 +1437,8 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
 }
 #endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinNotShownWhenSyncNotAllowed) {
   SimulateDisableSyncByPolicyWithError();
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
@@ -1451,7 +1451,6 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // if sync is not allowed.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
 enum class ManagedBy {
   kPolicy,
@@ -1521,10 +1520,8 @@ INSTANTIATE_TEST_SUITE_P(HistorySyncOptinManagedType,
                          ValuesIn(kHistorySyncOptinSyncManagedTypeTestCases));
 #endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinThenPassphraseError) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
@@ -1543,12 +1540,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinThenClientUpgradeError) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
@@ -1567,12 +1561,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinThenSigninPending) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
@@ -1591,12 +1582,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinThenExplicitText) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
@@ -1617,13 +1605,10 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(
     IN_PROC_BROWSER_TEST_P,
-    AvatarToolbarButtonSyncPromoBrowserTest,
+    MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
     HistorySyncOptinNotShownIfErrorBeforeGreetingTimesOut) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
@@ -1640,12 +1625,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
   // should NOT be shown.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              CollapsesOnSyncTurnedOn) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   EXPECT_EQ(avatar->GetText(),
@@ -1659,12 +1641,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // Once sync is turned on, the button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              CollapsesOnSignOut) {
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -1680,18 +1659,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // Once the user signs out, the button should return to the normal state.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PRE_ShowsOnBrowserRestart DISABLED_PRE_ShowsOnBrowserRestart
-#define MAYBE_ShowsOnBrowserRestart DISABLED_ShowsOnBrowserRestart
-#else
-#define MAYBE_PRE_ShowsOnBrowserRestart PRE_ShowsOnBrowserRestart
-#define MAYBE_ShowsOnBrowserRestart ShowsOnBrowserRestart
-#endif
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
-                       MAYBE_PRE_ShowsOnBrowserRestart) {
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                       PRE_ShowsOnBrowserRestart) {
   // Disable the preferences about syncing the tabs and history to make the
   // avatar promo eligible.
   SetHistoryAndTabsSyncingPreference(/*enable_sync=*/false);
@@ -1722,8 +1692,8 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
-                       MAYBE_ShowsOnBrowserRestart) {
+IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
+                       ShowsOnBrowserRestart) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   // The greeting is shown after the restart.
   ASSERT_EQ(
@@ -1737,10 +1707,8 @@ IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonSyncPromoBrowserTest,
   EXPECT_TRUE(avatar->GetText().empty());
 }
 
-// TODO(crbug.com/331746545): Check the flaky test issue on Windows.
-#if !BUILDFLAG(IS_WIN)
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonSyncPromoBrowserTest,
+                             MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                              HistorySyncOptinNotShownIfMaxShownCountReached) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
@@ -1766,19 +1734,24 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
   // it to show if the max shown count has been reached.
   EXPECT_TRUE(avatar->GetText().empty());
 }
-#endif
 
 INSTANTIATE_TEST_SUITE_P(,
-                         AvatarToolbarButtonSyncPromoBrowserTest,
+                         MAYBE_AvatarToolbarButtonSyncPromoBrowserTest,
                          ValuesIn({FeaturePromoType::kHistorySyncPromo,
                                    FeaturePromoType::kSyncPromo}));
 
 // TODO(crbug.com/331746545): Check the flaky test suite issue on Windows.
-#if !BUILDFLAG(IS_WIN)
-class AvatarToolbarButtonPromoClickBrowserTest
-    : public AvatarToolbarButtonSyncPromoBrowserTest {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AvatarToolbarButtonPromoClickBrowserTest \
+  DISABLED_AvatarToolbarButtonPromoClickBrowserTest
+#else
+#define MAYBE_AvatarToolbarButtonPromoClickBrowserTest \
+  AvatarToolbarButtonPromoClickBrowserTest
+#endif
+class MAYBE_AvatarToolbarButtonPromoClickBrowserTest
+    : public MAYBE_AvatarToolbarButtonSyncPromoBrowserTest {
  protected:
-  AvatarToolbarButtonPromoClickBrowserTest()
+  MAYBE_AvatarToolbarButtonPromoClickBrowserTest()
       : delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
             &mock_signin_ui_delegate_)) {}
 
@@ -1798,7 +1771,7 @@ class AvatarToolbarButtonPromoClickBrowserTest
 };
 
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonPromoClickBrowserTest,
+                             MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
                              CollapsesOnClickAndTriggersProfileMenuStartup) {
   ASSERT_TRUE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
@@ -1863,7 +1836,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
 }
 
 TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
-                             AvatarToolbarButtonPromoClickBrowserTest,
+                             MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
                              HistorySyncOptinNotShownIfUsedLimitReached) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   ASSERT_EQ(avatar->GetText(),
@@ -1914,7 +1887,7 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
 
 TEST_WITH_SIGNED_IN_FROM_PRE(
     IN_PROC_BROWSER_TEST_P,
-    AvatarToolbarButtonPromoClickBrowserTest,
+    MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
     TriggersAndCollapsesConsistentlyAcrossMultipleBrowsers) {
   // Make the delay for cross window animation replay zero to avoid flakiness.
   base::AutoReset<std::optional<base::TimeDelta>> delay_override_reset =
@@ -1949,10 +1922,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(
 }
 
 INSTANTIATE_TEST_SUITE_P(HistorySyncOptinExpansionPillOptions,
-                         AvatarToolbarButtonPromoClickBrowserTest,
+                         MAYBE_AvatarToolbarButtonPromoClickBrowserTest,
                          ValuesIn({FeaturePromoType::kHistorySyncPromo,
                                    FeaturePromoType::kSyncPromo}));
-#endif  // !BUILDFLAG(IS_WIN)
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
