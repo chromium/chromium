@@ -63,11 +63,13 @@ using MyExampleStatus = TypedStatus<MyExampleStatusTraits>;
 
 All TypedStatus specializations have the following common API:
 ```c++
+bool is_ok() const;
+
 // The underlying code value.
 T::Codes code() const;
 
 // The underlying message.
-std::string& message() const;
+std::string_view message() const;
 
 // Adds the current file & line number to the trace.
 TypedStatus<T>&& AddHere() &&;

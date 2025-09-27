@@ -198,9 +198,7 @@ std::string BatchingMediaLog::MediaEventToMessageString(
         return PipelineStatusToString(
             static_cast<media::PipelineStatusCodes>(code));
       }
-      std::stringstream formatted;
-      formatted << *group << ":" << code;
-      return formatted.str();
+      return *group;
     }
     case media::MediaLogRecord::Type::kMessage: {
       const std::string* result = event.params.FindString(

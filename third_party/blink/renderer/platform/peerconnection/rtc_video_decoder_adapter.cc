@@ -451,8 +451,7 @@ void RTCVideoDecoderAdapter::Impl::RegisterDecodeCompleteCallback(
 }
 
 void RTCVideoDecoderAdapter::Impl::OnDecodeDone(media::DecoderStatus status) {
-  DVLOG(3) << __func__ << "(" << status.group() << ":"
-           << static_cast<int>(status.code()) << ")";
+  status.DebugLog(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   outstanding_decode_requests_--;

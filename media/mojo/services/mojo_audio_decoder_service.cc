@@ -188,8 +188,7 @@ void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {
 
 void MojoAudioDecoderService::OnDecodeStatus(DecodeCallback callback,
                                              const DecoderStatus status) {
-  DVLOG(3) << __func__ << " status=" << status.group() << ":"
-           << static_cast<int>(status.code());
+  status.DebugLog(3);
   last_decode_status_ = status;
   std::move(callback).Run(std::move(status));
 }
