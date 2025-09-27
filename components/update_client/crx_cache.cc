@@ -8,10 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -68,7 +68,6 @@ class CrxCacheImpl : public CrxCacheSynchronous {
   CrxCacheImpl& operator=(const CrxCacheImpl&) = delete;
 
   explicit CrxCacheImpl(const base::FilePath& cache_root);
-  ~CrxCacheImpl() override;
 
   // Overrides for CrxCacheSynchronous:
   std::multimap<std::string, std::string> ListHashesByAppId() const override;
@@ -89,6 +88,8 @@ class CrxCacheImpl : public CrxCacheSynchronous {
 
   SEQUENCE_CHECKER(sequence_checker_);
   const base::FilePath cache_root_;
+
+  // Note: `~JsonPrefStore` calls `JsonPrefStore::CommitPendingWrite()`.
   scoped_refptr<JsonPrefStore> metadata_;
 };
 
@@ -102,8 +103,7 @@ CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
   absl::flat_hash_set<std::string> found_basenames;
   const base::Value* hashes_key = nullptr;
   if (!metadata_->GetValue("hashes", &hashes_key) || !hashes_key->is_dict()) {
-    base::Value::Dict empty_dict;
-    metadata_->SetValue("hashes", base::Value(std::move(empty_dict)), 0);
+    metadata_->SetValue("hashes", base::Value(base::DictValue()), 0);
     CHECK(metadata_->GetValue("hashes", &hashes_key) && hashes_key->is_dict());
   }
   for (const auto [hash, value] : hashes_key->GetDict()) {
@@ -114,8 +114,7 @@ CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
   base::FileEnumerator(cache_root_, false, base::FileEnumerator::FILES)
       .ForEach([&expected_basenames,
                 &found_basenames](const base::FilePath& file_path) {
-        if (!base::Contains(expected_basenames,
-                            file_path.BaseName().AsUTF8Unsafe())) {
+        if (!expected_basenames.contains(file_path.BaseName().AsUTF8Unsafe())) {
           RetryFileOperation(&base::DeleteFile, file_path);
         } else {
           found_basenames.insert(file_path.BaseName().AsUTF8Unsafe());
@@ -124,14 +123,12 @@ CrxCacheImpl::CrxCacheImpl(const base::FilePath& cache_root)
 
   // Remove metadata entries that are missing files.
   for (const auto& hash : expected_basenames) {
-    if (!base::Contains(found_basenames, hash)) {
+    if (!found_basenames.contains(hash)) {
       Remove(hash);
     }
   }
 }
 
-// Note: `~JsonPrefStore` calls `JsonPrefStore::CommitPendingWrite()`.
-CrxCacheImpl::~CrxCacheImpl() = default;
 
 std::multimap<std::string, std::string> CrxCacheImpl::ListHashesByAppId()
     const {
@@ -240,7 +237,7 @@ void CrxCacheImpl::RemoveIfNot(const std::vector<std::string>& app_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   absl::flat_hash_set<std::string> retained_ids(app_ids.begin(), app_ids.end());
   for (const auto& [id, hash] : ListHashesByAppId()) {
-    if (!base::Contains(retained_ids, id)) {
+    if (!retained_ids.contains(id)) {
       RemoveAll(id);
     }
   }
@@ -259,7 +256,6 @@ class CrxCacheError : public CrxCacheSynchronous {
   CrxCacheError& operator=(const CrxCacheError&) = delete;
 
   CrxCacheError() = default;
-  ~CrxCacheError() override = default;
 
   // Overrides for CrxCache:
   std::multimap<std::string, std::string> ListHashesByAppId() const override {
