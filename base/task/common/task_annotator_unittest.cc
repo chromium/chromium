@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -20,6 +21,11 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "build/build_config.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/extended_api.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -434,6 +440,51 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedNested) {
   }
 
   run_loop.Run();
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PurgeAfterTaskCompletion) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  // Prepare PA root for testing.
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  // Disables ThreadCache for the default allocator and enables it for the
+  // testing allocator.
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  void* ptr = root.Alloc(16);
+
+  TaskAnnotator annotator;
+  PendingTask pending_task(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+        root.Free<
+            partition_alloc::internal::FreeFlags::kSchedulerLoopQuarantine>(
+            ptr);
+        EXPECT_TRUE(branch_accessor.IsQuarantined(ptr));
+      }));
+  annotator.RunTask("TestTask", pending_task);
+
+  // `ptr` must not be in the quarantine as RunTask finished.
+  EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+#endif
 }
 
 }  // namespace base

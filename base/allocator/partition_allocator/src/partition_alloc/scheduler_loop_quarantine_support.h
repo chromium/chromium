@@ -16,6 +16,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/memory/stack_allocated.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/thread_cache.h"
@@ -83,8 +84,32 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   uintptr_t tcache_address_ = 0;
 };
 
-namespace internal {
+// This is a lightweight version of `SchedulerLoopQuarantineScanPolicyUpdater`.
+// It calls `DisallowScanlessPurge` in the constructor and `AllowScanlessPurge`
+// in the destructor.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+    ScopedSchedulerLoopQuarantineDisallowScanlessPurge {
+  // This is `PA_STACK_ALLOCATED()` to ensure that those two calls are made on
+  // the same thread, allowing us to omit thread-safety analysis.
+  PA_STACK_ALLOCATED();
 
+ public:
+  PA_ALWAYS_INLINE ScopedSchedulerLoopQuarantineDisallowScanlessPurge() {
+    ThreadCache* tcache = ThreadCache::EnsureAndGet();
+    PA_CHECK(ThreadCache::IsValid(tcache));
+
+    tcache->GetSchedulerLoopQuarantineBranch().DisallowScanlessPurge();
+  }
+
+  PA_ALWAYS_INLINE ~ScopedSchedulerLoopQuarantineDisallowScanlessPurge() {
+    ThreadCache* tcache = ThreadCache::EnsureAndGet();
+    PA_CHECK(ThreadCache::IsValid(tcache));
+
+    tcache->GetSchedulerLoopQuarantineBranch().AllowScanlessPurge();
+  }
+};
+
+namespace internal {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
     ScopedSchedulerLoopQuarantineBranchAccessorForTesting {
  public:

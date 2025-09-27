@@ -12,12 +12,21 @@
 #include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/safety_checks.h"
 #include "base/pending_task.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
 
 namespace base {
+
+// Enables task-controlled purge for the scheduler loop quarantine in
+// TaskAnnotator.
+BASE_EXPORT void EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+// Disables task-controlled purge for the scheduler loop quarantine in
+// TaskAnnotator. For use in tests.
+BASE_EXPORT void DisableSchedulerLoopQuarantineTaskControlledPurgeForTesting();
 
 namespace sequence_manager::internal {
 class WorkQueue;

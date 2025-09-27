@@ -8,8 +8,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/allocator/partition_alloc_support.h"
-
 #include <algorithm>
 #include <array>
 #include <cinttypes>
@@ -20,6 +18,7 @@
 #include <string_view>
 
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_alloc_support.h"
 #include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/at_exit.h"
 #include "base/check.h"
@@ -45,6 +44,7 @@
 #include "base/synchronization/lock_impl.h"
 #include "base/synchronization/lock_metrics_recorder.h"
 #include "base/system/sys_info.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
@@ -1009,6 +1009,7 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     base::allocator::InstallDanglingRawPtrChecks();
   }
   base::allocator::InstallUnretainedDanglingRawPtrChecks();
+
   {
     base::AutoLock scoped_lock(lock_);
     // Avoid initializing more than once.
@@ -1094,6 +1095,17 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
           GetSchedulerLoopQuarantineConfiguration(
               process_type,
               SchedulerLoopQuarantineBranchType::kAdvancedMemorySafetyChecks);
+
+  if (base::FeatureList::IsEnabled(
+          base::features::
+              kPartitionAllocSchedulerLoopQuarantineTaskControlledPurge) &&
+      ShouldEnableFeatureOnProcess(
+          base::features::
+              kPartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcessesParam
+                  .Get(),
+          process_type)) {
+    base::EnableSchedulerLoopQuarantineTaskControlledPurge();
+  }
 
   const bool eventually_zero_freed_memory = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocEventuallyZeroFreedMemory);

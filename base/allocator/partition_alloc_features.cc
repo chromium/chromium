@@ -137,6 +137,34 @@ constinit const FeatureParam<std::string>
         &kPartitionAllocSchedulerLoopQuarantine,
         "PartitionAllocSchedulerLoopQuarantineConfig", "{}"};
 
+BASE_FEATURE(kPartitionAllocSchedulerLoopQuarantineTaskControlledPurge,
+             FEATURE_DISABLED_BY_DEFAULT);
+constexpr FeatureParam<
+    PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses>::Option
+    kPartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcessesOptions[] =
+        {{PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+              kBrowserOnly,
+          kBrowserOnlyStr},
+         {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+              kBrowserAndRenderer,
+          kBrowserAndRendererStr},
+         {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+              kNonRenderer,
+          kNonRendererStr},
+         {PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+              kAllProcesses,
+          kAllProcessesStr}};
+// Note: Do not use the prepared macro as of no need for a local cache.
+constinit const FeatureParam<
+    PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses>
+    kPartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcessesParam{
+        &kPartitionAllocSchedulerLoopQuarantineTaskControlledPurge,
+        "PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcess"
+        "es",
+        PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses::
+            kBrowserOnly,
+        &kPartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcessesOptions};
+
 BASE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory,
              FEATURE_DISABLED_BY_DEFAULT);
 

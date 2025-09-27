@@ -101,6 +101,14 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     std::string,
     kPartitionAllocSchedulerLoopQuarantineConfig);
 
+using PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses =
+    internal::PAFeatureEnabledProcesses;
+BASE_EXPORT BASE_DECLARE_FEATURE(
+    kPartitionAllocSchedulerLoopQuarantineTaskControlledPurge);
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    PartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcesses,
+    kPartitionAllocSchedulerLoopQuarantineTaskControlledPurgeEnabledProcessesParam);
+
 // Eventually zero out most PartitionAlloc memory. This is not meant as a
 // security guarantee, but to increase the compression ratio of PartitionAlloc's
 // fragmented super pages.

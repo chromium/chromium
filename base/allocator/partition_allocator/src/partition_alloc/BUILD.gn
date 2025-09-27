@@ -648,6 +648,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/memory/ref_counted.h",
       "partition_alloc_base/memory/scoped_policy.h",
       "partition_alloc_base/memory/scoped_refptr.h",
+      "partition_alloc_base/memory/stack_allocated.h",
       "partition_alloc_base/no_destructor.h",
       "partition_alloc_base/notreached.h",
       "partition_alloc_base/numerics/checked_math.h",

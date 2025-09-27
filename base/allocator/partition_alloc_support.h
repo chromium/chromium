@@ -179,6 +179,7 @@ BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
 BASE_EXPORT void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t));
 
 using partition_alloc::SchedulerLoopQuarantineScanPolicyUpdater;
+using partition_alloc::ScopedSchedulerLoopQuarantineDisallowScanlessPurge;
 using partition_alloc::ScopedSchedulerLoopQuarantineExclusion;
 
 }  // namespace base::allocator
