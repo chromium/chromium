@@ -48,7 +48,7 @@ TEST(GetKioskReceiverRequestTest, OnSuccess) {
           }));
   base::Value::Dict response_dict;
   response_dict.Set(boca::kRobotEmail, kRobotEmail);
-  response_dict.Set(boca::kReceiverState, kReceiverState);
+  response_dict.Set(boca::kReceiverConnectionState, kReceiverState);
   request.OnSuccess(std::make_unique<base::Value>(std::move(response_dict)));
 
   ASSERT_TRUE(response_body.has_value());

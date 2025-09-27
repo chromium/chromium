@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/receiver/student_screen_presenter_impl.h"
 
 #include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/functional/callback_helpers.h"
@@ -37,10 +38,8 @@ constexpr std::string_view kStudentDeviceId = "student_device_id";
 constexpr std::string_view kConnectionId = "connection-id";
 constexpr std::string_view kConnectionIdPair =
     R"({"connectionId": "connection-id"})";
-constexpr std::string_view kStateDisconnectedPair =
-    R"({"state": "DISCONNECTED"})";
-constexpr std::string_view kStateStopRequestedPair =
-    R"({"state": "STOP_REQUESTED"})";
+constexpr std::string_view kDisconnectedState = "DISCONNECTED";
+constexpr std::string_view kStopRequestedState = "STOP_REQUESTED";
 
 class StudentScreenPresenterImplTest : public testing::Test {
  protected:
@@ -118,6 +117,18 @@ class StudentScreenPresenterImplTest : public testing::Test {
               user_identity.full_name());
     EXPECT_EQ(*user_device_dict->FindStringByDottedPath("user.gaiaId"),
               user_identity.gaia_id());
+  }
+
+  std::string CheckConnectionStateJson(std::string_view connection_state) {
+    return base::ReplaceStringPlaceholders(
+        R"({"receiverConnectionState": "$1"})", {std::string(connection_state)},
+        /*offsets=*/nullptr);
+  }
+
+  std::string UpdateConnectionStateJson(std::string_view connection_state) {
+    return base::ReplaceStringPlaceholders(R"({"state": "$1"})",
+                                           {std::string(connection_state)},
+                                           /*offsets=*/nullptr);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -209,7 +220,7 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionDisconnected) {
 
   url_loader_factory_.AddResponse(
       GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateDisconnectedPair);
+      CheckConnectionStateJson(kDisconnectedState));
   presenter.CheckConnection();
   EXPECT_TRUE(disconnected_future.Wait());
 
@@ -236,8 +247,10 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionNotDisconnected) {
   EXPECT_TRUE(start_future1.Get());
 
   url_loader_factory_.AddResponse(
-      GetKioskReceiverUrl(kReceiverId, kStateStopRequestedPair).spec(),
-      kStateStopRequestedPair);
+      GetKioskReceiverUrl(kReceiverId,
+                          CheckConnectionStateJson(kStopRequestedState))
+          .spec(),
+      CheckConnectionStateJson(kStopRequestedState));
   presenter.CheckConnection();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(disconnected_future.IsReady());
@@ -291,10 +304,11 @@ TEST_F(StudentScreenPresenterImplTest, StopSuccess) {
   EXPECT_TRUE(start_future1.Get());
 
   presenter.Stop(stop_future.GetCallback());
-  std::optional<base::Value::Dict> update_request = GetRequestBodyAndRespond(
-      GetUpdateReceiverUrl(kReceiverId, kConnectionId), kStateDisconnectedPair);
+  std::optional<base::Value::Dict> update_request =
+      GetRequestBodyAndRespond(GetUpdateReceiverUrl(kReceiverId, kConnectionId),
+                               UpdateConnectionStateJson(kDisconnectedState));
   ASSERT_TRUE(update_request.has_value());
-  EXPECT_EQ(*update_request->FindString("state"), "STOP_REQUESTED");
+  EXPECT_EQ(*update_request->FindString("state"), kStopRequestedState);
   EXPECT_TRUE(stop_future.Get());
   EXPECT_FALSE(disconnected_future.IsReady());
 
@@ -350,17 +364,17 @@ TEST_F(StudentScreenPresenterImplTest, StopDisconnectedAfterDelay) {
 
   url_loader_factory_.AddResponse(
       GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateStopRequestedPair);
+      UpdateConnectionStateJson(kStopRequestedState));
   presenter.Stop(stop_future.GetCallback());
   task_environment_.RunUntilIdle();
 
   presenter.CheckConnection();
   WaitAndRespond(GetKioskReceiverUrl(kReceiverId, kConnectionId),
-                 kStateStopRequestedPair);
+                 CheckConnectionStateJson(kStopRequestedState));
 
   task_environment_.FastForwardBy(base::Seconds(5));
   WaitAndRespond(GetKioskReceiverUrl(kReceiverId, kConnectionId),
-                 kStateDisconnectedPair);
+                 CheckConnectionStateJson(kDisconnectedState));
   EXPECT_TRUE(stop_future.Get());
   EXPECT_FALSE(disconnected_future.IsReady());
 }
@@ -380,13 +394,13 @@ TEST_F(StudentScreenPresenterImplTest, StopStillConnectedAfterDelay) {
 
   url_loader_factory_.AddResponse(
       GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateStopRequestedPair);
+      UpdateConnectionStateJson(kStopRequestedState));
   presenter.Stop(stop_future.GetCallback());
   task_environment_.RunUntilIdle();
 
   url_loader_factory_.AddResponse(
       GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateStopRequestedPair);
+      CheckConnectionStateJson(kStopRequestedState));
   task_environment_.FastForwardBy(base::Seconds(5));
   EXPECT_FALSE(stop_future.Get());
 }
@@ -412,14 +426,14 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionBeforeStopRequest) {
   presenter.Stop(stop_future.GetCallback());
   url_loader_factory_.AddResponse(
       GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateDisconnectedPair);
+      CheckConnectionStateJson(kDisconnectedState));
   // Check connection should be cancelled since stop is requested.
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(stop_future.IsReady());
 
   url_loader_factory_.AddResponse(
       GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateDisconnectedPair);
+      UpdateConnectionStateJson(kDisconnectedState));
   EXPECT_TRUE(stop_future.Get());
   EXPECT_FALSE(disconnected_future.IsReady());
 }
@@ -441,7 +455,7 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionBeforeStopResponse) {
 
   url_loader_factory_.AddResponse(
       GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateDisconnectedPair);
+      CheckConnectionStateJson(kDisconnectedState));
   presenter.Stop(stop_future.GetCallback());
   // Check connection should be ignored since stop request is in progress.
   presenter.CheckConnection();
@@ -450,7 +464,7 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionBeforeStopResponse) {
 
   url_loader_factory_.AddResponse(
       GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateDisconnectedPair);
+      UpdateConnectionStateJson(kDisconnectedState));
   EXPECT_TRUE(stop_future.Get());
   EXPECT_FALSE(disconnected_future.IsReady());
 }
@@ -473,13 +487,13 @@ TEST_F(StudentScreenPresenterImplTest,
 
   url_loader_factory_.AddResponse(
       GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateStopRequestedPair);
+      UpdateConnectionStateJson(kStopRequestedState));
   presenter.Stop(stop_future.GetCallback());
   task_environment_.RunUntilIdle();
 
   url_loader_factory_.AddResponse(
       GetKioskReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateDisconnectedPair);
+      CheckConnectionStateJson(kDisconnectedState));
   presenter.CheckConnection();
   EXPECT_TRUE(stop_future.Get());
 
@@ -504,7 +518,7 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionFailedAfterStopResponse) {
 
   url_loader_factory_.AddResponse(
       GetUpdateReceiverUrl(kReceiverId, kConnectionId).spec(),
-      kStateStopRequestedPair);
+      UpdateConnectionStateJson(kStopRequestedState));
   presenter.Stop(stop_future.GetCallback());
   task_environment_.RunUntilIdle();
 
@@ -514,7 +528,7 @@ TEST_F(StudentScreenPresenterImplTest, CheckConnectionFailedAfterStopResponse) {
 
   task_environment_.FastForwardBy(base::Seconds(5));
   WaitAndRespond(GetKioskReceiverUrl(kReceiverId, kConnectionId),
-                 kStateDisconnectedPair);
+                 CheckConnectionStateJson(kDisconnectedState));
   EXPECT_TRUE(stop_future.Get());
   EXPECT_FALSE(disconnected_future.IsReady());
 }

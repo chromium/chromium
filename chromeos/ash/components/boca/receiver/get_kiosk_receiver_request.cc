@@ -61,7 +61,8 @@ void GetKioskReceiverRequest::OnSuccess(std::unique_ptr<base::Value> response) {
           kiosk_receiver_dict->FindString(boca::kRobotEmail)) {
     receiver.set_robot_email(*robot_email_ptr);
   }
-  if (auto* state_ptr = kiosk_receiver_dict->FindString(boca::kReceiverState)) {
+  if (auto* state_ptr =
+          kiosk_receiver_dict->FindString(boca::kReceiverConnectionState)) {
     receiver.set_state(ReceiverConnectionStateProtoFromJson(*state_ptr));
   }
 
