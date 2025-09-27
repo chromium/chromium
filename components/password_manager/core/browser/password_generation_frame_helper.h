@@ -18,6 +18,10 @@
 
 class GURL;
 
+namespace autofill {
+struct AutofillServerPrediction;
+}
+
 namespace password_manager {
 
 class PasswordManagerClient;
@@ -52,8 +56,7 @@ class PasswordGenerationFrameHelper {
   void ProcessPasswordRequirements(
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
-          predictions);
+                           autofill::AutofillServerPrediction>& predictions);
 
   // Determines current state of password generation
   // `log_debug_data` determines whether log entries are sent to the

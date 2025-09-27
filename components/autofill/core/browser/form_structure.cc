@@ -40,6 +40,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
@@ -886,18 +887,17 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
   return buffer;
 }
 
-base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+base::flat_map<FieldGlobalId, AutofillServerPrediction>
 FormStructure::GetServerPredictions(
     const std::vector<FieldGlobalId>& field_ids) const {
-  auto predictions =
-      base::MakeFlatMap<FieldGlobalId, AutofillType::ServerPrediction>(
-          field_ids, {}, [](const FieldGlobalId& id) {
-            return std::make_pair(id, AutofillType::ServerPrediction());
-          });
+  auto predictions = base::MakeFlatMap<FieldGlobalId, AutofillServerPrediction>(
+      field_ids, {}, [](const FieldGlobalId& id) {
+        return std::make_pair(id, AutofillServerPrediction());
+      });
   for (const std::unique_ptr<AutofillField>& field : fields_) {
     auto field_in_predictions = predictions.find(field->global_id());
     if (field_in_predictions != predictions.end()) {
-      field_in_predictions->second = AutofillType::ServerPrediction(*field);
+      field_in_predictions->second = AutofillServerPrediction(*field);
     }
   }
   return predictions;

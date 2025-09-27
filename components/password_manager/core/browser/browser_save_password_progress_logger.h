@@ -10,7 +10,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -19,6 +18,7 @@
 #include "url/gurl.h"
 
 namespace autofill {
+struct AutofillServerPrediction;
 class FormStructure;
 class LogManager;
 
@@ -46,8 +46,7 @@ class BrowserSavePasswordProgressLogger
   void LogFormDataWithServerPredictions(
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
-          predictions);
+                           autofill::AutofillServerPrediction>& predictions);
 
   // Sanitizes `form` input and passes it to `SendLog` to display with matching
   // model `predictions`.

@@ -13,8 +13,6 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 
 namespace autofill {
 
@@ -34,8 +32,6 @@ class AutofillField;
 // TODO(crbug.com/432645177): Move ServerPredictions to AutofillField?
 class AutofillType {
  public:
-  struct ServerPrediction;
-
   // `TestConstraints(field_types)` must be true.
   //
   // `is_country_code` is a hack to work around the fact that FieldType does not
@@ -134,38 +130,6 @@ class AutofillType {
  private:
   FieldTypeSet types_;
   bool is_country_code_ = false;
-};
-
-// A collection of server prediction metadata related to a form field.
-// Its current intended use is solely for consumers outside of
-// components/autofill.
-// TODO(crbug.com/432645177): Move this out of AutofillType.
-struct AutofillType::ServerPrediction {
-  ServerPrediction();
-  explicit ServerPrediction(const AutofillField& field);
-
-  ServerPrediction(const ServerPrediction&);
-  ServerPrediction& operator=(const ServerPrediction&);
-  ServerPrediction(ServerPrediction&&);
-  ServerPrediction& operator=(ServerPrediction&&);
-
-  ~ServerPrediction();
-
-  // The most likely server-side prediction for the field's type.
-  FieldType server_type() const;
-
-  // Checks whether server-side prediction for the field's type is an
-  // override.
-  bool is_override() const;
-
-  // Requirements the site imposes on passwords (for password generation)
-  // obtained from the Autofill server.
-  std::optional<PasswordRequirementsSpec> password_requirements;
-
-  // The server-side predictions for the field's type.
-  std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
-      server_predictions;
 };
 
 }  // namespace autofill

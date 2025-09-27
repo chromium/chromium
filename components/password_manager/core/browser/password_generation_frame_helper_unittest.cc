@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -47,6 +48,7 @@
 #include "url/gurl.h"
 
 using autofill::AutofillField;
+using autofill::AutofillServerPrediction;
 using autofill::AutofillType;
 using autofill::FieldGlobalId;
 using autofill::FieldSignature;
@@ -325,13 +327,13 @@ TEST_F(PasswordGenerationFrameHelperTest, ProcessPasswordRequirements) {
     // Processs the password requirements with expected side effects of
     // either storing the requirements from the AutofillQueryResponseContents)
     // in the PasswordRequirementsService.
-    base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions;
+    base::flat_map<FieldGlobalId, AutofillServerPrediction> predictions;
 
-    AutofillType::ServerPrediction username_prediction;
+    AutofillServerPrediction username_prediction;
     username_prediction.server_predictions = {
         autofill::test::CreateFieldPrediction(FieldType::EMAIL_ADDRESS,
                                               /*is_override=*/false)};
-    AutofillType::ServerPrediction password_prediction;
+    AutofillServerPrediction password_prediction;
     password_prediction.server_predictions = {
         autofill::test::CreateFieldPrediction(
             FieldType::ACCOUNT_CREATION_PASSWORD,

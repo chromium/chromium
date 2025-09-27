@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -22,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using autofill::AutofillServerPrediction;
 using autofill::AutofillType;
 using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
@@ -86,15 +88,14 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
         {EMAIL_ADDRESS}}});
 
   FormData form_data;
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-      autofill_predictions;
+  base::flat_map<FieldGlobalId, AutofillServerPrediction> autofill_predictions;
   for (size_t i = 0; i < std::size(test_fields); ++i) {
     FormFieldData field;
     field.set_renderer_id(autofill::FieldRendererId(i + 1000));
     field.set_name(ASCIIToUTF16(test_fields[i].name));
     field.set_form_control_type(test_fields[i].form_control_type);
 
-    AutofillType::ServerPrediction prediction;
+    AutofillServerPrediction prediction;
     prediction.server_predictions.push_back(
         CreateFieldPrediction(test_fields[i].input_type));
     for (FieldType type : test_fields[i].additional_types) {
@@ -156,7 +157,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
 
   for (const std::vector<TestField>& test_form : kTestForms) {
     FormData form_data;
-    base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+    base::flat_map<FieldGlobalId, AutofillServerPrediction>
         autofill_predictions;
     for (size_t i = 0; i < test_form.size(); ++i) {
       FormFieldData field;
@@ -164,7 +165,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
       field.set_name(ASCIIToUTF16(test_form[i].name));
       field.set_form_control_type(test_form[i].form_control_type);
 
-      AutofillType::ServerPrediction new_prediction;
+      AutofillServerPrediction new_prediction;
       new_prediction.server_predictions = {
           CreateFieldPrediction(test_form[i].input_type)};
       autofill_predictions.insert(
@@ -226,7 +227,7 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
   }
 }
 
-// Tests that if |AutofillType::ServerPrediction| has an override flag, it
+// Tests that if |AutofillServerPrediction| has an override flag, it
 // will be propagated to |FormPredictions|.
 TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   constexpr int driver_id = 0;
@@ -236,9 +237,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   single_username_field.set_renderer_id(autofill::FieldRendererId(1000));
   form.set_fields({single_username_field});
 
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-      autofill_predictions;
-  AutofillType::ServerPrediction autofill_prediction;
+  base::flat_map<FieldGlobalId, AutofillServerPrediction> autofill_predictions;
+  AutofillServerPrediction autofill_prediction;
   autofill_prediction.server_predictions.push_back(
       CreateFieldPrediction(autofill::SINGLE_USERNAME, /*is_override=*/true));
   autofill_predictions.insert(

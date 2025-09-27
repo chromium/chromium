@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -1697,8 +1698,7 @@ void PasswordManager::OnLoginPotentiallyFailed(
 void PasswordManager::ProcessAutofillPredictions(
     PasswordManagerDriver* driver,
     const autofill::FormData& form,
-    const base::flat_map<FieldGlobalId,
-                         autofill::AutofillType::ServerPrediction>&
+    const base::flat_map<FieldGlobalId, autofill::AutofillServerPrediction>&
         predictions) {
   // Don't do anything if Password store is not available.
   if (!client_->GetProfilePasswordStore()) {

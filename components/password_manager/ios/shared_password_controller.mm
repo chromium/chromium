@@ -28,6 +28,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/types/expected_macros.h"
 #import "base/values.h"
+#import "components/autofill/core/browser/autofill_server_prediction.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"

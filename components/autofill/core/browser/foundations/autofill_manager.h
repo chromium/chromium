@@ -43,6 +43,7 @@
 
 namespace autofill {
 
+struct AutofillServerPrediction;
 class AutofillField;
 class AutofillProfile;
 class CreditCard;
@@ -326,7 +327,7 @@ class AutofillManager
   // identified by `form_id`. If the manager has no data about the form with
   // `form_id`, returns an empty map. If the form does not contain data about
   // fields with `field_ids`, NO_SERVER_DATA type is returned for them.
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+  base::flat_map<FieldGlobalId, AutofillServerPrediction>
   GetServerPredictionsForForm(
       FormGlobalId form_id,
       const std::vector<FieldGlobalId>& field_ids) const;

@@ -7,7 +7,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
@@ -15,7 +15,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
-using autofill::AutofillType;
+using autofill::AutofillServerPrediction;
 using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
 using autofill::FieldGlobalId;
@@ -28,7 +28,7 @@ namespace password_manager {
 
 namespace {
 
-FieldType GetServerType(const AutofillType::ServerPrediction& prediction) {
+FieldType GetServerType(const AutofillServerPrediction& prediction) {
   // The main server predictions is in `field.server_type()` but the server can
   // send additional predictions in `field.server_predictions()`. This function
   // chooses the relevant one for Password Manager predictions.
@@ -113,7 +113,7 @@ FormPredictions::~FormPredictions() = default;
 FormPredictions ConvertToFormPredictions(
     int driver_id,
     const autofill::FormData& form,
-    const base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>&
+    const base::flat_map<FieldGlobalId, AutofillServerPrediction>&
         predictions) {
   // This is a mostly mechanical transformation, except for the following case:
   // If there is no explicit CONFIRMATION_PASSWORD field, and there are two
@@ -143,7 +143,7 @@ FormPredictions ConvertToFormPredictions(
   for (const auto& field : form.fields()) {
     auto it = predictions.find(field.global_id());
     CHECK(it != predictions.end());
-    const AutofillType::ServerPrediction& autofill_prediction = it->second;
+    const AutofillServerPrediction& autofill_prediction = it->second;
     FieldType server_type = GetServerType(autofill_prediction);
 
     FieldSignature current_signature = CalculateFieldSignatureForField(field);

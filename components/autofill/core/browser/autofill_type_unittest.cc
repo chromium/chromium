@@ -4,14 +4,9 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 
-#include "base/containers/to_vector.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,9 +17,7 @@ using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-using ::testing::Matcher;
 using ::testing::Not;
-using ::testing::Property;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
 using FieldPrediction =
@@ -55,32 +48,6 @@ auto HasFormTypes(Ts... form_types) {
       "AutofillType::GetFormTypes()",
       [](const AutofillType& t) { return t.GetFormTypes(); },
       UnorderedElementsAre(form_types...));
-}
-
-// TODO(crbug.com/40276395): Consolidate the prediction matchers used in
-// different files and move them to a central location.
-Matcher<FieldPrediction> EqualsPrediction(FieldType prediction) {
-  return AllOf(Property("type", &FieldPrediction::type, prediction),
-               Property("source", &FieldPrediction::source,
-                        FieldPrediction::SOURCE_AUTOFILL_DEFAULT));
-}
-
-class AutofillTypeServerPredictionTest : public ::testing::Test {
- private:
-  test::AutofillUnitTestEnvironment autofill_environment_;
-};
-
-TEST_F(AutofillTypeServerPredictionTest, PredictionFromAutofillField) {
-  AutofillField field = AutofillField(test::CreateTestFormField(
-      "label", "name", "value", /*type=*/FormControlType::kInputText));
-  field.set_server_predictions(
-      {test::CreateFieldPrediction(FieldType::EMAIL_ADDRESS),
-       test::CreateFieldPrediction(FieldType::USERNAME)});
-
-  AutofillType::ServerPrediction prediction(field);
-  EXPECT_THAT(prediction.server_predictions,
-              ElementsAre(EqualsPrediction(FieldType::EMAIL_ADDRESS),
-                          EqualsPrediction(FieldType::USERNAME)));
 }
 
 // Tests the constraints, which govern which FieldTypes may occur with another.

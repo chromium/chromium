@@ -11,10 +11,13 @@
 
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+
+namespace autofill {
+struct AutofillServerPrediction;
+}
 
 namespace password_manager {
 
@@ -77,8 +80,7 @@ FormPredictions ConvertToFormPredictions(
     int driver_id,
     const autofill::FormData& form,
     const base::flat_map<autofill::FieldGlobalId,
-                         autofill::AutofillType::ServerPrediction>&
-        predictions);
+                         autofill::AutofillServerPrediction>& predictions);
 
 }  // namespace password_manager
 

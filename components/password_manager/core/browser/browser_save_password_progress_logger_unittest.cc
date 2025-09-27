@@ -6,7 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
@@ -20,7 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::AutofillType;
+using autofill::AutofillServerPrediction;
 using autofill::FieldGlobalId;
 using autofill::FieldType;
 using autofill::StubLogManager;
@@ -107,10 +107,10 @@ TEST_F(BrowserSavePasswordProgressLoggerTest,
        LogFormDataWithServerPredictions) {
   StubLogManager log_manager;
   TestLogger logger(&log_manager);
-  AutofillType::ServerPrediction password_prediction;
+  AutofillServerPrediction password_prediction;
   password_prediction.server_predictions = {
       CreateFieldPrediction(FieldType::NEW_PASSWORD)};
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions = {
+  base::flat_map<FieldGlobalId, AutofillServerPrediction> predictions = {
       {form_.fields()[0].global_id(), std::move(password_prediction)}};
   logger.LogFormDataWithServerPredictions(form_, predictions);
 

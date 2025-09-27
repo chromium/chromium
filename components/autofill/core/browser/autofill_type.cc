@@ -125,36 +125,6 @@ bool AutofillType::TestConstraints(const FieldTypeSet& s) {
          Intersection(s, kPasswordManagerFieldTypes).size() <= 1;
 }
 
-AutofillType::ServerPrediction::ServerPrediction() = default;
-
-AutofillType::ServerPrediction::ServerPrediction(const AutofillField& field) {
-  password_requirements = field.password_requirements();
-  server_predictions = field.server_predictions();
-}
-
-AutofillType::ServerPrediction::ServerPrediction(const ServerPrediction&) =
-    default;
-
-AutofillType::ServerPrediction& AutofillType::ServerPrediction::operator=(
-    const ServerPrediction&) = default;
-
-AutofillType::ServerPrediction::ServerPrediction(ServerPrediction&&) = default;
-
-AutofillType::ServerPrediction& AutofillType::ServerPrediction::operator=(
-    ServerPrediction&&) = default;
-
-AutofillType::ServerPrediction::~ServerPrediction() = default;
-
-FieldType AutofillType::ServerPrediction::server_type() const {
-  return server_predictions.empty()
-             ? NO_SERVER_DATA
-             : ToSafeFieldType(server_predictions[0].type(), NO_SERVER_DATA);
-}
-
-bool AutofillType::ServerPrediction::is_override() const {
-  return !server_predictions.empty() && server_predictions[0].override();
-}
-
 AutofillType::AutofillType(FieldTypeSet field_types, bool is_country_code)
     : types_(Normalize(field_types)),
       is_country_code_(is_country_code &&

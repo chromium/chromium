@@ -49,6 +49,7 @@ class PrefRegistrySyncable;
 }
 
 namespace autofill {
+struct AutofillServerPrediction;
 class FormData;
 }  // namespace autofill
 
@@ -138,7 +139,7 @@ class PasswordManager : public PasswordManagerInterface {
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
+                           autofill::AutofillServerPrediction>&
           field_predictions) override;
   void ProcessClassificationModelPredictions(
       PasswordManagerDriver* driver,

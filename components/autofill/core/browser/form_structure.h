@@ -42,17 +42,17 @@ class TimeTicks;
 
 namespace autofill {
 
-class LogBuffer;
-class LogManager;
-
 // The structure of forms and fields, represented by their signatures, on a
 // page. These are sequence containers to reflect their order in the DOM.
 using FormAndFieldSignatures =
     std::vector<std::pair<FormSignature, std::vector<FieldSignature>>>;
 using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
+struct AutofillServerPrediction;
 class FormData;
 struct FormDataPredictions;
+class LogBuffer;
+class LogManager;
 
 // FormStructure stores a single HTML form together with the values entered
 // in the fields along with additional information needed by Autofill.
@@ -302,8 +302,8 @@ class FormStructure {
     std::optional<FormSignature> last_credit_card_form_submitted;
   };
 
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-  GetServerPredictions(const std::vector<FieldGlobalId>& field_ids) const;
+  base::flat_map<FieldGlobalId, AutofillServerPrediction> GetServerPredictions(
+      const std::vector<FieldGlobalId>& field_ids) const;
 
   base::flat_map<FieldGlobalId, FieldType> GetHeuristicPredictions(
       HeuristicSource source,
