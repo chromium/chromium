@@ -1939,6 +1939,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   property_trees.set_changed(any_tree_changed);
   if (any_tree_changed) {
     property_trees.ResetCachedData();
+    layers.set_needs_update_draw_properties();
   }
 
   std::vector<std::unique_ptr<cc::RenderSurfaceImpl>> old_render_surfaces;
