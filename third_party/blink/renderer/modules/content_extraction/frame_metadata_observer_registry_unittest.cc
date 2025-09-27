@@ -101,6 +101,12 @@ class FrameMetadataObserverRegistryTest : public testing::Test {
     EXPECT_EQ(meta_tags[0]->content, "Gary");
   }
 
+  void VerifyAuthorMetaTagNoContent(const Vector<mojom::blink::MetaTagPtr>& meta_tags) {
+    ASSERT_EQ(meta_tags.size(), 1u);
+    EXPECT_EQ(meta_tags[0]->name, "author");
+    EXPECT_EQ(meta_tags[0]->content, "");
+  }
+
  protected:
   test::TaskEnvironment task_environment_;
   frame_test_helpers::WebViewHelper helper_;
@@ -442,6 +448,28 @@ TEST_F(FrameMetadataObserverRegistryTest, MetaTagsWithNamelessTag) {
 
   ASSERT_TRUE(observer.future().IsReady());
   VerifyAuthorMetaTag(observer.future().Take());
+}
+
+TEST_F(FrameMetadataObserverRegistryTest, MetaTagsWithNoContent) {
+  LoadHTML(R"HTML(
+    <head>
+      <meta charset="UTF-8">
+      <meta name="author">
+    </head>
+    <body></body>
+  )HTML");
+  BindRegistry();
+
+  MockMetaTagsObserver observer;
+  Vector<String> names_to_observe;
+  names_to_observe.push_back("author");
+
+  registry_->AddMetaTagsObserver(names_to_observe,
+                                 observer.BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  ASSERT_TRUE(observer.future().IsReady());
+  VerifyAuthorMetaTagNoContent(observer.future().Take());
 }
 
 // Re-enable this test once we support observing head elements that are added

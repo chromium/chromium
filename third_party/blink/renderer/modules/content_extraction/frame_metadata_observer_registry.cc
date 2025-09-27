@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/key_value_pair.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/core/html_names.h"
 
 namespace blink {
 
@@ -506,7 +508,8 @@ void FrameMetadataObserverRegistry::ObserveMetaTagAttributes(
 
   MutationObserverInit* init = MutationObserverInit::Create();
   init->setAttributes(true);
-  init->setAttributeFilter(Vector<String>{"name", "content"});
+  init->setAttributeFilter(
+      {html_names::kNameAttr.LocalName(), html_names::kContentAttr.LocalName()});
   DummyExceptionStateForTesting exception_state;
   attribute_observer->observe(meta, init, exception_state);
   DCHECK(!exception_state.HadException());
@@ -527,7 +530,7 @@ void FrameMetadataObserverRegistry::ObservePaidContentScriptAttributes(
 
   MutationObserverInit* init = MutationObserverInit::Create();
   init->setAttributes(true);
-  init->setAttributeFilter(Vector<String>{"type"});
+  init->setAttributeFilter({html_names::kTypeAttr.LocalName()});
   init->setChildList(true);  // For text content changes.
   DummyExceptionStateForTesting exception_state;
   attribute_observer->observe(script, init, exception_state);
@@ -595,8 +598,12 @@ void FrameMetadataObserverRegistry::OnMetaTagsChanged() {
     for (HTMLMetaElement& meta :
          Traversal<HTMLMetaElement>::ChildrenOf(*head)) {
       const String& name = meta.GetName();
+      String content = meta.Content();
+      if (content.IsNull()) {
+        content = String("");
+      }
       if (!name.IsNull() && all_metatag_name_counts_.Contains(name)) {
-        name_to_content_map.Set(name, meta.Content());
+        name_to_content_map.Set(name, content);
       }
     }
   }
