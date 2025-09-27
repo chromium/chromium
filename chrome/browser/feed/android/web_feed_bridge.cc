@@ -371,7 +371,8 @@ static void JNI_WebFeedBridge_GetRecentVisitCountsToHost(
       base::Days(GetFeedConfig().webfeed_accelerator_recent_visit_history_days);
   history_service->GetDailyVisitsToOrigin(
       url::Origin::Create(url::GURLAndroid::ToNativeGURL(env, j_url)),
-      begin_time, end_time, std::move(callback), &TaskTracker());
+      begin_time, end_time, history::VisitQuery404sPolicy::kExclude404s,
+      std::move(callback), &TaskTracker());
 }
 
 static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(

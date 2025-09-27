@@ -225,6 +225,7 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   // Get daily visit count for `url` from the history service.
   history_service->GetDailyVisitsToOrigin(
       url::Origin::Create(url), begin_time, end_time,
+      history::VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(&FollowTabHelper::OnDailyVisitQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), page_load_time,
                      recommended_url),

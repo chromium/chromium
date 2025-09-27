@@ -1218,7 +1218,8 @@ bool VisitDatabase::GetLastVisitToOrigin(
 DailyVisitsResult VisitDatabase::GetDailyVisitsToOrigin(
     const url::Origin& origin,
     base::Time begin_time,
-    base::Time end_time) {
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
   DailyVisitsResult result;
   if (origin.opaque() || !(origin.scheme() == url::kHttpScheme ||
                            origin.scheme() == url::kHttpsScheme)) {
@@ -1228,20 +1229,46 @@ DailyVisitsResult VisitDatabase::GetDailyVisitsToOrigin(
   std::pair<std::string, std::string> host_bounds =
       GetOriginSearchBounds(origin.GetURL());
 
-  sql::Statement statement(GetDB().GetCachedStatement(
-      // clang-format off
-      SQL_FROM_HERE,
-        "SELECT "
-        "visit_time,"
-        "transition "
-        "FROM visits v INNER JOIN urls u ON v.url=u.id "
-        "WHERE "
-          "u.url>=? AND "
-          "u.url<? AND "
-          "v.visit_time>=? AND "
-          "v.visit_time<?"
-      // clang-format on
-      ));
+  sql::Statement statement;
+  switch (policy_for_404_visits) {
+    case VisitQuery404sPolicy::kInclude404s:
+      statement.Assign(GetDB().GetCachedStatement(
+          // clang-format off
+          SQL_FROM_HERE,
+            "SELECT "
+            "visit_time,"
+            "transition "
+            "FROM visits v INNER JOIN urls u ON v.url=u.id "
+            "WHERE "
+              "u.url>=? AND "
+              "u.url<? AND "
+              "v.visit_time>=? AND "
+              "v.visit_time<?"
+          // clang-format on
+          ));
+      break;
+    case VisitQuery404sPolicy::kExclude404s:
+      statement.Assign(GetDB().GetCachedStatement(
+          // clang-format off
+          SQL_FROM_HERE,
+            "SELECT "
+            "visit_time,"
+            "transition "
+            "FROM visits v INNER JOIN urls u ON v.url=u.id "
+            "LEFT OUTER JOIN context_annotations ca ON v.id=ca.visit_id "
+            "WHERE "
+              "u.url>=? AND "
+              "u.url<? AND "
+              "v.visit_time>=? AND "
+              "v.visit_time<? AND "
+              "("
+                "ca.response_code IS NULL OR "
+                "ca.response_code!=404"
+              ")"
+          // clang-format on
+          ));
+      break;
+  }
 
   statement.BindString(0, host_bounds.first);
   statement.BindString(1, host_bounds.second);

@@ -2166,11 +2166,13 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(
 DailyVisitsResult HistoryBackend::GetDailyVisitsToOrigin(
     const url::Origin& origin,
     base::Time begin_time,
-    base::Time end_time) {
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
   if (!db_) {
     return {};
   }
-  return db_->GetDailyVisitsToOrigin(origin, begin_time, end_time);
+  return db_->GetDailyVisitsToOrigin(origin, begin_time, end_time,
+                                     policy_for_404_visits);
 }
 
 // Keyword visits --------------------------------------------------------------

@@ -1460,7 +1460,8 @@ TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_WithVisits) {
   add_visit(GURL("https://foo.com/bar"), end_time + base::Seconds(1));
 
   DailyVisitsResult result = GetDailyVisitsToOrigin(
-      url::Origin::Create(GURL("https://foo.com")), begin_time, end_time);
+      url::Origin::Create(GURL("https://foo.com")), begin_time, end_time,
+      VisitQuery404sPolicy::kInclude404s);
   EXPECT_TRUE(result.success);
   EXPECT_EQ(2, result.days_with_visits);
   EXPECT_EQ(7, result.total_visits);
@@ -1482,10 +1483,72 @@ TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_NoVisits) {
 
   DailyVisitsResult result = GetDailyVisitsToOrigin(
       url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
-      end_time);
+      end_time, VisitQuery404sPolicy::kInclude404s);
   EXPECT_TRUE(result.success);
   EXPECT_EQ(0, result.days_with_visits);
   EXPECT_EQ(0, result.total_visits);
+}
+
+TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_404s) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::Days(10);
+
+  auto add_visit = [&](const GURL& url, base::Time visit_time,
+                       int response_code) {
+    VisitRow row{AddURL(URLRow(url)),
+                 visit_time,
+                 0,
+                 ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                           ui::PAGE_TRANSITION_CHAIN_START |
+                                           ui::PAGE_TRANSITION_CHAIN_END),
+                 0,
+                 false,
+                 0};
+    AddVisit(&row, SOURCE_BROWSED);
+    VisitContextAnnotations annotations;
+    annotations.on_visit.response_code = response_code;
+    AddContextAnnotationsForVisit(row.visit_id, annotations);
+  };
+
+  // `origin1` has only a single visit in the time range, and it's a 404.
+  url::Origin origin1 = url::Origin::Create(GURL("https://foo.com"));
+  add_visit(GURL("https://foo.com/404"), begin_time, 404);
+
+  // When including 404s for `origin1`, we should get 1 day with 1 visit.
+  DailyVisitsResult result = GetDailyVisitsToOrigin(
+      origin1, begin_time, end_time, VisitQuery404sPolicy::kInclude404s);
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(1, result.days_with_visits);
+  EXPECT_EQ(1, result.total_visits);
+
+  // When excluding 404s for `origin1`, we should get 0 days with visits, 0
+  // visits total.
+  result = GetDailyVisitsToOrigin(origin1, begin_time, end_time,
+                                  VisitQuery404sPolicy::kExclude404s);
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(0, result.days_with_visits);
+  EXPECT_EQ(0, result.total_visits);
+
+  // `origin2` has two visits on a single day in the time range: one is a 404
+  // and the other is not.
+  url::Origin origin2 = url::Origin::Create(GURL("https://bar.com"));
+  add_visit(GURL("https://bar.com/404"), begin_time, 404);
+  add_visit(GURL("https://bar.com/200"), begin_time + base::Hours(1), 200);
+
+  // When including 404s for `origin2`, we should get 1 day with 2 visits.
+  result = GetDailyVisitsToOrigin(origin2, begin_time, end_time,
+                                  VisitQuery404sPolicy::kInclude404s);
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(1, result.days_with_visits);
+  EXPECT_EQ(2, result.total_visits);
+
+  // When excluding 404s for `origin2`, we should still get 1 day, but with only
+  // 1 visit.
+  result = GetDailyVisitsToOrigin(origin2, begin_time, end_time,
+                                  VisitQuery404sPolicy::kExclude404s);
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(1, result.days_with_visits);
+  EXPECT_EQ(1, result.total_visits);
 }
 
 TEST_F(VisitDatabaseTest, GetGoogleDomainVisitsFromSearchesInRange_NoVisits) {
