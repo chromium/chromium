@@ -103,6 +103,10 @@ BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
 // If enabled, disables unpacked extensions if developer mode is off.
 BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 
+// Allow e.g. .css files to use default_locale messages in WAR files via GUID.
+// TODO(crbug.com/435609878): Remove after m142. It's for safe m141 back merge.
+BASE_DECLARE_FEATURE(kExtensionLocalizationGuid);
+
 // A replacement key for declaring icons, in addition to supporting dark mode.
 BASE_DECLARE_FEATURE(kExtensionIconVariants);
 

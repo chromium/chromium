@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
@@ -49,6 +50,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
 #include "extensions/common/utils/content_script_utils.h"
@@ -655,6 +657,77 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
   EXPECT_EQ("success", content::EvalJs(get_active_tab(), kLoadExtraStylesheet));
   EXPECT_EQ(kInjectedDivColor, get_element_color("#div3"));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+class ContentScriptCssApiTest : public ContentScriptApiTest {
+ protected:
+  base::test::ScopedFeatureList feature_list_{
+      extensions_features::kExtensionLocalizationGuid};
+};
+
+// Tests a page's service worker intercepting an extension's stylesheet as
+// served by a dynamic URL.
+// Regression test for https://crbug.com/435609878.
+// TODO(crbug.com/447647864): Port to desktop Android when `getComputedStyle()`
+// returns updated values for a web service worker, instead of the default.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, LocalizedWithDynamicUrl) {
+  // Load an extension with a stylesheet that can be served by a dynamic URL.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("content_scripts/css_l10n_dynamic"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to a web page controlled by a service worker. The page will send a
+  // "ready" message when the service worker is activated and has claimed the
+  // page as a client.
+  const GURL url = embedded_test_server()->GetURL(
+      "/extensions/page_with_service_worker/index.html");
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
+  std::string ready;
+  EXPECT_TRUE(message_queue.WaitForMessage(&ready));
+  EXPECT_EQ(R"("ready")", ready);
+
+  // Inject a script that will add a stylesheet associated with the extension's
+  // dynamic URL and return (via a promise) when the stylesheet has loaded.
+  static constexpr char kInjectStylesheet[] =
+      R"((function() {
+           let sheet = document.createElement('link');
+           sheet.type = 'text/css';
+           sheet.rel = 'stylesheet';
+           let url = '%s';
+           sheet.href = url;
+           return new Promise(resolve => {
+             sheet.onload = () => { resolve('success'); };
+             sheet.onerror = error => { resolve(error); };
+             document.head.appendChild(sheet);
+           });
+         })();)";
+  GURL dynamic_url = extension->dynamic_url().Resolve("style.css");
+  std::string script =
+      base::StringPrintf(kInjectStylesheet, dynamic_url.spec());
+  EXPECT_EQ("success", content::EvalJs(web_contents, script));
+
+  // Retrieve the body's background color. Red (rgb(255, 0, 0) comes from the
+  // web service worker which retrieves it from the extension's messages.json
+  // file. This is made possible due to the extension's `default_locale` key.
+  // Notes:
+  // * The stylesheet in the extension uses the color "green". This difference
+  //   ensures the stylesheet is properly being served by the service worker,
+  //   and not the extension.
+  // * The service worker replies with an unlocalized variable in the stylesheet
+  //   for the color. This ensures that the stylesheet is properly localized by
+  //   the browser process before use.
+  static constexpr char kGetBodyColor[] =
+      R"((function() {
+           return getComputedStyle(document.body).color;
+         })();)";
+  EXPECT_EQ("rgb(255, 0, 0)", content::EvalJs(web_contents, kGetBodyColor));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // TODO(crbug.com/371432155): Port to desktop Android when the chrome.tabs API
