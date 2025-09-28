@@ -5,17 +5,34 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ACCOUNT_SETTINGS_ACCOUNT_SETTING_SERVICE_H_
 
+#include <memory>
+
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/data_type_store.h"
+
+namespace syncer {
+class DataTypeControllerDelegate;
+}
 
 namespace autofill {
+
+class AccountSettingSyncBridge;
 
 // Manages settings stored in your google account. These settings differ from
 // regular prefs, since they originate from the user's account and are available
 // beyond Chrome.
 class AccountSettingService : public KeyedService {
  public:
-  AccountSettingService() = default;
-  ~AccountSettingService() override = default;
+  explicit AccountSettingService(
+      syncer::OnceDataTypeStoreFactory store_factory);
+  ~AccountSettingService() override;
+
+  // Returns a controller delegate for the `sync_bridge_` owned by this service.
+  std::unique_ptr<syncer::DataTypeControllerDelegate>
+  GetSyncControllerDelegate();
+
+ private:
+  std::unique_ptr<AccountSettingSyncBridge> sync_bridge_;
 };
 
 }  // namespace autofill
