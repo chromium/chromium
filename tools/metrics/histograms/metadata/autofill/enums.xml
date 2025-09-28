@@ -242,6 +242,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="OfferNotification"/>
   <int value="7" label="FilledCardInformation"/>
   <int value="8" label="Password"/>
+  <int value="9" label="WalletablePassConsent"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/autofill/bubble_controller_base.h:BubbleType) -->

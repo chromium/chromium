@@ -34,6 +34,11 @@ class MockWalletablePassClient : public WalletablePassClient {
               GetOptimizationGuideModelExecutor,
               (),
               (override));
+  MOCK_METHOD(
+      void,
+      ShowWalletablePassConsentBubble,
+      (WalletablePassClient::WalletablePassBubbleResultCallback callback),
+      (override));
 };
 
 // Mock implementation of WalletablePassIngestionController that provides mocks

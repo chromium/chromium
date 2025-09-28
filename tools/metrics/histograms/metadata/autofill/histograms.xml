@@ -2244,6 +2244,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="SaveUpdateCard" summary="Save/update card bubble."/>
     <variant name="VirtualCardEnrollConfirmation"
         summary="Virtual card enroll confirmation bubble."/>
+    <variant name="WalletablePassConsent"
+        summary="Walletable pass consent bubble."/>
   </token>
 <!-- LINT.ThenChange(//chrome/browser/ui/autofill/bubble_manager_impl.cc:BubbleTypeToMetricSuffix) -->
 

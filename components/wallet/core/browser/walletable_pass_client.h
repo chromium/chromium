@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_CLIENT_H_
 #define COMPONENTS_WALLET_CORE_BROWSER_WALLETABLE_PASS_CLIENT_H_
 
+#include "base/functional/callback.h"
+
 namespace optimization_guide {
 class OptimizationGuideDecider;
 class OptimizationGuideModelExecutor;
@@ -22,6 +24,18 @@ namespace wallet {
 // lifecycle.
 class WalletablePassClient {
  public:
+  enum WalletablePassBubbleResult {
+    kUnknown = 0,
+    kLostFocus = 1,
+    kClosed = 2,
+    kAccepted = 3,
+    kDeclined = 4,
+    kMaxValue = kDeclined
+  };
+
+  using WalletablePassBubbleResultCallback =
+      base::OnceCallback<void(WalletablePassBubbleResult)>;
+
   virtual ~WalletablePassClient() = default;
 
   virtual optimization_guide::OptimizationGuideDecider*
@@ -29,6 +43,9 @@ class WalletablePassClient {
 
   virtual optimization_guide::OptimizationGuideModelExecutor*
   GetOptimizationGuideModelExecutor() = 0;
+
+  virtual void ShowWalletablePassConsentBubble(
+      WalletablePassBubbleResultCallback callback) = 0;
 };
 
 }  // namespace wallet

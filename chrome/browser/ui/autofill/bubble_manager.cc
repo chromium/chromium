@@ -22,10 +22,13 @@ std::unique_ptr<BubbleManager> BubbleManager::Create(tabs::TabInterface* tab) {
 // static
 BubbleManager* BubbleManager::GetForWebContents(
     content::WebContents* web_contents) {
+  return GetForTab(tabs::TabInterface::MaybeGetFromContents(web_contents));
+}
+
+// static
+BubbleManager* BubbleManager::GetForTab(tabs::TabInterface* tab_interface) {
   CHECK(base::FeatureList::IsEnabled(
       autofill::features::kAutofillShowBubblesBasedOnPriorities));
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!tab_interface) {
     return nullptr;
   }

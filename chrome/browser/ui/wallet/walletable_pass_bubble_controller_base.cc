@@ -4,13 +4,39 @@
 
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_controller_base.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace wallet {
+namespace {
 
-inline WalletablePassBubbleControllerBase::
-    WalletablePassBubbleControllerBase() = default;
+using enum WalletablePassBubbleControllerBase::WalletablePassBubbleClosedReason;
+
+WalletablePassClient::WalletablePassBubbleResult GetResult(
+    WalletablePassBubbleControllerBase::WalletablePassBubbleClosedReason
+        close_reason) {
+  switch (close_reason) {
+    case kUnknown:
+      return WalletablePassClient::WalletablePassBubbleResult::kUnknown;
+    case kLostFocus:
+      return WalletablePassClient::WalletablePassBubbleResult::kLostFocus;
+    case kClosed:
+      return WalletablePassClient::WalletablePassBubbleResult::kClosed;
+    case kAccepted:
+      return WalletablePassClient::WalletablePassBubbleResult::kAccepted;
+    case kDeclined:
+      return WalletablePassClient::WalletablePassBubbleResult::kDeclined;
+  }
+}
+
+}  // namespace
+
+WalletablePassBubbleControllerBase::WalletablePassBubbleControllerBase(
+    tabs::TabInterface* tab)
+    : tab_(CHECK_DEREF(tab)) {}
 
 WalletablePassBubbleControllerBase::~WalletablePassBubbleControllerBase() =
     default;
@@ -19,19 +45,58 @@ bool WalletablePassBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }
 
+void WalletablePassBubbleControllerBase::HideBubble(bool show_next_bubble) {
+  if (IsShowingBubble()) {
+    bubble_view_->CloseBubble();
+    ResetBubbleViewAndInformBubbleManager(show_next_bubble);
+  }
+}
+
 bool WalletablePassBubbleControllerBase::IsMouseHovered() const {
   return IsShowingBubble() && bubble_view_->IsMouseHovered();
 }
 
 void WalletablePassBubbleControllerBase::OnBubbleClosed(
     WalletablePassBubbleClosedReason reason) {
-  // TODO(crbug.com/441830204): Null the pointer & inform the callback of the
-  // result.
+  if (callback_) {
+    std::move(callback_).Run(GetResult(reason));
+  }
+  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
 }
 
 void WalletablePassBubbleControllerBase::SetBubbleView(
     WalletablePassBubbleViewBase& bubble_view) {
   bubble_view_ = &bubble_view;
+}
+
+void WalletablePassBubbleControllerBase::SetCallback(
+    WalletablePassClient::WalletablePassBubbleResultCallback callback) {
+  callback_ = std::move(callback);
+}
+
+void WalletablePassBubbleControllerBase::QueueOrShowBubble(bool force_show) {
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
+    if (auto* manager = autofill::BubbleManager::GetForTab(&tab())) {
+      manager->RequestShowController(*this, force_show);
+    }
+    return;
+  }
+
+  ShowBubble();
+}
+
+void WalletablePassBubbleControllerBase::ResetBubbleViewAndInformBubbleManager(
+    bool show_next_bubble) {
+  if (IsShowingBubble() &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
+    if (auto* manager = autofill::BubbleManager::GetForTab(&tab())) {
+      manager->OnBubbleHiddenByController(
+          *this, /*show_next_bubble=*/show_next_bubble);
+    }
+  }
+  bubble_view_ = nullptr;
 }
 
 }  // namespace wallet

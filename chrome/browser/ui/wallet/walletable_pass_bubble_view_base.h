@@ -8,9 +8,13 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace wallet {
 
@@ -33,6 +37,8 @@ class WalletablePassBubbleViewBase : public LocationBarBubbleDelegateView {
 
   // Called from controller to check if the mouse is hovering over the view.
   bool IsMouseHovered() const;
+
+  using LocationBarBubbleDelegateView::CloseBubble;
 
  private:
   base::WeakPtr<WalletablePassBubbleControllerBase> controller_;

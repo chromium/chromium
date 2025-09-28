@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_view_base.h"
 
 #include "chrome/browser/ui/wallet/walletable_pass_bubble_controller_base.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 

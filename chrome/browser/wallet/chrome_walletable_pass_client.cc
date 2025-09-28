@@ -8,6 +8,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/wallet/walletable_pass_consent_bubble_controller.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/tabs/public/tab_interface.h"
@@ -32,6 +33,15 @@ ChromeWalletablePassClient::GetOptimizationGuideModelExecutor() {
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
   return OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+}
+
+void ChromeWalletablePassClient::ShowWalletablePassConsentBubble(
+    WalletablePassBubbleResultCallback callback) {
+  if (!consent_bubble_controller_) {
+    consent_bubble_controller_ =
+        std::make_unique<WalletablePassConsentBubbleController>(&tab_.get());
+  }
+  consent_bubble_controller_->ShowConsentBubble(std::move(callback));
 }
 
 }  // namespace wallet

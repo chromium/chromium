@@ -76,6 +76,7 @@ class BubbleManager {
 
   static std::unique_ptr<BubbleManager> Create(tabs::TabInterface* tab);
   static BubbleManager* GetForWebContents(content::WebContents* web_contents);
+  static BubbleManager* GetForTab(tabs::TabInterface* tab_interface);
 
   // Requests the bubble for `controller_to_show` to be displayed.
   // If `force_show` is true, this bubble will preempt any active bubble,

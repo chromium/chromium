@@ -12,6 +12,7 @@ static_library("wallet") {
     "//base",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui/wallet",
     "//components/optimization_guide/core",
     "//components/wallet/content/browser",
     "//components/wallet/core/browser",

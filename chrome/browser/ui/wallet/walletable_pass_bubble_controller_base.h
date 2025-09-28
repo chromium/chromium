@@ -5,8 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_BUBBLE_CONTROLLER_BASE_H_
 #define CHROME_BROWSER_UI_WALLET_WALLETABLE_PASS_BUBBLE_CONTROLLER_BASE_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/autofill/bubble_controller_base.h"
+#include "components/wallet/core/browser/walletable_pass_client.h"
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace wallet {
 
 class WalletablePassBubbleViewBase;
@@ -26,7 +32,8 @@ class WalletablePassBubbleControllerBase
     kMaxValue = kDeclined
   };
 
-  WalletablePassBubbleControllerBase();
+  explicit WalletablePassBubbleControllerBase(tabs::TabInterface* tab);
+
   ~WalletablePassBubbleControllerBase() override;
 
   WalletablePassBubbleControllerBase(
@@ -36,6 +43,7 @@ class WalletablePassBubbleControllerBase
       const WalletablePassBubbleControllerBase&) = delete;
 
   // BubbleControllerBase:
+  void HideBubble(bool show_next_bubble) override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;
 
@@ -48,9 +56,23 @@ class WalletablePassBubbleControllerBase
  protected:
   void SetBubbleView(WalletablePassBubbleViewBase& bubble_view);
 
+  void SetCallback(
+      WalletablePassClient::WalletablePassBubbleResultCallback callback);
+
+  void QueueOrShowBubble(bool force_show = false);
+
+  void ResetBubbleViewAndInformBubbleManager(bool show_next_bubble);
+
+  tabs::TabInterface& tab() { return tab_.get(); }
+
  private:
   // Weak reference. Will be nullptr if no bubble is currently shown.
   raw_ptr<WalletablePassBubbleViewBase> bubble_view_ = nullptr;
+
+  // The tab that the bubble is associated with.
+  const raw_ref<tabs::TabInterface> tab_;
+
+  WalletablePassClient::WalletablePassBubbleResultCallback callback_;
 };
 
 }  // namespace wallet
