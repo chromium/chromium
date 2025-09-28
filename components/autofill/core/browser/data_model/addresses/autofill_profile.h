@@ -12,6 +12,7 @@
 #include <list>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -155,7 +156,7 @@ class AutofillProfile : public FormGroup {
 #if BUILDFLAG(IS_ANDROID)
   // Create a new Java AutofillProfile instance.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
-      const std::string& app_locale) const;
+      std::string_view app_locale) const;
 
   // Given a Java AutofillProfile object, create an equivalent C++ instance.
   // Java profile can represent either a new or an existing address profile
@@ -168,7 +169,7 @@ class AutofillProfile : public FormGroup {
   static AutofillProfile CreateFromJavaObject(
       const base::android::JavaParamRef<jobject>& jprofile,
       const AutofillProfile* existing_profile,
-      const std::string& app_locale);
+      std::string_view app_locale);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // FormGroup:
@@ -217,11 +218,11 @@ class AutofillProfile : public FormGroup {
   // Returns true if there are no values (field types) set.
   bool IsEmpty(std::string_view app_locale) const;
 
-  // Returns true if the |type| of data in this profile is present, but invalid.
+  // Returns true if the `type` of data in this profile is present, but invalid.
   // Otherwise returns false.
   bool IsPresentButInvalid(FieldType type) const;
 
-  // Comparison for Sync.  Returns 0 if the profile is the same as |this|,
+  // Comparison for Sync.  Returns 0 if the profile is the same as `this`,
   // or < 0, or > 0 if it is different.  The implied ordering can be used for
   // culling duplicates.  The ordering is based on collation order of the
   // textual contents of the fields. Full profile comparison, comparison
@@ -235,9 +236,9 @@ class AutofillProfile : public FormGroup {
   // differences in usage stats.
   bool EqualsForLegacySyncPurposes(const AutofillProfile& profile) const;
 
-  // Returns true if |new_profile| and this are considered equal for updating
+  // Returns true if `new_profile` and this are considered equal for updating
   // purposes, meaning that if equal we do not need to update this profile to
-  // the |new_profile|.
+  // the `new_profile`.
   bool EqualsForUpdatePurposes(const AutofillProfile& new_profile) const;
 
   // Equality operators compare GUIDs, origins, language code, and the contents
@@ -262,17 +263,17 @@ class AutofillProfile : public FormGroup {
   bool IsStrictSupersetOf(const AutofillProfileComparator& comparator,
                           const AutofillProfile& profile) const;
 
-  // Overwrites the data of |this| profile with data from the given |profile|.
+  // Overwrites the data of `this` profile with data from the given `profile`.
   // Expects that the profiles have the same guid.
   void OverwriteDataFromForLegacySync(const AutofillProfile& profile);
 
-  // Merges the data from |this| profile and the given |profile| into |this|
-  // profile. Expects that |this| and |profile| have already been deemed
+  // Merges the data from `this` profile and the given `profile` into `this`
+  // profile. Expects that `this` and `profile` have already been deemed
   // mergeable by an AutofillProfileComparator.
   bool MergeDataFrom(const AutofillProfile& profile,
-                     const std::string& app_locale);
+                     std::string_view app_locale);
 
-  // Creates a differentiating label for each of the |profiles|.
+  // Creates a differentiating label for each of the `profiles`.
   // Labels consist of the minimal differentiating combination of:
   // 1. Full name.
   // 2. Address.
@@ -281,7 +282,7 @@ class AutofillProfile : public FormGroup {
   // 5. Company name.
   static std::vector<std::u16string> CreateDifferentiatingLabels(
       base::span<const AutofillProfile* const> profiles,
-      const std::string& app_locale);
+      std::string_view app_locale);
 
   // Creates inferred labels for `profiles`, according to the rules above and
   // stores them in `labels`. The inferred labels both provide a way to
@@ -306,20 +307,20 @@ class AutofillProfile : public FormGroup {
       std::optional<FieldType> triggering_field_type,
       FieldTypeSet excluded_fields,
       size_t minimal_fields_shown,
-      const std::string& app_locale,
+      std::string_view app_locale,
       bool use_improved_labels_order = false);
 
-  // Builds inferred label from the first |num_fields_to_include| non-empty
-  // fields in |label_fields|. Uses as many fields as possible if there are not
+  // Builds inferred label from the first `num_fields_to_include` non-empty
+  // fields in `label_fields`. Uses as many fields as possible if there are not
   // enough non-empty fields.
   std::u16string ConstructInferredLabel(
       base::span<const FieldType> label_fields,
       size_t num_fields_to_include,
-      const std::string& app_locale) const;
+      std::string_view app_locale) const;
 
   const std::string& language_code() const { return language_code_; }
-  void set_language_code(const std::string& language_code) {
-    language_code_ = language_code;
+  void set_language_code(std::string language_code) {
+    language_code_ = std::move(language_code);
   }
 
   // Logs the number of days since the profile was last used and records its
@@ -331,18 +332,18 @@ class AutofillProfile : public FormGroup {
   // tokens. Should be called when a profile is used to fill a form.
   void LogVerificationStatuses();
 
-  // Calls |FinalizeAfterImport()| on all |FormGroup| members that are
-  // implemented using the hybrid-structure |AddressComponent|.
+  // Calls `FinalizeAfterImport()` on all `FormGroup` members that are
+  // implemented using the hybrid-structure `AddressComponent`.
   // If possible, this will initiate the completion of the structure tree to
   // derive all missing values either by parsing their parent node if assigned,
   // or by formatting the value from their child nodes.
   // Returns true if all calls yielded true.
   bool FinalizeAfterImport();
 
-  // Returns a constant reference to the |name_| field.
+  // Returns a constant reference to the `name_` field.
   const NameInfo& GetNameInfo() const { return name_; }
 
-  // Returns a constant reference to the |address_| field.
+  // Returns a constant reference to the `address_` field.
   const Address& GetAddress() const { return address_; }
 
   // Returns the profile country code.
@@ -352,7 +353,9 @@ class AutofillProfile : public FormGroup {
   const std::string& profile_label() const { return profile_label_; }
 
   // Sets the label of the profile.
-  void set_profile_label(const std::string& label) { profile_label_ = label; }
+  void set_profile_label(std::string label) {
+    profile_label_ = std::move(label);
+  }
 
   RecordType record_type() const { return record_type_; }
 
@@ -388,7 +391,7 @@ class AutofillProfile : public FormGroup {
   // found.
   FieldTypeSet FindInaccessibleProfileValues() const;
 
-  // Clears all specified |fields| from the profile.
+  // Clears all specified `fields` from the profile.
   void ClearFields(const FieldTypeSet& fields);
 
   // If a regular name is written in phonetic spelling, the contents
@@ -416,17 +419,17 @@ class AutofillProfile : public FormGroup {
   friend LogBuffer& operator<<(LogBuffer& buffer,
                                const AutofillProfile& profile);
 
-  // Creates inferred labels for |profiles| at indices corresponding to
-  // |indices|, and stores the results to the corresponding elements of
-  // |labels|. These labels include enough fields to differentiate among the
-  // profiles, if possible; and also at least |num_fields_to_include| fields, if
-  // possible. The label fields are drawn from |field_types|.
+  // Creates inferred labels for `profiles` at indices corresponding to
+  // `indices`, and stores the results to the corresponding elements of
+  // `labels`. These labels include enough fields to differentiate among the
+  // profiles, if possible; and also at least `num_fields_to_include` fields, if
+  // possible. The label fields are drawn from `field_types`.
   static void CreateInferredLabelsHelper(
       base::span<const AutofillProfile* const> profiles,
       const std::list<size_t>& indices,
       const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
-      const std::string& app_locale,
+      std::string_view app_locale,
       bool force_differentiating_label_in_front,
       std::vector<std::u16string>& labels);
 
@@ -470,7 +473,7 @@ class AutofillProfile : public FormGroup {
   // implemented and is currently unused.
   std::string profile_label_;
 
-  // The BCP 47 language code that can be used to format |address_| for display.
+  // The BCP 47 language code that can be used to format `address_` for display.
   std::string language_code_;
 
   RecordType record_type_;

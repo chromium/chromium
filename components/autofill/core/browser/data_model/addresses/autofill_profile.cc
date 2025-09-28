@@ -334,7 +334,7 @@ AutofillProfile& AutofillProfile::operator=(const AutofillProfile& profile) {
 
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
-    const std::string& app_locale) const {
+    std::string_view app_locale) const {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> jprofile =
       Java_AutofillProfile_Constructor(
@@ -359,7 +359,7 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
 AutofillProfile AutofillProfile::CreateFromJavaObject(
     const base::android::JavaParamRef<jobject>& jprofile,
     const AutofillProfile* existing_profile,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   JNIEnv* env = base::android::AttachCurrentThread();
   AutofillProfile profile =
       CreateStarterProfile(jprofile, env, existing_profile);
@@ -759,7 +759,7 @@ void AutofillProfile::OverwriteDataFromForLegacySync(
 }
 
 bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
-                                    const std::string& app_locale) {
+                                    std::string_view app_locale) {
   AutofillProfileComparator comparator(app_locale);
   DCHECK(comparator.AreMergeable(*this, profile));
 
@@ -875,7 +875,7 @@ void AutofillProfile::MergeFormGroupTokenQuality(
 // static
 std::vector<std::u16string> AutofillProfile::CreateDifferentiatingLabels(
     base::span<const AutofillProfile* const> profiles,
-    const std::string& app_locale) {
+    std::string_view app_locale) {
   const size_t kMinimalFieldsShown = 2;
   return CreateInferredLabels(profiles, /*suggested_fields=*/std::nullopt,
                               /*triggering_field_type=*/std::nullopt,
@@ -890,7 +890,7 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
     std::optional<FieldType> triggering_field_type,
     FieldTypeSet excluded_fields,
     size_t minimal_fields_shown,
-    const std::string& app_locale,
+    std::string_view app_locale,
     bool use_improved_labels_order) {
   // TODO(crbug.com/380273791): Clean up after launch.
   CHECK(!triggering_field_type ||
@@ -952,7 +952,7 @@ std::vector<std::u16string> AutofillProfile::CreateInferredLabels(
 std::u16string AutofillProfile::ConstructInferredLabel(
     base::span<const FieldType> included_fields,
     size_t num_fields_to_use,
-    const std::string& app_locale) const {
+    std::string_view app_locale) const {
   // TODO(estade): use libaddressinput?
   std::u16string separator =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR);
@@ -1103,7 +1103,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::list<size_t>& indices,
     const std::vector<FieldType>& field_types,
     size_t num_fields_to_include,
-    const std::string& app_locale,
+    std::string_view app_locale,
     bool force_differentiating_label_in_front,
     std::vector<std::u16string>& labels) {
   // For efficiency, we first construct a map of fields to their text values and

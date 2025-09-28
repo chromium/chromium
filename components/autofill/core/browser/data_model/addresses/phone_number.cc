@@ -367,7 +367,7 @@ void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,
 
 bool PhoneNumber::PhoneCombineHelper::ParseNumber(
     const AutofillProfile& profile,
-    const std::string& app_locale,
+    std::string_view app_locale,
     std::u16string* value) const {
   if (IsEmpty())
     return false;
@@ -384,7 +384,7 @@ bool PhoneNumber::PhoneCombineHelper::ParseNumber(
 // static
 bool PhoneNumber::ImportPhoneNumberToProfile(
     const PhoneNumber::PhoneCombineHelper& combined_phone,
-    const std::string& app_locale,
+    std::string_view app_locale,
     AutofillProfile& profile) {
   std::u16string constructed_number;
   // If the phone number only consists of a single component, the
