@@ -98,33 +98,12 @@ void AppendLogsQueryParam(
   }
 }
 
-GURL AppendOrReplaceQueryParametersForLensRequest(const GURL& url,
-                                                  lens::EntryPoint ep) {
-  GURL modified_url(url);
-  for (auto const& param : GetLensQueryParametersMap(ep)) {
-    modified_url = net::AppendOrReplaceQueryParameter(modified_url, param.first,
-                                                      param.second);
-  }
-
-  return modified_url;
-}
-
 std::string GetQueryParametersForLensRequest(lens::EntryPoint ep) {
   std::string query_string;
   for (auto const& param : GetLensQueryParametersMap(ep)) {
     AppendQueryParam(&query_string, param.first.c_str(), param.second.c_str());
   }
   return query_string;
-}
-
-bool IsValidLensResultUrl(const GURL& url) {
-  if (url.is_empty()) {
-    return false;
-  }
-
-  std::string payload;
-  // Make sure the payload is present
-  return net::GetValueForKeyInQuery(url, kPayloadQueryParameter, &payload);
 }
 
 bool IsLensMWebResult(const GURL& url) {
