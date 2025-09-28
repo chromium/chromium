@@ -32,7 +32,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, EmbedTagCreatesPlugin) {
-  // TODO: add expection of the creation of SecureEmbedHost and other browser
+  // TODO: add expectations of the creation of SecureEmbedHost and other browser
   // side objects.
 }
 
