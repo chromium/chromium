@@ -3647,6 +3647,12 @@
       status: "stable",
     },
     {
+      // Killswitch M142. Overrides the above to enable PaintOffsetTranslation
+      // for all composited LayoutObjects.
+      name: "PaintOffsetTranslationForComposited",
+      status: "stable",
+    },
+    {
       name: "PaintTimingMixin",
       status: "experimental",
     },
