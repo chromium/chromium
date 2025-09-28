@@ -11,6 +11,8 @@ assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 static_library("autofill") {
   sources = [
+    "account_setting_service_factory.cc",
+    "account_setting_service_factory.h",
     "address_normalizer_factory.cc",
     "address_normalizer_factory.h",
     "autocomplete_history_manager_factory.cc",
