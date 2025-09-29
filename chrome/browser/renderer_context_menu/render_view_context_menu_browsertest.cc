@@ -2721,17 +2721,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
   }));
 }
 
-// This test is flaky on the linux-chromeos-chrome bot.
-// TODO(crbug.com/445698141): Enable the test on ChromeOS bots.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SearchForTextContextMenuOpensLensOverlay \
-  DISABLED_SearchForTextContextMenuOpensLensOverlay
-#else
-#define MAYBE_SearchForTextContextMenuOpensLensOverlay \
-  SearchForTextContextMenuOpensLensOverlay
-#endif
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
-                       MAYBE_SearchForTextContextMenuOpensLensOverlay) {
+                       SearchForTextContextMenuOpensLensOverlay) {
   GURL page("data:text/html,text");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
 
@@ -2751,11 +2742,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
                                              base::NullCallback());
       }));
 
-  // Clicking the search for text entrypoint should eventually result in CSB
-  // state.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return controller->state() == LensOverlayController::State::kHidden;
-  }));
+  // Wait for the side panel to load.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->GetSidePanelWebContentsForTesting(); }));
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+  ASSERT_EQ(controller->state(), LensOverlayController::State::kOff);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayBrowserTest,
