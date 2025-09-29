@@ -727,13 +727,7 @@ public class StripLayoutTab extends StripLayoutView {
             @Nullable Float bottom) {
         super.setTouchTargetInsets(left, top, right, bottom);
 
-        // In more density mode, the close button's touch target should match its own size.
-        // Otherwise, align its vertical insets with the parent tab.
-        if (StripLayoutUtils.shouldApplyMoreDensity()) {
-            mCloseButton.setTouchTargetInsets(null, null, null, null);
-        } else {
-            mCloseButton.setTouchTargetInsets(null, top, null, bottom);
-        }
+        mCloseButton.setTouchTargetInsets(null, top, null, bottom);
     }
 
     /**
