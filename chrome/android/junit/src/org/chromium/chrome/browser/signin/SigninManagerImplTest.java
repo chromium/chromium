@@ -36,7 +36,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -529,9 +528,6 @@ public class SigninManagerImplTest {
         createSigninManager();
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
 
-        // Make sure that the user is not a demo user.
-        DeviceInfo.setIsRetailDemoModeForTesting(false);
-
         assertTrue(mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ true));
         assertTrue(mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ false));
     }
@@ -540,9 +536,6 @@ public class SigninManagerImplTest {
     public void signInShouldNotBeSupportedWhenGooglePlayServicesIsRequiredAndNotAvailable() {
         createSigninManager();
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(false);
-
-        // Make sure that the user is not a demo user.
-        DeviceInfo.setIsRetailDemoModeForTesting(false);
 
         assertFalse(mSigninManager.isSigninSupported(/* requireUpdatedPlayServices= */ true));
     }

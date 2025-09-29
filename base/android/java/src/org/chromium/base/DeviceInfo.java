@@ -7,6 +7,7 @@ package org.chromium.base;
 import static android.content.Context.UI_MODE_SERVICE;
 
 import android.app.UiModeManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.FeatureInfo;
 import android.content.pm.PackageInfo;
@@ -128,16 +129,21 @@ public final class DeviceInfo {
         if (sIsRetailDemoModeForTesting != null) {
             return sIsRetailDemoModeForTesting;
         }
-        DeviceInfo instance = getInstance();
-        if (instance.mIsRetailDemoMode == null) {
-            instance.mIsRetailDemoMode =
-                    0
-                            != Settings.Global.getInt(
-                                    ContextUtils.getApplicationContext().getContentResolver(),
-                                    "device_demo_mode", // Settings.Global.DEVICE_DEMO_MODE is @hide
-                                    0);
+        // Always assume false for tests, unless specifically overridden by a test.
+        if (BuildConfig.IS_FOR_TEST) {
+            return false;
         }
-        return instance.mIsRetailDemoMode;
+        DeviceInfo instance = getInstance();
+        boolean ret;
+        if (instance.mIsRetailDemoMode != null) {
+            ret = instance.mIsRetailDemoMode;
+        } else {
+            ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+            // Android demo mode (Settings.Global.DEVICE_DEMO_MODE is @hide).
+            ret = Settings.Global.getInt(resolver, "device_demo_mode", 0) != 0;
+            instance.mIsRetailDemoMode = ret;
+        }
+        return ret;
     }
 
     public static boolean isInitializedForTesting() {

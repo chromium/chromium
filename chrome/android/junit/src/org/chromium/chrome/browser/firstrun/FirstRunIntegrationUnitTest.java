@@ -32,7 +32,6 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -70,7 +69,6 @@ public final class FirstRunIntegrationUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         mShadowApplication = shadowOf((Application) ApplicationProvider.getApplicationContext());
 
-        DeviceInfo.setIsRetailDemoModeForTesting(false);
         ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
 
         FirstRunStatus.setFirstRunFlowComplete(false);
