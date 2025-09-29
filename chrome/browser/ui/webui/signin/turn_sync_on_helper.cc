@@ -342,7 +342,8 @@ void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
           TurnSyncOnHelperPolicyFetchTracker::CreateInstance(profile_,
                                                              account_info_);
       policy_fetch_tracker_->RegisterForPolicy(base::BindOnce(
-          &TurnSyncOnHelper::OnRegisteredForPolicy, base::Unretained(this)));
+          &TurnSyncOnHelper::OnRegisteredForPolicy, base::Unretained(this)),
+          /*is_registration_for_management_consistency_check=*/false);
       break;
     }
     case ProfileMode::NEW_PROFILE:

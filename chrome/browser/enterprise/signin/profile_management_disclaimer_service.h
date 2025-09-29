@@ -159,7 +159,6 @@ class ProfileManagementDisclaimerService
   std::optional<signin::SigninChoice> user_choice_for_testing_;
 
   bool enable_management_disclaimer_ = true;
-  bool skip_automatic_disclaimer_ = false;
   SigninPrefs signin_prefs_;
 
   std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>

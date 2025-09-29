@@ -57,14 +57,31 @@ bool CanTryPolicyRegistration(std::optional<base::Time> last_failure_time) {
          switches::kPolicyDisclaimerRegistrationRetryDelay.Get();
 }
 
+bool IsSigninRegistration(signin_metrics::AccessPoint access_point) {
+  return access_point != signin_metrics::AccessPoint::
+                             kEnterpriseManagementDisclaimerAtStartup &&
+         access_point != signin_metrics::AccessPoint::
+                             kEnterpriseManagementDisclaimerAfterBrowserFocus;
+}
+
+bool AllowDisclaimer(signin_metrics::AccessPoint access_point) {
+  if (base::FeatureList::IsEnabled(switches::kEnforceManagementDisclaimer)) {
+    return true;
+  }
+  return access_point != signin_metrics::AccessPoint::
+                             kEnterpriseManagementDisclaimerAtStartup &&
+         access_point != signin_metrics::AccessPoint::
+                             kEnterpriseManagementDisclaimerAfterBrowserFocus &&
+         access_point != signin_metrics::AccessPoint::
+                             kEnterpriseManagementDisclaimerAfterSignin;
+}
+
 }  // namespace
 
 ProfileManagementDisclaimerService::ProfileManagementDisclaimerService(
     Profile* profile)
     : profile_(*profile),
       state_(std::make_unique<ResetableState>()),
-      skip_automatic_disclaimer_(!base::FeatureList::IsEnabled(
-          switches::kEnforceManagementDisclaimer)),
       signin_prefs_(*profile->GetPrefs()) {
   scoped_identity_manager_observation_.Observe(GetIdentityManager());
   scoped_browser_list_observation_.Observe(BrowserList::GetInstance());
@@ -154,6 +171,10 @@ void ProfileManagementDisclaimerService::
   }
   // We should always know the access point that triggered the profile creation.
   CHECK_NE(access_point, signin_metrics::AccessPoint::kUnknown);
+
+  if (!AllowDisclaimer(access_point)) {
+    return;
+  }
 
   if (!state_->account_id.empty() && state_->account_id != account_id) {
     // If the account is different from the one we are already handling, reset
@@ -257,7 +278,8 @@ void ProfileManagementDisclaimerService::
   policy_fetch_tracker->RegisterForPolicy(
       base::BindOnce(&ProfileManagementDisclaimerService::OnRegisteredForPolicy,
                      weak_ptr_factory_.GetWeakPtr(),
-                     /*is_from_cached_registration_result=*/false));
+                     /*is_from_cached_registration_result=*/false),
+      !IsSigninRegistration(state_->access_point));
 }
 
 void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
@@ -337,9 +359,6 @@ void ProfileManagementDisclaimerService::Reset() {
 
 void ProfileManagementDisclaimerService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  if (skip_automatic_disclaimer_) {
-    return;
-  }
   if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
           signin::PrimaryAccountChangeEvent::Type::kCleared &&
       state_->account_id == GetPrimaryAccountInfo().account_id) {
@@ -386,9 +405,6 @@ void ProfileManagementDisclaimerService::OnExtendedAccountInfoUpdated(
 
 void ProfileManagementDisclaimerService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  if (skip_automatic_disclaimer_ && state_->account_id.empty()) {
-    return;
-  }
   if (state_->access_point == signin_metrics::AccessPoint::kUnknown) {
     return;
   }
@@ -409,9 +425,6 @@ void ProfileManagementDisclaimerService::OnRefreshTokenUpdatedForAccount(
 
 void ProfileManagementDisclaimerService::OnBrowserSetLastActive(
     Browser* browser) {
-  if (skip_automatic_disclaimer_ && state_->account_id.empty()) {
-    return;
-  }
   if (browser->profile() != &profile_.get()) {
     return;
   }

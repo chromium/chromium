@@ -74,7 +74,8 @@ void ChromeBrowserCloudManagementRegistrar::
   // request context because the user is not signed in to this profile.
   registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
       policy_client.get(),
-      enterprise_management::DeviceRegisterRequest::BROWSER);
+      enterprise_management::DeviceRegisterRequest::BROWSER,
+      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
 
   // Check if token enrollment is mandatory
   bool is_enrollment_mandatory =

@@ -250,6 +250,7 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   void RegisterForPolicyWithAccountId(
       const std::string& username,
       const CoreAccountId& account_id,
+      bool is_registration_for_management_consistency_check,
       PolicyRegistrationCallback callback) override {
     EXPECT_EQ(email_, username);
     EXPECT_EQ(account_id_, account_id);

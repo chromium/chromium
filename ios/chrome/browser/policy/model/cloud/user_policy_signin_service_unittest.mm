@@ -108,7 +108,9 @@ class UserPolicySigninServiceTest : public PlatformTest {
     AccountInfo account_info =
         identity_test_env()->MakeAccountAvailable(kManagedTestUser);
     service->RegisterForPolicyWithAccountId(
-        kManagedTestUser, account_info.account_id, std::move(callback));
+        kManagedTestUser, account_info.account_id,
+        /*is_registration_for_management_consistency_check=*/false,
+        std::move(callback));
     ASSERT_TRUE(IsRequestActive());
   }
 

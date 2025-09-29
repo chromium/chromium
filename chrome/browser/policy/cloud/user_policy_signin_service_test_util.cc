@@ -46,6 +46,7 @@ FakeUserPolicySigninService::FakeUserPolicySigninService(
 void FakeUserPolicySigninService::RegisterForPolicyWithAccountId(
     const std::string& username,
     const CoreAccountId& account_id,
+    bool is_registration_for_management_consistency_check,
     PolicyRegistrationCallback callback) {
   std::move(callback).Run(dm_token_, client_id_, std::vector<std::string>());
 }

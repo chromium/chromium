@@ -126,8 +126,10 @@ class UserPolicySigninServiceTest : public testing::Test {
       account_info = identity_test_env()->MakeAccountAvailable(kTestUser);
     }
     DCHECK(!account_info.IsEmpty());
-    service->RegisterForPolicyWithAccountId(kTestUser, account_info.account_id,
-                                            std::move(callback));
+    service->RegisterForPolicyWithAccountId(
+        kTestUser, account_info.account_id,
+        /*is_registration_for_management_consistency_check=*/false,
+        std::move(callback));
     ASSERT_TRUE(IsRequestActive());
   }
 

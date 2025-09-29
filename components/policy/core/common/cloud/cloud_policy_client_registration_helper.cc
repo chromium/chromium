@@ -84,8 +84,9 @@ void CloudPolicyClientRegistrationHelper::IdentityManagerHelper::
 
 CloudPolicyClientRegistrationHelper::CloudPolicyClientRegistrationHelper(
     CloudPolicyClient* client,
-    enterprise_management::DeviceRegisterRequest::Type registration_type)
-    : client_(client), registration_type_(registration_type) {
+    enterprise_management::DeviceRegisterRequest::Type registration_type,
+    enterprise_management::DeviceRegisterRequest::Flavor flavor)
+    : client_(client), registration_type_(registration_type), flavor_(flavor) {
   DCHECK(client_);
 }
 
@@ -146,8 +147,7 @@ void CloudPolicyClientRegistrationHelper::StartRegistrationWithOidcTokens(
   client_->AddObserver(this);
 
   CloudPolicyClient::RegistrationParameters register_user(
-      enterprise_management::DeviceRegisterRequest::USER,
-      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
+      enterprise_management::DeviceRegisterRequest::USER, flavor_);
   if (!state.empty()) {
     register_user.oidc_state = state;
   }
@@ -210,9 +210,7 @@ void CloudPolicyClientRegistrationHelper::OnGetUserInfoSuccess(
   // Kick off registration of the CloudPolicyClient with our newly minted
   // oauth_access_token_.
   client_->Register(
-      CloudPolicyClient::RegistrationParameters(
-          registration_type_, enterprise_management::DeviceRegisterRequest::
-                                  FLAVOR_USER_REGISTRATION),
+      CloudPolicyClient::RegistrationParameters(registration_type_, flavor_),
       std::string() /* client_id */, oauth_access_token_);
 }
 

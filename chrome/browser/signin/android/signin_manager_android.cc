@@ -213,6 +213,7 @@ void SigninManagerAndroid::RegisterPolicyWithAccount(
 
   user_policy_signin_service_->RegisterForPolicyWithAccountId(
       account.email, account.account_id,
+      /*is_registration_for_management_consistency_check=*/false,
       base::BindOnce(
           [](RegisterPolicyWithAccountCallback callback,
              const std::string& dm_token, const std::string& client_id,

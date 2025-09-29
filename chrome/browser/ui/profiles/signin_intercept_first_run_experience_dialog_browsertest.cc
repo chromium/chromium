@@ -74,6 +74,7 @@ class FakeUserPolicySigninService : public policy::UserPolicySigninService {
   void RegisterForPolicyWithAccountId(
       const std::string& username,
       const CoreAccountId& account_id,
+      bool is_registration_for_management_consistency_check,
       PolicyRegistrationCallback callback) override {
     std::move(callback).Run(std::string(), std::string(),
                             std::vector<std::string>());

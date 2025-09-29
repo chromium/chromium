@@ -34,13 +34,16 @@ class PolicyFetchTracker
     profile_ = new_profile;
   }
 
-  void RegisterForPolicy(base::OnceCallback<void(bool)> callback) override {
+  void RegisterForPolicy(
+      base::OnceCallback<void(bool)> callback,
+      bool is_registration_for_management_consistency_check) override {
     // This method should only be called once per instance.
     CHECK(!is_managed_account_.has_value());
     policy::UserPolicySigninService* policy_service =
         policy::UserPolicySigninServiceFactory::GetForProfile(profile_);
     policy_service->RegisterForPolicyWithAccountId(
         account_info_.email, account_info_.account_id,
+        is_registration_for_management_consistency_check,
         base::BindOnce(&PolicyFetchTracker::OnRegisteredForPolicy,
                        weak_pointer_factory_.GetWeakPtr(),
                        std::move(callback)));

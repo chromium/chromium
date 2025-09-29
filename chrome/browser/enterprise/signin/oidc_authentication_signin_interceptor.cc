@@ -339,9 +339,10 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration() {
                           g_browser_process->shared_url_loader_factory(),
                           CloudPolicyClient::DeviceDMTokenCallback());
 
-  registration_helper_for_temporary_client_ =
-      std::make_unique<policy::CloudPolicyClientRegistrationHelper>(
-          client.get(), enterprise_management::DeviceRegisterRequest::BROWSER);
+  registration_helper_for_temporary_client_ = std::make_unique<
+      policy::CloudPolicyClientRegistrationHelper>(
+      client.get(), enterprise_management::DeviceRegisterRequest::BROWSER,
+      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
 
   // Using a raw pointer to |this| is okay, because the service owns
   // |registration_helper_for_temporary_client_|.

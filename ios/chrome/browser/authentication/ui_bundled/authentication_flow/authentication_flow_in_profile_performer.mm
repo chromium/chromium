@@ -121,6 +121,7 @@
   __weak __typeof(self) weakSelf = self;
   userPolicyService->RegisterForPolicyWithAccountId(
       userEmail, accountID,
+      /*is_registration_for_management_consistency_check=*/false,
       base::BindOnce(^(const std::string& dmToken, const std::string& clientID,
                        const std::vector<std::string>& userAffiliationIDs) {
         [weakSelf didRegisterForUserPolicyWithDMToken:dmToken

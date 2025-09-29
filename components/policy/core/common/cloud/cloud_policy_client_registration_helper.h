@@ -37,7 +37,8 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   // |context| and |client| are not owned and must outlive this object.
   CloudPolicyClientRegistrationHelper(
       CloudPolicyClient* client,
-      enterprise_management::DeviceRegisterRequest::Type registration_type);
+      enterprise_management::DeviceRegisterRequest::Type registration_type,
+      enterprise_management::DeviceRegisterRequest::Flavor flavor);
   CloudPolicyClientRegistrationHelper(
       const CloudPolicyClientRegistrationHelper&) = delete;
   CloudPolicyClientRegistrationHelper& operator=(
@@ -109,6 +110,7 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
 
   raw_ptr<CloudPolicyClient> client_;
   enterprise_management::DeviceRegisterRequest::Type registration_type_;
+  enterprise_management::DeviceRegisterRequest::Flavor flavor_;
   base::OnceClosure callback_;
 };
 

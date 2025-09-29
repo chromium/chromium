@@ -126,7 +126,8 @@ void HistorySyncOptinPolicyHelper::RegisterForPolicies() {
   policy_fetch_tracker_ = TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
       profile_, account_info_);
   policy_fetch_tracker_->RegisterForPolicy(
-      std::move(on_register_for_policies_callback_));
+      std::move(on_register_for_policies_callback_),
+      /*is_registration_for_management_consistency_check=*/false);
 }
 
 void HistorySyncOptinPolicyHelper::FetchPolicies() {

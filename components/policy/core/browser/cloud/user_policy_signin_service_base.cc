@@ -301,6 +301,7 @@ void UserPolicySigninServiceBase::
 void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
     const std::string& username,
     const CoreAccountId& account_id,
+    bool is_registration_for_management_consistency_check,
     PolicyRegistrationCallback callback) {
   DCHECK(!account_id.empty());
 
@@ -330,7 +331,12 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
   // `RegisterForPolicyWithAccountId()`, if any.
   registration_helper_for_temporary_client_ =
       std::make_unique<CloudPolicyClientRegistrationHelper>(
-          policy_client.get(), GetCloudPolicyRegistrationType());
+          policy_client.get(), GetCloudPolicyRegistrationType(),
+          is_registration_for_management_consistency_check
+              ? enterprise_management::DeviceRegisterRequest::
+                    FLAVOR_USER_REGISTRATION_FOR_MANAGEMENT_CONSISTENCY_CHECK
+              : enterprise_management::DeviceRegisterRequest::
+                    FLAVOR_USER_REGISTRATION);
 
   // Using a raw pointer to |this| is okay, because the service owns
   // |registration_helper_for_temporary_client_|.
@@ -374,7 +380,8 @@ void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
   // Start the process of registering the CloudPolicyClient. Once it completes,
   // policy fetch will automatically happen.
   registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_manager()->core()->client(), GetCloudPolicyRegistrationType());
+      policy_manager()->core()->client(), GetCloudPolicyRegistrationType(),
+      enterprise_management::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
   registration_helper_->StartRegistration(
       identity_manager(),
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),

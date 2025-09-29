@@ -284,6 +284,9 @@ message DeviceRegisterRequest {
     // mandatory, but enrollment failed and we are falling back to manual
     // enrollment.
     FLAVOR_ENROLLMENT_REMOTE_DEPLOYMENT_MANUAL_FALLBACK = 21;
+    // User policy registration for a logged-in user that is not triggered by
+    // signin.
+    FLAVOR_USER_REGISTRATION_FOR_MANAGEMENT_CONSISTENCY_CHECK = 22;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when

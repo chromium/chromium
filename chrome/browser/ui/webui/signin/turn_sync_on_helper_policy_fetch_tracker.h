@@ -28,8 +28,12 @@ class TurnSyncOnHelperPolicyFetchTracker {
   // Registers with the server to check if policies can be fetched for the
   // tracked account. `callback` will run with `true` if the account is managed
   // and we are able to fetch policies for it, `false` otherwise.
+  // `is_registration_for_management_consistency_check` is true if the
+  // registration is triggered by `ProfileManagementDisclaimerService` to check
+  // if the signed in account can receive policies.
   virtual void RegisterForPolicy(
-      base::OnceCallback<void(bool is_managed_account)> callback) = 0;
+      base::OnceCallback<void(bool is_managed_account)> callback,
+      bool is_registration_for_management_consistency_check) = 0;
 
   // Fetches policies and calls `callback` once it's complete. `false` will be
   // returned if the fetch did not successfully start (e.g. if the account is
