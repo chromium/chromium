@@ -10,9 +10,8 @@ found in the LICENSE file.
     android:gravity="center"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
-    android:minWidth="0dp"
-    android:paddingEnd="@dimen/keyboard_accessory_dismiss_button_end_padding"
-    android:paddingStart="0dp"
-    android:layout_marginEnd="@dimen/keyboard_accessory_bar_item_padding"
+    android:paddingStart="@dimen/keyboard_accessory_dismiss_button_padding_horizontal"
+    android:paddingEnd="@dimen/keyboard_accessory_dismiss_button_padding_horizontal"
+    android:layout_marginEnd="@dimen/keyboard_accessory_dismiss_button_margin_end"
     android:textAlignment="center"
     style="@style/TextButton" />

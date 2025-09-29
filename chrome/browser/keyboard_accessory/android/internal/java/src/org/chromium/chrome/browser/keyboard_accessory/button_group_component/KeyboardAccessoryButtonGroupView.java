@@ -9,6 +9,9 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.VisibleForTesting;
@@ -18,14 +21,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 
 /** A {@link LinearLayout} containing the sheet opener buttons in the keyboard accessory. */
 @NullMarked
 public class KeyboardAccessoryButtonGroupView extends LinearLayout {
-    private final ArrayList<ChromeImageButton> mButtons = new ArrayList<>();
+    private final ArrayList<ImageButton> mButtons = new ArrayList<>();
     private @Nullable KeyboardAccessoryButtonGroupListener mListener;
 
     /**
@@ -49,30 +51,29 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
      * @param contentDescription The contentDescription to be used for the button.
      */
     public void addButton(Drawable icon, CharSequence contentDescription) {
-        ChromeImageButton button = new ChromeImageButton(getContext());
-        button.setMaxWidth(
-                getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_width));
-        button.setMaxHeight(
-                getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_size));
-        button.setMinimumWidth(button.getMaxWidth());
-        button.setMinimumHeight(button.getMaxHeight());
-        button.setPaddingRelative(
-                getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding),
-                0,
-                getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding),
-                0);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        ImageButton button =
+                (ImageButton)
+                        inflater.inflate(R.layout.keyboard_accessory_image_button, this, false);
         button.setImageDrawable(icon.mutate()); // mutate() needed to change the active tint.
         button.getDrawable()
                 .setColorFilter(
                         SemanticColorUtils.getDefaultIconColor(getContext()),
                         PorterDuff.Mode.SRC_IN);
         button.setContentDescription(contentDescription);
-        button.setBackground(null);
         button.setOnClickListener(
                 view -> {
                     if (mListener == null) return;
                     mListener.onButtonClicked(mButtons.indexOf(view));
                 });
+        // Add a spacing between buttons in the group.
+        ViewGroup.MarginLayoutParams marginParams =
+                (ViewGroup.MarginLayoutParams) button.getLayoutParams();
+        int spacing =
+                getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_spacing);
+        marginParams.leftMargin = spacing;
+        marginParams.rightMargin = spacing;
+        button.setLayoutParams(marginParams);
         mButtons.add(button);
         addView(button);
     }
@@ -99,7 +100,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     }
 
     @VisibleForTesting
-    public ArrayList<ChromeImageButton> getButtons() {
+    public ArrayList<ImageButton> getButtons() {
         return mButtons;
     }
 }

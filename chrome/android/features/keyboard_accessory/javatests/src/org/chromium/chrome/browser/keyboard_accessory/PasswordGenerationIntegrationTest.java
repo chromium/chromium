@@ -11,6 +11,7 @@ import static org.chromium.chrome.browser.touch_to_fill.password_generation.Touc
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -56,7 +57,6 @@ import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
@@ -285,8 +285,8 @@ public class PasswordGenerationIntegrationTest {
                     return keyboardAccessoryView.getButtons().size()
                             == KEYBOARD_ACCESSORY_BAR_ITEM_COUNT;
                 });
-        ArrayList<ChromeImageButton> buttons = keyboardAccessoryView.getButtons();
-        ChromeImageButton keyButton = buttons.get(0);
+        ArrayList<ImageButton> buttons = keyboardAccessoryView.getButtons();
+        ImageButton keyButton = buttons.get(0);
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         runOnUiThreadBlocking(
                 () -> {

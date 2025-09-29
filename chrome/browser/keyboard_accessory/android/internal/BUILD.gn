@@ -107,6 +107,7 @@ android_resources("java_resources") {
     "java/res/layout/keyboard_accessory_action.xml",
     "java/res/layout/keyboard_accessory_buttons.xml",
     "java/res/layout/keyboard_accessory_dismiss.xml",
+    "java/res/layout/keyboard_accessory_image_button.xml",
     "java/res/layout/keyboard_accessory_sheet.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_address_info.xml",
     "java/res/layout/keyboard_accessory_sheet_tab_credit_card_info.xml",

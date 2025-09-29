@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -72,7 +73,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
 import org.chromium.ui.test.util.ViewUtils;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -522,7 +522,7 @@ public class ManualFillingTestHelper {
                 for (int buttonIndex = 0;
                         buttonIndex < buttonGroupView.getButtons().size();
                         buttonIndex++) {
-                    final ChromeImageButton button = buttonGroupView.getButtons().get(buttonIndex);
+                    final ImageButton button = buttonGroupView.getButtons().get(buttonIndex);
                     if (descriptionToMatch.equals(button.getContentDescription())) {
                         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, button::performClick);
                         return;

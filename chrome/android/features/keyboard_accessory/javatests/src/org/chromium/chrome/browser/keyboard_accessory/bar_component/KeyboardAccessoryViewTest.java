@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,6 +52,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DimenRes;
@@ -112,6 +116,7 @@ import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeoutException;
@@ -963,6 +968,88 @@ public class KeyboardAccessoryViewTest {
         onView(withText("Virtual Card")).check(matches(not(isSelected())));
     }
 
+    @Test
+    @MediumTest
+    public void testAccessoryButtonsHaveHoverBackground() throws InterruptedException {
+        KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
+        ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
+        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+
+        // The presence of a background drawable (e.g., a state-list drawable)
+        // is used to enable visual feedback on hover and press states.
+        assertNotNull(
+                "First button should have a background for hover effects.",
+                buttons.get(0).getBackground());
+        assertNotNull(
+                "Second button should have a background for hover effects.",
+                buttons.get(1).getBackground());
+    }
+
+    @Test
+    @MediumTest
+    public void testAccessoryButtonsHaveCorrectSpacing() throws InterruptedException {
+        KeyboardAccessoryButtonGroupView buttonGroupView = setupButtonsAndGetGroup();
+        ArrayList<ImageButton> buttons = buttonGroupView.getButtons();
+        assertEquals("Expected two buttons to be present.", 2, buttons.size());
+
+        ImageButton button1 = buttons.get(0);
+        ImageButton button2 = buttons.get(1);
+
+        // Check spacing.
+        ViewGroup.MarginLayoutParams params1 =
+                (ViewGroup.MarginLayoutParams) button1.getLayoutParams();
+        ViewGroup.MarginLayoutParams params2 =
+                (ViewGroup.MarginLayoutParams) button2.getLayoutParams();
+
+        int expectedMargin =
+                buttonGroupView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.keyboard_accessory_tab_icon_spacing);
+
+        assertEquals(
+                "First button's left margin is incorrect.", expectedMargin, params1.leftMargin);
+        assertEquals(
+                "First button's right margin is incorrect.", expectedMargin, params1.rightMargin);
+        assertEquals(
+                "Second button's left margin is incorrect.", expectedMargin, params2.leftMargin);
+        assertEquals(
+                "Second button's right margin is incorrect.", expectedMargin, params2.rightMargin);
+    }
+
+    /**
+     * Sets up the accessory, adds two buttons, and waits for them to be laid out.
+     *
+     * @return The {@link KeyboardAccessoryButtonGroupView} containing the buttons.
+     */
+    private KeyboardAccessoryButtonGroupView setupButtonsAndGetGroup() throws InterruptedException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).set(new BarItem[] {createSheetOpener()});
+                });
+
+        // Wait for the view and find the KeyboardAccessoryButtonGroupView.
+        mKeyboardAccessoryView.take(); // Make sure the view is inflated.
+        AtomicReference<KeyboardAccessoryButtonGroupView> buttonGroupViewRef =
+                new AtomicReference<>();
+        onView(isAssignableFrom(KeyboardAccessoryButtonGroupView.class))
+                .check(
+                        (v, noViewFoundException) -> {
+                            if (noViewFoundException != null) {
+                                throw new RuntimeException(noViewFoundException);
+                            }
+                            buttonGroupViewRef.set((KeyboardAccessoryButtonGroupView) v);
+                        });
+
+        KeyboardAccessoryButtonGroupView buttonGroupView = buttonGroupViewRef.get();
+        assertNotNull(buttonGroupView);
+
+        // Wait for buttons to be added.
+        CriteriaHelper.pollUiThread(() -> buttonGroupView.getButtons().size() == 2);
+
+        return buttonGroupView;
+    }
+
     private static AutofillSuggestion.Builder getDefaultAutofillSuggestionBuilder() {
         return new AutofillSuggestion.Builder()
                 .setLabel("Johnathan")
@@ -1045,14 +1132,20 @@ public class KeyboardAccessoryViewTest {
                 new KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks() {
                     @Override
                     public void onViewBound(View buttons) {
-                        if (((KeyboardAccessoryButtonGroupView) buttons).getButtons().size() > 0) {
+                        KeyboardAccessoryButtonGroupView group =
+                                (KeyboardAccessoryButtonGroupView) buttons;
+                        if (group.getButtons().size() > 0) {
                             return;
                         }
-                        ((KeyboardAccessoryButtonGroupView) buttons)
-                                .addButton(
-                                        buttons.getContext()
-                                                .getDrawable(R.drawable.ic_password_manager_key),
-                                        "Key Icon");
+
+                        group.addButton(
+                                buttons.getContext()
+                                        .getDrawable(R.drawable.ic_password_manager_key),
+                                "Key Icon");
+
+                        group.addButton(
+                                buttons.getContext().getDrawable(R.drawable.ic_credit_card_black),
+                                "Card Icon 2");
                     }
 
                     @Override
