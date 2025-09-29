@@ -643,23 +643,7 @@ def make_backward_compatible_accessors(cg_context):
         ])
         return func_def
 
-    def make_api_set_enum_string(member):
-        type_info = blink_type_info(member.idl_type.unwrap())
-        func_def = CxxFuncDefNode(name=member.api_set,
-                                  arg_decls=["const String& value"],
-                                  return_type="void")
-        func_def.set_base_template_vars(cg_context.template_bindings())
-        func_def.body.append(
-            F("{} = {}::Create(value).value();", member.value_var,
-              type_info.value_t))
-        if member.does_use_presence_var:
-            func_def.body.append(F("{} = true;", member.presence_var))
-        return func_def
-
     for member in cg_context.dictionary_own_members:
-        if member.idl_type.unwrap().is_enumeration:
-            decls.append(make_api_set_enum_string(member))
-
         if (not member.idl_type.unwrap(nullable=False).is_nullable
                 or member.type_info.has_null_value):
             continue

@@ -36,13 +36,13 @@ namespace blink {
 
 namespace {
 
-String ToColorSpaceConversion(
+V8ColorSpaceConversion::Enum ToColorSpaceConversion(
     wc_fuzzer::ImageBitmapOptions_ColorSpaceConversion type) {
   switch (type) {
     case wc_fuzzer::ImageBitmapOptions_ColorSpaceConversion_CS_NONE:
-      return "none";
+      return V8ColorSpaceConversion::Enum::kNone;
     case wc_fuzzer::ImageBitmapOptions_ColorSpaceConversion_CS_DEFAULT:
-      return "default";
+      return V8ColorSpaceConversion::Enum::kDefault;
   }
 }
 

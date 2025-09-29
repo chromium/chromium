@@ -64,6 +64,12 @@ String StatsConversionHelper(const std::string& value) {
     v8_setter(StatsConversionHelper(*webrtc_stat)); \
   }
 
+#define SET_STAT_ENUM(webrtc_stat, v8_setter, V8EnumType)                 \
+  if (webrtc_stat.has_value()) {                                          \
+    v8_setter(                                                            \
+        V8EnumType::Create(StatsConversionHelper(*webrtc_stat)).value()); \
+  }
+
 template <typename T>
 v8::Local<v8::Value> HashMapToValue(ScriptState* script_state,
                                     HashMap<String, T>&& map) {
@@ -291,8 +297,9 @@ RTCOutboundRtpStreamStats* ToV8Stat(
   SET_STAT(webrtc_stat.total_encode_time, v8_stat->setTotalEncodeTime);
   SET_STAT(webrtc_stat.total_packet_send_delay,
            v8_stat->setTotalPacketSendDelay);
-  SET_STAT(webrtc_stat.quality_limitation_reason,
-           v8_stat->setQualityLimitationReason);
+  SET_STAT_ENUM(webrtc_stat.quality_limitation_reason,
+                v8_stat->setQualityLimitationReason,
+                V8RTCQualityLimitationReason);
   if (webrtc_stat.quality_limitation_durations.has_value()) {
     Vector<std::pair<String, double>> quality_durations;
     for (const auto& [key, value] : *webrtc_stat.quality_limitation_durations) {
@@ -426,7 +433,7 @@ RTCDataChannelStats* ToV8Stat(ScriptState* script_state,
   SET_STAT(webrtc_stat.protocol, v8_stat->setProtocol);
   SET_STAT(webrtc_stat.data_channel_identifier,
            v8_stat->setDataChannelIdentifier);
-  SET_STAT(webrtc_stat.state, v8_stat->setState);
+  SET_STAT_ENUM(webrtc_stat.state, v8_stat->setState, V8RTCDataChannelState);
   SET_STAT(webrtc_stat.messages_sent, v8_stat->setMessagesSent);
   SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
   SET_STAT(webrtc_stat.messages_received, v8_stat->setMessagesReceived);
@@ -444,18 +451,20 @@ RTCTransportStats* ToV8Stat(ScriptState* script_state,
   SET_STAT(webrtc_stat.packets_received, v8_stat->setPacketsReceived);
   SET_STAT(webrtc_stat.bytes_sent, v8_stat->setBytesSent);
   SET_STAT(webrtc_stat.bytes_received, v8_stat->setBytesReceived);
-  SET_STAT(webrtc_stat.ice_role, v8_stat->setIceRole);
+  SET_STAT_ENUM(webrtc_stat.ice_role, v8_stat->setIceRole, V8RTCIceRole);
   SET_STAT(webrtc_stat.ice_local_username_fragment,
            v8_stat->setIceLocalUsernameFragment);
-  SET_STAT(webrtc_stat.dtls_state, v8_stat->setDtlsState);
-  SET_STAT(webrtc_stat.ice_state, v8_stat->setIceState);
+  SET_STAT_ENUM(webrtc_stat.dtls_state, v8_stat->setDtlsState,
+                V8RTCDtlsTransportState);
+  SET_STAT_ENUM(webrtc_stat.ice_state, v8_stat->setIceState,
+                V8RTCIceTransportState);
   SET_STAT(webrtc_stat.selected_candidate_pair_id,
            v8_stat->setSelectedCandidatePairId);
   SET_STAT(webrtc_stat.local_certificate_id, v8_stat->setLocalCertificateId);
   SET_STAT(webrtc_stat.remote_certificate_id, v8_stat->setRemoteCertificateId);
   SET_STAT(webrtc_stat.tls_version, v8_stat->setTlsVersion);
   SET_STAT(webrtc_stat.dtls_cipher, v8_stat->setDtlsCipher);
-  SET_STAT(webrtc_stat.dtls_role, v8_stat->setDtlsRole);
+  SET_STAT_ENUM(webrtc_stat.dtls_role, v8_stat->setDtlsRole, V8RTCDtlsRole);
   SET_STAT(webrtc_stat.srtp_cipher, v8_stat->setSrtpCipher);
   SET_STAT(webrtc_stat.selected_candidate_pair_changes,
            v8_stat->setSelectedCandidatePairChanges);
@@ -477,18 +486,22 @@ RTCIceCandidateStats* ToV8Stat(
   SET_STAT(webrtc_stat.address, v8_stat->setAddress);
   SET_STAT(webrtc_stat.port, v8_stat->setPort);
   SET_STAT(webrtc_stat.protocol, v8_stat->setProtocol);
-  SET_STAT(webrtc_stat.candidate_type, v8_stat->setCandidateType);
+  SET_STAT_ENUM(webrtc_stat.candidate_type, v8_stat->setCandidateType,
+                V8RTCIceCandidateType);
   SET_STAT(webrtc_stat.priority, v8_stat->setPriority);
   SET_STAT(webrtc_stat.url, v8_stat->setUrl);
-  SET_STAT(webrtc_stat.relay_protocol, v8_stat->setRelayProtocol);
+  SET_STAT_ENUM(webrtc_stat.relay_protocol, v8_stat->setRelayProtocol,
+                V8RTCIceServerTransportProtocol);
   SET_STAT(webrtc_stat.foundation, v8_stat->setFoundation);
   SET_STAT(webrtc_stat.related_address, v8_stat->setRelatedAddress);
   SET_STAT(webrtc_stat.related_port, v8_stat->setRelatedPort);
   SET_STAT(webrtc_stat.username_fragment, v8_stat->setUsernameFragment);
-  SET_STAT(webrtc_stat.tcp_type, v8_stat->setTcpType);
+  SET_STAT_ENUM(webrtc_stat.tcp_type, v8_stat->setTcpType,
+                V8RTCIceTcpCandidateType);
   // https://w3c.github.io/webrtc-provisional-stats/#dom-rtcicecandidatestats-networktype
   // Note: additional work needed to reach consensus on the privacy model.
-  SET_STAT(webrtc_stat.network_type, v8_stat->setNetworkType);
+  SET_STAT_ENUM(webrtc_stat.network_type, v8_stat->setNetworkType,
+                V8RTCNetworkType);
   // Non-standard and obsolete stats.
   SET_STAT(webrtc_stat.is_remote, v8_stat->setIsRemote);
   SET_STAT(webrtc_stat.ip, v8_stat->setIp);
@@ -505,7 +518,8 @@ RTCIceCandidatePairStats* ToV8Stat(
   SET_STAT(webrtc_stat.transport_id, v8_stat->setTransportId);
   SET_STAT(webrtc_stat.local_candidate_id, v8_stat->setLocalCandidateId);
   SET_STAT(webrtc_stat.remote_candidate_id, v8_stat->setRemoteCandidateId);
-  SET_STAT(webrtc_stat.state, v8_stat->setState);
+  SET_STAT_ENUM(webrtc_stat.state, v8_stat->setState,
+                V8RTCStatsIceCandidatePairState);
   SET_STAT(webrtc_stat.nominated, v8_stat->setNominated);
   SET_STAT(webrtc_stat.packets_sent, v8_stat->setPacketsSent);
   SET_STAT(webrtc_stat.packets_received, v8_stat->setPacketsReceived);
