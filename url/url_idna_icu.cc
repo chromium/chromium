@@ -45,9 +45,11 @@ namespace {
 // See http://http://unicode.org/reports/tr46/ and references therein
 // for more details.
 UIDNA* CreateIDNA() {
-  uint32_t options = UIDNA_CHECK_BIDI;
-  // Use non-transitional processing, see https://url.spec.whatwg.org/#idna.
-  options |= UIDNA_NONTRANSITIONAL_TO_ASCII | UIDNA_NONTRANSITIONAL_TO_UNICODE;
+  // Enable options matching https://url.spec.whatwg.org/#idna.
+  // Note that ContextJ checks are enabled or disabled based on
+  // IsUsingIDNAContextJRules() in IDNToASCII().
+  uint32_t options = UIDNA_CHECK_BIDI | UIDNA_NONTRANSITIONAL_TO_ASCII |
+                     UIDNA_NONTRANSITIONAL_TO_UNICODE | UIDNA_CHECK_CONTEXTJ;
   UErrorCode err = U_ZERO_ERROR;
   UIDNA* idna = uidna_openUTS46(options, &err);
   if (U_FAILURE(err)) {
@@ -101,6 +103,7 @@ bool IDNToASCII(std::u16string_view src, CanonOutputW* output) {
     // Disable the "CheckHyphens" option in UTS #46. See
     //  - https://crbug.com/804688
     //  - https://github.com/whatwg/url/issues/267
+    //  - https://github.com/whatwg/url/issues/820 (beStrict is false)
     info.errors &= ~UIDNA_ERROR_HYPHEN_3_4;
     info.errors &= ~UIDNA_ERROR_LEADING_HYPHEN;
     info.errors &= ~UIDNA_ERROR_TRAILING_HYPHEN;
@@ -109,6 +112,11 @@ bool IDNToASCII(std::u16string_view src, CanonOutputW* output) {
     info.errors &= ~UIDNA_ERROR_EMPTY_LABEL;
     info.errors &= ~UIDNA_ERROR_LABEL_TOO_LONG;
     info.errors &= ~UIDNA_ERROR_DOMAIN_NAME_TOO_LONG;
+
+    // Clear any ContextJ error if the feature isn't enabled.
+    if (!url::IsUsingIDNAContextJRules()) {
+      info.errors &= ~UIDNA_ERROR_CONTEXTJ;
+    }
 
     if (U_SUCCESS(err) && info.errors == 0) {
       // Per WHATWG URL, it is a failure if the ToASCII output is empty.
