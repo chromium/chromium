@@ -1347,7 +1347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Shared.UseUrlForTitle.{SanitizationRequestType}"
-    enum="Boolean" expires_after="2025-10-10">
+    enum="Boolean" expires_after="2026-09-29">
   <owner>qinmin@google.com</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1411,8 +1411,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.AddedGroupIsEmptyFromSync" enum="Boolean"
-    expires_after="2025-10-10">
-  <owner>tbergquist@google.com</owner>
+    expires_after="2026-09-29">
+  <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a newly saved tab group was empty or not. Recorded on all
@@ -1425,8 +1425,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.AddedGroupIsEmptyLocally" enum="Boolean"
-    expires_after="2025-10-10">
-  <owner>tbergquist@google.com</owner>
+    expires_after="2026-09-29">
+  <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a newly saved tab group was empty or not. Recorded on all
@@ -1563,8 +1563,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabAddedToEmptyGroupFromSync" enum="Boolean"
-    expires_after="2025-10-10">
-  <owner>tbergquist@google.com</owner>
+    expires_after="2026-09-29">
+  <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab added to a saved group was the first tab or not.
@@ -1574,8 +1574,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabAddedToEmptyGroupLocally" enum="Boolean"
-    expires_after="2025-10-10">
-  <owner>tbergquist@google.com</owner>
+    expires_after="2026-09-29">
+  <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab added to a saved group was the first tab or not.
@@ -1743,8 +1743,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroupLoadedEmptiness"
-    enum="TabGroupLoadedEmptiness" expires_after="2025-10-10">
-  <owner>tbergquist@google.com</owner>
+    enum="TabGroupLoadedEmptiness" expires_after="2026-09-29">
+  <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab group loaded from disk was empty, not empty, or if it
@@ -1767,8 +1767,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabRemovedFromGroupWasLastTab" enum="Boolean"
-    expires_after="2025-10-10">
-  <owner>tbergquist@google.com</owner>
+    expires_after="2026-09-29">
+  <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     Records whether a tab removed from a saved group was the last tab or not.
@@ -3093,7 +3093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabCountInGroupPerLoad" units="tabs"
-    expires_after="2025-09-07">
+    expires_after="2026-03-29">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -3396,7 +3396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabSearch.PositionInTabstrip" enum="TabSearchPosition"
-    expires_after="2025-09-07">
+    expires_after="2026-03-29">
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
