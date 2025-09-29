@@ -744,6 +744,9 @@ const base::FeatureParam<bool> kGlicEntrypointVariationsShowLabel{
     &kGlicEntrypointVariations, "glic-entrypoint-variations-show-label", false};
 const base::FeatureParam<bool> kGlicEntrypointVariationsAltIcon{
     &kGlicEntrypointVariations, "glic-entrypoint-variations-alt-icon", false};
+const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge{
+    &kGlicEntrypointVariations, "glic-entrypoint-variations-highlight-nudge",
+    false};
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

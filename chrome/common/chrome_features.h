@@ -542,6 +542,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicEntrypointVariationsShowLabel;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicEntrypointVariationsAltIcon;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge;
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

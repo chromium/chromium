@@ -29,7 +29,7 @@ class TabStripNudgeButton : public TabStripControlButton {
   ~TabStripNudgeButton() override;
 
   void SetOpacity(float opacity);
-  void SetWidthFactor(float factor);
+  virtual void SetWidthFactor(float factor);
   float width_factor_for_testing() const { return width_factor_; }
 
   // TabStripControlButton:

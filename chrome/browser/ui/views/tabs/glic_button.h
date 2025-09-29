@@ -46,6 +46,7 @@ class GlicButton : public TabStripNudgeButton,
 
   // TabStripNudgeButton:
   void SetIsShowingNudge(bool is_showing) override;
+  void SetWidthFactor(float factor) override;
 
   void SetDropToAttachIndicator(bool indicate);
 
@@ -73,6 +74,7 @@ class GlicButton : public TabStripNudgeButton,
   // that we can load the suggestions in the UI as quickly as possible.
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void AddedToWidget() override;
 
   bool IsContextMenuShowingForTest();
 
@@ -99,6 +101,8 @@ class GlicButton : public TabStripNudgeButton,
   PrefService* profile_prefs() {
     return tab_strip_controller_->GetProfile()->GetPrefs();
   }
+
+  void UpdateTextColor();
 
 #if BUILDFLAG(ENABLE_GLIC)
   void PanelStateChanged(bool active);
@@ -142,6 +146,9 @@ class GlicButton : public TabStripNudgeButton,
 
   // Cached initial width for animating label changes.
   int initial_width_ = 0;
+
+  // View to be drawn behind the icon and label with a background color.
+  raw_ptr<View> highlight_view_ = nullptr;
 };
 
 }  // namespace glic

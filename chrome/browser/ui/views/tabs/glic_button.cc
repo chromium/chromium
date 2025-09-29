@@ -32,8 +32,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -44,6 +46,12 @@ namespace glic {
 namespace {
 
 constexpr int kIconLeftMargin = 6;
+constexpr int kIconRightMargin = 4;
+constexpr int kHighlightCornerRadius = 8;
+constexpr int kHighlightMargin = 2;
+constexpr int kLabelRightMargin = 12;
+constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
+
 constexpr gfx::Size kAltIconSize{16, 16};
 
 bool EntrypointVariationsEnabled() {
@@ -75,6 +83,21 @@ const gfx::VectorIcon& GetIconForTabStripControlButton() {
     return glic::GlicVectorIconManager::GetVectorIcon(
         IDR_GLIC_BUTTON_VECTOR_ICON);
   }
+}
+
+std::unique_ptr<views::View> CreateHighlightView() {
+  auto view = std::make_unique<views::View>();
+  view->SetBackground(views::CreateRoundedRectBackground(
+      kHighlightColorId, kHighlightCornerRadius, 0));
+  view->SetProperty(views::kMarginsKey, gfx::Insets(kHighlightMargin));
+  // Don't steal hover events
+  view->SetCanProcessEventsWithinSubtree(false);
+
+  auto* const layout_manager =
+      view->SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kStart);
+  return view;
 }
 
 }  // namespace
@@ -109,8 +132,20 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
 
     auto* image_view = static_cast<views::ImageView*>(image_container_view());
     image_view->SetImageSize(kAltIconSize);
-    image_view->SetProperty(views::kMarginsKey,
-                            gfx::Insets().set_left(kIconLeftMargin));
+    image_view->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_left_right(kIconLeftMargin, kIconRightMargin));
+  }
+
+  if (EntrypointVariationsEnabled() &&
+      features::kGlicEntrypointVariationsHighlightNudge.Get()) {
+    std::optional<size_t> icon_index = GetIndexOf(image_container_view());
+    CHECK(icon_index);
+    highlight_view_ = AddChildViewAt(CreateHighlightView(), *icon_index);
+
+    // Reparent icon and label under the highlight.
+    highlight_view_->AddChildView(RemoveChildViewT(image_container_view()));
+    highlight_view_->AddChildView(RemoveChildViewT(label()));
   }
 
   set_context_menu_controller(this);
@@ -181,13 +216,36 @@ void GlicButton::SetIsShowingNudge(bool is_showing) {
     SetCloseButtonVisible(true);
     SetCloseButtonFocusBehavior(FocusBehavior::ALWAYS);
     AnnounceNudgeShown();
+    SetWidthFactor(1);
   } else {
     SetCloseButtonVisible(false);
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
     RestoreDefaultLabel();
+    SetWidthFactor(0);
   }
+
+  if (highlight_view_) {
+    label()->SetProperty(views::kMarginsKey,
+                         gfx::Insets().set_right(kLabelRightMargin));
+  }
+
   is_showing_nudge_ = is_showing;
+  UpdateTextColor();
   PreferredSizeChanged();
+}
+
+void GlicButton::SetWidthFactor(float factor) {
+  TabStripNudgeButton::SetWidthFactor(factor);
+
+  if (views::Background* highlight_background =
+          highlight_view_ ? highlight_view_->background() : nullptr;
+      highlight_background && GetColorProvider()) {
+    // Animate highlight background between transparent and opaque.
+    SkColor highlight_color = ui::ColorVariant(kHighlightColorId)
+                                  .ResolveToSkColor(GetColorProvider());
+    highlight_color = SkColorSetA(highlight_color, factor * SK_AlphaOPAQUE);
+    highlight_background->SetColor(highlight_color);
+  }
 }
 
 gfx::Size GlicButton::CalculatePreferredSize(
@@ -210,6 +268,8 @@ void GlicButton::StateChanged(ButtonState old_state) {
       hovered_callback_) {
     hovered_callback_.Run();
   }
+
+  UpdateTextColor();
 }
 
 void GlicButton::SetDropToAttachIndicator(bool indicate) {
@@ -256,6 +316,8 @@ void GlicButton::ExecuteCommand(int command_id, int event_flags) {
 
 void GlicButton::SetText(std::u16string_view text) {
   TabStripNudgeButton::SetText(text);
+  label()->SetAutoColorReadabilityEnabled(true);
+  UpdateColors();
 }
 
 bool GlicButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -271,6 +333,13 @@ void GlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
     initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
   }
   TabStripNudgeButton::OnBoundsChanged(previous_bounds);
+}
+
+void GlicButton::AddedToWidget() {
+  TabStripNudgeButton::AddedToWidget();
+  // Make sure properties like highlight color are updated after this view is
+  // added to the hierarchy.
+  SetIsShowingNudge(is_showing_nudge_);
 }
 
 bool GlicButton::IsContextMenuShowingForTest() {
@@ -310,6 +379,19 @@ void GlicButton::SetDefaultColors() {
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
+}
+
+void GlicButton::UpdateTextColor() {
+  if (highlight_view_) {
+    // Set the background color so that auto-readability updates the foreground
+    // color.
+    if (is_showing_nudge_ && GetState() != STATE_HOVERED) {
+      label()->SetBackgroundColor(kHighlightColorId);
+    } else {
+      label()->SetBackgroundColor(SK_ColorTRANSPARENT);
+    }
+    UpdateColors();
+  }
 }
 
 BEGIN_METADATA(GlicButton)
