@@ -1031,6 +1031,15 @@ void SearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
   std::move(callback).Run(std::move(tabs));
 }
 
+// TODO(crbug.com/447629531): Move the implementation to the
+// ContextualSearchboxHandler and put an empty implementation in the header for
+// this class.
+void SearchboxHandler::GetTabPreview(int32_t tab_id,
+                                     GetTabPreviewCallback callback) {
+  // TODO(crbug.com/443939809): Implement tab preview generation.
+  std::move(callback).Run(std::nullopt);
+}
+
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {

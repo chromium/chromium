@@ -33,6 +33,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'onFocusChanged',
       'getPlaceholderConfig',
       'getRecentTabs',
+      'getTabPreview',
     ]);
   }
 
@@ -115,6 +116,11 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   getRecentTabs() {
     this.methodCalled('getRecentTabs');
     return Promise.resolve({tabs: []});
+  }
+
+  getTabPreview(tabId: number) {
+    this.methodCalled('getTabPreview', {tabId});
+    return Promise.resolve({previewDataUrl: ''});
   }
 
   notifySessionStarted() {
