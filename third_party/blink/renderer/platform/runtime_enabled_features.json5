@@ -4521,7 +4521,7 @@
       // https://chromestatus.com/feature/5412736871825408
       // https://issues.chromium.org/issues/439964654
       name: "SelectMobileDesktopParity",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SendBeaconThrowForBlobWithNonSimpleType",
