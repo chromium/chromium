@@ -15,5 +15,8 @@ source_set("safe_browsing") {
     "//content/public/browser",
     "//content/public/common",
   ]
-  deps = [ "//chrome/browser/safe_browsing" ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/safe_browsing",
+  ]
 }

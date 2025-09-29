@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_HANDLER_H_
 
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
@@ -15,13 +16,18 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace safe_browsing {
 
 class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
  public:
   SafeBrowsingUIHandler(
       content::BrowserContext* context,
-      std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate);
+      std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
+      os_crypt_async::OSCryptAsync* os_crypt_async);
 
   SafeBrowsingUIHandler(const SafeBrowsingUIHandler&) = delete;
   SafeBrowsingUIHandler& operator=(const SafeBrowsingUIHandler&) = delete;
@@ -260,6 +266,9 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void OnGetCookie(const std::string& callback_id,
                    const std::vector<net::CanonicalCookie>& cookies);
 
+  void GetSavedPasswordsImpl(const std::string& callback_id,
+                             os_crypt_async::Encryptor encryptor);
+
   raw_ptr<content::BrowserContext> browser_context_;
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
@@ -269,6 +278,8 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
 
   // Returns PrefService for local state.
   std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate_;
+
+  const raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   base::WeakPtrFactory<SafeBrowsingUIHandler> weak_factory_{this};
 };

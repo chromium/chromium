@@ -109,7 +109,8 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
   shared_pref_delegate = std::make_unique<SharedPreferencesDelegateAndroid>();
 #endif
   auto reuse_manager =
-      std::make_unique<password_manager::PasswordReuseManagerImpl>();
+      std::make_unique<password_manager::PasswordReuseManagerImpl>(
+          g_browser_process->os_crypt_async());
   reuse_manager->Init(
       profile->GetPrefs(), g_browser_process->local_state(),
       ProfilePasswordStoreFactory::GetForProfile(

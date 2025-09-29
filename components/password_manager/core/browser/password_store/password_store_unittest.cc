@@ -219,14 +219,6 @@ class PasswordStoreTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-std::optional<PasswordHashData> GetPasswordFromPref(const std::string& username,
-                                                    bool is_gaia_password,
-                                                    PrefService* prefs) {
-  HashPasswordManager hash_password_manager;
-  hash_password_manager.set_prefs(prefs);
-
-  return hash_password_manager.RetrievePasswordHash(username, is_gaia_password);
-}
 
 TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   base::HistogramTester histogram_tester;

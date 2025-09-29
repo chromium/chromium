@@ -17,7 +17,8 @@ namespace safe_browsing {
 
 SafeBrowsingUI::SafeBrowsingUI(
     content::WebUI* web_ui,
-    std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate)
+    std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
     : content::WebUIController(web_ui) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -29,7 +30,7 @@ SafeBrowsingUI::SafeBrowsingUI(
   // Register callback handler.
   // Handles messages from JavaScript to C++ via chrome.send().
   web_ui->AddMessageHandler(std::make_unique<SafeBrowsingUIHandler>(
-      browser_context, std::move(delegate)));
+      browser_context, std::move(delegate), os_crypt_async));
 
   // Add required resources.
   html_source->AddResourcePaths(kSafeBrowsingResources);

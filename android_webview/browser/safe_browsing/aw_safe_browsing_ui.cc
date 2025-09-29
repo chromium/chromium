@@ -4,6 +4,7 @@
 
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui.h"
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_local_state_delegate_impl.h"
 
 namespace safe_browsing {
@@ -12,7 +13,9 @@ AWSafeBrowsingUI::AWSafeBrowsingUI(content::WebUI* web_ui)
     : SafeBrowsingUI(
           web_ui,
           std::make_unique<safe_browsing::AwSafeBrowsingLocalStateDelegateImpl>(
-              web_ui)) {}
+              web_ui),
+          android_webview::AwBrowserProcess::GetInstance()->GetOSCryptAsync()) {
+}
 
 AWSafeBrowsingUI::~AWSafeBrowsingUI() = default;
 

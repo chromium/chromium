@@ -5,6 +5,8 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 
 #include "base/test/values_test_util.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,7 +20,10 @@ class SafeBrowsingUITest : public testing::Test {
  public:
   SafeBrowsingUITest() = default;
 
-  void SetUp() override {}
+  void SetUp() override {
+    os_crypt_async_ = os_crypt_async::GetTestOSCryptAsyncForTesting(
+        /*is_sync_for_unittests=*/true);
+  }
 
   int SetMemberInt(int member_int) {
     member_int_ = member_int;
@@ -26,8 +31,8 @@ class SafeBrowsingUITest : public testing::Test {
   }
 
   SafeBrowsingUIHandler* RegisterNewHandler() {
-    auto handler_unique =
-        std::make_unique<SafeBrowsingUIHandler>(&browser_context_, nullptr);
+    auto handler_unique = std::make_unique<SafeBrowsingUIHandler>(
+        &browser_context_, nullptr, os_crypt_async_.get());
 
     SafeBrowsingUIHandler* handler = handler_unique.get();
     handler->SetWebUIForTesting(&web_ui_);
@@ -48,6 +53,7 @@ class SafeBrowsingUITest : public testing::Test {
 
  protected:
   int member_int_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   content::TestWebUI web_ui_;
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;

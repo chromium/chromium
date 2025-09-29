@@ -20,6 +20,7 @@ static_library("web_ui") {
     "//base",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:connectors_proto_extras",
+    "//components/os_crypt/async/browser",
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/resources:components_resources_grit",
     "//components/resources:components_scaled_resources_grit",
@@ -60,6 +61,8 @@ source_set("unit_tests") {
 
   deps = [
     ":web_ui",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:test_support",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//content/test:test_support",
     "//testing/gtest",

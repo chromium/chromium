@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui_handler.h"
 
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
@@ -18,8 +20,11 @@ namespace safe_browsing {
 
 SafeBrowsingUIHandler::SafeBrowsingUIHandler(
     content::BrowserContext* context,
-    std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate)
-    : browser_context_(context), delegate_(std::move(delegate)) {}
+    std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
+    os_crypt_async::OSCryptAsync* os_crypt_async)
+    : browser_context_(context),
+      delegate_(std::move(delegate)),
+      os_crypt_async_(os_crypt_async) {}
 
 SafeBrowsingUIHandler::~SafeBrowsingUIHandler() {
   WebUIContentInfoSingleton::GetInstance()->UnregisterWebUIInstance(this);
@@ -97,7 +102,18 @@ void SafeBrowsingUIHandler::OnGetCookie(
 }
 
 void SafeBrowsingUIHandler::GetSavedPasswords(const base::Value::List& args) {
-  password_manager::HashPasswordManager hash_manager;
+  DCHECK(!args.empty());
+  const std::string& callback_id = args[0].GetString();
+
+  os_crypt_async_->GetInstance(
+      base::BindOnce(&SafeBrowsingUIHandler::GetSavedPasswordsImpl,
+                     weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void SafeBrowsingUIHandler::GetSavedPasswordsImpl(
+    const std::string& callback_id,
+    os_crypt_async::Encryptor encryptor) {
+  password_manager::HashPasswordManager hash_manager(std::move(encryptor));
   hash_manager.set_prefs(user_prefs::UserPrefs::Get(browser_context_));
   hash_manager.set_local_prefs(delegate_->GetLocalState());
 
@@ -109,8 +125,6 @@ void SafeBrowsingUIHandler::GetSavedPasswords(const base::Value::List& args) {
   }
 
   AllowJavascript();
-  DCHECK(!args.empty());
-  const std::string& callback_id = args[0].GetString();
   ResolveJavascriptCallback(callback_id, saved_passwords);
 }
 
