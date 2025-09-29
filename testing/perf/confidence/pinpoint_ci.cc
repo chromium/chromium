@@ -17,16 +17,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/safe_sprintf.h"
 #include "base/strings/string_split.h"
 #include "testing/perf/confidence/ratio_bootstrap_estimator.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// Not used with untrusted inputs.
-#pragma allow_unsafe_buffers
-#endif
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using std::pair;
 using std::string;
@@ -82,17 +80,20 @@ vector<unordered_map<string, string>> ReadCSV(const char* filename) {
 }  // namespace
 
 int main(int argc, char** argv) {
+  // SAFETY: `argv` is a command-line argument array, and `argc` is the number
+  // of arguments. This is a valid span.
+  auto argv_span = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
   if (argc < 2 || argc > 3) {
     LOG(WARNING) << "USAGE: pinpoint_ci CSV_FILE [CONFIDENCE_LEVEL]";
     exit(1);
   }
 
   // The default 0.99 matches Pinpoint.
-  double confidence_level = (argc > 2) ? atof(argv[2]) : 0.99;
+  double confidence_level = (argc > 2) ? atof(argv_span[2]) : 0.99;
   unordered_map<string, pair<vector<double>, vector<double>>> samples;
   bool any_is_speedometer = false;
 
-  for (unordered_map<string, string>& line : ReadCSV(argv[1])) {
+  for (unordered_map<string, string>& line : ReadCSV(argv_span[1])) {
     if (line.count("name") == 0 || line.count("displayLabel") == 0 ||
         line.count("avg") == 0) {
       continue;
@@ -203,7 +204,8 @@ int main(int argc, char** argv) {
       }
     }
 
-    printf("%s %-*s  [%+5.1f%%, %+5.1f%%]\n", emoji, max_key_len, key.c_str(),
-           lower, upper);
+    std::string result = absl::StrFormat("%s %-*s  [%+5.1f%%, %+5.1f%%]",
+                                         emoji, max_key_len, key, lower, upper);
+    printf("%s\n", result.c_str());
   }
 }
