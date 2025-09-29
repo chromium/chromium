@@ -105,11 +105,8 @@ void PipewireMouseCursorCapturer::Capture() {
       // CaptureCursor().
       std::unique_ptr<webrtc::MouseCursor> cursor = stream->CaptureCursor();
       if (cursor && cursor->image()->data()) {
-        // TODO: yuweih - Add release_image() to webrtc::MouseCursor to allow
-        // transfer of the cursor image's ownership.
         latest_cursor_frame_ =
-            webrtc::SharedDesktopFrame::Wrap(base::WrapUnique(
-                webrtc::BasicDesktopFrame::CopyOf(*cursor->image())));
+            webrtc::SharedDesktopFrame::Wrap(cursor->TakeImage());
         if (monitor_it != monitors_.end()) {
           latest_cursor_frame_->set_dpi(
               {monitor_it->second.dpi, monitor_it->second.dpi});
