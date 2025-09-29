@@ -10,7 +10,7 @@
 
 # Keep implementation classes needed for split compat. These will be accessed by
 # reflection.
--keep,allowobfuscation public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
+-keep,allowobfuscation,allowoptimization,allowaccessmodification public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
   public <init>();
 }
 
