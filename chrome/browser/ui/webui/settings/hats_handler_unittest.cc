@@ -140,20 +140,13 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   task_environment()->RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService \
-  DISABLED_HandleSecurityPageHatsRequestPassesArgumentsToHatsService
-#else
-#define MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService \
-  HandleSecurityPageHatsRequestPassesArgumentsToHatsService
-#endif
 TEST_F(HatsHandlerTest,
-       MAYBE_HandleSecurityPageHatsRequestPassesArgumentsToHatsService) {
+       HandleSecurityPageHatsRequestPassesArgumentsToHatsService) {
   SurveyStringData expected_product_specific_data = {
       {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
       {"Safe Browsing Setting Before Trigger", "standard_protection"},
       {"Safe Browsing Setting After Trigger", "standard_protection"},
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
       {"Client Channel", "stable"},
 #else
       {"Client Channel", "unknown"},
