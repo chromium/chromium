@@ -28,6 +28,7 @@
 
 #define LOG_E(...) ((void)__android_log_print(ANDROID_LOG_ERROR, "linker-jni", __VA_ARGS__))
 
+#include "base/android/linker/ashmem.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "base/android/linker/linker_jni.h"
 
@@ -243,91 +244,6 @@ bool CallJniOnLoad(void* handle) {
   LOG_INFO("Done");
   return true;
 }
-
-// Callback used with __system_property_read_callback.
-void prop_read_int(void* cookie, const char* name, const char* value, uint32_t serial) {
-  *static_cast<int *>(cookie) = atoi(value);
-  (void)name;
-  (void)serial;
-}
-
-int system_property_get_int(const char* name) {
-  int result = 0;
-  if (__builtin_available(android 26, *)) {
-    const prop_info* info = __system_property_find(name);
-    if (info)
-      __system_property_read_callback(info, &prop_read_int, &result);
-  } else {
-    char value[PROP_VALUE_MAX] = {};
-    if (__system_property_get(name, value) >= 1)
-      result = atoi(value);
-  }
-  return result;
-}
-
-int vendor_api_level() {
-  static int v_api_level = -1;
-  if (v_api_level < 0)
-    v_api_level = system_property_get_int("ro.vendor.api_level");
-  return v_api_level;
-}
-
-int memfd_create_region(const char *name, size_t size) {
-  int fd = syscall(__NR_memfd_create, name, MFD_CLOEXEC | MFD_ALLOW_SEALING);
-  if (fd < 0) {
-    LOG_E("memfd_create(%s, %zd) failed: %m", name, size);
-    return fd;
-  }
-
-  int ret = ftruncate(fd, size);
-  if (ret < 0) {
-    LOG_E("ftruncate(%s, %zd) failed: %m", name, size);
-    goto error;
-  }
-
-  ret = fcntl(fd, F_ADD_SEALS, F_SEAL_GROW | F_SEAL_SHRINK);
-  if (ret < 0) {
-    LOG_E("memfd_create(%s, %zd) fcntl(F_ADD_SEALS) failed: %m", name, size);
-    goto error;
-  }
-
-  return fd;
-
-error:
-  close(fd);
-  return ret;
-}
-
-int memfd_set_prot_region(int fd, int prot) {
-  int seals = fcntl(fd, F_GET_SEALS);
-  if (seals == -1) {
-    LOG_E("memfd_set_prot_region(%d, %d): F_GET_SEALS failed: %m", fd, prot);
-    return -1;
-  }
-
-  if (prot & PROT_WRITE) {
-    /*
-     * Now we want the buffer to be read-write, let's check if the buffer
-     * has been previously marked as read-only before, if so return error
-     */
-    if (seals & F_SEAL_FUTURE_WRITE) {
-      LOG_E("memfd_set_prot_region(%d, %d): region is write protected", fd, prot);
-      // Inline with ashmem error code, if already in read-only mode.
-      errno = EINVAL;
-      return -1;
-    }
-
-    return 0;
-  }
-
-  // We would only allow read-only for any future file operations
-  if (fcntl(fd, F_ADD_SEALS, F_SEAL_FUTURE_WRITE) == -1) {
-    LOG_E("memfd_set_prot_region(%d, %d): F_SEAL_FUTURE_WRITE seal failed: %m", fd, prot);
-    return -1;
-  }
-
-  return 0;
-}
 }  // namespace
 
 String::String(JNIEnv* env, jstring str) {
@@ -415,68 +331,6 @@ bool FindWebViewReservation(uintptr_t* out_address, size_t* out_size) {
   close(fd);
   return result;
 }
-
-// Starting with API level 26 (Android O) until device vendor API level
-// 202604 (Android 17), the following functions from
-// libandroid.so should be used to create shared memory regions to ensure
-// compatibility with the future versions:
-// * ASharedMemory_create()
-// * ASharedMemory_setProt()
-//
-// For devices with vendor API levels at 202604 and above, memfd should
-// be used.
-//
-// This is inspired by //third_party/ashmem/ashmem-dev.c, which cannot be
-// referenced from the linker library to avoid increasing binary size.
-//
-// *Not* threadsafe.
-struct SharedMemoryFunctions {
-  SharedMemoryFunctions() {
-    /*
-     * When a device conforms to the VSR for API level 202604 (Android 17),
-     * ASharedMemory will allocate memfds and attempt to relabel them by using
-     * fsetxattr() to workaround how SELinux handles memfds.
-     *
-     * fsetxattr() is not allowlisted in our seccomp filter, and allowlisting
-     * it may be unsafe. Since memfds from Chromium should be accessible with
-     * the existing sepolicy for appdomain_tmpfs files, just allocate memfds
-     * directly if the device conforms to the VSR for API level 202604.
-     */
-    if (vendor_api_level() >= 202604) {
-      create = &memfd_create_region;
-      set_protection = &memfd_set_prot_region;
-    } else {
-      library_handle = dlopen("libandroid.so", RTLD_NOW);
-      create = reinterpret_cast<CreateFunction>(
-          dlsym(library_handle, "ASharedMemory_create"));
-
-      set_protection = reinterpret_cast<SetProtectionFunction>(
-          dlsym(library_handle, "ASharedMemory_setProt"));
-    }
-  }
-
-  bool IsWorking() const {
-    if (!create || !set_protection) {
-      LOG_ERROR("Cannot get the shared memory functions from libandroid");
-      return false;
-    }
-    return true;
-  }
-
-  ~SharedMemoryFunctions() {
-    if (library_handle) {
-      dlclose(library_handle);
-    }
-  }
-
-  typedef int (*CreateFunction)(const char*, size_t);
-  typedef int (*SetProtectionFunction)(int fd, int prot);
-
-  CreateFunction create;
-  SetProtectionFunction set_protection;
-
-  void* library_handle = nullptr;
-};
 
 void NativeLibInfo::ExportLoadInfoToJava() const {
   if (!env_) {
@@ -627,8 +481,7 @@ bool NativeLibInfo::LoadWithDlopenExt(const String& path, void** handle) {
   return true;
 }
 
-bool NativeLibInfo::CreateSharedRelroFd(
-    const SharedMemoryFunctions& functions) {
+bool NativeLibInfo::CreateSharedRelroFd() {
   LOG_INFO("Entering");
   if (!relro_start_ || !relro_size_) {
     LOG_ERROR("RELRO region is not populated");
@@ -636,13 +489,13 @@ bool NativeLibInfo::CreateSharedRelroFd(
   }
 
   // Create a writable shared memory region.
-  int shared_mem_fd = functions.create("cr_relro", relro_size_);
+  int shared_mem_fd = ashmem_create_region("cr_relro", relro_size_);
   if (shared_mem_fd == -1) {
     LOG_ERROR("Cannot create the shared memory file");
     return false;
   }
   int rw_flags = PROT_READ | PROT_WRITE;
-  functions.set_protection(shared_mem_fd, rw_flags);
+  ashmem_set_prot_region(shared_mem_fd, rw_flags);
 
   // Map the region as writable.
   void* relro_copy_addr =
@@ -666,7 +519,7 @@ bool NativeLibInfo::CreateSharedRelroFd(
   // writable memory mappings, since they are not directly affected by the
   // change of region's protection flags.
   munmap(relro_copy_addr, relro_size_);
-  if (functions.set_protection(shared_mem_fd, PROT_READ) == -1) {
+  if (ashmem_set_prot_region(shared_mem_fd, PROT_READ) == -1) {
     LOG_ERROR("Failed to set the RELRO FD as read-only.");
     close(shared_mem_fd);
     return false;
@@ -676,8 +529,7 @@ bool NativeLibInfo::CreateSharedRelroFd(
   return true;
 }
 
-bool NativeLibInfo::ReplaceRelroWithSharedOne(
-    const SharedMemoryFunctions& functions) const {
+bool NativeLibInfo::ReplaceRelroWithSharedOne() const {
   LOG_INFO("Entering");
   if (relro_fd_ == -1 || !relro_start_ || !relro_size_) {
     LOG_ERROR("Replacement RELRO not ready");
@@ -736,15 +588,11 @@ bool NativeLibInfo::LoadLibrary(const String& library_path,
 
   // Spawn RELRO to a shared memory region by copying and remapping on top of
   // itself.
-  SharedMemoryFunctions functions;
-  if (!functions.IsWorking()) {
-    return false;
-  }
-  if (!CreateSharedRelroFd(functions)) {
+  if (!CreateSharedRelroFd()) {
     LOG_ERROR("Failed to create shared RELRO");
     return false;
   }
-  if (!ReplaceRelroWithSharedOne(functions)) {
+  if (!ReplaceRelroWithSharedOne()) {
     LOG_ERROR("Failed to convert RELRO to shared memory");
     CloseRelroFd();
     return false;
@@ -759,8 +607,7 @@ bool NativeLibInfo::LoadLibrary(const String& library_path,
 }
 
 bool NativeLibInfo::RelroIsIdentical(
-    const NativeLibInfo& other_lib_info,
-    const SharedMemoryFunctions& functions) const {
+    const NativeLibInfo& other_lib_info) const {
   // Abandon sharing if contents of the incoming RELRO region does not match the
   // current one. This can be useful for debugging, but should never happen in
   // the field.
@@ -809,12 +656,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
     return false;
   }
 
-  SharedMemoryFunctions functions;
-  if (!functions.IsWorking()) {
-    s_relro_sharing_status = RelroSharingStatus::NO_SHMEM_FUNCTIONS;
-    return false;
-  }
-  if (!RelroIsIdentical(other_lib_info, functions)) {
+  if (!RelroIsIdentical(other_lib_info)) {
     LOG_ERROR("RELRO is not identical");
     s_relro_sharing_status = RelroSharingStatus::NOT_IDENTICAL;
     return false;
@@ -828,7 +670,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
   //  * It does not rely on disallowing mprotect(PROT_WRITE)
   //  * This way |ReplaceRelroWithSharedOne()| is reused across spawning RELRO
   //    and receiving it
-  if (!other_lib_info.ReplaceRelroWithSharedOne(functions)) {
+  if (!other_lib_info.ReplaceRelroWithSharedOne()) {
     LOG_ERROR("Failed to use relro_fd");
     s_relro_sharing_status = RelroSharingStatus::REMAP_FAILED;
     return false;
@@ -841,17 +683,7 @@ bool NativeLibInfo::CompareRelroAndReplaceItBy(
 bool NativeLibInfo::CreateSharedRelroFdForTesting() {
   // The library providing these functions will be dlclose()-ed after returning
   // from this context. The extra overhead of dlopen() is OK for testing.
-  SharedMemoryFunctions functions;
-  if (!functions.IsWorking()) {
-    abort();
-  }
-  return CreateSharedRelroFd(functions);
-}
-
-// static
-bool NativeLibInfo::SharedMemoryFunctionsSupportedForTesting() {
-  SharedMemoryFunctions functions;
-  return functions.IsWorking();
+  return CreateSharedRelroFd();
 }
 
 JNI_ZERO_BOUNDARY_EXPORT void

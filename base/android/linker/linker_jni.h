@@ -239,8 +239,6 @@ enum class RelroSharingStatus {
   COUNT = 9,
 };
 
-struct SharedMemoryFunctions;
-
 // Holds address ranges of the loaded native library, its RELRO region, along
 // with the RELRO FD identifying the shared memory region. Carries the same
 // members as the Java-side LibInfo (without mLibFilePath), allowing to
@@ -312,8 +310,6 @@ class NativeLibInfo {
   size_t get_relro_start_for_testing() const { return relro_start_; }
   size_t get_load_size_for_testing() const { return load_size_; }
 
-  static bool SharedMemoryFunctionsSupportedForTesting();
-
   bool FindRelroAndLibraryRangesInElfForTesting() {
     return FindRelroAndLibraryRangesInElf();
   }
@@ -346,16 +342,15 @@ class NativeLibInfo {
 
   // Initializes |relro_fd_| with a newly created read-only shared memory region
   // sized as the library's RELRO and with identical data.
-  bool CreateSharedRelroFd(const SharedMemoryFunctions& functions);
+  bool CreateSharedRelroFd();
 
   // Assuming that RELRO-related information is populated, memory-maps the RELRO
   // FD on top of the library's RELRO.
-  bool ReplaceRelroWithSharedOne(const SharedMemoryFunctions& functions) const;
+  bool ReplaceRelroWithSharedOne() const;
 
   // Returns true iff the RELRO address and size, along with the contents are
   // equal among the two.
-  bool RelroIsIdentical(const NativeLibInfo& external_lib_info,
-                        const SharedMemoryFunctions& functions) const;
+  bool RelroIsIdentical(const NativeLibInfo& external_lib_info) const;
 
   static constexpr int kInvalidFd = -1;
   uintptr_t load_address_ = 0;

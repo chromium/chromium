@@ -147,12 +147,6 @@ class LinkerTest : public testing::Test {
 // Checks that NativeLibInfo::CreateSharedRelroFd() creates a shared memory
 // region that is 'sealed' as read-only.
 TEST_F(LinkerTest, CreatedRegionIsSealed) {
-  if (!NativeLibInfo::SharedMemoryFunctionsSupportedForTesting()) {
-    // The Linker uses functions from libandroid.so that are not available
-    // on Android releases before O. Disable unittests for old releases.
-    return;
-  }
-
   // Fill a synthetic RELRO region with 0xEE in private anonynous memory.
   constexpr size_t kRelroSize = 1 << 21;  // 2 MiB.
   void* relro_address = mmap(nullptr, kRelroSize, PROT_READ | PROT_WRITE,
