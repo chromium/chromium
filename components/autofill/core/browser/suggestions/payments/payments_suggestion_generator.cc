@@ -771,63 +771,6 @@ bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
          CreditCard::VirtualCardEnrollmentState::kEnrolled;
 }
 
-// Returns the local and server cards ordered by the Autofill ranking.
-// If `suppress_disused_cards`, local expired disused cards are removed.
-// If `prefix_match`, cards are matched with the contents of `trigger_field`.
-// If `include_virtual_cards`, virtual cards will be added when possible.
-std::vector<CreditCard> GetOrderedCardsToSuggest(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
-    bool suppress_disused_cards,
-    bool prefix_match,
-    bool require_non_empty_value_on_trigger_field,
-    bool include_virtual_cards) {
-  std::vector<const CreditCard*> available_cards = GetCreditCardsToSuggest(
-      client.GetPersonalDataManager().payments_data_manager());
-  // If a card has available card linked offers on the last committed url, rank
-  // it to the top.
-  if (std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
-          GetCardLinkedOffers(client);
-      !card_linked_offers_map.empty()) {
-    std::ranges::stable_sort(
-        available_cards,
-        [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
-          return base::Contains(card_linked_offers_map, a->guid()) &&
-                 !base::Contains(card_linked_offers_map, b->guid());
-        });
-  }
-  // Suppress disused credit cards when triggered from an empty field.
-  if (suppress_disused_cards) {
-    const base::Time min_last_used =
-        AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
-                                                       available_cards);
-  }
-  std::vector<CreditCard> cards_to_suggest;
-  std::u16string field_contents =
-      base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value()));
-  for (const CreditCard* credit_card : available_cards) {
-    std::u16string suggested_value = credit_card->GetInfo(
-        trigger_field_type,
-        client.GetPersonalDataManager().payments_data_manager().app_locale());
-    if (require_non_empty_value_on_trigger_field && suggested_value.empty()) {
-      continue;
-    }
-    if (prefix_match &&
-        !IsValidPaymentsSuggestionForFieldContents(
-            /*suggestion_canon=*/base::i18n::ToLower(suggested_value),
-            field_contents, trigger_field_type)) {
-      continue;
-    }
-    if (include_virtual_cards &&
-        ShouldShowVirtualCardOption(credit_card, client)) {
-      cards_to_suggest.push_back(CreditCard::CreateVirtualCard(*credit_card));
-    }
-    cards_to_suggest.push_back(*credit_card);
-  }
-  return cards_to_suggest;
-}
 
 // Creates a suggestion for the given `credit_card`. `virtual_card_option`
 // suggests whether the suggestion is a virtual card option.
@@ -1816,4 +1759,63 @@ void FilterCardsToSuggestForCvcFields(
                   });
   }
 }
+
+// Returns the local and server cards ordered by the Autofill ranking.
+// If `suppress_disused_cards`, local expired disused cards are removed.
+// If `prefix_match`, cards are matched with the contents of `trigger_field`.
+// If `include_virtual_cards`, virtual cards will be added when possible.
+std::vector<CreditCard> GetOrderedCardsToSuggest(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    bool suppress_disused_cards,
+    bool prefix_match,
+    bool require_non_empty_value_on_trigger_field,
+    bool include_virtual_cards) {
+  std::vector<const CreditCard*> available_cards = GetCreditCardsToSuggest(
+      client.GetPersonalDataManager().payments_data_manager());
+  // If a card has available card linked offers on the last committed url, rank
+  // it to the top.
+  if (std::map<std::string, const AutofillOfferData*> card_linked_offers_map =
+          GetCardLinkedOffers(client);
+      !card_linked_offers_map.empty()) {
+    std::ranges::stable_sort(
+        available_cards,
+        [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
+          return base::Contains(card_linked_offers_map, a->guid()) &&
+                 !base::Contains(card_linked_offers_map, b->guid());
+        });
+  }
+  // Suppress disused credit cards when triggered from an empty field.
+  if (suppress_disused_cards) {
+    const base::Time min_last_used =
+        AutofillClock::Now() - kDisusedDataModelTimeDelta;
+    RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
+                                                       available_cards);
+  }
+  std::vector<CreditCard> cards_to_suggest;
+  std::u16string field_contents =
+      base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value()));
+  for (const CreditCard* credit_card : available_cards) {
+    std::u16string suggested_value = credit_card->GetInfo(
+        trigger_field_type,
+        client.GetPersonalDataManager().payments_data_manager().app_locale());
+    if (require_non_empty_value_on_trigger_field && suggested_value.empty()) {
+      continue;
+    }
+    if (prefix_match &&
+        !IsValidPaymentsSuggestionForFieldContents(
+            /*suggestion_canon=*/base::i18n::ToLower(suggested_value),
+            field_contents, trigger_field_type)) {
+      continue;
+    }
+    if (include_virtual_cards &&
+        ShouldShowVirtualCardOption(credit_card, client)) {
+      cards_to_suggest.push_back(CreditCard::CreateVirtualCard(*credit_card));
+    }
+    cards_to_suggest.push_back(*credit_card);
+  }
+  return cards_to_suggest;
+}
+
 }  // namespace autofill

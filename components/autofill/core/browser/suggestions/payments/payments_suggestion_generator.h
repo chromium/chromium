@@ -237,6 +237,22 @@ void FilterCardsToSuggestForCvcFields(
     const std::u16string& autofilled_last_four_digits_in_form_for_filtering,
     std::vector<CreditCard>& cards_to_suggest);
 
+// Function, shared between android touch-to-fill feature
+// and CCSG.
+//
+// Returns the local and server cards ordered by the Autofill ranking.
+// If `suppress_disused_cards`, local expired disused cards are removed.
+// If `prefix_match`, cards are matched with the contents of `trigger_field`.
+// If `include_virtual_cards`, virtual cards will be added when possible.
+std::vector<CreditCard> GetOrderedCardsToSuggest(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    bool suppress_disused_cards,
+    bool prefix_match,
+    bool require_non_empty_value_on_trigger_field,
+    bool include_virtual_cards);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_PAYMENTS_SUGGESTION_GENERATOR_H_
