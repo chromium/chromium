@@ -87,6 +87,9 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   // The container for the text.
   UIView* _titleSubtitleContainer;
   UIStackView* _allTextStack;
+  // Constraints to be applied on the text labels when using accessibility font
+  // size.
+  NSArray<NSLayoutConstraint*>* _accessibilityTextConstraints;
 
   // The main container.
   UIStackView* _mainStack;
@@ -124,22 +127,6 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 - (BOOL)supportsConfiguration:(id<UIContentConfiguration>)configuration {
   return
       [configuration isMemberOfClass:TableViewCellContentConfiguration.class];
-}
-
-#pragma mark - UIView
-
-- (void)layoutSubviews {
-  if (UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory)) {
-    CGFloat cellWidth = self.bounds.size.width;
-    // Make sure that the multiline labels width isn't changed when the
-    // accessory is set.
-    CGFloat maxTextWidth = cellWidth - (kTableViewAccessoryWidth +
-                                        2 * kTableViewHorizontalSpacing);
-    _subtitle.preferredMaxLayoutWidth = maxTextWidth;
-    _title.preferredMaxLayoutWidth = maxTextWidth;
-  }
-  [super layoutSubviews];
 }
 
 #pragma mark - Private
@@ -198,22 +185,38 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   _title.text = _configuration.title;
   _title.textColor =
       _configuration.titleColor ?: [UIColor colorNamed:kTextPrimaryColor];
-  _title.numberOfLines = _configuration.titleNumberOfLines;
   _title.enabled = !_configuration.textDisabled;
 
   _subtitle.hidden = !_configuration.subtitle;
   _subtitle.text = _configuration.subtitle;
   _subtitle.textColor =
       _configuration.subtitleColor ?: [UIColor colorNamed:kTextSecondaryColor];
-  _subtitle.numberOfLines = _configuration.subtitleNumberOfLines;
   _subtitle.enabled = !_configuration.textDisabled;
 
   _trailingLabel.hidden = !_configuration.trailingText;
   _trailingLabel.text = _configuration.trailingText;
   _trailingLabel.textColor = _configuration.trailingTextColor
                                  ?: [UIColor colorNamed:kTextSecondaryColor];
-  _trailingLabel.numberOfLines = _configuration.trailingTextNumberOfLines;
   _trailingLabel.enabled = !_configuration.textDisabled;
+
+  [self updateNumberOfLines];
+}
+
+// Updates the number of lines of the labels based on the accessibility and the
+// config.
+- (void)updateNumberOfLines {
+  BOOL accessibilityContentSizeCategory =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+
+  _title.numberOfLines =
+      accessibilityContentSizeCategory ? 0 : _configuration.titleNumberOfLines;
+  _subtitle.numberOfLines = accessibilityContentSizeCategory
+                                ? 0
+                                : _configuration.subtitleNumberOfLines;
+  _trailingLabel.numberOfLines = accessibilityContentSizeCategory
+                                     ? 0
+                                     : _configuration.trailingTextNumberOfLines;
 }
 
 // Updates the elements based on a change in the content size.
@@ -223,18 +226,27 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
           self.traitCollection.preferredContentSizeCategory);
   if (accessibilityContentSizeCategory) {
     _allTextStack.axis = UILayoutConstraintAxisVertical;
+    _allTextStack.alignment = UIStackViewAlignmentLeading;
+    _mainStack.axis = UILayoutConstraintAxisVertical;
+    _mainStack.alignment = UIStackViewAlignmentLeading;
 
     _trailingLabel.textAlignment = NSTextAlignmentNatural;
-    _trailingLabel.numberOfLines = 0;
+    [NSLayoutConstraint activateConstraints:_accessibilityTextConstraints];
   } else {
     _allTextStack.axis = UILayoutConstraintAxisHorizontal;
+    _allTextStack.alignment = UIStackViewAlignmentCenter;
+    _mainStack.axis = UILayoutConstraintAxisHorizontal;
+    _mainStack.alignment = UIStackViewAlignmentCenter;
+
     _trailingLabel.textAlignment =
         self.effectiveUserInterfaceLayoutDirection ==
                 UIUserInterfaceLayoutDirectionLeftToRight
             ? NSTextAlignmentRight
             : NSTextAlignmentLeft;
-    _trailingLabel.numberOfLines = _configuration.trailingTextNumberOfLines;
+    [NSLayoutConstraint deactivateConstraints:_accessibilityTextConstraints];
   }
+
+  [self updateNumberOfLines];
 }
 
 // Setups the views.
@@ -271,6 +283,14 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
                      afterView:_leadingContentViewContainer];
 
   [self addSubview:_mainStack];
+
+  _accessibilityTextConstraints = @[
+    [_title.widthAnchor constraintEqualToAnchor:_allTextStack.widthAnchor],
+    [_subtitle.widthAnchor constraintEqualToAnchor:_allTextStack.widthAnchor],
+    [_trailingLabel.widthAnchor
+        constraintEqualToAnchor:_allTextStack.widthAnchor],
+    [_allTextStack.widthAnchor constraintEqualToAnchor:_mainStack.widthAnchor],
+  ];
 
   // The constraint ensuring the 75/25 ratio. It is higher priority than the
   // compression resistance but lower than the content hugging.
@@ -349,7 +369,6 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 // label.
 - (UIStackView*)createAllTextStack {
   UIStackView* stack = [[UIStackView alloc] init];
-  stack.alignment = UIStackViewAlignmentCenter;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
   return stack;
 }
