@@ -150,8 +150,6 @@ void MediaFoundationVideoEncoderSharedState::GetSupportedProfilesInternal() {
   for (auto codec : supported_codecs) {
     auto activates = EnumerateHardwareEncoders(codec);
     if (activates.empty()) {
-      DVLOG(1) << "Hardware encode acceleration is not available for "
-               << GetCodecName(codec);
       continue;
     }
 
