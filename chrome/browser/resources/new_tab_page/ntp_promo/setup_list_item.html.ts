@@ -1,7 +1,13 @@
-<!-- Copyright 2025 The Chromium Authors
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SetupListItemElement} from './setup_list_item.js';
+
+export function getHtml(this: SetupListItemElement) {
+  return html`
 <button id="backing" @click="${this.onClick_}"
     class="${this.completed ? 'completed' : 'pending'}"
     ?disabled="${this.completed}"
@@ -13,3 +19,5 @@
   <p id="bodyText">${this.bodyText}</p>
   <cr-icon id="actionIcon" icon="cr:chevron-right"></cr-icon>
 </button>
+`;
+}

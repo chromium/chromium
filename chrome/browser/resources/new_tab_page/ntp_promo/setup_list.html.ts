@@ -1,6 +1,13 @@
-<!-- Copyright 2025 The Chromium Authors
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
+import type {SetupListElement} from './setup_list.js';
+
+export function getHtml(this: SetupListElement) {
+  return html`
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
     header-text="${this.i18n('modulesSetupListTitle')}"
@@ -50,3 +57,5 @@ ${this.showInfoDialog_ ? html`
         @close="${this.onInfoDialogClose_}">>
     </ntp-info-dialog>
 ` : ''}
+`;
+}
