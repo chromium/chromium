@@ -355,48 +355,57 @@ class TrackingProtectionSettingsRollbackTest
     return {privacy_sandbox::kRollBackModeB};
   }
 
- protected:
+  void Initialize3pcdState(content_settings::CookieControlsMode cookies_mode,
+                           bool all_3pcs_blocked) {
+    prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+    prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, all_3pcs_blocked);
+    prefs()->SetInteger(prefs::kCookieControlsMode,
+                        static_cast<int>(cookies_mode));
+  }
+
+  void VerifyRollbackState(content_settings::CookieControlsMode cookies_mode,
+                           bool show_rollback_ui) {
+    EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
+    EXPECT_EQ(prefs()->GetBoolean(prefs::kShowRollbackUiModeB),
+              show_rollback_ui);
+    EXPECT_EQ(prefs()->GetInteger(prefs::kCookieControlsMode),
+              static_cast<int>(cookies_mode));
+    histogram_tester_.ExpectUniqueSample(
+        "Privacy.3PCD.RollbackNotice.ShouldShow", show_rollback_ui, 1);
+  }
+
+ private:
   base::HistogramTester histogram_tester_;
 };
 
 TEST_F(TrackingProtectionSettingsRollbackTest,
        Allowed3pcsDisables3pcdPrefAndEnablesRollbackUi) {
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  Initialize3pcdState(content_settings::CookieControlsMode::kOff, false);
   TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
                                  management_service(),
                                  /*is_incognito=*/false);
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
-  EXPECT_TRUE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
-  histogram_tester_.ExpectUniqueSample("Privacy.3PCD.RollbackNotice.ShouldShow",
-                                       true, 1);
+  VerifyRollbackState(content_settings::CookieControlsMode::kOff, true);
 }
 
 TEST_F(TrackingProtectionSettingsRollbackTest,
        Blocked3pcsIn3pcdDisables3pcdPrefAndRollbackUi) {
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
+  Initialize3pcdState(content_settings::CookieControlsMode::kOff, true);
   TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
                                  management_service(),
                                  /*is_incognito=*/false);
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
-  histogram_tester_.ExpectUniqueSample("Privacy.3PCD.RollbackNotice.ShouldShow",
-                                       false, 1);
+  VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
+                      false);
 }
 
 TEST_F(TrackingProtectionSettingsRollbackTest,
        Blocked3pcsDisables3pcdPrefAndRollbackUi) {
-  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  prefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+  Initialize3pcdState(content_settings::CookieControlsMode::kBlockThirdParty,
+                      false);
   TrackingProtectionSettings tps(prefs(), host_content_settings_map(),
                                  management_service(),
                                  /*is_incognito=*/false);
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kTrackingProtection3pcdEnabled));
-  EXPECT_FALSE(prefs()->GetBoolean(prefs::kShowRollbackUiModeB));
-  histogram_tester_.ExpectUniqueSample("Privacy.3PCD.RollbackNotice.ShouldShow",
-                                       false, 1);
+  VerifyRollbackState(content_settings::CookieControlsMode::kBlockThirdParty,
+                      false);
 }
 #endif
 

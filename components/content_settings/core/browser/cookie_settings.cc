@@ -459,15 +459,6 @@ void CookieSettings::OnTrackingProtection3pcdChanged() {
     obs.OnTrackingProtectionEnabledFor3pcdChanged(
         new_tracking_protection_enabled_for_3pcd);
   }
-  // If the user opted to block all 3PC while in the experiment, preserve that
-  // preference if they are offboarded.
-  if (!new_tracking_protection_enabled_for_3pcd &&
-      pref_change_registrar_->prefs()->GetBoolean(
-          prefs::kBlockAll3pcToggleEnabled)) {
-    pref_change_registrar_->prefs()->SetInteger(
-        prefs::kCookieControlsMode,
-        static_cast<int>(CookieControlsMode::kBlockThirdParty));
-  }
   OnCookiePreferencesChanged();
 }
 
