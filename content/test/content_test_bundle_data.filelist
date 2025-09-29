@@ -3020,6 +3020,10 @@ data/accessibility/event/scroll-vertical-scroll-percent-change-expected-android.
 data/accessibility/event/scroll-vertical-scroll-percent-change-expected-uia-win.txt
 data/accessibility/event/scroll-vertical-scroll-percent-change-expected-win.txt
 data/accessibility/event/scroll-vertical-scroll-percent-change.html
+data/accessibility/event/select-multiple-activate-options-expected-android.txt
+data/accessibility/event/select-multiple-activate-options-expected-auralinux.txt
+data/accessibility/event/select-multiple-activate-options-expected-mac.txt
+data/accessibility/event/select-multiple-activate-options.html
 data/accessibility/event/select-selected-add-remove-expected-android.txt
 data/accessibility/event/select-selected-add-remove-expected-auralinux.txt
 data/accessibility/event/select-selected-add-remove-expected-mac.txt
@@ -5387,6 +5391,13 @@ data/accessibility/html/select-listbox-modes-expected-mac.txt
 data/accessibility/html/select-listbox-modes-expected-uia-win.txt
 data/accessibility/html/select-listbox-modes-expected-win.txt
 data/accessibility/html/select-listbox-modes.html
+data/accessibility/html/select-multiple-activate-options-expected-android.txt
+data/accessibility/html/select-multiple-activate-options-expected-auralinux.txt
+data/accessibility/html/select-multiple-activate-options-expected-blink.txt
+data/accessibility/html/select-multiple-activate-options-expected-mac.txt
+data/accessibility/html/select-multiple-activate-options-expected-uia-win.txt
+data/accessibility/html/select-multiple-activate-options-expected-win.txt
+data/accessibility/html/select-multiple-activate-options.html
 data/accessibility/html/select-open-expected-android-assist-data.txt
 data/accessibility/html/select-open-expected-android-external.txt
 data/accessibility/html/select-open-expected-android.txt

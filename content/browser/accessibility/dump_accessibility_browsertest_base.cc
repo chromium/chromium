@@ -385,12 +385,7 @@ void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions() {
 
   // Perform default action on any elements specified by the test.
   for (const auto& str : scenario_.default_action_on) {
-    // TODO(accessibility) Consider waiting for kEndOfTest instead (but change
-    // the name to something more like kAccessibilityClean).
-    AccessibilityNotificationWaiter waiter(GetWebContents(),
-                                           ax::mojom::Event::kClicked);
     ui::BrowserAccessibility* action_element;
-
     // TODO(accessibility) base/strings/string_split.h might be cleaner here.
     size_t parent_node_delimiter_index = str.find(",");
     if (parent_node_delimiter_index != std::string::npos) {
@@ -403,6 +398,18 @@ void DumpAccessibilityTestBase::PerformAndWaitForDefaultActions() {
     } else {
       action_element = FindNode(str);
     }
+
+    // TODO(accessibility) Consider waiting for kEndOfTest instead (but change
+    // the name to something more like kAccessibilityClean).
+    bool is_listbox =
+        action_element->GetData().role == ax::mojom::Role::kListBoxOption;
+    // Options in ListBox select elements emit a click when the select isn't
+    // focused yet, but don't emit a click when the select is already focused.
+    // In this case, we have to wait for something other than the click. See
+    // HTMLSelectElement::SelectOptionByAccessKey.
+    AccessibilityNotificationWaiter waiter(
+        GetWebContents(), is_listbox ? ax::mojom::Event::kCheckedStateChanged
+                                     : ax::mojom::Event::kClicked);
 
     ui::AXActionData action_data;
     action_data.action = ax::mojom::Action::kDoDefault;

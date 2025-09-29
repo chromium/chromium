@@ -1353,6 +1353,12 @@ void HTMLSelectElement::SelectOptionByAccessKey(HTMLOptionElement* option) {
     SelectOption(option, flags);
   }
   option->SetDirty(true);
+
+  // Whether the option was selected or de-selected, we need to set it as the
+  // active descendant by calling SetListBoxActiveSelection here. Otherwise,
+  // screen readers will unexpectedly move their cursor to another option.
+  select_type_->SetListBoxActiveSelection(option);
+
   select_type_->ListBoxOnChange();
   select_type_->ScrollToSelection();
 }
