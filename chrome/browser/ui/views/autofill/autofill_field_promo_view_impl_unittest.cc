@@ -9,18 +9,14 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/common/autofill_test_utils.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/display/screen.h"
@@ -29,10 +25,6 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "url/origin.h"
-
-#if defined(USE_AURA)
-#include "ui/aura//window.h"
-#endif  // defined(USE_AURA)
 
 namespace autofill {
 namespace {
@@ -61,20 +53,19 @@ AutofillFieldPromoViewImpl* GetViewRawPtr(
   return static_cast<AutofillFieldPromoViewImpl*>(view.get());
 }
 
-class AutofillFieldPromoViewImplTest : public InProcessBrowserTest {
+class AutofillFieldPromoViewImplTest : public TestWithBrowserView {
  public:
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+  void SetUp() override {
+    TestWithBrowserView::SetUp();
     // Create the first tab so that `web_contents()` exists.
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                             GURL(chrome::kChromeUINewTabURL)));
+    AddTab(browser(), GURL(chrome::kChromeUINewTabURL));
   }
 
-  void TearDownOnMainThread() override {
+  void TearDown() override {
     if (view_) {
       view_->Close();
     }
-    InProcessBrowserTest::TearDownOnMainThread();
+    TestWithBrowserView::TearDown();
   }
 
   content::WebContents* web_contents() {
@@ -125,13 +116,12 @@ class AutofillFieldPromoViewImplTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(IS_MAC)
 
  private:
-  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   const ui::ElementIdentifier test_promo_element_identifier_ =
       autofill::PopupViewViews::kAutofillStandaloneCvcSuggestionElementId;
   base::WeakPtr<AutofillFieldPromoView> view_;
 };
 
-IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplTest, BoundsAreCorrect) {
+TEST_F(AutofillFieldPromoViewImplTest, BoundsAreCorrect) {
   // Set custom web contents bounds.
 #if BUILDFLAG(IS_MAC)
   ChangeBrowserWindowBoundsForDesiredWebContentsBounds(
@@ -156,8 +146,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplTest, BoundsAreCorrect) {
       gfx::Rect(0, 199, 200, 1));
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplTest,
-                       LifetimeIsManagedCorrectlyOnClose) {
+TEST_F(AutofillFieldPromoViewImplTest, LifetimeIsManagedCorrectlyOnClose) {
   base::WeakPtr<AutofillFieldPromoView> view = CreateView();
   AutofillFieldPromoViewImpl* view_ptr = GetViewRawPtr(view);
 
@@ -169,8 +158,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplTest,
   EXPECT_FALSE(view);
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplTest,
-                       OverlapsWithPictureInPictureWindow) {
+TEST_F(AutofillFieldPromoViewImplTest, OverlapsWithPictureInPictureWindow) {
   base::WeakPtr<AutofillFieldPromoView> view =
       CreateView(gfx::RectF(200, 200, 300, 300));
   TestPictureInPictureWindowController picture_in_picture_window_controller;
@@ -188,8 +176,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplTest,
   EXPECT_TRUE(view->OverlapsWithPictureInPictureWindow());
 }
 
-IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplTest,
-                       ElementIdForIphIsCorrect) {
+TEST_F(AutofillFieldPromoViewImplTest, ElementIdForIphIsCorrect) {
   EXPECT_EQ(
       GetViewRawPtr(CreateView())->GetProperty(views::kElementIdentifierKey),
       element_identifier());
