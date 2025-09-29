@@ -56,7 +56,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayer;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSceneLayerJni;
@@ -92,6 +91,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for toolbar manager behavior. */

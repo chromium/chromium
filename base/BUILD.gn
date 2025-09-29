@@ -4963,7 +4963,6 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
-
   android_library("time_utils_java") {
     sources = [ "android/java/src/org/chromium/base/TimeUtils.java" ]
   }
@@ -5233,20 +5232,6 @@ if (is_android) {
     cpp_package_name = "org/chromium/base/library_loader"
   }
 
-  # These files would make more sense to be in //ui/android but are required by
-  # other files in //base.
-  if (!is_cronet_build) {
-    android_library("ui_java") {
-      sources = [ "android/java/src/org/chromium/base/ui/KeyboardUtils.java" ]
-      deps = [
-        ":log_java",
-        ":tasks_java",
-        "//third_party/androidx:androidx_annotation_annotation_java",
-        "//third_party/androidx:androidx_core_core_java",
-      ]
-    }
-  }
-
   android_library("library_loader_java") {
     srcjar_deps = [
       ":library_loader_java_enums_srcjar",
@@ -5472,10 +5457,6 @@ if (is_android) {
       "//third_party/junit",
     ]
 
-    if (!is_cronet_build) {
-      deps += [ ":ui_java" ]
-    }
-
     public_deps = [
       ":base_cached_flags_java",
       ":base_java_url_utils_for_test",
@@ -5558,10 +5539,10 @@ if (is_android) {
     if (is_cronet_for_aosp_build) {
       sources += [ "//components/cronet/android/platform-only/org/chromium/base/test/util/PackageManagerWrapper.java" ]
     } else {
-      sources += [ "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java" ]
-    }
-    if (!is_cronet_build) {
-      sources += [ "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java" ]
+      sources += [
+        "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
+        "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
+      ]
     }
     if (use_clang_coverage) {
       mergeable_android_manifests = [

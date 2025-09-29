@@ -22,9 +22,9 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.KeyboardUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 
