@@ -38,7 +38,6 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
   auto glic_view = std::make_unique<GlicView>(
       profile, GlicWidget::GetInitialSize(), nullptr);
-  delegate_->host().CreateContents(/*initially_hidden=*/true);
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
   return glic_view;

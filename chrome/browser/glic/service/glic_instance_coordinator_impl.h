@@ -130,6 +130,7 @@ class GlicInstanceCoordinatorImpl
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id);
   GlicInstanceImpl* GetInstanceImplForTab(tabs::TabInterface* tab);
   GlicInstanceImpl* CreateGlicInstance();
+  void CreateWarmedInstance();
 
   void ToggleFloaty();
   void ToggleSidePanel(BrowserWindowInterface* browser);
@@ -147,6 +148,8 @@ class GlicInstanceCoordinatorImpl
 
   // The instance ID of the one instance that is currently floating.
   std::optional<InstanceId> floating_instance_key_;
+
+  std::unique_ptr<GlicInstanceImpl> warmed_instance_;
 
   std::unique_ptr<HostManager> host_manager_;
 

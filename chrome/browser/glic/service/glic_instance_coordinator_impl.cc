@@ -103,6 +103,9 @@ void GlicInstanceCoordinatorImpl::OnInstanceOrphaned(GlicInstance* instance) {
 
 std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {
   std::vector<GlicInstance*> instances;
+  if (warmed_instance_) {
+    instances.push_back(warmed_instance_.get());
+  }
   for (auto& entry : instances_) {
     instances.push_back(entry.second.get());
   }
@@ -248,8 +251,7 @@ GlicInstanceCoordinatorImpl::AddWindowActivationChangedCallback(
 }
 
 void GlicInstanceCoordinatorImpl::Preload() {
-  // Method should only be called on individual panels not the coordinator.
-  NOTIMPLEMENTED();
+  CreateWarmedInstance();
 }
 
 void GlicInstanceCoordinatorImpl::Reload() {
@@ -390,14 +392,21 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplFor(
 }
 
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance() {
+  if (!warmed_instance_) {
+    CreateWarmedInstance();
+  }
+  auto* instance_ptr = warmed_instance_.get();
+  instances_[instance_ptr->id()] = std::move(warmed_instance_);
+  CreateWarmedInstance();
+  return instance_ptr;
+}
+
+void GlicInstanceCoordinatorImpl::CreateWarmedInstance() {
   // TODO: Sync this id with the web client.
   InstanceId instance_id = base::Uuid::GenerateRandomV4();
-  auto new_instance = std::make_unique<GlicInstanceImpl>(
+  warmed_instance_ = std::make_unique<GlicInstanceImpl>(
       profile_, instance_id, weak_ptr_factory_.GetWeakPtr(),
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->metrics());
-  auto* instance_ptr = new_instance.get();
-  instances_[instance_id] = std::move(new_instance);
-  return instance_ptr;
 }
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty() {
