@@ -90,13 +90,24 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
 
 // Overriden to return NO for
 // -webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:
-// if the web client does not want to override the native open panel behaviour.
+// if there is no delegate or `delegate->CanRunOpenPanel()` returns false.
 - (BOOL)respondsToSelector:(SEL)selector {
   SEL runOpenPanelWithParametersSelector = @selector
       (webView:runOpenPanelWithParameters:initiatedByFrame:completionHandler:);
-  if (selector == runOpenPanelWithParametersSelector &&
-      !web::GetWebClient()->OverrideOpenPanel()) {
-    return NO;
+  if (selector == runOpenPanelWithParametersSelector) {
+    if (@available(iOS 18.4, *)) {
+      web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
+      if (delegate) {
+        return delegate->CanRunOpenPanel(self.webStateImpl);
+      } else {
+        // If there is no delegate, then fall back to native behaviour.
+        return NO;
+      }
+    } else {
+      NOTREACHED() << "@selector(-webView:runOpenPanelWithParameters:"
+                      "initiatedByFrame:completionHandler:) only exists on "
+                      "18.4+ so it should not be used in former versions.";
+    }
   }
   return [super respondsToSelector:selector];
 }
@@ -326,9 +337,19 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
               initiatedByFrame:(WKFrameInfo*)frame
              completionHandler:(void (^)(NSArray<NSURL*>*))completionHandler
     API_AVAILABLE(ios(18.4)) {
-  CHECK(web::GetWebClient()->OverrideOpenPanel());
+  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
+  CHECK(delegate) << "-[CRWWKUIHandler "
+                     "webView:runOpenPanelWithParameters:initiatedByFrame:"
+                     "completionHandler:] was called while the associated "
+                     "WebState has no delegate to show an open panel.";
+  CHECK(delegate->CanRunOpenPanel(self.webStateImpl))
+      << "-[CRWWKUIHandler "
+         "webView:runOpenPanelWithParameters:initiatedByFrame:"
+         "completionHandler:] was called while the associated WebState's "
+         "delegate cannot show an open panel (delegate->CanRunOpenPanel() "
+         "returned false).";
   // TODO(crbug.com/441659098): Forward parameters and completion handler to the
-  // embedder instead of passing nil.
+  // delegate instead of passing nil.
   completionHandler(nil);
 }
 

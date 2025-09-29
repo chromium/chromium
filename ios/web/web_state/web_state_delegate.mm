@@ -108,4 +108,9 @@ id<CRWResponderInputView> WebStateDelegate::GetResponderInputView(
 
 void WebStateDelegate::OnNewWebViewCreated(WebState* source) {}
 
+bool WebStateDelegate::CanRunOpenPanel(web::WebState* source) const
+    API_AVAILABLE(ios(18.4)) {
+  return false;
+}
+
 }  // namespace web

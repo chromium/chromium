@@ -101,6 +101,8 @@ class WebStateDelegateBrowserAgent
                         base::OnceCallback<void(bool)> callback) override;
   void ShouldAllowCut(web::WebState* source,
                       base::OnceCallback<void(bool)> callback) override;
+  bool CanRunOpenPanel(web::WebState* source) const override
+      API_AVAILABLE(ios(18.4));
 
   raw_ptr<WebStateList> web_state_list_ = nullptr;
   raw_ptr<TabInsertionBrowserAgent, DanglingUntriaged> tab_insertion_agent_ =

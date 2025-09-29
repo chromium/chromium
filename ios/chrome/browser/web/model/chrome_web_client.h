@@ -57,7 +57,6 @@ class ChromeWebClient : public web::WebClient {
   bool EnableFullscreenAPI() const override;
   bool EnableLongPressUIContextMenu() const override;
   bool EnableWebInspector(web::BrowserState* browser_state) const override;
-  bool OverrideOpenPanel() const override;
   web::UserAgentType GetDefaultUserAgent(web::WebState* web_state,
                                          const GURL& url) const override;
   void LogDefaultUserAgent(web::WebState* web_state,

@@ -127,6 +127,11 @@ class WebStateDelegate {
   // view.
   virtual void OnNewWebViewCreated(WebState* source);
 
+  // Whether the delegate implements the `RunOpenPanel()` method for `source`.
+  // If this returns `false`, then the native open panel will run instead.
+  virtual bool CanRunOpenPanel(web::WebState* source) const
+      API_AVAILABLE(ios(18.4));
+
  protected:
   virtual ~WebStateDelegate();
 

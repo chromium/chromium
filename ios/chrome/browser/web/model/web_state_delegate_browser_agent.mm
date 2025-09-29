@@ -374,3 +374,10 @@ void WebStateDelegateBrowserAgent::ShouldAllowCut(
   data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
       ->ShouldAllowCut(std::move(callback));
 }
+
+bool WebStateDelegateBrowserAgent::CanRunOpenPanel(web::WebState* source) const
+    API_AVAILABLE(ios(18.4)) {
+  // TODO(crbug.com/441659098): Use a feature flag to determine whether to
+  // override the native open panel behaviour.
+  return false;
+}

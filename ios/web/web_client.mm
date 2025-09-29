@@ -98,10 +98,6 @@ bool WebClient::EnableWebInspector(BrowserState* browser_state) const {
   return false;
 }
 
-bool WebClient::OverrideOpenPanel() const {
-  return false;
-}
-
 void WebClient::CleanupNativeRestoreURLs(web::WebState* web_state) const {}
 
 void WebClient::WillDisplayMediaCapturePermissionPrompt(
