@@ -48,6 +48,8 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -72,9 +74,11 @@ public class BookmarkBarCoordinator
                 BookmarkBarVisibilityObserver,
                 View.OnLayoutChangeListener,
                 BrowserControlsStateProvider.Observer,
-                FullscreenManager.Observer {
+                FullscreenManager.Observer,
+                TopResumedActivityChangedObserver {
 
     private final Context mContext;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final SimpleRecyclerViewAdapter mItemsAdapter;
     private final BookmarkBarItemsLayoutManager mBookmarkBarItemsLayoutManager;
     private final BookmarkBarMediator mMediator;
@@ -106,6 +110,7 @@ public class BookmarkBarCoordinator
      * Constructs the bookmark bar coordinator.
      *
      * @param activity The activity which is hosting the bookmark bar.
+     * @param activityLifecycleDispatcher The activity lifecycle observer for window focus changes.
      * @param layoutManager LayoutManager to add SceneLayer to and bind model to.
      * @param requestUpdate Runnable to request an update for the layout manager and cc layers.
      * @param fullscreenManager FullScreenManager that can be observed for hiding scene layers.
@@ -123,6 +128,7 @@ public class BookmarkBarCoordinator
      */
     public BookmarkBarCoordinator(
             Activity activity,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
             LayoutManager layoutManager,
             Runnable requestUpdate,
             FullscreenManager fullscreenManager,
@@ -142,6 +148,8 @@ public class BookmarkBarCoordinator
         mResourceManager = resourceManager;
         mFullscreenManager = fullscreenManager;
         mFullscreenManager.addObserver(this);
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mActivityLifecycleDispatcher.register(this);
 
         // The Bookmark Bar may first be turned on in fullscreen mode, in which case we want its
         // initial state to be hidden, which is tracked by this member variable.
@@ -305,6 +313,7 @@ public class BookmarkBarCoordinator
         mContentContainer.removeOnLayoutChangeListener(this);
         mBrowserControlsStateProvider.removeObserver(this);
         mFullscreenManager.removeObserver(this);
+        mActivityLifecycleDispatcher.unregister(this);
         if (mIsResourceRegistered) unregisterResource();
         mBookmarkBarSceneLayer.setVisibility(false);
     }
@@ -557,6 +566,16 @@ public class BookmarkBarCoordinator
         // don't force this to true, but use the current state instead.
         mIsInFullscreenMode = false;
         mBookmarkBarSceneLayer.setVisibility(mShouldBookmarkBarBeShown);
+    }
+
+    // TopResumedActivityChangedObserver implementation:
+
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        // Whenever the top resumed activity is lost, we want to dismiss the anchored pop up.
+        if (!isTopResumedActivity) {
+            mMediator.dismissPopupMenu();
+        }
     }
 
     // Private methods:

@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -85,6 +86,7 @@ public class BookmarkBarRenderTest {
     @Mock private BookmarkBarSceneLayer.Natives mBookmarkBarSceneLayerJniMock;
     @Mock private ResourceFactory.Natives mResourceFactoryJniMock;
 
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private LayoutManager mLayoutManager;
     @Mock private ResourceManager mResourceManager;
     @Mock private FullscreenManager mFullscreenManager;
@@ -124,6 +126,7 @@ public class BookmarkBarRenderTest {
                     mCoordinator =
                             new BookmarkBarCoordinator(
                                     activity,
+                                    mActivityLifecycleDispatcher,
                                     mLayoutManager,
                                     /* requestUpdate= */ () -> {},
                                     mFullscreenManager,

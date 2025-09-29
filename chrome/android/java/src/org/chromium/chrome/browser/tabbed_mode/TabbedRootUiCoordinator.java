@@ -1839,6 +1839,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarCoordinator =
                     new BookmarkBarCoordinator(
                             mActivity,
+                            mActivityLifecycleDispatcher,
                             mLayoutManager,
                             mLayoutManager::requestUpdate,
                             mFullscreenManager,
