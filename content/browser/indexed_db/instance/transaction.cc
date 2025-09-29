@@ -1168,6 +1168,9 @@ void Transaction::TimeoutFired() {
   base::UmaHistogramEnumeration("IndexedDB.TransactionTimeout.Mode", mode_);
   base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.CommitPending",
                             is_commit_pending_);
+  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.IsAborted", aborted_);
+  base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.TaskRunQueued",
+                            bucket_context_->task_run_queued());
   base::UmaHistogramCounts10000(
       "IndexedDB.TransactionTimeout.NumTransactionsInDB",
       num_transactions_across_all_connections);
@@ -1191,6 +1194,11 @@ void Transaction::TimeoutFired() {
     base::UmaHistogramBoolean(
         "IndexedDB.TransactionTimeout.10kTransactions.CommitPending",
         is_commit_pending_);
+    base::UmaHistogramBoolean(
+        "IndexedDB.TransactionTimeout.10kTransactions.IsAborted", aborted_);
+    base::UmaHistogramBoolean(
+        "IndexedDB.TransactionTimeout.10kTransactions.TaskRunQueued",
+        bucket_context_->task_run_queued());
     base::UmaHistogramCounts100000(
         "IndexedDB.TransactionTimeout.10kTransactions.NumTransactionsInDB",
         num_transactions_across_all_connections);
