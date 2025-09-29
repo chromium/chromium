@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
@@ -93,10 +94,27 @@ class AnalysisServiceSettings {
   using PatternSettings =
       std::map<base::MatcherStringPattern::ID, URLPatternSettings>;
 
+  static constexpr size_t kDefaultMinimumDataSize = 100;
+
   // Accessors for the pattern setting maps.
   static std::optional<URLPatternSettings> GetPatternSettings(
       const PatternSettings& patterns,
       base::MatcherStringPattern::ID match);
+
+  // Helper methods for parsing the raw policy settings input
+  // Service provider data must be provided and valid
+  bool TryParseServiceProviderData(const base::Value::Dict& settings_dict,
+                                   const ServiceProviderConfig&);
+  void ParsePatternSettings(const base::Value::List* pattern_settings_list,
+                            bool is_enabled_pattern,
+                            base::MatcherStringPattern::ID& id);
+  void ParseBlockSettings(const base::Value::Dict& settings_dict);
+  void ParseMinimumDataSize(const base::Value::Dict& settings_dict);
+  void ParseCustomMessages(const base::Value::Dict& settings_dict);
+  void ParseJustificationTags(const base::Value::Dict& settings_dict);
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+  void ParseVerificationSignatures(const base::Value::Dict& settings_dict);
+#endif
 
   // Returns the analysis settings with the specified tags.
   AnalysisSettings GetAnalysisSettingsWithTags(
@@ -137,12 +155,14 @@ class AnalysisServiceSettings {
   // condition set IDs returned after matching against a URL can be used to
   // check |enabled_patterns_settings| and |disable_patterns_settings| to
   // obtain URL-specific settings.
-  std::unique_ptr<url_matcher::URLMatcher> matcher_;
+  std::unique_ptr<url_matcher::URLMatcher> matcher_ =
+      std::make_unique<url_matcher::URLMatcher>();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // A matcher to identify matching pairs of sources and destinations.
   // Set for ChromeOS' OnFileTransferEnterpriseConnector.
-  std::unique_ptr<SourceDestinationMatcherAsh> source_destination_matcher_;
+  std::unique_ptr<SourceDestinationMatcherAsh> source_destination_matcher_ =
+      std::make_unique<SourceDestinationMatcherAsh>();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // These members map URL patterns to corresponding settings.  If an entry in
@@ -161,7 +181,7 @@ class AnalysisServiceSettings {
   DefaultAction default_action_ = DefaultAction::kAllow;
   bool block_password_protected_files_ = false;
   bool block_large_files_ = false;
-  size_t minimum_data_size_ = 100;
+  size_t minimum_data_size_ = kDefaultMinimumDataSize;
   // A map from tag (dlp, malware, etc) to the custom message, "learn more" link
   // and other settings associated to a specific tag.
   std::map<std::string, TagSettings> tags_;
