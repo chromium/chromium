@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -51,7 +52,6 @@
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -206,7 +206,7 @@ void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
     base::Time min_last_used,
     std::vector<const CreditCard*>& cards) {
   const size_t original_size = cards.size();
-  std::erase_if(cards, [comparison_time = AutofillClock::Now(),
+  std::erase_if(cards, [comparison_time = base::Time::Now(),
                         min_last_used](const CreditCard* card) {
     return card->IsExpired(comparison_time) &&
            card->usage_history().use_date() < min_last_used &&
@@ -1789,7 +1789,7 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
   // Suppress disused credit cards when triggered from an empty field.
   if (suppress_disused_cards) {
     const base::Time min_last_used =
-        AutofillClock::Now() - kDisusedDataModelTimeDelta;
+        base::Time::Now() - kDisusedDataModelTimeDelta;
     RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
                                                        available_cards);
   }

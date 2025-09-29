@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -1449,7 +1448,7 @@ INSTANTIATE_TEST_SUITE_P(
                     {UkmFocusedComplexFormType::
                          kIsInControlGroupOfConditionalAblationName,
                      0},
-                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 10},
+                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 2},
                     {UkmFocusedComplexFormType::
                          kIsAblationStudyInDryRunModeName,
                      0},
@@ -1506,7 +1505,7 @@ INSTANTIATE_TEST_SUITE_P(
                     {UkmFocusedComplexFormType::
                          kIsInControlGroupOfConditionalAblationName,
                      0},
-                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 10},
+                    {UkmFocusedComplexFormType::kDayInAblationWindowName, 2},
                     // This is true due to dry-run mode.
                     {UkmFocusedComplexFormType::
                          kIsAblationStudyInDryRunModeName,
@@ -1534,9 +1533,8 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
     scoped_feature_list.InitAndEnableFeatureWithParameters(
         features::kAutofillEnableAblationStudy, feature_parameters);
   }
-  constexpr base::Time arbitrary_default_time =
-      base::Time::FromSecondsSinceUnixEpoch(25);
-  TestAutofillClock test_clock(arbitrary_default_time);
+
+  task_environment_.FastForwardBy(base::Seconds(25));
 
   CreateCreditCards(
       /*include_local_credit_card=*/true,
