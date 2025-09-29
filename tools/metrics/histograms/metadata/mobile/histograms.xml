@@ -218,6 +218,10 @@ chromium-metrics-reviews@google.com.
     <variant name="OmniboxMostVisitedEntry"
         summary="Omnibox Most Visited entry"/>
     <variant name="PinnedTabsEntry" summary="Pinned Tabs entry"/>
+    <variant name="ReaderModeImage" summary="Image on a Reader Mode page"/>
+    <variant name="ReaderModeImageLink"
+        summary="Image-Link on a Reader Mode page"/>
+    <variant name="ReaderModeLink" summary="Link on a Reader Mode page"/>
     <variant name="ReadingListEntry" summary="Reading List entry"/>
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
     <variant name="RecentTabsHeader" summary="Recent Tabs header/device"/>

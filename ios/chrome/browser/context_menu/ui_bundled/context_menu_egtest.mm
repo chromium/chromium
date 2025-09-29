@@ -989,6 +989,8 @@ void RelaunchApp() {
   FLAKY_testOpenContextMenuFromReadingMode
 #endif
 - (void)testOpenContextMenuFromReadingMode {
+  [self setUpHistogramTester];
+
   const GURL initialURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -1005,19 +1007,9 @@ void RelaunchApp() {
   [ChromeEarlGrey
       waitForWebStateContainingElement:ElementSelectorToLongPressLink()];
 
+  // Open the context menu and tap on an action.
   [ChromeEarlGreyUI longPressElementOnWebView:ElementSelectorToLongPressLink()];
-
-  // Make sure the context menu appeared.
-  [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
-      assertWithMatcher:grey_notNil()];
-
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap the tools menu to dismiss the popover.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-        performAction:grey_tap()];
-  }
-  // Tap the drop shadow to dismiss the popover.
-  chrome_test_util::TapAtOffsetOf(nil, 0, CGVectorMake(0.5, 0.95));
+  TapOnContextMenuButton(OpenLinkInNewTabButton());
 
   // Make sure the context menu disappeared.
   ConditionBlock condition = ^{
@@ -1031,6 +1023,22 @@ void RelaunchApp() {
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForUIElementTimeout, condition),
              @"Waiting for the context menu to disappear");
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:36  // Number refering to MenuScenarioHistogram enum.
+      forHistogram:@"Mobile.ContextMenu.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:0  // Number refering to MenuActionType enum.
+      forHistogram:@"Mobile.ContextMenu.ReaderModeLink.Actions"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 // Tests that the context menu is displayed for an image url in Reading mode.
@@ -1044,6 +1052,8 @@ void RelaunchApp() {
   FLAKY_testContextMenuDisplayedOnImageForReadingMode
 #endif
 - (void)testContextMenuDisplayedOnImageForReadingMode {
+  [self setUpHistogramTester];
+
   const GURL pageURL = self.testServer->GetURL("/article.html");
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -1069,6 +1079,22 @@ void RelaunchApp() {
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
   [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
       assertWithMatcher:grey_notNil()];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:34  // Number refering to MenuScenarioHistogram enum.
+      forHistogram:@"Mobile.ContextMenu.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:20  // Number refering to MenuActionType enum.
+      forHistogram:@"Mobile.ContextMenu.ReaderModeImage.Actions"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 @end

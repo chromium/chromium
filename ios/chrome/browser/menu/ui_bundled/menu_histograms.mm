@@ -76,6 +76,12 @@ const char kTabGroupIndicatorNTPEntryActionsHistogram[] =
     "Mobile.ContextMenu.TabGroupIndicatorNTPEntry.Actions";
 const char kLastVisitedHistoryEntryActionsHistogram[] =
     "Mobile.ContextMenu.LastVisitedHistoryEntry.Actions";
+const char kContextMenuReaderModeImageActionsHistogram[] =
+    "Mobile.ContextMenu.ReaderModeImage.Actions";
+const char kContextMenuReaderModeImageLinkActionsHistogram[] =
+    "Mobile.ContextMenu.ReaderModeImageLink.Actions";
+const char kContextMenuReaderModeLinkActionsHistogram[] =
+    "Mobile.ContextMenu.ReaderModeLink.Actions";
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/histograms.xml)
 }  // namespace
 
@@ -152,6 +158,12 @@ const char* GetActionsHistogramName(MenuScenarioHistogram scenario) {
       return kTabGroupIndicatorNTPEntryActionsHistogram;
     case kMenuScenarioHistogramLastVisitedHistoryEntry:
       return kLastVisitedHistoryEntryActionsHistogram;
+    case kMenuScenarioHistogramReaderModeContextMenuImage:
+      return kContextMenuReaderModeImageActionsHistogram;
+    case kMenuScenarioHistogramReaderModeContextMenuImageLink:
+      return kContextMenuReaderModeImageLinkActionsHistogram;
+    case kMenuScenarioHistogramReaderModeContextMenuLink:
+      return kContextMenuReaderModeLinkActionsHistogram;
     case kMenuScenarioHistogramCount:
       NOTREACHED();
   }

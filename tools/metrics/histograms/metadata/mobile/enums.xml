@@ -271,6 +271,9 @@ chromium-metrics-reviews@google.com.
   <int value="31" label="Autofill Manual Fallback Plus Address Entry"/>
   <int value="32" label="Tab Group Indicator on NTP Entry"/>
   <int value="33" label="Last Visited History Entry"/>
+  <int value="34" label="Image on a Reader Mode page"/>
+  <int value="35" label="Image-Link on a Reader Mode page"/>
+  <int value="36" label="Link on a Reader Mode page"/>
 </enum>
 
 <enum name="IOSShareAction">
