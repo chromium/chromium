@@ -25,6 +25,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GEN
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATE_SUGGESTIONS_FROM_TOP;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS_FIXED;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_STICKY_LAST_ITEM;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.HAS_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.OBFUSCATED_CHILD_AT_CALLBACK;
@@ -635,13 +636,35 @@ public class KeyboardAccessoryControllerTest {
 
         mCoordinator.setSuggestions(List.of(mock(AutofillSuggestion.class)), mMockAutofillDelegate);
 
-        assertThat(mModel.get(BAR_ITEMS).size(), is(3));
+        assertThat(mModel.get(BAR_ITEMS), contains(instanceOf(AutofillBarItem.class)));
         assertThat(
-                mModel.get(BAR_ITEMS),
-                contains(
-                        instanceOf(AutofillBarItem.class),
-                        instanceOf(SheetOpenerBarItem.class),
-                        instanceOf(DismissBarItem.class)));
+                mModel.get(BAR_ITEMS_FIXED),
+                contains(instanceOf(SheetOpenerBarItem.class), instanceOf(DismissBarItem.class)));
+    }
+
+    @Test
+    public void testLargeFormFactorHasFixedItems() {
+        when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
+        Provider<Action[]> generationProvider = new Provider<>(GENERATE_PASSWORD_AUTOMATIC);
+        mCoordinator.registerActionProvider(generationProvider);
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Suggestion")
+                        .setSubLabel("")
+                        .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
+                        .setFeatureForIph("")
+                        .build();
+        Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
+
+        mCoordinator.setSuggestions(List.of(suggestion), mMockAutofillDelegate);
+        generationProvider.notifyObservers(new Action[] {generationAction});
+
+        assertThat(mModel.get(BAR_ITEMS).size(), is(2));
+        assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
+        assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
+        assertThat(
+                mModel.get(BAR_ITEMS_FIXED),
+                contains(instanceOf(SheetOpenerBarItem.class), instanceOf(DismissBarItem.class)));
     }
 
     private int getGenerationImpressionCount() {
