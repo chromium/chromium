@@ -474,6 +474,9 @@ static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
   return true;
 }
 
+// TODO(crbug.com/447640763): Remove after M145 if nothing explodes.
+BASE_FEATURE(kAudioPowerMonitoring, base::FEATURE_DISABLED_BY_DEFAULT);
+
 class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
  public:
   AudioPowerObserver()
@@ -509,6 +512,10 @@ class AudioManagerMac::AudioPowerObserver : public base::PowerSuspendObserver {
 
   bool ShouldDeferStreamStart() const {
     DCHECK(thread_checker_.CalledOnValidThread());
+    if (!base::FeatureList::IsEnabled(kAudioPowerMonitoring)) {
+      return false;
+    }
+
     // Start() should be deferred if the system is in the middle of a suspend or
     // has recently started the process of resuming.
     return is_suspending_ || base::TimeTicks::Now() < earliest_start_time_;
