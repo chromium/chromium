@@ -145,7 +145,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
                            int src_y,
                            int plane_index,
                            void* dst_pixels) override;
-  void DeleteGpuRasterTexture(GLuint texture) override;
   void TraceBeginCHROMIUM(const char* category_name,
                           const char* trace_name) override {}
   void TraceEndCHROMIUM() override {}

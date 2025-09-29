@@ -96,10 +96,6 @@ gpu::SyncToken TestRasterInterface::ScheduleImageDecode(
   return gpu::SyncToken();
 }
 
-void TestRasterInterface::DeleteGpuRasterTexture(GLuint texture) {
-  NOTREACHED();
-}
-
 void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
   // Don't return a valid sync token if context is lost. This matches behavior
   // of CommandBufferProxyImpl.

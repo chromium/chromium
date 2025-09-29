@@ -1900,10 +1900,6 @@ void RasterImplementation::IssueImageDecodeCacheEntryCreation(
       sync_token.release_count(), target_color_space, needs_mips);
 }
 
-void RasterImplementation::DeleteGpuRasterTexture(GLuint texture) {
-  NOTREACHED();
-}
-
 void RasterImplementation::TraceBeginCHROMIUM(const char* category_name,
                                               const char* trace_name) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();

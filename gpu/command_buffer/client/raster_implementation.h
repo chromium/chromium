@@ -193,7 +193,6 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                            int src_y,
                            int plane_index,
                            void* dst_pixels) override;
-  void DeleteGpuRasterTexture(GLuint texture) override;
 
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
