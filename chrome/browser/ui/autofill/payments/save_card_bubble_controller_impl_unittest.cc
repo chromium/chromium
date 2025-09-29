@@ -797,7 +797,13 @@ TEST_P(SaveCardBubbleLoggingTest, MAYBE_Metrics_SaveButton) {
       autofill_metrics::LegacySaveCardPromptResult::kAccepted, 1);
 }
 
-TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
+// TODO(https://crbug.com/448030345): Flaky on Linux ASan
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Metrics_CancelButton DISABLED_Metrics_CancelButton
+#else
+#define MAYBE_Metrics_CancelButton Metrics_CancleButton
+#endif
+TEST_P(SaveCardBubbleLoggingTest, MAYBE_Metrics_CancelButton) {
   base::HistogramTester histogram_tester;
   TriggerFlow();
   CloseBubble(PaymentsUiClosedReason::kCancelled);
@@ -807,7 +813,13 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_CancelButton) {
       autofill_metrics::LegacySaveCardPromptResult::kCancelled, 1);
 }
 
-TEST_P(SaveCardBubbleLoggingTest, Metrics_Closed) {
+// TODO(https://crbug.com/448030345): Flaky on Linux ASan
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Metrics_Closed DISABLED_Metrics_Closed
+#else
+#define MAYBE_Metrics_Closed Metrics_Closed
+#endif
+TEST_P(SaveCardBubbleLoggingTest, MAYBE_Metrics_Closed) {
   base::HistogramTester histogram_tester;
   TriggerFlow();
   CloseBubble(PaymentsUiClosedReason::kClosed);
