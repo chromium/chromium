@@ -511,7 +511,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kServiceWorkerAutoPreload,
           "enable_only_when_service_worker_not_running",
-          /*default_value=*/false) &&
+          /*default_value=*/true) &&
       version->running_status() == blink::EmbeddedWorkerStatus::kRunning) {
     return false;
   }
@@ -534,7 +534,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
   version->set_fetch_handler_bypass_option(
       base::GetFieldTrialParamByFeatureAsBool(
           features::kServiceWorkerAutoPreload, "enable_subresource_preload",
-          /*default_value=*/true)
+          /*default_value=*/false)
           ? blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload
           : blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault);
 
