@@ -263,12 +263,14 @@ void KioskBrowserWindowHandler::OnCompleteBrowserAdded(Browser* browser) {
   // This URL is required for our triaging, so we'll wait for it.
   url_waiters_[browser] = std::make_unique<NavigationWaiter>(
       browser, base::BindOnce(
-                   [](KioskBrowserWindowHandler* self, Browser* browser) {
-                     if (self->TriageNewBrowserWindow(browser)) {
-                       browser->window()->Show();
-                     }
-                   },
-                   base::Unretained(this), base::Unretained(browser)));
+                   &KioskBrowserWindowHandler::OnBrowserNavigationStarted,
+                   weak_ptr_factory_.GetWeakPtr(), base::Unretained(browser)));
+}
+
+void KioskBrowserWindowHandler::OnBrowserNavigationStarted(Browser* browser) {
+  if (TriageNewBrowserWindow(browser)) {
+    browser->window()->Show();
+  }
 }
 
 void KioskBrowserWindowHandler::OnBrowserRemoved(Browser* browser) {

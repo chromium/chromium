@@ -66,6 +66,7 @@ class KioskBrowserWindowHandler : public BrowserListObserver {
 
  private:
   void OnCompleteBrowserAdded(Browser* browser);
+  void OnBrowserNavigationStarted(Browser* browser);
   bool TriageNewBrowserWindow(Browser* browser);
   void HandleNewSettingsWindow(Browser* browser, const std::string& url_string);
 
