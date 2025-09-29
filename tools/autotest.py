@@ -649,6 +649,22 @@ def BuildPrefMappingTestFilter(filenames):
   return ':'.join(names_without_extension)
 
 
+def GetChangedTestFiles():
+  # Find both committed and uncommitted changes.
+  merge_base_command = ['git', 'merge-base', 'origin/main', 'HEAD']
+  merge_base = RunCommand(merge_base_command).strip()
+  git_command = [
+      'git', 'diff', '--name-only', '--diff-filter=ACMRT', merge_base
+  ]
+  changed_files = RunCommand(git_command).splitlines()
+
+  test_files = []
+  for f in changed_files:
+    if IsTestFile(f) is TestValidity.VALID_TEST:
+      test_files.append(f)
+  return test_files
+
+
 def main():
   parser = argparse.ArgumentParser(
       description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
@@ -669,6 +685,11 @@ def main():
       '--run_all',
       action='store_true',
       help='Run all tests for the file or directory, instead of just one')
+  parser.add_argument(
+      '--run-changed',
+      '--run_changed',
+      action='store_true',
+      help='Run tests files modified since this branch diverged from main.')
   parser.add_argument('--line',
                       type=int,
                       help='run only the test on this line number. c++ only.')
@@ -703,7 +724,7 @@ def main():
                       help='Do not add --fast-local-dev for Android tests.')
   parser.add_argument('files',
                       metavar='FILE_NAME',
-                      nargs='+',
+                      nargs='*',
                       help='test suite file (eg. FooTest.java)')
 
   args, _extras = parser.parse_known_args()
@@ -716,12 +737,25 @@ def main():
   if not os.path.isdir(out_dir):
     parser.error(f'OUT_DIR "{out_dir}" does not exist.')
   target_cache = TargetCache(out_dir)
+
+  if not args.run_changed and not args.files:
+    parser.error('Specify a file to test or use --run-changed')
+
+  files_to_test = args.files
+  if args.run_changed:
+    files_to_test.extend(GetChangedTestFiles())
+    # Remove duplicates.
+    files_to_test = list(set(files_to_test))
+
   filenames = []
-  for file in args.files:
+  for file in files_to_test:
     filenames.extend(FindMatchingTestFiles(file, args.remote_search))
 
+  if not filenames:
+    ExitWithMessage('No associated test files found.')
+
   targets, used_cache = FindTestTargets(target_cache, out_dir, filenames,
-                                        args.run_all)
+                                        args.run_all or args.run_changed)
 
   gtest_filter = args.gtest_filter
   if not gtest_filter:
@@ -744,7 +778,7 @@ def main():
   if used_cache and not target_cache.IsStillValid():
     target_cache = TargetCache(out_dir)
     new_targets, _ = FindTestTargets(target_cache, out_dir, filenames,
-                                     args.run_all)
+                                     args.run_all or args.run_changed)
     if targets != new_targets:
       # Note that this can happen, for example, if you rename a test target.
       print('gn config was changed, trying to build again', file=sys.stderr)
