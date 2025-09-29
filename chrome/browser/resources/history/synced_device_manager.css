@@ -29,6 +29,7 @@
 
 .sync-history-promo-avatar-illustration {
   content: url(./images/avatar_surrounding_illustration_light.svg);
+  height: 132px;
   width: 100%;
 }
 
@@ -46,47 +47,11 @@
   }
 }
 
-#avatar {
-  /** The user avatar may be transparent, add a background */
-  background-color: var(--md-background-color);
-  border: solid var(--md-background-color);
-  border-radius: 50%;
-  height: 64px;
-  /* To place the avatar at the center of the background image,
-     place it at top left point of its parent,
-     then shift it back by half its width and height. */
-  left: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 64px;
-}
-
-#imageContainer {
-  align-self: center;
-  display: flex;
-  /* The height must be set so that the height of this relatively positioned
-  container is taken into account in the height calculator of the entire screen. */
-  height: 162px;
-  justify-content: center;
-  /* Establishes a positioning context for absolute children. */
-  position: relative;
-}
-
 #no-synced-tabs {
   height: 100%;
 }
 
 #sign-in-guide {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  overflow-x: hidden;
-  text-align: center;
-}
-
-.history-sync-optin {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -110,24 +75,6 @@
   margin: 24px 0;
 }
 
-/* TODO:  crbug.com/418144047 - align the style with the Figma mockups. */
-.sync-history-promo {
-  font-size: 215%;
-  font-weight: 500;
-  margin-top: 40px;
-}
-
-.sync-history-promo-desc {
-  color: var(--cr-secondary-text-color);
-  font-size: 123%;
-  margin-top: 10px;
-  width: 80ch;
-}
-
-#sync-history-button {
-  margin: 24px 0;
-}
-
 #synced-device-list {
   padding-top: var(--first-card-padding-top);
 }
@@ -135,3 +82,95 @@
 history-synced-device-card {
   margin-block-end: var(--card-padding-between);
 }
+
+<if expr="not is_chromeos">
+.history-sync-optin {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+.sync-history-promo {
+  margin-top: 12px;
+  color: #202124;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 32px;
+}
+
+.sync-history-promo-desc {
+  margin-top: 8px;
+  max-width: 684px;
+  color: #5E5E5E;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+#avatar {
+  /** The user avatar may be transparent, add a background */
+  background-color: var(--md-background-color);
+  border: solid var(--md-background-color);
+  border-radius: 50%;
+  height: 64px;
+  /* To place the avatar at the center of the background image,
+     place it at top left point of its parent,
+     then shift it back by half its width and height. */
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+}
+
+.image-container {
+  align-self: center;
+  align-items: center;
+  display: flex;
+  /* The height must be set so that the height of this relatively positioned
+  container is taken into account in the height calculator of the entire screen. */
+  height: 162px;
+  justify-content: center;
+  /* Establishes a positioning context for absolute children. */
+  position: relative;
+  margin-top: 36px;
+}
+
+.profile-row {
+  text-align: left;
+  align-items: center;
+  display: flex;
+  margin-top: 16px;
+}
+
+.account-info-container {
+  padding-inline-start: 16px;
+}
+
+.profile-icon {
+  border-radius: 20px;
+  height: 40px;
+  width: 40px;
+}
+
+.account-name {
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.account-email {
+  color: #474747;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.action-button {
+  margin: 16px 0;
+}
+</if>

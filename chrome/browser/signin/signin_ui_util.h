@@ -17,6 +17,7 @@
 
 struct AccountInfo;
 struct CoreAccountInfo;
+class Browser;
 class Profile;
 class ProfileAttributesEntry;
 class ProfileAttributesStorage;
@@ -28,6 +29,15 @@ class IdentityManager;
 // Utility functions to gather status information from the various signed in
 // services and construct messages suitable for showing in UI.
 namespace signin_ui_util {
+
+// Triggers the sign in flow for history sync opt-in.
+// This will open the sign in tab or just sign in the user to Chrome (if they
+// are already signed into Web), and enable history sync once the sign in was
+// completed.
+void TriggerSignInForHistorySyncOptIn(Browser* browser,
+                                      Profile* profile,
+                                      signin_metrics::AccessPoint access_point);
+
 class SigninUiDelegate;
 
 // Returns the username of the primary account or an empty string if there is

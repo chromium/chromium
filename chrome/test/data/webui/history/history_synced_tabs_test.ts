@@ -8,6 +8,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+// <if expr="not is_chromeos">
+import { isChildVisible } from 'chrome://webui-test/test_util.js';
+// </if>
+
 import {TestBrowserService} from './test_browser_service.js';
 import {createSession, createWindow} from './test_util.js';
 
@@ -350,3 +354,118 @@ suite('<history-synced-device-manager>', function() {
     assertEquals(0, cards.length);
   });
 });
+
+// <if expr="not is_chromeos">
+// history-sync-optin elements is not shown for ChromeOS.
+suite('<history-sync-optin>', function() {
+  let element: HistorySyncedDeviceManagerElement;
+  let testService: TestBrowserService;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    window.history.replaceState({}, '', '/');
+    testService = new TestBrowserService();
+    BrowserServiceImpl.setInstance(testService);
+
+    // history-sync-optin elements are only shown when the
+    // replaceSyncPromosWithSignInPromos is true
+    loadTimeData.overrideValues({
+      replaceSyncPromosWithSignInPromos: true,
+    });
+
+    // Need to ensure lazy_load.html has been imported so that the device
+    // manager custom element is defined.
+    return ensureLazyLoaded().then(() => {
+      element = document.createElement('history-synced-device-manager');
+      // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
+      // the same order in tests, in order to catch regressions like
+      // https://crbug.com/915641.
+      element.searchTerm = '';
+      element.configureSignInForTest({
+        // Setting the sign in state to WEB_ONLY_SIGNED_IN, because user's name,
+        // email and profile icon are only shown on the page when the sign in
+        // state is WEB_ONLY_SIGNED_IN.
+        signInState: HistorySignInState.WEB_ONLY_SIGNED_IN,
+        signInAllowed: true,
+        guestSession: false,
+      });
+      document.body.appendChild(element);
+    });
+  });
+
+  test('check history sync optin elements are visible', async () => {
+    await microtasksFinished();
+
+    // The old promo should not be visible.
+    assertFalse(isChildVisible(element, '#turn-on-sync-promo'));
+
+    // The new promo elements for WEB_ONLY_SIGNED_IN state are shown correctly.
+    assertTrue(isChildVisible(element, '#sync-history-button'));
+    assertTrue(isChildVisible(element, '#history-sync-optin'));
+    assertTrue(isChildVisible(element, '#account-name'));
+    assertTrue(isChildVisible(element, '#account-email'));
+    assertTrue(isChildVisible(element, '#profile-icon'));
+  });
+
+  test('initializes account info', async () => {
+    await testService.handler.whenCalled('requestAccountInfo');
+    await microtasksFinished();
+
+    assertEquals(
+        'Test User',
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#account-name')!.textContent!.trim());
+    assertEquals(
+        'test@google.com',
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#account-email')!.textContent!.trim());
+    assertEquals(
+        'http://example.com/image.png',
+        element.shadowRoot.querySelector<HTMLImageElement>(
+                              '#profile-icon')!.src);
+  });
+
+  test('updates account info', async () => {
+    await testService.handler.whenCalled('requestAccountInfo');
+    await microtasksFinished();
+
+    const newAccountInfo = {
+      name: 'Test User 2',
+      email: 'test2@google.com',
+      accountImageSrc: {url: 'http://image.com/img2.png'},
+    };
+
+    testService.pageRemote.sendAccountInfo(newAccountInfo);
+    await microtasksFinished();
+
+    assertEquals(
+        newAccountInfo.name,
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#account-name')!.textContent!.trim());
+    assertEquals(
+        newAccountInfo.email,
+        element.shadowRoot.querySelector<HTMLElement>(
+                              '#account-email')!.textContent!.trim());
+    assertEquals(
+        newAccountInfo.accountImageSrc.url,
+        element.shadowRoot.querySelector<HTMLImageElement>(
+                              '#profile-icon')!.src);
+  });
+
+  test('calls turnOnHistorySync when button is clicked', async () => {
+    element.configureSignInForTest({
+      // For the sake of diversity, using other signin state in this test,
+      // different from WEB_ONLY_SIGN_IN
+      signInState: HistorySignInState.SIGNED_IN_NOT_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    const button =
+        element.shadowRoot.querySelector<HTMLElement>('#sync-history-button');
+    assertTrue(!!button);
+    button.click();
+
+    await testService.handler.whenCalled('turnOnHistorySync');
+  });
+});
+// </if>

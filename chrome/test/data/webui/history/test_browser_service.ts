@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 import type {BrowserService, ForeignSession} from 'chrome://history/history.js';
-import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {
+  PageCallbackRouter,
+  PageHandlerRemote,
+  type PageRemote,
+} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -14,6 +18,7 @@ export class TestBrowserService extends TestBrowserProxy implements
     BrowserService {
   handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
+  pageRemote: PageRemote;
   histogramMap: {[key: string]: {[key: string]: number}} = {};
   actionMap: {[key: string]: number} = {};
   private foreignSessions_: ForeignSession[] = [];
@@ -34,11 +39,20 @@ export class TestBrowserService extends TestBrowserProxy implements
 
     this.handler = TestMock.fromClass(PageHandlerRemote);
     this.callbackRouter = new PageCallbackRouter();
+    this.pageRemote = this.callbackRouter.$.bindNewPipeAndPassRemote();
 
     this.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
         info: createHistoryInfo(''),
         value: [],
+      },
+    }));
+
+    this.handler.setResultFor('requestAccountInfo', Promise.resolve({
+      accountInfo: {
+        name: 'Test User',
+        email: 'test@google.com',
+        accountImageSrc: {url: 'http://example.com/image.png'},
       },
     }));
   }
@@ -112,5 +126,6 @@ export class TestBrowserService extends TestBrowserProxy implements
   }
 
   removeBookmark() {}
+
   startTurnOnSyncFlow() {}
 }

@@ -21,6 +21,9 @@ import {BrowserServiceImpl} from './browser_service.js';
 import {HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 import type {ForeignSession, ForeignSessionTab} from './externs.js';
 import type {HistorySyncedDeviceCardElement} from './synced_device_card.js';
+// <if expr="not is_chromeos">
+import type {AccountInfo} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+// </if>
 import {getCss} from './synced_device_manager.css.js';
 import {getHtml} from './synced_device_manager.html.js';
 
@@ -80,9 +83,11 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
        */
       actionMenuModel_: {type: String},
 
-      useHistorySyncOptinScreen_: {type: Boolean},
+      replaceSyncPromosWithSignInPromos_: {type: Boolean},
 
-      accountImageSrc_: {type: String},
+      // <if expr="not is_chromeos">
+      accountInfo_: {type: Object},
+      // </if>
     };
   }
 
@@ -96,10 +101,12 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
       loadTimeData.getBoolean('isGuestSession');
   private accessor signInAllowed_: boolean =
       loadTimeData.getBoolean('isSignInAllowed');
-  protected accessor useHistorySyncOptinScreen_: boolean =
-      loadTimeData.getBoolean('useHistorySyncOptinScreen');
-  protected accessor accountImageSrc_: string =
-      loadTimeData.getString('accountPictureUrl');
+  protected accessor replaceSyncPromosWithSignInPromos_: boolean =
+      loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos');
+  // <if expr="not is_chromeos">
+  protected accessor accountInfo_: AccountInfo|null = null;
+  private onAccountInfoDataReceivedListenerId_: number|null = null;
+  // </if>
 
   accessor signInState: HistorySignInState = HistorySignInState.SIGNED_OUT;
   accessor searchTerm: string = '';
@@ -133,11 +140,28 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
     BrowserServiceImpl.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.INITIALIZED,
         SyncedTabsHistogram.LIMIT);
+
+    // <if expr="not is_chromeos">
+    this.onAccountInfoDataReceivedListenerId_ =
+        BrowserServiceImpl.getInstance()
+            .callbackRouter.sendAccountInfo.addListener(
+                this.handleAccountInfoChanged_.bind(this));
+
+    BrowserServiceImpl.getInstance().handler.requestAccountInfo().then(
+        ({accountInfo}) => this.handleAccountInfoChanged_(accountInfo));
+    // </if>
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.focusGrid_!.destroy();
+
+    // <if expr="not is_chromeos">
+    assert(this.onAccountInfoDataReceivedListenerId_);
+    BrowserServiceImpl.getInstance().callbackRouter.removeListener(
+        this.onAccountInfoDataReceivedListenerId_);
+    this.onAccountInfoDataReceivedListenerId_ = null;
+    // </if>
   }
 
   configureSignInForTest(data: {
@@ -198,6 +222,16 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
   protected onTurnOnSyncClick_() {
     BrowserServiceImpl.getInstance().startTurnOnSyncFlow();
   }
+
+  // <if expr="not is_chromeos">
+  protected onTurnOnHistorySyncClick_() {
+    BrowserServiceImpl.getInstance().handler.turnOnHistorySync();
+  }
+
+  private handleAccountInfoChanged_(accountInfo: AccountInfo) {
+    this.accountInfo_ = accountInfo;
+  }
+  // </if>
 
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
     this.actionMenuModel_ = e.detail.tag;
@@ -267,8 +301,13 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
     this.syncedDevices_ = [];
   }
 
-  protected get isSignedOut_(): boolean {
-    return this.signInState === HistorySignInState.SIGNED_OUT;
+  protected isSignInState_(state: HistorySignInState): boolean {
+    return this.signInState === state;
+  }
+
+  protected shouldShowHistorySyncOptIn_(): boolean {
+    return this.replaceSyncPromosWithSignInPromos_ &&
+        !this.isSignInState_(HistorySignInState.SIGNED_IN_SYNCING_TABS);
   }
 
   /**

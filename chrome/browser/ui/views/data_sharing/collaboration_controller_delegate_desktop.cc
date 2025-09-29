@@ -436,62 +436,17 @@ void CollaborationControllerDelegateDesktop::
   }
 
   Profile* profile = browser_->profile();
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
 
-  // Try to sign in or open a sign in tab if user input is needed. If the user
-  // is already signed in, this is a no-op.
-  signin_ui_util::SignInFromSingleAccountPromo(
+  // This function uses `signin_util::GetSignedInState()` rather than
+  // `status.signin_status`. We cannot currently use `status.signin_status`, as
+  // it may not update in time after `SignInFromSingleAccountPromo` sets the
+  // primary account.
+  // TODO (crbug.com/443679624): Consider updating and using
+  // `status.signin_status` instead for consistency.
+  signin_ui_util::TriggerSignInForHistorySyncOptIn(
+      browser_,
       profile,
-      signin_ui_util::GetSingleAccountForPromos(
-          IdentityManagerFactory::GetForProfile(profile)),
       signin_metrics::AccessPoint::kCollaborationShareTabGroup);
-
-  if (!sync_service) {
-    return;
-  }
-
-  // It is safe to pass a pointer to the sync service here because the callback
-  // is then owned by a tab helper, which is guaranteed to be destroyed before
-  // the sync service.
-  auto enable_history_sync = base::BindOnce(&signin_util::EnableHistorySync,
-                                            base::Unretained(sync_service));
-
-  // We cannot currently use `status.signin_status`, as it may not update in
-  // time after `SignInFromSingleAccountPromo` sets the primary account.
-  // TODO (crbug.com/443679624): Update and use `status.signin_status` instead
-  // for consistency.
-  switch (signin_util::GetSignedInState(
-      IdentityManagerFactory::GetForProfile(profile))) {
-    // If the sign in was already successful, enable history sync directly.
-    case signin_util::SignedInState::kSignedIn:
-      std::move(enable_history_sync).Run();
-      return;
-    // These states require a sign in tab to be displayed. A tab helper attached
-    // to the tab will take care of turning on history sync once signed in.
-    case signin_util::SignedInState::kSignedOut:
-    case signin_util::SignedInState::kSignInPending:
-    case signin_util::SignedInState::kSyncPaused:
-      break;
-    case signin_util::SignedInState::kSyncing:
-    case signin_util::SignedInState::kWebOnlySignedIn:
-      return;
-  }
-
-  content::WebContents* sign_in_tab_contents =
-      signin_ui_util::GetSignInTabWithAccessPoint(
-          browser_, signin_metrics::AccessPoint::kCollaborationShareTabGroup);
-
-  // SignInFromSingleAccountPromo may fail to open a tab. Do not wait for a
-  // sign in event in that case.
-  if (!sign_in_tab_contents) {
-    return;
-  }
-
-  SigninPromoTabHelper::GetForWebContents(*sign_in_tab_contents)
-      ->InitializeCallbackAfterSignIn(
-          std::move(enable_history_sync),
-          signin_metrics::AccessPoint::kCollaborationShareTabGroup);
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

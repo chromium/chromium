@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {HistorySignInState} from './constants.js';
 
 import type {HistorySyncedDeviceManagerElement} from './synced_device_manager.js';
 
@@ -29,8 +30,10 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
     ?hidden="${!this.showNoSyncedMessage_()}">
   ${this.noSyncedTabsMessage_()}
 </div>
+
 <div id="sign-in-guide"
-    ?hidden="${!this.showSignInGuide_() || this.useHistorySyncOptinScreen_}">
+    ?hidden="${!this.showSignInGuide_()
+      || this.replaceSyncPromosWithSignInPromos_}">
   <div id="sync-promo-illustration"></div>
   <div id="turn-on-sync-promo">$i18n{turnOnSyncPromo}</div>
   <div id="turn-on-sync-promo-desc">$i18n{turnOnSyncPromoDesc}</div>
@@ -40,33 +43,56 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
   </cr-button>
 </div>
 
-${this.useHistorySyncOptinScreen_ ? html `
-  <div class="history-sync-optin">
-    ${this.isSignedOut_ ? html`
-      <!-- not signed in case -->
-      <div id="imageContainer">
-        <img class="sync-history-illustration" alt="" />
-      </div>
-      <div class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</div>
-      <div class="sync-history-promo-desc">
-        $i18n{turnOnSyncHistoryPromoDesc}
-      </div>
-      <!-- for "account aware" case here will be a div with the account info -->
-    ` : html`
-      <!-- signed in case -->
-      <div id="imageContainer">
-        <img class="sync-history-promo-avatar-illustration" alt="" />
-        <img id="avatar" alt="" src="${this.accountImageSrc_}" />
-      </div>
-      <div class="sync-history-promo">$i18n{turnOnSignedInSyncHistoryPromo}</div>
-      <div class="sync-history-promo-desc">
-        $i18n{turnOnSignedInSyncHistoryPromoDesc}
-      </div>
-    `}
-    <cr-button id="sync-history-button" class="action-button">
-      $i18n{turnOnSyncHistoryButton}
-    </cr-button>
-  </div>` : ''}
+<if expr="not is_chromeos">
+  ${this.shouldShowHistorySyncOptIn_() ? html`
+    <div id="history-sync-optin" class="history-sync-optin">
+      ${this.isSignInState_(HistorySignInState.SIGNED_OUT)
+        || this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN) ? html`
+        <div class="image-container">
+          <img class="sync-history-illustration" alt="">
+        </div>
+        <div class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</div>
+        <div class="sync-history-promo-desc">
+          $i18n{syncHistoryPromoBodySignedOut}
+        </div>
+      ` : ''}
+
+      ${this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN)
+        && this.accountInfo_ ? html`
+        <div class="profile-row">
+          <img id="profile-icon" class="profile-icon"
+              src="${this.accountInfo_.accountImageSrc.url}">
+          <div class="account-info-container">
+            <div id="account-name" class="account-name">
+              ${this.accountInfo_.name}</div>
+            <div id="account-email" class="account-email">
+              ${this.accountInfo_.email}</div>
+          </div>
+        </div>
+      ` : ''}
+
+      ${this.isSignInState_(HistorySignInState.SIGNED_IN_NOT_SYNCING_TABS)
+        && this.accountInfo_ ? html`
+          <div class="image-container">
+            <img class="sync-history-promo-avatar-illustration" alt="">
+            <img id="avatar" src="${this.accountInfo_.accountImageSrc.url}"
+                alt="">
+          </div>
+          <div class="sync-history-promo">
+            $i18n{turnOnSyncHistoryPromo}
+          </div>
+          <div class="sync-history-promo-desc">
+            $i18n{turnOnSignedInSyncHistoryPromoBodySignInSyncOff}
+          </div>
+        ` : ''}
+
+      <cr-button id="sync-history-button" class="action-button"
+          @click="${this.onTurnOnHistorySyncClick_}">
+        $i18n{turnOnSyncHistoryButton}
+      </cr-button>
+    </div>
+  ` : ''}
+</if>
 
 <cr-lazy-render-lit id="menu" .template='${() => html`
   <cr-action-menu role-description="$i18n{menu}">

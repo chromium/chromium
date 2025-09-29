@@ -9,6 +9,7 @@ assert(!is_android && !is_ios)
 
 mojom("mojo_bindings") {
   sources = [ "history.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = ""
 }
 
