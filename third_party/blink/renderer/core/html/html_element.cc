@@ -2891,18 +2891,14 @@ const AtomicString& HTMLElement::GetDirectionalAttribute(
 
   const AtomicString& result = FastGetAttribute(attr_name);
   if (!result.IsNull()) {
-    TextDirection direction = TextDirection::kLtr;
-    if (RuntimeEnabledFeatures::AttributeDirectionalityEnabled()) {
-      direction = CachedDirectionality();
-    }
+    TextDirection direction = CachedDirectionality();
 
     if (const LayoutObject* layout_object = GetLayoutObject()) {
       // Note that this isn't part of the HTML spec's concept, but we've
       // always honored CSS directionality for the title attribute.
       direction = layout_object->StyleRef().Direction();
     }
-    if (RuntimeEnabledFeatures::AttributeDirectionalityEnabled() &&
-        HasDirectionAuto()) {
+    if (HasDirectionAuto()) {
       if (const std::optional<TextDirection> string_direction =
               BidiParagraph::BaseDirectionForString(result)) {
         direction = *string_direction;
