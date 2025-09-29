@@ -6,11 +6,12 @@
 #define UI_VIEWS_ACCESSIBILITY_TREE_WIDGET_AX_MANAGER_H_
 
 #include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -64,6 +65,15 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
 
   void OnChildManagerAdded(WidgetAXManager& child_manager);
   void OnChildManagerRemoved(WidgetAXManager& child_manager);
+
+  // Sets a test callback that is invoked on every exit from
+  // SendPendingUpdate(). If updates/events were actually sent, the optional
+  // contains the ui::AXUpdatesAndEvents; otherwise it is absl::nullopt.
+  void SetUpdatesAndEventsCallbackForTesting(
+      base::RepeatingCallback<
+          void(const std::optional<ui::AXUpdatesAndEvents>&)> callback) {
+    updates_and_events_callback_for_testing_ = std::move(callback);
+  }
 
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
@@ -139,6 +149,12 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   };
   std::vector<Event> pending_events_;
   absl::flat_hash_set<ui::AXNodeID> pending_data_updates_;
+
+  // Always invoked when SendPendingUpdate() exits. Receives a non-empty
+  // optional only if a non-empty updates/events payload was produced and
+  // dispatched to the tree manager.
+  base::RepeatingCallback<void(const std::optional<ui::AXUpdatesAndEvents>&)>
+      updates_and_events_callback_for_testing_;
 
   // Ensure posted tasks don’t run after we’re destroyed.
   base::WeakPtrFactory<WidgetAXManager> weak_factory_{this};

@@ -165,7 +165,8 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   auto* v1 = widget()->GetRootView()->AddChildView(std::make_unique<View>());
   auto* v2 = widget()->GetRootView()->AddChildView(std::make_unique<View>());
 
-  task_environment()->RunUntilIdle();
+  // Wait for the serialization triggered by adding the child views to flush.
+  api.WaitForNextSerialization();
 
   // Fire two events on v1, one on v2, before the first send.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
@@ -183,15 +184,28 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   EXPECT_EQ(api.pending_data_updates().size(), 2u);
 
   // After run, everything clears.
-  task_environment()->RunUntilIdle();
+  api.WaitForNextSerialization();
   EXPECT_EQ(api.pending_events().size(), 0u);
   EXPECT_EQ(api.pending_data_updates().size(), 0u);
   EXPECT_FALSE(api.processing_update_posted());
+
+  ASSERT_EQ(api.last_serialization().events.size(), 3u);
+  ASSERT_GE(api.last_serialization().updates.size(), 1u);
+  EXPECT_EQ(api.last_serialization().events[0].event_type,
+            ax::mojom::Event::kFocus);
+  EXPECT_EQ(api.last_serialization().events[1].event_type,
+            ax::mojom::Event::kValueChanged);
+  EXPECT_EQ(api.last_serialization().events[2].event_type,
+            ax::mojom::Event::kBlur);
 }
 
 TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
   WidgetAXManagerTestApi api(manager());
   manager()->Enable();
+
+  // TODO(crbug.com/40672441): Uncomment this line once we serialize the full
+  // tree on Enable().
+  // api.WaitForNextSerialization();
 
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
@@ -219,42 +233,56 @@ TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before);
 
   // After run, clear everything.
-  task_environment()->RunUntilIdle();
+  api.WaitForNextSerialization();
 
   EXPECT_EQ(api.pending_data_updates().size(), 0u);
   EXPECT_FALSE(api.processing_update_posted());
+
+  ASSERT_EQ(api.last_serialization().updates.size(), 1u);
+  EXPECT_FALSE(api.last_serialization().updates[0].nodes.empty());
 }
 
 TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
   WidgetAXManagerTestApi api(manager());
   manager()->Enable();
 
-  auto v = ViewAccessibility::Create(nullptr);
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  api.WaitForNextSerialization();
 
   // First batch.
-  manager()->OnEvent(*v, ax::mojom::Event::kFocus);
-  task_environment()->RunUntilIdle();
+  manager()->OnEvent(v->GetViewAccessibility(), ax::mojom::Event::kFocus);
+  api.WaitForNextSerialization();
+
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
+  ASSERT_EQ(api.last_serialization().events.size(), 1u);
+  EXPECT_EQ(api.last_serialization().events[0].event_type,
+            ax::mojom::Event::kFocus);
 
   // Second batch.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
-  manager()->OnEvent(*v, ax::mojom::Event::kBlur);
+  manager()->OnEvent(v->GetViewAccessibility(), ax::mojom::Event::kBlur);
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before + 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 1u);
   EXPECT_EQ(api.pending_data_updates().size(), 1u);
+
+  api.WaitForNextSerialization();
+  ASSERT_EQ(api.last_serialization().events.size(), 1u);
+  EXPECT_EQ(api.last_serialization().events[0].event_type,
+            ax::mojom::Event::kBlur);
 }
 
 TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {
   WidgetAXManagerTestApi api(manager());
   manager()->Enable();
 
-  auto v = ViewAccessibility::Create(nullptr);
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
+  api.WaitForNextSerialization();
 
   // First batch.
-  manager()->OnDataChanged(*v);
+  manager()->OnDataChanged(v->GetViewAccessibility());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_events().empty());
@@ -262,7 +290,7 @@ TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {
 
   // Second batch.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
-  manager()->OnDataChanged(*v);
+  manager()->OnDataChanged(v->GetViewAccessibility());
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before + 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 0u);
@@ -273,16 +301,16 @@ TEST_F(WidgetAXManagerTest, UpdatesIgnoredWhenDisabled) {
   WidgetAXManagerTestApi api(manager());
 
   // Manager is disabled by default.
-  auto v = ViewAccessibility::Create(nullptr);
+  auto* v = widget()->GetRootView()->AddChildView(std::make_unique<View>());
 
   auto before = task_environment()->GetPendingMainThreadTaskCount();
-  manager()->OnEvent(*v, ax::mojom::Event::kFocus);
+  manager()->OnEvent(v->GetViewAccessibility(), ax::mojom::Event::kFocus);
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_events().empty());
   EXPECT_TRUE(api.pending_data_updates().empty());
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before);
 
-  manager()->OnDataChanged(*v);
+  manager()->OnDataChanged(v->GetViewAccessibility());
   EXPECT_FALSE(api.processing_update_posted());
   EXPECT_TRUE(api.pending_data_updates().empty());
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before);
@@ -326,38 +354,34 @@ TEST_F(WidgetAXManagerTest,
   auto* child = widget()->GetRootView()->AddChildView(std::make_unique<View>());
   ui::AXNodeID child_id =
       static_cast<ui::AXNodeID>(child->GetViewAccessibility().GetUniqueId());
-  task_environment()->RunUntilIdle();
+  api.WaitForNextSerialization();
 
   EXPECT_NE(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
 
   // Removing a child view should also schedule a pending serialization.
   widget()->GetRootView()->RemoveChildViewT(child);
-  task_environment()->RunUntilIdle();
+  api.WaitForNextSerialization();
 
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(child_id), nullptr);
 }
 
-TEST_F(WidgetAXManagerTest, SendPendingUpdate_SerializeOnEvent) {
-  // This is far from complete, but it should at least confirm that fired events
-  // lead to serialization and are themselves serialized.
-  // TODO(https://crbug.com/40672441): Replace this test by a new dump event
-  // test frameworks for views.
-  base::HistogramTester histogram_tester;
-
+TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
   WidgetAXManagerTestApi api(manager());
 
-  std::string histogram_name =
-      "Accessibility.Performance.BrowserAccessibilityManager::"
-      "OnAccessibilityEvents2";
   manager()->Enable();
 
-  histogram_tester.ExpectTotalCount(histogram_name, 0);
+  // TODO(crbug.com/40672441): Uncomment this line once we serialize the full
+  // tree on Enable(). api.WaitForNextSerialization();
 
   manager()->OnEvent(widget()->GetRootView()->GetViewAccessibility(),
                      ax::mojom::Event::kLoadComplete);
-  task_environment()->RunUntilIdle();
+  api.WaitForNextSerialization();
 
-  histogram_tester.ExpectTotalCount(histogram_name, 1);
+  EXPECT_EQ(api.last_serialization().events.size(), 1u);
+  EXPECT_EQ(api.last_serialization().events[0].event_type,
+            ax::mojom::Event::kLoadComplete);
+
+  EXPECT_FALSE(api.last_serialization().updates.empty());
 
   EXPECT_NE(
       api.ax_tree_manager()->ax_tree()->GetFromId(static_cast<ui::AXNodeID>(
@@ -373,8 +397,9 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_NoSerializeWhenNodeNotInTree) {
   auto v = ViewAccessibility::Create(nullptr);
 
   manager()->OnDataChanged(*v.get());
-  task_environment()->RunUntilIdle();
+  api.WaitForNextSerialization();
 
+  EXPECT_EQ(api.has_last_serialization(), false);
   EXPECT_EQ(api.ax_tree_manager()->ax_tree()->GetFromId(
                 static_cast<ui::AXNodeID>(v->GetUniqueId())),
             nullptr);
@@ -504,7 +529,7 @@ TEST_F(WidgetAXManagerTest, OnChildAddedAndRemoved_ReserializeOnParent) {
   EXPECT_TRUE(api.pending_data_updates().contains(parent->GetUniqueId()));
 
   // Process the pending update to clear it.
-  task_environment()->RunUntilIdle();
+  api.WaitForNextSerialization();
 
   // Removing a child should also schedule a pending serialization on the
   // parent.

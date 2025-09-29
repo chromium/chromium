@@ -1446,6 +1446,7 @@ test("views_unittests") {
       "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/ax_virtual_view_unittest.cc",
       "accessibility/tree/view_accessibility_ax_tree_source_unittest.cc",
+      "accessibility/tree/widget_ax_manager_test_api.cc",
       "accessibility/tree/widget_ax_manager_unittest.cc",
       "accessibility/tree/widget_view_ax_cache_unittest.cc",
       "accessibility/view_accessibility_unittest.cc",

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -296,6 +297,14 @@ void WidgetAXManager::SchedulePendingUpdate() {
 }
 
 void WidgetAXManager::SendPendingUpdate() {
+  std::optional<ui::AXUpdatesAndEvents> maybe_updates_and_events;
+  // Always invoke the test callback on exit.
+  auto exit_cleanup = absl::MakeCleanup([this, &maybe_updates_and_events]() {
+    if (!updates_and_events_callback_for_testing_.is_null()) {
+      updates_and_events_callback_for_testing_.Run(maybe_updates_and_events);
+    }
+  });
+
   processing_update_posted_ = false;
   if (!is_enabled_) {
     return;
@@ -389,11 +398,12 @@ void WidgetAXManager::SendPendingUpdate() {
     return;
   }
 
-  ui::AXUpdatesAndEvents updates_and_events;
-  updates_and_events.updates = std::move(tree_updates);
-  updates_and_events.events = std::move(events);
+  maybe_updates_and_events.emplace();
+  maybe_updates_and_events->ax_tree_id = ax_tree_id_;
+  maybe_updates_and_events->updates = std::move(tree_updates);
+  maybe_updates_and_events->events = std::move(events);
 
-  ax_tree_manager_->OnAccessibilityEvents(updates_and_events);
+  ax_tree_manager_->OnAccessibilityEvents(*maybe_updates_and_events);
 }
 
 }  // namespace views
