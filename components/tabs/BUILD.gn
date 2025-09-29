@@ -73,7 +73,9 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "impl/mock_tab_group.cc",
     "impl/mock_tab_interface.cc",
+    "public/mock_tab_group.h",
     "public/mock_tab_interface.h",
   ]
 
@@ -96,6 +98,7 @@ source_set("unit_tests") {
   # TODO(crbug.com/415965106): tab_iterator_unittest.cc
   sources = [
     "public/supports_handles_unittest.cc",
+    "public/tab_collection_observer_unittest.cc",
     "public/tab_handle_factory_unittest.cc",
   ]
 
@@ -105,6 +108,7 @@ source_set("unit_tests") {
     ":public",
     ":split_tabs",
     ":tabs",
+    ":test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx/range",

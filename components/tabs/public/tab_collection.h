@@ -20,6 +20,7 @@
 #include "base/types/pass_key.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs_api {
 class MojoTreeBuilder;
@@ -225,6 +226,13 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
     return GetChildren();
   }
 
+  void NotifyOnChildrenAdded(
+      base::PassKey<TabCollection> pass_key,
+      const std::vector<std::variant<TabCollection::Handle, tabs::TabHandle>>&
+          handles,
+      const std::pair<tabs::TabCollection*, int>& insertion_details,
+      TabCollection* notification_root);
+
  protected:
   explicit TabCollection(Type type,
                          std::unordered_set<Type> supported_child_collections,
@@ -254,6 +262,9 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
 };
 
 using TabCollectionHandle = TabCollection::Handle;
+using TabCollectionNodeHandle =
+    std::variant<tabs::TabCollectionHandle, tabs::TabHandle>;
+using TabCollectionNodes = std::vector<TabCollectionNodeHandle>;
 
 }  // namespace tabs
 

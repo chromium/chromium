@@ -41,10 +41,6 @@ class TabStripCollection : public TabCollection {
 
   size_t IndexOfFirstNonPinnedTab() const;
 
-  // Adds a tab to a particular recursive index in the collection. This forwards
-  // calls to the appropriate parent collection (currently supports pinned,
-  // unpinned, and group collections). If the inputs are incorrect this method
-  // will fail and hit a CHECK.
   void AddTabRecursive(std::unique_ptr<TabInterface> tab,
                        size_t index,
                        std::optional<tab_groups::TabGroupId> new_group_id,
@@ -134,6 +130,12 @@ class TabStripCollection : public TabCollection {
       base::PassKey<TabStripModel>) const;
 
  private:
+  // Adds a tab to a particular recursive index in the collection.
+  void AddTabRecursiveImpl(std::unique_ptr<TabInterface> tab,
+                           size_t index,
+                           std::optional<tab_groups::TabGroupId> new_group_id,
+                           bool new_pinned_state);
+
   // If the group specified by new_group is detached, pop it from the detached
   // groups vector and add it to the collections structure at the specified
   // `index`.

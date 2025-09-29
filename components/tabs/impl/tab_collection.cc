@@ -253,6 +253,25 @@ void TabCollection::OnTabRemovedFromTree() {
   }
 }
 
+void TabCollection::NotifyOnChildrenAdded(
+    base::PassKey<TabCollection> pass_key,
+    const std::vector<std::variant<TabCollection::Handle, tabs::TabHandle>>&
+        handles,
+    const std::pair<tabs::TabCollection*, int>& insertion_details,
+    TabCollection* notification_root) {
+  auto [tab_collection_parent_ptr, insert_index] = insertion_details;
+
+  TabCollectionObserver::Position position = TabCollectionObserver::Position(
+      tab_collection_parent_ptr->GetHandle(), insert_index);
+
+  observers_.Notify(&TabCollectionObserver::OnChildrenAdded, position, handles);
+
+  if (this != notification_root) {
+    parent_->NotifyOnChildrenAdded(pass_key, handles, insertion_details,
+                                   notification_root);
+  }
+}
+
 TabInterface* TabCollection::AddTab(std::unique_ptr<TabInterface> tab,
                                     size_t index) {
   CHECK(tab);

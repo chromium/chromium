@@ -49,6 +49,34 @@ void TabStripCollection::AddTabRecursive(
   // been added.
   CHECK(index >= 0 && index <= TabCountRecursive());
 
+  if (new_group_id.has_value()) {
+    CHECK(GetTabGroupCollection(new_group_id.value()));
+  }
+
+  std::pair<tabs::TabCollection*, int> insertion_details =
+      GetInsertionDetails(index, new_pinned_state, new_group_id);
+  auto [tab_collection_ptr, insert_index] = insertion_details;
+
+  TabInterface* tab_ptr =
+      tab_collection_ptr->AddTab(std::move(tab), insert_index);
+
+  TabCollectionNodes handles_added;
+  handles_added.push_back(tab_ptr->GetHandle());
+
+  tab_collection_ptr->NotifyOnChildrenAdded(GetPassKey(), handles_added,
+                                            insertion_details, this);
+}
+
+void TabStripCollection::AddTabRecursiveImpl(
+    std::unique_ptr<TabInterface> tab,
+    size_t index,
+    std::optional<tab_groups::TabGroupId> new_group_id,
+    bool new_pinned_state) {
+  CHECK(tab);
+  // `index` can be equal to the tab count as at this point the tab has not yet
+  // been added.
+  CHECK(index >= 0 && index <= TabCountRecursive());
+
   // First tab needs to be added to the group. In this case we need to create a
   // group collection.
   if (new_group_id.has_value() &&
@@ -92,8 +120,8 @@ void TabStripCollection::MoveTabRecursive(
   } else {
     std::unique_ptr<TabInterface> moved_data =
         RemoveTabRecursive(tab, old_group != new_group_id);
-    AddTabRecursive(std::move(moved_data), final_index, new_group_id,
-                    new_pinned_state);
+    AddTabRecursiveImpl(std::move(moved_data), final_index, new_group_id,
+                        new_pinned_state);
   }
 }
 
