@@ -14,6 +14,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 from typing import List, Optional
 
 _SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
@@ -172,11 +173,13 @@ class AndroidProfileTool:
     self._DeleteDeviceData()
     return data
 
-  def CollectWebViewStartupProfile(self, apk: str):
+  def CollectWebViewStartupProfile(self, apk: str,
+                                   out_dir: Optional[str] = None):
     """Run the given benchmark and collect the generated profiles.
 
     Args:
       apk: The location of the webview apk file to profile.
+      out_dir: The output directory, to find the chromedriver binary.
 
     Returns:
       A list of profile hitmaps.
@@ -191,30 +194,41 @@ class AndroidProfileTool:
     package_info = self._GetPackageInfo(apk)
     changer = self._SetCommandLineFlags(package_info)
 
-    chromium_out_dir = os.path.abspath(os.path.join(os.path.dirname(apk), '..'))
-    browser = 'android-webview-standalone'
+    if out_dir:
+      maybe_driver_path = [
+          f'--driver-path={os.path.join(out_dir, "clang_x64", "chromedriver")}']
+      wpr_bin_path = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
+                                  'webpagereplay', 'cipd', 'bin', 'linux',
+                                  'x86_64', 'wpr')
+      maybe_wpr_bin_path = f',"wpr_go_bin":"{wpr_bin_path}"'
+      adb_bin_path = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
+                                  'android_sdk', 'public', 'platform-tools',
+                                  'adb')
+      maybe_adb_bin_path = f',"adb_bin":"{adb_bin_path}"'
+    else:
+      maybe_driver_path = []
+      maybe_wpr_bin_path = ''
+      maybe_adb_bin_path = ''
 
-    profile_benchmark = 'orderfile_generation.webview_startup'
-    if self._debug:
-      logging.info('Using reduced debugging profile')
-      profile_benchmark = 'orderfile_generation.webview_startup_debugging'
     RunCommand([
-        'tools/perf/run_benchmark',
-        '--device',
-        self._device.serial,
-        '--browser',
-        browser,
-        '--chromium-output-directory',
-        chromium_out_dir,
-        # TODO(tne): Remove this once the builder https://ci.chromium.org/ui/p/chrome/builders/ci/webview-arm-orderfile/ is fixed.
-        '--verbose',
-        '--verbose',
-        '--verbose',
-        profile_benchmark
+        'tools/perf/cb',
+        'embedder',
+        '--browser={browser:"clank/android_webview/tools/crossbench_config/cipd/arm64/Velvet_arm64.apk",driver:{type:"Android"' +
+        maybe_adb_bin_path +
+        '}}',
+    ] + maybe_driver_path + [
+        '--splashscreen=skip',
+        '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
+        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"' +
+        maybe_wpr_bin_path +
+        ',"skip_deterministic_script_injection":true}',
+        '--embedder-process-name=googleapp',
+        '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
     ])
     self._RestoreCommandLineFlags(changer)
 
-    data = self._PullProfileData(profile_benchmark)
+    time.sleep(60)  # Leave time for the profile dump
+    data = self._PullProfileData('embedder.crossbench')
     self._DeleteDeviceData()
     return data
 

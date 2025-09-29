@@ -41,7 +41,6 @@
     "args_file": "//tools/pgo/override_args.gni",
     "gn_args": {
       "debuggable_apks": false,
-      "devtools_instrumentation_dumping": true,
       "enable_proguard_obfuscation": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
@@ -59,7 +58,6 @@
     "args_file": "//tools/pgo/override_args.gni",
     "gn_args": {
       "debuggable_apks": false,
-      "devtools_instrumentation_dumping": true,
       "enable_proguard_obfuscation": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,

@@ -454,7 +454,7 @@
     ],
 
     'official_android_arm32_orderfile': [
-      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'orderfile_common', 'devtools_instrumentation_dumping',
     ],
 
     'official_android_arm32_pgo': [
@@ -462,7 +462,7 @@
     ],
 
     'official_android_arm64_orderfile': [
-      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'orderfile_common', 'devtools_instrumentation_dumping',
     ],
 
     'official_android_arm64_pgo': [
@@ -606,11 +606,11 @@
     ],
 
     'official_webview_arm32_orderfile': [
-      'official', 'remoteexec', 'android', 'arm', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'arm', 'minimal_symbols', 'orderfile_common',
     ],
 
     'official_webview_arm64_orderfile': [
-      'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'orderfile_common',
     ],
 
     'official_win_arm64_pgo': [
@@ -1028,8 +1028,8 @@
       'gn_args': 'use_order_profiling=true',
     },
 
-    'orderfile': {
-      'mixins': ['no_proguard_obfuscation', 'devtools_instrumentation_dumping', 'order_profiling', 'pgo_profile_override'],
+    'orderfile_common': {
+      'mixins': ['no_proguard_obfuscation', 'order_profiling', 'pgo_profile_override'],
     },
 
     'ozone_headless': {
