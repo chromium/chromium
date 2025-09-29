@@ -2049,8 +2049,13 @@ if (is_android) {
     extra_args = []
 
     if (is_desktop_android) {
-      deps +=
-          [ "//chrome/browser/ui/browser_window/internal:android_browsertests" ]
+      sources +=
+          [ "../browser/ui/android/browser_navigator_android_browsertest.cc" ]
+      deps += [
+        "//chrome/browser/ui:browser_navigator_params_headers",
+        "//chrome/browser/ui/browser_window",
+        "//chrome/browser/ui/browser_window/internal:android_browsertests",
+      ]
     }
 
     if (enable_chrome_android_internal) {
@@ -8265,9 +8270,9 @@ test("unit_tests") {
       "../browser/ui/webui/password_manager/sync_handler_unittest.cc",
       "../browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler_unittest.cc",
       "../browser/ui/webui/sanitized_image_source_unittest.cc",
+      "../browser/ui/webui/searchbox/contextual_searchbox_handler_unittest.cc",
       "../browser/ui/webui/searchbox/contextual_searchbox_test_utils.cc",
       "../browser/ui/webui/searchbox/contextual_searchbox_test_utils.h",
-      "../browser/ui/webui/searchbox/contextual_searchbox_handler_unittest.cc",
       "../browser/ui/webui/searchbox/searchbox_handler_unittest.cc",
       "../browser/ui/webui/searchbox/searchbox_test_utils.cc",
       "../browser/ui/webui/searchbox/searchbox_test_utils.h",
