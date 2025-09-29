@@ -731,12 +731,12 @@ BASE_FEATURE_PARAM(int,
                    "SocketPoolSizePerTopLevelSiteTrialWebSocketProfileLimit",
                    256);
 
-BASE_FEATURE(kNetTaskScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNetTaskScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpProxyConnectJob,
                    &kNetTaskScheduler,
                    "http_proxy_connect_job",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpCache,
                    &kNetTaskScheduler,
@@ -751,32 +751,32 @@ BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpStreamFactoryJob,
                    &kNetTaskScheduler,
                    "http_stream_factory_job",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpStreamFactoryJobController,
                    &kNetTaskScheduler,
                    "http_stream_factory_job_controller",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerURLRequestErrorJob,
                    &kNetTaskScheduler,
                    "url_request_error_job",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerURLRequestHttpJob,
                    &kNetTaskScheduler,
                    "url_request_http_job",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerURLRequestJob,
                    &kNetTaskScheduler,
                    "url_request_job",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerURLRequestRedirectJob,
                    &kNetTaskScheduler,
                    "url_request_redirect_job",
-                   false);
+                   true);
 
 BASE_FEATURE(kAdditionalDelayMainJob, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,

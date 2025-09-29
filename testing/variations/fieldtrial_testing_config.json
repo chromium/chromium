@@ -16118,24 +16118,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "params": {
-                        "http_proxy_connect_job": "true",
-                        "http_stream_factory_job": "true",
-                        "http_stream_factory_job_controller": "true",
-                        "resource_scheduler": "true",
-                        "url_loader": "true",
-                        "url_request_error_job": "true",
-                        "url_request_http_job": "true",
-                        "url_request_job": "true",
-                        "url_request_redirect_job": "true"
-                    },
-                    "enable_features": [
-                        "NetTaskScheduler",
-                        "NetworkServiceTaskScheduler"
-                    ]
-                },
-                {
                     "name": "Enabled2",
                     "params": {
                         "http_cache": "true",

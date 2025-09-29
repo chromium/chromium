@@ -575,16 +575,16 @@ BASE_FEATURE_PARAM(size_t,
                    /*name=*/"max_size",
                    1'000'000);
 
-BASE_FEATURE(kNetworkServiceTaskScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kNetworkServiceTaskScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kNetworkServiceTaskSchedulerResourceScheduler,
                    &kNetworkServiceTaskScheduler,
                    "resource_scheduler",
-                   false);
+                   true);
 BASE_FEATURE_PARAM(bool,
                    kNetworkServiceTaskSchedulerURLLoader,
                    &kNetworkServiceTaskScheduler,
                    "url_loader",
-                   false);
+                   true);
 
 }  // namespace network::features
