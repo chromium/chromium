@@ -37,7 +37,6 @@ export class WebviewElement extends CrLitElement {
 
   accessor guestId: number = -1;
   private attached: boolean = false;
-  guestHandler?: GuestHandlerRemote;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -77,44 +76,6 @@ export class WebviewElement extends CrLitElement {
       }, 100);
     });
   }
-
-  goBack() {
-    assert(this.guestHandler);
-    this.guestHandler.goBack();
-  }
-
-  goForward() {
-    assert(this.guestHandler);
-    this.guestHandler.goForward();
-  }
-
-  reload() {
-    if (this.guestHandler) {
-      this.guestHandler.reload();
-    }
-  }
-
-  stopLoading() {
-    if (this.guestHandler) {
-      this.guestHandler.stopLoading();
-    }
-  }
-
-  async canGoBack(): Promise<boolean> {
-    if (!this.guestHandler) {
-      return false;
-    }
-    const {canGoBack} = await this.guestHandler.canGoBack();
-    return canGoBack;
-  }
-
-  async canGoForward(): Promise<boolean> {
-    if (!this.guestHandler) {
-      return false;
-    }
-    const {canGoForward} = await this.guestHandler.canGoForward();
-    return canGoForward;
-  }
 }
 
 export class TabWebviewElement extends WebviewElement {
@@ -123,6 +84,7 @@ export class TabWebviewElement extends WebviewElement {
   }
 
   tabId: string;
+  private guestHandler: GuestHandlerRemote = new GuestHandlerRemote();
 
   constructor(tabId: string) {
     super();
@@ -140,26 +102,48 @@ export class TabWebviewElement extends WebviewElement {
   }
 
   openPageInfoMenu() {
-    if (this.guestHandler) {
-      this.guestHandler.openPageInfoMenu();
-    }
+    this.guestHandler.openPageInfoMenu();
   }
 
   async getSecurityIcon(): Promise<SecurityIcon> {
-    assert(this.guestHandler);
     const {securityIcon} = await this.guestHandler.getSecurityIcon();
     return securityIcon;
   }
 
   private attachTabContents() {
-    const handler = new GuestHandlerRemote();
     BrowserProxy.getPageHandler()
-        .getGuestIdForTabId(this.tabId, handler.$.bindNewPipeAndPassReceiver())
+        .getGuestIdForTabId(
+            this.tabId, this.guestHandler.$.bindNewPipeAndPassReceiver())
         .then(({guestId}) => {
           this.guestId = guestId;
-          this.guestHandler = handler;
           this.tryToAttach();
         });
+  }
+
+  goBack() {
+    this.guestHandler.goBack();
+  }
+
+  goForward() {
+    this.guestHandler.goForward();
+  }
+
+  reload() {
+    this.guestHandler.reload();
+  }
+
+  stopLoading() {
+    this.guestHandler.stopLoading();
+  }
+
+  async canGoBack(): Promise<boolean> {
+    const {canGoBack} = await this.guestHandler.canGoBack();
+    return canGoBack;
+  }
+
+  async canGoForward(): Promise<boolean> {
+    const {canGoForward} = await this.guestHandler.canGoForward();
+    return canGoForward;
   }
 }
 
