@@ -302,12 +302,11 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isMaximized() {
-        // TODO(crbug.com/438268202): Change the if statement to an assert.
-        // We don't expect ChromeAndroidTask to work for R and below.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             Log.w(TAG, "isMaximized() requires Android R+; returning a false");
             return false;
         }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -326,8 +325,6 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public boolean isFullscreen() {
-        // TODO(crbug.com/438268202): Change the if statement to an assert.
-        // We don't expect ChromeAndroidTask to work for R and below.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             Log.w(TAG, "isFullscreen() requires Android R+; returning false");
             return false;
@@ -459,12 +456,11 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void maximize() {
-        // TODO(crbug.com/438268202): Change the if statement to an assert.
-        // We don't expect ChromeAndroidTask to work for R and below.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             Log.w(TAG, "maximize() requires Android R+; does nothing");
             return;
         }
+
         synchronized (mActivityWindowAndroidLock) {
             var activityWindowAndroid =
                     getActivityWindowAndroidInternalLocked(/* assertAlive= */ true);
@@ -483,8 +479,6 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void minimize() {
-        // TODO(crbug.com/438268202): Change the if statement to an assert.
-        // We don't expect ChromeAndroidTask to work for R and below.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             Log.w(TAG, "minimize() requires Android R+; does nothing");
             return;
@@ -677,8 +671,6 @@ final class ChromeAndroidTaskImpl
 
     @GuardedBy("mActivityWindowAndroidLock")
     private Rect getBoundsInternalLocked() {
-        // TODO(crbug.com/438268202): Change the if statement to an assert.
-        // We don't expect ChromeAndroidTask to work for R and below.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             Log.w(TAG, "getBoundsInternal() requires Android R+; returning an empty Rect()");
             return new Rect();
