@@ -85,7 +85,7 @@ BASE_FEATURE(kFillOnAccountSelect,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kFillRecoveryPassword, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFillRecoveryPassword, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_IOS)
