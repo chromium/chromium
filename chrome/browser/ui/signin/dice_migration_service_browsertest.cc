@@ -1589,6 +1589,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
   EXPECT_FALSE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // The user is signed in to the web only.
+  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   EXPECT_THAT(
       GetIdentityManager()->GetAccountsWithRefreshTokens(),
       testing::ElementsAre(testing::Field(&AccountInfo::email, kTestEmail)));
@@ -1661,6 +1662,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
   EXPECT_FALSE(
       GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   // The user is signed in to the web only.
+  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   EXPECT_THAT(GetIdentityManager()->GetAccountsWithRefreshTokens(),
               testing::ElementsAre(
                   testing::Field(&AccountInfo::email, kEnterpriseTestEmail)));
@@ -1701,6 +1703,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
   // The user is explicitly signed in.
   EXPECT_TRUE(IsExplicitlySignedIn());
   // The user is signed in to the web.
+  signin::WaitForRefreshTokensLoaded(GetIdentityManager());
   EXPECT_THAT(GetIdentityManager()->GetAccountsWithRefreshTokens(),
               testing::ElementsAre(
                   testing::Field(&AccountInfo::email, kEnterpriseTestEmail)));
@@ -1709,12 +1712,16 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceForcedMigrationBrowserTest,
   histogram_tester_.ExpectUniqueSample(kForcedMigrationAccountManagedHistogram,
                                        true, 1);
   histogram_tester_.ExpectTotalCount(kSignoutReasonHistogram, 0);
-  // The toast is shown after the timer finishes.
-  ASSERT_TRUE(
-      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
-  histogram_tester_.ExpectUniqueSample(kToastTriggerToShowHistogram,
-                                       ToastId::kDiceUserMigrated, 0);
-  FireDialogTriggerTimer();
+  // The toast is shown after the timer finishes. However, it is possible that
+  // the timer has already finished and the toast is shown before the
+  // expectation below is checked.
+  if (GetDiceMigrationService()
+          ->GetDialogTriggerTimerForTesting()
+          .IsRunning()) {
+    histogram_tester_.ExpectUniqueSample(kToastTriggerToShowHistogram,
+                                         ToastId::kDiceUserMigrated, 0);
+    FireDialogTriggerTimer();
+  }
   histogram_tester_.ExpectUniqueSample(kToastTriggerToShowHistogram,
                                        ToastId::kDiceUserMigrated, 1);
 }
