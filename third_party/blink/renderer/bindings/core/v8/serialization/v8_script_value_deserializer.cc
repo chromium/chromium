@@ -74,7 +74,6 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
 
@@ -879,17 +878,22 @@ File* V8ScriptValueDeserializer::ReadFile() {
   String path, name, relative_path, uuid, type;
   uint32_t has_snapshot = 0;
   uint64_t size = 0;
-  double last_modified_ms = 0;
+  std::optional<base::Time> last_modified;
   if (!ReadUTF8String(&path) || (Version() >= 4 && !ReadUTF8String(&name)) ||
       (Version() >= 4 && !ReadUTF8String(&relative_path)) ||
       !ReadUTF8String(&uuid) || !ReadUTF8String(&type) ||
       (Version() >= 4 && !ReadUint32(&has_snapshot)))
     return nullptr;
   if (has_snapshot) {
+    double last_modified_ms = 0;
     if (!ReadUint64(&size) || !ReadDouble(&last_modified_ms))
       return nullptr;
     if (Version() < 8)
-      last_modified_ms *= kMsPerSecond;
+      last_modified_ms *= base::Time::kMillisecondsPerSecond;
+    if (std::isfinite(last_modified_ms)) {
+      last_modified =
+          base::Time::FromMillisecondsSinceUnixEpoch(last_modified_ms);
+    }
   }
   uint32_t is_user_visible = 1;
   if (Version() >= 7 && !ReadUint32(&is_user_visible))
@@ -899,11 +903,6 @@ File* V8ScriptValueDeserializer::ReadFile() {
   auto blob_handle = GetBlobDataHandle(uuid);
   if (!blob_handle)
     return nullptr;
-  std::optional<base::Time> last_modified;
-  if (has_snapshot && std::isfinite(last_modified_ms)) {
-    last_modified =
-        base::Time::FromMillisecondsSinceUnixEpoch(last_modified_ms);
-  }
   return File::CreateFromSerialization(path, name, relative_path,
                                        user_visibility, has_snapshot, size,
                                        last_modified, std::move(blob_handle));
