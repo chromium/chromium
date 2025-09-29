@@ -72,6 +72,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
 
         /** Notifies the observer that a permission was changed. */
         void onPermissionChanged();
+
+        /** Notifies the observer that the location permission subpage was clicked. */
+        void onLocationPermissionSubpageClicked();
     }
 
     // SingleWebsiteSettings expects either EXTRA_SITE (a Website) or
@@ -668,7 +671,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         TwoActionSwitchPreference preference = new TwoActionSwitchPreference(getStyledContext());
         preference.setPrimaryButtonClickListener(
                 (v) -> {
-                    // TODO(crbug.com/418936295): Launch subpage for page info.
                     if (getSettingsNavigation() != null) {
                         Bundle fragmentArgs = new Bundle();
                         fragmentArgs.putSerializable(EXTRA_SITE, mSite);
@@ -677,6 +679,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                                         getActivity(),
                                         LocationPermissionSubpageSettings.class,
                                         fragmentArgs);
+                    } else if (mWebsiteSettingsObserver != null) {
+                        mWebsiteSettingsObserver.onLocationPermissionSubpageClicked();
                     } else {
                         assert false : "Not reached.";
                     }

@@ -1819,6 +1819,26 @@ public class PageInfoViewTest {
                 .check(matches(hasBackgroundColor(R.color.iph_highlight_blue)));
     }
 
+    /** Tests the location permission subpage of the PageInfo UI. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testShowLocationPermissionSubpage() throws IOException {
+        addSomePermissions(mTestServerRule.getServer().getURL("/"));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+
+        onView(withText("Location")).perform(click());
+        onViewWaiting(allOf(withText(R.string.website_settings_device_location), isDisplayed()));
+        onViewWaiting(
+                allOf(
+                        withText(
+                                "Sites usually use your location for relevant features or info,"
+                                        + " like local news or nearby shops"),
+                        isDisplayed()));
+    }
+
     /**
      * Tests the permissions page of the PageInfo UI with permissions and a particular permission
      * row highlight.
@@ -1863,6 +1883,32 @@ public class PageInfoViewTest {
                 () -> {
                     ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null);
                 });
+    }
+
+    /** Tests that navigation between nested subpages works as expected. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
+    public void testNestedSubpageNavigation() throws IOException {
+        addSomePermissions(mTestServerRule.getServer().getURL("/"));
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        PageInfoController controller = PageInfoController.getLastPageInfoController();
+
+        // Open first subpage.
+        onView(withId(R.id.page_info_permissions_row)).perform(click());
+        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+
+        // Open second subpage
+        onView(withText("Location")).perform(click());
+        onViewWaiting(allOf(withText(R.string.website_settings_device_location), isDisplayed()));
+
+        // Verify back button press takes you back to the first subpage.
+        controller.exitSubpage();
+        onViewWaiting(allOf(withText("Control this site's access to your device"), isDisplayed()));
+
+        // Verify another back button press takes you back to the main page info view.
+        controller.exitSubpage();
+        onViewWaiting(allOf(withId(R.id.page_info_permissions_row), isDisplayed()));
     }
 
     /** Tests the summary string of the history page of the PageInfo UI. */

@@ -272,4 +272,12 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         mMainController.recordAction(PageInfoAction.PAGE_INFO_CHANGED_PERMISSION);
         mDataIsStale = true;
     }
+
+    @Override
+    public void onLocationPermissionSubpageClicked() {
+        // TODO(crbug.com/418936295): Update location preference on preference changes.
+        mMainController.launchSubpage(
+                new PageInfoLocationPermissionController(
+                        mRowView, getDelegate(), mMainController.getURL().getSpec()));
+    }
 }
