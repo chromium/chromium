@@ -6244,7 +6244,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.AwBrowserContext.Default.Duration.CreateOrLoadFromDisk"
-    units="ms" expires_after="2025-11-09">
+    units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6262,7 +6262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AwBrowserContext.Instantiations"
-    units="profiles" expires_after="2025-11-09">
+    units="profiles" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6280,7 +6280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AwBrowserContext.NonDefault.CountAtStartup"
-    units="profiles" expires_after="2025-11-09">
+    units="profiles" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6298,7 +6298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AwBrowserContext.NonDefault.Duration.Create"
-    units="ms" expires_after="2025-11-09">
+    units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6318,7 +6318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AwBrowserContext.NonDefault.Duration.Delete"
-    units="ms" expires_after="2025-11-09">
+    units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6335,7 +6335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.AwBrowserContext.NonDefault.Duration.LoadFromDisk"
-    units="ms" expires_after="2025-11-09">
+    units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6356,7 +6356,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.AwBrowserContext.NonDefault.TimeSinceStartup.Create"
-    units="ms" expires_after="2025-11-09">
+    units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6374,7 +6374,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.AwBrowserContext.NonDefault.TimeSinceStartup.Delete"
-    units="ms" expires_after="2025-11-09">
+    units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6392,7 +6392,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.AwBrowserContext.NonDefault.TimeSinceStartup.LoadFromDisk"
-    units="ms" expires_after="2025-11-09">
+    units="ms" expires_after="2026-04-01">
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
