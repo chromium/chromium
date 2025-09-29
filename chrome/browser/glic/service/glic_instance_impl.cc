@@ -93,14 +93,16 @@ bool GlicInstanceImpl::IsShowing() const {
 void GlicInstanceImpl::Show(EmbedderType type, tabs::TabInterface* tab) {
   EmbedderKey new_key = GetEmbedderKey(type, tab);
 
+  GlicUiEmbedder* embedder_to_show = nullptr;
+
   if (active_embedder_key_.has_value() &&
       active_embedder_key_.value() == new_key) {
-    return;
+    embedder_to_show = GetActiveEmbedder();
+  } else {
+    DeactivateCurrentEmbedder();
+    embedder_to_show = CreateActiveEmbedderFor(new_key);
+    active_embedder_key_ = new_key;
   }
-
-  DeactivateCurrentEmbedder();
-  auto* embedder_to_show = CreateActiveEmbedderFor(new_key);
-  active_embedder_key_ = new_key;
 
   MaybeShowHostUi(embedder_to_show);
   embedder_to_show->Show();
