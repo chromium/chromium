@@ -97,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogTest, ReturnsCorrectDialogArgs) {
                             /*close_dialog_closure=*/base::DoNothing());
   EXPECT_TRUE(InlineLoginDialog::IsShown());
 
-  std::optional<base::Value> args =
-      base::JSONReader::Read(dialog->GetDialogArgs());
+  std::optional<base::Value> args = base::JSONReader::Read(
+      dialog->GetDialogArgs(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(args.has_value());
   EXPECT_TRUE(args.value().is_dict());
   const base::Value::Dict& dict = args.value().GetDict();

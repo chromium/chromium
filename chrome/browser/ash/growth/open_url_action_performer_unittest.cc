@@ -98,7 +98,8 @@ class OpenUrlActionPerformerTest : public testing::Test {
 TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {
   const auto validOpenUrlParam =
       base::StringPrintf(kOpenUrlParamTemplate, kValidUrl, 0);
-  auto value = base::JSONReader::Read(validOpenUrlParam);
+  auto value = base::JSONReader::Read(validOpenUrlParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -112,7 +113,8 @@ TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {
 
 TEST_F(OpenUrlActionPerformerTest, TestInvalidOpenUrlParams) {
   auto* const invalidOpenUrlParam = "{}";
-  auto value = base::JSONReader::Read(invalidOpenUrlParam);
+  auto value = base::JSONReader::Read(invalidOpenUrlParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),

@@ -173,7 +173,8 @@ std::optional<gfx::RoundedCornersF> ParsePanelRadiiFromCommandLine() {
 
   std::optional<base::Value> display_switch_value = base::JSONReader::Read(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kDisplayProperties));
+          switches::kDisplayProperties),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!display_switch_value.has_value()) {
     return std::nullopt;

@@ -353,7 +353,8 @@ bool PolicyUIStatusTest::ReadStatusFor(
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
   std::string json = content::EvalJs(contents, javascript).ExtractString();
-  std::optional<base::Value> statuses = base::JSONReader::Read(json);
+  std::optional<base::Value> statuses =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!statuses.has_value() || !statuses->is_dict()) {
     return false;
   }

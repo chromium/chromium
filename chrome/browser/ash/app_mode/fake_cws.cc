@@ -176,7 +176,8 @@ bool GetAppIdsFromUpdateUrl(const GURL& update_url,
 // false and does not change `ids`.
 bool GetAppIdsFromRequestBody(const std::string& request_body,
                               std::vector<std::string>* ids) {
-  const auto value = base::JSONReader::Read(request_body);
+  const auto value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     return false;
   }

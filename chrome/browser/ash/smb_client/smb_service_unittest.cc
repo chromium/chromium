@@ -212,7 +212,8 @@ TEST_F(SmbServiceWithSmbfsTest, MountPreconfigured) {
   const char kPremountPath[] = "smb://preconfigured/share";
   const char kPreconfiguredShares[] =
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured\\share"}])";
-  auto parsed_shares = base::JSONReader::Read(kPreconfiguredShares);
+  auto parsed_shares = base::JSONReader::Read(
+      kPreconfiguredShares, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_shares);
   profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
                              *parsed_shares);
@@ -261,7 +262,8 @@ TEST_F(SmbServiceWithSmbfsTest, MountPreconfigured) {
 TEST_F(SmbServiceWithSmbfsTest, MountInvalidPreconfigured) {
   const char kPreconfiguredShares[] =
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured"}])";
-  auto parsed_shares = base::JSONReader::Read(kPreconfiguredShares);
+  auto parsed_shares = base::JSONReader::Read(
+      kPreconfiguredShares, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_shares);
   profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
                              *parsed_shares);
@@ -479,7 +481,8 @@ TEST_F(SmbServiceWithSmbfsTest, IsAnySmbShareConfigured) {
   // Add a preconfigured share
   const char kPreconfiguredShares[] =
       R"([{"mode":"pre_mount","share_url":"\\\\preconfigured\\share"}])";
-  auto parsed_shares = base::JSONReader::Read(kPreconfiguredShares);
+  auto parsed_shares = base::JSONReader::Read(
+      kPreconfiguredShares, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_shares);
   profile()->GetPrefs()->Set(prefs::kNetworkFileSharesPreconfiguredShares,
                              *parsed_shares);

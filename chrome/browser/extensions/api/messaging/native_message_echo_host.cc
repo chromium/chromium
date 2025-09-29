@@ -29,8 +29,8 @@ void NativeMessageEchoHost::Start(Client* client) {
 }
 
 void NativeMessageEchoHost::OnMessage(const std::string& request_string) {
-  std::optional<base::Value> request_value =
-      base::JSONReader::Read(request_string);
+  std::optional<base::Value> request_value = base::JSONReader::Read(
+      request_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!request_value.has_value()) {
     client_->CloseChannel(kHostInputOutputError);
   } else if (request_string.find("stopHostTest") != std::string::npos) {

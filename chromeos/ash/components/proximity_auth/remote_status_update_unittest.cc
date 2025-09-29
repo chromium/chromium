@@ -13,7 +13,8 @@ namespace {
 
 // Parses the |json| into a RemoteStatusUpdate instance.
 std::unique_ptr<RemoteStatusUpdate> ParseJson(const std::string& json) {
-  std::optional<base::Value> dict = base::JSONReader::Read(json);
+  std::optional<base::Value> dict =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return RemoteStatusUpdate::Deserialize(dict->GetDict());
 }
 

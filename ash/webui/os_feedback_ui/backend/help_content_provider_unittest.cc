@@ -97,7 +97,8 @@ class HelpContentProviderTest : public testing::Test {
   // Parse the json and call PopulateSearchResponse if successful.
   void PopulateSearchResponseHelper(const std::string& json,
                                     SearchResponsePtr& search_response) {
-    std::optional<base::Value> search_result = base::JSONReader::Read(json);
+    std::optional<base::Value> search_result =
+        base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (search_result) {
       PopulateSearchResponse("en-gb", /*is_child_account=*/false, 5u,
                              search_result.value(), search_response);

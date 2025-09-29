@@ -40,7 +40,8 @@ TEST(OmniboxUtilTest, CreateAnswerResult) {
       R"(            "at": { "t": "additional two", "tt": 6 },)"
       R"(            "al": "a11y label" } })"
       R"(] })";
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value && value->is_dict());
   omnibox::RichAnswerTemplate answer_template;
   ASSERT_TRUE(omnibox::answer_data_parser::ParseJsonToAnswerData(
@@ -134,7 +135,8 @@ TEST(OmniboxUtilTest, CreateWeatherResult) {
       R"(    })"
       R"(  })"
       R"(] })";
-  const std::optional<base::Value> value = base::JSONReader::Read(json);
+  const std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value && value->is_dict());
 
   // Create weather result using omnibox::RichAnswerTemplate.

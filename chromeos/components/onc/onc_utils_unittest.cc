@@ -847,10 +847,12 @@ using ONCUtilsMaskCredentialsTest =
     testing::TestWithParam<MaskCredentialsTestCase>;
 
 TEST_P(ONCUtilsMaskCredentialsTest, Test) {
-  std::optional<base::Value> onc_value = base::JSONReader::Read(GetParam().onc);
+  std::optional<base::Value> onc_value = base::JSONReader::Read(
+      GetParam().onc, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(onc_value) << "Could not parse " << GetParam().onc;
   std::optional<base::Value> expected_after_masking_value =
-      base::JSONReader::Read(GetParam().expected_after_masking);
+      base::JSONReader::Read(GetParam().expected_after_masking,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_after_masking_value)
       << "Could not parse " << GetParam().expected_after_masking;
 

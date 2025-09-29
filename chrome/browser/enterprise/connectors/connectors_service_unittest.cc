@@ -211,7 +211,9 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
   chromeos::FakeManagedGuestSession fake_mgs;
 
   if (pref_value()) {
-    profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    profile_->GetPrefs()->Set(
+        pref(), *base::JSONReader::Read(pref_value(),
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     profile_->GetPrefs()->SetInteger(scope_pref(),
                                      policy::POLICY_SCOPE_MACHINE);
   }
@@ -229,7 +231,9 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
 TEST_P(ConnectorsServiceReportingFeatureTest,
        ChromeOsManagedGuestSessionFlagNotSetInUserSession) {
   if (pref_value()) {
-    profile_->GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    profile_->GetPrefs()->Set(
+        pref(), *base::JSONReader::Read(pref_value(),
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     profile_->GetPrefs()->SetInteger(scope_pref(),
                                      policy::POLICY_SCOPE_MACHINE);
   }

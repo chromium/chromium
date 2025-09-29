@@ -15,12 +15,14 @@ namespace google_apis::classroom {
 using ::base::JSONReader;
 
 TEST(ClassroomApiMaterialResponseTypesTest, ConvertsAllMaterialTypes) {
-  const auto raw_materials = JSONReader::Read(R"([
+  const auto raw_materials =
+      JSONReader::Read(R"([
       {"youtubeVideo": {"title": "Test Video"}},
       {"driveFile": {"driveFile": {"title": "Test Doc"}}},
       {"link": {"title": "Test Link"}},
       {"form": {"title": "Test Form"}}
-  ])");
+  ])",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_materials);
   ASSERT_TRUE(raw_materials->is_list());
 
@@ -48,9 +50,11 @@ TEST(ClassroomApiMaterialResponseTypesTest, ConvertsAllMaterialTypes) {
 }
 
 TEST(ClassroomApiMaterialResponseTypesTest, HandlesUnknownMaterialType) {
-  const auto raw_material = JSONReader::Read(R"({
+  const auto raw_material =
+      JSONReader::Read(R"({
       "someNewApiField": {"title": "Future Feature"}
-  })");
+  })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_material);
 
   Material material;
@@ -62,9 +66,11 @@ TEST(ClassroomApiMaterialResponseTypesTest, HandlesUnknownMaterialType) {
 TEST(ClassroomApiMaterialResponseTypesTest, FailsOnMalformedDriveFile) {
   // Test that a malformed driveFile (missing the nested driveFile object)
   // correctly causes a parsing failure.
-  const auto raw_material = JSONReader::Read(R"({
+  const auto raw_material =
+      JSONReader::Read(R"({
       "driveFile": {"title": "This is incorrect"}
-  })");
+  })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_material);
 
   Material material;

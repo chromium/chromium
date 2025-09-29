@@ -2810,7 +2810,8 @@ void FileManagerBrowserTestBase::RunTestMessageLoop() {
 
     // If the message in JSON format has no command, ignore it
     // but note a reply is required: use std::string().
-    std::optional<base::Value> json = base::JSONReader::Read(message.message);
+    std::optional<base::Value> json = base::JSONReader::Read(
+        message.message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!json) {
       message.function->Reply(std::string());
       continue;

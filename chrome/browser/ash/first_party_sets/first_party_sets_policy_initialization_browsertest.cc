@@ -150,13 +150,15 @@ IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
 IN_PROC_BROWSER_TEST_F(FirstPartySetsPolicyInitializationTest,
                        BothPoliciesSetAndUsed) {
   base::RunLoop loop;
-  base::Value expected_overrides = base::JSONReader::Read(R"(
+  base::Value expected_overrides =
+      base::JSONReader::Read(R"(
              {
                 "replacements": [],
                 "additions": []
               }
-            )")
-                                       .value();
+            )",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value();
   ::first_party_sets::FirstPartySetsPolicyServiceFactory::GlobalTestingFactory
       factory = base::BindLambdaForTesting([&](content::BrowserContext*
                                                    context) {

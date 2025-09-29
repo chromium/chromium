@@ -106,8 +106,8 @@ TEST_F(ArcSupportMessageHostTest, SendMessage) {
   message_host()->SendMessage(value);
 
   ASSERT_EQ(1u, client()->messages().size());
-  std::optional<base::Value> recieved_value =
-      base::JSONReader::Read(client()->messages()[0]);
+  std::optional<base::Value> recieved_value = base::JSONReader::Read(
+      client()->messages()[0], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(value, recieved_value->GetDict());
 }
 

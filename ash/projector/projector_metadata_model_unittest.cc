@@ -2247,7 +2247,8 @@ constexpr char kCompleteMetadataV2JapaneseWithLatinCharactersTemplate[] = R"({
 
 void AssertSerializedString(const std::string& expected,
                             const std::string& actual) {
-  std::optional<base::Value> expected_value = base::JSONReader::Read(expected);
+  std::optional<base::Value> expected_value =
+      base::JSONReader::Read(expected, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected_value);
   std::string expected_serialized_value =
       base::WriteJson(expected_value.value()).value_or("");

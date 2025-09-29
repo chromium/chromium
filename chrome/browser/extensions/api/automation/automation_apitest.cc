@@ -836,8 +836,8 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
       content::TracingController::CreateStringEndpoint(
           stop_tracing_future.GetCallback()));
 
-  std::optional<base::Value> trace_data =
-      base::JSONReader::Read(*stop_tracing_future.Take());
+  std::optional<base::Value> trace_data = base::JSONReader::Read(
+      *stop_tracing_future.Take(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(trace_data && trace_data->is_dict());
 
   const base::Value::List* trace_events =

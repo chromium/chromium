@@ -118,7 +118,8 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
       "              \"t\": [{ \"t\": \"-5°C\", \"tt\": 8 }], "
       "              \"at\": { \"t\": \"additional two\", \"tt\": 42 } } } "
       "] }";
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value && value->is_dict());
   // Create weather result when ACMatch has |answer_template| populated.
   omnibox::RichAnswerTemplate answer_template;
@@ -179,7 +180,8 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
       "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 5 }], "
       "              \"at\": { \"t\": \"additional two\", \"tt\": 6 } } } "
       "] }";
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value && value->is_dict());
   // Create result when ACMatch has |answer_template| populated.
   omnibox::RichAnswerTemplate answer_template;
@@ -247,7 +249,8 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
       "  { \"il\": { \"t\": [{ \"t\": \"text one\", \"tt\": 8 }] } }, "
       "  { \"il\": { \"t\": [{ \"t\": \"text two\", \"tt\": 5 }] } } "
       "] }";
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value && value->is_dict());
   // Dictionary result when ACMatch has |answer_template| populated.
   omnibox::RichAnswerTemplate answer_template;

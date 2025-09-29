@@ -140,7 +140,8 @@ std::string FakeAuthorizationServer::ReceivePOSTWithJSON(
     base::Value::Dict& out_params) {
   std::string payload;
   auto msg = GetNextRequest("POST", url, "application/json", payload);
-  auto content = base::JSONReader::Read(payload);
+  auto content =
+      base::JSONReader::Read(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   out_params.clear();
   if (content && content->is_dict()) {
     out_params = std::move(content).value().TakeDict();

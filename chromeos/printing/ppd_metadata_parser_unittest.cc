@@ -640,7 +640,9 @@ TEST(PpdMetadataParserTest, ParseUsbIndexDoesNotReturnEmptyContainer) {
   constexpr std::string_view kEmptyJsonUsbIndex = R"({
   "usbIndex": { }
 })";
-  ASSERT_THAT(base::JSONReader::Read(kEmptyJsonUsbIndex), Ne(std::nullopt));
+  ASSERT_THAT(base::JSONReader::Read(kEmptyJsonUsbIndex,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              Ne(std::nullopt));
   EXPECT_THAT(ParseUsbIndex(kEmptyJsonUsbIndex), Eq(std::nullopt));
 
   constexpr std::string_view kJsonUsbIndexWithBadStringKeys = R"({
@@ -648,7 +650,8 @@ TEST(PpdMetadataParserTest, ParseUsbIndexDoesNotReturnEmptyContainer) {
     "non-integral key": { }
   }
 })";
-  ASSERT_THAT(base::JSONReader::Read(kJsonUsbIndexWithBadStringKeys),
+  ASSERT_THAT(base::JSONReader::Read(kJsonUsbIndexWithBadStringKeys,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
               Ne(std::nullopt));
   EXPECT_THAT(ParseUsbIndex(kJsonUsbIndexWithBadStringKeys), Eq(std::nullopt));
 
@@ -659,7 +662,8 @@ TEST(PpdMetadataParserTest, ParseUsbIndexDoesNotReturnEmptyContainer) {
     }
   }
 })";
-  ASSERT_THAT(base::JSONReader::Read(kJsonUsbIndexWithoutEmmAtLeaf),
+  ASSERT_THAT(base::JSONReader::Read(kJsonUsbIndexWithoutEmmAtLeaf,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
               Ne(std::nullopt));
   EXPECT_THAT(ParseUsbIndex(kJsonUsbIndexWithoutEmmAtLeaf), Eq(std::nullopt));
 
@@ -670,7 +674,8 @@ TEST(PpdMetadataParserTest, ParseUsbIndexDoesNotReturnEmptyContainer) {
     }
   }
 })";
-  ASSERT_THAT(base::JSONReader::Read(kJsonUsbIndexWithEmptyEmmAtLeaf),
+  ASSERT_THAT(base::JSONReader::Read(kJsonUsbIndexWithEmptyEmmAtLeaf,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
               Ne(std::nullopt));
   EXPECT_THAT(ParseUsbIndex(kJsonUsbIndexWithEmptyEmmAtLeaf), Eq(std::nullopt));
 }

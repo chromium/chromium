@@ -200,7 +200,9 @@ int CountProxyBroadcasts(
       DCHECK(count < extras.size())
           << "The expected proxy broadcast count is smaller than "
              "the actual count.";
-      EXPECT_EQ(*base::JSONReader::Read(broadcast.extras), *extras[count]);
+      EXPECT_EQ(*base::JSONReader::Read(broadcast.extras,
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+                *extras[count]);
       count++;
     }
   }

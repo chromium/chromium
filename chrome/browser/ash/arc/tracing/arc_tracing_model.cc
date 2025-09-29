@@ -361,7 +361,8 @@ void ArcTracingModel::SetMinMaxTime(uint64_t min_timestamp,
 }
 
 bool ArcTracingModel::Build(const std::string& data) {
-  std::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(ERROR) << "Cannot parse trace data";
     return false;

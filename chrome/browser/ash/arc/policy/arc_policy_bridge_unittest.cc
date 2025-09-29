@@ -298,8 +298,8 @@ class ArcPolicyBridgeTestBase {
   void ReportComplianceAndVerifyObserverCallback(
       const std::string& compliance_report) {
     Mock::VerifyAndClearExpectations(&observer_);
-    std::optional<base::Value> compliance_report_value =
-        base::JSONReader::Read(compliance_report);
+    std::optional<base::Value> compliance_report_value = base::JSONReader::Read(
+        compliance_report, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (compliance_report_value && compliance_report_value->is_dict()) {
       EXPECT_CALL(observer_, OnComplianceReportReceived(
                                  ValueEquals(&*compliance_report_value)));
@@ -314,7 +314,8 @@ class ArcPolicyBridgeTestBase {
     if (compliance_report_value) {
       std::optional<base::Value> saved_compliance_report_value =
           base::JSONReader::Read(
-              policy_bridge()->get_arc_policy_compliance_report());
+              policy_bridge()->get_arc_policy_compliance_report(),
+              base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       ASSERT_TRUE(saved_compliance_report_value);
       EXPECT_EQ(*compliance_report_value, *saved_compliance_report_value);
     } else {

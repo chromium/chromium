@@ -115,7 +115,8 @@ class ShowNudgeActionPerformerTest : public testing::Test {
 TEST_F(ShowNudgeActionPerformerTest, TestValidPayloadParams) {
   const auto validPayloadParam =
       base::StringPrintf(kNudgePayloadTemplate, "body");
-  auto value = base::JSONReader::Read(validPayloadParam);
+  auto value = base::JSONReader::Read(validPayloadParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -127,7 +128,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestValidPayloadParams) {
 
 TEST_F(ShowNudgeActionPerformerTest, TestInvalidPayloadParams) {
   auto* const inValidOpenUrlParam = "{}";
-  auto value = base::JSONReader::Read(inValidOpenUrlParam);
+  auto value = base::JSONReader::Read(inValidOpenUrlParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -140,7 +142,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestInvalidPayloadParams) {
 TEST_F(ShowNudgeActionPerformerTest, TestInvalidPayloadBody) {
   auto const inValidOpenUrlParam =
       base::StringPrintf(kNudgePayloadTemplate, "Body");
-  auto value = base::JSONReader::Read(inValidOpenUrlParam);
+  auto value = base::JSONReader::Read(inValidOpenUrlParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -153,7 +156,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestInvalidPayloadBody) {
 TEST_F(ShowNudgeActionPerformerTest, ShouldCallOnReadyToLogImpression) {
   const auto validPayloadParam =
       base::StringPrintf(kNudgePayloadTemplate, "body");
-  auto value = base::JSONReader::Read(validPayloadParam);
+  auto value = base::JSONReader::Read(validPayloadParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
 
   int campaign_id = 100;
@@ -179,7 +183,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestDefaultAnchor) {
         )";
 
   const auto validPayloadParam = base::StringPrintf(kNudgePayload, anchor);
-  auto value = base::JSONReader::Read(validPayloadParam);
+  auto value = base::JSONReader::Read(validPayloadParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -197,7 +202,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestValidAnchorOnCaptionButtonContainer) {
         )";
 
   const auto validPayloadParam = base::StringPrintf(kNudgePayload, anchor);
-  auto value = base::JSONReader::Read(validPayloadParam);
+  auto value = base::JSONReader::Read(validPayloadParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   SetTestAnchoredView(/*has_anchor_view=*/true);
   action().Run(
@@ -216,7 +222,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestFailAnchorOnCaptionButtonContainer) {
         )";
 
   const auto validPayloadParam = base::StringPrintf(kNudgePayload, anchor);
-  auto value = base::JSONReader::Read(validPayloadParam);
+  auto value = base::JSONReader::Read(validPayloadParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   SetTestAnchoredView(/*has_anchor_view=*/false);
   action().Run(
@@ -235,7 +242,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestValidAnchorOnShelfAppButtonId) {
         )";
 
   const auto validPayloadParam = base::StringPrintf(kNudgePayload, anchor);
-  auto value = base::JSONReader::Read(validPayloadParam);
+  auto value = base::JSONReader::Read(validPayloadParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   SetTestAnchoredView(/*has_anchor_view=*/true);
   action().Run(
@@ -254,7 +262,8 @@ TEST_F(ShowNudgeActionPerformerTest, TestFailAnchorOnShelfAppButtonId) {
         )";
 
   const auto validPayloadParam = base::StringPrintf(kNudgePayload, anchor);
-  auto value = base::JSONReader::Read(validPayloadParam);
+  auto value = base::JSONReader::Read(validPayloadParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   SetTestAnchoredView(/*has_anchor_view=*/false);
   action().Run(

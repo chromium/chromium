@@ -89,7 +89,8 @@ base::Value MakeClientCertificateInfoValue(
 }
 
 base::Value ParseJsonToValue(const std::string& json) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(value);
   return std::move(*value);
 }

@@ -206,8 +206,11 @@ TEST_F(UpdateSessionConfigTest,
     }
   )";
   ASSERT_TRUE(http_request.has_content);
-  EXPECT_EQ(base::JSONReader::Read(kContentData).value(),
-            base::JSONReader::Read(http_request.content));
+  EXPECT_EQ(
+      base::JSONReader::Read(kContentData, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value(),
+      base::JSONReader::Read(http_request.content,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(result.value());
 }
 
@@ -299,8 +302,11 @@ TEST_F(UpdateSessionConfigTest, UpdateSessionConfigWithOnTaskConfigAndSucceed) {
     }
   )";
   ASSERT_TRUE(http_request.has_content);
-  EXPECT_EQ(base::JSONReader::Read(kContentData).value(),
-            base::JSONReader::Read(http_request.content));
+  EXPECT_EQ(
+      base::JSONReader::Read(kContentData, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value(),
+      base::JSONReader::Read(http_request.content,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(result.value());
 }
 
@@ -355,8 +361,11 @@ TEST_F(UpdateSessionConfigTest,
     }
   )";
   ASSERT_TRUE(http_request.has_content);
-  EXPECT_EQ(base::JSONReader::Read(kContentData).value(),
-            base::JSONReader::Read(http_request.content));
+  EXPECT_EQ(
+      base::JSONReader::Read(kContentData, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value(),
+      base::JSONReader::Read(http_request.content,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_TRUE(result.value());
 }
 

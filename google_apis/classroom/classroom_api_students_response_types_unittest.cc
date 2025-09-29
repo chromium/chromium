@@ -15,7 +15,8 @@ namespace google_apis::classroom {
 using ::base::JSONReader;
 
 TEST(ClassroomApiStudentsResponseTypesTest, ConvertsEmptyResponse) {
-  auto raw_students = JSONReader::Read("{}");
+  auto raw_students =
+      JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   auto students = Students::CreateFrom(raw_students.value());
@@ -25,7 +26,8 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsEmptyResponse) {
 }
 
 TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
-  const auto raw_students = JSONReader::Read(R"(
+  const auto raw_students =
+      JSONReader::Read(R"(
       {
          "students":[
             {
@@ -49,7 +51,8 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
                }
             }
          ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   const auto students = Students::CreateFrom(raw_students.value());
@@ -73,11 +76,13 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
 }
 
 TEST(ClassroomApiStudentsResponseTypesTest, ConvertsNextPageToken) {
-  const auto raw_students = JSONReader::Read(R"(
+  const auto raw_students =
+      JSONReader::Read(R"(
       {
         "students": [],
         "nextPageToken": "qwerty"
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   const auto students = Students::CreateFrom(raw_students.value());
@@ -86,11 +91,13 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsNextPageToken) {
 }
 
 TEST(ClassroomApiStudentsResponseTypesTest, DoesNotCrashOnUnexpectedResponse) {
-  const auto raw_students = JSONReader::Read(R"(
+  const auto raw_students =
+      JSONReader::Read(R"(
       {
         "students": [{"id": []}],
         "nextPageToken": true
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_students);
 
   const auto students = Students::CreateFrom(raw_students.value());

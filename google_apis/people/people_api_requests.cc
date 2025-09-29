@@ -36,7 +36,8 @@ constexpr std::string_view kCreateContactPath =
     "v1/people:createContact?personFields=metadata";
 
 std::optional<Person> ParsePerson(std::string_view json) {
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(json);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     return std::nullopt;
   }

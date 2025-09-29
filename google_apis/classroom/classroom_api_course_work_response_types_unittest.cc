@@ -22,7 +22,8 @@ constexpr int64_t kNanosInHour = kNanosInMinute * 60;
 }  // namespace
 
 TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsEmptyResponse) {
-  auto raw_course_work = JSONReader::Read("{}");
+  auto raw_course_work =
+      JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work);
 
   auto course_work = CourseWork::CreateFrom(raw_course_work.value());
@@ -32,7 +33,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsEmptyResponse) {
 }
 
 TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
-  const auto raw_course_work = JSONReader::Read(R"(
+  const auto raw_course_work =
+      JSONReader::Read(R"(
       {
         "courseWork": [
           {
@@ -80,7 +82,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
             "updateTime": "2023-04-04T00:10:55.000Z"
           }
         ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work);
 
   const auto course_work = CourseWork::CreateFrom(raw_course_work.value());
@@ -167,11 +170,13 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWork) {
 }
 
 TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsNextPageToken) {
-  const auto raw_course_work = JSONReader::Read(R"(
+  const auto raw_course_work =
+      JSONReader::Read(R"(
       {
         "courseWork": [],
         "nextPageToken": "qwerty"
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work);
 
   const auto course_work = CourseWork::CreateFrom(raw_course_work.value());
@@ -181,7 +186,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsNextPageToken) {
 
 TEST(ClassroomApiCourseWorkResponseTypesTest,
      ConvertsCourseWorkItemDueDateTime) {
-  const auto raw_course_work = JSONReader::Read(R"(
+  const auto raw_course_work =
+      JSONReader::Read(R"(
       {
         "courseWork": [
           {
@@ -204,7 +210,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest,
             "dueTime": {"hours": 15}
           }
         ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work);
 
   const auto course_work = CourseWork::CreateFrom(raw_course_work.value());
@@ -238,11 +245,13 @@ TEST(ClassroomApiCourseWorkResponseTypesTest,
 
 TEST(ClassroomApiCourseWorkResponseTypesTest,
      DoesNotCrashOnUnexpectedResponse) {
-  const auto raw_course_work = JSONReader::Read(R"(
+  const auto raw_course_work =
+      JSONReader::Read(R"(
       {
         "courseWork": [{"id": []}],
         "nextPageToken": true
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work);
 
   const auto course_work = CourseWork::CreateFrom(raw_course_work.value());
@@ -250,7 +259,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest,
 }
 
 TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWorkItemMaterials) {
-  const auto raw_course_work = JSONReader::Read(R"(
+  const auto raw_course_work =
+      JSONReader::Read(R"(
       {
         "courseWork": [
           {
@@ -299,7 +309,8 @@ TEST(ClassroomApiCourseWorkResponseTypesTest, ConvertsCourseWorkItemMaterials) {
             ]
           }
         ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work);
 
   const auto course_work = CourseWork::CreateFrom(raw_course_work.value());

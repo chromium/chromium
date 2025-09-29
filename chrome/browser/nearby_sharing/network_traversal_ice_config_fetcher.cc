@@ -96,7 +96,8 @@ std::vector<::sharing::mojom::IceServerPtr> GetDefaultIceServers() {
 std::vector<::sharing::mojom::IceServerPtr> ParseIceConfigJson(
     std::string json) {
   std::vector<::sharing::mojom::IceServerPtr> ice_servers;
-  std::optional<base::Value> response = base::JSONReader::Read(json);
+  std::optional<base::Value> response =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!response)
     return ice_servers;
 

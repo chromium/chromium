@@ -77,7 +77,8 @@ std::unique_ptr<google::protobuf::MessageLite> DecodedMessageToProto(
 // static
 std::unique_ptr<MessageWrapper> MessageWrapper::FromRawMessage(
     const std::string& message) {
-  std::optional<base::Value> json_value = base::JSONReader::Read(message);
+  std::optional<base::Value> json_value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_value) {
     return nullptr;
   }

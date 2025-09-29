@@ -75,7 +75,8 @@ class FakeDevToolsSessionHost : public blink::mojom::DevToolsSessionHost {
     std::string message_str;
     crdtp::json::ConvertCBORToJSON(message_span, &message_str);
     // Read json into object.
-    auto json_parsed = base::JSONReader::Read(message_str);
+    auto json_parsed = base::JSONReader::Read(
+        message_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     // This json should be a valid dict.
     EXPECT_TRUE(json_parsed.has_value() && json_parsed->is_dict());
     // See

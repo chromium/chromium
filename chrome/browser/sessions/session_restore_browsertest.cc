@@ -3686,26 +3686,30 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
     web_app::WebAppTestInstallObserver observer(profile);
     observer.BeginListening({ash::kCalculatorAppId});
 
-    base::Value::List web_app_settings = base::JSONReader::Read(R"([
+    base::Value::List web_app_settings =
+        base::JSONReader::Read(R"([
     {
       "manifest_id": "https://calculator.apps.chrome/",
       "run_on_os_login": "run_windowed",
       "prevent_close_after_run_on_os_login": true
     }
-    ])")
-                                             ->GetList()
-                                             .Clone();
+    ])",
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            ->GetList()
+            .Clone();
     profile->GetPrefs()->SetList(prefs::kWebAppSettings,
                                  std::move(web_app_settings));
 
-    base::Value::List web_app_install_list = base::JSONReader::Read(R"([
+    base::Value::List web_app_install_list =
+        base::JSONReader::Read(R"([
     {
       "url": "https://calculator.apps.chrome/",
       "default_launch_container": "window"
     }
-    ])")
-                                                 ->GetList()
-                                                 .Clone();
+    ])",
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            ->GetList()
+            .Clone();
     profile->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(web_app_install_list));
 
@@ -3762,14 +3766,16 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
     web_app::WebAppTestInstallObserver observer(profile);
     observer.BeginListening({ash::kCalculatorAppId});
 
-    base::Value::List web_app_install_list = base::JSONReader::Read(R"([
+    base::Value::List web_app_install_list =
+        base::JSONReader::Read(R"([
     {
       "url": "https://calculator.apps.chrome/",
       "default_launch_container": "window"
     }
-    ])")
-                                                 ->GetList()
-                                                 .Clone();
+    ])",
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            ->GetList()
+            .Clone();
 
     profile->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  std::move(web_app_install_list));
@@ -3802,15 +3808,17 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
   StartupServices(profile);
 
   {
-    base::Value::List web_app_settings = base::JSONReader::Read(R"([
+    base::Value::List web_app_settings =
+        base::JSONReader::Read(R"([
     {
       "manifest_id": "https://calculator.apps.chrome/",
       "run_on_os_login": "run_windowed",
       "prevent_close_after_run_on_os_login": true
     }
-    ])")
-                                             ->GetList()
-                                             .Clone();
+    ])",
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            ->GetList()
+            .Clone();
     profile->GetPrefs()->SetList(prefs::kWebAppSettings,
                                  std::move(web_app_settings));
   }

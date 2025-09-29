@@ -78,7 +78,8 @@ void SettingsWithTtsPreviewHandler::HandlePreviewTtsVoice(
     return;
   }
 
-  std::optional<base::Value> json = base::JSONReader::Read(voice_id);
+  std::optional<base::Value> json =
+      base::JSONReader::Read(voice_id, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   std::string name;
   std::string extension_id;
   if (const std::string* ptr = json->GetDict().FindString("name")) {

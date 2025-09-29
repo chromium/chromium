@@ -18,7 +18,8 @@ namespace google_apis::classroom {
 using ::base::JSONReader;
 
 TEST(ClassroomApiCourseWorkMaterialResponseTypesTest, ConvertsEmptyResponse) {
-  auto raw_course_work_material = JSONReader::Read("{}");
+  auto raw_course_work_material =
+      JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work_material);
 
   auto materials =
@@ -30,7 +31,8 @@ TEST(ClassroomApiCourseWorkMaterialResponseTypesTest, ConvertsEmptyResponse) {
 
 TEST(ClassroomApiCourseWorkMaterialResponseTypesTest,
      ConvertsCourseWorkMaterials) {
-  const auto raw_course_work_material = JSONReader::Read(R"(
+  const auto raw_course_work_material =
+      JSONReader::Read(R"(
       {
         "courseWorkMaterial": [
           {
@@ -51,7 +53,8 @@ TEST(ClassroomApiCourseWorkMaterialResponseTypesTest,
             "state": "DRAFT"
           }
         ]
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work_material);
 
   const auto materials =
@@ -79,11 +82,13 @@ TEST(ClassroomApiCourseWorkMaterialResponseTypesTest,
 }
 
 TEST(ClassroomApiCourseWorkMaterialResponseTypesTest, ConvertsNextPageToken) {
-  const auto raw_course_work_material = JSONReader::Read(R"(
+  const auto raw_course_work_material =
+      JSONReader::Read(R"(
       {
         "courseWorkMaterial": [],
         "nextPageToken": "page-2-token"
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work_material);
 
   const auto materials =
@@ -95,11 +100,13 @@ TEST(ClassroomApiCourseWorkMaterialResponseTypesTest, ConvertsNextPageToken) {
 
 TEST(ClassroomApiCourseWorkMaterialResponseTypesTest,
      DoesNotCrashOnUnexpectedResponse) {
-  const auto raw_course_work_material = JSONReader::Read(R"(
+  const auto raw_course_work_material =
+      JSONReader::Read(R"(
       {
         "courseWorkMaterial": [{"id": 12345, "title": []}],
         "nextPageToken": true
-      })");
+      })",
+                       base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(raw_course_work_material);
 
   const auto materials =

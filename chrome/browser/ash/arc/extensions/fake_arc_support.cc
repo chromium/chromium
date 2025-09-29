@@ -136,8 +136,8 @@ void FakeArcSupport::UnsetMessageHost() {
 
 void FakeArcSupport::PostMessageFromNativeHost(
     const std::string& message_string) {
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(message_string);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(parsed_json);
 
   const base::Value::Dict& message = parsed_json->GetDict();

@@ -178,8 +178,8 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestVerifyParameters) {
       *test_url_loader_factory_.pending_requests();
   ASSERT_EQ(1u, pending.size());
   const network::ResourceRequest& request = pending[0].request;
-  std::optional<base::Value> request_value =
-      base::JSONReader::Read(network::GetUploadData(request));
+  std::optional<base::Value> request_value = base::JSONReader::Read(
+      network::GetUploadData(request), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(request_value.has_value());
   base::Value::Dict* request_body = request_value->GetIfDict();
   ASSERT_NE(nullptr, request_body);
@@ -228,8 +228,8 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestEmptyAttestedId) {
       *test_url_loader_factory_.pending_requests();
   ASSERT_EQ(1u, pending.size());
   const network::ResourceRequest& request = pending[0].request;
-  std::optional<base::Value> request_value =
-      base::JSONReader::Read(network::GetUploadData(request));
+  std::optional<base::Value> request_value = base::JSONReader::Read(
+      network::GetUploadData(request), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(request_value.has_value());
   base::Value::Dict* request_body = request_value->GetIfDict();
   ASSERT_NE(nullptr, request_body);

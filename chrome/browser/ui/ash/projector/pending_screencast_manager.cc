@@ -147,7 +147,8 @@ std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
     return indexable_text;
   }
 
-  std::optional<base::Value> value(base::JSONReader::Read(file_content));
+  std::optional<base::Value> value(base::JSONReader::Read(
+      file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   if (!value) {
     return indexable_text;
   }

@@ -23,8 +23,8 @@ class OncParsedCertificatesTest : public testing::Test {
  protected:
   std::unique_ptr<OncParsedCertificates> ReadFromJSON(
       std::string_view onc_certificates_json) {
-    std::optional<base::Value> onc_certificates =
-        base::JSONReader::Read(onc_certificates_json);
+    std::optional<base::Value> onc_certificates = base::JSONReader::Read(
+        onc_certificates_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!onc_certificates || !onc_certificates->is_list()) {
       return nullptr;
     }
@@ -390,8 +390,8 @@ TEST_F(OncParsedCertificatesTest, EqualityChecks) {
       -----END CERTIFICATE-----" }
       ])";
 
-  std::optional<base::Value> onc_certificates =
-      base::JSONReader::Read(onc_certificates_json);
+  std::optional<base::Value> onc_certificates = base::JSONReader::Read(
+      onc_certificates_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(onc_certificates);
   ASSERT_TRUE(onc_certificates->is_list());
 

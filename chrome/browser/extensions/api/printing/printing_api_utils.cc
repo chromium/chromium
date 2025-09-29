@@ -95,7 +95,8 @@ std::optional<DefaultPrinterRules> GetDefaultPrinterRules(
     return std::nullopt;
 
   std::optional<base::Value> default_destination_selection_rules_value =
-      base::JSONReader::Read(default_destination_selection_rules);
+      base::JSONReader::Read(default_destination_selection_rules,
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* default_destination_selection_rules_dict =
       default_destination_selection_rules_value.has_value()
           ? default_destination_selection_rules_value->GetIfDict()

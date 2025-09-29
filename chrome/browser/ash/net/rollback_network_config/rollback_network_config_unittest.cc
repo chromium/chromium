@@ -364,7 +364,8 @@ class RollbackNetworkConfigTest : public testing::Test {
 };
 
 TEST_F(RollbackNetworkConfigTest, OpenWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -381,7 +382,8 @@ TEST_F(RollbackNetworkConfigTest, OpenWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PolicyOpenWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -402,7 +404,8 @@ TEST_F(RollbackNetworkConfigTest, PolicyOpenWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, WpaPskWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kWpaPskWiFi);
+  base::Value network = *base::JSONReader::Read(
+      kWpaPskWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -422,7 +425,8 @@ TEST_F(RollbackNetworkConfigTest, WpaPskWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, WpaPskWiFiWithoutPasswordIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kWpaPskWiFiNoPass);
+  base::Value network = *base::JSONReader::Read(
+      kWpaPskWiFiNoPass, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -442,7 +446,8 @@ TEST_F(RollbackNetworkConfigTest, WpaPskWiFiWithoutPasswordIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PolicyWpaPskWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kWpaPskWiFi);
+  base::Value network = *base::JSONReader::Read(
+      kWpaPskWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -465,7 +470,8 @@ TEST_F(RollbackNetworkConfigTest, PolicyWpaPskWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, WepPskWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kWepPskWiFi);
+  base::Value network = *base::JSONReader::Read(
+      kWepPskWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -483,7 +489,8 @@ TEST_F(RollbackNetworkConfigTest, WepPskWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PolicyWepPskWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kWepPskWiFi);
+  base::Value network = *base::JSONReader::Read(
+      kWepPskWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -506,7 +513,8 @@ TEST_F(RollbackNetworkConfigTest, PolicyWepPskWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PeapWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kPeapWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kPeapWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -531,7 +539,8 @@ TEST_F(RollbackNetworkConfigTest, PeapWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PolicyPeapWiFiIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kPeapWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kPeapWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -563,7 +572,8 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapWiFiIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, OpenEthernetIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kOpenEthernet);
+  base::Value network = *base::JSONReader::Read(
+      kOpenEthernet, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -579,7 +589,8 @@ TEST_F(RollbackNetworkConfigTest, OpenEthernetIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PolicyOpenEthernetIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kOpenEthernet);
+  base::Value network = *base::JSONReader::Read(
+      kOpenEthernet, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -602,7 +613,8 @@ TEST_F(RollbackNetworkConfigTest, PolicyOpenEthernetIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PeapEthernetIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kPeapEthernet);
+  base::Value network = *base::JSONReader::Read(
+      kPeapEthernet, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -627,7 +639,8 @@ TEST_F(RollbackNetworkConfigTest, PeapEthernetIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, PolicyPeapEthernetIsPreserved) {
-  base::Value network = *base::JSONReader::Read(kPeapEthernet);
+  base::Value network = *base::JSONReader::Read(
+      kPeapEthernet, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   SimulateRollback();
   const std::string& guid =
@@ -658,7 +671,8 @@ TEST_F(RollbackNetworkConfigTest, PolicyPeapEthernetIsPreserved) {
 }
 
 TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipKeepsDeviceNetworks) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -676,7 +690,8 @@ TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipKeepsDeviceNetworks) {
 }
 
 TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipDeletesPolicyNetworksWiFi) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -690,7 +705,8 @@ TEST_F(RollbackNetworkConfigTest, ConsumerOwnershipDeletesPolicyNetworksWiFi) {
 
 TEST_F(RollbackNetworkConfigTest,
        ConsumerOwnershipDeletesPolicyNetworksEthernet) {
-  base::Value network = *base::JSONReader::Read(kPeapEthernet);
+  base::Value network = *base::JSONReader::Read(
+      kPeapEthernet, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -714,7 +730,8 @@ TEST_F(RollbackNetworkConfigTest,
 }
 
 TEST_F(RollbackNetworkConfigTest, EnrollmentToSameKeepsPolicyNetworks) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -732,7 +749,8 @@ TEST_F(RollbackNetworkConfigTest, EnrollmentToSameKeepsPolicyNetworks) {
 }
 
 TEST_F(RollbackNetworkConfigTest, EnrollmentToDifferentDeletesPolicyNetworks) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -751,7 +769,8 @@ TEST_F(RollbackNetworkConfigTest, EnrollmentToDifferentDeletesPolicyNetworks) {
 // early. See b/270355500.
 TEST_F(RollbackNetworkConfigTest,
        PolicyApplicationWithoutOwnershipDoesNotDeleteNetworks) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -765,10 +784,10 @@ TEST_F(RollbackNetworkConfigTest,
 }
 
 TEST_F(RollbackNetworkConfigTest, ExactlyRecommendedValuesPreserved) {
-  base::Value policy_config =
-      *base::JSONReader::Read(kPeapWiFiRecommendedPolicyPart);
-  base::Value user_config =
-      *base::JSONReader::Read(kPeapWiFiRecommendedUserPart);
+  base::Value policy_config = *base::JSONReader::Read(
+      kPeapWiFiRecommendedPolicyPart, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  base::Value user_config = *base::JSONReader::Read(
+      kPeapWiFiRecommendedUserPart, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   const std::string& guid =
       GetStringValue(policy_config.GetDict(), onc::network_config::kGUID);
 
@@ -786,10 +805,10 @@ TEST_F(RollbackNetworkConfigTest, ExactlyRecommendedValuesPreserved) {
 
 TEST_F(RollbackNetworkConfigTest,
        ConsumerOwnershipDeletesPolicyNetworkWithRecommendFields) {
-  base::Value policy_config =
-      *base::JSONReader::Read(kPeapWiFiRecommendedPolicyPart);
-  base::Value user_config =
-      *base::JSONReader::Read(kPeapWiFiRecommendedUserPart);
+  base::Value policy_config = *base::JSONReader::Read(
+      kPeapWiFiRecommendedPolicyPart, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  base::Value user_config = *base::JSONReader::Read(
+      kPeapWiFiRecommendedUserPart, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   const std::string& guid =
       GetStringValue(policy_config.GetDict(), onc::network_config::kGUID);
 
@@ -803,7 +822,8 @@ TEST_F(RollbackNetworkConfigTest,
 
 TEST_F(RollbackNetworkConfigTest,
        DeleteDeviceNetworkBetweenImportAndConsumerOwnership) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -818,7 +838,8 @@ TEST_F(RollbackNetworkConfigTest,
 
 TEST_F(RollbackNetworkConfigTest,
        DeleteDeviceNetworkBetweenImportAndEnrollment) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -833,7 +854,8 @@ TEST_F(RollbackNetworkConfigTest,
 
 TEST_F(RollbackNetworkConfigTest,
        DeletePolicyNetworkBetweenImportAndConsumerOwnership) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -851,7 +873,8 @@ TEST_F(RollbackNetworkConfigTest,
 
 TEST_F(RollbackNetworkConfigTest,
        DeletePolicyNetworkBetweenImportAndEnrollment) {
-  base::Value network = *base::JSONReader::Read(kOpenWiFi);
+  base::Value network =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDevicePolicyNetworkConfig(network);
   const std::string& guid =
       GetStringValue(network.GetDict(), onc::network_config::kGUID);
@@ -878,17 +901,20 @@ TEST_F(RollbackNetworkConfigTest, EmptyExport) {
 }
 
 TEST_F(RollbackNetworkConfigTest, MultipleNetworks) {
-  base::Value peap_wifi = *base::JSONReader::Read(kPeapWiFi);
+  base::Value peap_wifi =
+      *base::JSONReader::Read(kPeapWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(peap_wifi);
   const std::string& peap_wifi_guid =
       GetStringValue(peap_wifi.GetDict(), onc::network_config::kGUID);
 
-  base::Value open_wifi = *base::JSONReader::Read(kOpenWiFi);
+  base::Value open_wifi =
+      *base::JSONReader::Read(kOpenWiFi, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(open_wifi);
   const std::string& open_wifi_guid =
       GetStringValue(open_wifi.GetDict(), onc::network_config::kGUID);
 
-  base::Value eap_ethernet = *base::JSONReader::Read(kPeapEthernet);
+  base::Value eap_ethernet = *base::JSONReader::Read(
+      kPeapEthernet, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SetUpDeviceWideNetworkConfig(eap_ethernet);
   const std::string& eap_ethernet_guid =
       GetStringValue(eap_ethernet.GetDict(), onc::network_config::kGUID);

@@ -22,7 +22,8 @@ FakeRollbackNetworkConfig::~FakeRollbackNetworkConfig() = default;
 
 void FakeRollbackNetworkConfig::RollbackConfigImport(const std::string& config,
                                                      ImportCallback callback) {
-  imported_config_ = base::JSONReader::Read(config);
+  imported_config_ =
+      base::JSONReader::Read(config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (config_imported_callback_) {
     std::move(config_imported_callback_).Run();
   }

@@ -93,7 +93,8 @@ constexpr char kGooglePhotosAlbumsFullResponse[] =
 // Parses `json` as a value dictionary. A test calling this function will fail
 // if `json` is not appropriately formatted.
 base::Value::Dict JsonToDict(std::string_view json) {
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(json);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json.has_value() && parsed_json->is_dict());
   return std::move(*parsed_json).TakeDict();
 }

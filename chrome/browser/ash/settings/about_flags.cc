@@ -40,7 +40,8 @@ std::set<std::string> ParseFlagsFromCommandLine(
     return flags;
   }
 
-  auto flags_list = base::JSONReader::Read(encoded);
+  auto flags_list =
+      base::JSONReader::Read(encoded, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!flags_list) {
     LOG(WARNING) << "Failed to parse feature flags configuration";
     return flags;
@@ -65,7 +66,8 @@ std::map<std::string, std::string> ParseOriginListFlagsFromCommmandLine(
     return origin_list_flags;
   }
 
-  auto origin_list_flags_dict = base::JSONReader::Read(encoded);
+  auto origin_list_flags_dict =
+      base::JSONReader::Read(encoded, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!origin_list_flags_dict) {
     LOG(WARNING) << "Failed to parse origin list configuration";
     return origin_list_flags;

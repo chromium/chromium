@@ -220,7 +220,8 @@ std::vector<std::string> GetAllowedInputMethodEngines() {
 
   // Loads allowed imes from field trials
   if (auto parsed = base::JSONReader::Read(
-          base::GetFieldTrialParamValue(kExperimentName, kImeAllowlistLabel));
+          base::GetFieldTrialParamValue(kExperimentName, kImeAllowlistLabel),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       parsed.has_value() && parsed->is_list()) {
     for (const auto& item : parsed->GetList()) {
       if (item.is_string()) {

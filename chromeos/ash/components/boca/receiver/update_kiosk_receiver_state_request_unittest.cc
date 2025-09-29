@@ -38,7 +38,8 @@ TEST(UpdateKioskReceiverStateRequestTest, GetRequestBody) {
       base::DoNothing());
   std::optional<std::string> request_body = request.GetRequestBody();
   ASSERT_TRUE(request_body.has_value());
-  std::optional<base::Value> value = base::JSONReader::Read(*request_body);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      *request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   ASSERT_TRUE(value->is_dict());
   const base::Value::Dict& dict = value->GetDict();

@@ -1254,8 +1254,11 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
       "url": "https://policy-example.org/",
       "default_launch_container": "window"
     }])";
-    profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList,
-                               base::JSONReader::Read(kWebAppPolicy).value());
+    profile()->GetPrefs()->Set(
+        prefs::kWebAppInstallForceList,
+        base::JSONReader::Read(kWebAppPolicy,
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            .value());
     run_loop.Run();
   }
 

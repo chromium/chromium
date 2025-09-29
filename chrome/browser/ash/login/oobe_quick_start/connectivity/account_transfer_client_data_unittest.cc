@@ -33,8 +33,8 @@ TEST_F(AccountTransferClientDataTest, CreateFidoAccountTransferClientDataJson) {
   AccountTransferClientData data(challenge_b64url_);
 
   std::string client_data_json = data.CreateJson();
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(client_data_json);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      client_data_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_json);
   ASSERT_TRUE(parsed_json->is_dict());
   base::Value::Dict& parsed_json_dict = parsed_json.value().GetDict();

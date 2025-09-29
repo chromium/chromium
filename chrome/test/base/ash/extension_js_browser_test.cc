@@ -164,7 +164,8 @@ bool ExtensionJSBrowserTest::RunJavascriptTestF(bool is_async,
   }
 
   std::string result_str = result.GetString();
-  std::optional<base::Value> value_result = base::JSONReader::Read(result_str);
+  std::optional<base::Value> value_result =
+      base::JSONReader::Read(result_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   const base::Value::Dict& dict_value = value_result->GetDict();
 
   bool test_result = dict_value.FindBool("result").value();
