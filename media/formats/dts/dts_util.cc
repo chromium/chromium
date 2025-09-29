@@ -26,30 +26,32 @@ bool MatchSyncWord(const uint8_t* data, uint32_t sync_word) {
 }
 
 // Search for the next sync word 0x7ffe8001.
-const uint8_t* FindNextSyncWord(const uint8_t* begin,
-                                const uint8_t* end,
-                                uint32_t sync_word) {
-  DCHECK(begin);
-  DCHECK(end);
-  DCHECK_LE(begin, end);
-
-  const int sync_word_len_less_one = 3;
-  const uint8_t* current = begin;
-  const uint8_t first_sync_byte = static_cast<uint8_t>(sync_word >> 24);
-
-  while (current && (current < end - sync_word_len_less_one)) {
-    if (MatchSyncWord(current, sync_word)) {
-      if (current != begin)
-        DVLOG(2) << __func__ << " skip " << current - begin << " bytes.";
-      return current;
-    }
-
-    ++current;
-    current = static_cast<const uint8_t*>(
-        memchr(current, first_sync_byte, end - current));
+base::span<const uint8_t> FindNextSyncWord(base::span<const uint8_t> buffer,
+                                           uint32_t sync_word) {
+  if (buffer.size() < 4) {
+    return {};
   }
 
-  return nullptr;
+  const uint8_t first_sync_byte = static_cast<uint8_t>(sync_word >> 24);
+  size_t i = 0;
+
+  while (i <= buffer.size() - 4) {
+    if (buffer[i] == first_sync_byte && MatchSyncWord(&buffer[i], sync_word)) {
+      if (i != 0) {
+        DVLOG(2) << __func__ << " skip " << i << " bytes.";
+      }
+      return buffer.subspan(i);
+    }
+
+    const void* next =
+        memchr(&buffer[i + 1], first_sync_byte, buffer.size() - i - 1);
+    if (!next) {
+      break;
+    }
+    i = static_cast<const uint8_t*>(next) - buffer.data();
+  }
+
+  return {};
 }
 
 }  // namespace
@@ -83,34 +85,38 @@ int ParseTotalSampleCount(const uint8_t* data,
     return 0;
 
   DTSStreamParser parser;
-  const uint8_t* dend = data + size;
-  const uint8_t* current = FindNextSyncWord(data, dend, sync_word);
+  base::span<const uint8_t> buffer_span(data, size);
   int total_sample_count = 0;
 
-  while (current && (dend > current + header_size)) {
-    int frame_size;
-    int sample_count;
+  while (buffer_span.size() > header_size) {
+    base::span<const uint8_t> sync_span =
+        FindNextSyncWord(buffer_span, sync_word);
+    if (sync_span.empty() || sync_span.size() < header_size) {
+      break;
+    }
+    buffer_span = sync_span;
+
+    size_t frame_size = 0;
+    size_t sample_count = 0;
     int bytes_processed =
-        parser.ParseFrameHeader(current, dend - current, &frame_size, nullptr,
-                                nullptr, &sample_count, nullptr, nullptr);
+        parser.ParseFrameHeader(buffer_span, &frame_size, nullptr, nullptr,
+                                &sample_count, nullptr, nullptr);
 
     if ((bytes_processed > 0) && (frame_size > 0) && (sample_count > 0)) {
-      current += frame_size;
-      if (current > dend) {
-        DVLOG(2) << __func__ << " Incomplete frame, missing " << current - dend
-                 << " bytes.";
+      if (frame_size > buffer_span.size()) {
+        DVLOG(2) << __func__ << " Incomplete frame, missing "
+                 << frame_size - buffer_span.size() << " bytes.";
         break;
       }
 
       total_sample_count += sample_count;
+      buffer_span = buffer_span.subspan(frame_size);
     } else {
       DVLOG(2)
           << __func__
           << " Invalid frame, skip 1 byte to find next synchronization word.";
-      current++;
+      buffer_span = buffer_span.subspan(1u);
     }
-
-    current = FindNextSyncWord(current, dend, sync_word);
   }
 
   return total_sample_count;

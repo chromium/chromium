@@ -16,40 +16,41 @@ DTSStreamParser::DTSStreamParser()
 
 DTSStreamParser::~DTSStreamParser() = default;
 
-int DTSStreamParser::ParseFrameHeader(const uint8_t* data,
-                                      int size,
-                                      int* frame_size,
-                                      int* sample_rate,
+int DTSStreamParser::ParseFrameHeader(base::span<const uint8_t> data,
+                                      size_t* frame_size,
+                                      size_t* sample_rate,
                                       ChannelLayout* channel_layout,
-                                      int* sample_count,
+                                      size_t* sample_count,
                                       bool* metadata_frame,
                                       std::vector<uint8_t>* extra_data) {
-  if (data == nullptr || size < kDTSCoreHeaderSizeInBytes)
+  if (data.empty() || data.size() < kDTSCoreHeaderSizeInBytes) {
     return 0;
+  }
 
-  BitReader reader(data, size);
+  BitReader reader(data);
 
   // Read and validate Sync word.
   uint32_t sync_word = 0;
-  reader.ReadBits(32, &sync_word);
+  CHECK(reader.ReadBits(32, &sync_word));
   if (sync_word != kDTSCoreSyncWord)
     return 0;
 
-  int fsize = 0, ext_audio = 0, ext_audio_id = 0, nblks = 0, sfreq = 0;
+  uint16_t fsize = 0;
+  uint8_t ext_audio = 0, ext_audio_id = 0, nblks = 0, sfreq = 0;
 
   // Skip ftype(1-bit) + DeficitSample Count(5-bits) + CRC Present Flag(1-bit)
-  reader.SkipBits(7);
-  reader.ReadBits(7, &nblks);
-  reader.ReadBits(14, &fsize);
-  reader.SkipBits(6);  // Skip AMODE
-  reader.ReadBits(4, &sfreq);
-  reader.SkipBits(10);  // Skip: RATE, FixedBit, DNYF, TIMEF, AUSX, HDCD
-  reader.ReadBits(3, &ext_audio_id);
-  reader.ReadBits(1, &ext_audio);
+  CHECK(reader.SkipBits(7));
+  CHECK(reader.ReadBits(7, &nblks));
+  CHECK(reader.ReadBits(14, &fsize));
+  CHECK(reader.SkipBits(6));  // Skip AMODE
+  CHECK(reader.ReadBits(4, &sfreq));
+  CHECK(reader.SkipBits(10));  // Skip: RATE, FixedBit, DNYF, TIMEF, AUSX, HDCD
+  CHECK(reader.ReadBits(3, &ext_audio_id));
+  CHECK(reader.ReadBits(1, &ext_audio));
 
-  constexpr int kSampleRateCore[16] = {0,     8000,  16000, 32000, 0, 0,
-                                       11025, 22050, 44100, 0,     0, 12000,
-                                       24000, 48000, 0,     0};
+  constexpr size_t kSampleRateCore[16] = {0,     8000,  16000, 32000, 0, 0,
+                                          11025, 22050, 44100, 0,     0, 12000,
+                                          24000, 48000, 0,     0};
 
   if (fsize < 95)  // Invalid values of FSIZE is 0-94.
     return 0;
@@ -78,7 +79,8 @@ int DTSStreamParser::ParseFrameHeader(const uint8_t* data,
   // Use nblks to compute frame duration, a.k.a number of PCM samples per
   // channel in the current DTS frames in the buffer.
   if (sample_count) {
-    *sample_count = (nblks + 1) * 32;  // Num of PCM samples in current frame
+    *sample_count = static_cast<size_t>(
+        (nblks + 1) * 32);  // Num of PCM samples in current frame
     if (is_core_x96)
       *sample_count <<= 1;
   }

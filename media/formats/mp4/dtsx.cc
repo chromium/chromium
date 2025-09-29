@@ -140,7 +140,7 @@ int DTSX::GetMaxPayload() const {
   return max_payload_;
 }
 
-int DTSX::GetNumPresentations() const {
+uint32_t DTSX::GetNumPresentations() const {
   return num_presentations_;
 }
 
