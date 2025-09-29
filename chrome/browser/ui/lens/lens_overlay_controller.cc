@@ -968,6 +968,19 @@ void LensOverlayController::IssueTextSearchRequestInner(
     // when a contextual request is made but the overlay is not shown.
     lens_overlay_query_controller_ = lens_overlay_query_controller;
     CHECK(lens_overlay_query_controller_);
+
+    // If the contextualization controller was already initialized then
+    // there is no need to call `StartContextualization` again.
+    if (GetContextualizationController()->IsActive()) {
+      GetContextualizationController()->TryUpdatePageContextualization(
+          base::BindOnce(
+              &LensOverlayController::OnPageContextUpdatedForSuggestion,
+              weak_factory_.GetWeakPtr(), query_start_time, query_text,
+              additional_query_parameters, match_type,
+              is_zero_prefix_suggestion, invocation_source));
+      return;
+    }
+
     GetContextualizationController()->StartContextualization(
         invocation_source,
         base::BindOnce(
