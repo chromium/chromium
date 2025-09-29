@@ -111,6 +111,8 @@ class WifiConfigurationBridge : public syncer::DataTypeSyncBridge,
  private:
   void Commit(std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch);
 
+  void RecordNetworkMetrics();
+
   // Callbacks for DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,
                       std::unique_ptr<syncer::DataTypeStore> store);
