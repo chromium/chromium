@@ -313,6 +313,64 @@ TEST(UrlUnescapeIteratorTest, OneByteSameAsUnescapePercentEncodedUrlEncoded) {
 
 FUZZ_TEST(UrlUnescapeIteratorTest, SameOutputAsUnescapePercentEncodedUrl);
 
+TEST(UrlUnescapeIteratorTest, TrivialSelfEquals) {
+  auto expect_self_equals = [](base::span<const Case> cases) {
+    for (const auto [input, _, description] : cases) {
+      EXPECT_TRUE(EqualsAfterUrlDecoding(input, input)) << description;
+    }
+  };
+  for (const char* input : {"", "a", "word", " ", "+", "%", "%2", "%20"}) {
+    EXPECT_TRUE(EqualsAfterUrlDecoding(input, input)) << input;
+  }
+  expect_self_equals(kGoodUtf8);
+  expect_self_equals(kBadUtf8);
+}
+
+TEST(UrlUnescapeIteratorTest, EqualsAfterEscaping) {
+  auto expect_equals_after_escaping = [](base::span<const Case> cases) {
+    for (const auto [input, _, description] : cases) {
+      EXPECT_TRUE(
+          EqualsAfterUrlDecoding(input, base::EscapeAllExceptUnreserved(input)))
+          << description;
+      EXPECT_TRUE(
+          EqualsAfterUrlDecoding(base::EscapeAllExceptUnreserved(input), input))
+          << description << ", backwards";
+    }
+  };
+  expect_equals_after_escaping(kGoodUtf8);
+  expect_equals_after_escaping(kBadUtf8);
+}
+
+struct StringPair {
+  std::string_view a;
+  std::string_view b;
+};
+
+TEST(UrlUnescapeIteratorTest, InterestinglyEqual) {
+  static constexpr StringPair cases[] = {
+      {" ", "+"},        {"+", "%20"},         {"%", "%25"},
+      {"%2a", "%2A"},    {"%c2%A5", "%C2%a5"}, {"%c2\xa5", "\xc2%a5"},
+      {"%c0", "%c1"},     // both become replacement character
+      {"%c2", "%ef%bf"},  // both are truncated UTF-8 codepoints
+  };
+  for (const auto [a, b] : cases) {
+    EXPECT_TRUE(EqualsAfterUrlDecoding(a, b))
+        << "(\"" << a << "\", \"" << b << "\")";
+  }
+}
+
+TEST(UrlUnescapeIteratorTest, Unequal) {
+  static constexpr StringPair cases[] = {
+      {"", "%00"},          {"abc", "ABC"}, {"\xc2\xa5", "\xc2\xa6"},
+      {"%c2%a5", "%c2%a6"}, {"%a", "%A"},   {"%2g", "%2G"},
+      {"%00a", "%00A"},
+  };
+  for (const auto [a, b] : cases) {
+    EXPECT_FALSE(EqualsAfterUrlDecoding(a, b))
+        << "(\"" << a << "\", \"" << b << "\")";
+  }
+}
+
 #undef REPLACEMENT_CHAR
 
 }  // namespace

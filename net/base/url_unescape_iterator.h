@@ -187,6 +187,12 @@ constexpr std::ranges::subrange<UrlUnescapeIterator> MakeUrlUnescapeRange(
   return {start, end};
 }
 
+// Returns true if `a` and `b` would be equal after decoding with
+// UrlUnescapeIterator. Optimized to avoid actually performing decoding in
+// common cases.
+NET_EXPORT_PRIVATE bool EqualsAfterUrlDecoding(std::string_view a,
+                                               std::string_view b);
+
 }  // namespace net
 
 #endif  // NET_BASE_URL_UNESCAPE_ITERATOR_H_

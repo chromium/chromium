@@ -4,11 +4,26 @@
 
 #include "net/base/url_unescape_iterator.h"
 
+#include <algorithm>
+
 #include "base/containers/span.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/third_party/icu/icu_utf.h"
 
 namespace net {
+
+namespace {
+
+// Returns true if `s` contains any characters whose interpretation may be
+// changed by UrlUnescapeIterator. ASCII characters are passed through
+// unchanged, except for '+' and '%'.
+bool ContainsCharactersChangedByUnescaping(std::string_view s) {
+  return std::ranges::any_of(
+      s, [](char c) { return c == '+' || c == '%' || (c & 0x80) != 0; });
+}
+
+}  // namespace
 
 void UrlUnescapeIterator::IncrementReplacementChar() {
   value_ = kReplacementCharacterInUTF8[replacement_character_byte_];
@@ -96,6 +111,21 @@ void UrlUnescapeIterator::CheckNonAscii() {
 void UrlUnescapeIterator::EmitReplacementCharacter() {
   value_ = kReplacementCharacterInUTF8[0];
   replacement_character_byte_ = 1;
+}
+
+bool EqualsAfterUrlDecoding(std::string_view a, std::string_view b) {
+  if (a == b) {
+    // UrlUnescapeIterator is deterministic, so if they are the same before
+    // decoding they will also be the same afterwards.
+    return true;
+  }
+
+  if (!ContainsCharactersChangedByUnescaping(a) &&
+      !ContainsCharactersChangedByUnescaping(b)) {
+    return false;
+  }
+
+  return std::ranges::equal(MakeUrlUnescapeRange(a), MakeUrlUnescapeRange(b));
 }
 
 }  // namespace net
