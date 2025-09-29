@@ -44,12 +44,19 @@ void SessionRestoreInfobarController::MaybeShowInfoBar(
   model_ = std::make_unique<SessionRestoreInfobarModel>(profile, was_restarted,
                                                         is_post_crash_launch);
 
-  if (GetInfobarMessageType() == SessionRestoreInfoBarDelegate::
-                                     InfobarMessageType::kTurnOffFromRestart ||
-      GetInfobarMessageType() == SessionRestoreInfoBarDelegate::
-                                     InfobarMessageType::kTurnOffFromSession) {
+  if (GetInfobarMessageType() ==
+      SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromRestart) {
     if (profile.GetPrefs()->GetInteger(
-            prefs::kSessionRestoreInfoBarTimesShown) >= 1) {
+            prefs::kSessionRestoreTurnOffFromRestartInfoBarTimesShown) >=
+        kSessionRestoreInfoBarMaxOptOutTimesShown) {
+      return;
+    }
+  } else if (GetInfobarMessageType() ==
+             SessionRestoreInfoBarDelegate::InfobarMessageType::
+                 kTurnOffFromSession) {
+    if (profile.GetPrefs()->GetInteger(
+            prefs::kSessionRestoreTurnOffFromSessionInfoBarTimesShown) >=
+        kSessionRestoreInfoBarMaxOptOutTimesShown) {
       return;
     }
   } else if (InfoBarShownMaxTimes(profile.GetPrefs())) {
@@ -75,7 +82,7 @@ void SessionRestoreInfobarController::MaybeShowInfoBar(
 
   SessionRestoreInfoBarManager::GetInstance()->ShowInfoBar(
       profile, GetInfobarMessageType());
-  IncrementInfoBarShownCount(profile.GetPrefs());
+  IncrementInfoBarShownCount(profile.GetPrefs(), GetInfobarMessageType());
 }
 
 SessionRestoreInfobarController* SessionRestoreInfobarController::From(

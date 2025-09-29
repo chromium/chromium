@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_controller.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_prefs.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
@@ -175,6 +176,54 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
                l10n_util::GetStringUTF16(
                    IDS_SESSION_RESTORE_TURN_OFF_RESTORE_FROM_SESSION);
       }));
+}
+
+// Test that the session restore infobar is not shown after being shown max
+// times for the restart flow.
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
+                       InfobarNotShownMaxTimesForRestart) {
+  browser()->profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup, 1);
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kSessionRestoreTurnOffFromRestartInfoBarTimesShown,
+      kSessionRestoreInfoBarMaxOptOutTimesShown);
+
+  CreateInfobar(browser(), true, false);
+
+  RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
+}
+
+// Test that the session restore infobar is not shown after being shown max
+// times for the session flow.
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
+                       InfobarNotShownMaxTimesForSession) {
+  if (!IsDefaultContinueSession()) {
+    return;
+  }
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kSessionRestoreTurnOffFromSessionInfoBarTimesShown,
+      kSessionRestoreInfoBarMaxOptOutTimesShown);
+
+  CreateInfobar(browser(), false, false);
+
+  RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
+}
+
+// Test that the session restore infobar is not shown after being shown max
+// times for the default flow.
+IN_PROC_BROWSER_TEST_P(SessionRestoreInfobarInteractiveTest,
+                       InfobarNotShownMaxTimesForDefault) {
+  if (IsDefaultContinueSession()) {
+    return;
+  }
+
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kSessionRestoreInfoBarTimesShown,
+      kSessionRestoreInfoBarMaxTimesToShow);
+
+  CreateInfobar(browser(), true, false);
+
+  RunTestSequence(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId));
 }
 
 // Test that the session restore infobar is global and appears on all tabs.

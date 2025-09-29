@@ -97,7 +97,7 @@ SessionRestoreInfoBarDelegate::~SessionRestoreInfoBarDelegate() {
     } else {
       // The infobars with the message to turn off session restore will only be
       // displayed once and if no action is taken,
-      //  false will be recorded for no setting changed.
+      // false will be recorded for no setting changed.
       RecordSettingChanged(false, message_type_);
     }
   }
