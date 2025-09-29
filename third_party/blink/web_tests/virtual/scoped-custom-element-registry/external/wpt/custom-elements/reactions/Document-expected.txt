@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] importNode on Document must construct a new custom element when importing a custom element from a template
-  assert_array_equals: lengths differ, expected array ["constructed"] length 1, got [] length 0
-Harness: the test ran to completion.

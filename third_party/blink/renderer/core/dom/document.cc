@@ -1733,7 +1733,8 @@ Node* Document::importNode(Node* imported_node,
 Node* Document::importNode(Node* imported_node,
                            bool deep,
                            ExceptionState& exception_state) {
-  return importNode(imported_node, deep, nullptr, exception_state);
+  return importNode(imported_node, deep, customElementRegistry(),
+                    exception_state);
 }
 
 Node* Document::importNode(Node* imported_node,
