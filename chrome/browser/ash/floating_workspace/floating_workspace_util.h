@@ -12,18 +12,6 @@ class Profile;
 
 namespace ash::floating_workspace_util {
 
-enum class FloatingWorkspaceVersion {
-  // Default value, indicates no version was enabled.
-  kNoVersionEnabled = 0,
-
-  // Floating Workspace is fully enabled.
-  kFloatingWorkspaceV2Enabled = 1,
-
-  // FloatingWorkspaceService is to be used for automatic sign-out
-  // functionality, but not for app restore.
-  kAutoSignoutOnly = 2,
-};
-
 ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // DEPRECATED. Please use `IsFloatingWorkspaceEnabled` which takes the `profile`

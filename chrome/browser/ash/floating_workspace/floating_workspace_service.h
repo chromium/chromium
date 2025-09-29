@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
-#include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -32,7 +31,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_observer.h"
-#include "components/sync_device_info/device_info_sync_service.h"
 
 class Profile;
 
@@ -56,16 +54,13 @@ class FloatingWorkspaceService
       public ash::SystemTrayObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
-  explicit FloatingWorkspaceService(
-      Profile* profile,
-      floating_workspace_util::FloatingWorkspaceVersion version);
+  explicit FloatingWorkspaceService(Profile* profile);
 
   ~FloatingWorkspaceService() override;
 
   // Used in constructor for initializations
   void Init(syncer::SyncService* sync_service,
-            desks_storage::DeskSyncService* desk_sync_service,
-            syncer::DeviceInfoSyncService* device_info_sync_service);
+            desks_storage::DeskSyncService* desk_sync_service);
 
   // Get latest Floating Workspace Template from DeskSyncBridge.
   const DeskTemplate* GetLatestFloatingWorkspaceTemplate();
@@ -102,8 +97,7 @@ class FloatingWorkspaceService
   // active user session is changed back to the first logged in user.
   void SetUpServiceAndObservers(
       syncer::SyncService* sync_service,
-      desks_storage::DeskSyncService* desk_sync_service,
-      syncer::DeviceInfoSyncService* device_info_sync_service);
+      desks_storage::DeskSyncService* desk_sync_service);
 
   // Shuts down the observers and dependent services.
   // This will be called when the user session changes to a different user or
@@ -131,8 +125,7 @@ class FloatingWorkspaceService
   void OnAppRegistryCacheAdded(const AccountId& account_id) override;
 
   void InitImpl(syncer::SyncService* sync_service,
-                desks_storage::DeskSyncService* desk_sync_service,
-                syncer::DeviceInfoSyncService* device_info_sync_service);
+                desks_storage::DeskSyncService* desk_sync_service);
 
   // Start and Stop capturing and uploading the active desks.
   void StartCaptureAndUploadActiveDesk();
@@ -199,10 +192,6 @@ class FloatingWorkspaceService
   void RemoveAllPreviousDesksExceptActiveDesk(
       const base::Uuid& exclude_desk_uuid);
 
-  // Sign out of the current user session when we detect another active
-  // session after this service was started.
-  void MaybeSignOutOfCurrentSession();
-
   // Updates the `is_cache_ready_` status if all the required app types are
   // initialized.
   bool AreRequiredAppTypesInitialized();
@@ -216,13 +205,6 @@ class FloatingWorkspaceService
   // Returns true if we should exclude the `floating_workspace_template` from
   // consideration for either sign out or restore.
   bool ShouldExcludeTemplate(const DeskTemplate* floating_workspace_template);
-
-  // Called by local_device_info_provider when it is ready.
-  void OnLocalDeviceInfoProviderReady();
-
-  // Updates the local device info with the new floating workspace recent signin
-  // time.
-  void UpdateLocalDeviceInfo();
 
   // Check if we should wait for cookies to be synced before restoring the
   // workspace. If yes, it will set the callback for Floating SSO code to
@@ -257,8 +239,6 @@ class FloatingWorkspaceService
 
   const raw_ptr<Profile> profile_;
 
-  const floating_workspace_util::FloatingWorkspaceVersion version_;
-
   base::CallbackListSubscription foreign_session_updated_subscription_;
 
   // Flag to determine if we should run the restore.
@@ -284,10 +264,6 @@ class FloatingWorkspaceService
   // Time when the service is initialized.
   base::TimeTicks initialization_timeticks_;
 
-  // Time when service is initialized in base::Time format for comparison with
-  // desk template time.
-  base::Time initialization_time_;
-
   // Time when sync data becomes available for the first time.
   std::optional<base::TimeTicks> first_sync_data_downloaded_timeticks_;
 
@@ -309,10 +285,6 @@ class FloatingWorkspaceService
   raw_ptr<desks_storage::DeskSyncService> desk_sync_service_ = nullptr;
 
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
-
-  raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_ = nullptr;
-
-  base::CallbackListSubscription local_device_info_ready_subscription_;
 
   // The uuid associated with this device's floating workspace template. This is
   // populated when we first capture a floating workspace template.

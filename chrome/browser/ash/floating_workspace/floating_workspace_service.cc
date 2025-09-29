@@ -39,7 +39,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -59,10 +58,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "components/sync_device_info/device_info.h"
-#include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/device_info_tracker.h"
-#include "components/sync_device_info/local_device_info_provider.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
 namespace {
@@ -85,17 +80,9 @@ namespace ash {
 // Default time without activity after which a floating workspace template is
 // considered stale and becomes a candidate for garbage collection.
 constexpr base::TimeDelta kStaleFWSThreshold = base::Days(30);
-// Minimum time to wait before we decide to show the progress status if no
-// floating workspace templates have been downloaded yet.
-constexpr base::TimeDelta kMinTimeToWait = base::Seconds(2);
 
-FloatingWorkspaceService::FloatingWorkspaceService(
-    Profile* profile,
-    floating_workspace_util::FloatingWorkspaceVersion version)
-    : profile_(profile),
-      version_(version),
-      initialization_timeticks_(base::TimeTicks::Now()),
-      initialization_time_(base::Time::Now()) {}
+FloatingWorkspaceService::FloatingWorkspaceService(Profile* profile)
+    : profile_(profile), initialization_timeticks_(base::TimeTicks::Now()) {}
 
 FloatingWorkspaceService::~FloatingWorkspaceService() {
   StopCaptureAndUploadActiveDesk();
@@ -140,18 +127,6 @@ void FloatingWorkspaceService::ScheduleShowingNetworkScreen() {
 }
 
 void FloatingWorkspaceService::InitiateSigninTask() {
-  syncer::LocalDeviceInfoProvider* local_device_info_provider =
-      (device_info_sync_service_->GetLocalDeviceInfoProvider());
-  if (!local_device_info_provider->GetLocalDeviceInfo()) {
-    local_device_info_ready_subscription_ =
-        local_device_info_provider->RegisterOnInitializedCallback(
-            base::BindRepeating(
-                &FloatingWorkspaceService::OnLocalDeviceInfoProviderReady,
-                weak_pointer_factory_.GetWeakPtr()));
-  } else {
-    UpdateLocalDeviceInfo();
-  }
-
   if (should_run_restore_) {
     // It is possible that all relevant Sync state changes happened before
     // this method was called (e.g. it often happens in the wake-up flow while
@@ -166,24 +141,11 @@ void FloatingWorkspaceService::InitiateSigninTask() {
 // TODO(b/309137462): Clean up params to not need to be passed in.
 void FloatingWorkspaceService::Init(
     syncer::SyncService* sync_service,
-    desks_storage::DeskSyncService* desk_sync_service,
-    syncer::DeviceInfoSyncService* device_info_sync_service) {
+    desks_storage::DeskSyncService* desk_sync_service) {
   if (ash::SessionController::Get()) {
     ash::SessionController::Get()->AddObserver(this);
   }
-
-  if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
-                      kFloatingWorkspaceV2Enabled &&
-      floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
-    InitImpl(sync_service, desk_sync_service, device_info_sync_service);
-    return;
-  }
-
-  if (version_ ==
-      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
-    should_run_restore_ = false;
-    InitImpl(sync_service, desk_sync_service, device_info_sync_service);
-  }
+  InitImpl(sync_service, desk_sync_service);
 }
 
 void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
@@ -194,7 +156,6 @@ void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
     return;
   }
   if (!should_run_restore_) {
-    MaybeSignOutOfCurrentSession();
     return;
   }
   syncer::UploadState workspace_upload_state = syncer::GetUploadToGoogleState(
@@ -362,14 +323,12 @@ void FloatingWorkspaceService::SuspendDone(base::TimeDelta sleep_duration) {
   restore_upon_wake_ = true;
   // Setting initialization time here is important to avoid unintended
   // automatic sign-out when device wakes up on the lock screen.
-  initialization_time_ = base::Time::Now();
   initialization_timeticks_ = base::TimeTicks::Now();
 }
 
 void FloatingWorkspaceService::InitImpl(
     syncer::SyncService* sync_service,
-    desks_storage::DeskSyncService* desk_sync_service,
-    syncer::DeviceInfoSyncService* device_info_sync_service) {
+    desks_storage::DeskSyncService* desk_sync_service) {
   // Disable floating workspace action in safe mode.
   if (floating_workspace_util::IsSafeMode()) {
     LOG(WARNING) << "Floating workspace disabled in safe mode.";
@@ -379,8 +338,7 @@ void FloatingWorkspaceService::InitImpl(
   }
   floating_workspace_metrics_util::
       RecordFloatingWorkspaceV2InitializedHistogram();
-  SetUpServiceAndObservers(sync_service, desk_sync_service,
-                           device_info_sync_service);
+  SetUpServiceAndObservers(sync_service, desk_sync_service);
   InitiateSigninTask();
 }
 
@@ -480,10 +438,6 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDesk() {
   if (should_run_restore_) {
     // A safeguard in case the capture was triggered while we are waiting to
     // restore the session.
-    return;
-  }
-  if (version_ ==
-      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
     return;
   }
   GetDesksClient()->CaptureActiveDesk(
@@ -827,90 +781,6 @@ void FloatingWorkspaceService::RemoveAllPreviousDesksExceptActiveDesk(
   }
 }
 
-void FloatingWorkspaceService::MaybeSignOutOfCurrentSession() {
-  base::TimeDelta time_delta =
-      ui::UserActivityDetector::Get()->last_activity_time() -
-      initialization_timeticks_;
-  if (sync_service_->GetDownloadStatusFor(syncer::DataType::DEVICE_INFO) ==
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
-    std::vector<const syncer::DeviceInfo*> all_devices =
-        device_info_sync_service_->GetDeviceInfoTracker()->GetAllDeviceInfo();
-
-    // Sort the DeviceInfo vector so the most recently modified devices are
-    // first.
-    std::sort(all_devices.begin(), all_devices.end(),
-              [](const syncer::DeviceInfo* device1,
-                 const syncer::DeviceInfo* device2) {
-                return device1->auto_sign_out_last_signin_timestamp().value_or(
-                           base::Time()) >
-                       device2->auto_sign_out_last_signin_timestamp().value_or(
-                           base::Time());
-              });
-    // Checks if the most recently modified devices are after this device's last
-    // active timestamp.
-    for (const syncer::DeviceInfo* device : all_devices) {
-      // If the timestamp is older than the current timestamp or the entry is
-      // nullopt, then any other devices afterwards are older, so we can stop
-      // here.
-      if (!device->auto_sign_out_last_signin_timestamp().has_value() ||
-          device->auto_sign_out_last_signin_timestamp().value() <
-              initialization_time_ +
-                  (time_delta.is_positive() ? time_delta : base::Seconds(0)) +
-                  kMinTimeToWait) {
-        break;
-      }
-      // Skip current device info.
-      if (device_info_sync_service_->GetDeviceInfoTracker()
-              ->IsRecentLocalCacheGuid(device->guid())) {
-        continue;
-      }
-      // We log out if we reach this part of the loop. We only reach here when:
-      // 1) the device info is not for the current device and 2) the last active
-      // timestamp is after the last user activity on this device.
-      ash::Shell::Get()->session_controller()->RequestSignOut();
-      return;
-    }
-  }
-
-  if (version_ ==
-      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
-    // In `kAutoSignoutOnly` mode, we can rely only on the device info
-    // timestamp which was handled above.
-    return;
-  }
-
-  // As a final resort, if we could not logout via the device info, or
-  // floating workspace entries came first before the device info, use
-  // floating workspace entries to determine if we should logout.
-  if (sync_service_->GetDownloadStatusFor(syncer::DataType::WORKSPACE_DESK) !=
-      syncer::SyncService::DataTypeDownloadStatus::kUpToDate) {
-    return;
-  }
-  auto* latest_floating_workspace = GetLatestFloatingWorkspaceTemplate();
-
-  if (latest_floating_workspace == nullptr) {
-    return;
-  }
-  // Checks if the latest uploaded floating workspace template is a captured
-  // template from this device and sign out of this session if it is not.
-  // Note: we are comparing the last activity time for the user here with the
-  // template that we just got. Since `last_activity_time` is in timeticks and
-  // the template time is in time, we need to do some manually conversion with
-  // Time. Note: this time_delta is strictly > 0 but can be smaller than wall
-  // clock time difference. Some additional time buffer (using the 30s from
-  // the periodic capture job) is added to account for clock drifts from
-  // device to device.
-  if (latest_floating_workspace->client_cache_guid() !=
-          desk_sync_service_->GetDeskModel()->GetCacheGuid() &&
-      latest_floating_workspace->GetLastUpdatedTime() >
-          initialization_time_ +
-              (time_delta.is_positive() ? time_delta : base::Seconds(0)) +
-              ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds
-                  .Get()) {
-    ash::Shell::Get()->session_controller()->RequestSignOut();
-  }
-}
-
 void FloatingWorkspaceService::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   // Set the cache readiness to false. If this is happening, then it's very
@@ -972,10 +842,8 @@ void FloatingWorkspaceService::OnActiveUserSessionChanged(
   if (active_profile != profile_) {
     ShutDownServicesAndObservers();
   } else {
-    SetUpServiceAndObservers(
-        SyncServiceFactory::GetForProfile(profile_),
-        DeskSyncServiceFactory::GetForProfile(profile_),
-        DeviceInfoSyncServiceFactory::GetForProfile(profile_));
+    SetUpServiceAndObservers(SyncServiceFactory::GetForProfile(profile_),
+                             DeskSyncServiceFactory::GetForProfile(profile_));
   }
 }
 
@@ -993,13 +861,9 @@ void FloatingWorkspaceService::OnLockStateChanged(bool locked) {
   // sleep mode. Reset initialization times and start the flow as if the user
   // has just logged in.
   if (!locked && restore_upon_wake_) {
-    if (version_ == floating_workspace_util::FloatingWorkspaceVersion::
-                        kFloatingWorkspaceV2Enabled) {
-      should_run_restore_ = true;
-      launch_on_new_desk_ = true;
-    }
+    should_run_restore_ = true;
+    launch_on_new_desk_ = true;
     restore_upon_wake_ = false;
-    initialization_time_ = base::Time::Now();
     initialization_timeticks_ = base::TimeTicks::Now();
     InitiateSigninTask();
   }
@@ -1013,27 +877,6 @@ void FloatingWorkspaceService::OnFocusLeavingSystemTray(bool reverse) {}
 
 void FloatingWorkspaceService::OnSystemTrayBubbleShown() {
   CaptureAndUploadActiveDesk();
-}
-
-void FloatingWorkspaceService::OnLocalDeviceInfoProviderReady() {
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FloatingWorkspaceService::UpdateLocalDeviceInfo,
-                     weak_pointer_factory_.GetWeakPtr()));
-}
-
-void FloatingWorkspaceService::UpdateLocalDeviceInfo() {
-  if (!device_info_sync_service_ ||
-      !device_info_sync_service_->GetLocalDeviceInfoProvider() ||
-      !device_info_sync_service_->GetLocalDeviceInfoProvider()
-           ->GetLocalDeviceInfo()) {
-    return;
-  }
-  syncer::MutableLocalDeviceInfoProvider* local_device_info_provider =
-      static_cast<syncer::MutableLocalDeviceInfoProvider*>(
-          device_info_sync_service_->GetLocalDeviceInfoProvider());
-  local_device_info_provider->UpdateRecentSignInTime(initialization_time_);
-  device_info_sync_service_->RefreshLocalDeviceInfo();
 }
 
 void FloatingWorkspaceService::ShutDownServicesAndObservers() {
@@ -1068,11 +911,9 @@ void FloatingWorkspaceService::ShutDownServicesAndObservers() {
 
 void FloatingWorkspaceService::SetUpServiceAndObservers(
     syncer::SyncService* sync_service,
-    desks_storage::DeskSyncService* desk_sync_service,
-    syncer::DeviceInfoSyncService* device_info_sync_service) {
+    desks_storage::DeskSyncService* desk_sync_service) {
   sync_service_ = sync_service;
   desk_sync_service_ = desk_sync_service;
-  device_info_sync_service_ = device_info_sync_service;
   tab_sync_enabled_ = sync_service_->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kTabs);
   if (!tab_sync_enabled_) {
@@ -1099,13 +940,6 @@ void FloatingWorkspaceService::SetUpServiceAndObservers(
   }
   if (chromeos::PowerManagerClient::Get()) {
     chromeos::PowerManagerClient::Get()->AddObserver(this);
-  }
-
-  if (version_ ==
-      floating_workspace_util::FloatingWorkspaceVersion::kAutoSignoutOnly) {
-    // No need to observe apps and scheduling the capture task when we are only
-    // interested in automatic sign-out, so we exit here.
-    return;
   }
 
   // If we don't have an apps cache then we observe the wrapper to
