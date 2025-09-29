@@ -128,10 +128,9 @@ enum class IdentityConfirmationSnackbarDecision {
 - (IdentityConfirmationSnackbarDecision)
     shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   ProfileIOS* profile = browser->GetProfile();
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(profile);
-  if (!authenticationService->HasPrimaryIdentity(
-          signin::ConsentLevel::kSignin)) {
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
 
@@ -141,6 +140,8 @@ enum class IdentityConfirmationSnackbarDecision {
     return IdentityConfirmationSnackbarDecision::kDontShowSingleAccount;
   }
 
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
   // For non-managed accounts, show the snackbar only on top of Bling Start.
   if (!authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin) &&
