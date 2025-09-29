@@ -260,7 +260,7 @@ declare_args() {
   # outside of Chromium.
   use_asan_backup_ref_ptr =
       build_with_chromium && is_asan &&
-      (is_win || is_android || is_linux || is_apple || is_chromeos)
+      (is_win || is_android || is_linux || is_mac || is_chromeos)
 
   # Use probe-on-destruct unowned ptr detection with ASAN.
   use_raw_ptr_asan_unowned_impl = false
