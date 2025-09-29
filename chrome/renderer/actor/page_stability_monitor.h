@@ -64,18 +64,16 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   enum class State {
     kInitial,
 
-    // Navigation committed before waiting.
-    kInitialWithCommittedNavigation,
-
     // If a tool specifies an execution delay, wait in this state before
     // starting monitoring.
     kMonitorStartDelay,
 
+    // Before starting the monitor, if a navigation is in-progress, wait for it
+    // to commit or fail.
+    kWaitForNavigation,
+
     // Entry point into the state machine. Decides which state to start in.
     kStartMonitoring,
-
-    // A navigation was started, wait for it to commit or cancel.
-    kWaitForNavigation,
 
     // Wait until all network requests complete.
     kWaitForNetworkIdle,
@@ -95,13 +93,16 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // passed to NotifyWhenStable() will be delayed by said amount of time.
     kMaybeDelayCallback,
 
+    // The monitor wants to invoke the callback but the client hasn't yet
+    // requested to wait for the notification.
+    kInvokedBeforeNotify,
+
     // Invoke the callback passed to NotifyWhenStable and cleanup.
     kInvokeCallback,
 
-    // Navigation states - these just move to MaybeDelayCallback or
-    // InvokeCallback state.
-    kNavigationCommitted,
-    kNavigationFailed,
+    // The render frame is about to be deleted (e.g. because of a navigation to
+    // a new RenderFrame).
+    kRenderFrameGoingAway,
 
     // The `paint_stability_monitor_` has determined that paint stability has
     // been reached. This just moves to kInokeCallback.
@@ -137,6 +138,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   void OnPaintStabilityReached();
 
   void OnMojoDisconnected();
+
+  void Cleanup();
 
   // The number of active network requests at the time this object was
   // initialized. Used to compare to the number of requests after monitoring

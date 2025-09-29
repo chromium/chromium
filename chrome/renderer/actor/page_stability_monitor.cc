@@ -78,29 +78,30 @@ PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
 }
 
 PageStabilityMonitor::~PageStabilityMonitor() {
-  start_monitoring_delayed_handle_.CancelTask();
+  // If we have a callback, ensure it replies now.
+  MoveToState(State::kRenderFrameGoingAway);
+  Cleanup();
 }
 
 void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
                                             NotifyWhenStableCallback callback) {
   CHECK(!is_stable_callback_);
+  is_stable_callback_ = std::move(callback);
+
+  // It's possible that a navigation has been committed before NotifyWhenStable
+  // has been called, requesting the callback be invoked. Do so now.
+  if (state_ == State::kInvokedBeforeNotify) {
+    MoveToState(State::kInvokeCallback);
+    return;
+  }
+
+  CHECK_EQ(state_, State::kInitial);
 
   // This will end the PageStabilityInitial entry and start a new one.
   journal_entry_.reset();
   journal_entry_ = journal_->CreatePendingAsyncEntry(
       task_id_, "PageStability",
       JournalDetailsBuilder().Add("state", state_).Build());
-  is_stable_callback_ = std::move(callback);
-
-  // It's possible that the navigation has been committed before
-  // NotifyWhenStable has been called.
-  CHECK(state_ == State::kInitial ||
-        state_ == State::kInitialWithCommittedNavigation);
-
-  if (state_ == State::kInitialWithCommittedNavigation) {
-    MoveToState(State::kNavigationCommitted);
-    return;
-  }
 
   monitoring_start_delay_ = observation_delay;
 
@@ -116,40 +117,29 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   // If a same-RenderFrame navigation was committed a new document will be
   // loaded so finish observing the page. (loading is observed from the browser
-  // process). Also we intentionally don't observe
-  // `DidFinishSameDocumentNavigation()` and just wait for page stability for
-  // same-document navigations.
+  // process). Also we intentionally don't do this for
+  // `DidFinishSameDocumentNavigation()` since that appears instant to
+  // browser-side load observation and we do want to wait for page stability in
+  // same-document navigations. Note: This can probably be removed once
+  // RenderDocument ships everywhere.
 
-  // As we may not clean up PageStabilityMonitor, this may happen after `kDone`.
+  // As we may not destroy PageStabilityMonitor, this may happen after `kDone`.
   if (state_ == State::kDone) {
     return;
   }
-
-  CHECK(journal_entry_);
 
   journal_entry_->Log(
       "DidCommitProvisionalLoad",
       JournalDetailsBuilder()
           .Add("transition", PageTransitionGetCoreTransitionString(transition))
           .Build());
-  start_monitoring_delayed_handle_.CancelTask();
-  paint_stability_monitor_.reset();
-
-  // Note that this could happen before NotifyWhenStable has been called.
-  if (state_ == State::kInitial) {
-    MoveToState(State::kInitialWithCommittedNavigation);
-  } else {
-    MoveToState(State::kNavigationCommitted);
-  }
+  MoveToState(State::kRenderFrameGoingAway);
 }
 
 void PageStabilityMonitor::DidFailProvisionalLoad() {
   if (state_ == State::kWaitForNavigation) {
-    // TODO(b/436573891): Should this go back to `kStartMonitoring`?
-    journal_entry_->EndEntry(
-        JournalDetailsBuilder().AddError("DidFailProvisionalLoad").Build());
-    paint_stability_monitor_.reset();
-    MoveToState(State::kNavigationFailed);
+    journal_entry_->Log("DidFailProvisionalLoad", {});
+    MoveToState(State::kStartMonitoring);
   }
 }
 
@@ -171,10 +161,6 @@ void PageStabilityMonitor::MoveToState(State new_state) {
     case State::kInitial: {
       NOTREACHED();
     }
-    case State::kInitialWithCommittedNavigation: {
-      // Do nothing - the state will change from NotifyWhenStable.
-      break;
-    }
     case State::kMonitorStartDelay: {
       journal_entry_->Log(
           "MonitorStartDelay",
@@ -182,9 +168,19 @@ void PageStabilityMonitor::MoveToState(State new_state) {
               .Add("delay", monitoring_start_delay_.InMilliseconds())
               .Build());
       start_monitoring_delayed_handle_ =
-          PostCancelableMoveToStateClosure(State::kStartMonitoring,
+          PostCancelableMoveToStateClosure(State::kWaitForNavigation,
                                            monitoring_start_delay_)
               .Run();
+      break;
+    }
+    case State::kWaitForNavigation: {
+      if (!render_frame()->IsRequestingNavigation()) {
+        MoveToState(State::kStartMonitoring);
+        break;
+      }
+      // Do nothing - will advance to the next state from
+      // DidCommit|FailProvisionalLoad.
+      journal_entry_->Log("WaitingForNavigation");
       break;
     }
     case State::kStartMonitoring: {
@@ -192,37 +188,26 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       int after_request_count = document.ActiveResourceRequestCount();
 
       State next_state;
-      if (render_frame()->IsRequestingNavigation()) {
-        journal_entry_->Log("WaitForNavigation");
-        next_state = State::kWaitForNavigation;
-        // If there's a pending navigation, don't monitor paint stability, since
-        // commit/fail is the signal we want to use.
-        paint_stability_monitor_.reset();
+
+      // Race paint stability with network/thread stability, if paint
+      // stability is supported.
+      if (paint_stability_monitor_) {
+        paint_stability_monitor_->WaitForStable(
+            base::BindOnce(&PageStabilityMonitor::OnPaintStabilityReached,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
+      if (after_request_count > starting_request_count_) {
+        journal_entry_->Log("WaitForNetworkIdle",
+                            JournalDetailsBuilder()
+                                .Add("requests", after_request_count)
+                                .Build());
+        next_state = State::kWaitForNetworkIdle;
       } else {
-        // Race paint stability with network/thread stability, if paint
-        // stability is supported.
-        if (paint_stability_monitor_) {
-          paint_stability_monitor_->WaitForStable(
-              base::BindOnce(&PageStabilityMonitor::OnPaintStabilityReached,
-                             weak_ptr_factory_.GetWeakPtr()));
-        }
-        if (after_request_count > starting_request_count_) {
-          journal_entry_->Log("WaitForNetworkIdle",
-                              JournalDetailsBuilder()
-                                  .Add("requests", after_request_count)
-                                  .Build());
-          next_state = State::kWaitForNetworkIdle;
-        } else {
-          journal_entry_->Log("WaitForMainThreadIdle");
-          next_state = State::kWaitForMainThreadIdle;
-        }
+        journal_entry_->Log("WaitForMainThreadIdle");
+        next_state = State::kWaitForMainThreadIdle;
       }
 
       MoveToState(next_state);
-      break;
-    }
-    case State::kWaitForNavigation: {
-      // Do nothing - the state will change from DidCommit|FailProvisionalLoad
       break;
     }
     case State::kWaitForNetworkIdle: {
@@ -288,15 +273,27 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       }
       break;
     }
+    case State::kInvokedBeforeNotify: {
+      // Do nothing - this will be moved from NotifyWhenStable.
+      break;
+    }
     case State::kInvokeCallback: {
+      // If we don't yet have a callback it's because NotifyWhenStable hasn't
+      // been called yet (NavigationCommitted can occur before then). If this
+      // happens, just move to kDone; the callback will invoke when it is
+      // called.
+      if (!is_stable_callback_) {
+        MoveToState(State::kInvokedBeforeNotify);
+        break;
+      }
       // Ensure we release the network and main thread idle callback slots.
       network_idle_callback_.Cancel();
       main_thread_idle_callback_.Cancel();
       if (receiver_.is_bound()) {
         // It's important to run the callback synchronously so a mojo reply is
-        // sent before disconnect. This is because we reset the receiver when
-        // moving to kDone. Once GeneralPageStability is enabled the mojo is the
-        // only caller so we can always invoke synchronously.
+        // sent before disconnect. If done from the state machine we reset the
+        // receiver when moving to kDone. Once GeneralPageStability is enabled
+        // the mojo is the only caller so we can always invoke synchronously.
         std::move(is_stable_callback_).Run();
       } else {
         // This path is only used when the monitor is called from the renderer
@@ -309,11 +306,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       MoveToState(State::kDone);
       break;
     }
-    case State::kNavigationCommitted: {
-      MoveToState(State::kMaybeDelayCallback);
-      break;
-    }
-    case State::kNavigationFailed: {
+    case State::kRenderFrameGoingAway: {
       MoveToState(State::kInvokeCallback);
       break;
     }
@@ -322,13 +315,20 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     case State::kDone: {
       CHECK(!is_stable_callback_);
-      // As we may not clean up PageStabilityMonitor, clean up here.
-      receiver_.reset();
-      paint_stability_monitor_.reset();
-      journal_entry_.reset();
+      // As we may not destroy PageStabilityMonitor, clean up here.
+      Cleanup();
       break;
     }
   }
+}
+
+void PageStabilityMonitor::Cleanup() {
+  network_idle_callback_.Cancel();
+  main_thread_idle_callback_.Cancel();
+  start_monitoring_delayed_handle_.CancelTask();
+  receiver_.reset();
+  paint_stability_monitor_.reset();
+  journal_entry_.reset();
 }
 
 base::OnceClosure PageStabilityMonitor::MoveToStateClosure(State new_state) {
@@ -381,40 +381,38 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
   static const base::NoDestructor<base::StateTransitions<State>> transitions(
       base::StateTransitions<State>({
           // clang-format off
-          {State::kInitial,
-              {State::kMonitorStartDelay,
-               State::kInitialWithCommittedNavigation}},
-          {State::kInitialWithCommittedNavigation, {
-              State::kNavigationCommitted}},
+          {State::kInitial, {
+              State::kMonitorStartDelay,
+              State::kRenderFrameGoingAway}},
           {State::kMonitorStartDelay, {
+              State::kWaitForNavigation,
+              State::kTimeoutGlobal,
+              State::kRenderFrameGoingAway}},
+          {State::kWaitForNavigation, {
               State::kStartMonitoring,
               State::kTimeoutGlobal,
-              State::kNavigationCommitted}},
+              State::kRenderFrameGoingAway}},
           {State::kStartMonitoring, {
-              State::kWaitForNavigation,
               State::kWaitForNetworkIdle,
               State::kWaitForMainThreadIdle}},
-          {State::kWaitForNavigation, {
-              State::kNavigationCommitted,
-              State::kNavigationFailed,
-              State::kTimeoutGlobal}},
           {State::kWaitForNetworkIdle, {
               State::kWaitForMainThreadIdle,
               State::kPaintStabilityReached,
               State::kTimeoutGlobal,
-              State::kNavigationCommitted}},
+              State::kRenderFrameGoingAway}},
           {State::kWaitForMainThreadIdle, {
               State::kWaitForVisualStateRequest,
               State::kPaintStabilityReached,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
-              State::kNavigationCommitted}},
+              State::kRenderFrameGoingAway}},
           {State::kWaitForVisualStateRequest, {
               State::kPaintStabilityReached,
               State::kMaybeDelayCallback,
               State::kInvokeCallback,
               State::kTimeoutMainThread,
-              State::kTimeoutGlobal}},
+              State::kTimeoutGlobal,
+              State::kRenderFrameGoingAway}},
           {State::kTimeoutMainThread, {
               State::kInvokeCallback}},
           {State::kTimeoutGlobal, {
@@ -424,14 +422,16 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kInvokeCallback,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
-              State::kNavigationCommitted}},
-          {State::kNavigationCommitted, {
-              State::kMaybeDelayCallback}},
-          {State::kNavigationFailed, {
+              State::kRenderFrameGoingAway}},
+          {State::kInvokedBeforeNotify, {
+              State::kInvokeCallback,
+              State::kRenderFrameGoingAway}},
+          {State::kRenderFrameGoingAway, {
               State::kInvokeCallback}},
           {State::kPaintStabilityReached, {
               State::kInvokeCallback}},
           {State::kInvokeCallback, {
+              State::kInvokedBeforeNotify,
               State::kDone}}
 
           // kDone can be entered after various tasks are posted but before
