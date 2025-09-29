@@ -72,7 +72,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 // Returns YES if the user is signIn.
 - (BOOL)isSignIn {
-  return _authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 // Returns YES if account is eligible for model execution.
