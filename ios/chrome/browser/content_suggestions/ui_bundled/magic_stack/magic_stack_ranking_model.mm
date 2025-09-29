@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/check.h"
+#import "base/containers/contains.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
@@ -95,13 +96,15 @@ namespace {
 // of 3 impressions and an impression only counts if the card is at the
 // front of the Magic Stack.
 BOOL PromoteShopCardToFrontOfStack() {
-  return (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+  return (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1) ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) &&
          commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
 }
 
 BOOL PromoteTabResumptionShopCardToFrontOfStack() {
-  return (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+  return (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm3) ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
           commerce::kShopCardVariation.Get() == commerce::kShopCardArm5) &&
          commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
@@ -797,7 +800,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   inputContext->metadata_args.emplace(
       segmentation_platform::kNumPriceDropsInShoppingList,
       segmentation_platform::processing::ProcessedValue::FromFloat(-1.0f));
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+  if (base::Contains(commerce::kShopCardVariation.Get(),
+                     commerce::kShopCardArm1)) {
     __weak MagicStackRankingModel* weakSelf = self;
     GetAllPriceTrackedBookmarks(
         _shoppingService, _bookmarkModel,

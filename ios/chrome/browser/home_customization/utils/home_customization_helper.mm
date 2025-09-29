@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 
+#import "base/containers/contains.h"
 #import "base/notreached.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -38,7 +39,8 @@
     case CustomizationToggleType::kTips:
       return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     case CustomizationToggleType::kShopCard:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS);
       } else if (commerce::kShopCardVariation.Get() ==
@@ -77,7 +79,8 @@
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TIPS);
     case CustomizationToggleType::kShopCard:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_PRICE_TRACKING_CUSTOMIZE_CARDS_SUBTITLE);
       } else if (commerce::kShopCardVariation.Get() ==
@@ -118,7 +121,8 @@
       UIImageSymbolConfiguration* fallbackImageConfig =
           [UIImageSymbolConfiguration
               configurationWithWeight:UIImageSymbolWeightLight];
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         return CustomSymbolWithConfiguration(kDownTrendSymbol,
                                              fallbackImageConfig);
       } else if (commerce::kShopCardVariation.Get() ==
@@ -152,7 +156,8 @@
     case CustomizationToggleType::kTips:
       return kCustomizationToggleTipsIdentifier;
     case CustomizationToggleType::kShopCard:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         return kCustomizationToggleShopCardPriceTrackingIdentifier;
       } else if (commerce::kShopCardVariation.Get() ==
                  commerce::kShopCardArm2) {

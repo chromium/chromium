@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/contains.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -409,7 +410,8 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_priceTrackingPromoMediator];
   }
   if (base::FeatureList::IsEnabled(commerce::kShopCard) &&
-      (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+      (base::Contains(commerce::kShopCardVariation.Get(),
+                      commerce::kShopCardArm1) ||
        commerce::kShopCardVariation.Get() == commerce::kShopCardArm2)) {
     // If ShopCard experiment is on, create the ShopCard mediator.
     // Note at this point we don't know which of the 4 variants will show.
@@ -884,7 +886,8 @@ using segmentation_platform::TipIdentifier;
       [self showMagicStackRecentTabs];
       break;
     case ContentSuggestionsModuleType::kShopCard:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         id<PriceTrackedItemsCommands> priceNotificationsCommands =
             HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                PriceTrackedItemsCommands);

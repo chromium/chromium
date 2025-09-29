@@ -6,6 +6,7 @@
 
 #import <optional>
 
+#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_macros.h"
@@ -146,7 +147,8 @@ int GetImpressionLimit() {
 }
 
 - (void)fetchLatestShopCardItem {
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 &&
+  if (base::Contains(commerce::kShopCardVariation.Get(),
+                     commerce::kShopCardArm1) &&
       !_prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)) {
     return;
@@ -157,7 +159,8 @@ int GetImpressionLimit() {
     return;
   }
 
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+  if (base::Contains(commerce::kShopCardVariation.Get(),
+                     commerce::kShopCardArm1)) {
     _shoppingDataForShopCardFound = false;
     __weak ShopCardMediator* weakSelf = self;
 
@@ -234,7 +237,8 @@ int GetImpressionLimit() {
   _shopCardItem.shopCardFaviconConsumerSource = self;
   _shopCardItem.shopCardData.shopCardItemType =
       ShopCardItemType::kPriceDropForTrackedProducts;
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+  if (base::Contains(commerce::kShopCardVariation.Get(),
+                     commerce::kShopCardArm1)) {
     _shopCardItem.shouldShowSeeMore = YES;
   }
   PriceDrop priceDrop;
@@ -330,7 +334,8 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 #pragma mark - Public
 - (void)disableModule {
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+  if (base::Contains(commerce::kShopCardVariation.Get(),
+                     commerce::kShopCardArm1)) {
     _prefService->SetBoolean(
         prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
   }

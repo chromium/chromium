@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container.h"
 
+#import "base/containers/contains.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
@@ -459,7 +460,8 @@ const CGFloat kSeparatorHeight = 0.5;
                                              config:(MagicStackModule*)config {
   switch (type) {
     case ContentSuggestionsModuleType::kShopCard: {
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         ShopCardItem* shopCardItem = static_cast<ShopCardItem*>(config);
         _seeMoreButton.accessibilityLabel = [@[
           _seeMoreButton.titleLabel.text, shopCardItem.shopCardData.productTitle

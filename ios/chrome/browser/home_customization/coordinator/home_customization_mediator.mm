@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
 
+#import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
@@ -86,7 +87,8 @@
         {CustomizationToggleType::kTips,
          [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]});
   }
-  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+  if (base::Contains(commerce::kShopCardVariation.Get(),
+                     commerce::kShopCardArm1) ||
       commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
     toggleMap.insert({CustomizationToggleType::kShopCard,
                       [self isMagicStackCardEnabledForType:
@@ -132,7 +134,8 @@
           prefs::kHomeCustomizationMagicStackTipsEnabled);
     }
     case CustomizationToggleType::kShopCard:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         return _prefService->GetBoolean(
             prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled);
       } else if (commerce::kShopCardVariation.Get() ==
@@ -186,7 +189,8 @@
       break;
     }
     case CustomizationToggleType::kShopCard:
-      if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1) {
+      if (base::Contains(commerce::kShopCardVariation.Get(),
+                         commerce::kShopCardArm1)) {
         _prefService->SetBoolean(
             prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled,
             enabled);
