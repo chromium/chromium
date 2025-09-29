@@ -10,7 +10,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
@@ -134,7 +133,8 @@ class BASE_EXPORT WaitableEvent {
   //
   // If more than one WaitableEvent is signaled to unblock WaitMany, the lowest
   // index among them is returned.
-  NOT_TAIL_CALLED static size_t WaitMany(span<WaitableEvent*> waitables);
+  NOT_TAIL_CALLED static size_t WaitMany(WaitableEvent** waitables,
+                                         size_t count);
 
   // For asynchronous waiting, see WaitableEventWatcher
 

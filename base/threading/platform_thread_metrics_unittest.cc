@@ -111,7 +111,7 @@ class MetricsTestThread final : public SimpleThread {
     std::array<WaitableEvent*, 2> events{&do_busy_work_event_, &stop_event_};
     while (!stop_event_.IsSignaled()) {
       // WaitMany returns the lowest index among signaled events.
-      if (WaitableEvent::WaitMany(events) == 0) {
+      if (WaitableEvent::WaitMany(events.data(), events.size()) == 0) {
         // DoBusyWork() waits on `done_busy_work_event_` so it should be
         // impossible to signal `stop_event_` too.
         ASSERT_FALSE(stop_event_.IsSignaled());
