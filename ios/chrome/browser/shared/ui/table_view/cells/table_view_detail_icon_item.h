@@ -103,6 +103,10 @@ enum class BadgeType {
      backgroundColor:(UIColor*)backgroundColor
         cornerRadius:(CGFloat)cornerRadius;
 
+// Initializes the detailTextLabel. Useful for setting the attributedString
+// property.
+- (void)createDetailTextLabel;
+
 // Sets the detail text. `detailText` can be nil (or empty) to hide the detail
 // text.
 - (void)setDetailText:(NSString*)detailText;

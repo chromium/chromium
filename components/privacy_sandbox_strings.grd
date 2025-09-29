@@ -399,6 +399,16 @@
       <message name="IDS_TRACKING_PROTECTIONS_PAGE_ACTION_PROTECTIONS_ENABLED_LABEL" desc="Label in the Page Action (omnibox) icon indicating that tracking protections are enabled on the current site.">
         Tracking protections enabled
       </message>
+      <!-- Site Info (iOS) -->
+      <message name="IDS_IOS_PAGE_INFO_TRACKING_PROTECTIONS_SECTION_FOOTER" translateable="false" desc="Footer text shown below the tracking protections section of the 'Site Info' sheet. Provides a link to the tracking protections settings page.">
+        Review available Incognito tracking protections in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph>.
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_TRACKING_PROTECTIONS_PAUSED_DETAIL_TEXT" translateable="false" desc="Descriptive text on the 'Site Info' sheet shown when tracking protections are paused on the current site. Explains that tracking protections will remain paused on this site until the user closes all Incognito tabs. Additionally, adds a link to 'Send feedback' page which allows the user to give feedback on why they paused tracking protections on this site.">
+         Protections are paused until all Incognito tabs are closed. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Send feeback<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_PAGE_INFO_TRACKING_PROTECTIONS_RESUMED" translateable="false" desc="">
+        Site not working?
+      </message>
       <!-- Page Info -->
       <message name="IDS_PAGE_INFO_PRIVACY_SITE_DATA_HEADER" desc="The header for the 'Privacy and site data' subpage in the page info bubble." formatter_data="android_java">
         Privacy and site data

@@ -6,6 +6,7 @@ source_set("ui") {
   sources = [
     "page_info_tracking_protection_consumer.h",
     "page_info_tracking_protection_info.h",
+    "page_info_tracking_protection_info.mm",
     "page_info_tracking_protection_mutator.h",
   ]
   deps = [ "//base" ]

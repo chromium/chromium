@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_PAGE_INFO_TRACKING_PROTECTION_UI_PAGE_INFO_TRACKING_PROTECTION_INFO_H_
 #define IOS_CHROME_BROWSER_PAGE_INFO_TRACKING_PROTECTION_UI_PAGE_INFO_TRACKING_PROTECTION_INFO_H_
 
+#import <Foundation/Foundation.h>
+
 // Object that stores tracking protection information.
 @interface PageInfoTrackingProtectionInfo : NSObject
 
