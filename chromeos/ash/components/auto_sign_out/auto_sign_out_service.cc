@@ -37,7 +37,6 @@ AutoSignOutService::AutoSignOutService(
       initialization_time_(base::Time::Now()) {
   RegisterPrefListeners();
   UpdateObservations();
-  UpdateLocalDeviceInfoWhenReady();
 }
 
 AutoSignOutService::~AutoSignOutService() = default;
@@ -72,6 +71,7 @@ void AutoSignOutService::UpdateObservations() {
       power_manager_client_observation_.Observe(
           chromeos::PowerManagerClient::Get());
     }
+    UpdateLocalDeviceInfoWhenReady();
   } else {
     power_manager_client_observation_.Reset();
     session_manager_observation_.Reset();
@@ -87,8 +87,7 @@ void AutoSignOutService::UpdateLocalDeviceInfoWhenReady() {
 
   if (local_device_info_provider->GetLocalDeviceInfo()) {
     UpdateLocalDeviceInfo();
-  } else {
-    CHECK(!local_device_info_ready_subscription_);
+  } else if (!local_device_info_ready_subscription_) {
     local_device_info_ready_subscription_ =
         local_device_info_provider->RegisterOnInitializedCallback(
             base::BindRepeating(

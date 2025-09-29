@@ -387,9 +387,21 @@ TEST_P(AutoSignOutPrefTest,
   prefs()->SetBoolean(chromeos::prefs::kFloatingWorkspaceV2Enabled,
                       test_config.floating_workspace_v2_enabled);
 
+  ASSERT_FALSE(
+      local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
+
   AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
                                            test_sync_service(),
                                            session_manager(), prefs());
+
+  // Verify that timestamp is updated only when AutoSignOutService is enabled.
+  if (test_config.expected_sign_out_count == 1) {
+    EXPECT_TRUE(
+        local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
+  } else {
+    EXPECT_FALSE(
+        local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
+  }
 
   fake_device_info_sync_service()->GetDeviceInfoTracker()->Add(
       CreateFakeDeviceInfo("guid1", "device1",
