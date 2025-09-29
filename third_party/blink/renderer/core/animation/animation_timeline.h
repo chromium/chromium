@@ -180,6 +180,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
 
   std::optional<PhaseAndTime> last_current_phase_and_time_;
 
+  bool in_trigger_attachments_update_ = false;
+
   // Whether or not to update the trigger at the next opportunity to do so.
   // This could because the |last_current_phase_and_time_| changed or because a
   // new animation which triggers on this timeline has been added since the last

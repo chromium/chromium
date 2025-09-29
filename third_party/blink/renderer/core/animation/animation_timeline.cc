@@ -28,11 +28,13 @@ AnimationTimeline::AnimationTimeline(Document* document)
 
 void AnimationTimeline::AnimationAttached(Animation* animation) {
   DCHECK(!animations_.Contains(animation));
+  DCHECK(!in_trigger_attachments_update_);
   animations_.insert(animation);
   animation->ResolveTimelineOffsets(GetTimelineRange());
 }
 
 void AnimationTimeline::AnimationDetached(Animation* animation) {
+  DCHECK(!in_trigger_attachments_update_);
   animations_.erase(animation);
   animations_needing_update_.erase(animation);
   if (animation->Outdated())
@@ -250,6 +252,8 @@ void AnimationTimeline::UpdateAnimationTriggerAttachments() {
   if (!GetDocument() || !GetDocument()->View()) {
     return;
   }
+  base::AutoReset<bool> in_trigger_attachments_update(
+      &in_trigger_attachments_update_, true);
   for (Animation* animation : animations_) {
     CSSAnimation* css_animation = DynamicTo<CSSAnimation>(animation);
     if (!css_animation) {
