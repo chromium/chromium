@@ -1,10 +1,10 @@
 Name: font-types
 URL: https://crates.io/crates/font-types
-Version: 0.9.0
-Revision: 16a34a1ef640260202e270d0b1e052df1bd210ac
+Version: 0.10.0
+Revision: 1a8baba89aa129a899bc83b0b610881190f8bbad
 Update Mechanism: Manual
 License: Apache-2.0
-License File: //third_party/rust/chromium_crates_io/vendor/font-types-v0_9/LICENSE-APACHE
+License File: //third_party/rust/chromium_crates_io/vendor/font-types-v0_10/LICENSE-APACHE
 Shipped: yes
 Security Critical: yes
 

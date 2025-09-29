@@ -188,7 +188,7 @@ impl MappingIndex {
                     CmapSubtable::Format14(cmap14) => Some(cmap14),
                     _ => None,
                 }),
-            cmap12_limits: CmapIterLimits::default_for_font(font),
+            cmap12_limits: self.cmap12_limits,
         }
     }
 }

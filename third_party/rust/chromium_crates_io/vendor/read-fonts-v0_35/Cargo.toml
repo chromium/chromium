@@ -11,16 +11,16 @@
 
 [package]
 edition = "2021"
-rust-version = "1.80"
-name = "skrifa"
-version = "0.36.0"
+rust-version = "1.82"
+name = "read-fonts"
+version = "0.35.0"
 build = false
 autolib = false
 autobins = false
 autoexamples = false
 autotests = false
 autobenches = false
-description = "Metadata reader and glyph scaler for OpenType fonts."
+description = "Reading OpenType font files."
 readme = "README.md"
 categories = [
     "text-processing",
@@ -31,28 +31,43 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/googlefonts/fontations"
 
 [package.metadata.docs.rs]
-all-features = true
+features = [
+    "libm",
+    "serde",
+    "std",
+]
 
 [features]
-autohint_shaping = []
-default = [
-    "autohint_shaping",
-    "traversal",
+codegen_test = []
+default = ["std"]
+experimental_traverse = ["std"]
+ift = []
+libm = ["dep:core_maths"]
+scaler_test = []
+serde = [
+    "dep:serde",
+    "font-types/serde",
 ]
-libm = [
-    "dep:core_maths",
-    "read-fonts/libm",
-]
-spec_next = ["read-fonts/spec_next"]
-std = ["read-fonts/std"]
-traversal = [
-    "std",
-    "read-fonts/experimental_traverse",
-]
+spec_next = []
+std = ["font-types/std"]
 
 [lib]
-name = "skrifa"
+name = "read_fonts"
 path = "src/lib.rs"
+
+[[bench]]
+name = "bench_helper"
+path = "benches/bench_helper.rs"
+
+[[bench]]
+name = "int_set_benchmark"
+path = "benches/int_set_benchmark.rs"
+harness = false
+
+[[bench]]
+name = "sparse_bit_set_benchmark"
+path = "benches/sparse_bit_set_benchmark.rs"
+harness = false
 
 [dependencies.bytemuck]
 version = "1.13.1"
@@ -61,26 +76,20 @@ version = "1.13.1"
 version = "0.1"
 optional = true
 
-[dependencies.read-fonts]
-version = "0.34.0"
-default-features = false
+[dependencies.font-types]
+version = "0.10.0"
+features = ["bytemuck"]
 
-[dev-dependencies.kurbo]
-version = "0.11.0"
-
-[dev-dependencies.pretty_assertions]
-version = "1.3.0"
-
-[dev-dependencies.read-fonts]
-version = "0.34.0"
-features = [
-    "scaler_test",
-    "serde",
-]
-default-features = false
-
-[dev-dependencies.serde]
+[dependencies.serde]
 version = "1.0"
+features = ["derive"]
+optional = true
+
+[dev-dependencies.criterion]
+version = "0.3.0"
+
+[dev-dependencies.rand]
+version = "0.8.5"
 
 [dev-dependencies.serde_json]
 version = "1.0"

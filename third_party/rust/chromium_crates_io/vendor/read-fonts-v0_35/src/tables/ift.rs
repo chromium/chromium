@@ -478,6 +478,19 @@ mod tests {
     }
 
     #[test]
+    fn invalid_format_number() {
+        // No offsets
+        let mut data = test_data::codepoints_only_format2();
+        data.write_at("format", 3u8);
+
+        let Err(err) = Ift::read(FontData::new(&data)) else {
+            panic!("Read should have failed due to invalid format number.");
+        };
+
+        assert_eq!(ReadError::InvalidFormat(3), err);
+    }
+
+    #[test]
     fn compatibility_id() {
         let data = test_data::simple_format1();
         let table = Ift::read(FontData::new(&data)).unwrap();
