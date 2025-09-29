@@ -143,9 +143,6 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
                            int plane_index,
                            void* dst_pixels) override;
 
-  // Raster via GrContext.
-  GLuint CreateAndConsumeForGpuRaster(const gpu::Mailbox& mailbox);
-
   void DeleteGpuRasterTexture(GLuint texture) override;
   void BeginGpuRaster() override;
   void EndGpuRaster() override;

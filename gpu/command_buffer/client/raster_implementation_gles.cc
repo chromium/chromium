@@ -199,7 +199,8 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   const auto& src_info = src_sk_pixmap.info();
   const auto& src_row_bytes = src_sk_pixmap.rowBytes();
   DCHECK_GE(src_row_bytes, src_info.minRowBytes());
-  GLuint texture_id = CreateAndConsumeForGpuRaster(dest_mailbox);
+  GLuint texture_id =
+      gl_->CreateAndTexStorage2DSharedImageCHROMIUM(dest_mailbox.name);
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
@@ -303,7 +304,8 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
   GLenum format =
       dst_info.colorType() == kRGBA_8888_SkColorType ? GL_RGBA : GL_BGRA_EXT;
   gfx::Size dst_gfx_size(dst_info.width(), dst_info.height());
-  GLuint texture_id = CreateAndConsumeForGpuRaster(source_mailbox);
+  GLuint texture_id =
+      gl_->CreateAndTexStorage2DSharedImageCHROMIUM(source_mailbox.name);
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
@@ -365,7 +367,8 @@ void RasterImplementationGLES::ReadbackYUVPixelsAsync(
     const gfx::Point& paste_location,
     base::OnceCallback<void()> release_mailbox,
     base::OnceCallback<void(bool)> readback_done) {
-  GLuint shared_texture_id = CreateAndConsumeForGpuRaster(source_mailbox);
+  GLuint shared_texture_id =
+      gl_->CreateAndTexStorage2DSharedImageCHROMIUM(source_mailbox.name);
   gl_->BeginSharedImageAccessDirectCHROMIUM(
       shared_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
   base::OnceCallback<void()> on_release_mailbox =
@@ -461,11 +464,6 @@ bool RasterImplementationGLES::ReadbackImagePixels(
              dst_info.alphaType(), dst_row_bytes, src_x, src_y, plane_index,
              dst_pixels) ||
          base::FeatureList::IsEnabled(kDisableErrorHandlingForReadbackGLES);
-}
-
-GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
-    const gpu::Mailbox& mailbox) {
-  return gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
 }
 
 void RasterImplementationGLES::DeleteGpuRasterTexture(GLuint texture) {

@@ -354,15 +354,6 @@ TEST_F(RasterImplementationGLESTest, GetQueryObjectui64vEXT) {
   ri_->GetQueryObjectui64vEXT(kQueryId, kQueryParam, &result);
 }
 
-TEST_F(RasterImplementationGLESTest, CreateAndConsumeForGpuRaster) {
-  const GLuint kTextureId = 23;
-  const auto mailbox = gpu::Mailbox::Generate();
-  EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name))
-      .WillOnce(Return(kTextureId));
-  GLuint texture_id = ri_->CreateAndConsumeForGpuRaster(mailbox);
-  EXPECT_EQ(kTextureId, texture_id);
-}
-
 TEST_F(RasterImplementationGLESTest, DeleteGpuRasterTexture) {
   const GLuint kTextureId = 23;
   EXPECT_CALL(*gl_, DeleteTextures(1, Pointee(Eq(kTextureId)))).Times(1);
