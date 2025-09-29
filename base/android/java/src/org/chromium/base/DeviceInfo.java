@@ -15,6 +15,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Process;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 
 import androidx.annotation.GuardedBy;
@@ -43,7 +44,9 @@ public final class DeviceInfo {
     private static @Nullable Boolean sIsAutomotiveForTesting;
     private static boolean sInitialized;
     private static boolean sIsXrForTesting;
+    private static @Nullable Boolean sIsRetailDemoModeForTesting;
     private final IDeviceInfo mIDeviceInfo;
+    private @Nullable Boolean mIsRetailDemoMode;
 
     // This is the minimum width in DP that defines a large display device
     public static final int LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP = 600;
@@ -121,6 +124,22 @@ public final class DeviceInfo {
         return getInstance().mIDeviceInfo.isXr;
     }
 
+    public static boolean isRetailDemoMode() {
+        if (sIsRetailDemoModeForTesting != null) {
+            return sIsRetailDemoModeForTesting;
+        }
+        DeviceInfo instance = getInstance();
+        if (instance.mIsRetailDemoMode == null) {
+            instance.mIsRetailDemoMode =
+                    0
+                            != Settings.Global.getInt(
+                                    ContextUtils.getApplicationContext().getContentResolver(),
+                                    "device_demo_mode", // Settings.Global.DEVICE_DEMO_MODE is @hide
+                                    0);
+        }
+        return instance.mIsRetailDemoMode;
+    }
+
     public static boolean isInitializedForTesting() {
         return sInitialized;
     }
@@ -133,6 +152,11 @@ public final class DeviceInfo {
     @CalledByNativeForTesting
     public static void resetIsXrForTesting() {
         sIsXrForTesting = false;
+    }
+
+    public static void setIsRetailDemoModeForTesting(boolean value) {
+        sIsRetailDemoModeForTesting = value;
+        ResettersForTesting.register(() -> sIsRetailDemoModeForTesting = null);
     }
 
     private static DeviceInfo getInstance() {

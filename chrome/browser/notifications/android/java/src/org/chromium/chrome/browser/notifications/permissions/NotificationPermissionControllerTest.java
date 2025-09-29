@@ -14,10 +14,8 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
-import android.os.UserManager;
 import android.text.format.DateUtils;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -25,9 +23,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
@@ -48,19 +46,10 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = VERSION_CODES.TIRAMISU, manifest = Config.NONE)
 public class NotificationPermissionControllerTest {
-    private static final int DEMO_USER_ID = 2;
-    private ShadowUserManager mShadowUserManager;
-
     @Rule public FakeTimeTestRule mFakeTimeRule = new FakeTimeTestRule();
 
     @Before
     public void setUp() {
-        mShadowUserManager =
-                shadowOf(
-                        ApplicationProvider.getApplicationContext()
-                                .getSystemService(UserManager.class));
-        mShadowUserManager.addUser(DEMO_USER_ID, "demo_user", ShadowUserManager.FLAG_DEMO);
-
         setupFeatureParams(false, null, null);
     }
 
@@ -241,7 +230,7 @@ public class NotificationPermissionControllerTest {
 
     @Test
     public void testNotificationPrompt_nothingHappensInDemoMode() {
-        mShadowUserManager.switchUser(DEMO_USER_ID);
+        DeviceInfo.setIsRetailDemoModeForTesting(true);
 
         mActivityScenarios
                 .getScenario()

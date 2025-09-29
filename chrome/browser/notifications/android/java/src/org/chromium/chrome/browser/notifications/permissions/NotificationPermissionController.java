@@ -10,8 +10,8 @@ import android.os.Build;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
@@ -182,8 +182,7 @@ public class NotificationPermissionController implements UnownedUserData {
      * @return True if any UI was shown (either rationale dialog or OS prompt), false otherwise.
      */
     public boolean requestPermissionIfNeeded(boolean contextual) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                || ApiCompatibilityUtils.isDemoUser()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || DeviceInfo.isRetailDemoMode()) {
             return false;
         }
 

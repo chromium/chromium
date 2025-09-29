@@ -20,7 +20,6 @@ import android.hardware.display.DisplayManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.StrictMode;
-import android.os.UserManager;
 import android.provider.MediaStore;
 import android.view.Display;
 import android.view.View;
@@ -85,16 +84,6 @@ public class ApiCompatibilityUtils {
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
-    }
-
-    /**
-     * @return Whether the device is running in demo mode.
-     */
-    public static boolean isDemoUser() {
-        UserManager userManager =
-                (UserManager)
-                        ContextUtils.getApplicationContext().getSystemService(Context.USER_SERVICE);
-        return userManager.isDemoUser();
     }
 
     /**
