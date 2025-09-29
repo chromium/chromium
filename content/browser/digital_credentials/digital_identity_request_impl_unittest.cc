@@ -75,7 +75,8 @@ class TestDigitalIdentityProviderWithCustomRisk
 };
 
 base::Value ParseJsonAndCheck(const std::string& json) {
-  std::optional<base::Value> parsed = base::JSONReader::Read(json);
+  std::optional<base::Value> parsed =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return parsed.has_value() ? std::move(*parsed) : base::Value();
 }
 

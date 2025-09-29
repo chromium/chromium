@@ -237,7 +237,8 @@ std::optional<base::Value> DeserializeValue(std::string_view serialized_value) {
   if (serialized_value.empty()) {
     return {};
   }
-  std::optional<base::Value> result = base::JSONReader::Read(serialized_value);
+  std::optional<base::Value> result = base::JSONReader::Read(
+      serialized_value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (result) {
     base::UmaHistogramEnumeration(
         "Storage.InterestGroup.JSONDeserializationResult",

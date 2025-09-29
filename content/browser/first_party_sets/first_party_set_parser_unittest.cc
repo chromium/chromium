@@ -1788,7 +1788,8 @@ auto JsonDomain() {
       // a tuple of base::Value. The return value is additionally wrapped in
       // std::optional.
       [](const std::string& value) -> std::optional<std::tuple<base::Value>> {
-        auto res = base::JSONReader::Read(value);
+        auto res =
+            base::JSONReader::Read(value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
         if (!res) {
           return std::nullopt;
         }

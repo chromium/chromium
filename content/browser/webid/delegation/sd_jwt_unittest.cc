@@ -98,7 +98,9 @@ TEST_F(SdJwtTest, DisclosureParsing) {
   // https://www.ietf.org/archive/id/draft-ietf-oauth-selective-disclosure-jwt-13.html#section-4.2.1
   std::string json = R"(["_26bc4LT-ac6q2KI6cBW5es", "family_name", "Möbius"])";
 
-  auto disclosure = Disclosure::From(base::JSONReader::Read(json)->GetList());
+  auto disclosure = Disclosure::From(
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          ->GetList());
   EXPECT_TRUE(disclosure);
 
   EXPECT_EQ(disclosure->salt, Base64String("_26bc4LT-ac6q2KI6cBW5es"));

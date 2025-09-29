@@ -245,7 +245,8 @@ bool CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
       return false;
     }
 
-    payload = base::JSONReader::Read(jwt->payload.value());
+    payload = base::JSONReader::Read(jwt->payload.value(),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!payload || !payload->is_dict()) {
       return false;
     }

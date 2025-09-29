@@ -658,7 +658,8 @@ void HitTestRootWindowTransform(
 
 #if defined(USE_AURA)
 bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
-  std::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return false;
   base::Value::Dict* root = value->GetIfDict();
@@ -674,7 +675,8 @@ bool ConvertJSONToPoint(const std::string& str, gfx::PointF* point) {
 }
 
 bool ConvertJSONToRect(const std::string& str, gfx::Rect* rect) {
-  std::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return false;
   base::Value::Dict* root = value->GetIfDict();

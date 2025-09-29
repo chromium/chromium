@@ -220,8 +220,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
       JSON.stringify(document.querySelector($1).getBoundingClientRect());
     )JS",
                                          query));
-    std::optional<base::Value> value =
-        base::JSONReader::Read(result.ExtractString());
+    std::optional<base::Value> value = base::JSONReader::Read(
+        result.ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
@@ -271,8 +271,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
         pageTop: visualViewport.pageTop});
     )JS");
 
-    std::optional<base::Value> value =
-        base::JSONReader::Read(result.ExtractString());
+    std::optional<base::Value> value = base::JSONReader::Read(
+        result.ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(value.has_value());
     CHECK(value->is_dict());
 

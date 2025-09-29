@@ -694,7 +694,8 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
         BuildClientDataJson({test.type, test.origin, test.top_origin,
                              test.challenge, test.is_cross_origin});
 
-    const auto parsed = base::JSONReader::Read(json);
+    const auto parsed =
+        base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed.has_value());
     std::string type_key;
     std::string expected_type;
@@ -892,11 +893,13 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_ImmediateGet) {
 // also in the second, and with the same value.
 static void CheckJSONIsSubsetOfJSON(std::string_view subset_str,
                                     std::string_view test_str) {
-  std::optional<base::Value> subset = base::JSONReader::Read(subset_str);
+  std::optional<base::Value> subset =
+      base::JSONReader::Read(subset_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(subset);
   ASSERT_TRUE(subset->is_dict());
   const base::Value::Dict& subset_dict = subset->GetDict();
-  std::optional<base::Value> test = base::JSONReader::Read(test_str);
+  std::optional<base::Value> test =
+      base::JSONReader::Read(test_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(test);
   ASSERT_TRUE(test->is_dict());
   const base::Value::Dict& test_dict = test->GetDict();

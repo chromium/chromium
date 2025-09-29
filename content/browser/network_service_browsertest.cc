@@ -648,7 +648,8 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
             FILE_PATH_LITERAL("TestData"));
     std::string data;
     EXPECT_TRUE(base::ReadFileToString(data_file, &data));
-    auto json_data = base::JSONReader::Read(data);
+    auto json_data =
+        base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(json_data.has_value());
     url = GURL(json_data->GetString());
     EXPECT_TRUE(url.is_valid());

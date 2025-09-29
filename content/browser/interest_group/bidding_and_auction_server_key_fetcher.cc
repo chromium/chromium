@@ -307,7 +307,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     std::string config =
         blink::features::kFledgeBiddingAndAuctionKeyConfig.Get();
     if (!config.empty()) {
-      std::optional<base::Value> config_value = base::JSONReader::Read(config);
+      std::optional<base::Value> config_value =
+          base::JSONReader::Read(config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (config_value && config_value->is_dict()) {
         for (const auto kv : config_value->GetDict()) {
           if (!kv.second.is_string()) {
@@ -346,7 +347,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
   if (base::FeatureList::IsEnabled(blink::features::kFledgeOriginScopedKeys)) {
     std::string config = blink::features::kFledgeOriginScopedKeyConfig.Get();
     if (!config.empty()) {
-      std::optional<base::Value> config_value = base::JSONReader::Read(config);
+      std::optional<base::Value> config_value =
+          base::JSONReader::Read(config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (config_value && config_value->is_dict()) {
         for (const auto kv : config_value->GetDict()) {
           if (!kv.second.is_string()) {

@@ -163,8 +163,8 @@ void PreloadingConfig::ParseConfig() {
   }
   // Throughout parsing the config, if we fail to parse, we silently skip the
   // config and use the default values.
-  std::optional<base::Value> config_value =
-      base::JSONReader::Read(kPreloadingConfigParam.Get());
+  std::optional<base::Value> config_value = base::JSONReader::Read(
+      kPreloadingConfigParam.Get(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!config_value) {
     return;
   }

@@ -1371,7 +1371,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                        NavigatorCredentialsApi) {
   base::Value kIdentityProviderResponse =
       base::JSONReader::Read(
-          R"({"vp_token": "token data" , "presentation_submission":"bar"})")
+          R"({"vp_token": "token data" , "presentation_submission":"bar"})",
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS)
           .value();
 
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
@@ -1421,7 +1422,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           test_browser_client_->GetDigitalIdentityProviderForTests());
 
   base::Value kResponse =
-      base::JSONReader::Read(R"({"token":"test-mdoc"})").value();
+      base::JSONReader::Read(R"({"token":"test-mdoc"})",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value();
 
   EXPECT_CALL(*digital_identity_provider, Get)
       .WillOnce(WithArg<3>(
@@ -1475,7 +1478,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(DigitalCredential(
                 "openid4vp",
-                base::JSONReader::Read(R"({"token":"test-mdoc"})").value()));
+                base::JSONReader::Read(R"({"token":"test-mdoc"})",
+                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                    .value()));
           }));
 
   RunDigitalIdentityValidRequest(shell());

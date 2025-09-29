@@ -1156,10 +1156,11 @@ bool IsDocumentLoadedWithoutUrlLoaderClient(
 }
 
 std::vector<GURL> GetTargetUrlsOfBoostRenderProcessForLoading() {
-  std::optional<base::Value> json_value =
-      base::JSONReader::Read(base::UnescapeURLComponent(
+  std::optional<base::Value> json_value = base::JSONReader::Read(
+      base::UnescapeURLComponent(
           blink::features::kBoostRenderProcessForLoadingTargetUrls.Get(),
-          base::UnescapeRule::SPACES));
+          base::UnescapeRule::SPACES),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!json_value) {
     return {};

@@ -6195,7 +6195,8 @@ void RenderFrameImpl::BeginNavigationInternal(
   std::optional<base::Value::Dict> devtools_initiator;
   if (!info->devtools_initiator_info.IsNull()) {
     std::optional<base::Value> devtools_initiator_value =
-        base::JSONReader::Read(info->devtools_initiator_info.Utf8());
+        base::JSONReader::Read(info->devtools_initiator_info.Utf8(),
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (devtools_initiator_value && devtools_initiator_value->is_dict()) {
       devtools_initiator = std::move(*devtools_initiator_value).TakeDict();
     }

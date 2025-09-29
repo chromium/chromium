@@ -140,7 +140,9 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, ValidLegacyFormat) {
       R"({"response": {"digital": {"data": {"vp_token" : "token"}}}})");
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(result.value()->data,
-            JSONReader::Read(R"({"vp_token":"token"})").value());
+            JSONReader::Read(R"({"vp_token":"token"})",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                .value());
   EXPECT_FALSE(result.value()->protocol.has_value());
 }
 
@@ -209,7 +211,9 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest, NewResponseFormat) {
          })");
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->data,
-            JSONReader::Read(R"({"key":"value"})").value());
+            JSONReader::Read(R"({"key":"value"})",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                .value());
   EXPECT_EQ(result.value()->protocol, "ProtocolInResponse");
 }
 
@@ -228,7 +232,9 @@ TEST_P(DigitalCredentialsCrossDeviceRequestDispatcherTest,
          })");
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value()->data,
-            JSONReader::Read(R"({"key":"value"})").value());
+            JSONReader::Read(R"({"key":"value"})",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                .value());
   EXPECT_FALSE(result.value()->protocol.has_value());
 }
 

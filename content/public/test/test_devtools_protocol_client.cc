@@ -163,7 +163,8 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
     base::span<const uint8_t> message) {
   std::string_view message_str(reinterpret_cast<const char*>(message.data()),
                                message.size());
-  base::Value parsed = *base::JSONReader::Read(message_str);
+  base::Value parsed = *base::JSONReader::Read(
+      message_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (std::optional<int> id = parsed.GetDict().FindInt("id")) {
     received_responses_count_++;
     response_ = std::move(parsed).TakeDict();

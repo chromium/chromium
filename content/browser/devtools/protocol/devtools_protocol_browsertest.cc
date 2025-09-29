@@ -2248,12 +2248,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandAsync("Security.enable");
   SendCommandSync("Network.setRequestInterception",
                   std::move(base::JSONReader::Read(
-                                "{\"patterns\": [{\"urlPattern\": \"*\"}]}")
+                                "{\"patterns\": [{\"urlPattern\": \"*\"}]}",
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                                 ->GetDict()));
 
   SendCommandSync(
       "Security.setIgnoreCertificateErrors",
-      std::move(base::JSONReader::Read("{\"ignore\": true}")->GetDict()));
+      std::move(base::JSONReader::Read("{\"ignore\": true}",
+                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                    ->GetDict()));
 
   SendCommandSync("Network.clearBrowserCache");
   SendCommandSync("Network.clearBrowserCookies");
@@ -2262,10 +2265,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   base::Value::Dict params =
       WaitForNotification("Network.requestIntercepted", false);
   std::string interceptionId = *params.FindString("interceptionId");
-  SendCommandAsync("Network.continueInterceptedRequest",
-                   std::move(base::JSONReader::Read("{\"interceptionId\": \"" +
-                                                    interceptionId + "\"}")
-                                 ->GetDict()));
+  SendCommandAsync(
+      "Network.continueInterceptedRequest",
+      std::move(base::JSONReader::Read(
+                    "{\"interceptionId\": \"" + interceptionId + "\"}",
+                    base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                    ->GetDict()));
   continue_observer.Wait();
   EXPECT_EQ(test_url, shell()
                           ->web_contents()

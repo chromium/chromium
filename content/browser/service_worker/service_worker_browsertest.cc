@@ -2008,7 +2008,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       "text/javascript");
 
   std::optional<base::Value> result = base::JSONReader::Read(
-      LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
+      LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   // The page request must be sent only once, since the worker responded with
   // a generated Response.
@@ -2062,7 +2063,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNavigationPreloadTest,
       "text/javascript");
 
   std::optional<base::Value> result = base::JSONReader::Read(
-      LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
+      LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   // The page request must be sent only once, since the worker responded with
   // a generated Response.
@@ -2278,7 +2280,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRendererSideContentDecodingBrowserTest,
   // Load the test page, which registers the worker and waits for the preload
   // response. Expect the promise in the worker to be resolved successfully.
   std::optional<base::Value> result = base::JSONReader::Read(
-      LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"));
+      LoadNavigationPreloadTestPage(page_url, worker_url, "RESOLVED"),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   // Verify the page request was made only once (worker responded, preventing
   // fallback to network).
@@ -3327,8 +3330,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerURLLoaderThrottleTest,
   EvalJsResult result = EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                                "document.body.textContent");
   ASSERT_TRUE(result.is_ok());
-  std::optional<base::Value> parsed_result =
-      base::JSONReader::Read(result.ExtractString());
+  std::optional<base::Value> parsed_result = base::JSONReader::Read(
+      result.ExtractString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(parsed_result);
   base::Value::Dict* dict = parsed_result->GetIfDict();
   ASSERT_TRUE(dict);

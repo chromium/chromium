@@ -3986,8 +3986,9 @@ void DevToolsInspectorLogWatcher::DispatchProtocolMessage(
     base::span<const uint8_t> message) {
   std::string_view message_str(reinterpret_cast<const char*>(message.data()),
                                message.size());
-  auto parsed_message =
-      std::move(base::JSONReader::Read(message_str)->GetDict());
+  auto parsed_message = std::move(
+      base::JSONReader::Read(message_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          ->GetDict());
   std::optional<int> command_id = parsed_message.FindInt("id");
   if (command_id.has_value()) {
     switch (command_id.value()) {

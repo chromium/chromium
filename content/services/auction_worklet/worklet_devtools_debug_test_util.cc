@@ -160,7 +160,8 @@ void TestDevToolsAgentClient::LogEvent(
 
   // Now make it into a base::Value, to make it easy to look stuff up in it,
   // and queue it.
-  std::optional<base::Value> val = base::JSONReader::Read(payload_json);
+  std::optional<base::Value> val = base::JSONReader::Read(
+      payload_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(val.has_value());
   Event event;
   event.type = type;

@@ -374,8 +374,8 @@ void RequestService::RequestToken(
 
         bool has_nonce_in_params = false;
         if (idp_ptr->params_json) {
-          std::optional<base::Value> params =
-              base::JSONReader::Read(*idp_ptr->params_json);
+          std::optional<base::Value> params = base::JSONReader::Read(
+              *idp_ptr->params_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
           if (params && params->is_dict()) {
             if (params->GetDict().contains("nonce")) {
               has_nonce_in_params = true;

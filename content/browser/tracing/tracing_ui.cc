@@ -258,7 +258,8 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     return false;
   }
 
-  std::optional<base::Value> options = base::JSONReader::Read(data);
+  std::optional<base::Value> options =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!options) {
     LOG(ERROR) << "Options were not valid JSON";
     return false;

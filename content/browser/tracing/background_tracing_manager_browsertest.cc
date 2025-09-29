@@ -768,7 +768,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_TRUE(background_tracing_helper.trace_received());
 
   std::optional<base::Value> trace_json =
-      base::JSONReader::Read(background_tracing_helper.json_file_contents());
+      base::JSONReader::Read(background_tracing_helper.json_file_contents(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(trace_json);
   ASSERT_TRUE(trace_json->is_dict());
   auto* metadata_json = trace_json->GetDict().FindDict("metadata");
