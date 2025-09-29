@@ -27,54 +27,45 @@ ALWAYS_INLINE static bool IsOnly8Bit(base::span<const UChar> chars) {
 class UCharBuffer {
  public:
   ALWAYS_INLINE static unsigned ComputeHashAndMaskTop8Bits(
-      const UChar* chars,
-      unsigned len,
+      base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding) {
     if (encoding == AtomicStringUCharEncoding::kIs8Bit ||
         (encoding == AtomicStringUCharEncoding::kUnknown &&
-         IsOnly8Bit(UNSAFE_TODO({chars, len})))) {
+         IsOnly8Bit(chars))) {
       // This is a very common case from HTML parsing, so we take
       // the size penalty from inlining.
       return StringHasher::ComputeHashAndMaskTop8BitsInline<
-          ConvertTo8BitHashReader>(
-          UNSAFE_TODO({reinterpret_cast<const uint8_t*>(chars), len}));
+          ConvertTo8BitHashReader>(UNSAFE_TODO(
+          {reinterpret_cast<const uint8_t*>(chars.data()), chars.size()}));
     } else {
       return StringHasher::ComputeHashAndMaskTop8Bits(
-          reinterpret_cast<const char*>(chars), len * 2);
+          reinterpret_cast<const char*>(chars.data()), chars.size() * 2);
     }
   }
 
   ALWAYS_INLINE UCharBuffer(base::span<const UChar> chars,
                             AtomicStringUCharEncoding encoding)
-      : characters_(chars.data()),
-        length_(chars.size()),
-        hash_(ComputeHashAndMaskTop8Bits(chars.data(), length_, encoding)),
+      : characters_(chars),
+        hash_(ComputeHashAndMaskTop8Bits(chars, encoding)),
         encoding_(encoding) {}
 
-  base::span<const UChar> characters() const {
-    return UNSAFE_TODO({characters_, length_});
-  }
-  unsigned length() const { return length_; }
+  base::span<const UChar> characters() const { return characters_; }
   unsigned hash() const { return hash_; }
   AtomicStringUCharEncoding encoding() const { return encoding_; }
 
   scoped_refptr<StringImpl> CreateStringImpl() const {
     switch (encoding_) {
       case AtomicStringUCharEncoding::kUnknown:
-        return StringImpl::Create8BitIfPossible(
-            UNSAFE_TODO({characters_, length_}));
+        return StringImpl::Create8BitIfPossible(characters_);
       case AtomicStringUCharEncoding::kIs8Bit:
-        return String::Make8BitFrom16BitSource(
-                   UNSAFE_TODO({characters_, length_}))
-            .ReleaseImpl();
+        return String::Make8BitFrom16BitSource(characters_).ReleaseImpl();
       case AtomicStringUCharEncoding::kIs16Bit:
-        return StringImpl::Create(UNSAFE_TODO({characters_, length_}));
+        return StringImpl::Create(characters_);
     }
   }
 
  private:
-  const UChar* characters_;
-  const unsigned length_;
+  const base::span<const UChar> characters_;
   const unsigned hash_;
   const AtomicStringUCharEncoding encoding_;
 };
@@ -336,35 +327,32 @@ scoped_refptr<StringImpl> AtomicStringTable::AddToStringTable(const T& value) {
 }
 
 scoped_refptr<StringImpl> AtomicStringTable::Add(
-    const UChar* s,
-    unsigned length,
+    base::span<const UChar> chars,
     AtomicStringUCharEncoding encoding) {
-  if (!s)
+  if (!chars.data()) {
     return nullptr;
+  }
 
-  if (!length)
+  if (chars.empty()) {
     return StringImpl::empty_;
+  }
 
-  UCharBuffer buffer(UNSAFE_TODO({s, length}), encoding);
+  UCharBuffer buffer(chars, encoding);
   return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
 }
 
 class LCharBuffer {
  public:
   ALWAYS_INLINE explicit LCharBuffer(base::span<const LChar> chars)
-      : characters_(chars.data()),
-        length_(chars.size()),
+      : characters_(chars),
         // This is a common path from V8 strings, so inlining is worth it.
         hash_(StringHasher::ComputeHashAndMaskTop8BitsInline(chars)) {}
 
-  base::span<const LChar> characters() const {
-    return UNSAFE_TODO({characters_, length_});
-  }
+  base::span<const LChar> characters() const { return characters_; }
   unsigned hash() const { return hash_; }
 
  private:
-  const LChar* characters_;
-  const unsigned length_;
+  const base::span<const LChar> characters_;
   const unsigned hash_;
 };
 
@@ -403,15 +391,17 @@ scoped_refptr<StringImpl> AtomicStringTable::Add(
   return AddToStringTable<UCharBuffer, UCharBufferTranslator>(buffer);
 }
 
-scoped_refptr<StringImpl> AtomicStringTable::Add(const LChar* s,
-                                                 unsigned length) {
-  if (!s)
+scoped_refptr<StringImpl> AtomicStringTable::Add(
+    base::span<const LChar> chars) {
+  if (!chars.data()) {
     return nullptr;
+  }
 
-  if (!length)
+  if (chars.empty()) {
     return StringImpl::empty_;
+  }
 
-  LCharBuffer buffer(UNSAFE_TODO({s, length}));
+  LCharBuffer buffer(chars);
   return AddToStringTable<LCharBuffer, LCharBufferTranslator>(buffer);
 }
 
@@ -458,7 +448,7 @@ scoped_refptr<StringImpl> AtomicStringTable::AddUTF8(
   unsigned utf16_length = blink::unicode::CalculateStringLengthFromUtf8(
       characters_span, seen_non_ascii, seen_non_latin1);
   if (!seen_non_ascii) {
-    return Add(characters_span.data(), utf16_length);
+    return Add(characters_span);
   }
 
   auto utf16_buf = base::HeapArray<UChar>::Uninit(utf16_length);
