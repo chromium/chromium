@@ -432,11 +432,11 @@ TEST_F(D3D12VideoEncodeAcceleratorTest, SharedHandleCaching) {
   unsigned bitstream_buffer_count = 0;
   size_t bitstream_buffer_size = 0;
   EXPECT_CALL(*client_, RequireBitstreamBuffers(_, _, _))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [&](unsigned int count, const gfx::Size& size, size_t size_in_bytes) {
             bitstream_buffer_count = count;
             bitstream_buffer_size = size_in_bytes;
-          }));
+          });
   EXPECT_TRUE(
       d3d12_video_encode_accelerator
           ->Initialize(supported_config, client_.get(), media_log_->Clone())
