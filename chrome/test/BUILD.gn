@@ -669,6 +669,7 @@ static_library("test_support") {
     "//components/zoom",
     "//components/zoom:test_support",
     "//content/public/app",
+    "//content/public/browser",
     "//content/public/child",
     "//content/public/common",
     "//content/public/renderer",
@@ -7339,6 +7340,7 @@ test("unit_tests") {
     "//components/webui/flags",
     "//components/webui/flags:test_support",
     "//content/public/app",
+    "//content/public/browser",
     "//content/test:test_support",
     "//crypto:test_support",
     "//device/bluetooth:mocks",
@@ -7816,6 +7818,7 @@ test("unit_tests") {
   if (is_android) {
     sources += [
       "../browser/android/backup/dict_pref_backup_serializer_unittest.cc",
+      "../browser/android/compositor/compositor_view_unittest.cc",
       "../browser/android/compositor/layer/tab_layer_unittest.cc",
       "../browser/android/compositor/tab_content_manager_unittest.cc",
       "../browser/android/customtabs/detached_resource_request_unittest.cc",

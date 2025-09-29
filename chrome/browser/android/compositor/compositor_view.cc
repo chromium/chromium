@@ -100,6 +100,29 @@ CompositorView::CompositorView(JNIEnv* env,
   root_layer_->SetBackgroundColor(SkColors::kWhite);
 }
 
+// Constructor for testing.
+CompositorView::CompositorView(JNIEnv* env,
+                               const base::android::JavaRef<jobject>& obj,
+                               ui::WindowAndroid* window_android,
+                               TabContentManager* tab_content_manager,
+                               std::unique_ptr<content::Compositor> compositor)
+    : tab_content_manager_(tab_content_manager),
+      root_layer_(cc::slim::SolidColorLayer::Create()),
+      scene_layer_(nullptr),
+      current_surface_format_(0),
+      content_width_(0),
+      content_height_(0),
+      overlay_video_mode_(false),
+      overlay_immersive_ar_mode_(false),
+      overlay_xr_full_screen_mode_(false) {
+  content::BrowserChildProcessObserver::Add(this);
+  obj_.Reset(env, obj);
+  compositor_ = std::move(compositor);
+
+  root_layer_->SetIsDrawable(true);
+  root_layer_->SetBackgroundColor(SkColors::kWhite);
+}
+
 CompositorView::~CompositorView() {
   content::BrowserChildProcessObserver::Remove(this);
   tab_content_manager_->OnUIResourcesWereEvicted();
