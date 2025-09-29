@@ -86,6 +86,7 @@ void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
   CHECK(!is_stable_callback_);
 
   // This will end the PageStabilityInitial entry and start a new one.
+  journal_entry_.reset();
   journal_entry_ = journal_->CreatePendingAsyncEntry(
       task_id_, "PageStability",
       JournalDetailsBuilder().Add("state", state_).Build());
