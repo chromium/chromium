@@ -13,7 +13,7 @@ component("cookie_config") {
   public_deps = [ "//base" ]
 
   deps = [
-    "//components/os_crypt/sync",
+    "//components/os_crypt/async/browser",
     "//net:extras",
   ]
 }

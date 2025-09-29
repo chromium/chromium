@@ -36,6 +36,10 @@ class GeolocationSystemPermissionManager;
 }  // namespace device
 #endif
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace ui {
 class Compositor;
 }  // namespace ui
@@ -108,6 +112,10 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 
   int exit_code() const { return exit_code_; }
 
+  os_crypt_async::OSCryptAsync* os_crypt_async() {
+    return os_crypt_async_.get();
+  }
+
 #if defined(HEADLESS_USE_PREFS)
   void CreatePrefService();
   PrefService* GetPrefs();
@@ -130,6 +138,8 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   std::optional<HeadlessBrowser::Options> options_;
 
   int exit_code_ = 0;
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   base::flat_map<std::string, std::unique_ptr<HeadlessBrowserContextImpl>>
       browser_contexts_;

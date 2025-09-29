@@ -19,6 +19,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -203,7 +205,8 @@ void HeadlessBrowserImpl::SetDefaultBrowserContext(
   if (default_browser_context_ && !system_request_context_manager_) {
     system_request_context_manager_ =
         HeadlessRequestContextManager::CreateSystemContext(
-            HeadlessBrowserContextImpl::From(browser_context)->options());
+            HeadlessBrowserContextImpl::From(browser_context)->options(),
+            os_crypt_async());
   }
 }
 
@@ -258,6 +261,10 @@ bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
 }
 
 void HeadlessBrowserImpl::PreMainMessageLoopRun() {
+  os_crypt_async_ = std::make_unique<os_crypt_async::OSCryptAsync>(
+      std::vector<std::pair<os_crypt_async::OSCryptAsync::Precedence,
+                            std::unique_ptr<os_crypt_async::KeyProvider>>>{});
+
   PlatformInitialize();
 
   // We don't support the tethering domain on this agent host.
@@ -273,6 +280,7 @@ void HeadlessBrowserImpl::WillRunMainMessageLoop(base::RunLoop& run_loop) {
 }
 
 void HeadlessBrowserImpl::PostMainMessageLoopRun() {
+  os_crypt_async_.reset();
 #if defined(HEADLESS_USE_PREFS)
   if (local_state_) {
     local_state_->CommitPendingWrite();

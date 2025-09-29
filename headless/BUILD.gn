@@ -374,6 +374,7 @@ component("headless_non_renderer") {
     "//components/keyed_service/content",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
+    "//components/os_crypt/async/browser",
     "//components/os_crypt/sync",
     "//components/policy:generated",
     "//components/policy/content",

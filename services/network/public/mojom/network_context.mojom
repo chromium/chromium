@@ -620,10 +620,9 @@ struct NetworkContextParams {
   string? cookie_deprecation_label;
 
   // Sets the cookie encryption provider to be used by this network context if
-  // `enable_encrypted_cookies` is also enabled.
-  // If both are set then the `GetEncryptor` method on the supplied
-  // `cookie_encryption_provider` is called to obtain a valid set of keys for
-  // cookie encryption.
+  // `enable_encrypted_cookies` is enabled.
+  // The `GetEncryptor` method on the supplied `cookie_encryption_provider` is
+  // called to obtain a valid set of keys for cookie encryption.
   pending_remote<CookieEncryptionProvider>? cookie_encryption_provider;
 
   // Enables Device Bound Session Credential for this network context.
