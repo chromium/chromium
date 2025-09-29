@@ -161,23 +161,34 @@ int GetImpressionLimit() {
 
   if (base::Contains(commerce::kShopCardVariation.Get(),
                      commerce::kShopCardArm1)) {
-    _shoppingDataForShopCardFound = false;
-    __weak ShopCardMediator* weakSelf = self;
-
-    GetAllPriceTrackedBookmarks(
-        _shoppingService, _bookmarkModel,
-        base::BindOnce(
-            ^(std::vector<const bookmarks::BookmarkNode*> subscriptions) {
-              ShopCardMediator* strongSelf = weakSelf;
-              if (!strongSelf || !strongSelf.delegate) {
-                return;
-              }
-              [strongSelf onPriceTrackedBookmarksReceived:subscriptions];
-            }));
+    [self fetchPriceTrackedBookmarksIfApplicable];
   } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
     // TODO(crbug.com/392971752): populate for card 2.
     _shopCardItem = [[ShopCardItem alloc] init];
   }
+}
+
+- (void)fetchPriceTrackedBookmarksIfApplicable {
+  if (self->_shopCardItem) {
+    return;
+  }
+  [self fetchPriceTrackedBookmarks];
+}
+
+- (void)fetchPriceTrackedBookmarks {
+  _shoppingDataForShopCardFound = false;
+  __weak ShopCardMediator* weakSelf = self;
+
+  GetAllPriceTrackedBookmarks(
+      _shoppingService, _bookmarkModel,
+      base::BindOnce(
+          ^(std::vector<const bookmarks::BookmarkNode*> subscriptions) {
+            ShopCardMediator* strongSelf = weakSelf;
+            if (!strongSelf || !strongSelf.delegate) {
+              return;
+            }
+            [strongSelf onPriceTrackedBookmarksReceived:subscriptions];
+          }));
 }
 
 - (void)onPriceTrackedBookmarksReceived:
@@ -473,6 +484,14 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 }
 - (void)onUrlUntrackedForTesting:(GURL)url {
   [self onUrlUntracked:url];
+}
+
+- (void)fetchPriceTrackedBookmarksForTesting {
+  [self fetchPriceTrackedBookmarks];
+}
+
+- (void)fetchPriceTrackedBookmarksIfApplicableForTesting {
+  [self fetchPriceTrackedBookmarksIfApplicable];
 }
 
 @end

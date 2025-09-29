@@ -40,6 +40,10 @@ class ImageDataFetcher;
 
 - (void)onUrlUntrackedForTesting:(GURL)url;
 
+- (void)fetchPriceTrackedBookmarksForTesting;
+
+- (void)fetchPriceTrackedBookmarksIfApplicableForTesting;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_SHOP_CARD_SHOP_CARD_MEDIATOR_TESTING_H_

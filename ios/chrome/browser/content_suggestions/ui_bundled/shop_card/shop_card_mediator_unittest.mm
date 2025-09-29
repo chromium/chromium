@@ -194,3 +194,12 @@ TEST_F(ShopCardMediatorTest, TestUntrackedNoShopCardData) {
   // Shouldn't crash
   [mediator() onUrlUntrackedForTesting:GURL("https://example.com/")];
 }
+
+TEST_F(ShopCardMediatorTest, TestDontFetchIfShopCardDataExists) {
+  ShopCardItem* item = [[ShopCardItem alloc] init];
+  id mock = OCMPartialMock(mediator());
+  OCMReject([mock fetchPriceTrackedBookmarksForTesting]);
+  [mediator() setShopCardItemForTesting:item];
+  [mediator() fetchPriceTrackedBookmarksIfApplicableForTesting];
+  EXPECT_OCMOCK_VERIFY(mock);
+}
