@@ -498,8 +498,11 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT" desc="Body of the sync hystory promo for signed out users. Tells users to sign in and sync hystory to see synced tabs, passwords, and other data from other devices.">
         To get your tabs from your other devices, sign in and sync history. You’ll also get your passwords and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
       </message>
-      <message name="IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_PENDING_SIGN_IN" desc="Body of the sync hystory promo for users with pending sign in.">
+      <message name="IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_PENDING_SIGN_IN" desc="Body of the sync hystory promo for users with pending sign in, who have history sync off.">
         To get your tabs from your other devices, verify it’s you and sync your history and tabs. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+      </message>
+      <message name="IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_PENDING_SIGN_IN_SYNC_HISTORY_ON" desc="Body of the sync hystory promo for users with pending sign in, who have history sync on.">
+        To get your tabs from your other devices, verify it’s you. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
       </message>
       <message name="IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_IN_SYNC_OFF" desc="Body of the sync hystory promo for signed in users with sync turned off.">
         To get your tabs from your other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph>. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
