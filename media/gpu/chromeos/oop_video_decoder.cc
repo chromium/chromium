@@ -1173,7 +1173,7 @@ void OOPVideoDecoder::OnWaiting(WaitingReason reason) {
     waiting_cb_.Run(reason);
 }
 
-void OOPVideoDecoder::RequestOverlayInfo(bool restart_for_transitions) {
+void OOPVideoDecoder::RequestOverlayInfo() {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }

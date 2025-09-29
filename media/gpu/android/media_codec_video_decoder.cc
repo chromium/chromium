@@ -591,8 +591,7 @@ void MediaCodecVideoDecoder::OnVideoFrameFactoryInitialized(
 
   // Request OverlayInfo updates. Initialization continues on the first one.
   std::move(request_overlay_info_cb_)
-      .Run(/*restart_for_transitions=*/false,
-           base::BindRepeating(&MediaCodecVideoDecoder::OnOverlayInfoChanged,
+      .Run(base::BindRepeating(&MediaCodecVideoDecoder::OnOverlayInfoChanged,
                                weak_factory_.GetWeakPtr()));
 }
 

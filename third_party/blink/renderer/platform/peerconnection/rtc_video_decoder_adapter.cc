@@ -84,8 +84,7 @@ void FinishWait(base::WaitableEvent* waiter, bool* result_out, bool result) {
   waiter->Signal();
 }
 
-void OnRequestOverlayInfo(bool decoder_requires_restart_for_overlay,
-                          media::ProvideOverlayInfoCB overlay_info_cb) {
+void OnRequestOverlayInfo(media::ProvideOverlayInfoCB overlay_info_cb) {
   // Android overlays are not supported.
   if (overlay_info_cb)
     std::move(overlay_info_cb).Run(media::OverlayInfo());

@@ -495,7 +495,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Called by GpuVideoDecoder on Android to request a surface to render to (if
   // necessary).
   void OnOverlayInfoRequested(
-      bool decoder_requires_restart_for_overlay,
       media::ProvideOverlayInfoCB provide_overlay_info_cb);
 
   // Creates a Renderer via the |renderer_factory_selector_|. If the
@@ -830,9 +829,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Cors and Caching flags set during `Load` and used while creating demuxers.
   CorsMode cors_mode_ = kCorsModeUnspecified;
   bool is_cache_disabled_ = false;
-
-  // Whether the current decoder requires a restart on overlay transitions.
-  bool decoder_requires_restart_for_overlay_ = false;
 
   const raw_ptr<MediaPlayerClient> client_;
   const raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_;

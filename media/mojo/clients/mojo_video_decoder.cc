@@ -111,7 +111,7 @@ MojoVideoDecoder::MojoVideoDecoder(
 MojoVideoDecoder::~MojoVideoDecoder() {
   DVLOG(1) << __func__;
   if (request_overlay_info_cb_ && overlay_info_requested_)
-    request_overlay_info_cb_.Run(false, base::NullCallback());
+    request_overlay_info_cb_.Run(base::NullCallback());
 }
 
 bool MojoVideoDecoder::IsPlatformDecoder() const {
@@ -432,14 +432,13 @@ void MojoVideoDecoder::OnWaiting(WaitingReason reason) {
   waiting_cb_.Run(reason);
 }
 
-void MojoVideoDecoder::RequestOverlayInfo(bool restart_for_transitions) {
+void MojoVideoDecoder::RequestOverlayInfo() {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request_overlay_info_cb_);
 
   overlay_info_requested_ = true;
   request_overlay_info_cb_.Run(
-      restart_for_transitions,
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MojoVideoDecoder::OnOverlayInfoChanged, weak_this_)));
 }

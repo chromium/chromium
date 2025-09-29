@@ -293,9 +293,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     }
   }
 
-  void RequestOverlayInfoCb(bool restart_for_transitions,
-                            ProvideOverlayInfoCB provide_overlay_info_cb) {
-    restart_for_transitions_ = restart_for_transitions;
+  void RequestOverlayInfoCb(ProvideOverlayInfoCB provide_overlay_info_cb) {
     provide_overlay_info_cb_ = std::move(provide_overlay_info_cb);
   }
 
@@ -311,7 +309,6 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   raw_ptr<MockVideoFrameFactory> video_frame_factory_ = nullptr;
   NiceMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb_;
   ProvideOverlayInfoCB provide_overlay_info_cb_;
-  bool restart_for_transitions_;
   gpu::GpuPreferences gpu_preferences_;
   scoped_refptr<VideoFrame> most_recent_frame_;
 
@@ -383,12 +380,6 @@ TEST_P(MediaCodecVideoDecoderTest,
   ASSERT_FALSE(provide_overlay_info_cb_);
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   ASSERT_TRUE(provide_overlay_info_cb_);
-}
-
-TEST_P(MediaCodecVideoDecoderTest, RestartForOverlayTransitionsFlagIsCorrect) {
-  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
-  mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
-  ASSERT_FALSE(restart_for_transitions_);
 }
 
 TEST_P(MediaCodecVideoDecoderTest,

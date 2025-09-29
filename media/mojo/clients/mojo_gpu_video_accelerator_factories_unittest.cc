@@ -139,7 +139,7 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
 
 class MockOverlayInfoCbHandler {
  public:
-  MOCK_METHOD2(Call, void(bool, media::ProvideOverlayInfoCB));
+  MOCK_METHOD1(Call, void(media::ProvideOverlayInfoCB));
 };
 
 class MockContextProviderCommandBuffer

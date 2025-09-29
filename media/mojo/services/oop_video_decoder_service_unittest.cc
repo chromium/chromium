@@ -205,7 +205,7 @@ class MockVideoDecoderClient : public mojom::VideoDecoderClient {
            bool can_read_without_stalling,
            const std::optional<base::UnguessableToken>& release_token));
   MOCK_METHOD1(OnWaiting, void(WaitingReason reason));
-  MOCK_METHOD1(RequestOverlayInfo, void(bool restart_for_transitions));
+  MOCK_METHOD0(RequestOverlayInfo, void());
 
  private:
   mojo::AssociatedReceiver<mojom::VideoDecoderClient> receiver_;

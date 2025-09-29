@@ -102,7 +102,7 @@ class OOPVideoDecoder : public VideoDecoderMixin,
       bool can_read_without_stalling,
       const std::optional<base::UnguessableToken>& release_token) final;
   void OnWaiting(WaitingReason reason) final;
-  void RequestOverlayInfo(bool restart_for_transitions) final;
+  void RequestOverlayInfo() final;
 
   // mojom::MediaLog implementation.
   void AddLogRecord(const MediaLogRecord& event) final;

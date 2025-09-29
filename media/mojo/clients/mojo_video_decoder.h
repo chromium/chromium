@@ -78,7 +78,7 @@ class MojoVideoDecoder final : public VideoDecoder,
       bool can_read_without_stalling,
       const std::optional<base::UnguessableToken>& release_token) final;
   void OnWaiting(WaitingReason reason) final;
-  void RequestOverlayInfo(bool restart_for_transitions) final;
+  void RequestOverlayInfo() final;
 
   void set_writer_capacity_for_testing(uint32_t capacity) {
     writer_capacity_ = capacity;

@@ -226,8 +226,7 @@ class MediaVideoTaskWrapper {
         std::move(external_decoder_factory));
   }
 
-  void OnRequestOverlayInfo(bool decoder_requires_restart_for_overlay,
-                            media::ProvideOverlayInfoCB overlay_info_cb) {
+  void OnRequestOverlayInfo(media::ProvideOverlayInfoCB overlay_info_cb) {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

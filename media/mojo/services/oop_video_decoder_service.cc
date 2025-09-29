@@ -258,7 +258,7 @@ void OOPVideoDecoderService::OnWaiting(WaitingReason reason) {
   video_decoder_client_remote_->OnWaiting(reason);
 }
 
-void OOPVideoDecoderService::RequestOverlayInfo(bool restart_for_transitions) {
+void OOPVideoDecoderService::RequestOverlayInfo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED();
 }

@@ -199,7 +199,5 @@ interface VideoDecoderClient {
 
   // Request to be notified when the current OverlayInfo changes. This results
   // in at least one call to OnOverlayInfoChanged() for the initial OverlayInfo.
-  // |restart_for_transitions| sets whether the decoder should be restarted on
-  // overlay transitions instead of receiving a call to OnOverlayInfoChanged().
-  RequestOverlayInfo(bool restart_for_transitions);
+  RequestOverlayInfo();
 };

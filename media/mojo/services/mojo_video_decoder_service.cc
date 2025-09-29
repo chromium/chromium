@@ -516,7 +516,6 @@ void MojoVideoDecoderService::OnOverlayInfoChanged(
 }
 
 void MojoVideoDecoderService::OnDecoderRequestedOverlayInfo(
-    bool restart_for_transitions,
     ProvideOverlayInfoCB provide_overlay_info_cb) {
   DVLOG(2) << __func__;
   DCHECK(client_);
@@ -526,7 +525,7 @@ void MojoVideoDecoderService::OnDecoderRequestedOverlayInfo(
                "MojoVideoDecoderService::OnDecoderRequestedOverlayInfo");
 
   provide_overlay_info_cb_ = std::move(provide_overlay_info_cb);
-  client_->RequestOverlayInfo(restart_for_transitions);
+  client_->RequestOverlayInfo();
 }
 
 }  // namespace media
