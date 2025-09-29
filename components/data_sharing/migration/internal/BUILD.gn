@@ -2,6 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("migration_state_proto") {
+  sources = [ "protocol/migration_state.proto" ]
+}
+
 source_set("internal") {
   sources = [
     "migratable_sync_service_coordinator_impl.cc",
