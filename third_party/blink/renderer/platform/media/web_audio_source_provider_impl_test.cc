@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/zip.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/fake_audio_render_callback.h"
@@ -36,6 +37,15 @@ const int kTestSampleRate = 48000;
 
 // TODO(crbug.com/420150619): Re-enable this and make it a global feature.
 constexpr bool kDelayStopForMediaElementSourceNode = false;
+
+std::vector<float*> GetRawChannelPointers(media::AudioBus* bus) {
+  std::vector<float*> channel_pointers;
+  channel_pointers.reserve(static_cast<size_t>(bus->channels()));
+  for (auto channel : bus->AllChannels()) {
+    channel_pointers.push_back(channel.data());
+  }
+  return channel_pointers;
+}
 
 }  // namespace
 
@@ -102,10 +112,9 @@ class WebAudioSourceProviderImplTest : public testing::Test,
   bool CompareBusses(const media::AudioBus* bus1, const media::AudioBus* bus2) {
     EXPECT_EQ(bus1->channels(), bus2->channels());
     EXPECT_EQ(bus1->frames(), bus2->frames());
-    for (int ch = 0; ch < bus1->channels(); ++ch) {
-      if (UNSAFE_TODO(memcmp(bus1->channel(ch), bus2->channel(ch),
-                             sizeof(*bus1->channel(ch)) * bus1->frames())) !=
-          0) {
+    for (auto [ch_1, ch_2] :
+         base::zip(bus1->AllChannels(), bus2->AllChannels())) {
+      if (ch_1 != ch_2) {
         return false;
       }
     }
@@ -182,11 +191,6 @@ TEST_F(WebAudioSourceProviderImplTest, RenderTainted) {
   auto bus = media::AudioBus::Create(params_);
   bus->Zero();
 
-  // Point the std::vector into memory owned by |bus|.
-  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    audio_data[i] = bus->channel(static_cast<int>(i));
-
   wasp_impl_->Initialize(params_, &fake_callback_);
 
   EXPECT_CALL(*mock_sink_, Start());
@@ -212,12 +216,10 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   auto bus2 = media::AudioBus::Create(params_);
 
   // Point the std::vector into memory owned by |bus1|.
-  std::vector<float*> audio_data(static_cast<size_t>(bus1->channels()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    audio_data[i] = bus1->channel(static_cast<int>(i));
+  std::vector<float*> audio_data = GetRawChannelPointers(bus1.get());
 
   // Verify provideInput() works before Initialize() and returns silence.
-  bus1->channel(0)[0] = 1;
+  bus1->channel_span(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -227,7 +229,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
 
   // Verify provideInput() is muted prior to Start() and no calls to the render
   // callback have occurred.
-  bus1->channel(0)[0] = 1;
+  bus1->channel_span(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -236,7 +238,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
   wasp_impl_->Start();
 
   // Ditto for Play().
-  bus1->channel(0)[0] = 1;
+  bus1->channel_span(0)[0] = 1;
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
   ASSERT_EQ(fake_callback_.last_delay(), base::TimeDelta::Max());
@@ -260,7 +262,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
 
   // Pause should return to silence.
   wasp_impl_->Pause();
-  bus1->channel(0)[0] = 1;
+  bus1->channel_span(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -286,7 +288,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInput) {
 
   // Stop() should return silence.
   wasp_impl_->Stop();
-  bus1->channel(0)[0] = 1;
+  bus1->channel_span(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus1.get(), bus2.get()));
@@ -298,9 +300,7 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputTainted) {
   bus->Zero();
 
   // Point the std::vector into memory owned by |bus|.
-  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    audio_data[i] = bus->channel(static_cast<int>(i));
+  std::vector<float*> audio_data = GetRawChannelPointers(bus.get());
 
   wasp_impl_->Initialize(params_, &fake_callback_);
   SetClient(this);
@@ -396,12 +396,10 @@ TEST_F(WebAudioSourceProviderImplTest, MultipleInitializeWithSetClient) {
   auto bus2 = media::AudioBus::Create(stream_params);
 
   // Point the std::vector into memory owned by |bus1|.
-  std::vector<float*> audio_data(static_cast<size_t>(bus1->channels()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    audio_data[i] = bus1->channel(static_cast<int>(i));
+  std::vector<float*> audio_data = GetRawChannelPointers(bus1.get());
 
   // Verify provideInput() doesn't return silence and doesn't crash.
-  bus1->channel(0)[0] = 1;
+  bus1->channel_span(0)[0] = 1;
   bus2->Zero();
   wasp_impl_->ProvideInput(audio_data, params_.frames_per_buffer());
   ASSERT_FALSE(CompareBusses(bus1.get(), bus2.get()));
@@ -432,15 +430,13 @@ TEST_F(WebAudioSourceProviderImplTest, ProvideInputDifferentChannelCount) {
   auto bus = media::AudioBus::Create(mono_params);
 
   // Point the std::vector into memory owned by |bus|.
-  std::vector<float*> audio_data(static_cast<size_t>(bus->channels()));
-  for (size_t i = 0; i < audio_data.size(); ++i)
-    audio_data[i] = bus->channel(static_cast<int>(i));
+  std::vector<float*> audio_data = GetRawChannelPointers(bus.get());
 
   auto zero_bus = media::AudioBus::Create(mono_params);
   zero_bus->Zero();
 
   // Verify ProvideInput() returns silence and doesn't crash.
-  bus->channel(0)[0] = 1;
+  bus->channel_span(0)[0] = 1;
   wasp_impl_->ProvideInput(audio_data, mono_params.frames_per_buffer());
   ASSERT_TRUE(CompareBusses(bus.get(), zero_bus.get()));
 }

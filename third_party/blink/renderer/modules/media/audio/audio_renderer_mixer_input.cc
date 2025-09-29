@@ -254,16 +254,14 @@ double AudioRendererMixerInput::ProvideInput(
 
     DCHECK_LE(remaining_fade_in_frames_, total_fade_in_frames_);
     const int start_volume = total_fade_in_frames_ - remaining_fade_in_frames_;
+    const float fade_in_step = 1.0f / total_fade_in_frames_;
     DCHECK_GE(start_volume, 0);
 
     // Apply a perfect linear fade-in. Fading-in in steps (e.g. increasing
     // volume by 10% every 1ms over 10ms) introduces high frequency distortions.
-    for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      float* data = audio_bus->channel(ch);
-
+    for (auto channel : audio_bus->AllChannels()) {
       for (int i = 0; i < frames; ++i) {
-        UNSAFE_TODO(data[i]) *=
-            static_cast<float>(start_volume + i) / total_fade_in_frames_;
+        channel[i] *= static_cast<float>(start_volume + i) * fade_in_step;
       }
     }
 

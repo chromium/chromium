@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_glitch_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,9 +53,9 @@ void VerifyAudioDataEqual(const media::AudioBus& first,
                           const media::AudioBus& second) {
   DCHECK_EQ(first.channels(), second.channels());
   DCHECK_EQ(first.frames(), second.frames());
-  for (int ch = 0; ch < first.channels(); ++ch) {
-    UNSAFE_TODO(EXPECT_EQ(0, memcmp(first.channel(ch), second.channel(ch),
-                                    sizeof(float) * first.frames())));
+  for (auto [first_ch, second_ch] :
+       base::zip(first.AllChannels(), second.AllChannels())) {
+    EXPECT_EQ(first_ch, second_ch);
   }
 }
 

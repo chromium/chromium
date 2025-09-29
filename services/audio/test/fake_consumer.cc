@@ -41,10 +41,10 @@ void FakeConsumer::Clear() {
 
 void FakeConsumer::Consume(const media::AudioBus& bus) {
   CHECK_EQ(static_cast<int>(recorded_channel_data_.size()), bus.channels());
-  for (int ch = 0; ch < static_cast<int>(recorded_channel_data_.size()); ++ch) {
-    const float* const src = bus.channel(ch);
+  for (size_t ch = 0; ch < recorded_channel_data_.size(); ++ch) {
+    base::span<const float> src_ch = bus.channel_span(ch);
     std::vector<float>& samples = recorded_channel_data_[ch];
-    samples.insert(samples.end(), src, UNSAFE_TODO(src + bus.frames()));
+    samples.insert(samples.end(), src_ch.begin(), src_ch.end());
   }
 }
 
@@ -129,18 +129,21 @@ void FakeConsumer::SaveToFile(const base::FilePath& path) const {
     task_environment = std::make_unique<base::test::TaskEnvironment>();
   }
 
+  const size_t number_of_samples = recorded_channel_data_[0].size();
+
   const media::AudioParameters params(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
       media::ChannelLayoutConfig::Guess(recorded_channel_data_.size()),
-      sample_rate_, recorded_channel_data_[0].size());
+      sample_rate_, number_of_samples);
   base::File file(path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
                             base::File::FLAG_WRITE);
   CHECK(file.IsValid());
   auto writer = media::AudioDebugFileWriter::Create(params, std::move(file));
   auto bus = media::AudioBus::Create(params);
   for (int i = 0; i < params.channels(); ++i) {
-    UNSAFE_TODO(memcpy(bus->channel(i), recorded_channel_data_[i].data(),
-                       sizeof(float) * recorded_channel_data_[i].size()));
+    CHECK_EQ(recorded_channel_data_[i].size(), number_of_samples);
+    const std::vector<float>& channel_data = recorded_channel_data_[i];
+    bus->channel_span(i).copy_from_nonoverlapping(base::span(channel_data));
   }
   writer->Write(*bus);
 }
