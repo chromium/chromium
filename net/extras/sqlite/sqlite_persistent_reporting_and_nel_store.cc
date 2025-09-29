@@ -80,7 +80,8 @@ base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
 [[nodiscard]] bool NetworkAnonymizationKeyFromString(
     std::string_view string,
     NetworkAnonymizationKey* out_network_anonymization_key) {
-  std::optional<base::Value> value = base::JSONReader::Read(string);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return false;
 

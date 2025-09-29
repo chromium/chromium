@@ -1817,7 +1817,7 @@ TEST(HostCacheTest, DeserializeNoEndpointNoAliase) {
       (base::Time::Now() + ttl).since_origin().InMicroseconds());
 
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "dns_query_type": 1,
    "expiration": "%s",
@@ -1830,7 +1830,8 @@ TEST(HostCacheTest, DeserializeNoEndpointNoAliase) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);
@@ -1858,7 +1859,7 @@ TEST(HostCacheTest, DeserializeLegacyAddresses) {
       (base::Time::Now() + ttl).since_origin().InMicroseconds());
 
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "addresses": [ "2000::", "1.2.3.4" ],
    "dns_query_type": 1,
@@ -1872,7 +1873,8 @@ TEST(HostCacheTest, DeserializeLegacyAddresses) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);
@@ -1902,7 +1904,7 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeIntegrity) {
 
   // RestoreFromListValue doesn't support dns_query_type=6 (INTEGRITY).
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "addresses": [ "2000::", "1.2.3.4" ],
    "dns_query_type": 6,
@@ -1916,7 +1918,8 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeIntegrity) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);
@@ -1933,7 +1936,7 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeHttpsExperimental) {
 
   // RestoreFromListValue doesn't support dns_query_type=8 (HTTPS_EXPERIMENTAL).
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "addresses": [ "2000::", "1.2.3.4" ],
    "dns_query_type": 8,
@@ -1947,7 +1950,8 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeHttpsExperimental) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);

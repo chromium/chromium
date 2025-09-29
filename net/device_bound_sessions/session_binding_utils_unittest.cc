@@ -29,7 +29,8 @@ base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
   std::string json;
   EXPECT_TRUE(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &json));
-  std::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(result.has_value());
   return std::move(*result);
 }
@@ -62,7 +63,9 @@ TEST(SessionBindingUtilsTest, CreateLegacyKeyRegistrationHeaderAndPayload) {
           .Set("aud", "https://accounts.example.test/RegisterKey")
           .Set("jti", "test_challenge")
           .Set("iat", 17280000)
-          .Set("key", base::JSONReader::Read(jwk).value())
+          .Set("key",
+               base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                   .value())
           .Set("authorization", "auth")
           .Set("sub", "session_id");
 
@@ -97,7 +100,9 @@ TEST(SessionBindingUtilsTest,
           .Set("aud", "https://accounts.example.test/RegisterKey")
           .Set("jti", "test_challenge")
           .Set("iat", 17280000)
-          .Set("key", base::JSONReader::Read(jwk).value())
+          .Set("key",
+               base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                   .value())
           .Set("sub", "session_id");
 
   EXPECT_EQ(actual_header, expected_header);
@@ -132,7 +137,9 @@ TEST(SessionBindingUtilsTest,
           .Set("aud", "https://accounts.example.test/RegisterKey")
           .Set("jti", "test_challenge")
           .Set("iat", 17280000)
-          .Set("key", base::JSONReader::Read(jwk).value())
+          .Set("key",
+               base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                   .value())
           .Set("authorization", "authorization");
 
   EXPECT_EQ(actual_header, expected_header);
@@ -160,7 +167,9 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
       base::Value::Dict()
           .Set("alg", "RS256")
           .Set("typ", "dbsc+jwt")
-          .Set("jwk", base::JSONReader::Read(jwk).value());
+          .Set("jwk",
+               base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                   .value());
   base::Value::Dict expected_payload = base::Value::Dict()
                                            .Set("jti", "test_challenge")
                                            .Set("authorization", "auth");
@@ -191,7 +200,9 @@ TEST(SessionBindingUtilsTest,
       base::Value::Dict()
           .Set("alg", "RS256")
           .Set("typ", "dbsc+jwt")
-          .Set("jwk", base::JSONReader::Read(jwk).value());
+          .Set("jwk",
+               base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                   .value());
   base::Value::Dict expected_payload =
       base::Value::Dict().Set("jti", "test_challenge");
 

@@ -62,7 +62,8 @@ TEST(JWKUtilsTest, UnsupportedAlgo) {
 TEST(JWKUtilsTest, RS256) {
   auto [spki, jwk] = GetRS256SpkiAndJwkForTesting();
 
-  base::Value expected = base::JSONReader::Read(jwk).value();
+  base::Value expected =
+      base::JSONReader::Read(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS).value();
   base::Value::Dict converted =
       ConvertPkeySpkiToJwk(crypto::SignatureVerifier::RSA_PKCS1_SHA256, spki);
   EXPECT_EQ(converted, expected);
@@ -75,7 +76,9 @@ TEST(JWKUtilsTest, ES256) {
     "x": "heUidIx0GC1lJWxEGSliA2J6NY4uUuZY5QYVvB5BQhU",
     "y": "AHdtNFoxemoUM20ldTE7uaRpgsgEJDLjgkZ_L7Q7Rn4"})json";
 
-  base::Value expected = base::JSONReader::Read(kJwk).value();
+  base::Value expected =
+      base::JSONReader::Read(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value();
   base::Value::Dict converted =
       ConvertPkeySpkiToJwk(crypto::SignatureVerifier::ECDSA_SHA256, kES256Spki);
   EXPECT_EQ(converted, expected);
@@ -116,7 +119,8 @@ TEST(JWKUtilsTest, CreateJwkThumbprintRS256) {
   })json";
   ASSERT_EQ(
       ConvertPkeySpkiToJwk(crypto::SignatureVerifier::RSA_PKCS1_SHA256, kSpki),
-      base::JSONReader::Read(kJwk).value());
+      base::JSONReader::Read(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value());
 
   static constexpr char kExpectedThumbprint[] =
       "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs";

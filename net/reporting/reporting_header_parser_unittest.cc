@@ -204,7 +204,8 @@ class ReportingHeaderParserTest : public ReportingHeaderParserTestBase {
   void ParseHeader(const NetworkAnonymizationKey& network_anonymization_key,
                    const url::Origin& origin,
                    const std::string& json) {
-    std::optional<base::Value> value = base::JSONReader::Read("[" + json + "]");
+    std::optional<base::Value> value = base::JSONReader::Read(
+        "[" + json + "]", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (value) {
       ReportingHeaderParser::ParseReportToHeader(
           context(), network_anonymization_key, origin, value->GetList());

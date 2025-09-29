@@ -22,8 +22,8 @@
 namespace net::ct {
 
 TEST(CTLogResponseParserTest, ParsesValidJsonSTH) {
-  std::optional<base::Value> sample_sth_json =
-      base::JSONReader::Read(GetSampleSTHAsJson());
+  std::optional<base::Value> sample_sth_json = base::JSONReader::Read(
+      GetSampleSTHAsJson(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   SignedTreeHead tree_head;
   EXPECT_TRUE(FillSignedTreeHead(*sample_sth_json, &tree_head));
 
@@ -48,14 +48,16 @@ TEST(CTLogResponseParserTest, ParsesValidJsonSTH) {
 TEST(CTLogResponseParserTest, FailsToParseMissingFields) {
   std::optional<base::Value> missing_signature_sth = base::JSONReader::Read(
       CreateSignedTreeHeadJsonString(1 /* tree_size */, 123456u /* timestamp */,
-                                     GetSampleSTHSHA256RootHash(), ""));
+                                     GetSampleSTHSHA256RootHash(), ""),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   SignedTreeHead tree_head;
   ASSERT_FALSE(FillSignedTreeHead(*missing_signature_sth, &tree_head));
 
   std::optional<base::Value> missing_root_hash_sth = base::JSONReader::Read(
       CreateSignedTreeHeadJsonString(1 /* tree_size */, 123456u /* timestamp */,
-                                     {}, GetSampleSTHTreeHeadSignature()));
+                                     {}, GetSampleSTHTreeHeadSignature()),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_FALSE(FillSignedTreeHead(*missing_root_hash_sth, &tree_head));
 }
 
@@ -68,8 +70,9 @@ TEST(CTLogResponseParserTest, FailsToParseIncorrectLengthRootHash) {
       &too_long_hash);
   std::optional<base::Value> too_long_hash_json =
       base::JSONReader::Read(CreateSignedTreeHeadJsonString(
-          1 /* tree_size */, 123456u /* timestamp */,
-          GetSampleSTHSHA256RootHash(), too_long_hash));
+                                 1 /* tree_size */, 123456u /* timestamp */,
+                                 GetSampleSTHSHA256RootHash(), too_long_hash),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_FALSE(FillSignedTreeHead(*too_long_hash_json, &tree_head));
 
   std::string too_short_hash;
@@ -78,18 +81,20 @@ TEST(CTLogResponseParserTest, FailsToParseIncorrectLengthRootHash) {
       &too_short_hash);
   std::optional<base::Value> too_short_hash_json =
       base::JSONReader::Read(CreateSignedTreeHeadJsonString(
-          1 /* tree_size */, 123456u /* timestamp */,
-          GetSampleSTHSHA256RootHash(), too_short_hash));
+                                 1 /* tree_size */, 123456u /* timestamp */,
+                                 GetSampleSTHSHA256RootHash(), too_short_hash),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_FALSE(FillSignedTreeHead(*too_short_hash_json, &tree_head));
 }
 
 TEST(CTLogResponseParserTest, ParsesJsonSTHWithLargeTimestamp) {
   SignedTreeHead tree_head;
 
-  std::optional<base::Value> large_timestamp_json =
-      base::JSONReader::Read(CreateSignedTreeHeadJsonString(
-          100, INT64_C(1) << 34, GetSampleSTHSHA256RootHash(),
-          GetSampleSTHTreeHeadSignature()));
+  std::optional<base::Value> large_timestamp_json = base::JSONReader::Read(
+      CreateSignedTreeHeadJsonString(100, INT64_C(1) << 34,
+                                     GetSampleSTHSHA256RootHash(),
+                                     GetSampleSTHTreeHeadSignature()),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(FillSignedTreeHead(*large_timestamp_json, &tree_head));
 
@@ -109,7 +114,8 @@ TEST(CTLogResponseParserTest, ParsesConsistencyProofSuccessfully) {
   raw_nodes.push_back(second);
   raw_nodes.push_back(third);
   std::optional<base::Value> sample_consistency_proof =
-      base::JSONReader::Read(CreateConsistencyProofJsonString(raw_nodes));
+      base::JSONReader::Read(CreateConsistencyProofJsonString(raw_nodes),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   std::vector<std::string> output;
 
@@ -124,19 +130,21 @@ TEST(CTLogResponseParserTest, FailsOnInvalidProofJson) {
   std::vector<std::string> output;
 
   std::optional<base::Value> badly_encoded =
-      base::JSONReader::Read(std::string("{\"consistency\": [\"notbase64\"]}"));
+      base::JSONReader::Read(std::string("{\"consistency\": [\"notbase64\"]}"),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_FALSE(FillConsistencyProof(*badly_encoded, &output));
 
   std::optional<base::Value> not_a_string =
-      base::JSONReader::Read(std::string("{\"consistency\": [42, 16]}"));
+      base::JSONReader::Read(std::string("{\"consistency\": [42, 16]}"),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_FALSE(FillConsistencyProof(*badly_encoded, &output));
 
-  std::optional<base::Value> missing_consistency =
-      base::JSONReader::Read(std::string("{}"));
+  std::optional<base::Value> missing_consistency = base::JSONReader::Read(
+      std::string("{}"), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_FALSE(FillConsistencyProof(*missing_consistency, &output));
 
-  std::optional<base::Value> not_a_dict =
-      base::JSONReader::Read(std::string("[]"));
+  std::optional<base::Value> not_a_dict = base::JSONReader::Read(
+      std::string("[]"), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_FALSE(FillConsistencyProof(*not_a_dict, &output));
 }
 
@@ -144,7 +152,8 @@ TEST(CTLogResponseParserTest, ParsesProofJsonWithExtraFields) {
   std::vector<std::string> output;
 
   std::optional<base::Value> badly_encoded = base::JSONReader::Read(
-      std::string("{\"consistency\": [], \"somethingelse\": 3}"));
+      std::string("{\"consistency\": [], \"somethingelse\": 3}"),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(FillConsistencyProof(*badly_encoded, &output));
 }
 

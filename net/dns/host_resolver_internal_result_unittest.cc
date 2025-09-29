@@ -148,7 +148,8 @@ TEST(HostResolverInternalResultTest, SerializepDataResult) {
           "timed_expiration": "0",
           "type": "data"
         }
-        )");
+        )",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
 
   EXPECT_EQ(value, expected.value());
@@ -328,7 +329,8 @@ TEST(HostResolverInternalResultTest, SerializepMetadataResult) {
           "timed_expiration": "0",
           "type": "metadata"
         }
-        )");
+        )",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
 
   EXPECT_EQ(value, expected.value());
@@ -516,7 +518,8 @@ TEST(HostResolverInternalResultTest, SerializepErrorResult) {
           "timed_expiration": "0",
           "type": "error"
         }
-        )");
+        )",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
 
   EXPECT_EQ(value, expected.value());
@@ -637,7 +640,8 @@ TEST(HostResolverInternalResultTest, SerializepAliasResult) {
           "timed_expiration": "0",
           "type": "alias"
         }
-        )");
+        )",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(expected.has_value());
 
   EXPECT_EQ(value, expected.value());
