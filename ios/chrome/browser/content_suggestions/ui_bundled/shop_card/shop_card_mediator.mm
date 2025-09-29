@@ -218,7 +218,6 @@ int GetImpressionLimit() {
     }
 
     _shoppingDataForShopCardFound = true;
-    [self populateShopCardItem:specifics bookmark:bookmark];
 
     GURL productImageUrl = GURL(meta->lead_image().url());
     __weak ShopCardMediator* weakSelf = self;
@@ -230,6 +229,7 @@ int GetImpressionLimit() {
           if (!strongSelf || !strongSelf.delegate) {
             return;
           }
+          [strongSelf populateShopCardItem:specifics url:bookmark->url()];
           [strongSelf onProductImageFetchedResult:imageData
                                        productUrl:GURL(bookmark->url())];
         }),
@@ -240,7 +240,7 @@ int GetImpressionLimit() {
 }
 
 - (void)populateShopCardItem:(const power_bookmarks::ShoppingSpecifics)specifics
-                    bookmark:(const bookmarks::BookmarkNode*)bookmark {
+                         url:(const GURL&)url {
   _shopCardItem = [[ShopCardItem alloc] init];
   _shopCardItem.delegate = self;
   _shopCardItem.shopCardData = [[ShopCardData alloc] init];
@@ -269,7 +269,7 @@ int GetImpressionLimit() {
   priceDrop.previous_price = [self GetFormattedPrice:formatter.get()
                                         price_micros:previous_price_micros];
   _shopCardItem.shopCardData.priceDrop = priceDrop;
-  _shopCardItem.shopCardData.productURL = bookmark->url();
+  _shopCardItem.shopCardData.productURL = url;
   _shopCardItem.shopCardData.productTitle =
       [NSString stringWithUTF8String:specifics.title().c_str()];
 
@@ -280,7 +280,7 @@ int GetImpressionLimit() {
       base::SysNSStringToUTF16(
           _shopCardItem.shopCardData.priceDrop->current_price),
       base::SysNSStringToUTF16(_shopCardItem.shopCardData.productTitle),
-      GetHostnameFromGURL(bookmark->url()));
+      GetHostnameFromGURL(url));
 }
 
 std::u16string GetHostnameFromGURL(const GURL& url) {
