@@ -100,7 +100,7 @@ using base::UserMetricsAction;
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&
       [self.NTPDelegate isSignInAllowed] &&
-      !authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+      !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 
   // If the user is signed out and signin is allowed, then start the top-of-feed
   // signin promo components.
