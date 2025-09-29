@@ -301,7 +301,7 @@ ClientSharedImage::CreateMappableBufferFromHandle(
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
       return MappableBufferSharedMemory::CreateFromHandle(std::move(handle),
-                                                          size, format, usage);
+                                                          size, format);
 #if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER: {
       bool is_read_only_cpu_usage =
@@ -810,7 +810,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
   MappableBufferSharedMemory::AllocateForTesting(
       info.meta.size, info.meta.format, buffer_usage, &handle);
   auto mappable_buffer = MappableBufferSharedMemory::CreateFromHandle(
-      std::move(handle), info.meta.size, info.meta.format, buffer_usage);
+      std::move(handle), info.meta.size, info.meta.format);
 
   // Since the |mappable_buffer| here is always a shared memory, clear the
   // external sampler prefs if it is already set by client.

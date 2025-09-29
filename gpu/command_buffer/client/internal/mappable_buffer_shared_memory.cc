@@ -24,7 +24,6 @@ namespace gpu {
 MappableBufferSharedMemory::MappableBufferSharedMemory(
     const gfx::Size& size,
     viz::SharedImageFormat format,
-    gfx::BufferUsage usage,
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::WritableSharedMemoryMapping shared_memory_mapping,
     size_t offset,
@@ -56,8 +55,7 @@ void MappableBufferSharedMemory::AssertMapped() {
 std::unique_ptr<MappableBufferSharedMemory>
 MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
                                              const gfx::Size& size,
-                                             viz::SharedImageFormat format,
-                                             gfx::BufferUsage usage) {
+                                             viz::SharedImageFormat format) {
   DCHECK(handle.region().IsValid());
   CHECK(viz::HasEquivalentBufferFormat(format));
 
@@ -108,7 +106,7 @@ MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
   const uint32_t offset = handle.offset;
   const uint32_t stride = handle.stride;
   return base::WrapUnique(new MappableBufferSharedMemory(
-      size, format, usage, std::move(handle).region(),
+      size, format, std::move(handle).region(),
       base::WritableSharedMemoryMapping(), offset, stride));
 }
 
