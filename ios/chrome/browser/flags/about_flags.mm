@@ -2961,7 +2961,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAIMPrototypeImmersiveSRPName,
      flag_descriptions::kAIMPrototypeImmersiveSRPDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAIMPrototypeImmersiveSRP)},
-};
+    {"ios-custom-file-upload-menu",
+     flag_descriptions::kIOSCustomFileUploadMenuName,
+     flag_descriptions::kIOSCustomFileUploadMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSCustomFileUploadMenu)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

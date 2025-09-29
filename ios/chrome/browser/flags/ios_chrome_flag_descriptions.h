@@ -420,6 +420,9 @@ extern const char kIOSAppBundlePromoEphemeralCardDescription[];
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 
+extern const char kIOSCustomFileUploadMenuName[];
+extern const char kIOSCustomFileUploadMenuDescription[];
+
 extern const char kIOSDockingPromoName[];
 extern const char kIOSDockingPromoDescription[];
 

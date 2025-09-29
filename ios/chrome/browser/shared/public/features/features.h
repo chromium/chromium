@@ -158,6 +158,9 @@ BASE_DECLARE_FEATURE(kShareInWebContextMenuIOS);
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
+// Feature flag to enable the custom file upload menu.
+BASE_DECLARE_FEATURE(kIOSCustomFileUploadMenu);
+
 // Docking Promo experiment variations.
 
 // A parameter representing the experimental arm for when the Docking Promo is
