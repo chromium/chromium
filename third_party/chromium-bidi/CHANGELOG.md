@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [9.2.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.1.0...chromium-bidi-v9.2.0) (2025-09-29)
+
+
+### Features
+
+* respect `network.addDataCollector: maxEncodedDataSize` param ([#3782](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3782)) ([7471cee](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7471cee0a91330ff4d8799ca833f4d565a5626dd))
+
 ## [9.1.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v9.0.0...chromium-bidi-v9.1.0) (2025-09-23)
 
 
