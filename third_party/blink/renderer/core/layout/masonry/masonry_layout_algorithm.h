@@ -145,9 +145,7 @@ class CORE_EXPORT MasonryLayoutAlgorithm
       const GridItemData& masonry_item,
       const LogicalSize& containing_size,
       const LogicalSize& fixed_available_size,
-      LayoutResultCacheSlot result_cache_slot,
-      const std::optional<LogicalSize>& opt_percentage_resolution_size =
-          std::nullopt) const;
+      LayoutResultCacheSlot result_cache_slot) const;
 
   // Return the inline contribution of `masonry_item` calculated to either the
   // min-width or the max-width based on `sizing_constraint`.
@@ -166,7 +164,6 @@ class CORE_EXPORT MasonryLayoutAlgorithm
 
   ConstraintSpace CreateConstraintSpaceForMeasure(
       const GridItemData& masonry_item,
-      const bool needs_intrinsic_track_size = false,
       std::optional<LayoutUnit> opt_fixed_inline_size = std::nullopt,
       bool is_for_min_max_sizing = false) const;
 

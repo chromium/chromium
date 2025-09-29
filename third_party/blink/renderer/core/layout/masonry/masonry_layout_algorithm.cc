@@ -335,7 +335,7 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
                             masonry_item, track_collection,
                             opt_fixed_inline_size, &containing_rect)
                       : CreateConstraintSpaceForMeasure(
-                            masonry_item, /*needs_auto_track_size=*/false,
+                            masonry_item,
                             CalculateItemInlineContribution(masonry_item,
                                                             *sizing_constraint),
                             /*is_for_min_max_sizing=*/true);
@@ -598,8 +598,7 @@ GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(
     for (const Member<GridItemData>& group_item : group_items) {
       const GridItemData& item_data = *group_item;
       const BlockNode& item_node = item_data.node;
-      const auto space = CreateConstraintSpaceForMeasure(
-          item_data, needs_intrinsic_track_size);
+      const auto space = CreateConstraintSpaceForMeasure(item_data);
       const ComputedStyle& item_style = item_node.Style();
 
       bool is_parallel = IsParallelWritingMode(
@@ -769,7 +768,7 @@ LayoutUnit MasonryLayoutAlgorithm::ComputeMasonryItemBlockContribution(
                                   masonry_item->node, space_for_measure)
                                   .sizes;
     const auto fallback_space = CreateConstraintSpaceForMeasure(
-        *masonry_item, needs_intrinsic_track_size,
+        *masonry_item,
         /*opt_fixed_inline_size=*/sizing_constraint ==
                 SizingConstraint::kMinContent
             ? sizes.min_size
@@ -984,8 +983,7 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
     const GridItemData& masonry_item,
     const LogicalSize& containing_size,
     const LogicalSize& fixed_available_size,
-    LayoutResultCacheSlot result_cache_slot,
-    const std::optional<LogicalSize>& opt_percentage_resolution_size) const {
+    LayoutResultCacheSlot result_cache_slot) const {
   ConstraintSpaceBuilder builder(
       GetConstraintSpace(), masonry_item.node.Style().GetWritingDirection(),
       /*is_new_fc=*/true, /*adjust_inline_size_if_needed=*/false);
@@ -1007,9 +1005,7 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpace(
     builder.SetAvailableSize(available_size);
   }
 
-  builder.SetPercentageResolutionSize(
-      opt_percentage_resolution_size ? opt_percentage_resolution_size.value()
-                                     : containing_size);
+  builder.SetPercentageResolutionSize(containing_size);
   builder.SetInlineAutoBehavior(masonry_item.column_auto_behavior);
   builder.SetBlockAutoBehavior(masonry_item.row_auto_behavior);
   return builder.ToConstraintSpace();
@@ -1076,7 +1072,6 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForLayout(
 
 ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     const GridItemData& masonry_item,
-    const bool needs_intrinsic_track_size,
     std::optional<LayoutUnit> opt_fixed_inline_size,
     bool is_for_min_max_sizing) const {
   LogicalSize containing_size = masonry_available_size_;
@@ -1112,16 +1107,9 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
     }
   }
 
-  // If we are determining the track size of an intrinsic track within an auto
-  // repeat(), we resolve percentages against the container.
-  std::optional<LogicalSize> percentage_resolution_size =
-      needs_intrinsic_track_size
-          ? std::optional<LogicalSize>(masonry_available_size_)
-          : std::nullopt;
-
-  return CreateConstraintSpace(
-      masonry_item, containing_size, fixed_available_size,
-      LayoutResultCacheSlot::kMeasure, percentage_resolution_size);
+  return CreateConstraintSpace(masonry_item, containing_size,
+                               fixed_available_size,
+                               LayoutResultCacheSlot::kMeasure);
 }
 
 // static
