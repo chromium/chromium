@@ -880,7 +880,11 @@ void BocaAppHandler::OnSessionEnded(const std::string& session_id) {
   ResetProducerSessionCaptionConfig();
   OnSessionConfigUpdated(
       mojom::ConfigResult::NewError(mojom::GetSessionError::kEmpty));
-  if (student_screen_presenter()) {
+  if (student_screen_presenter() &&
+      student_screen_presenter()->IsPresenting()) {
+    // Ending the session should disconnect the student remoting so update the
+    // UI.
+    remote_->OnPresentStudentScreenEnded();
     student_screen_presenter()->Stop(base::DoNothing());
   }
 }

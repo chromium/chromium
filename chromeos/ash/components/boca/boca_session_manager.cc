@@ -471,9 +471,6 @@ void BocaSessionManager::SetScreenPresenterFactory(
 }
 
 StudentScreenPresenter* BocaSessionManager::GetStudentScreenPresenter() {
-  if (!IsSessionActive(current_session_.get())) {
-    return nullptr;
-  }
   return student_screen_presenter_.get();
 }
 
