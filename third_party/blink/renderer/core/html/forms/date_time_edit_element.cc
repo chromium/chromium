@@ -70,8 +70,9 @@ class DateTimeEditBuilder : private DateTimeFormat::TokenHandler {
   inline const StepRange& GetStepRange() const {
     return parameters_.step_range;
   }
-  DateTimeNumericFieldElement::Step CreateStep(double ms_per_field_unit,
-                                               double ms_per_field_size) const;
+  DateTimeNumericFieldElement::Step CreateStep(
+      base::TimeDelta per_field_unit,
+      base::TimeDelta per_field_size) const;
 
   // DateTimeFormat::TokenHandler functions.
   void VisitField(DateTimeFormat::FieldType, int) final;
@@ -184,7 +185,7 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
 
     case DateTimeFormat::kFieldTypeHour11: {
       DateTimeNumericFieldElement::Step step =
-          CreateStep(kMsPerHour, kMsPerHour * 12);
+          CreateStep(base::Hours(1), base::Hours(12));
       DateTimeFieldElement* field =
           MakeGarbageCollected<DateTimeHour11FieldElement>(
               document, EditElement(), hour23_range_, step);
@@ -198,7 +199,7 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
 
     case DateTimeFormat::kFieldTypeHour12: {
       DateTimeNumericFieldElement::Step step =
-          CreateStep(kMsPerHour, kMsPerHour * 12);
+          CreateStep(base::Hours(1), base::Hours(12));
       DateTimeFieldElement* field =
           MakeGarbageCollected<DateTimeHour12FieldElement>(
               document, EditElement(), hour23_range_, step);
@@ -212,7 +213,7 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
 
     case DateTimeFormat::kFieldTypeHour23: {
       DateTimeNumericFieldElement::Step step =
-          CreateStep(kMsPerHour, kMsPerDay);
+          CreateStep(base::Hours(1), base::Days(1));
       DateTimeFieldElement* field =
           MakeGarbageCollected<DateTimeHour23FieldElement>(
               document, EditElement(), hour23_range_, step);
@@ -226,7 +227,7 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
 
     case DateTimeFormat::kFieldTypeHour24: {
       DateTimeNumericFieldElement::Step step =
-          CreateStep(kMsPerHour, kMsPerDay);
+          CreateStep(base::Hours(1), base::Days(1));
       DateTimeFieldElement* field =
           MakeGarbageCollected<DateTimeHour24FieldElement>(
               document, EditElement(), hour23_range_, step);
@@ -240,7 +241,7 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
 
     case DateTimeFormat::kFieldTypeMinute: {
       DateTimeNumericFieldElement::Step step =
-          CreateStep(kMsPerMinute, kMsPerHour);
+          CreateStep(base::Minutes(1), base::Hours(1));
       DateTimeNumericFieldElement* field =
           MakeGarbageCollected<DateTimeMinuteFieldElement>(
               document, EditElement(), minute_range_, step);
@@ -315,7 +316,7 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
 
     case DateTimeFormat::kFieldTypeSecond: {
       DateTimeNumericFieldElement::Step step =
-          CreateStep(kMsPerSecond, kMsPerMinute);
+          CreateStep(base::Seconds(1), base::Minutes(1));
       DateTimeNumericFieldElement* field =
           MakeGarbageCollected<DateTimeSecondFieldElement>(
               document, EditElement(), second_range_, step);
@@ -333,7 +334,8 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
     }
 
     case DateTimeFormat::kFieldTypeFractionalSecond: {
-      DateTimeNumericFieldElement::Step step = CreateStep(1, kMsPerSecond);
+      DateTimeNumericFieldElement::Step step =
+          CreateStep(base::Milliseconds(1), base::Seconds(1));
       DateTimeNumericFieldElement* field =
           MakeGarbageCollected<DateTimeMillisecondFieldElement>(
               document, EditElement(), millisecond_range_, step);
@@ -511,10 +513,12 @@ DateTimeEditElement& DateTimeEditBuilder::EditElement() const {
 }
 
 DateTimeNumericFieldElement::Step DateTimeEditBuilder::CreateStep(
-    double ms_per_field_unit,
-    double ms_per_field_size) const {
-  const Decimal ms_per_field_unit_decimal(static_cast<int>(ms_per_field_unit));
-  const Decimal ms_per_field_size_decimal(static_cast<int>(ms_per_field_size));
+    base::TimeDelta per_field_unit,
+    base::TimeDelta per_field_size) const {
+  const Decimal ms_per_field_unit_decimal(
+      static_cast<int>(per_field_unit.InMilliseconds()));
+  const Decimal ms_per_field_size_decimal(
+      static_cast<int>(per_field_size.InMilliseconds()));
   Decimal step_milliseconds = GetStepRange().Step();
   DCHECK(!ms_per_field_unit_decimal.IsZero());
   DCHECK(!ms_per_field_size_decimal.IsZero());
