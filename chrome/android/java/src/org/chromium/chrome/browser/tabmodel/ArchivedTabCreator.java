@@ -10,6 +10,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBuilder;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -118,5 +119,10 @@ public class ArchivedTabCreator extends TabCreator implements NeedsTabModel {
     public Tab createTabWithHistory(@Nullable Tab parent, int type) {
         assert false : "Not reached.";
         return assumeNonNull(null);
+    }
+
+    @Override
+    protected Profile getProfile() {
+        return assumeNonNull(mTabModel.getProfile());
     }
 }

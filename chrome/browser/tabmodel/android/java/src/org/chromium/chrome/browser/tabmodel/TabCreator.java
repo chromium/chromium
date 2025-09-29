@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -171,6 +173,9 @@ public abstract class TabCreator {
      */
     public @Nullable abstract Tab createTabWithHistory(Tab parent, @TabLaunchType int type);
 
+    /** Returns the {@link Profile} associated with this TabCreator. */
+    protected abstract Profile getProfile();
+
     /** Creates a new tab and loads the NTP. */
     public final void launchNtp() {
         launchNtp(TabLaunchType.FROM_CHROME_UI);
@@ -180,7 +185,9 @@ public abstract class TabCreator {
     public final void launchNtp(@TabLaunchType int type) {
         try {
             TraceEvent.begin("TabCreator.launchNtp");
-            launchUrl(UrlConstants.NTP_URL, type);
+            UrlConstantResolver urlConstantResolver =
+                    UrlConstantResolverFactory.getForProfile(getProfile());
+            launchUrl(urlConstantResolver.getNtpUrl(), type);
         } finally {
             TraceEvent.end("TabCreator.launchNtp");
         }

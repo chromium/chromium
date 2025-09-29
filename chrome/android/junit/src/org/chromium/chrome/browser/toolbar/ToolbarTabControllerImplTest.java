@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -302,12 +304,14 @@ public class ToolbarTabControllerImplTest {
     }
 
     private void initToolbarTabController() {
+        UrlConstantResolver urlConstantResolver =
+                UrlConstantResolverFactory.getForProfile(/* profile= */ null);
         mToolbarTabController =
                 new ToolbarTabControllerImpl(
                         mTabSupplier,
                         mTrackerSupplier,
                         mBottomControlsCoordinatorSupplier,
-                        ToolbarManager::homepageUrl,
+                        urlConstantResolver::getNtpUrl,
                         mRunnable,
                         mActivityTabProvider,
                         mTabCreatorManager,

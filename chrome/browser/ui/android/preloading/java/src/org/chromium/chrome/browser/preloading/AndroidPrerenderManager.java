@@ -13,7 +13,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
@@ -35,7 +36,9 @@ public class AndroidPrerenderManager {
                 public void onContentChanged(Tab tab) {
                     // Opening or navigating back to a new tab page will trigger onContentChanged as
                     // well, resetting variables in this scenario should be avoided.
-                    if (tab.getUrl().getSpec().equals(UrlConstants.NTP_URL)
+                    UrlConstantResolver urlConstantResolver =
+                            UrlConstantResolverFactory.getForProfile(tab.getProfile());
+                    if (tab.getUrl().getSpec().equals(urlConstantResolver.getNtpUrl())
                             || tab.getUrl().getSpec().equals("")) {
                         return;
                     }

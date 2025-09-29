@@ -29,6 +29,7 @@ import android.text.format.DateUtils;
 
 import androidx.test.filters.SmallTest;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -108,6 +109,7 @@ public class ReturnToChromeUtilUnitTest {
     @Mock private TabCreator mTabCreater;
     @Mock private Tab mTab1;
     @Mock private Tab mNtpTab;
+    @Mock private Profile mProfile;
     @Mock private NewTabPage mNewTabPage;
     @Mock private HomeSurfaceTracker mHomeSurfaceTracker;
     @Mock private Bundle mSaveInstanceState;
@@ -122,6 +124,9 @@ public class ReturnToChromeUtilUnitTest {
         HomepageManager.setInstanceForTesting(mHomepageManager);
         doReturn(true).when(mHomepageManager).isHomepageEnabled();
         doReturn(UrlConstants.ntpGurl()).when(mHomepageManager).getHomepageGurl();
+
+        doReturn(mProfile).when(mCurrentTabModel).getProfile();
+        doReturn(mCurrentTabModel).when(mTabModelSelector).getCurrentModel();
 
         ShadowHomepagePolicyManager.sIsInitialized = true;
         assertTrue(HomepagePolicyManager.isInitializedWithNative());

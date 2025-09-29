@@ -59,12 +59,13 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
@@ -419,11 +420,15 @@ public class TabGroupUiMediator implements BackPressHandler {
 
                     assert relatedTabs.size() > 0;
 
+                    Profile currentTabProfile = currentTab.getProfile();
+                    UrlConstantResolver urlConstantResolver =
+                            UrlConstantResolverFactory.getForProfile(currentTabProfile);
+
                     Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
                     mTabCreatorManager
                             .getTabCreator(currentTab.isIncognito())
                             .createNewTab(
-                                    new LoadUrlParams(UrlConstants.NTP_URL),
+                                    new LoadUrlParams(urlConstantResolver.getNtpUrl()),
                                     TabLaunchType.FROM_TAB_GROUP_UI,
                                     parentTabToAttach);
                     RecordUserAction.record(

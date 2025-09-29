@@ -172,7 +172,8 @@ public class ChromeTabCreator extends TabCreator
         }
     }
 
-    private Profile getProfile() {
+    @Override
+    protected Profile getProfile() {
         return ProfileProvider.getOrCreateProfile(
                 assertNonNull(mProfileProviderSupplier.get()), mIncognito);
     }

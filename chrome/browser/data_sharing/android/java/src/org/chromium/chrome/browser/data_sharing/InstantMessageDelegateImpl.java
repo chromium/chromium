@@ -24,9 +24,12 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
@@ -40,7 +43,6 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -353,7 +355,10 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
             @Nullable Token tabGroupId,
             @Nullable String url,
             TabGroupModelFilter tabGroupModelFilter) {
-        url = TextUtils.isEmpty(url) ? UrlConstants.NTP_URL : url;
+        Profile currentProfile = tabGroupModelFilter.getTabModel().getProfile();
+        UrlConstantResolver urlConstantResolver =
+                UrlConstantResolverFactory.getForProfile(currentProfile);
+        url = TextUtils.isEmpty(url) ? urlConstantResolver.getNtpUrl() : url;
         int tabId = tabGroupModelFilter.getGroupLastShownTabId(tabGroupId);
         TabGroupUtils.openUrlInGroup(
                 tabGroupModelFilter, url, tabId, TabLaunchType.FROM_TAB_GROUP_UI);

@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
@@ -125,7 +127,9 @@ public class IncognitoNewTabPage extends BasicNativePage
 
     @Override
     public String getUrl() {
-        return UrlConstants.NTP_URL;
+        UrlConstantResolver urlConstantResolver =
+                UrlConstantResolverFactory.getForProfile(mProfile);
+        return urlConstantResolver.getNtpUrl();
     }
 
     @Override

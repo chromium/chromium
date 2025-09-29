@@ -28,7 +28,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteProto.AutocompleteResultProto;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -172,7 +173,9 @@ public class CachedZeroSuggestionsManager {
      */
     public static JumpStartContext readJumpStartContext() {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        String url = prefs.getString(KEY_JUMP_START_URL, UrlConstants.NTP_URL);
+        UrlConstantResolver defaultResolver =
+                UrlConstantResolverFactory.getForProfile(/* profile= */ null);
+        String url = prefs.getString(KEY_JUMP_START_URL, defaultResolver.getNtpUrl());
         int pageClass =
                 prefs.getInt(
                         KEY_JUMP_START_PAGE_CLASS,
