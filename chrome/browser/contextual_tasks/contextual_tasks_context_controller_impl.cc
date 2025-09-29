@@ -62,6 +62,13 @@ void ContextualTasksContextControllerImpl::DetachUrlFromTask(
   service_->DetachUrlFromTask(task_id, url);
 }
 
+void ContextualTasksContextControllerImpl::GetContextForTask(
+    const base::Uuid& task_id,
+    base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+        context_callback) {
+  service_->GetContextForTask(task_id, std::move(context_callback));
+}
+
 FeatureEligibility
 ContextualTasksContextControllerImpl::GetFeatureEligibility() {
   return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),

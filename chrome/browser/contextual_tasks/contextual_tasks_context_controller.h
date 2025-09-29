@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
 
@@ -60,6 +61,13 @@ class ContextualTasksContextController : public KeyedService {
   // Detaches a URL from a `ContextualTask`.
   virtual void DetachUrlFromTask(const base::Uuid& task_id,
                                  const GURL& url) = 0;
+
+  // Gets the context for a given task. The `context_callback` will receive the
+  // context if the task is found, or `std::nullopt` otherwise.
+  virtual void GetContextForTask(
+      const base::Uuid& task_id,
+      base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+          context_callback) = 0;
 
   // Returns whether there are any available backends that are eligible for use.
   virtual FeatureEligibility GetFeatureEligibility() = 0;

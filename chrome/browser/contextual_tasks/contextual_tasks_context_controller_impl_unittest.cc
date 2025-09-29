@@ -134,6 +134,23 @@ class ContextualTasksContextControllerImplTest : public testing::Test {
     return task;
   }
 
+  std::optional<ContextualTaskContext> GetContextForTask(
+      const base::Uuid& task_id) {
+    std::optional<ContextualTaskContext> context;
+    base::RunLoop run_loop;
+    controller_->GetContextForTask(
+        task_id, base::BindOnce(
+                     [](std::optional<ContextualTaskContext>* out_context,
+                        base::OnceClosure quit_closure,
+                        std::optional<ContextualTaskContext> result) {
+                       *out_context = std::move(result);
+                       std::move(quit_closure).Run();
+                     },
+                     &context, run_loop.QuitClosure()));
+    run_loop.Run();
+    return context;
+  }
+
   std::optional<ContextualTask> GetSelectedTaskForTab(
       SessionID tab_session_id) {
     std::optional<ContextualTask> task;
@@ -260,6 +277,46 @@ TEST_F(ContextualTasksContextControllerImplTest, DetachUrlFromTask) {
   EXPECT_CALL(mock_service_, DetachUrlFromTask(task_id, url)).Times(1);
 
   controller_->DetachUrlFromTask(task_id, url);
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  GURL url1("https://example.com/1");
+  GURL url2("https://example.com/2");
+  task.AddUrl(url1);
+  task.AddUrl(url2);
+
+  ContextualTaskContext expected_context(task);
+
+  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _))
+      .WillOnce(
+          [&](const base::Uuid&,
+              base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+                  callback) {
+            std::move(callback).Run(std::make_optional(expected_context));
+          });
+
+  std::optional<ContextualTaskContext> context = GetContextForTask(task_id);
+  ASSERT_TRUE(context.has_value());
+  EXPECT_EQ(context->GetTaskId(), expected_context.GetTaskId());
+  const auto& attachments = context->GetUrlAttachments();
+  ASSERT_EQ(attachments.size(), 2u);
+  EXPECT_EQ(attachments[0].url, url1);
+  EXPECT_EQ(attachments[1].url, url2);
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, GetContextForTask_NotFound) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+
+  EXPECT_CALL(mock_service_, GetContextForTask(task_id, _))
+      .WillOnce(
+          [&](const base::Uuid&,
+              base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::nullopt); });
+
+  std::optional<ContextualTaskContext> context = GetContextForTask(task_id);
+  EXPECT_FALSE(context.has_value());
 }
 
 TEST_F(ContextualTasksContextControllerImplTest, GetFeatureEligibility) {

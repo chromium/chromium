@@ -40,6 +40,10 @@ class ContextualTasksContextControllerImpl
           selected_task_callback) override;
   void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
   void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
+  void GetContextForTask(
+      const base::Uuid& task_id,
+      base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+          context_callback) override;
   FeatureEligibility GetFeatureEligibility() override;
 
  private:
