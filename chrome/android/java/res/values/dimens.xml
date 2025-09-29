@@ -202,17 +202,18 @@ found in the LICENSE file.
     <dimen name="bookmark_widget_section_header_padding_start">20dp</dimen>
 
     <!-- Bookmark bar -->
-    <dimen name="bookmark_bar_button_padding_horizontal">8dp</dimen>
+    <dimen name="bookmark_bar_button_padding_horizontal">12dp</dimen>
     <dimen name="bookmark_bar_button_padding_vertical">4dp</dimen>
     <dimen name="bookmark_bar_button_icon_margin_end">8dp</dimen>
     <dimen name="bookmark_bar_button_icon_size">24dp</dimen>
     <dimen name="bookmark_bar_divider_height">20dp</dimen>
     <dimen name="bookmark_bar_divider_width">2dp</dimen>
     <dimen name="bookmark_bar_item_max_width">124dp</dimen>
-    <dimen name="bookmark_bar_item_spacing">@dimen/bookmark_bar_spacing</dimen>
+    <dimen name="bookmark_bar_item_spacing">4dp</dimen>
     <dimen name="bookmark_bar_overflow_button_size">24dp</dimen>
     <dimen name="bookmark_bar_padding">8dp</dimen>
     <dimen name="bookmark_bar_spacing">8dp</dimen>
+    <dimen name="bookmark_bar_all_bookmarks_padding">-4dp</dimen>
 
     <!-- Custom Tabs dimensions -->
     <dimen name="custom_tabs_drag_handle_padding_top">12dp</dimen>
