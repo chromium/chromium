@@ -18,7 +18,7 @@
 
 namespace net::device_bound_sessions {
 
-// Class to parse Sec-Session-Registration header.
+// Class to parse Secure-Session-Registration header.
 // See explainer for details:
 // https://github.com/WICG/dbsc/blob/main/README.md#start-session
 // The header format for the session registration is a list of
@@ -37,7 +37,7 @@ class NET_EXPORT RegistrationFetcherParam {
   RegistrationFetcherParam& operator=(const RegistrationFetcherParam&) = delete;
   ~RegistrationFetcherParam();
 
-  // Checks `headers` for any Sec-Session-Registration headers. Parses any
+  // Checks `headers` for any Secure-Session-Registration headers. Parses any
   // valid ones that are found into `RegistrationFetcherParam` instances and
   // returns a vector of these. `request_url` corresponds to the request that
   // returned these headers; it is used to resolve any relative registration

@@ -81,17 +81,14 @@ class NET_EXPORT SessionService {
 
   virtual ~SessionService() = default;
 
-  // Called to register a new session after getting a Sec-Session-Registration
-  // header.
-  // Registration parameters to be used for creating the registration
-  // request.
-  // Isolation info to be used for registration request, this should be the
-  // same as was used for the response with the Sec-Session-Registration
-  // header.
-  // `net_log` is the log corresponding to the request receiving the
-  // Sec-Session-Registration header.
-  // 'original_request_initiator` was the initiator for the request that
-  // received the Sec-Session-Registration header.
+  // Called to register a new session after getting a
+  // Secure-Session-Registration header. Registration parameters to be used for
+  // creating the registration request. Isolation info to be used for
+  // registration request, this should be the same as was used for the response
+  // with the Secure-Session-Registration header. `net_log` is the log
+  // corresponding to the request receiving the Secure-Session-Registration
+  // header. 'original_request_initiator` was the initiator for the request that
+  // received the Secure-Session-Registration header.
   virtual void RegisterBoundSession(
       OnAccessCallback on_access_callback,
       RegistrationFetcherParam registration_params,
@@ -128,7 +125,7 @@ class NET_EXPORT SessionService {
                                       RefreshCompleteCallback callback) = 0;
 
   // Set the challenge for a bound session after getting a
-  // Sec-Session-Challenge header.
+  // Secure-Session-Challenge header.
   virtual void SetChallengeForBoundSession(
       OnAccessCallback on_access_callback,
       const URLRequest& request,

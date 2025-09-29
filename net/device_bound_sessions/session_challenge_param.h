@@ -20,17 +20,17 @@ class HttpResponseHeaders;
 
 namespace net::device_bound_sessions {
 
-// Class to parse Sec-Session-Challenge header.
+// Class to parse Secure-Session-Challenge header.
 // See explainer for details:
 // https://github.com/WICG/dbsc/blob/main/README.md.
 // It is a RFC 8941 list of challenges for the associated DBSC sessions.
 // Example:
-// Sec-Session-Challenge: "challenge";id="session_id".
-// Sec-Session-Challenge: "challenge";id="session_id", "challenge1";id="id1".
+// Secure-Session-Challenge: "challenge";id="session_id".
+// Secure-Session-Challenge: "challenge";id="session_id", "challenge1";id="id1".
 // The session id may be unknown during the session registration, hence it can
 // be omitted:
-// Sec-Session-Challenge: "challenge".
-// It is possible to have multiple Sec-Session-Challenge headers in
+// Secure-Session-Challenge: "challenge".
+// It is possible to have multiple Secure-Session-Challenge headers in
 // one response. If multiple challenges are given for one specific session,
 // the last one will take effect.
 class NET_EXPORT SessionChallengeParam {
@@ -42,7 +42,7 @@ class NET_EXPORT SessionChallengeParam {
 
   // Returns a vector of valid instances from the headers.
 
-  // Checks `headers` for any Sec-Session-Challenge headers. Parses any valid
+  // Checks `headers` for any Secure-Session-Challenge headers. Parses any valid
   // ones that are found into `SessionChallengeParam` instances and returns a
   // vector of these. `request_url` corresponds to the request that returned
   // these headers; it is used only to affirm that that URL is valid.
