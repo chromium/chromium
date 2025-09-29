@@ -386,7 +386,8 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   }
 
   // Match the mask's size to the scroll view's size.
-  self.gradientMask.frame = self.scrollView.bounds;
+  self.gradientMask.frame = CGRectMake(0, 0, self.scrollView.bounds.size.width,
+                                       self.scrollView.bounds.size.height);
 
   // Determine the starting point of the gradient so that it has the desired
   // number of pixels of height at the bottom of the scroll view.
