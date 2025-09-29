@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
+#import "ios/chrome/browser/home_customization/ui/centered_flow_layout.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_action_sheet_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
@@ -36,6 +37,9 @@ const CGFloat kSectionInsetSides = 25.0;
 
 // The bottom padding for the section in the collection view.
 const CGFloat kSectionInsetBottom = 27.0;
+
+// The portion of the width taken by the color cells (from 0.0 to 1.0).
+const CGFloat kRelativeRowWidth = 1.0;
 
 // Returns a dynamic UIColor using two named color assets for light and dark
 // mode.
@@ -82,8 +86,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   self.view.backgroundColor = [UIColor systemBackgroundColor];
 
-  UICollectionViewFlowLayout* layout =
-      [[UICollectionViewFlowLayout alloc] init];
+  UICollectionViewFlowLayout* layout = [[CenteredFlowLayout alloc] init];
 
   layout.itemSize = CGSizeMake(kColorCellSize, kColorCellSize);
   layout.minimumLineSpacing = kLineSpacing;
@@ -112,13 +115,13 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   [self.view addSubview:_collectionView];
 
   [NSLayoutConstraint activateConstraints:@[
+    [_collectionView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
     [_collectionView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [_collectionView.leadingAnchor
-        constraintEqualToAnchor:self.view.leadingAnchor],
-    [_collectionView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor],
     [_collectionView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor]
+        constraintEqualToAnchor:self.view.bottomAnchor],
+    [_collectionView.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
+                                              multiplier:kRelativeRowWidth],
   ]];
 }
 
