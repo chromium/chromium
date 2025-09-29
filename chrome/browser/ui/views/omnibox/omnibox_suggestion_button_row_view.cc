@@ -516,16 +516,9 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     SetPillButtonVisibility(keyword_button_,
                             OmniboxPopupSelection::KEYWORD_MODE);
     if (keyword_button_->GetVisible()) {
-      std::u16string keyword;
-      std::u16string keyword_placeholder;
-      bool is_keyword_hint = false;
-      match().GetKeywordUIState(
-          popup_view_->controller()->client()->GetTemplateURLService(),
-          popup_view_->controller()->client()->IsHistoryEmbeddingsEnabled(),
-          &keyword, &keyword_placeholder, &is_keyword_hint);
-
+      CHECK(!match().associated_keyword.empty());
       const auto names = SelectedKeywordView::GetKeywordLabelNames(
-          keyword,
+          match().associated_keyword,
           popup_view_->controller()->client()->GetTemplateURLService());
       keyword_button_->SetText(names.full_name);
       keyword_button_->GetViewAccessibility().SetName(
