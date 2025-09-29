@@ -187,7 +187,8 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     if (MapFile(std::move(metadata_channel), &metadata_mmap)) {
       std::optional<base::Value> metadata_parsed = base::JSONReader::Read(
           std::string_view(reinterpret_cast<char*>(metadata_mmap.data()),
-                           metadata_mmap.length()));
+                           metadata_mmap.length()),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
       if (metadata_parsed && metadata_parsed->is_dict()) {
         const auto& dict = metadata_parsed->GetDict();

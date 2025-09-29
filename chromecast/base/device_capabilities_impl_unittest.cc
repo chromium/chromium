@@ -532,7 +532,8 @@ TEST_F(DeviceCapabilitiesImplTest, SetCapabilityDynamic) {
 // capability of type DictionaryValue.
 TEST_F(DeviceCapabilitiesImplTest, SetCapabilityDictionary) {
   std::string key("dummy_dictionary_key");
-  auto init_value = base::JSONReader::Read(kSampleDictionaryCapability);
+  auto init_value = base::JSONReader::Read(
+      kSampleDictionaryCapability, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(init_value);
   FakeCapabilityManagerSimple manager(capabilities(), key,
                                       std::move(*init_value), true, false);
@@ -557,7 +558,8 @@ TEST_F(DeviceCapabilitiesImplTest, SetCapabilityDictionary) {
 // capability of type DictionaryValue and invalid changes are proposed.
 TEST_F(DeviceCapabilitiesImplTest, SetCapabilityDictionaryInvalid) {
   std::string key("dummy_dictionary_key");
-  auto init_value = base::JSONReader::Read(kSampleDictionaryCapability);
+  auto init_value = base::JSONReader::Read(
+      kSampleDictionaryCapability, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(init_value);
   FakeCapabilityManagerSimple manager(capabilities(), key,
                                       std::move(*init_value), false, false);
