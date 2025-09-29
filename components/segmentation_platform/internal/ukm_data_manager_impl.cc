@@ -25,6 +25,9 @@ const base::TimeDelta kDatabaseCleanupDelayNormal = base::Days(1);
 // Number of days to keep UKM metrics in database.
 constexpr base::TimeDelta kUkmEntriesTTL = base::Days(30);
 
+// Number of days to keep UMA metrics in database.
+constexpr base::TimeDelta kUmaEntriesTTL = base::Days(365);
+
 }  // namespace
 
 UkmDataManagerImpl::UkmDataManagerImpl() = default;
@@ -148,7 +151,8 @@ void UkmDataManagerImpl::RemoveRef() {
 
 void UkmDataManagerImpl::RunCleanupTask() {
   DCHECK(ukm_database_);
-  ukm_database_->DeleteEntriesOlderThan(base::Time::Now() - kUkmEntriesTTL);
+  base::Time now = base::Time::Now();
+  ukm_database_->CleanupOldEntries(now - kUkmEntriesTTL, now - kUmaEntriesTTL);
 
   // Consider waiting for the above task to finish successfully before posting
   // the next one.

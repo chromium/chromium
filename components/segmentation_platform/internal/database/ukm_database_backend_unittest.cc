@@ -478,7 +478,7 @@ TEST_F(UkmDatabaseBackendTest, DeleteAllUrls) {
   EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
 
-TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
+TEST_F(UkmDatabaseBackendTest, CleanupOldEntries) {
   const GURL kUrl1("https://www.url1.com");
   const GURL kUrl2("https://www.url2.com");
   const GURL kUrl3("https://www.url3.com");
@@ -522,11 +522,11 @@ TEST_F(UkmDatabaseBackendTest, DeleteOldEntries) {
                                });
   EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
 
-  backend_->DeleteEntriesOlderThan(base::Time::Max());
+  backend_->CleanupOldEntries(base::Time::Max(), base::Time::Max());
 
   test_util::AssertUrlsInTable(backend_->db(), {});
-  // UMA metrics are not deleted.
-  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 3u);
+  // UMA metrics are also deleted.
+  EXPECT_EQ(test_util::GetAllUmaMetrics(backend_->db()).size(), 0u);
 
   EXPECT_TRUE(backend_->has_transaction_for_testing());
 }
@@ -688,7 +688,7 @@ TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
   backend_->UpdateUrlForUkmSource(10, kUrl1, true, /*profile_id*/ "");
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/false);
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/true);
-  backend_->DeleteEntriesOlderThan(base::Time() - base::Seconds(10));
+  backend_->CleanupOldEntries(base::Time::Now(), base::Time::Now());
   backend_->AddUmaMetric("1", GetSampleMetricsRow());
   backend_->CleanupItems("",
                          {CleanupItem(1, 2, proto::SignalType::HISTOGRAM_ENUM,

@@ -95,12 +95,13 @@ class UkmDatabase {
   virtual void RunReadOnlyQueries(QueryList&& queries,
                                   QueryCallback callback) = 0;
 
-  // Removes metrics older than or equal to the given `time` from the database.
-  // URLs are removed when there are no references to the metrics.
-  virtual void DeleteEntriesOlderThan(base::Time time) = 0;
+  // Removes UKM metrics older than or equal to the given `ukm_time_limit` and
+  // UMA metrics older than `uma_time_limit` from the database. URLs are
+  // removed when there are no references to the metrics.
+  virtual void CleanupOldEntries(base::Time ukm_time_limit,
+                                 base::Time uma_time_limit) = 0;
 
-  // Cleans up old items from the database. Only cleans up UMA entries. UKM
-  // entries still uses `DeleteEntriesOlderThan()` instead.
+  // Cleans up old items from the database. Only cleans up UMA entries.
   virtual void CleanupItems(const std::string& profile_id,
                             std::vector<CleanupItem> cleanup_items) = 0;
 

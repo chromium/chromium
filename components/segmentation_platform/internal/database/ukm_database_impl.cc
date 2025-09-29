@@ -82,11 +82,13 @@ void UkmDatabaseImpl::RunReadOnlyQueries(QueryList&& queries,
                                 std::move(callback)));
 }
 
-void UkmDatabaseImpl::DeleteEntriesOlderThan(base::Time time) {
+void UkmDatabaseImpl::CleanupOldEntries(base::Time ukm_time_limit,
+                                        base::Time uma_time_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&UkmDatabaseBackend::DeleteEntriesOlderThan,
-                                backend_->GetWeakPtr(), time));
+      FROM_HERE,
+      base::BindOnce(&UkmDatabaseBackend::CleanupOldEntries,
+                     backend_->GetWeakPtr(), ukm_time_limit, uma_time_limit));
 }
 
 void UkmDatabaseImpl::CleanupItems(const std::string& profile_id,

@@ -329,16 +329,18 @@ void UkmDatabaseBackend::RunReadOnlyQueries(QueryList&& queries,
       base::BindOnce(std::move(callback), success, std::move(result)));
 }
 
-void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
+void UkmDatabaseBackend::CleanupOldEntries(base::Time ukm_time_limit,
+                                           base::Time uma_time_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status_ != Status::INIT_SUCCESS) {
     return;
   }
 
   std::vector<UrlId> deleted_urls =
-      metrics_table_.DeleteEventsBeforeTimestamp(time);
+      metrics_table_.DeleteEventsBeforeTimestamp(ukm_time_limit);
   url_table_.RemoveUrls(deleted_urls);
-  url_table_.DeleteUrlsBeforeTimestamp(time);
+  url_table_.DeleteUrlsBeforeTimestamp(ukm_time_limit);
+  uma_metrics_table_.DeleteEventsBeforeTimestamp(uma_time_limit);
 
   // Force commit so that we don't store URLs longer than needed.
   RestartTransaction();
