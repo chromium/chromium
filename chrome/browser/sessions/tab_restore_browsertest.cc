@@ -121,11 +121,6 @@ class TabRestoreTest : public InProcessBrowserTest {
     content::SetupCrossSiteRedirector(embedded_test_server());
   }
 
-  Browser* GetBrowser(int index) {
-    CHECK(static_cast<int>(active_browser_list_->size()) > index);
-    return active_browser_list_->get(index);
-  }
-
   // Adds tabs to the given browser, all navigated to url1_(Uses a file://
   // scheme). Returns the final number of tabs.
   int AddFileSchemeTabs(BrowserWindowInterface* browser, int how_many) {
@@ -179,11 +174,12 @@ class TabRestoreTest : public InProcessBrowserTest {
 
   // Uses the undo-close-tab accelerator to undo the most recent close
   // operation.
-  content::WebContents* RestoreMostRecentlyClosed(Browser* browser) {
+  content::WebContents* RestoreMostRecentlyClosed(
+      BrowserWindowInterface* browser) {
     ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
     {
       TabRestoreServiceLoadWaiter waiter(
-          TabRestoreServiceFactory::GetForProfile(browser->profile()));
+          TabRestoreServiceFactory::GetForProfile(browser->GetProfile()));
       chrome::RestoreTab(browser);
       waiter.Wait();
     }
@@ -193,83 +189,66 @@ class TabRestoreTest : public InProcessBrowserTest {
   }
 
   // Uses the undo-close-tab accelerator to undo a close-tab or close-window
-  // operation. The newly restored tab is expected to appear in the
-  // window at index |expected_window_index|, at the |expected_tabstrip_index|,
-  // and to be active. If |expected_window_index| is equal to the number of
-  // current windows, the restored tab is expected to be created in a new
-  // window (since the index is 0-based).
+  // operation. The newly restored tab is expected to appear in
+  // `target_browser`, at the `expected_tabstrip_index`, and to be active. If
+  // `target_browser` is null, the restored tab is expected to be created in a
+  // new browser.
   std::optional<tab_groups::TabGroupId> RestoreTab(
-      int expected_window_index,
+      BrowserWindowInterface* target_browser,
       int expected_tabstrip_index) {
-    int window_count = static_cast<int>(active_browser_list_->size());
-    CHECK_GT(window_count, 0);
+    const size_t initial_browser_count = active_browser_list_->size();
+    CHECK_GT(initial_browser_count, 0);
 
-    bool expect_new_window = (expected_window_index == window_count);
-
-    Browser* browser;
-    if (expect_new_window) {
-      browser = active_browser_list_->get(0);
-    } else {
-      browser = GetBrowser(expected_window_index);
-    }
-    int tab_count = browser->tab_strip_model()->count();
-    CHECK_GT(tab_count, 0);
+    const bool expect_new_window = !target_browser;
+    BrowserWindowInterface* browser =
+        expect_new_window ? GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                          : target_browser;
+    const int initial_tab_count = browser->GetTabStripModel()->count();
+    CHECK_GT(initial_tab_count, 0);
 
     // Restore the tab.
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     content::WebContents* new_tab = RestoreMostRecentlyClosed(browser);
 
     if (expect_new_window) {
-      int new_window_count = static_cast<int>(active_browser_list_->size());
-      EXPECT_EQ(++window_count, new_window_count);
-      browser = GetBrowser(expected_window_index);
+      browser = browser_created_observer.Wait();
+      EXPECT_EQ(initial_browser_count + 1, active_browser_list_->size());
     } else {
-      EXPECT_EQ(++tab_count, browser->tab_strip_model()->count());
+      EXPECT_EQ(initial_tab_count + 1, browser->GetTabStripModel()->count());
     }
 
     EXPECT_EQ(chrome::FindBrowserWithTab(new_tab), browser);
 
     // Get a handle to the restored tab.
-    CHECK_GT(browser->tab_strip_model()->count(), expected_tabstrip_index);
+    CHECK_GT(browser->GetTabStripModel()->count(), expected_tabstrip_index);
 
     // Ensure that the tab and window are active.
     EXPECT_EQ(expected_tabstrip_index,
-              browser->tab_strip_model()->active_index());
+              browser->GetTabStripModel()->active_index());
     std::optional<tab_groups::TabGroupId> restored_group_id =
-        browser->tab_strip_model()->GetTabGroupForTab(
-            browser->tab_strip_model()->GetIndexOfWebContents(new_tab));
+        browser->GetTabStripModel()->GetTabGroupForTab(
+            browser->GetTabStripModel()->GetIndexOfWebContents(new_tab));
 
     return restored_group_id;
   }
 
-  // Uses the undo-close-tab accelerator to undo a close-group operation.
-  // The first tab in the group |expected_group| is expected to appear in the
-  // window at index |expected_window_index|, at the |expected_tabstrip_index|.
-  // If |expected_window_index| is equal to the number of current windows, the
-  // restored tab is expected to be created in a new window.
+  // Uses the undo-close-tab accelerator to undo a close-group operation. The
+  // first tab in the group `expected_group` is expected to appear in
+  // `target_browser`, at the `expected_tabstrip_index`.
   tab_groups::TabGroupId RestoreGroup(tab_groups::TabGroupId expected_group,
-                                      int expected_window_index,
+                                      BrowserWindowInterface* target_browser,
                                       int expected_tabstrip_index) {
-    int window_count = static_cast<int>(active_browser_list_->size());
-    CHECK_GT(window_count, 0);
-
-    bool expect_new_window = (expected_window_index == window_count);
-
-    Browser* browser;
-    if (expect_new_window) {
-      browser = active_browser_list_->get(0);
-    } else {
-      browser = GetBrowser(expected_window_index);
-    }
+    CHECK(target_browser);
 
     // Get the baseline conditions to compare against post-restore.
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    TabStripModel* tab_strip_model = target_browser->GetTabStripModel();
     TabGroupModel* group_model = tab_strip_model->group_model();
     int tab_count = tab_strip_model->count();
     int group_count = group_model->ListTabGroups().size();
     CHECK_GT(tab_count, 0);
 
     // Restore the group. Returns the last tab in the group that is restored.
-    content::WebContents* content = RestoreMostRecentlyClosed(browser);
+    content::WebContents* content = RestoreMostRecentlyClosed(target_browser);
     CHECK(content);
 
     std::optional<tab_groups::TabGroupId> restored_group_id =
@@ -277,18 +256,6 @@ class TabRestoreTest : public InProcessBrowserTest {
             tab_strip_model->GetIndexOfWebContents(content));
     CHECK(restored_group_id.has_value())
         << "Expected restored tab to be part of a group but wasn't";
-
-    // Reset all baseline conditions if a new window is expected to be opened.
-    // Note that we're resetting what browser models to compare against as well
-    // as the baseline counts for those models.
-    if (expect_new_window) {
-      EXPECT_EQ(++window_count, static_cast<int>(active_browser_list_->size()));
-      browser = GetBrowser(expected_window_index);
-      tab_strip_model = browser->tab_strip_model();
-      group_model = tab_strip_model->group_model();
-      tab_count = 0;
-      group_count = 0;
-    }
 
     EXPECT_EQ(++group_count,
               static_cast<int>(group_model->ListTabGroups().size()));
@@ -355,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, Basic) {
   CloseTab(closed_tab_index);
   EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), closed_tab_index));
 
   // And make sure everything looks right.
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
@@ -381,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MiddleTab) {
   CloseTab(closed_tab_index);
   EXPECT_EQ(starting_tab_count + 2, browser()->tab_strip_model()->count());
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), closed_tab_index));
 
   // And make sure everything looks right.
   EXPECT_EQ(starting_tab_count + 3, browser()->tab_strip_model()->count());
@@ -409,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreToDifferentWindow) {
   EXPECT_EQ(2u, active_browser_list_->size());
 
   // Restore tab into original browser.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), closed_tab_index));
 
   // And make sure everything looks right.
   EXPECT_EQ(starting_tab_count + 3, browser()->tab_strip_model()->count());
@@ -439,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DISABLED_BasicRestoreFromClosedWindow) {
 
   // Tab should be in a new window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(/*target_browser=*/nullptr, 0));
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
 
   content::WebContents* web_contents =
@@ -469,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_DontLoadRestoredTab) {
   ASSERT_EQ(browser()->tab_strip_model()->count(), starting_tab_count + 1);
 
   // Restore it.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), 0));
   ASSERT_EQ(browser()->tab_strip_model()->count(), starting_tab_count + 2);
 
   // Make sure that there's nothing else to restore.
@@ -505,12 +472,13 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowAndTab) {
   // Restore the first window. The expected_tabstrip_index (second argument)
   // indicates the expected active tab.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, active_tab_index));
+  ASSERT_NO_FATAL_FAILURE(
+      RestoreTab(/*target_browser=*/nullptr, active_tab_index));
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
   EXPECT_EQ(starting_tab_count + 2, browser->GetTabStripModel()->count());
 
   // Restore the closed tab.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, closed_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser, closed_tab_index));
   EXPECT_EQ(starting_tab_count + 3, browser->GetTabStripModel()->count());
   EXPECT_EQ(url1_,
             browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
@@ -545,14 +513,14 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreIntoSameWindow) {
 
   // Restore the last-closed tab into a new window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(/*target_browser=*/nullptr, 0));
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
   EXPECT_EQ(1, browser->GetTabStripModel()->count());
   EXPECT_EQ(url2_,
             browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
 
   // Restore the next-to-last-closed tab into the same window.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser, 0));
   EXPECT_EQ(2, browser->GetTabStripModel()->count());
   EXPECT_EQ(url1_,
             browser->GetTabStripModel()->GetActiveWebContents()->GetURL());
@@ -631,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroup) {
       browser()->tab_strip_model()->AddToNewGroup({1, 2});
   CloseGroup(group);
 
-  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, 0, 2);
+  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, browser(), 2);
   const TabGroupModel* group_model =
       browser()->tab_strip_model()->group_model();
   EXPECT_EQ(group_model->GetTabGroup(restored_group_id)->ListTabs(),
@@ -757,11 +725,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
 
   CloseTab(2);
   CloseGroup(group);
-  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, 0, 1);
+  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, browser(), 1);
 
   // Tab will be restored at the end of the group instead of the original index.
   const int expected_tabstrip_index = 3;
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, expected_tabstrip_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), expected_tabstrip_index));
 
   EXPECT_EQ(browser()
                 ->tab_strip_model()
@@ -801,7 +769,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
 
   // Restore the original group, which should create a new window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  std::optional<tab_groups::TabGroupId> restored_group_id = RestoreTab(1, 0);
+  std::optional<tab_groups::TabGroupId> restored_group_id =
+      RestoreTab(/*target_browser=*/nullptr, 0);
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
   ASSERT_TRUE(restored_group_id.has_value());
 
@@ -911,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Restore the group, which will restore all tabs, including one that is now
   // a duplicate of the unclosed tab.
-  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, 0, 2);
+  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, browser(), 2);
   EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
             1u);
 
@@ -1034,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerAccepted) {
   destroyed_watcher.Wait();
 
   // Restore the group, which should restore the original group intact.
-  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, 0, 1);
+  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, browser(), 1);
 
   // The 2 additional tabs come from the tabs that do not have a standard
   // https://www domain. For TabGroupsSave we do not store these to prevent
@@ -1155,7 +1124,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWithExistingSiteInstance) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Restore the closed tab.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, tab_count - 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), tab_count - 1));
 
   // And make sure the URLs match.
   EXPECT_EQ(http_url2,
@@ -1208,7 +1177,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Restore the closed tab.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, tab_count - 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), tab_count - 1));
 
   // And make sure the URLs match.
   EXPECT_EQ(url1_,
@@ -1251,7 +1220,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow) {
   // Restore the window.
   ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  chrome::RestoreTab(active_browser_list_->get(0));
+  chrome::RestoreTab(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
   EXPECT_EQ(window_count, active_browser_list_->size());
 
@@ -1289,7 +1258,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow_ActiveTabIndex) {
   EXPECT_EQ(1u, active_browser_list_->size());
 
   // Restore the first browser. Verify the active tab index.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, kActiveTabIndex));
+  ASSERT_NO_FATAL_FAILURE(
+      RestoreTab(/*target_browser=*/nullptr, kActiveTabIndex));
 }
 
 // https://crbug.com/825305: Timeout flakiness on Mac10.13 Tests (dbg) and
@@ -1314,7 +1284,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURL) {
   CloseTab(1);
 
   // Restore the closed tab.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), 1));
   content::WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(1);
   EnsureTabFinishedRestoring(tab);
 
@@ -1354,7 +1324,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, MAYBE_RestoreTabWithSpecialURLOnBack) {
   CloseTab(1);
 
   // Restore the closed tab.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), 1));
   content::WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(1);
   EnsureTabFinishedRestoring(tab);
   ASSERT_EQ(http_url, tab->GetURL());
@@ -1376,7 +1346,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, PRE_RestoreOnStartup) {
 
 // Verifies restoring a tab works on startup.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreOnStartup) {
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), 1));
   EXPECT_EQ(url1_,
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
 }
@@ -1616,7 +1586,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
 
   // Restore the first browser.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, active_tab_index));
+  ASSERT_NO_FATAL_FAILURE(
+      RestoreTab(/*target_browser=*/nullptr, active_tab_index));
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
   EXPECT_EQ("foobar", browser->GetBrowserForMigrationOnly()->user_title());
 }
@@ -1641,7 +1612,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
   browser()->tab_strip_model()->ChangeTabGroupVisuals(group_id, visual_data);
   CloseTab(grouped_tab_index);
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, grouped_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), grouped_tab_index));
   ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
 
   group = browser()->tab_strip_model()->group_model()->GetTabGroup(group_id);
@@ -1676,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab) {
 
   CloseTab(grouped_tab_index);
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, grouped_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), grouped_tab_index));
   ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
 
   EXPECT_EQ(group_id, browser()
@@ -1712,7 +1683,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoCollapsedGroup) {
 
   CloseTab(closed_tab_index);
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), closed_tab_index));
   ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
 
   EXPECT_EQ(group_id, browser()
@@ -1755,7 +1726,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
   browser()->GetTabStripModel()->ChangeTabGroupVisuals(group->id(),
                                                        visual_data_2);
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), closed_tab_index));
   ASSERT_EQ(tab_count, browser()->tab_strip_model()->count());
 
   EXPECT_EQ(group_id, browser()
@@ -1783,12 +1754,13 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroupInNewWindow) {
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   CloseTab(closed_tab_index);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::MoveGroupToNewWindow(browser(), group);
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
 
   // Expect the tab to be restored to the new window, inside the group.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, closed_tab_index));
-  Browser* new_browser = active_browser_list_->get(1);
-  ASSERT_EQ(2u, new_browser->tab_strip_model()
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(new_browser, closed_tab_index));
+  ASSERT_EQ(2u, new_browser->GetTabStripModel()
                     ->group_model()
                     ->GetTabGroup(group)
                     ->ListTabs()
@@ -1878,7 +1850,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreIntoOtherGroup) {
   tabstrip->AddToExistingGroup({1}, group1);
 
   // The restored tab of |group2| should be placed to the right of |group1|.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 2));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), 2));
   EXPECT_EQ(group1, tabstrip->GetTabGroupForTab(0));
   EXPECT_EQ(group1, tabstrip->GetTabGroupForTab(1));
   EXPECT_EQ(group2, tabstrip->GetTabGroupForTab(2));
@@ -1901,7 +1873,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreReaderModePages) {
   CloseTab(interesting_tab);
   EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, interesting_tab));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), interesting_tab));
 
   // And make sure everything looks right.
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
@@ -1934,7 +1906,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   CloseTab(interesting_tab);
   EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, interesting_tab));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), interesting_tab));
 
   // And make sure everything looks right.
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
@@ -1983,7 +1955,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   CloseTab(interesting_tab);
   EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
 
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, interesting_tab));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), interesting_tab));
 
   // And make sure everything looks right.
   EXPECT_EQ(starting_tab_count + 1, browser()->tab_strip_model()->count());
@@ -2024,7 +1996,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Restore the tab. This should record the kTimeBetweenTabClosedAndRestored
   // histogram.
-  RestoreTab(0, closed_tab_index);
+  RestoreTab(browser(), closed_tab_index);
   EXPECT_EQ(
       histogram_tester.GetAllSamples(kTimeBetweenTabClosedAndRestored).size(),
       1U);
@@ -2062,7 +2034,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   // Restore the window. This should record kTimeBetweenWindowClosedAndRestored
   // histogram.
   ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
-  chrome::RestoreTab(active_browser_list_->get(0));
+  chrome::RestoreTab(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_TRUE(content::WaitForLoadStop(tab_added_waiter.Wait()));
 
   EXPECT_EQ(histogram_tester.GetAllSamples(kTimeBetweenWindowClosedAndRestored)
@@ -2085,7 +2057,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Restore closed group. This should record kTimeBetweenGroupClosedAndRestored
   // histogram.
-  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 2));
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, browser(), 2));
 
   EXPECT_EQ(
       histogram_tester.GetAllSamples(kTimeBetweenGroupClosedAndRestored).size(),
@@ -2120,14 +2092,14 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreAfterMultipleRestarts) {
   // Restore url2 from one session ago.
   auto browser_created_observer =
       std::make_optional<ui_test_utils::BrowserCreatedObserver>();
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(/*target_browser=*/nullptr, 0));
   BrowserWindowInterface* const browser_2 = browser_created_observer->Wait();
   EXPECT_EQ(url2_,
             browser_2->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
 
   // Restore url1 from two sessions ago.
   browser_created_observer.emplace();
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(2, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(/*target_browser=*/nullptr, 0));
   BrowserWindowInterface* const browser_3 = browser_created_observer->Wait();
   EXPECT_EQ(url1_,
             browser_3->GetTabStripModel()->GetWebContentsAt(0)->GetURL());
@@ -2198,7 +2170,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
   content::WebContents* new_popup = nullptr;
   {
     content::WebContentsAddedObserver restored_tab_observer;
-    RestoreTab(0, closed_tab_index);
+    RestoreTab(browser(), closed_tab_index);
     EXPECT_EQ(2, browser()->tab_strip_model()->count());
     new_popup = restored_tab_observer.GetWebContents();
   }
@@ -2461,7 +2433,7 @@ IN_PROC_BROWSER_TEST_F(SoftNavigationTabRestoreTest,
   EXPECT_EQ(starting_tab_count, browser()->tab_strip_model()->count());
 
   // Restore the tab.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, closed_tab_index));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(browser(), closed_tab_index));
 
   // Soft-navigate back.
   content::SimulateMouseClickAt(
@@ -2947,7 +2919,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
 
   // Use the newly opened browser to restore the closed window.
   ui_test_utils::BrowserCreatedObserver browser_created_observer;
-  chrome::RestoreTab(active_browser_list_->get(0));
+  chrome::RestoreTab(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   BrowserWindowInterface* const browser = browser_created_observer.Wait();
   const std::vector<tab_groups::TabGroupId>& group_ids =
       browser->GetTabStripModel()->group_model()->ListTabGroups();

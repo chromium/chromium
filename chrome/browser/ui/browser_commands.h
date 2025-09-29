@@ -112,7 +112,7 @@ void CloseTab(Browser* browser);
 bool CanZoomIn(content::WebContents* contents);
 bool CanZoomOut(content::WebContents* contents);
 bool CanResetZoom(content::WebContents* contents);
-void RestoreTab(Browser* browser);
+void RestoreTab(BrowserWindowInterface* browser);
 void SelectNextTab(
     Browser* browser,
     TabStripUserGestureDetails gesture_detail = TabStripUserGestureDetails(
