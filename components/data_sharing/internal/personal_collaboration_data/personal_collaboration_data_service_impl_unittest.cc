@@ -20,7 +20,6 @@ namespace data_sharing::personal_collaboration_data {
 namespace {
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 using testing::ReturnRef;
 
@@ -124,9 +123,9 @@ TEST_F(PersonalCollaborationDataServiceImplTest,
 
   // Now, let the service initialize. The queued actions should be executed.
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_observer, OnInitialized()).WillOnce(Invoke([&]() {
+  EXPECT_CALL(mock_observer, OnInitialized()).WillOnce([&]() {
     run_loop.Quit();
-  }));
+  });
   ON_CALL(mock_processor, IsTrackingMetadata()).WillByDefault(Return(true));
 
   // The service queues a Put for key1, a Put for key2, then a Delete for key2.
