@@ -40,6 +40,7 @@ const char kShareTabStripItemActionsHistogram[] =
     "Mobile.Share.TabStripItem.Actions";
 const char kShareInWebContextMenu[] =
     "Mobile.Share.ShareInWebContextMenu.Actions";
+const char kShareInReaderMode[] = "Mobile.Share.ShareInReaderMode.Actions";
 
 // Enum representing an aggregation of the `ActivityType` enum values in a way
 // that is relevant for metric collection. Current values should not
@@ -195,6 +196,9 @@ void RecordActionForScenario(ShareActionType actionType,
       break;
     case SharingScenario::ShareInWebContextMenu:
       histogramName = kShareInWebContextMenu;
+      break;
+    case SharingScenario::ShareInReaderMode:
+      histogramName = kShareInReaderMode;
       break;
   }
   base::UmaHistogramEnumeration(histogramName, actionType);

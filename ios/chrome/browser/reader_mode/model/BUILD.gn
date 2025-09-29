@@ -35,6 +35,8 @@ source_set("model") {
     "reader_mode_tab_helper.mm",
     "reader_mode_web_state_delegate.h",
     "reader_mode_web_state_delegate.mm",
+    "reader_mode_web_state_utils.h",
+    "reader_mode_web_state_utils.mm",
   ]
   deps = [
     ":constants",

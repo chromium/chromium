@@ -86,6 +86,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/reader_mode/coordinator:chip",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:chip",
     "//ios/chrome/browser/search_engines/model",

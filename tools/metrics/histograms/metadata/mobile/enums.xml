@@ -147,6 +147,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Omnibox Most Visited Tile"/>
   <int value="12" label="Tab Strip Item"/>
   <int value="13" label="Share in Web Context Menu"/>
+  <int value="14" label="Tab Share in Reader Mode"/>
 </enum>
 
 <enum name="IOSLensSupportStatus">

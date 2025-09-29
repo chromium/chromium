@@ -85,6 +85,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/badges/ui_bundled:public",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/page_action_menu/utils",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/reader_mode/model:constants",
     "//ios/chrome/browser/reader_mode/model:features",

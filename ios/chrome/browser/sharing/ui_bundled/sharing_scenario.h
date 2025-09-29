@@ -24,8 +24,9 @@ enum class SharingScenario {
   OmniboxMostVisitedEntry = 11,
   TabStripItem = 12,
   ShareInWebContextMenu = 13,
+  ShareInReaderMode = 14,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = ShareInWebContextMenu
+  kMaxValue = ShareInReaderMode
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/mobile/enums.xml)
 
