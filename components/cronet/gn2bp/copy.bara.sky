@@ -111,6 +111,8 @@ origin_files = glob([
     "third_party/compiler-rt/src/test/**",
   ]) + glob([
     "third_party/libc++/**",
+  ]) + glob([
+    "components/cbor/**",
   ]) - glob([
     # This is not used, and contains a huge number of files (~10k) that slows
     # down imports and checkouts.
