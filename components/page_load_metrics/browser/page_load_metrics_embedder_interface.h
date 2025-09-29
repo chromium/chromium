@@ -35,9 +35,11 @@ class PageLoadMetricsEmbedderInterface {
       PageLoadTracker* metrics,
       content::NavigationHandle* navigation_handle) = 0;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer() = 0;
+  virtual bool HasWebUIConfig(const GURL& url) = 0;
   virtual bool IsNoStatePrefetch(content::WebContents* web_contents) = 0;
   virtual bool IsExtensionUrl(const GURL& url) = 0;
   virtual bool IsNonTabWebUI(const GURL& url) = 0;
+  virtual bool IsInternalWebUI(const GURL& url) = 0;
   virtual bool ShouldObserveScheme(std::string_view scheme) = 0;
   virtual bool IsIncognito(content::WebContents* web_contents) = 0;
 

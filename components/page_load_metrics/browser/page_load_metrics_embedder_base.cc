@@ -76,6 +76,14 @@ std::unique_ptr<base::OneShotTimer> PageLoadMetricsEmbedderBase::CreateTimer() {
   return std::make_unique<base::OneShotTimer>();
 }
 
+bool PageLoadMetricsEmbedderBase::HasWebUIConfig(const GURL& url) {
+  return false;
+}
+
+bool PageLoadMetricsEmbedderBase::IsInternalWebUI(const GURL& url) {
+  return true;
+}
+
 bool PageLoadMetricsEmbedderBase::ShouldObserveScheme(std::string_view scheme) {
   return false;
 }

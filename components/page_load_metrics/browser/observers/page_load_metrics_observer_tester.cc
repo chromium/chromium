@@ -66,6 +66,8 @@ class TestPageLoadMetricsEmbedderInterface
     return std::move(timer);
   }
 
+  bool HasWebUIConfig(const GURL& url) override { return false; }
+
   bool IsNoStatePrefetch(content::WebContents* web_contents) override {
     return false;
   }
@@ -75,6 +77,8 @@ class TestPageLoadMetricsEmbedderInterface
   bool IsNonTabWebUI(const GURL& url) override {
     return test_->is_non_tab_webui();
   }
+
+  bool IsInternalWebUI(const GURL& url) override { return true; }
 
   bool ShouldObserveScheme(std::string_view scheme) override { return false; }
 

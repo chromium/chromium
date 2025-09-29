@@ -221,6 +221,10 @@ TestMetricsWebContentsObserverEmbedder::CreateTimer() {
   return std::move(timer);
 }
 
+bool TestMetricsWebContentsObserverEmbedder::HasWebUIConfig(const GURL& url) {
+  return false;
+}
+
 bool TestMetricsWebContentsObserverEmbedder::IsNoStatePrefetch(
     content::WebContents* web_contents) {
   return false;
@@ -232,6 +236,10 @@ bool TestMetricsWebContentsObserverEmbedder::IsExtensionUrl(const GURL& url) {
 
 bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI(const GURL& url) {
   return false;
+}
+
+bool TestMetricsWebContentsObserverEmbedder::IsInternalWebUI(const GURL& url) {
+  return true;
 }
 
 bool TestMetricsWebContentsObserverEmbedder::ShouldObserveScheme(

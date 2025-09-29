@@ -4432,6 +4432,17 @@ chromium-metrics-reviews@google.com.
   <token key="WebUIName" variants="WebUIName"/>
 </histogram>
 
+<histogram name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.WebUI"
+    units="ms" expires_after="2026-02-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Measures the time from navigation start to first contentful paint for webUI.
+    This is only recorded for webUI pages that are not blocked if users do not
+    visit chrome://about and enable debugging pages.
+  </summary>
+</histogram>
+
 <histogram
     name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.{Scheme}"
     units="ms" expires_after="2026-09-22">
@@ -4543,6 +4554,17 @@ chromium-metrics-reviews@google.com.
     <variant name="Second"/>
     <variant name="Third"/>
   </token>
+</histogram>
+
+<histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.WebUI"
+    units="ms" expires_after="2026-02-15">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Measures the time from navigation start to largest contentful paint for
+    webUI. This is only recorded for webUI pages that are not blocked if users
+    do not visit chrome://about and enable debugging pages.
+  </summary>
 </histogram>
 
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"

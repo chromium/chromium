@@ -1485,22 +1485,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NonHtmlMainResource) {
       << "Recorded metrics: " << GetRecordedPageLoadMetricNames();
 }
 
-// TODO(crbug.com/40774566): Test flakes on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NonHttpOrHttpsUrl DISABLED_NonHttpOrHttpsUrl
-#else
-#define MAYBE_NonHttpOrHttpsUrl NonHttpOrHttpsUrl
-#endif
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_NonHttpOrHttpsUrl) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUIVersionURL)));
-  NavigateToUntrackedUrl();
-  EXPECT_TRUE(NoPageLoadMetricsRecorded())
-      << "Recorded metrics: " << GetRecordedPageLoadMetricNames();
-}
-
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, HttpErrorPage) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

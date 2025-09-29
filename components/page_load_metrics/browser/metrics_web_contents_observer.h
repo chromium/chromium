@@ -126,7 +126,7 @@ class MetricsWebContentsObserver
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(content::RenderFrameHost* rfh,
                          const content::CookieAccessDetails& details) override;
-  void DidActivatePreviewedPage(base::TimeTicks activaation_time) override;
+  void DidActivatePreviewedPage(base::TimeTicks activation_time) override;
 
   void OnStorageAccessed(content::RenderFrameHost* rfh,
                          const GURL& url,
@@ -148,6 +148,11 @@ class MetricsWebContentsObserver
   // Returns the delegate for the current committed primary page load, required
   // for `MetricsLifecycleObserver`s.
   const PageLoadMetricsObserverDelegate& GetDelegateForCommittedLoad();
+
+  // Returns the embedder interface. Public for testing.
+  PageLoadMetricsEmbedderInterface* GetEmbedderInterfaceForTesting() const {
+    return embedder_interface_.get();
+  }
 
   // Register / unregister `MetricsLifecycleObserver`s.
   void AddLifecycleObserver(MetricsLifecycleObserver* observer);

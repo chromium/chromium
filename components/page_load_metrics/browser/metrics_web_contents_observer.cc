@@ -1311,8 +1311,10 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   }
 
   const GURL& url = navigation_handle->GetURL();
-  if (embedder_interface_->IsNonTabWebUI(url) ||
-      embedder_interface_->IsNewTabPageUrl(url)) {
+  if (embedder_interface_->IsNewTabPageUrl(url) ||
+      (embedder_interface_->HasWebUIConfig(url) &&
+       !embedder_interface_->IsInternalWebUI(url)) ||
+      embedder_interface_->IsNonTabWebUI(url)) {
     return true;
   }
 

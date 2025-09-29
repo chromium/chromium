@@ -24,6 +24,8 @@ class PageLoadMetricsEmbedderBase : public PageLoadMetricsEmbedderInterface {
   void RegisterObservers(PageLoadTracker* tracker,
                          content::NavigationHandle* navigation_handle) override;
   std::unique_ptr<base::OneShotTimer> CreateTimer() override;
+  bool HasWebUIConfig(const GURL& url) override;
+  bool IsInternalWebUI(const GURL& url) override;
   bool ShouldObserveScheme(std::string_view scheme) override;
 
   content::WebContents* web_contents() const { return web_contents_; }
