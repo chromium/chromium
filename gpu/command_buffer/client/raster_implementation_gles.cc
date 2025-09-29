@@ -220,7 +220,7 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   gl_->PixelStorei(GL_UNPACK_ALIGNMENT, old_align);
 
   gl_->EndSharedImageAccessDirectCHROMIUM(texture_id);
-  DeleteGpuRasterTexture(texture_id);
+  gl_->DeleteTextures(1u, &texture_id);
 }
 
 void RasterImplementationGLES::WritePixelsYUV(
@@ -347,7 +347,7 @@ void RasterImplementationGLES::OnReadARGBPixelsAsync(
     bool success) {
   DCHECK(texture_id);
   gl_->EndSharedImageAccessDirectCHROMIUM(texture_id);
-  DeleteGpuRasterTexture(texture_id);
+  gl_->DeleteTextures(1u, &texture_id);
 
   std::move(readback_done).Run(success);
 }
@@ -436,7 +436,7 @@ void RasterImplementationGLES::OnReleaseMailbox(
   DCHECK(!release_mailbox.is_null());
 
   gl_->EndSharedImageAccessDirectCHROMIUM(shared_texture_id);
-  DeleteGpuRasterTexture(shared_texture_id);
+  gl_->DeleteTextures(1u, &shared_texture_id);
   std::move(release_mailbox).Run();
 }
 
@@ -464,10 +464,6 @@ bool RasterImplementationGLES::ReadbackImagePixels(
              dst_info.alphaType(), dst_row_bytes, src_x, src_y, plane_index,
              dst_pixels) ||
          base::FeatureList::IsEnabled(kDisableErrorHandlingForReadbackGLES);
-}
-
-void RasterImplementationGLES::DeleteGpuRasterTexture(GLuint texture) {
-  gl_->DeleteTextures(1u, &texture);
 }
 
 void RasterImplementationGLES::TraceBeginCHROMIUM(const char* category_name,

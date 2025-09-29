@@ -354,11 +354,5 @@ TEST_F(RasterImplementationGLESTest, GetQueryObjectui64vEXT) {
   ri_->GetQueryObjectui64vEXT(kQueryId, kQueryParam, &result);
 }
 
-TEST_F(RasterImplementationGLESTest, DeleteGpuRasterTexture) {
-  const GLuint kTextureId = 23;
-  EXPECT_CALL(*gl_, DeleteTextures(1, Pointee(Eq(kTextureId)))).Times(1);
-  ri_->DeleteGpuRasterTexture(kTextureId);
-}
-
 }  // namespace raster
 }  // namespace gpu
