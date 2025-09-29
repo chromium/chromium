@@ -173,6 +173,10 @@ class AuthenticationFlowTest : public PlatformTest,
                                          anchorRect:CGRectNull];
     in_profile_performer_mock_ =
         OCMStrictClassMock([AuthenticationFlowInProfilePerformer class]);
+    if (performer_mock_) {
+      EXPECT_OCMOCK_VERIFY((id)performer_mock_);
+      [(id)performer_mock_ stopMocking];
+    }
     performer_mock_ = OCMStrictClassMock([AuthenticationFlowPerformer class]);
 
     // Once AuthenticationFlow is started, it'll create its performer. Replace
@@ -181,7 +185,6 @@ class AuthenticationFlowTest : public PlatformTest,
     OCMExpect([performer_mock_ initWithDelegate:[OCMArg any]
                            changeProfileHandler:[OCMArg any]])
         .andReturn(performer_mock_);
-
     if (shouldHandOverToFlowInProfile) {
       // Once the flow progresses into AuthenticationFlowInProfile, that class
       // creates its own performer. For simplicity, reuse the same mock object
@@ -580,10 +583,11 @@ TEST_P(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
   // There is no unsynced data in this case, so no confirmation should be
   // shown - the next step is fetching the managed status.
   // Don't bother continuing the flow beyond that step for this test.
+  OCMExpect([performer_mock_ interrupt]);
   OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                     forIdentity:identity2_])
       .andDo(^(NSInvocation*) {
-        run_loop_->Quit();
+        [authentication_flow_ interrupt];
       });
 
   [authentication_flow_ startSignIn];
@@ -610,6 +614,7 @@ TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
       });
   // There is unsynced data, so a confirmation should be shown.
   // Don't bother continuing the flow beyond that step for this test.
+  OCMExpect([performer_mock_ interrupt]);
   OCMExpect(
       [performer_mock_
           showLeavingPrimaryAccountConfirmationWithBaseViewController:[OCMArg
@@ -625,7 +630,7 @@ TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
                                                            anchorRect:CGRect()])
       .ignoringNonObjectArgs()  // Don't care about the CGRect values.
       .andDo(^(NSInvocation*) {
-        run_loop_->Quit();
+        [authentication_flow_ interrupt];
       });
 
   [authentication_flow_ startSignIn];
