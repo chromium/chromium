@@ -9650,30 +9650,6 @@
             ]
         }
     ],
-    "EnableBestEffortTaskInhibitingPolicy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_best_effort_task_inhibiting_minimum_allowed_time_per_period": "1s",
-                        "enable_best_effort_task_inhibiting_period": "2s"
-                    },
-                    "enable_features": [
-                        "EnableBestEffortTaskInhibitingPolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableChromeFatalCrashEventsObserver": [
         {
             "platforms": [
