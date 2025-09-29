@@ -42,10 +42,6 @@ namespace device {
 
 namespace {
 
-constexpr std::array<uint8_t, kAaguidLength> kTestWindowsAaguid = {
-    {0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c,
-     0x0d, 0x0e, 0x0f, 0x10}};
-
 std::unique_ptr<VirtualFidoDevice::PrivateKey> MakePrivateKey(
     PCWEBAUTHN_COSE_CREDENTIAL_PARAMETERS cose_credential_parameters,
     bool is_platform_credential) {
@@ -300,10 +296,12 @@ HRESULT FakeWinWebAuthnApi::AuthenticatorMakeCredential(
   attestation->win_attestation.bLargeBlobSupported =
       options->dwLargeBlobSupport != WEBAUTHN_LARGE_BLOB_SUPPORT_NONE &&
       version_ >= WEBAUTHN_API_VERSION_3 && large_blob_supported_;
-  attestation->win_attestation.dwUsedTransport =
-      attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
-          ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
-          : transport_;
+  if (version_ >= WEBAUTHN_API_VERSION_6) {
+    attestation->win_attestation.dwUsedTransport =
+        attachment == WEBAUTHN_AUTHENTICATOR_ATTACHMENT_PLATFORM
+            ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
+            : transport_;
+  }
 
   *credential_attestation_ptr = &attestation->win_attestation;
   returned_attestations_.push_back(std::move(attestation));

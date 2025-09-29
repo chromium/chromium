@@ -888,7 +888,7 @@ TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetric) {
 #if BUILDFLAG(IS_WIN)
 TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetricWin) {
   FakeWinWebAuthnApi win_api;
-  win_api.set_version(WEBAUTHN_API_VERSION_3);
+  win_api.set_version(WEBAUTHN_API_VERSION_6);
   win_api.set_transport(WEBAUTHN_CTAP_TRANSPORT_BLE);
   WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&win_api);
   base::HistogramTester histograms;

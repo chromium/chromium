@@ -8090,6 +8090,49 @@ TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialLargeBlobWinPreferred) {
     EXPECT_EQ(result.response->supports_large_blob, large_blob_supported);
   }
 }
+
+// Tests that the AAGUID is not zeroed out for Windows Hello on Windows versions
+// where Chrome can learn the transport used.
+// Regression test for crbug.com/446157740.
+TEST_F(ResidentKeyAuthenticatorImplTest,
+       WinPlatformAuthenticatorAttestationAAGUID) {
+  enum Test {
+    kWindowsReportsUsb,
+    kWindowsReportsInternal,
+    kWindowsDoesNotReportTransport
+  };
+  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
+  fake_win_webauthn_api_.set_available(true);
+  for (Test test : {kWindowsReportsUsb, kWindowsReportsInternal,
+                    kWindowsDoesNotReportTransport}) {
+    SCOPED_TRACE(test);
+    fake_win_webauthn_api_.set_version(test == kWindowsDoesNotReportTransport
+                                           ? WEBAUTHN_API_VERSION_5
+                                           : WEBAUTHN_API_VERSION_6);
+    fake_win_webauthn_api_.set_transport(test == kWindowsReportsInternal
+                                             ? WEBAUTHN_CTAP_TRANSPORT_INTERNAL
+                                             : WEBAUTHN_CTAP_TRANSPORT_USB);
+    PublicKeyCredentialCreationOptionsPtr options =
+        GetTestPublicKeyCredentialCreationOptions();
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+
+    const device::AuthenticatorData auth_data =
+        AuthDataFromMakeCredentialResponse(result.response);
+
+    std::optional<Value> attestation_value =
+        Reader::Read(result.response->attestation_object);
+    ASSERT_TRUE(attestation_value);
+    ASSERT_TRUE(attestation_value->is_map());
+    if (test == kWindowsReportsInternal) {
+      EXPECT_EQ(auth_data.attested_data()->aaguid(),
+                device::FakeWinWebAuthnApi::kTestWindowsAaguid);
+    } else {
+      EXPECT_TRUE(auth_data.attested_data()->IsAaguidZero());
+    }
+  }
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 // Tests that chrome does not attempt setting the PRF extension during a

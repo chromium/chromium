@@ -2365,16 +2365,20 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
       RequestSource(), device::FidoRequestType::kMakeCredential,
       authenticator->GetType());
 
-  std::optional<device::FidoTransportProtocol> transport =
+  base::flat_set<device::FidoTransportProtocol> transports;
+  std::optional<device::FidoTransportProtocol> authenticator_transport =
       authenticator->AuthenticatorTransport();
-  bool is_transport_used_internal = false;
-  bool is_transport_used_cable = false;
-  if (transport) {
-    is_transport_used_internal =
-        *transport == device::FidoTransportProtocol::kInternal;
-    is_transport_used_cable =
-        *transport == device::FidoTransportProtocol::kHybrid;
+  if (authenticator_transport) {
+    transports.emplace(*authenticator_transport);
+  } else if (response_data->transports) {
+    // On platforms where we delegate handling different transports to the OS,
+    // use the list of transports reported by the credential instead.
+    transports = *response_data->transports;
   }
+  bool is_transport_used_internal =
+      base::Contains(transports, device::FidoTransportProtocol::kInternal);
+  bool is_transport_used_cable =
+      base::Contains(transports, device::FidoTransportProtocol::kHybrid);
 
   const auto attestation =
       std::get<device::CtapMakeCredentialRequest>(req_state_->ctap_request)
