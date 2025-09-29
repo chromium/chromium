@@ -1028,6 +1028,13 @@ void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
       credential_cache_->GetCredentialStore(origin).GetCredentials();
   base::span<const UiCredential>::iterator cred =
       GetUiCredentialForSelection(matching_creds, selection);
+
+  if (cred != matching_creds.end() && cred->is_backup_credential()) {
+    password_manager::metrics_util::LogPasswordDropdownItemSelected(
+        password_manager::metrics_util::PasswordDropdownSelectedOption::
+            kBackupPassword);
+  }
+
   if (selection.is_obfuscated() && cred != matching_creds.end() &&
       cred->match_type() == GetLoginMatchType::kGrouped) {
     // Use `cred->display_name()` instead of origin here to correctly display

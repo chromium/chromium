@@ -2181,6 +2181,41 @@ TEST_F(PasswordAccessoryControllerTest,
       /*is_field_eligible_for_manual_generation=*/false);
 }
 
+TEST_F(PasswordAccessoryControllerTest, LogBackupPasswordSelected) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kFillRecoveryPassword);
+  CreateSheetController();
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+  matches[0].SetPasswordBackupNote(u"BackupPassword");
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/false);
+
+  AccessorySheetField selected_field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
+          .SetDisplayText(u"BackupPassword")
+          .SetIsObfuscated(true)
+          .SetSelectable(true)
+          .Build();
+
+  base::HistogramTester histogram_tester;
+  // Simulate selecting the password.
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownItemSelected",
+      password_manager::metrics_util::PasswordDropdownSelectedOption::
+          kBackupPassword,
+      1);
+}
+
 class PasswordAccessoryControllerWithTestStoreTest
     : public PasswordAccessoryControllerTest,
       public testing::WithParamInterface<bool> {

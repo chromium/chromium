@@ -297,6 +297,11 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
       base::BindOnce(
           &TouchToFillControllerAutofillDelegate::OnFillingCredentialComplete,
           base::Unretained(this), credential.username()));
+  if (credential.is_backup_credential()) {
+    password_manager::metrics_util::LogPasswordDropdownItemSelected(
+        password_manager::metrics_util::PasswordDropdownSelectedOption::
+            kBackupPassword);
+  }
 }
 
 void TouchToFillControllerAutofillDelegate::OnFillingCredentialComplete(

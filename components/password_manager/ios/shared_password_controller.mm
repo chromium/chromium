@@ -708,7 +708,7 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
   switch (suggestion.type) {
     case autofill::SuggestionType::kAllSavedPasswordsEntry: {
       completion();
-      password_manager::metrics_util::LogPasswordDropdownItemSelected(
+      password_manager::metrics_util::LogPasswordSuggestionSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kShowAll,
           [self IsOffTheRecord]);
@@ -722,14 +722,14 @@ autofill::LocalFrameToken GetLocalFrameToken(web::WebFrame* frame) {
                       fieldIdentifier:fieldRendererID
                               inFrame:frame
                   isManuallyTriggered:NO];
-      password_manager::metrics_util::LogPasswordDropdownItemSelected(
+      password_manager::metrics_util::LogPasswordSuggestionSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kGenerate,
           [self IsOffTheRecord]);
       return;
     }
     default: {
-      password_manager::metrics_util::LogPasswordDropdownItemSelected(
+      password_manager::metrics_util::LogPasswordSuggestionSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kPassword,
           [self IsOffTheRecord]);

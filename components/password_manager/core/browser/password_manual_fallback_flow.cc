@@ -319,7 +319,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     case autofill::SuggestionType::kAllSavedPasswordsEntry:
       password_client_->NavigateToManagePasswordsPage(
           ManagePasswordsReferrer::kPasswordDropdown);
-      metrics_util::LogPasswordDropdownItemSelected(
+      metrics_util::LogPasswordSuggestionSelected(
           metrics_util::PasswordDropdownSelectedOption::kShowAll,
           password_client_->IsOffTheRecord());
       break;

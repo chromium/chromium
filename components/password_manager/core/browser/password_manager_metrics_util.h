@@ -728,8 +728,11 @@ void LogPasswordDropdownShown(
     const std::vector<autofill::Suggestion>& suggestions);
 
 // Log the type of the password dropdown suggestion when chosen.
-void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type,
-                                     bool off_the_record);
+void LogPasswordSuggestionSelected(PasswordDropdownSelectedOption type,
+                                   bool off_the_record);
+
+// Logs only PasswordManager.PasswordDropdownItemSelected metric.
+void LogPasswordDropdownItemSelected(PasswordDropdownSelectedOption type);
 
 // Log a password successful submission event.
 void LogPasswordSuccessfulSubmissionIndicatorEvent(
