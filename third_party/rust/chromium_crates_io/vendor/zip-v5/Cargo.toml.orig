@@ -1,6 +1,6 @@
 [package]
 name = "zip"
-version = "4.6.1"
+version = "5.1.1"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -12,7 +12,7 @@ repository = "https://github.com/zip-rs/zip2.git"
 keywords = ["zip", "archive", "compression"]
 # Any change to rust-version must be reflected also in `README.md` and `.github/workflows/ci.yaml`.
 # The MSRV policy is documented in `README.md`.
-rust-version = "1.82.0"
+rust-version = "1.83.0"
 description = """
 Library to support the reading and writing of zip files.
 """
@@ -29,7 +29,7 @@ time = { version = "0.3.37", default-features = false }
 [dependencies]
 aes = { version = "0.8", optional = true }
 bzip2 = { version = "0.6.0", optional = true }
-chrono = { version = "0.4", optional = true }
+chrono = { version = "^0.4.27", optional = true }
 constant_time_eq = { version = "0.3.1", optional = true }
 crc32fast = "1.4"
 flate2 = { version = "1.1.1", default-features = false, optional = true }
@@ -49,7 +49,8 @@ zeroize = { version = "1.8", optional = true, features = ["zeroize_derive"] }
 zstd = { version = "0.13", optional = true, default-features = false }
 zopfli = { version = "0.8", optional = true }
 deflate64 = { version = "0.1.9", optional = true }
-liblzma = { version = "0.4.1", optional = true }
+lzma-rust2 = { version = "0.13", optional = true, default-features = false, features = ["std", "encoder", "optimization", "xz"] }
+bitstream-io =  { version = "4.5.0", optional = true }
 
 [target.'cfg(fuzzing)'.dependencies]
 arbitrary = { version = "1.4.1", features = ["derive"] }
@@ -78,18 +79,19 @@ deflate-flate2-zlib = ["deflate-flate2", "flate2/zlib"]
 deflate-zopfli = ["dep:zopfli", "_deflate-any"]
 jiff-02 = ["dep:jiff"]
 nt-time = ["dep:nt-time"]
-lzma = ["dep:liblzma"]
-lzma-static = ["lzma", "liblzma/static"]
+lzma = ["dep:lzma-rust2"]
+lzma-static = ["lzma"]
 ppmd = ["dep:ppmd-rust"]
 unreserved = []
-xz = ["dep:liblzma"]
-xz-static = ["xz", "liblzma/static"]
+xz = ["dep:lzma-rust2"]
+xz-static = ["lzma"]
+legacy-zip = ["bitstream-io"]
 default = [
     "aes-crypto",
     "bzip2",
     "deflate64",
     "deflate",
-    "lzma-static",
+    "lzma",
     "ppmd",
     "time",
     "zstd",

@@ -23,7 +23,7 @@
 //! | Bzip2 | ✅ | ✅ |
 //! | ZStandard | ✅ | ✅ |
 //! | LZMA | ✅ | |
-//! | XZ | ✅ | |
+//! | XZ | ✅ | ✅ |
 //! | PPMd | ✅ | ✅ |
 //! | AES encryption | ✅ | ✅ |
 //! | ZipCrypto deprecated encryption | ✅ | ✅ |
@@ -55,6 +55,8 @@ mod types;
 pub mod write;
 mod zipcrypto;
 pub use extra_fields::ExtraField;
+#[cfg(feature = "legacy-zip")]
+mod legacy;
 
 #[doc = "Unstable APIs\n\
 \

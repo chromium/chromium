@@ -1,3 +1,4 @@
+use crate::result::invalid;
 use crate::result::{ZipError, ZipResult};
 use crate::unstable::LittleEndianReadExt;
 use std::io::Read;
@@ -20,6 +21,9 @@ impl ExtendedTimestamp {
     where
         R: Read,
     {
+        if len == 0 {
+            return Err(invalid!("Extended timestamp field is empty"));
+        }
         let mut flags = [0u8];
         let mut bytes_to_read = len as usize;
         reader.read_exact(&mut flags)?;
@@ -91,4 +95,17 @@ impl ExtendedTimestamp {
     pub fn cr_time(&self) -> Option<u32> {
         self.cr_time
     }
+}
+
+#[test]
+/// Ensure we don't panic or read garbage data if the field body is empty
+pub fn test_bad_extended_timestamp() -> ZipResult<()> {
+    use crate::ZipArchive;
+    use std::io::Cursor;
+
+    assert!(ZipArchive::new(Cursor::new(include_bytes!(
+        "../../tests/data/extended_timestamp_bad.zip"
+    )))
+    .is_err());
+    Ok(())
 }

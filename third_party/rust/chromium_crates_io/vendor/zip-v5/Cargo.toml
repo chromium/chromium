@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82.0"
+rust-version = "1.83.0"
 name = "zip"
-version = "4.6.1"
+version = "5.1.1"
 authors = [
     "Mathijs van de Nes <git@mathijs.vd-nes.nl>",
     "Marli Frost <marli@frost.red>",
@@ -70,7 +70,7 @@ default = [
     "bzip2",
     "deflate64",
     "deflate",
-    "lzma-static",
+    "lzma",
     "ppmd",
     "time",
     "zstd",
@@ -97,19 +97,14 @@ deflate-zopfli = [
     "_deflate-any",
 ]
 jiff-02 = ["dep:jiff"]
-lzma = ["dep:liblzma"]
-lzma-static = [
-    "lzma",
-    "liblzma/static",
-]
+legacy-zip = ["bitstream-io"]
+lzma = ["dep:lzma-rust2"]
+lzma-static = ["lzma"]
 nt-time = ["dep:nt-time"]
 ppmd = ["dep:ppmd-rust"]
 unreserved = []
-xz = ["dep:liblzma"]
-xz-static = [
-    "xz",
-    "liblzma/static",
-]
+xz = ["dep:lzma-rust2"]
+xz-static = ["lzma"]
 
 [lib]
 name = "zip"
@@ -134,12 +129,16 @@ harness = false
 version = "0.8"
 optional = true
 
+[dependencies.bitstream-io]
+version = "4.5.0"
+optional = true
+
 [dependencies.bzip2]
 version = "0.6.0"
 optional = true
 
 [dependencies.chrono]
-version = "0.4"
+version = "^0.4.27"
 optional = true
 
 [dependencies.constant_time_eq]
@@ -175,9 +174,16 @@ version = "2"
 version = "0.2.4"
 optional = true
 
-[dependencies.liblzma]
-version = "0.4.1"
+[dependencies.lzma-rust2]
+version = "0.13"
+features = [
+    "std",
+    "encoder",
+    "optimization",
+    "xz",
+]
 optional = true
+default-features = false
 
 [dependencies.memchr]
 version = "2.7"

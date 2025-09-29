@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.1](https://github.com/zip-rs/zip2/compare/v5.1.0...v5.1.1) - 2025-09-11
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- panic when reading empty extended-timestamp field ([#404](https://github.com/zip-rs/zip2/pull/404)) ([#422](https://github.com/zip-rs/zip2/pull/422))
+- Restore original file timestamp when unzipping with `chrono` ([#46](https://github.com/zip-rs/zip2/pull/46))
+
+### <!-- 7 -->⚙️ Miscellaneous Tasks
+
+- Configure Amazon Q rules ([#421](https://github.com/zip-rs/zip2/pull/421))
+
+## [5.1.0](https://github.com/zip-rs/zip2/compare/v5.0.1...v5.1.0) - 2025-09-10
+
+### <!-- 0 -->🚀 Features
+
+- Add legacy shrink/reduce/implode compression ([#303](https://github.com/zip-rs/zip2/pull/303))
+
+## [5.0.1](https://github.com/zip-rs/zip2/compare/v5.0.0...v5.0.1) - 2025-09-09
+
+### <!-- 1 -->🐛 Bug Fixes
+
+- AES metadata was not copied correctly in raw copy methods, which could corrupt the copied file. ([#417](https://github.com/zip-rs/zip2/pull/417))
+
+## [5.0.0](https://github.com/zip-rs/zip2/compare/v4.6.1...v5.0.0) - 2025-09-05
+
+### <!-- 0 -->🚀 Features
+
+- Implement by_path*() methods on ZipArchive ([#382](https://github.com/zip-rs/zip2/pull/382))
+
 ## [4.6.1](https://github.com/zip-rs/zip2/compare/v4.6.0...v4.6.1) - 2025-09-03
 
 ### <!-- 1 -->🐛 Bug Fixes

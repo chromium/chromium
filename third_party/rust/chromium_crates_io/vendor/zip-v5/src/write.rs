@@ -98,7 +98,7 @@ enum GenericZipWriter<W: Write + Seek> {
     #[cfg(feature = "zstd")]
     Zstd(ZstdEncoder<'static, MaybeEncrypted<W>>),
     #[cfg(feature = "xz")]
-    Xz(liblzma::write::XzEncoder<MaybeEncrypted<W>>),
+    Xz(Box<lzma_rust2::XzWriter<MaybeEncrypted<W>>>),
     #[cfg(feature = "ppmd")]
     Ppmd(Box<ppmd_rust::Ppmd8Encoder<MaybeEncrypted<W>>>),
 }
@@ -121,7 +121,7 @@ impl<W: Write + Seek> Debug for GenericZipWriter<W> {
             #[cfg(feature = "zstd")]
             GenericZipWriter::Zstd(w) => f.write_fmt(format_args!("Zstd({:?})", w.get_ref())),
             #[cfg(feature = "xz")]
-            GenericZipWriter::Xz(w) => f.write_fmt(format_args!("Xz({:?})", w.get_ref())),
+            GenericZipWriter::Xz(w) => f.write_fmt(format_args!("Xz({:?})", w.inner())),
             #[cfg(feature = "ppmd")]
             GenericZipWriter::Ppmd(_) => f.write_fmt(format_args!("Ppmd8Encoder")),
         }
@@ -273,6 +273,8 @@ pub struct FileOptions<'k, T: FileOptionExtension> {
     pub(crate) alignment: u16,
     #[cfg(feature = "deflate-zopfli")]
     pub(super) zopfli_buffer_size: Option<usize>,
+    #[cfg(feature = "aes-crypto")]
+    pub(crate) aes_mode: Option<(AesMode, AesVendorVersion, CompressionMethod)>,
 }
 /// Simple File Options. Can be copied and good for simple writing zip files
 pub type SimpleFileOptions = FileOptions<'static, ()>;
@@ -566,6 +568,8 @@ impl<T: FileOptionExtension> Default for FileOptions<'_, T> {
             alignment: 1,
             #[cfg(feature = "deflate-zopfli")]
             zopfli_buffer_size: Some(1 << 15),
+            #[cfg(feature = "aes-crypto")]
+            aes_mode: None,
         }
     }
 }
@@ -932,9 +936,25 @@ impl<W: Write + Seek> ZipWriter<W> {
                 0x9901,
                 aes_dummy_extra_data,
             )?;
+        } else if let Some((mode, vendor, underlying)) = options.aes_mode {
+            // For raw copies of AES entries, write the correct AES extra data immediately
+            let mut body = Vec::with_capacity(7);
+            body.write_u16_le(vendor as u16)?; // vendor version (1 or 2)
+            body.extend_from_slice(b"AE"); // vendor id
+            body.push(mode as u8); // strength
+            body.write_u16_le(underlying.serialize_to_u16())?; // real compression method
+            aes_extra_data_start = extra_data.len() as u64;
+            ExtendedFileOptions::add_extra_data_unchecked(
+                &mut extra_data,
+                0x9901,
+                body.into_boxed_slice(),
+            )?;
         }
 
         let (compression_method, aes_mode) = match options.encrypt_with {
+            // Preserve AES method for raw copies without needing a password
+            #[cfg(feature = "aes-crypto")]
+            None if options.aes_mode.is_some() => (CompressionMethod::Aes, options.aes_mode),
             #[cfg(feature = "aes-crypto")]
             Some(EncryptWith::Aes { mode, .. }) => (
                 CompressionMethod::Aes,
@@ -1791,6 +1811,18 @@ impl<W: Write + Seek> GenericZipWriter<W> {
                         ))
                     }))
                 }
+                #[cfg(feature = "legacy-zip")]
+                CompressionMethod::Shrink => Err(ZipError::UnsupportedArchive(
+                    "Shrink compression unsupported",
+                )),
+                #[cfg(feature = "legacy-zip")]
+                CompressionMethod::Reduce(_) => Err(ZipError::UnsupportedArchive(
+                    "Reduce compression unsupported",
+                )),
+                #[cfg(feature = "legacy-zip")]
+                CompressionMethod::Implode => Err(ZipError::UnsupportedArchive(
+                    "Implode compression unsupported",
+                )),
                 #[cfg(feature = "lzma")]
                 CompressionMethod::Lzma => {
                     Err(UnsupportedArchive("LZMA isn't supported for compression"))
@@ -1801,8 +1833,12 @@ impl<W: Write + Seek> GenericZipWriter<W> {
                         .ok_or(UnsupportedArchive("Unsupported compression level"))?
                         as u32;
                     Ok(Box::new(move |bare| {
-                        Ok(GenericZipWriter::Xz(liblzma::write::XzEncoder::new(
-                            bare, level,
+                        Ok(GenericZipWriter::Xz(Box::new(
+                            lzma_rust2::XzWriter::new(
+                                bare,
+                                lzma_rust2::XzOptions::with_preset(level),
+                            )
+                            .map_err(ZipError::Io)?,
                         )))
                     }))
                 }
@@ -2313,6 +2349,8 @@ mod test {
             alignment: 1,
             #[cfg(feature = "deflate-zopfli")]
             zopfli_buffer_size: None,
+            #[cfg(feature = "aes-crypto")]
+            aes_mode: None,
         };
         writer.start_file("mimetype", options).unwrap();
         writer
@@ -2354,6 +2392,8 @@ mod test {
             alignment: 1,
             #[cfg(feature = "deflate-zopfli")]
             zopfli_buffer_size: None,
+            #[cfg(feature = "aes-crypto")]
+            aes_mode: None,
         };
 
         // GB18030
@@ -2407,6 +2447,8 @@ mod test {
             alignment: 0,
             #[cfg(feature = "deflate-zopfli")]
             zopfli_buffer_size: None,
+            #[cfg(feature = "aes-crypto")]
+            aes_mode: None,
         };
         writer.start_file(RT_TEST_FILENAME, options).unwrap();
         writer.write_all(RT_TEST_TEXT.as_ref()).unwrap();
@@ -2458,6 +2500,8 @@ mod test {
             alignment: 0,
             #[cfg(feature = "deflate-zopfli")]
             zopfli_buffer_size: None,
+            #[cfg(feature = "aes-crypto")]
+            aes_mode: None,
         };
         writer.start_file(RT_TEST_FILENAME, options).unwrap();
         writer.write_all(RT_TEST_TEXT.as_ref()).unwrap();

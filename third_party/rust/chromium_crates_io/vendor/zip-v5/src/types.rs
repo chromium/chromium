@@ -492,6 +492,8 @@ pub struct ZipFileData {
     pub system: System,
     /// Specification version
     pub version_made_by: u8,
+    /// ZIP flags
+    pub flags: u16,
     /// True if the file is encrypted.
     pub encrypted: bool,
     /// True if file_name and file_comment are UTF8
@@ -710,7 +712,17 @@ impl ZipFileData {
         let mut local_block = ZipFileData {
             system: System::Unix,
             version_made_by: DEFAULT_VERSION,
-            encrypted: options.encrypt_with.is_some(),
+            flags: 0,
+            encrypted: options.encrypt_with.is_some() || {
+                #[cfg(feature = "aes-crypto")]
+                {
+                    options.aes_mode.is_some()
+                }
+                #[cfg(not(feature = "aes-crypto"))]
+                {
+                    false
+                }
+            },
             using_data_descriptor: false,
             is_utf8: !file_name.is_ascii(),
             compression_method,
@@ -794,6 +806,7 @@ impl ZipFileData {
             system: System::from(system),
             /* NB: this strips the top 8 bits! */
             version_made_by: version_made_by as u8,
+            flags,
             encrypted,
             using_data_descriptor,
             is_utf8,
@@ -1213,7 +1226,7 @@ impl FixedSizeBlock for Zip64DataDescriptorBlock {
 ///
 /// According to the [specification](https://www.winzip.com/win/en/aes_info.html#winzip11) AE-2
 /// does not make use of the CRC check.
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[repr(u16)]
 pub enum AesVendorVersion {
     Ae1 = 0x0001,
@@ -1272,6 +1285,7 @@ mod test {
         let data = ZipFileData {
             system: System::Dos,
             version_made_by: 0,
+            flags: 0,
             encrypted: false,
             using_data_descriptor: false,
             is_utf8: true,

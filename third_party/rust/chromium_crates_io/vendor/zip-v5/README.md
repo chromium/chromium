@@ -10,7 +10,7 @@ Info
 ----
 
 
-A zip library for rust which supports reading and writing of simple ZIP files. Formerly hosted at 
+A zip library for rust which supports reading and writing of simple ZIP files. Formerly hosted at
 https://github.com/zip-rs/zip2.
 
 Supported compression formats:
@@ -21,7 +21,7 @@ Supported compression formats:
 * bzip2
 * zstd
 * lzma (decompression only)
-* xz (decompression only)
+* xz
 * ppmd
 
 Currently unsupported zip extensions:
@@ -35,8 +35,8 @@ The features available are:
 
 * `aes-crypto`: Enables decryption of files which were encrypted with AES. Supports AE-1 and AE-2 methods.
 * `deflate`: Enables compressing and decompressing an unspecified implementation (that may change in future versions) of
- the deflate compression algorithm, which is the default for zip files. Supports compression quality 1..=264.
-* `deflate-flate2`: Combine this with any `flate2` feature flag that enables a back-end, to support deflate compression 
+  the deflate compression algorithm, which is the default for zip files. Supports compression quality 1..=264.
+* `deflate-flate2`: Combine this with any `flate2` feature flag that enables a back-end, to support deflate compression
   at quality 1..=9.
 * `deflate-zopfli`: Enables deflating files with the `zopfli` library (used when compression quality is 10..=264). This
   is the most effective `deflate` implementation available, but also among the slowest.
@@ -48,14 +48,15 @@ The features available are:
 * `chrono`: Enables converting last-modified `zip::DateTime` to and from `chrono::NaiveDateTime`.
 * `jiff-02`: Enables converting last-modified `zip::DateTime` to and from `jiff::civil::DateTime`.
 * `nt-time`: Enables returning timestamps stored in the NTFS extra field as `nt_time::FileTime`.
+* `xz`: Enables the XZ compression algorithm.
 * `zstd`: Enables the Zstandard compression algorithm.
 
-By default `aes-crypto`, `bzip2`, `deflate`, `deflate64`, `lzma`, `ppmd`, `time` and `zstd` are enabled.
+By default `aes-crypto`, `bzip2`, `deflate`, `deflate64`, `lzma`, `ppmd`, `time`, `xz` and `zstd` are enabled.
 
 MSRV
 ----
 
-Our current Minimum Supported Rust Version is **1.82**. When adding features,
+Our current Minimum Supported Rust Version is **1.83**. When adding features,
 we will follow these guidelines:
 
 - We will always support a minor Rust version that has been stable for at least 6 months.
@@ -65,12 +66,13 @@ Examples
 --------
 
 See the [examples directory](examples) for:
-   * How to write a file to a zip.
-   * How to write a directory of files to a zip (using [walkdir](https://github.com/BurntSushi/walkdir)).
-   * How to extract a zip file.
-   * How to extract a single file from a zip.
-   * How to read a zip from the standard input.
-   * How to append a directory to an existing archive
+
+* How to write a file to a zip.
+* How to write a directory of files to a zip (using [walkdir](https://github.com/BurntSushi/walkdir)).
+* How to extract a zip file.
+* How to extract a single file from a zip.
+* How to read a zip from the standard input.
+* How to append a directory to an existing archive
 
 Fuzzing
 -------
