@@ -290,9 +290,13 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleContextualMediaLink(
 }
 
 bool LensOverlaySidePanelCoordinator::IsEntryShowing() {
-  return GetSidePanelUI(GetLensOverlayController())
-      ->IsSidePanelEntryShowing(
-          SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
+  auto* side_panel_ui = GetSidePanelUI(GetLensOverlayController());
+  if (!side_panel_ui) {
+    return false;
+  }
+
+  return side_panel_ui->IsSidePanelEntryShowing(
+      SidePanelEntry::Key(SidePanelEntry::Id::kLensOverlayResults));
 }
 
 void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,

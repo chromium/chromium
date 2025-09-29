@@ -139,8 +139,12 @@ void LensSearchController::OpenLensOverlay(
     lens::LensOverlayInvocationSource invocation_source) {
   CheckInitialized(initialized_);
 
+  // The overlay can only be reinvoked if the feature is enabled.
+  const bool allow_reinvoking_overlay =
+      lens::features::GetEnableLensButtonInSearchbox() || IsOff();
   // If the eligibility checks fail, do not procced with opening any UI.
-  if (!RunLensEligibilityChecks(
+  if (!allow_reinvoking_overlay ||
+      !RunLensEligibilityChecks(
           invocation_source,
           /*permission_granted_callback=*/base::BindRepeating(
               &LensSearchController::OpenLensOverlay,
