@@ -22,6 +22,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -46,10 +47,10 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+@DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
 @Batch(Batch.PER_CLASS)
 @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
-// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
-@DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+@Restriction(DeviceFormFactor.PHONE_OR_TABLET)
 public class TabSwitcherActionMenuBatchedPTTest {
     @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mCtaTestRule =
