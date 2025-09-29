@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="IndexedDBTransactionCount">
+  <variant name="" summary="Always recorded"/>
+  <variant name="10kTransactions."
+      summary="Recorded when there are &gt;10k transactions on the connection"/>
+</variants>
+
 <variants name="IndexedDBTransactionMode">
   <variant name="ReadOnly"/>
   <variant name="ReadWrite"/>
@@ -586,41 +592,45 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IndexedDB.TransactionTimeout.CommitPending" enum="Boolean"
-    expires_after="2026-03-30">
+<histogram name="IndexedDB.TransactionTimeout.{TransactionCount}CommitPending"
+    enum="Boolean" expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Whether an IndexedDB transaction has a commit pending. Recorded every time
     the 20 seconds inactivity timeout is hit for a transaction. Will be used to
-    diagnose crbug.com/381086791.
+    diagnose crbug.com/381086791. {TransactionCount}
   </summary>
+  <token key="TransactionCount" variants="IndexedDBTransactionCount"/>
 </histogram>
 
-<histogram name="IndexedDB.TransactionTimeout.IsConnected" enum="Boolean"
-    expires_after="2026-03-30">
+<histogram name="IndexedDB.TransactionTimeout.{TransactionCount}IsConnected"
+    enum="Boolean" expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Whether the connection to which an IndexedDB transaction is associated is
     connected. Recorded every time the 20 seconds inactivity timeout is hit for
     a transaction, if it is associated with an existing connection. Will be used
-    to diagnose crbug.com/381086791.
+    to diagnose crbug.com/381086791. {TransactionCount}
   </summary>
+  <token key="TransactionCount" variants="IndexedDBTransactionCount"/>
 </histogram>
 
-<histogram name="IndexedDB.TransactionTimeout.Mode" enum="IDBTransactionMode"
-    expires_after="2026-03-30">
+<histogram name="IndexedDB.TransactionTimeout.{TransactionCount}Mode"
+    enum="IDBTransactionMode" expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The mode of an IndexedDB transaction. Recorded every time the 20 seconds
     inactivity timeout is hit for a transaction. Will be used to diagnose
-    crbug.com/381086791.
+    crbug.com/381086791. {TransactionCount}
   </summary>
+  <token key="TransactionCount" variants="IndexedDBTransactionCount"/>
 </histogram>
 
-<histogram name="IndexedDB.TransactionTimeout.NumTransactionsInConnection"
+<histogram
+    name="IndexedDB.TransactionTimeout.{TransactionCount}NumTransactionsInConnection"
     units="transactions" expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -628,11 +638,13 @@ chromium-metrics-reviews@google.com.
     Number of transactions associated with the same connection as an IndexedDB
     transaction. Recorded every time the 20 seconds inactivity timeout is hit
     for a transaction. Will be used to diagnose crbug.com/381086791. We suspect
-    that this can be very high.
+    that this can be very high. {TransactionCount}
   </summary>
+  <token key="TransactionCount" variants="IndexedDBTransactionCount"/>
 </histogram>
 
-<histogram name="IndexedDB.TransactionTimeout.NumTransactionsInDB"
+<histogram
+    name="IndexedDB.TransactionTimeout.{TransactionCount}NumTransactionsInDB"
     units="transactions" expires_after="2026-03-30">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -640,8 +652,9 @@ chromium-metrics-reviews@google.com.
     Number of transactions associated with the same database as an IndexedDB
     transaction. Recorded every time the 20 seconds inactivity timeout is hit
     for a transaction. Will be used to diagnose crbug.com/381086791. We suspect
-    that this can be very high.
+    that this can be very high. {TransactionCount}
   </summary>
+  <token key="TransactionCount" variants="IndexedDBTransactionCount"/>
 </histogram>
 
 <histogram name="IndexedDB.ValueDecompressionCount" units="count"

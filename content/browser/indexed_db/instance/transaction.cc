@@ -1160,6 +1160,9 @@ void Transaction::TimeoutFired() {
   const bool has_connection = (connection_.get() != nullptr);
   CHECK(has_connection, base::NotFatalUntil::M145);
 
+  const size_t num_transactions_across_all_connections =
+      database_->GetNumTransactionsAcrossAllConnections();
+
   // Histograms to diagnose memory leak crbug.com/381086791.
   // TODO(crbug.com/381086791): Remove after the leak is fixed.
   base::UmaHistogramEnumeration("IndexedDB.TransactionTimeout.Mode", mode_);
@@ -1167,13 +1170,43 @@ void Transaction::TimeoutFired() {
                             is_commit_pending_);
   base::UmaHistogramCounts10000(
       "IndexedDB.TransactionTimeout.NumTransactionsInDB",
-      database_->GetNumTransactionsAcrossAllConnections());
+      num_transactions_across_all_connections);
+
+  // Note: There is a non-fatal CHECK above the validates that `has_connection`
+  // is always true. There is a condition here to avoid a crash if the non-fatal
+  // CHECK fails.
   if (has_connection) {
     base::UmaHistogramBoolean("IndexedDB.TransactionTimeout.IsConnected",
                               connection_->IsConnected());
     base::UmaHistogramCounts10000(
         "IndexedDB.TransactionTimeout.NumTransactionsInConnection",
         connection_->transactions().size());
+  }
+
+  // Same histograms as above, but only when there are a lot of transactions in
+  // the connection.
+  if (connection_->transactions().size() > 10000) {
+    base::UmaHistogramEnumeration(
+        "IndexedDB.TransactionTimeout.10kTransactions.Mode", mode_);
+    base::UmaHistogramBoolean(
+        "IndexedDB.TransactionTimeout.10kTransactions.CommitPending",
+        is_commit_pending_);
+    base::UmaHistogramCounts100000(
+        "IndexedDB.TransactionTimeout.10kTransactions.NumTransactionsInDB",
+        num_transactions_across_all_connections);
+
+    // Note: There is a non-fatal CHECK above the validates that
+    // `has_connection` is always true. There is a condition here to avoid a
+    // crash if the non-fatal CHECK fails.
+    if (has_connection) {
+      base::UmaHistogramBoolean(
+          "IndexedDB.TransactionTimeout.10kTransactions.IsConnected",
+          connection_->IsConnected());
+      base::UmaHistogramCounts100000(
+          "IndexedDB.TransactionTimeout.10kTransactions."
+          "NumTransactionsInConnection",
+          connection_->transactions().size());
+    }
   }
 
   if (!IsTransactionBlockingOtherClients(/*consider_priority=*/true)) {
