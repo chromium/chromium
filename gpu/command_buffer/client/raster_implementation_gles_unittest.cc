@@ -360,18 +360,5 @@ TEST_F(RasterImplementationGLESTest, DeleteGpuRasterTexture) {
   ri_->DeleteGpuRasterTexture(kTextureId);
 }
 
-TEST_F(RasterImplementationGLESTest, BeginGpuRaster) {
-  EXPECT_CALL(*gl_, TraceBeginCHROMIUM(StrEq("BeginGpuRaster"),
-                                       StrEq("GpuRasterization")))
-      .Times(1);
-  ri_->BeginGpuRaster();
-}
-
-TEST_F(RasterImplementationGLESTest, EndGpuRaster) {
-  EXPECT_CALL(*gl_, PixelStorei(GL_UNPACK_ALIGNMENT, 4)).Times(1);
-  EXPECT_CALL(*gl_, TraceEndCHROMIUM()).Times(1);
-  ri_->EndGpuRaster();
-}
-
 }  // namespace raster
 }  // namespace gpu

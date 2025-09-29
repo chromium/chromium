@@ -190,8 +190,6 @@ class RasterInterface : public InterfaceBase {
                                    void* dst_pixels) = 0;
 
   virtual void DeleteGpuRasterTexture(GLuint texture) = 0;
-  virtual void BeginGpuRaster() = 0;
-  virtual void EndGpuRaster() = 0;
 
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in

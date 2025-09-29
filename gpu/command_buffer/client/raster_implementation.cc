@@ -1904,13 +1904,6 @@ void RasterImplementation::DeleteGpuRasterTexture(GLuint texture) {
   NOTREACHED();
 }
 
-void RasterImplementation::BeginGpuRaster() {
-  NOTREACHED();
-}
-void RasterImplementation::EndGpuRaster() {
-  NOTREACHED();
-}
-
 void RasterImplementation::TraceBeginCHROMIUM(const char* category_name,
                                               const char* trace_name) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();

@@ -100,14 +100,6 @@ void TestRasterInterface::DeleteGpuRasterTexture(GLuint texture) {
   NOTREACHED();
 }
 
-void TestRasterInterface::BeginGpuRaster() {
-  NOTREACHED();
-}
-
-void TestRasterInterface::EndGpuRaster() {
-  NOTREACHED();
-}
-
 void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
   // Don't return a valid sync token if context is lost. This matches behavior
   // of CommandBufferProxyImpl.

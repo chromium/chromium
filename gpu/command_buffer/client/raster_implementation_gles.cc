@@ -470,24 +470,6 @@ void RasterImplementationGLES::DeleteGpuRasterTexture(GLuint texture) {
   gl_->DeleteTextures(1u, &texture);
 }
 
-void RasterImplementationGLES::BeginGpuRaster() {
-  // Using push/pop functions directly incurs cost to evaluate function
-  // arguments even when tracing is disabled.
-  gl_->TraceBeginCHROMIUM("BeginGpuRaster", "GpuRasterization");
-}
-
-void RasterImplementationGLES::EndGpuRaster() {
-  // Restore default GL unpack alignment.  TextureUploader expects this.
-  gl_->PixelStorei(GL_UNPACK_ALIGNMENT, 4);
-
-  // Using push/pop functions directly incurs cost to evaluate function
-  // arguments even when tracing is disabled.
-  gl_->TraceEndCHROMIUM();
-
-  // Reset cached raster state.
-  gl_->ActiveTexture(GL_TEXTURE0);
-}
-
 void RasterImplementationGLES::TraceBeginCHROMIUM(const char* category_name,
                                                   const char* trace_name) {
   gl_->TraceBeginCHROMIUM(category_name, trace_name);
