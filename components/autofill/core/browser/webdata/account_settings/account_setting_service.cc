@@ -19,15 +19,8 @@
 namespace autofill {
 
 AccountSettingService::AccountSettingService(
-    syncer::OnceDataTypeStoreFactory store_factory) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
-    sync_bridge_ = std::make_unique<AccountSettingSyncBridge>(
-        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-            syncer::ACCOUNT_SETTING,
-            /*dump_stack=*/base::DoNothing()),
-        std::move(store_factory));
-  }
-}
+    std::unique_ptr<AccountSettingSyncBridge> sync_bridge)
+    : sync_bridge_(std::move(sync_bridge)) {}
 
 AccountSettingService::~AccountSettingService() = default;
 

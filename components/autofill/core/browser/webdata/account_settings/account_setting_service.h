@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/model/data_type_store.h"
 
 namespace syncer {
 class DataTypeControllerDelegate;
@@ -24,7 +23,7 @@ class AccountSettingSyncBridge;
 class AccountSettingService : public KeyedService {
  public:
   explicit AccountSettingService(
-      syncer::OnceDataTypeStoreFactory store_factory);
+      std::unique_ptr<AccountSettingSyncBridge> bridge);
   ~AccountSettingService() override;
 
   // Returns a controller delegate for the `sync_bridge_` owned by this service.
