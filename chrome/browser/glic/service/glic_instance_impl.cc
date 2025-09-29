@@ -416,8 +416,10 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
 
   // TODO: NotifyPanelStateChanged() here
   // TODO: pass in the correct invocation source
-  // TODO: pass in the conversation id
-  host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton, {});
+  Host::PanelWillOpenOptions options;
+  options.conversation_id = conversation_id();
+  host_.PanelWillOpen(mojom::InvocationSource::kTopChromeButton,
+                      std::move(options));
 }
 
 void GlicInstanceImpl::OnAssociatedTabDestroyed(tabs::TabInterface* tab,
