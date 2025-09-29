@@ -176,8 +176,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   glicWebClientNotifyPinnedTabsChanged(payload: {tabData: TabDataPrivate[]}):
       void {
-    // MOJO_RUNTIME_FEATURE_GATED NotifyPinnedTabsChanged
-    // No gating necessary here, this is called by the browser.
     this.cachedPinnedTabs =
         payload.tabData.map((x) => convertTabDataFromPrivate(x));
     this.host.pinnedTabs?.assignAndSignal(this.cachedPinnedTabs);
@@ -185,8 +183,6 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
 
   glicWebClientNotifyPinnedTabDataChanged(payload: {tabData: TabDataPrivate}):
       void {
-    // MOJO_RUNTIME_FEATURE_GATED NotifyPinnedTabDataChanged
-    // No gating necessary here, this is called by the browser.
     if (!this.cachedPinnedTabs) {
       return;
     }
