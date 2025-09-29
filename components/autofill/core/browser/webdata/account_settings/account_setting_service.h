@@ -17,7 +17,7 @@ namespace autofill {
 
 class AccountSettingSyncBridge;
 
-// Manages settings stored in your google account. These settings differ from
+// Manages settings stored in your Google account. These settings differ from
 // regular prefs, since they originate from the user's account and are available
 // beyond Chrome.
 class AccountSettingService : public KeyedService {
