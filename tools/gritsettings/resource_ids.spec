@@ -97,6 +97,12 @@
     "includes": [2200],
     "structures": [2220],
   },
+  "chrome/browser/actor/resources/internal/browser_resources.grd": {
+    "structures": [2230],
+  },
+  "chrome/browser/actor/resources/browser_resources.grd": {
+    "structures": [2230],
+  },
   "chrome/browser/dev_ui_browser_resources.grd": {
     "includes": [2240],
   },

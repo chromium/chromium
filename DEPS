@@ -3472,7 +3472,7 @@ deps = {
 
   'src/chrome/browser/actor/resources/internal': {
       'url': Var('chrome_git') + '/chrome/browser/actor/resources/internal.git' + '@' +
-        'e7fd4dd0ff03c8a85bcbce1bd27996a81b3cb06d',
+        '217b3431ffbe1fb5bad95e4a6e41e5c19d35b0ec',
       'condition': 'checkout_src_internal',
   },
 
