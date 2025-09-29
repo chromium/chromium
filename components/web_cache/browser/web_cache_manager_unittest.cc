@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/web_cache/browser/web_cache_manager.h"
+
+#include "content/public/browser/child_process_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -11,7 +13,7 @@ namespace web_cache {
 TEST(WebCacheManagerTest, AddRemoveRendererTest) {
   content::BrowserTaskEnvironment task_environment_;
   WebCacheManager manager;
-  const int kRendererID = 146;
+  const content::ChildProcessId kRendererID = content::ChildProcessId(146);
 
   EXPECT_EQ(0U, manager.renderers_.size());
 

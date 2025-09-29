@@ -19,12 +19,12 @@ WebCacheManager::WebCacheManager() {
   // cannot observe the creation of the previous processes.
   for (auto iter(content::RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
-    Add(iter.GetCurrentValue()->GetDeprecatedID());
+    Add(iter.GetCurrentValue()->GetID());
   }
 }
 WebCacheManager::~WebCacheManager() = default;
 
-void WebCacheManager::Add(int renderer_id) {
+void WebCacheManager::Add(content::ChildProcessId renderer_id) {
   renderers_.insert(renderer_id);
   content::RenderProcessHost* host =
       content::RenderProcessHost::FromID(renderer_id);
@@ -35,7 +35,7 @@ void WebCacheManager::Add(int renderer_id) {
   }
 }
 
-void WebCacheManager::Remove(int renderer_id) {
+void WebCacheManager::Remove(content::ChildProcessId renderer_id) {
   renderers_.erase(renderer_id);
   web_cache_services_.erase(renderer_id);
 }
@@ -53,7 +53,7 @@ void WebCacheManager::ClearCacheOnNavigation() {
 
 void WebCacheManager::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
-  Add(process_host->GetDeprecatedID());
+  Add(process_host->GetID());
   rph_observations_.AddObservation(process_host);
 }
 
@@ -66,19 +66,20 @@ void WebCacheManager::RenderProcessExited(
 void WebCacheManager::RenderProcessHostDestroyed(
     content::RenderProcessHost* process_host) {
   rph_observations_.RemoveObservation(process_host);
-  Remove(process_host->GetDeprecatedID());
+  Remove(process_host->GetID());
 }
 
-void WebCacheManager::ClearCacheForProcess(int render_process_id) {
-  std::set<int> renderers;
+void WebCacheManager::ClearCacheForProcess(
+    content::ChildProcessId render_process_id) {
+  std::set<content::ChildProcessId> renderers;
   renderers.insert(render_process_id);
   ClearRendererCache(renderers, INSTANTLY);
 }
 
 void WebCacheManager::ClearRendererCache(
-    const std::set<int>& renderers,
+    const std::set<content::ChildProcessId>& renderers,
     WebCacheManager::ClearCacheOccasion occasion) {
-  for (int renderer_id : renderers) {
+  for (const content::ChildProcessId renderer_id : renderers) {
     content::RenderProcessHost* host =
         content::RenderProcessHost::FromID(renderer_id);
     if (host) {
