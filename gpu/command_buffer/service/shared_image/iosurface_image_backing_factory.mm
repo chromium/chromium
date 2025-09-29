@@ -174,6 +174,21 @@ IOSurfaceImageBackingFactory::IOSurfaceImageBackingFactory(
 
 IOSurfaceImageBackingFactory::~IOSurfaceImageBackingFactory() = default;
 
+// static
+gfx::GpuMemoryBufferHandle
+IOSurfaceImageBackingFactory::CreateGpuMemoryBufferHandle(
+    const gfx::Size& size,
+    viz::SharedImageFormat format) {
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+      gfx::CreateIOSurface(size, format, /*should_clear=*/true);
+  if (!io_surface) {
+    LOG(ERROR) << "Failed to allocate IOSurface.";
+    return {};
+  }
+
+  return gfx::GpuMemoryBufferHandle(std::move(io_surface));
+}
+
 std::unique_ptr<SharedImageBacking>
 IOSurfaceImageBackingFactory::CreateSharedImage(
     const Mailbox& mailbox,

@@ -43,6 +43,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBackingFactory
                                uint32_t texture_target);
   ~IOSurfaceImageBackingFactory() override;
 
+  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+      const gfx::Size& size,
+      viz::SharedImageFormat format);
+
   // SharedImageBackingFactory implementation.
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

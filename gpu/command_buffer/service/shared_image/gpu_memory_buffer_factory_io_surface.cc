@@ -13,6 +13,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
@@ -27,15 +28,8 @@ GpuMemoryBufferFactoryIOSurface::CreateNativeGmbHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  bool should_clear = true;
-  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
-      gfx::CreateIOSurface(size, format, should_clear);
-  if (!io_surface) {
-    LOG(ERROR) << "Failed to allocate IOSurface.";
-    return {};
-  }
-
-  return gfx::GpuMemoryBufferHandle(std::move(io_surface));
+  return IOSurfaceImageBackingFactory::CreateGpuMemoryBufferHandle(size,
+                                                                   format);
 }
 
 }  // namespace gpu
