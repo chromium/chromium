@@ -165,6 +165,13 @@ const BACKGROUND_COLOR: number = 0xff282828;
 // LINT.ThenChange(//chrome/browser/resources/pdf/pdf_embedder.css:PdfBackgroundColor, //components/pdf/common/pdf_util.cc:PdfBackgroundColor)
 // clang-format on
 
+// <if expr="enable_pdf_ink2">
+function isEditedSaveRequestType(requestType: SaveRequestType): boolean {
+  return requestType === SaveRequestType.ANNOTATION ||
+      requestType === SaveRequestType.EDITED;
+}
+// </if>
+
 // <if expr="enable_pdf_save_to_drive">
 function convertNoErrorStatusToSaveToDriveState(status: SaveToDriveStatus):
     SaveToDriveState {
@@ -340,7 +347,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor hasEdits_: boolean = false;
   // <if expr="enable_pdf_ink2">
   protected accessor hasCommittedInk2Edits_: boolean = false;
+  // `hasSavedEdits_` is true if the PDF has been saved with edits. Additional
+  // changes or saves of the document will not update this property.
   private hasSavedEdits_: boolean = false;
+  // `hasUnsavedEdits_` is set whenever the user makes edits to the PDF that
+  // have not been saved. This is used to determine whether to enable the
+  // beforeunload dialog when the user navigates away with unsaved changes.
+  private hasUnsavedEdits_: boolean = false;
   // </if>
   protected accessor formFieldFocus_: FormFieldFocusType =
       FormFieldFocusType.NONE;
@@ -1165,6 +1178,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private handleFinishInkStroke_(modified: boolean) {
     if (modified) {
       this.hasCommittedInk2Edits_ = true;
+      this.hasUnsavedEdits_ = true;
       this.setShowBeforeUnloadDialog_(true);
     }
     this.pluginController_.getEventTarget().dispatchEvent(new CustomEvent(
@@ -1437,12 +1451,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_pdf_ink2">
   protected onStrokesUpdated_(e: CustomEvent<number>) {
     this.hasCommittedInk2Edits_ = e.detail > 0;
+    this.hasUnsavedEdits_ = this.hasCommittedInk2Edits_;
 
     // If the user already saved, always show the beforeunload dialog if the
     // strokes have updated. If the user hasn't saved, only show the
     // beforeunload dialog if there's edits.
     this.setShowBeforeUnloadDialog_(
-        this.hasSavedEdits_ || this.hasCommittedInk2Edits_);
+        this.hasSavedEdits_ || this.hasUnsavedEdits_);
   }
   // </if>
 
@@ -1545,6 +1560,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       assert(textbox);
       textbox.commitTextAnnotation();
     }
+
+    // `this.hasUnsavedEdits_` will be set back to true if save is disrupted for
+    // SaveRequestType.ANNOTATION or SaveRequestType.EDITED.
+    if (isEditedSaveRequestType(requestType)) {
+      this.hasUnsavedEdits_ = false;
+    }
     // </if>
 
     if (this.pdfGetSaveDataInBlocks_) {
@@ -1576,10 +1597,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
     if (!this.pdfUseShowSaveFilePicker_) {
       const writer = await this.selectFileAndGetWriter_(fileName);
-      if (writer !== null) {
-        writer.write(blob);
-        this.onSaveSuccessful_(requestType);
+      if (writer === null) {
+        // <if expr="enable_pdf_ink2">
+        this.onSaveFailedOrCancelled_(requestType);
+        // </if>
+        return;
       }
+      writer.write(blob);
+      this.onSaveSuccessful_(requestType);
       return;
     }
 
@@ -1592,6 +1617,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       if (error.name !== 'AbortError') {
         console.error('window.showSaveFilePicker failed: ' + error);
       }
+      // <if expr="enable_pdf_ink2">
+      this.onSaveFailedOrCancelled_(requestType);
+      // </if>
     }
   }
 
@@ -1635,6 +1663,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       } else {
         writer = await this.selectFileAndGetWriter_(fileName);
         if (writer === null) {
+          // <if expr="enable_pdf_ink2">
+          this.onSaveFailedOrCancelled_(requestType);
+          // </if>
           return;
         }
         writable = null;
@@ -1686,6 +1717,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       if (error.name !== 'AbortError') {
         console.error('window.showSaveFilePicker failed: ' + error);
       }
+      // <if expr="enable_pdf_ink2">
+      this.onSaveFailedOrCancelled_(requestType);
+      // </if>
     }
   }
 
@@ -1694,13 +1728,26 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    */
   private onSaveSuccessful_(requestType: SaveRequestType) {
     // <if expr="enable_pdf_ink2">
-    // Unblock closing the window now that the user has saved
-    // successfully.
-    this.setShowBeforeUnloadDialog_(false);
+    // Unblock closing the window if there are no unsaved edits.
+    this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
     this.hasSavedEdits_ =
         this.hasSavedEdits_ || requestType === SaveRequestType.EDITED;
     // </if>
   }
+
+  // <if expr="enable_pdf_ink2">
+  /**
+   * Performs required tasks after a failed or cancelled save.
+   */
+  private onSaveFailedOrCancelled_(requestType: SaveRequestType) {
+    // Restore the original value of `hasUnsavedEdits_` and block closing the
+    // window if there are unsaved edits.
+    if (isEditedSaveRequestType(requestType)) {
+      this.hasUnsavedEdits_ = true;
+    }
+    this.setShowBeforeUnloadDialog_(this.hasUnsavedEdits_);
+  }
+  // </if>
 
   /**
    * Records metrics for saving PDFs.
