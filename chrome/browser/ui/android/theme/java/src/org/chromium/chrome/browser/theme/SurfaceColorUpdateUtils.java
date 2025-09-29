@@ -74,12 +74,6 @@ public class SurfaceColorUpdateUtils {
         if (useNewGm3GtsTabGroupColors() && colorId != null) {
             return TabGroupColorPickerUtils.getTabGroupCardColor(context, colorId, isIncognito);
         }
-        if (useNewGtsSurfaceColor()) {
-            // TODO(crbug.com/414404094): Add semantic color for incognito tab card view.
-            return isIncognito
-                    ? ContextCompat.getColor(context, R.color.gm3_baseline_surface_dim_dark)
-                    : SemanticColorUtils.getColorSurfaceDim(context);
-        }
         return isIncognito
                 ? ContextCompat.getColor(
                         context, R.color.gm3_baseline_surface_container_highest_dark)

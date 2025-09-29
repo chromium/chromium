@@ -41,24 +41,6 @@ public class SurfaceColorUpdateUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testTabCardViewBackgroundColor_FlagEnabled() {
-        @ColorInt
-        int tabCardViewBackgroundColor =
-                SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ false, /* colorId= */ null);
-        assertEquals(SemanticColorUtils.getColorSurfaceDim(mContext), tabCardViewBackgroundColor);
-
-        @ColorInt
-        int tabCardViewBackgroundColorIncognito =
-                SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ true, /* colorId= */ null);
-        assertEquals(
-                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dim_dark),
-                tabCardViewBackgroundColorIncognito);
-    }
-
-    @Test
     @DisableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
     public void testTabCardViewBackgroundColor_FlagDisabled() {
         @ColorInt
@@ -114,7 +96,6 @@ public class SurfaceColorUpdateUtilsUnitTest {
     @Test
     @EnableFeatures({
         ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3,
-        ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE
     })
     public void
             testGetCardViewBackgroundColor_NewGm3TabGroupColorsEnabled_WithColorId_GtsSurfaceAlsoEnabled() {
@@ -131,35 +112,6 @@ public class SurfaceColorUpdateUtilsUnitTest {
                 "GM3 group colors should take precedence when colorId is present.",
                 expectedColor,
                 actualColor);
-    }
-
-    @Test
-    @DisableFeatures({ChromeFeatureList.ANDROID_TAB_GROUPS_COLOR_UPDATE_GM3})
-    @EnableFeatures({ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE})
-    public void testGetCardViewBackgroundColor_NewGtsSurfaceColorEnabled_ColorIdNotNull() {
-        @TabGroupColorId int redColorId = TabGroupColorId.RED;
-
-        @ColorInt int expectedNonIncognito = SemanticColorUtils.getColorSurfaceDim(mContext);
-        @ColorInt
-        int actualNonIncognito =
-                SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ false, redColorId);
-        assertEquals(
-                "Color mismatch for non-incognito with GtsSurfaceColor (colorId ignored).",
-                expectedNonIncognito,
-                actualNonIncognito);
-
-        @ColorInt
-        int expectedIncognito =
-                ContextCompat.getColor(mContext, R.color.gm3_baseline_surface_dim_dark);
-        @ColorInt
-        int actualIncognito =
-                SurfaceColorUpdateUtils.getCardViewBackgroundColor(
-                        mContext, /* isIncognito= */ true, redColorId);
-        assertEquals(
-                "Color mismatch for incognito with GtsSurfaceColor (colorId ignored).",
-                expectedIncognito,
-                actualIncognito);
     }
 
     @Test
