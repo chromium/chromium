@@ -19312,23 +19312,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_NTP_CUSTOMIZATION_PROMO" desc="The text shown in the body of the New Tab Page browser customization promotion">
         Customize Chrome to give your browser a new look
       </message>
-      <message name="IDS_NTP_CUSTOMIZATION_PROMO_ACTION_BUTTON" is_accessibility_with_no_ui="true" desc="The screenreader text for the action button on the Customization New Tab Page promo">
-        Customize Chrome
-      </message>
       <message name="IDS_NTP_EXTENSIONS_PROMO" desc="The text shown in the body of the New Tab Page extensions promotion">
         Add extensions to stay organized, simplify tasks, and enhance your browsing
       </message>
-      <message name="IDS_NTP_EXTENSIONS_PROMO_ACTION_BUTTON" is_accessibility_with_no_ui="true" desc="The screenreader text for the action button on the Extensions New Tab Page promo">
-        Add extensions
-      </message>
-      <message name="IDS_NTP_SIGN_IN_PROMO" desc="The text shown in the body of the New Tab Page sign in promotion">
-        Sign in to Chrome to get your passwords and more on all your devices
-      </message>
       <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
         Sign in to Chrome to get your passwords, bookmarks, and more on all your devices
-      </message>
-      <message name="IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON" is_accessibility_with_no_ui="true" desc="The screenreader text for the action button on the Sign In New Tab Page promo">
-        Sign in
       </message>
     </if>
 

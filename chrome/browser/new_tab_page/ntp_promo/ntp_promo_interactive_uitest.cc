@@ -78,8 +78,11 @@ constexpr char kPromoIconId[] = "#bodyIcon";
 constexpr char kSignInIconName[] = "account_circle";
 constexpr char kExtensionsIconName[] = "my_extensions";
 constexpr char kCustomizationIconName[] = "palette";
-constexpr int kLongSampleTextIds = IDS_NTP_SIGN_IN_PROMO;
-constexpr int kShortSampleTextIds = IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON;
+constexpr int kLongSampleTextIds = IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS;
+// This can be any short string; it tests that the promo doesn't shrink if the
+// text doesn't fill the promo.
+constexpr int kShortSampleTextIds =
+    IDS_PASSWORD_MANAGER_ACCOUNT_CHOOSER_SIGN_IN;
 
 constexpr std::string_view kNtpURL = chrome::kChromeUINewTabURL;
 
@@ -196,9 +199,7 @@ class NtpPromoUiTest
         UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
     user_education::NtpPromoRegistry* registry = service->ntp_promo_registry();
     user_education::NtpPromoSpecification spec(
-        id,
-        user_education::NtpPromoContent(kSignInIconName, text_id,
-                                        IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
+        id, user_education::NtpPromoContent(kSignInIconName, text_id, text_id),
         base::BindLambdaForTesting(
             [=](const user_education::UserEducationContextPtr& context) {
               return eligibility;
@@ -225,7 +226,8 @@ class NtpPromoUiTest
 
   void InstallTestPromo(Eligibility eligibility) {
     ClearRegisteredPromos();
-    RegisterTestPromo(kTestPromoName, eligibility, IDS_NTP_SIGN_IN_PROMO);
+    RegisterTestPromo(kTestPromoName, eligibility,
+                      IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS);
   }
 
   auto GetFirstPromoPath() const {
@@ -293,9 +295,10 @@ class NtpPromoUiTest
   }
 
   auto VerifyTestPromoText() {
-    return CheckJsResultAt(kNtpElementId, GetFirstPromoPath() + kPromoTextId,
-                           "el => el.innerText",
-                           l10n_util::GetStringUTF8(IDS_NTP_SIGN_IN_PROMO))
+    return CheckJsResultAt(
+               kNtpElementId, GetFirstPromoPath() + kPromoTextId,
+               "el => el.innerText",
+               l10n_util::GetStringUTF8(IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS))
         .AddDescriptionPrefix(__func__);
   }
 
