@@ -7,7 +7,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/buildflags.h"
@@ -38,7 +37,6 @@ class WebNNContextProviderImplTest : public testing::Test {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 // `WebNNContextProviderImplTest` only focuses on the non-supported platforms.
