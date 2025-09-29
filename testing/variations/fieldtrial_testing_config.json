@@ -12398,6 +12398,26 @@
             ]
         }
     ],
+    "HeapProfilerBloomFilter": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledBloomFilter_20250925",
+                    "enable_features": [
+                        "UseLockFreeBloomFilter"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeatmapPalmDetectionStudy": [
         {
             "platforms": [
