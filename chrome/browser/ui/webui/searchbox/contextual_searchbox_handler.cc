@@ -44,7 +44,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
-    std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
+    std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     std::unique_ptr<OmniboxController> controller,
     std::unique_ptr<ComposeboxQueryController> query_controller)
     : SearchboxHandler(
@@ -54,23 +54,25 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
           metrics_reporter,
           std::move(controller)),
       query_controller_(std::move(query_controller)),
-      metrics_recorder_(std::move(metrics_recorder)),
+      composebox_metrics_recorder_(std::move(composebox_metrics_recorder)),
       web_contents_(web_contents) {
-  query_controller_->AddObserver(this);
+  if (query_controller_) {
+    file_upload_status_observer_.Observe(query_controller_.get());
+  }
 }
 
-ContextualSearchboxHandler::~ContextualSearchboxHandler() {
-  query_controller_->RemoveObserver(this);
-}
+ContextualSearchboxHandler::~ContextualSearchboxHandler() = default;
 
 void ContextualSearchboxHandler::NotifySessionStarted() {
   query_controller_->NotifySessionStarted();
-  metrics_recorder_->NotifySessionStateChanged(SessionState::kSessionStarted);
+  composebox_metrics_recorder_->NotifySessionStateChanged(
+      SessionState::kSessionStarted);
 }
 
 void ContextualSearchboxHandler::NotifySessionAbandoned() {
   query_controller_->NotifySessionAbandoned();
-  metrics_recorder_->NotifySessionStateChanged(SessionState::kSessionAbandoned);
+  composebox_metrics_recorder_->NotifySessionStateChanged(
+      SessionState::kSessionAbandoned);
 }
 
 void ContextualSearchboxHandler::AddFileContext(
@@ -103,7 +105,8 @@ void ContextualSearchboxHandler::AddFileContext(
       lens::ContextualInput(std::move(file_data_vector), mime_type));
 
   std::move(callback).Run(file_token);
-  metrics_recorder_->RecordFileSizeMetric(mime_type, file_bytes.size());
+  composebox_metrics_recorder_->RecordFileSizeMetric(mime_type,
+                                                     file_bytes.size());
   query_controller_->StartFileUploadFlow(file_token, std::move(input_data),
                                          std::move(image_options));
 }
@@ -190,6 +193,6 @@ void ContextualSearchboxHandler::OnFileUploadStatusChanged(
     const std::optional<FileUploadErrorType>& error_type) {
   page_->OnContextualInputStatusChanged(file_token, file_upload_status,
                                         error_type);
-  metrics_recorder_->OnFileUploadStatusChanged(mime_type, file_upload_status,
-                                               error_type);
+  composebox_metrics_recorder_->OnFileUploadStatusChanged(
+      mime_type, file_upload_status, error_type);
 }

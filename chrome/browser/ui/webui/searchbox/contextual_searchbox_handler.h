@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
@@ -45,7 +46,7 @@ class ContextualSearchboxHandler
      Profile* profile,
      content::WebContents* web_contents,
      MetricsReporter* metrics_reporter,
-     std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
+     std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
      std::unique_ptr<OmniboxController> controller,
      std::unique_ptr<ComposeboxQueryController> query_controller);
   ~ContextualSearchboxHandler() override;
@@ -70,7 +71,7 @@ class ContextualSearchboxHandler
  protected:
   std::set<base::UnguessableToken> deleted_context_tokens_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
-  std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder_;
+  std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder_;
 
  private:
   void OnGetTabPageContext(
@@ -80,6 +81,11 @@ class ContextualSearchboxHandler
   void RecordTabClickedMetric(tabs::TabInterface* const tab);
 
   raw_ptr<content::WebContents> web_contents_;
+
+  base::ScopedObservation<ComposeboxQueryController,
+                          ComposeboxQueryController::FileUploadStatusObserver>
+      file_upload_status_observer_{this};
+
   base::WeakPtrFactory<ContextualSearchboxHandler> weak_ptr_factory_{this};
 };
 

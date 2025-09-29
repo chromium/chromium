@@ -166,6 +166,7 @@ NewTabPageUIConfig::CreateWebUIController(content::WebUI* web_ui,
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
+constexpr char kComposeboxMetricsReporterPrefName[] = "NewTabPage.";
 
 bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -834,8 +835,26 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler) {
   MetricsReporterService* service =
       MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
+  std::unique_ptr<ComposeboxQueryController> query_controller;
+  std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder;
+  // Only create the composebox query controller and metrics recorder needed for
+  // contextual search if realbox next is enabled.
+  if (ntp_composebox::kRealboxLayoutMode.Get() !=
+      ntp_composebox::RealboxLayoutMode::kDefault) {
+    query_controller = std::make_unique<ComposeboxQueryController>(
+        IdentityManagerFactory::GetForProfile(profile_),
+        g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
+        g_browser_process->GetApplicationLocale(),
+        TemplateURLServiceFactory::GetForProfile(profile_),
+        profile_->GetVariationsClient(),
+        ntp_composebox::kSendLnsSurfaceParam.Get(),
+        ntp_composebox::kMaxNumFiles.Get() > 1);
+    composebox_metrics_recorder = std::make_unique<ComposeboxMetricsRecorder>(
+        kComposeboxMetricsReporterPrefName);
+  }
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), profile_, web_contents(),
+      std::move(pending_page_handler), std::move(query_controller),
+      std::move(composebox_metrics_recorder), profile_, web_contents(),
       service->metrics_reporter());
 }
 
@@ -1051,8 +1070,9 @@ void NewTabPageUI::CreatePageHandler(
           profile_->GetVariationsClient(),
           ntp_composebox::kSendLnsSurfaceParam.Get(),
           enable_multi_context_input_flow),
-      std::make_unique<ComposeboxMetricsRecorder>("NewTabPage."), profile_,
-      web_contents(), service->metrics_reporter());
+      std::make_unique<ComposeboxMetricsRecorder>(
+          kComposeboxMetricsReporterPrefName),
+      profile_, web_contents(), service->metrics_reporter());
 
   // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
   composebox_handler_->SetPage(std::move(pending_searchbox_page));

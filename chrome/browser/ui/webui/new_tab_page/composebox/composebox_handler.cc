@@ -23,7 +23,7 @@ ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
     std::unique_ptr<ComposeboxQueryController> query_controller,
-    std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
+    std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter)
@@ -32,7 +32,7 @@ ComposeboxHandler::ComposeboxHandler(
           profile,
           web_contents,
           metrics_reporter,
-          std::move(metrics_recorder),
+          std::move(composebox_metrics_recorder),
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
               std::make_unique<composebox::ComposeboxOmniboxClient>(
@@ -78,7 +78,7 @@ void ComposeboxHandler::SubmitQuery(
                                 : FileUploadStatus::kNotUploaded;
 
                   bool success = query_controller_->DeleteFile(context_token);
-                  metrics_recorder_->RecordFileDeletedMetrics(
+                  composebox_metrics_recorder_->RecordFileDeletedMetrics(
                       success, file_type, file_status);
 
                   return success;
@@ -92,13 +92,14 @@ void ComposeboxHandler::SubmitQuery(
   // autocomplete logic may be run before this if there was a match associated
   // with the query.
   base::Time query_start_time = base::Time::Now();
-  metrics_recorder_->NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  composebox_metrics_recorder_->NotifySessionStateChanged(
+      SessionState::kQuerySubmitted);
   OpenUrl(query_controller_->CreateAimUrl(query_text, query_start_time,
                                           additional_params),
           disposition);
-  metrics_recorder_->NotifySessionStateChanged(
+  composebox_metrics_recorder_->NotifySessionStateChanged(
       SessionState::kNavigationOccurred);
-  metrics_recorder_->RecordQueryMetrics(
+  composebox_metrics_recorder_->RecordQueryMetrics(
       query_text.size(), query_controller_->num_files_in_request());
 }
 

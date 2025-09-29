@@ -38,7 +38,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/cookies/cookie_util.h"
-#include "searchbox_handler.h"
+#include "contextual_searchbox_handler.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/webui/resource_path.h"
@@ -77,18 +77,22 @@ void RealboxOmniboxClient::OnBookmarkLaunched() {
 
 RealboxHandler::RealboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
+    std::unique_ptr<ComposeboxQueryController> query_controller,
+    std::unique_ptr<ComposeboxMetricsRecorder> composebox_metrics_recorder,
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter)
-    : SearchboxHandler(
+    : ContextualSearchboxHandler(
           std::move(pending_page_handler),
           profile,
           web_contents,
           metrics_reporter,
+          std::move(composebox_metrics_recorder),
           std::make_unique<OmniboxController>(
               /*view=*/nullptr,
               std::make_unique<RealboxOmniboxClient>(profile, web_contents),
-              kAutocompleteDefaultStopTimerDuration)) {
+              kAutocompleteDefaultStopTimerDuration),
+          std::move(query_controller)) {
   autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 

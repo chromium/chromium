@@ -100,8 +100,9 @@ class RealboxHandlerTest : public SearchboxHandlerTest {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     handler_ = std::make_unique<RealboxHandler>(
-        mojo::PendingReceiver<searchbox::mojom::PageHandler>(), profile(),
-        web_contents_.get(), /*metrics_reporter=*/nullptr);
+        mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+        /*query_controller=*/nullptr, /*composebox_metrics_recorder=*/nullptr,
+        profile(), web_contents_.get(), /*metrics_reporter=*/nullptr);
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
