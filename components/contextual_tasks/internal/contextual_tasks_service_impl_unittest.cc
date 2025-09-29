@@ -72,6 +72,23 @@ class ContextualTasksServiceImplTest : public testing::Test {
     return task;
   }
 
+  std::optional<ContextualTaskContext> GetContextForTask(
+      const base::Uuid& task_id) {
+    std::optional<ContextualTaskContext> context;
+    base::RunLoop run_loop;
+    service_.GetContextForTask(
+        task_id, base::BindOnce(
+                     [](std::optional<ContextualTaskContext>* out_context,
+                        base::OnceClosure quit_closure,
+                        std::optional<ContextualTaskContext> result) {
+                       *out_context = std::move(result);
+                       std::move(quit_closure).Run();
+                     },
+                     &context, run_loop.QuitClosure()));
+    run_loop.Run();
+    return context;
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   ContextualTasksServiceImpl service_;
@@ -415,6 +432,26 @@ TEST_F(ContextualTasksServiceImplTest,
   std::optional<ContextualTask> recent_task =
       service_.GetMostRecentContextualTaskForSessionID(session_id);
   EXPECT_FALSE(recent_task.has_value());
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetContextForTask) {
+  ContextualTask task = service_.CreateTask();
+  GURL url("https://www.google.com");
+  service_.AttachUrlToTask(task.GetTaskId(), url);
+
+  std::optional<ContextualTaskContext> context =
+      GetContextForTask(task.GetTaskId());
+  ASSERT_TRUE(context.has_value());
+  EXPECT_EQ(context->GetTaskId(), task.GetTaskId());
+  const auto& attachments = context->GetUrlAttachments();
+  ASSERT_EQ(attachments.size(), 1u);
+  EXPECT_EQ(attachments[0].url, url);
+}
+
+TEST_F(ContextualTasksServiceImplTest, GetContextForTask_NotFound) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  std::optional<ContextualTaskContext> context = GetContextForTask(task_id);
+  EXPECT_FALSE(context.has_value());
 }
 
 }  // namespace contextual_tasks

@@ -45,6 +45,10 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
                                SessionID session_id) override;
   std::optional<ContextualTask> GetMostRecentContextualTaskForSessionID(
       SessionID session_id) const override;
+  void GetContextForTask(
+      const base::Uuid& task_id,
+      base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+          context_callback) override;
   void AddObserver(ContextualTasksService::Observer* observer) override;
   void RemoveObserver(ContextualTasksService::Observer* observer) override;
 

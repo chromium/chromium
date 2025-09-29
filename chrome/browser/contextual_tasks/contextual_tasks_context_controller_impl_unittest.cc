@@ -70,6 +70,12 @@ class MockContextualTasksService : public ContextualTasksService {
               (const base::Uuid& task_id, const GURL& url),
               (override));
   MOCK_METHOD(void,
+              GetContextForTask,
+              (const base::Uuid& task_id,
+               base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+                   context_callback),
+              (override));
+  MOCK_METHOD(void,
               AttachSessionIdToTask,
               (const base::Uuid& task_id, SessionID session_id),
               (override));

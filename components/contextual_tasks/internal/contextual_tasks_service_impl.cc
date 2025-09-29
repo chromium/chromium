@@ -172,6 +172,20 @@ ContextualTasksServiceImpl::GetMostRecentContextualTaskForSessionID(
   return std::nullopt;
 }
 
+void ContextualTasksServiceImpl::GetContextForTask(
+    const base::Uuid& task_id,
+    base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+        context_callback) {
+  auto it = tasks_.find(task_id);
+  std::optional<ContextualTaskContext> result;
+  if (it != tasks_.end()) {
+    result = ContextualTaskContext(it->second);
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(context_callback), std::move(result)));
+}
+
 void ContextualTasksServiceImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

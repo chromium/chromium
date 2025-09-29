@@ -14,6 +14,8 @@ source_set("public") {
   sources = [
     "contextual_task.cc",
     "contextual_task.h",
+    "contextual_task_context.cc",
+    "contextual_task_context.h",
     "contextual_tasks_service.cc",
     "contextual_tasks_service.h",
   ]
@@ -31,7 +33,10 @@ source_set("public") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "contextual_task_unittest.cc" ]
+  sources = [
+    "contextual_task_context_unittest.cc",
+    "contextual_task_unittest.cc",
+  ]
 
   deps = [
     ":public",

@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
@@ -77,6 +78,13 @@ class ContextualTasksService : public KeyedService {
   virtual void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) = 0;
   virtual void DetachUrlFromTask(const base::Uuid& task_id,
                                  const GURL& url) = 0;
+
+  // Gets the context for a given task. The `context_callback` will receive the
+  // context if the task is found, or `std::nullopt` otherwise.
+  virtual void GetContextForTask(
+      const base::Uuid& task_id,
+      base::OnceCallback<void(std::optional<ContextualTaskContext>)>
+          context_callback) = 0;
 
   // Methods related to attaching tabs to tasks using their SessionID.
   virtual void AttachSessionIdToTask(const base::Uuid& task_id,
