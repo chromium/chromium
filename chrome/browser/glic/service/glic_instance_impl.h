@@ -97,7 +97,6 @@ class GlicInstanceImpl : public GlicInstance,
   Host& host() override;
   const InstanceId& id() const override;
   std::optional<std::string> conversation_id() const;
-  void set_conversation_id(const std::string& conversation_id);
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
 

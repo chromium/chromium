@@ -143,11 +143,6 @@ void GlicInstanceImpl::CloseInstanceAndShutdown() {
 void GlicInstanceImpl::RegisterConversation(
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::RegisterConversationCallback callback) {
-  if (conversation_info_) {
-    std::move(callback).Run(mojom::RegisterConversationErrorReason::
-                                kInstanceAlreadyHasConversationId);
-    return;
-  }
   if (!info) {
     // This point shouldn't be hit, because empty info triggers switching to a
     // new conversation and the glic api enforces non-empty conversation info
@@ -155,6 +150,13 @@ void GlicInstanceImpl::RegisterConversation(
     LOG(ERROR) << "RegisterConversation called with null info.";
     std::move(callback).Run(
         mojom::RegisterConversationErrorReason::kDefaultValue);
+    return;
+  }
+
+  if (conversation_info_ &&
+      conversation_info_->conversation_id != info->conversation_id) {
+    std::move(callback).Run(mojom::RegisterConversationErrorReason::
+                                kInstanceAlreadyHasConversationId);
     return;
   }
 
@@ -317,11 +319,6 @@ std::optional<std::string> GlicInstanceImpl::conversation_id() const {
     return conversation_info_->conversation_id;
   }
   return std::nullopt;
-}
-
-void GlicInstanceImpl::set_conversation_id(const std::string& conversation_id) {
-  CHECK(!conversation_info_);
-  conversation_info_ = ConversationInfo{conversation_id, ""};
 }
 
 void GlicInstanceImpl::OnBrowserSetLastActive(Browser* browser) {
