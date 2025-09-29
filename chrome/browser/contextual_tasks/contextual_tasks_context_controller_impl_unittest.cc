@@ -238,6 +238,24 @@ TEST_F(ContextualTasksContextControllerImplTest,
   EXPECT_FALSE(task.has_value());
 }
 
+TEST_F(ContextualTasksContextControllerImplTest, AttachUrlToTask) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL url("https://google.com");
+
+  EXPECT_CALL(mock_service_, AttachUrlToTask(task_id, url)).Times(1);
+
+  controller_->AttachUrlToTask(task_id, url);
+}
+
+TEST_F(ContextualTasksContextControllerImplTest, DetachUrlFromTask) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL url("https://google.com");
+
+  EXPECT_CALL(mock_service_, DetachUrlFromTask(task_id, url)).Times(1);
+
+  controller_->DetachUrlFromTask(task_id, url);
+}
+
 TEST_F(ContextualTasksContextControllerImplTest, GetFeatureEligibility) {
   // Test case 1: Feature flag enabled, AIM eligible.
   feature_list_.InitAndEnableFeature(kContextualTasks);

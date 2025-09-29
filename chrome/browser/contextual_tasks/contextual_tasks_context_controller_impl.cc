@@ -50,6 +50,18 @@ void ContextualTasksContextControllerImpl::GetSelectedTaskForTab(
       .Run(service_->GetMostRecentContextualTaskForSessionID(tab_session_id));
 }
 
+void ContextualTasksContextControllerImpl::AttachUrlToTask(
+    const base::Uuid& task_id,
+    const GURL& url) {
+  service_->AttachUrlToTask(task_id, url);
+}
+
+void ContextualTasksContextControllerImpl::DetachUrlFromTask(
+    const base::Uuid& task_id,
+    const GURL& url) {
+  service_->DetachUrlFromTask(task_id, url);
+}
+
 FeatureEligibility
 ContextualTasksContextControllerImpl::GetFeatureEligibility() {
   return {base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks),

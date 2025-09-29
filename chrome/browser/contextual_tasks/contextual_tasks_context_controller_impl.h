@@ -38,6 +38,8 @@ class ContextualTasksContextControllerImpl
       SessionID tab_session_id,
       base::OnceCallback<void(std::optional<ContextualTask>)>
           selected_task_callback) override;
+  void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) override;
+  void DetachUrlFromTask(const base::Uuid& task_id, const GURL& url) override;
   FeatureEligibility GetFeatureEligibility() override;
 
  private:

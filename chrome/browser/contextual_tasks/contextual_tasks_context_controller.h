@@ -55,6 +55,12 @@ class ContextualTasksContextController : public KeyedService {
       base::OnceCallback<void(std::optional<ContextualTask>)>
           selected_task_callback) = 0;
 
+  // Attaches a URL to a `ContextualTask`.
+  virtual void AttachUrlToTask(const base::Uuid& task_id, const GURL& url) = 0;
+  // Detaches a URL from a `ContextualTask`.
+  virtual void DetachUrlFromTask(const base::Uuid& task_id,
+                                 const GURL& url) = 0;
+
   // Returns whether there are any available backends that are eligible for use.
   virtual FeatureEligibility GetFeatureEligibility() = 0;
 
