@@ -1022,11 +1022,6 @@
       name: "CollapseZeroWidthSpaceWhenReuseItem",
       status: "stable",
     },
-    {
-      // Killswitch for https://crbug.com/414827239
-      name: "ColorInputDatalistLooksNormal",
-      status: "stable",
-    },
     // Enable the rec2100-linear color space in CSS and PredefinedColorSpace.
     {
       name: "ColorSpaceRec2100Linear",
