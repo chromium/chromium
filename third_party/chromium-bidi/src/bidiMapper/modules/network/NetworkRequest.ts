@@ -197,6 +197,15 @@ export class NetworkRequest {
     return this.url.startsWith('data:');
   }
 
+  #isNonInterceptable(): boolean {
+    return (
+      // We can't intercept data urls from CDP
+      this.#isDataUrl() ||
+      // Cached requests never hit the network
+      this.#servedFromCache
+    );
+  }
+
   get #method(): string | undefined {
     return (
       this.#requestOverrides?.method ??
@@ -417,7 +426,10 @@ export class NetworkRequest {
   }
 
   #interceptsInPhase(phase: Network.InterceptPhase) {
-    if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
+    if (
+      this.#isNonInterceptable() ||
+      !this.#cdpTarget.isSubscribedTo(`network.${phase}`)
+    ) {
       return new Set();
     }
 
@@ -456,11 +468,7 @@ export class NetworkRequest {
       // is the only place we can find out
       Boolean(this.#response.info && !this.#response.hasExtraInfo);
 
-    const noInterceptionExpected =
-      // We can't intercept data urls from CDP
-      this.#isDataUrl() ||
-      // Cached requests never hit the network
-      this.#servedFromCache;
+    const noInterceptionExpected = this.#isNonInterceptable();
 
     const requestInterceptionExpected =
       !noInterceptionExpected &&
