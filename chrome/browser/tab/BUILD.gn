@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TabStateAttributes.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStoragePackager.java",
     "java/src/org/chromium/chrome/browser/tab/TabSupplierObserver.java",
     "java/src/org/chromium/chrome/browser/tab/TabViewManager.java",
     "java/src/org/chromium/chrome/browser/tab/TabViewProvider.java",

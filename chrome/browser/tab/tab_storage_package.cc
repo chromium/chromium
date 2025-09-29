@@ -10,15 +10,11 @@
 namespace tabs {
 
 TabStoragePackage::TabStoragePackage(
-    int id,
-    int parent_id,
     int user_agent,
-    std::unique_ptr<base::Token> tab_group_id,
+    base::Token tab_group_id,
     bool is_pinned,
     std::unique_ptr<AndroidTabPackage> android_tab_package)
-    : id_(id),
-      parent_id_(parent_id),
-      user_agent_(user_agent),
+    : user_agent_(user_agent),
       tab_group_id_(std::move(tab_group_id)),
       is_pinned_(is_pinned),
       android_tab_package_(std::move(android_tab_package)) {}

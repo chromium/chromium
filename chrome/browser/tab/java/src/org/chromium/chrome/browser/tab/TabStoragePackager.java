@@ -4,10 +4,17 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.nio.ByteBuffer;
 
 /** Saves Java-accessible tab data for use in C++. */
 @JNINamespace("tabs")
@@ -22,5 +29,33 @@ public class TabStoragePackager {
     @CalledByNative
     private static TabStoragePackager create(long nativeTabStoragePackager) {
         return new TabStoragePackager(nativeTabStoragePackager);
+    }
+
+    @CalledByNative
+    public void packageTab(@JniType("TabAndroid*") Tab tab) {
+        WebContentsState state = tab.getWebContentsState();
+        TabStoragePackagerJni.get()
+                .consolidatePackageData(
+                        mNativeTabStoragePackager,
+                        tab.getTimestampMillis(),
+                        state == null ? null : state.buffer(),
+                        assumeNonNull(TabAssociatedApp.getAppId(tab)),
+                        tab.getThemeColor(),
+                        tab.getLastNavigationCommittedTimestampMillis(),
+                        tab.getTabHasSensitiveContent(),
+                        tab);
+    }
+
+    @NativeMethods
+    interface Natives {
+        void consolidatePackageData(
+                long nativeTabStoragePackagerAndroid,
+                long timestampMillis,
+                @Nullable ByteBuffer webContentsStateBuffer,
+                @Nullable @JniType("std::string") String openerAppId,
+                int themeColor,
+                long lastNavigationCommittedTimestampMillis,
+                boolean tabHasSensitiveContent,
+                @JniType("TabAndroid*") Tab tab);
     }
 }

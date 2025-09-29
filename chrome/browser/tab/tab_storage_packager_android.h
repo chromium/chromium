@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/android_tab_package.h"
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
@@ -29,6 +30,17 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   // TabStoragePackager overrides:
   void Package(TabInterface* tab) override;
   std::unique_ptr<TabStoragePackage> ReleasePackage() override;
+
+  void ConsolidatePackageData(
+      JNIEnv* env,
+      jlong timestamp_millis,
+      const jni_zero::JavaParamRef<jobject>& web_contents_state_buffer,
+      std::string& opener_app_id,
+      jint theme_color,
+      jlong last_navigation_committed_timestamp_millis,
+      jboolean tab_has_sensitive_content,
+      TabAndroid* tab);
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
   // A reference to the Java version of this class.
