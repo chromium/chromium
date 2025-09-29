@@ -36,9 +36,10 @@ class EventMonitorRemoteCocoa
 
  private:
   // views::NativeWidgetMacEventMonitor::Client
-  void NativeWidgetMacEventMonitorOnEvent(ui::Event* event,
-                                          bool target_is_this_window,
-                                          bool* event_handled) override;
+  void NativeWidgetMacEventMonitorOnEvent(
+      ui::Event* ui_event,
+      bool target_is_this_window_or_descendant,
+      bool* was_handled) override;
 
   const std::set<ui::EventType> types_;
   raw_ptr<ui::EventObserver> event_observer_;

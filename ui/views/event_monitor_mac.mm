@@ -80,7 +80,17 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
       return event;
     }
 
-    if (!target_window || [event window] == target_window) {
+    bool target_is_this_window_or_descendant = false;
+    if (target_window) {
+      for (NSWindow* current = [event window]; current;
+           current = [current parentWindow]) {
+        if (current == target_window) {
+          target_is_this_window_or_descendant = true;
+          break;
+        }
+      }
+    }
+    if (!target_window || target_is_this_window_or_descendant) {
       std::unique_ptr<ui::Event> ui_event =
           ui::EventFromNative(base::apple::OwnedNSEvent(event));
       if (ui_event && types_.find(ui_event->type()) != types_.end()) {
