@@ -317,7 +317,9 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
   // |MetricsWebContentsObserver::DoesTimingUpdateHaveError| anyway.
   if (context_ == kDefaultContext) {
     client->DidObserveNewFeatureUsage(feature);
-    total_taken_time_for_reporting_ += timer.Elapsed();
+    if (base::TimeTicks::IsHighResolution()) {
+      total_taken_time_for_reporting_ += timer.Elapsed();
+    }
     return true;
   }
 
@@ -348,9 +350,9 @@ void UseCounterImpl::ReportTotalTakenTime(const LocalFrame* frame,
     suffix = ".FinishedParsing";
   }
 
-  base::UmaHistogramTimes(
+  base::UmaHistogramMicrosecondsTimes(
       base::StrCat(
-          {"Blink.UseCounter.TotalTakenTimeForReporting", suffix.Ascii()}),
+          {"Blink.UseCounter.TotalTakenTimeForReporting2", suffix.Ascii()}),
       total_taken_time_for_reporting_);
 }
 

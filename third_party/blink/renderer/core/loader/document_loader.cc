@@ -3903,7 +3903,9 @@ void DocumentLoader::UpdateSubresourceLoadMetrics(
     const SubresourceLoadMetrics& subresource_load_metrics) {
   base::ElapsedTimer timer;
   GetLocalFrameClient().DidObserveSubresourceLoad(subresource_load_metrics);
-  total_taken_time_to_update_subresource_load_metrics_ += timer.Elapsed();
+  if (base::TimeTicks::IsHighResolution()) {
+    total_taken_time_to_update_subresource_load_metrics_ += timer.Elapsed();
+  }
 }
 
 const mojom::RendererContentSettingsPtr& DocumentLoader::GetContentSettings() {
@@ -3913,8 +3915,8 @@ const mojom::RendererContentSettingsPtr& DocumentLoader::GetContentSettings() {
 void DocumentLoader::ReportTotalTakenTimeToUpdateSubresourceLoadMetrics() {
   if (Url().ProtocolIsInHTTPFamily() && frame_->IsOutermostMainFrame() &&
       ShouldEmitNewNavigationHistogram(navigation_type_)) {
-    base::UmaHistogramTimes(
-        "Blink.DocumentLoader.TotalTakenTimeToUpdateSubresourceLoadMetrics."
+    base::UmaHistogramMicrosecondsTimes(
+        "Blink.DocumentLoader.TotalTakenTimeToUpdateSubresourceLoadMetrics2."
         "OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS",
         total_taken_time_to_update_subresource_load_metrics_);
   }

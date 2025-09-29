@@ -1194,8 +1194,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Blink.DocumentLoader.TotalTakenTimeToUpdateSubresourceLoadMetrics.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
-    units="ms" expires_after="2026-02-22">
+    name="Blink.DocumentLoader.TotalTakenTimeToUpdateSubresourceLoadMetrics2.OutermostMainFrame.NewNavigation.IsHTTPOrHTTPS"
+    units="microseconds" expires_after="2026-02-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -1204,6 +1204,8 @@ chromium-metrics-reviews@google.com.
     until the document parsing is finished in the renderer process. This is
     recorded on each new navigation for http or https URLs in
     OutermostMainFrame.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
@@ -5662,10 +5664,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.UseCounter.TotalTakenTimeForReporting.{Timing}"
-    units="ms" expires_after="2026-03-09">
+<histogram name="Blink.UseCounter.TotalTakenTimeForReporting2.{Timing}"
+    units="microseconds" expires_after="2026-03-09">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Measures the accumulated time taken by recording the feautre usage in the
     renderer, at the timing of {Timing}.
@@ -5674,6 +5677,8 @@ chromium-metrics-reviews@google.com.
     document is not the initial empty document, and the URL is HTTP or HTTPS.
 
     This is triggered at the {Timing} phase.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="Timing">
     <variant name="DidCommitLoad"/>
