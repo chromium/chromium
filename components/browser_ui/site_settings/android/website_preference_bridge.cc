@@ -637,7 +637,8 @@ static void JNI_WebsitePreferenceBridge_RevokeObjectPermission(
   GURL origin(ConvertJavaStringToUTF8(env, jorigin));
   DCHECK(origin.is_valid());
   std::optional<base::Value> object =
-      base::JSONReader::Read(ConvertJavaStringToUTF8(env, jobject));
+      base::JSONReader::Read(ConvertJavaStringToUTF8(env, jobject),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(object && object->is_dict());
   permissions::ObjectPermissionContextBase* context = GetChooserContext(
       jbrowser_context_handle,

@@ -262,7 +262,8 @@ base::Value::List DefaultPopularSites(std::optional<std::string> country) {
 
   std::optional<base::Value> sites = base::JSONReader::Read(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          popular_sites_json));
+          popular_sites_json),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::List& sites_list = sites->GetList();
   for (base::Value& site : sites_list) {
     site.GetDict().Set("baked_in", true);

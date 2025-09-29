@@ -69,7 +69,8 @@ void CreateTestFiles(const base::FilePath& install_dir) {
 }
 
 void AssertOnDemandRequest(bool on_demand, std::string post_data) {
-  const auto root = base::JSONReader::Read(post_data);
+  const auto root =
+      base::JSONReader::Read(post_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
   const auto* request = root->GetDict().FindDict("request");
   ASSERT_TRUE(request);

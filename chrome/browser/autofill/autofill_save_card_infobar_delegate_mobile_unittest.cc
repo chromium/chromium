@@ -196,8 +196,8 @@ AutofillSaveCardInfoBarDelegateMobileTest::
                                              CreditCard credit_card) {
   LegalMessageLines legal_message_lines;
   if (!legal_message_string.empty()) {
-    std::optional<base::Value> value =
-        base::JSONReader::Read(legal_message_string);
+    std::optional<base::Value> value = base::JSONReader::Read(
+        legal_message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(value);
     LegalMessageLine::Parse(value->GetDict(), &legal_message_lines,
                             /*escape_apostrophes=*/true);
