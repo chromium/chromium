@@ -1031,11 +1031,17 @@ void OnListFamilyMembersResponse(
     // always open the URL in the continuation in this scenario.
     openURL = YES;
   }
+  ChangeProfileReason reason;
+  if ([self shareExtensionURLEligibleForAccountChange:context.context.URL]) {
+    reason = ChangeProfileReason::kSwitchAccountsFromShareExtension;
+  } else {
+    reason = ChangeProfileReason::kSwitchAccountsFromWidget;
+  }
 
   [changeProfileHandler
       changeProfile:*profileName
            forScene:self.sceneState
-             reason:ChangeProfileReason::kSwitchAccountsFromWidget
+             reason:reason
        continuation:CreateChangeProfileAuthenticationContinuation(
                         context, contexts, openURL)];
   return YES;

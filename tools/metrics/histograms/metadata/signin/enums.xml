@@ -577,6 +577,9 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="User tapped on a widget and the account used on the widget is
              different from the account used in the app"/>
+  <int value="7"
+      label="User selected an account, in the share extension, different from
+             the one used in the app."/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/app/change_profile_commands.h:IOSChangeProfileReason) -->
