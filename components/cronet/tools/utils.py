@@ -28,7 +28,28 @@ NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
 MIN_SDK_VERSION_FOR_AOSP = 30
 ARCHS = ['x86', 'x64', 'arm', 'arm64', 'riscv64']
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
+# The current value of 500 is a heuristic that seems to work. If command
+# line length limitation is exceeded, reduce this number.
+_MAX_TARGETS_PER_NINJA_EXECUTION = 500
 
+
+def build_targets_list_chunking(out_path: str, targets: List[str]) -> None:
+  """Builds the provided targets by chunking them and passing each chunk into GN. This is
+  generally faster than building each target separately. However, the |chunk_size| must be
+  tweaked carefully to avoid exceeding the command-line length.
+
+  Args:
+    out_path: GN output path
+    targets: List of targets to build.
+  """
+  # Split the build script actions into chunk of _MAX_TARGETS_PER_NINJA_EXECUTION.
+  # This is needed in order not to exceed the command-line length.
+  build_script_actions_chunks = [
+      targets[i:i + _MAX_TARGETS_PER_NINJA_EXECUTION]
+      for i in range(0, len(targets), _MAX_TARGETS_PER_NINJA_EXECUTION)
+  ]
+  for chunk in build_script_actions_chunks:
+    build_all(out_path, chunk)
 
 def run(command, **kwargs):
   """See the official documentation for subprocess.check_call.

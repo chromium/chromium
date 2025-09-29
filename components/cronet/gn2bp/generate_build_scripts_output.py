@@ -2,7 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """
-Generates the rust build script output into a well-structured JSON format.
+Rust crates can generate code at build time through a host-compiled Rust binary called a "build script".
+
+These build scripts can generate two kinds of artifacts:
+
+* cargo_flags.rs, which is a set of rustc compiler options that should be used when
+building the crate;
+* Arbitrary Rust code to be used by the crate.
+
+Android.bp does not support build scripts. In gn2bp we work around this by generating
+the above on the Chromium side prior to running gen_android_bp; As seen in _generate_build_scripts_outputs.
+For cargo_flags.rs, This script outputs a file containing  the per-GN-target-per-architecture rustc flags
+to use, and this is consumed by gn_utils. As for the rest (arbitrary generated Rust code), it is handled in
+gen_android_bp.py#create_modules_from_target.
 """
 import argparse
 from typing import Set, List, Dict
@@ -14,16 +26,15 @@ import re
 import subprocess
 import os
 import sys
+import json
+import shutil
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 sys.path.insert(0, REPOSITORY_ROOT)
 
-# The current value of 500 is a heuristic that seems to work. If command
-# line length limitation is exceeded, reduce this number.
-_MAX_TARGETS_PER_NINJA_EXECUTION = 500
-
 import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
+import components.cronet.gn2bp.common as gn2bp_common  # pylint: disable=wrong-import-position
 import components.cronet.gn2bp.gen_android_bp as cronet_gn2bp  # pylint: disable=wrong-import-position
 
 # TODO: Move ARCHS to cronet_utils.
@@ -32,51 +43,60 @@ _ARCHS = ["x86", "x64", "arm", "arm64", "riscv64"]
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, "out")
 
 
-def _find_all_cargo_flags_files(out_dir: str) -> Set[str]:
-  return set(glob.glob(f"{out_dir}/gen/**/cargo_flags.rs", recursive=True))
+def _extract_crate_path(args: List[str]) -> str:
+  """Extracts the path where the crate actually exist from the args of a build script
+  action.
+
+  Args:
+    args: Build script GN action arguments
+
+  Returns:
+    The path to the rust crate relative to Chromium repository.
+  """
+  return args[args.index("--src-dir") + 1].replace("../../", "")
 
 
-def _find_all_host_cargo_flags_files(out_dir: str) -> Set[str]:
-  return set(
-      glob.glob(f"{out_dir}/clang_*/gen/**/cargo_flags.rs", recursive=True))
+def _get_toolchain_name(toolchain_label: str) -> str:
+  return toolchain_label[toolchain_label.find(":") + 1:]
 
 
-def _build_rust_build_script_actions(out_path: str):
-  """Builds build script actions, first GN is used to query
-    all actions that are available to build, then the actions are
-    filtered to only actions that has "build_script_output" in its
-    name which indicates that it builds a build_script.
+def _get_toolchain_label_from_label(target_label: str) -> str:
+  return target_label[target_label.find('(') + 1:-1]
 
-    The build script actions are split into chunks of _MAX_TARGETS_PER_NINJA_EXECUTION
-    where each ninja execution will build _MAX_TARGETS_PER_NINJA_EXECUTION actions.
-    This is to avoid hitting the command-line maximum length limitation.
 
-    Args:
-      out_path: the GN output directory.
+def _get_label_name_without_toolchain(target_label: str) -> str:
+  return target_label[:target_label.find("(")]
 
-    Raises:
-      Exception: If ninja execution has failed or querying GN failed.
-    """
-  all_actions_process = subprocess.run(
-      [cronet_utils.GN_PATH, 'ls', out_path, '--as=output', '--type=action'],
-      check=True,
-      capture_output=True,
-      text=True)
-  all_actions_process.check_returncode()
-  build_script_actions = [
-      action for action in all_actions_process.stdout.split("\n")
-      # Skip roboelectric actions.
-      if "build_script_output" in action and "robolectric" not in action
-  ]
-  # Split the build script actions into chunk of _MAX_TARGETS_PER_NINJA_EXECUTION.
-  # This is needed in order not to exceed the command-line length.
-  build_script_actions_chunk = [
-      build_script_actions[i:i + _MAX_TARGETS_PER_NINJA_EXECUTION] for i in
-      range(0, len(build_script_actions), _MAX_TARGETS_PER_NINJA_EXECUTION)
-  ]
-  for chunk in build_script_actions_chunk:
-    cronet_utils.build_all(out_path, chunk)
 
+def _build_rust_build_script_actions(
+    out_path: str, host_variant: bool) -> Dict[str, Dict[str, any]]:
+  targets_data = json.loads(
+      cronet_utils.run_and_get_stdout([
+          cronet_utils.GN_PATH, "desc", out_path, "//*", "--format=json",
+          "--type=action"
+      ]))
+  possible_candidates = {}
+  for target_name, target_data in targets_data.items():
+    if gn2bp_common.is_rust_build_script(target_data.get("script", "")):
+      # "clang_x64" assumes that the host uses clang to compile for the host machine.
+      # which is mostly true, unless gcc is used which is a case that we don't care about.
+      if host_variant and _get_toolchain_name(
+          target_data['toolchain']).startswith("clang_x64"):
+        possible_candidates[target_name[2:]] = target_data
+      elif not host_variant and _get_toolchain_name(
+          target_data['toolchain']).startswith("android_clang_"):
+        possible_candidates[target_name[2:]] = target_data
+
+  # The generated Ninja targets do not support the "//...(//toolchain)` syntax. So to workaround
+  # this limitation, build the phony target which matches the host-toolchain target. A target whose
+  # name is "A/B/C:D(//path/to/toolchain:toolchain_name)" will be mapped to
+  # "toolchain_name/phony/A/B/C/D".
+  cronet_utils.build_targets_list_chunking(out_path, [
+      name if not host_variant else
+      f'{_get_toolchain_name(_get_toolchain_label_from_label(name))}/phony/{_get_label_name_without_toolchain(name.replace(":", "/"))}'
+      for name in possible_candidates
+  ])
+  return possible_candidates
 
 def _get_target_name_from_file(file_name: str) -> str:
   """Extracts the target name which generated the file from
@@ -102,13 +122,14 @@ def _get_target_name_from_file(file_name: str) -> str:
   return f"//{build_gn_path}:{target_name}"
 
 
-def _generate_build_script_outputs_for_host() -> Dict[str, List[str]]:
-  return _generate_build_script_outputs_for_arch("x64", True)
+def _generate_and_copy_build_script_outputs_for_host() -> Dict[str, any]:
+  return _generate_and_copy_build_script_outputs_for_arch(arch="x64",
+                                                          host_variant=True)
 
 
-def _generate_build_script_outputs_for_arch(arch: str,
-                                            host_variant: bool = False
-                                            ) -> Dict[str, List[str]]:
+def _generate_and_copy_build_script_outputs_for_arch(arch: str,
+                                                     host_variant: bool = False
+                                                     ) -> Dict[str, any]:
   # gn desc behaves completely differently when the output
   # directory is outside of chromium/src, some paths will
   # stop having // in the beginning of their labels
@@ -121,25 +142,42 @@ def _generate_build_script_outputs_for_arch(arch: str,
   with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
     cronet_utils.gn(gn_out_dir,
                     ' '.join(cronet_utils.get_gn_args_for_aosp(arch)))
-    _build_rust_build_script_actions(gn_out_dir)
-    build_script_output_files = _find_all_host_cargo_flags_files(
-        gn_out_dir) if host_variant else _find_all_cargo_flags_files(gn_out_dir)
+    candidate_targets = _build_rust_build_script_actions(
+        gn_out_dir, host_variant=host_variant)
+    for target_data in candidate_targets.values():
+      output_files = [
+          '/'.join(file_name.removeprefix("//").split("/")[2:])
+          for file_name in target_data["outputs"] if file_name.endswith(".rs")
+      ]
 
-    for build_script_output_file in build_script_output_files:
-      target_name = _get_target_name_from_file(build_script_output_file)
-      target_name_to_build_script_output[target_name] = cronet_utils.read_file(
-          os.path.join(gn_out_dir,
-                       build_script_output_file)).rstrip("\n").split("\n")
+      cargo_rs = next(file for file in output_files
+                      if file.endswith("cargo_flags.rs"))
+      target_name_to_build_script_output[_get_target_name_from_file(
+          cargo_rs)] = cronet_utils.read_file(os.path.join(
+              gn_out_dir, cargo_rs)).rstrip("\n").split("\n")
+      for output_file in output_files:
+        output_path = os.path.join(
+            REPOSITORY_ROOT,
+            _extract_crate_path(target_data['args']),
+            "gn2bp_rust_build_script_outputs",
+            (arch if not host_variant else "host"),
+            # TODO(crbug.com/448059753): Support outputs nested in a sub-directory.
+            output_file.split("/")[-1])
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        shutil.copy(os.path.join(gn_out_dir, output_file), output_path)
   return target_name_to_build_script_output
 
 
 def _generate_build_scripts_outputs(
-    archs: List[str], targets: List[str]) -> Dict[str, Dict[str, List[str]]]:
+    archs: List[str],
+    targets: List[str] = None) -> Dict[str, Dict[str, List[str]]]:
   build_scripts_output_per_arch = {}
   with multiprocessing.dummy.Pool(len(archs)) as pool:
-    results = [(arch,
-                pool.apply_async(_generate_build_script_outputs_for_arch,
-                                 (arch, ))) for arch in archs]
+    results = [
+        (arch,
+         pool.apply_async(_generate_and_copy_build_script_outputs_for_arch,
+                          (arch, False))) for arch in archs
+    ]
     for (arch, result) in results:
       build_script_output = result.get()
       for (target_name, output) in build_script_output.items():
@@ -150,7 +188,7 @@ def _generate_build_scripts_outputs(
         build_scripts_output_per_arch[target_name][arch] = output
 
   # Generate host-specific build script outputs
-  build_script_output = _generate_build_script_outputs_for_host()
+  build_script_output = _generate_and_copy_build_script_outputs_for_host()
   for (target_name, output) in build_script_output.items():
     if targets and target_name not in targets:
       continue
@@ -158,7 +196,6 @@ def _generate_build_scripts_outputs(
       build_scripts_output_per_arch[target_name] = {}
     build_scripts_output_per_arch[target_name]["host"] = output
   return build_scripts_output_per_arch
-
 
 def dump_build_scripts_outputs_to_file(
     output_file_path: str,
@@ -178,7 +215,6 @@ def dump_build_scripts_outputs_to_file(
         json.dumps(_generate_build_scripts_outputs(archs, targets_to_build),
                    indent=2,
                    sort_keys=True))
-
 
 def main():
   parser = argparse.ArgumentParser(

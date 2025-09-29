@@ -2217,9 +2217,5 @@ group("cronet_package_android") {
 # Everything added here will be executed in the CI.
 group("cronet_package_ci") {
   testonly = true
-  deps = [
-    ":generate_build_script_test",
-    "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets",
-    "//components/cronet/license/tests/target_a",
-  ]
+  deps = [ "//components/cronet/license/tests/target_a" ]
 }

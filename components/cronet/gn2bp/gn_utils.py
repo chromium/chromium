@@ -10,8 +10,13 @@ import json
 import logging as log
 import os
 import re
-import collections
+import sys
 import shlex
+
+REPOSITORY_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+sys.path.insert(0, REPOSITORY_ROOT)
+import components.cronet.gn2bp.common as gn2bp_common  # pylint: disable=wrong-import-position
 
 LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library',
                      'source_set')
@@ -35,6 +40,13 @@ def _get_build_path_from_label(target_name: str) -> str:
 def _clean_string(string):
   return string.replace('\\', '').replace('../../', '').replace('"', '').strip()
 
+
+def _extract_rust_package_version(env_args):
+  for arg in env_args:
+    is_match = re.match(r'CARGO_PKG_VERSION=(.+)', arg)
+    if is_match:
+      return is_match.group(1)
+  return None
 
 def _extract_includes_from_aidl_args(args):
   for arg in args:
@@ -190,6 +202,10 @@ class GnParser:
 
       self.java_jar_excluded_patterns = []
       self.java_jar_included_patterns = []
+      # This is only populated for build script actions. It refers to the directory for which
+      # the original source files are.
+      self.rust_source_dir = None
+      self.rust_package_version = None
 
     # Properties to forward access to common arch.
     # TODO: delete these after the transition has been completed.
@@ -452,11 +468,8 @@ class GnParser:
       # return early, no need to parse any further as the module is a builtin.
       return target
 
-    if (target_name.startswith("//build/rust/std")
-        or desc.get("crate_name", "").endswith("_build_script")):
+    if target_name.startswith("//build/rust/std"):
       # We intentionally don't parse build/rust/std as we use AOSP's stdlib.
-      # Don't parse build_script as we can't execute them in AOSP, we use a different
-      # source of truth.
       return target
 
     target.testonly = desc.get('testonly', False)
@@ -597,6 +610,14 @@ class GnParser:
       target.transitive_jni_java_sources.update(
           metadata.get("jni_source_files", set()))
       self.jni_java_sources.update(metadata.get("jni_source_files", set()))
+      if gn2bp_common.is_rust_build_script(target.script):
+
+        def _extract_crate_path(args):
+          return args[args.index("--src-dir") + 1].replace("../../", "")
+
+        target.rust_source_dir = _extract_crate_path(desc['args'])
+        # Don't continue the dependencies exploration.
+        return target
     elif target.type == 'group':
       # Group targets are bubbled upward without creating an equivalent GN target.
       pass
@@ -609,6 +630,8 @@ class GnParser:
       target.arch[arch].sources.update(source
                                        for source in desc.get('sources', [])
                                        if not source.startswith("//out"))
+      target.rust_package_version = _extract_rust_package_version(
+          desc['rustenv'])
     else:
       raise Exception(
           f"Encountered GN target with unknown type\nCulprit target: {gn_target_name}\ntype: {target.type}"
