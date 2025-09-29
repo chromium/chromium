@@ -374,7 +374,8 @@ public class AccessibilityNodeInfoBuilder {
             String brailleLabel,
             String brailleRoleDescription,
             int expandedState,
-            int checked) {
+            int checked,
+            int[] labelledByIds) {
         node.setUniqueId(String.valueOf(virtualViewId));
         node.setClassName(className);
 
@@ -431,6 +432,10 @@ public class AccessibilityNodeInfoBuilder {
         }
 
         node.setChecked(checked);
+
+        for (int id : labelledByIds) {
+            node.addLabeledBy(mDelegate.getView(), id);
+        }
     }
 
     @SuppressLint("NewApi")

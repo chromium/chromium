@@ -248,10 +248,11 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // Android accessibility properties.
   enum class AndroidNameTo {
     kUnset = 0,
-    kText,
-    kContentDescription,
-    kSupplementalDescription,
     kContainerTitle,
+    kContentDescription,
+    kLabeledBy,
+    kSupplementalDescription,
+    kText,
   };
 
   // Append line start and end indices for the text of this node
@@ -284,6 +285,10 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // Used to determine paint order to see in what order nodes are drawn.
   // Used by Android XR.
   int GetPaintOrder() const;
+
+  // Returns a list of Android IDs that were set on the node using
+  // aria-labelledby.
+  const std::vector<int> GetLabelledByAndroidIds() const;
 
  protected:
   BrowserAccessibilityAndroid(ui::BrowserAccessibilityManager* manager,

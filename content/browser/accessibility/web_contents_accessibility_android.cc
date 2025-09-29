@@ -1365,7 +1365,8 @@ void WebContentsAccessibilityAndroid::
       node->ClickableScore(), GetCanonicalJNIString(env, node->GetCSSDisplay()),
       base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
       GetCanonicalJNIString(env, node->GetBrailleRoleDescription()),
-      node->ExpandedState(), node->GetChecked());
+      node->ExpandedState(), node->GetChecked(),
+      base::android::ToJavaIntArray(env, node->GetLabelledByAndroidIds()));
 }
 
 void WebContentsAccessibilityAndroid::
@@ -2625,6 +2626,16 @@ WebContentsAccessibilityAndroid::GetChildIdsForTesting(JNIEnv* env,
     child_ids.push_back(android_node.GetUniqueId());
   }
   return base::android::ToJavaIntArray(env, child_ids);
+}
+
+ScopedJavaLocalRef<jintArray>
+WebContentsAccessibilityAndroid::GetLabeledByNodeIdsForTesting(JNIEnv* env,
+                                                               jint unique_id) {
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return nullptr;
+  }
+  return base::android::ToJavaIntArray(env, node->GetLabelledByAndroidIds());
 }
 
 jlong JNI_WebContentsAccessibilityImpl_InitWithAXTree(

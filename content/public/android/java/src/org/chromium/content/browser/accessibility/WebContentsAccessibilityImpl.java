@@ -556,6 +556,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 .getChildIdsForTesting(mNativeObj, virtualViewId);
     }
 
+    public int @Nullable [] getLabeledByNodeIdsForTesting(int virtualViewId) {
+        if (!isNativeInitialized()) return null;
+        assert isRootManagerConnected()
+                : "Accessibility root manager should be connected when the native object is"
+                        + " initialized.";
+        return WebContentsAccessibilityImplJni.get()
+                .getLabeledByNodeIdsForTesting(mNativeObj, virtualViewId); // IN-TEST
+    }
+
     public int getRootIdForTesting() {
         assert isNativeInitialized() : "native object is not initialized";
         assert isRootManagerConnected()
@@ -2452,6 +2461,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 long nativeWebContentsAccessibilityAndroid, int id, int start, int len);
 
         int[] getChildIdsForTesting(long nativeWebContentsAccessibilityAndroid, int virtualViewId);
+
+        int[] getLabeledByNodeIdsForTesting( // IN-TEST
+                long nativeWebContentsAccessibilityAndroid, int virtualViewId);
 
         int getTextLength(long nativeWebContentsAccessibilityAndroid, int id);
 

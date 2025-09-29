@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/android/accessibility_state.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -2553,6 +2554,17 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
         name_to_cache_ = AndroidNameTo::kText;
       }
       break;
+    case ax::mojom::NameFrom::kRelatedElement:
+      // TODO(crbug.com/447426033): Map all kRelatedElement accessible names for
+      // android.
+      if (::features::IsAccessibilityLabeledByEnabled() &&
+          GetData().HasIntListAttribute(
+              ax::mojom::IntListAttribute::kLabelledbyIds)) {
+        name_to_cache_ = AndroidNameTo::kLabeledBy;
+      } else {
+        name_to_cache_ = AndroidNameTo::kText;
+      }
+      break;
     case ax::mojom::NameFrom::kCssAltText:
     case ax::mojom::NameFrom::kPopoverTarget:
     case ax::mojom::NameFrom::kInterestFor:
@@ -2563,7 +2575,6 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
     case ax::mojom::NameFrom::kCaption:
     case ax::mojom::NameFrom::kContents:
     case ax::mojom::NameFrom::kPlaceholder:
-    case ax::mojom::NameFrom::kRelatedElement:
     case ax::mojom::NameFrom::kProhibited:
     case ax::mojom::NameFrom::kProhibitedAndRedundant:
     case ax::mojom::NameFrom::kTitle:
@@ -2590,11 +2601,26 @@ BrowserAccessibilityAndroid::GenerateAccessibilityNodeInfoString() const {
 }
 
 int BrowserAccessibilityAndroid::GetPaintOrder() const {
-  if (HasIntAttribute(ax::mojom::IntAttribute::kPaintOrder)) {
-    return GetData().GetPaintOrder();
-  } else {
-    return 0;
+  return GetIntAttribute(ax::mojom::IntAttribute::kPaintOrder);
+}
+
+const std::vector<int> BrowserAccessibilityAndroid::GetLabelledByAndroidIds()
+    const {
+  if (!::features::IsAccessibilityLabeledByEnabled()) {
+    return std::vector<int>();
   }
+  const std::vector<int32_t>& ids = GetData().GetIntListAttribute(
+      ax::mojom::IntListAttribute::kLabelledbyIds);
+  std::vector<int32_t> android_ids;
+  android_ids.reserve(ids.size());
+  for (const auto& id : ids) {
+    // Convert AX ID to Android ID.
+    ui::BrowserAccessibility* node = this->manager()->GetFromID(id);
+    CHECK(node);
+    android_ids.push_back(
+        static_cast<BrowserAccessibilityAndroid*>(node)->GetUniqueId());
+  }
+  return android_ids;
 }
 
 bool BrowserAccessibilityAndroid::ShouldExposeEditableValue() const {

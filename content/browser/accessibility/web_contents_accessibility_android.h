@@ -420,6 +420,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       jint unique_id);
 
+  base::android::ScopedJavaLocalRef<jintArray> GetLabeledByNodeIdsForTesting(
+      JNIEnv* env,
+      jint unique_id);
+
  private:
   friend class MockWebContentsAccessibilityAndroid;
 
