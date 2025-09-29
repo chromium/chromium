@@ -49,10 +49,21 @@ template <typename DataType, typename KeyType>
            std::same_as<DataType, ServerCvc>
 class AutofillDataModelChange {
  public:
-  // The difference between `REMOVE` and `HIDE_IN_AUTOFILL` is that the latter
-  // does not actually remove the profile from the server, but instead marks
-  // it as uninteresting to Chrome. This profile may become visible again if
-  // it is updated in a different product.
+  // The difference between `REMOVE` and `HIDE_IN_AUTOFILL` is that the
+  // `HIDE_IN_AUTOFILL`:
+  // - For kAccount, kAccountHome and kAccountWork profiles, does not
+  // actually remove the profile from the server, but instead marks it as
+  // uninteresting to Chrome. This profile may become visible again if it is
+  // updated in a different product.
+  //
+  // - For kAccountNameEmail profile, removes the profile for the duration of
+  // the sign out or autofill sync toggle being off, but the profile may
+  // reappear once the user is signed in and autofill sync toggle is enabled
+  // again. See `AccountNameEmailStore` for the detailed description of this
+  // behaviour.
+  //
+  // - For kLocalOrSyncable profile, there is no difference.
+  // TODO(crbug.com/40100455): Consider renaming `HIDE_IN_AUTOFILL`.
   enum Type { ADD, UPDATE, REMOVE, HIDE_IN_AUTOFILL };
 
   // The `type` input specifies the change type.  The `key` input is the key

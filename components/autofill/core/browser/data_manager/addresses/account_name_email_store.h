@@ -20,7 +20,22 @@ namespace autofill {
 // The kAccountNameEmail autofill profile is an un-syncable, locally stored,
 // profile generated automatically for the every signed in user with the
 // Autofill sync toggle enabled, unless they have deleted it or have not used
-// it.
+// it. There are two ways this profile can be removed:
+// 1. Soft remove - which happens when the user does one of the following:
+// - turns off the autofill sync toggle,
+// - signs out.
+// When the toggle is turned on again, or the user signs in again, the
+// kAccountNameEmail profile reappears.
+// 2. Hard remove - which happens when the user does one of the following:
+// - explicitly removes profile from the autofill settings,
+// - does not use the kAccountNameEmail profile during the first
+//   `kAutofillNameAndEmailProfileNotSelectedThreshold` times it was suggested,
+// - accepts an import of an `AutofillProfile` that is a superset of
+//   kAccountNameEmail (`AutofillProfileImportType::kNameEmailSuperset` and
+//   `AutofillProfileImportType::kHomeWorkNameEmailMerge`).
+// The profile will always be recreated after removal (including a hard remove)
+// when the users account full name changes (assuming that other feature
+// conditions are met).
 //
 // This profile is composed of 2 pieces of data:
 // - full name
@@ -35,7 +50,6 @@ namespace autofill {
 // `AccountNameEmailStore` is owned by and has the same lifetime as
 // `AddressDataManager`.
 class AccountNameEmailStore : public signin::IdentityManager::Observer,
-                              public AddressDataManager::Observer,
                               public syncer::SyncServiceObserver {
  public:
   AccountNameEmailStore(AddressDataManager& address_data_manager,
@@ -45,10 +59,11 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   ~AccountNameEmailStore() override;
 
   // IdentityManager::Observer:
-  // Called when the user signs out. Used to remove `kAccountNameEmail` profile.
+  // Called when the user signs out. Used to soft remove kAccountNameEmail
+  // profile.
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
-  // Called when the account's extended information (e.g., full name) is
-  // updated. Used to keep the `kAccountNameEmail` profile up to date.
+  // Called when the account's extended information (e.g. full name) is
+  // updated. Used to keep the kAccountNameEmail profile up to date.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   // syncer::SyncServiceObserver:
@@ -60,15 +75,12 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // This prevents premature update/create without all of the relevant data.
   void MaybeUpdateOrCreateAccountNameEmail();
 
-  // AddressDataManager::Observer:
-  // Called when the address data of the `AddressDataManager` changes. If
-  // `kAccountNameEmail` profile is missing but the user is still signed in,
-  // `kAutofillNameAndEmailProfileNotSelectedCounter` is set to
-  // `kAutofillNameAndEmailProfileNotSelectedThreshold` + 1.
-  void OnAddressDataChanged() override;
+  // Persists the `change` in prefs, if it applies to kAccountNameEmail
+  // profile.
+  void ApplyChange(const AutofillProfileChange& change);
 
-  // Removes the `kAccountNameEmail` autofill profile if it exists.
-  void RemoveAccountNameEmail();
+  // Removes the kAccountNameEmail autofill profile if it exists.
+  void SoftRemoveAccountNameEmail();
 
  private:
   friend class AccountNameEmailStoreTestApi;
@@ -103,11 +115,6 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<syncer::SyncService> sync_service_;
   raw_ref<PrefService> pref_service_;
-
-  // Used to update `kAutofillNameAndEmailProfileNotSelectedCounter` pref in
-  // `OnAddressDataChanged` method.
-  base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
-      address_data_manager_observer_{this};
 
   // Used to update the `kAccountNameEmail` profile when the account name
   // changes.

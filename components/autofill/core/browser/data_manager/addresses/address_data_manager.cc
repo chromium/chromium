@@ -831,6 +831,9 @@ void AddressDataManager::HandleNextProfileChange() {
   if (home_and_work_metadata_) {
     home_and_work_metadata_->ApplyChange(change);
   }
+  if (account_name_email_store_) {
+    account_name_email_store_->ApplyChange(change);
+  }
   is_ongoing = true;
 }
 
