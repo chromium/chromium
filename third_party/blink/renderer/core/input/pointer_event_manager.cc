@@ -1185,6 +1185,18 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
 
   // Send got/lostpointercapture rightaway if necessary.
   if (pointer_event->type() == event_type_names::kPointerup) {
+    // Fix `target` if it was removed by the click event handler.
+    //
+    // TODO(https://crbug.com/448046115):  The next comment (also about click)
+    // calls for a simplification here.  When the RTE flag here is removed, it
+    // would be cleaner to isolate the click-specific part from the next
+    // statement into this block.
+    if (consider_click_dispatch &&
+        RuntimeEnabledFeatures::
+            BoundaryEventDispatchTracksNodeRemovalEnabled()) {
+      target = NonDeletedElementTarget(target, pointer_event);
+    }
+
     // If a click was dispatched above, the following call only sets element
     // under pointer/mouse and skips sending got/lostpointercapture events.
     ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
