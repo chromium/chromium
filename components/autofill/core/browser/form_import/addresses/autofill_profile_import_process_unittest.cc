@@ -642,10 +642,6 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   // The profile should be updateable with the observed profile.
   AutofillProfile updateable_profile = test::UpdateableStandardProfile();
 
-  // Set a modification date and subsequently advance the test clock.
-  updateable_profile.usage_history().set_modification_date(base::Time::Now());
-  AdvanceClock(base::Days(1));
-
   address_data_manager().AddProfile(updateable_profile);
 
   // Create the import process for the scenario that there is an existing
@@ -676,8 +672,6 @@ TEST_F(AutofillProfileImportProcessTest, SilentlyUpdateProfile) {
   ASSERT_EQ(resulting_profiles.size(), 1U);
   EXPECT_THAT(resulting_profiles,
               testing::UnorderedElementsAre(updated_profile));
-  EXPECT_EQ(resulting_profiles.at(0).usage_history().modification_date(),
-            base::Time::Now());
 }
 
 // Tests the scenario in which an observed profile can be merged with an

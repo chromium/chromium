@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -18,7 +19,8 @@ namespace autofill {
 
 class AddressDataManager;
 
-// Specifies the type of a profile form import.
+// Specifies the type of a profile form import. The type is used for logging but
+// also for deciding which UI to show.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class AutofillProfileImportType {
@@ -246,29 +248,59 @@ class ProfileImportProcess {
       const std::vector<const AutofillProfile*>& existing_profiles) const;
 
  private:
-  // Determines the import type of |observed_profile_| with respect to
-  // |existing_profiles|. Only the first profile in |existing_profiles| becomes
-  // a merge candidate in case there is a confirmable merge.
-  // TODO(crbug.com/354706653): Handle the kHomeAndWorkSuperset import type.
+  // Represents an existing profile and how it changes when merged with the
+  // `observed_profile_`.
+  struct ImportCandidate {
+    // Describes how `existing_profile` and `merged_profile` differ.
+    enum class Change {
+      kNoChange = 0,
+      kNonSettingVisibleChange = 1,
+      kSettingVisibleChange = 2,
+    } change;
+    // An existing profile, as saved in Autofill prior to form submission.
+    AutofillProfile existing_profile;
+    // The `existing_profile`, merged with `observed_profile_`.
+    AutofillProfile merged_profile;
+  };
+
+  // Determines the import type of `observed_profile_` with respect to
+  // `existing_profiles` and updates `merge_candidate_`, `import_candidate_`
+  // and/or `silently_updated_profiles_`.
+  // Only one profile can be updated in a user-visible way at a time. Updates
+  // are preferred over migrations and higher frecency profiles are preferred
+  // over lower frecency ones.
   void DetermineProfileImportType();
+
+  // Helper functions for `DetermineProfileImportType()` that set the
+  // appropriate `import_type_` once the logic has determined that a certain
+  // flow should happen (new profile import, suppressing an import, ...).
+  // Also sets the `import_candidate_` and `merge_candidate_`, if necessary.
+  void DetermineNewProfileImportType();
+  void DetermineSuppressedImportType(
+      base::span<const ImportCandidate> candidates);
+  void DetermineUpdateProfileImportType(
+      const ImportCandidate& update_candidate);
+  void DetermineMigrateProfileImportType(
+      const AutofillProfile& migration_candidate);
+
+  // Predicates to classify whether a `candidates` qualifies for a certain flow.
+  // This checks for conditions like address completeness or strikes from
+  // repeatedly rejecting prompts.
+  bool QualifiesForSilentUpdate(const ImportCandidate& candidate) const;
+  bool QualifiesForUpdateProfilePrompt(const ImportCandidate& candidate) const;
+  bool QualifiesForMigrateProfilePrompt(const ImportCandidate& profile) const;
+
+  // Merges the `mergeable_profiles` with the `observed_profile_` and determines
+  // how the merged profile differs from the original one (see
+  // `ImportCandidate::Change`). Constructs one `ImportCandidate` per
+  // `mergeable_profiles` and returns the result, preserving relative order.
+  // Assumes that mergeability has already been determined.
+  std::vector<ImportCandidate> GetImportCandidates(
+      base::span<const AutofillProfile*> mergeable_profiles) const;
 
   // For new profile imports, sets the source of the `import_candidate_`
   // correctly, depending on the user's account storage eligiblity.
   void DetermineSourceOfImportCandidate();
-
-  // If the observed profile is a duplicate (modulo silent updates) of an
-  // existing `kLocalOrSyncable` profile, eligible users are prompted to change
-  // its storage location to `kAccount`.
-  // This function checks whether the `profile` qualifies for migration and sets
-  // the `migration_candidate` accordingly. The conditions are:
-  // - `migration_candidate` not set yet.
-  // - The User eligible for account profile storage.
-  // - `profile` is of source `kLocalOrSyncable` and not blocked for migration.
-  // - The `profile`'s country isn't set to an unsupported country.
-  // - Not only silent updates are allowed.
-  void MaybeSetMigrationCandidate(
-      std::optional<AutofillProfile>& migration_candidate,
-      const AutofillProfile& profile) const;
 
   // Computes the settings-visible profile difference between the
   // `import_candidate_` and the `confirmed_import_candidate_`. Logs all edited

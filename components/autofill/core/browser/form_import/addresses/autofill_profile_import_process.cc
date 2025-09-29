@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 
 #include <algorithm>
-#include <map>
+#include <vector>
 
 #include "base/check_deref.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/home_and_work_metadata_store.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
-#include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
@@ -142,193 +141,198 @@ bool ProfileImportProcess::UserAccepted() const {
 
 void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
-  bool is_mergeable_with_existing_profile = false;
-  int number_of_unchanged_profiles = 0;
-  int number_of_blocked_profile_updates = 0;
-  std::optional<AutofillProfile> migration_candidate;
-
-  const bool account_name_email_home_work_merge =
-      CanCombineAccountNameEmailWithHomeWork(import_metadata(),
-                                             *address_data_manager_);
-
-  // We don't offer an import if `observed_profile_` is a duplicate of an
-  // existing profile.
-  const std::vector<const AutofillProfile*> existing_profiles =
-      address_data_manager_->GetProfiles(
-          AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
-
-  // If we have reason to believe that the country was complemented incorrectly,
-  // remove it.
+  // If there is reason to believe that the `observed_profile_`'s country was
+  // complemented incorrectly, remove remove the country.
   if (import_metadata_.did_complement_country &&
-      ShouldCountryApproximationBeRemoved(observed_profile_, existing_profiles,
+      ShouldCountryApproximationBeRemoved(observed_profile_,
+                                          address_data_manager_->GetProfiles(),
                                           comparator)) {
     observed_profile_.ClearFields({ADDRESS_HOME_COUNTRY});
     import_metadata_.did_complement_country = false;
   }
 
-  for (const AutofillProfile* existing_profile : existing_profiles) {
-    // If the existing profile is not mergeable with the observed profile, the
-    // existing profile is not altered by this import.
-    if (!comparator.AreMergeable(*existing_profile, observed_profile_)) {
-      ++number_of_unchanged_profiles;
-      continue;
-    }
-
-    // The observed profile is mergeable with an existing profile.
-    // This information is used to determine if the observed profile classifies
-    // as an import of a new profile or the import of a duplicate profile.
-    is_mergeable_with_existing_profile = true;
-
-    // Make a copy of the existing profile and merge it with the observation.
-    // The return value of |MergeDataFrom()| indicates if the existing profile
-    // was changed at all during that merge.
-    AutofillProfile merged_profile = *existing_profile;
-    if (!merged_profile.MergeDataFrom(observed_profile_, app_locale_)) {
-      ++number_of_unchanged_profiles;
-      // The `observed_profile_` is a duplicate of the `existing_profile`.
-      // Consider it for migration.
-      MaybeSetMigrationCandidate(migration_candidate, *existing_profile);
-      continue;
-    }
-
-    // At this point, the observed profile was merged with (a copy of) the
-    // existing profile which changed in some way.
-    // Now, determine if the merge alters any settings-visible value, or if the
-    // merge can be considered as a silent update that does not need to get user
-    // confirmation.
-    if (AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
-            *existing_profile, merged_profile, app_locale_)) {
-      // Determine if the existing profile is blocked for updates.
-      bool is_blocked_for_update =
-          allow_only_silent_updates_ ||
-          address_data_manager_->IsProfileUpdateBlocked(
-              existing_profile->guid()) ||
-          base::FeatureList::IsEnabled(
-              features::test::kAutofillDisableProfileUpdates);
-
-      if (is_blocked_for_update) {
-        ++number_of_blocked_profile_updates;
-      }
-
-      // If a settings-visible value changed, the existing profile is the merge
-      // candidate if no other merge candidate has already been found and if the
-      // existing profile is not blocked for updates.
-      if (!merge_candidate_.has_value() && !is_blocked_for_update) {
-        merge_candidate_ = *existing_profile;
-        import_candidate_ = merged_profile;
-      } else {
-        // If there is already a merge candidate, the existing profile is not
-        // supposed to be changed.
-        ++number_of_unchanged_profiles;
-      }
-      continue;
-    }
-    // If the profile changed but all settings-visible values are maintained,
-    // the profile can be updated silently. Silent updates can also be disabled
-    // using a feature flag.
-    if (!base::FeatureList::IsEnabled(
-            features::test::kAutofillDisableSilentProfileUpdates)) {
-      merged_profile.usage_history().set_modification_date(
-          AutofillClock::Now());
-      silently_updated_profiles_.emplace_back(merged_profile);
-    } else {
-      ++number_of_unchanged_profiles;
-    }
-    // The `observed_profile_` only differs from the `existing_profile` in a
-    // non-settings visible way. Consider it for migration.
-    MaybeSetMigrationCandidate(migration_candidate, merged_profile);
+  // Existing profiles that are not mergeable with the `observed_profile_`
+  // cannot be altered by this import. If none remain, no update prompts can be
+  // shown and the import corresponds to a new profile.
+  std::vector<const AutofillProfile*> mergeable_profiles =
+      address_data_manager_->GetProfiles(
+          AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
+  std::erase_if(mergeable_profiles, [&](const AutofillProfile* p) {
+    return !comparator.AreMergeable(*p, observed_profile_);
+  });
+  if (mergeable_profiles.empty()) {
+    DetermineNewProfileImportType();
+    return;
   }
 
-  // If the profile is not mergeable with an existing profile, the import
-  // corresponds to a new profile.
-  if (!is_mergeable_with_existing_profile) {
-    // There should be no import candidate yet.
-    DCHECK(!import_candidate_.has_value());
-    if (allow_only_silent_updates_ ||
-        address_data_manager_->IsNewProfileImportBlockedForDomain(
-            form_source_url_)) {
-      import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
-    } else {
-      import_type_ = AutofillProfileImportType::kNewProfile;
-      import_candidate_ = observed_profile();
+  // The `observed_profile_` is mergeable with some existing profiles. Create
+  // import candidates by merging `observed_profile_` into `mergeable_profiles`.
+  // Note that `mergeable_profiles`'s frecency ordering is retained.
+  std::vector<ImportCandidate> candidates =
+      GetImportCandidates(mergeable_profiles);
+
+  // Collect all silently updatable profiles.
+  for (const ImportCandidate& candidate : candidates) {
+    if (QualifiesForSilentUpdate(candidate)) {
+      silently_updated_profiles_.push_back(candidate.merged_profile);
     }
+  }
+
+  // Attempt to show an update prompt (prioritized over migrations).
+  auto update_candidate_it = std::ranges::find_if(
+      candidates, [&](auto& c) { return QualifiesForUpdateProfilePrompt(c); });
+  if (update_candidate_it != candidates.end()) {
+    DetermineUpdateProfileImportType(*update_candidate_it);
+    return;
+  }
+
+  // Attempt to show a migration prompt.
+  auto migrate_candidate_it = std::ranges::find_if(
+      candidates, [&](auto& c) { return QualifiesForMigrateProfilePrompt(c); });
+  if (migrate_candidate_it != candidates.end()) {
+    DetermineMigrateProfileImportType(migrate_candidate_it->merged_profile);
+    return;
+  }
+
+  // Neither an update nor a migration prompt could be shown.
+  DetermineSuppressedImportType(candidates);
+}
+
+void ProfileImportProcess::DetermineNewProfileImportType() {
+  if (allow_only_silent_updates_ ||
+      address_data_manager_->IsNewProfileImportBlockedForDomain(
+          form_source_url_)) {
+    import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
+    return;
+  }
+  import_candidate_ = observed_profile();
+  import_type_ = AutofillProfileImportType::kNewProfile;
+}
+
+void ProfileImportProcess::DetermineSuppressedImportType(
+    base::span<const ImportCandidate> candidates) {
+  CHECK(!candidates.empty());
+  // Even though the `observed_profile_` is mergeable with some existing
+  // profiles, none of the `candidates` qualified for an update or a migration
+  // prompt. From a user's perspective, nothing will happen. For metrics,
+  // break down further why the import was suppressed.
+  if (std::ranges::any_of(candidates, [](auto& c) {
+        return c.change == ImportCandidate::Change::kSettingVisibleChange;
+      })) {
+    // At least one of the `candidates` changed in a setting-visibile way. The
+    // fact that `DetermineSuppressedImportType()` was called means that an
+    // update prompt was suppressed, for example because of the strike database.
+    import_type_ = silently_updated_profiles_.empty()
+                       ? AutofillProfileImportType::kSuppressedConfirmableMerge
+                       : AutofillProfileImportType::
+                             kSuppressedConfirmableMergeAndSilentUpdate;
   } else {
-    bool silent_updates_present = !silently_updated_profiles_.empty();
+    // Either all updates could be applied silently or a migration prompt was
+    // suppressed. No distinction is made for metrics.
+    import_type_ = silently_updated_profiles_.empty()
+                       ? AutofillProfileImportType::kDuplicateImport
+                       : AutofillProfileImportType::kSilentUpdate;
+  }
+}
 
-    if (merge_candidate_.has_value()) {
-      switch (import_candidate_->record_type()) {
-        case AutofillProfile::RecordType::kAccountHome:
-        case AutofillProfile::RecordType::kAccountWork:
-          import_type_ =
-              account_name_email_home_work_merge
-                  ? AutofillProfileImportType::kHomeWorkNameEmailMerge
-                  : AutofillProfileImportType::kHomeAndWorkSuperset;
-          break;
-        case AutofillProfile::RecordType::kAccountNameEmail:
-          import_type_ =
-              account_name_email_home_work_merge
-                  ? AutofillProfileImportType::kHomeWorkNameEmailMerge
-                  : AutofillProfileImportType::kNameEmailSuperset;
-          break;
-        case AutofillProfile::RecordType::kAccount:
-        case AutofillProfile::RecordType::kLocalOrSyncable:
-          import_type_ =
-              silent_updates_present
-                  ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
-                  : AutofillProfileImportType::kConfirmableMerge;
-          break;
+void ProfileImportProcess::DetermineUpdateProfileImportType(
+    const ImportCandidate& update_candidate) {
+  import_candidate_ = update_candidate.merged_profile;
+  // By setting the `merge_candidate_`, an update prompt will be shown that
+  // displays the diff between the `import_candidate_` and the
+  // `merge_candidate_`. In some cases, this intentionally doesn't happen so
+  // that the new profile UI is triggered instead. This is done when the
+  // underlying profile that should get updated is read-only (e.g. the
+  // kAccountNameEmail profile). To the user, the flow feels like an update.
+  switch (update_candidate.existing_profile.record_type()) {
+    case AutofillProfile::RecordType::kAccountHome:
+    case AutofillProfile::RecordType::kAccountWork:
+      if (CanCombineAccountNameEmailWithHomeWork(import_metadata(),
+                                                 *address_data_manager_)) {
+        import_type_ = AutofillProfileImportType::kHomeWorkNameEmailMerge;
+      } else {
+        import_type_ = AutofillProfileImportType::kHomeAndWorkSuperset;
+        merge_candidate_ = update_candidate.existing_profile;
       }
-    } else if (number_of_blocked_profile_updates > 0) {
+      break;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      import_type_ = CanCombineAccountNameEmailWithHomeWork(
+                         import_metadata(), *address_data_manager_)
+                         ? AutofillProfileImportType::kHomeWorkNameEmailMerge
+                         : AutofillProfileImportType::kNameEmailSuperset;
+      break;
+    case AutofillProfile::RecordType::kAccount:
+    case AutofillProfile::RecordType::kLocalOrSyncable:
       import_type_ =
-          silent_updates_present
-              ? AutofillProfileImportType::
-                    kSuppressedConfirmableMergeAndSilentUpdate
-              : AutofillProfileImportType::kSuppressedConfirmableMerge;
-    } else if (!migration_candidate) {
-      import_type_ = silent_updates_present
-                         ? AutofillProfileImportType::kSilentUpdate
-                         : AutofillProfileImportType::kDuplicateImport;
-    } else {
-      import_type_ =
-          silent_updates_present
-              ? AutofillProfileImportType::kProfileMigrationAndSilentUpdate
-              : AutofillProfileImportType::kProfileMigration;
-      CHECK(migration_candidate.has_value());
-      import_candidate_ = std::move(migration_candidate);
-    }
+          silently_updated_profiles_.empty()
+              ? AutofillProfileImportType::kConfirmableMerge
+              : AutofillProfileImportType::kConfirmableMergeAndSilentUpdate;
+      merge_candidate_ = update_candidate.existing_profile;
+      break;
   }
+}
 
-  if (import_candidate_.has_value()) {
-    import_candidate_->usage_history().set_modification_date(
-        AutofillClock::Now());
+void ProfileImportProcess::DetermineMigrateProfileImportType(
+    const AutofillProfile& migration_candidate) {
+  import_candidate_ = migration_candidate;
+  import_type_ =
+      silently_updated_profiles_.empty()
+          ? AutofillProfileImportType::kProfileMigration
+          : AutofillProfileImportType::kProfileMigrationAndSilentUpdate;
+}
+
+bool ProfileImportProcess::QualifiesForSilentUpdate(
+    const ImportCandidate& candidate) const {
+  return candidate.change ==
+             ImportCandidate::Change::kNonSettingVisibleChange &&
+         !base::FeatureList::IsEnabled(
+             features::test::kAutofillDisableSilentProfileUpdates);
+}
+
+bool ProfileImportProcess::QualifiesForUpdateProfilePrompt(
+    const ImportCandidate& candidate) const {
+  return candidate.change == ImportCandidate::Change::kSettingVisibleChange &&
+         !allow_only_silent_updates_ &&
+         !address_data_manager_->IsProfileUpdateBlocked(
+             candidate.existing_profile.guid()) &&
+         !base::FeatureList::IsEnabled(
+             features::test::kAutofillDisableProfileUpdates);
+}
+
+bool ProfileImportProcess::QualifiesForMigrateProfilePrompt(
+    const ImportCandidate& candidate) const {
+  return candidate.change != ImportCandidate::Change::kSettingVisibleChange &&
+         !allow_only_silent_updates_ &&
+         IsEligibleForMigrationToAccount(*address_data_manager_,
+                                         candidate.existing_profile);
+}
+
+std::vector<ProfileImportProcess::ImportCandidate>
+ProfileImportProcess::GetImportCandidates(
+    base::span<const AutofillProfile*> mergeable_profiles) const {
+  std::vector<ImportCandidate> result;
+  result.reserve(mergeable_profiles.size());
+  for (const AutofillProfile* merge_candidate : mergeable_profiles) {
+    AutofillProfile merged_profile = *merge_candidate;
+    const bool was_profile_altered =
+        merged_profile.MergeDataFrom(observed_profile_, app_locale_);
+    ImportCandidate::Change change_type = [&] {
+      if (!was_profile_altered) {
+        return ImportCandidate::Change::kNoChange;
+      } else if (AutofillProfileComparator::
+                     ProfilesHaveDifferentSettingsVisibleValues(
+                         *merge_candidate, merged_profile, app_locale_)) {
+        return ImportCandidate::Change::kSettingVisibleChange;
+      } else {
+        return ImportCandidate::Change::kNonSettingVisibleChange;
+      }
+    }();
+    result.push_back(
+        ImportCandidate{.change = change_type,
+                        .existing_profile = *merge_candidate,
+                        .merged_profile = std::move(merged_profile)});
   }
-
-  if (import_type_ == AutofillProfileImportType::kHomeWorkNameEmailMerge ||
-      import_type_ == AutofillProfileImportType::kNameEmailSuperset) {
-    // Setting `merge_candidate_` to `std::nullopt` ensures that the save
-    // bubble will appear. Although `observed_profile` can be merged with
-    // with `kAccountNameEmail` profile this flow is supposed to create a
-    // new profile since the `kAccountNameEmail` profile, from the POV of
-    // import process, is read-only. The reasoning is the same in the case
-    // of `kHomeWorkNameEmailMerge`.
-    merge_candidate_ = std::nullopt;
-    // Resetting merge_candidate_ creates discrepancy between the real
-    // number of unchanged profiles and number stored in
-    // `number_of_unchanged_profiles` variable. In order to account for
-    // the fact that the `kAccountNameEmail` profile or a H/W profile will not
-    // be changed (and instead a new profile will be created)
-    // `number_of_unchanged_profiles` should be incremented.
-    ++number_of_unchanged_profiles;
-  }
-
-  // At this point, all existing profiles are either unchanged, updated and/or
-  // one is the merge candidate.
-  // One of the unchanged or updated profiles might be considered for migration.
-  // In this case, `import_type()` is `kProfileMigrationAndMaybeSilentUpdates`.
-  DCHECK_EQ(existing_profiles.size(),
-            number_of_unchanged_profiles + silently_updated_profiles_.size() +
-                (merge_candidate_.has_value() ? 1 : 0));
-  DCHECK_NE(import_type_, AutofillProfileImportType::kImportTypeUnspecified);
+  return result;
 }
 
 void ProfileImportProcess::DetermineSourceOfImportCandidate() {
@@ -387,16 +391,6 @@ bool ProfileImportProcess::requires_user_prompt() const {
   }
 }
 
-void ProfileImportProcess::MaybeSetMigrationCandidate(
-    std::optional<AutofillProfile>& migration_candidate,
-    const AutofillProfile& profile) const {
-  if (migration_candidate || allow_only_silent_updates_ ||
-      !IsEligibleForMigrationToAccount(*address_data_manager_, profile)) {
-    return;
-  }
-  migration_candidate = profile;
-}
-
 void ProfileImportProcess::ApplyImport() {
   // At this point, a user decision must have been supplied.
   DCHECK_NE(user_decision_, UserDecision::kUndefined);
@@ -417,6 +411,12 @@ void ProfileImportProcess::ApplyImport() {
   if (!confirmed_import_candidate_.has_value()) {
     return;
   }
+  // In case a new profile is created, make sure the modification date is
+  // updated correctly. Note that for update profile cases (such as the silent
+  // updates above), this is not necessary, since the AddressDataManager already
+  // takes care of it.
+  confirmed_import_candidate_->usage_history().set_modification_date(
+      base::Time::Now());
   // Handle bubble-showing autofill profile import types.
   switch (import_type()) {
     case AutofillProfileImportType::kNewProfile:
@@ -509,8 +509,6 @@ void ProfileImportProcess::SetUserDecision(
       }
 
       confirmed_import_candidate_->FinalizeAfterImport();
-      confirmed_import_candidate_->usage_history().set_modification_date(
-          AutofillClock::Now());
       // The `confirmed_import_candidate_` has to have the same `guid` as the
       // original import candidate.
       DCHECK_EQ(import_candidate_->guid(), confirmed_import_candidate_->guid());
