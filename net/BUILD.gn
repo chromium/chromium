@@ -325,6 +325,8 @@ component("net") {
     "base/upload_progress.h",
     "base/url_search_params.cc",
     "base/url_search_params.h",
+    "base/url_unescape_iterator.cc",
+    "base/url_unescape_iterator.h",
     "base/url_util.cc",
     "base/url_util.h",
     "cert/asn1_util.cc",
@@ -2762,6 +2764,7 @@ target(_test_target_type, "net_unittests") {
     "base/upload_bytes_element_reader_unittest.cc",
     "base/upload_file_element_reader_unittest.cc",
     "base/url_search_params_unittest.cc",
+    "base/url_unescape_iterator_unittest.cc",
     "base/url_util_unittest.cc",
     "cert/caching_cert_verifier_unittest.cc",
     "cert/cert_database_unittest.cc",
@@ -3128,6 +3131,7 @@ target(_test_target_type, "net_unittests") {
   fuzztests = [
     "PickleTest.FuzzRoundTrip",
     "QuicVersionsFuzzTest.ParseSerializeParseIdentityProperty",
+    "UrlUnescapeIteratorTest.SameOutputAsUnescapePercentEncodedUrl",
   ]
 
   deps = [
