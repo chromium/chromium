@@ -47,17 +47,6 @@ AccountNameEmailStore::AccountNameEmailStore(
 
 AccountNameEmailStore::~AccountNameEmailStore() = default;
 
-void AccountNameEmailStore::OnExtendedAccountInfoRemoved(
-    const AccountInfo& info) {
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    // Sign out - remove the profile until the user is signed in and autofill
-    // sync toggle enabled.
-    SoftRemoveAccountNameEmail();
-    // TODO(crbug.com/356845298): Clear `kAutofillNameAndEmailProfileSignature`
-    // on sign out.
-  }
-}
-
 void AccountNameEmailStore::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   const std::optional<CoreAccountInfo>& primary_info =
@@ -87,8 +76,19 @@ void AccountNameEmailStore::OnStateChanged(syncer::SyncService* sync_service) {
     return;
   }
   switch (reason.value()) {
-    case ProfileUpdateBlockReason::kSyncOff:
+    case ProfileUpdateBlockReason::kAutofillSyncToggleDisabled:
       SoftRemoveAccountNameEmail();
+      return;
+    case ProfileUpdateBlockReason::kUserSignedOut:
+      // User signed out and prefs are no longer synced. Clear their local state
+      // to prevent them from leaking into a different account. It is important
+      // that this happens after PRIORITY_PREFERENCES stopped syncing, because
+      // the metadata should be redownloaded during the next sign-in.
+      SoftRemoveAccountNameEmail();
+      pref_service_->ClearPref(prefs::kAutofillNameAndEmailProfileSignature);
+      pref_service_->ClearPref(
+          prefs::kAutofillNameAndEmailProfileNotSelectedCounter);
+      pref_service_->ClearPref(prefs::kAutofillWasNameAndEmailProfileUsed);
       return;
     case ProfileUpdateBlockReason::kDataNotLoaded:
       // Defer call. When data is loaded, `OnStateChanged` will be called again,
@@ -176,9 +176,6 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
           prefs::kAutofillNameAndEmailProfileNotSelectedCounter) >
       features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get();
 
-  // TODO(crbug.com/356845298): Implement `PrefChangeRegistrar` to remove the
-  // kAccountNameEmail profile permanently when the counter exceedes the
-  // threshold.
   if (!hashes_different && was_hard_removed) {
     // User signed out and then signed in, but previously a hard remove had
     // happened, thus no recreation should happen.
@@ -215,9 +212,14 @@ std::string AccountNameEmailStore::HashAccountInfo(
 
 std::optional<AccountNameEmailStore::ProfileUpdateBlockReason>
 AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
+  if (sync_service_->GetTransportState() ==
+      syncer::SyncService::TransportState::DISABLED) {
+    return ProfileUpdateBlockReason::kUserSignedOut;
+  }
+
   if (!sync_service_->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kAutofill)) {
-    return ProfileUpdateBlockReason::kSyncOff;
+    return ProfileUpdateBlockReason::kAutofillSyncToggleDisabled;
   }
 
   if (address_data_manager_->IsAwaitingPendingAddressChanges()) {

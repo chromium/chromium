@@ -381,19 +381,34 @@ TEST_F(AccountNameEmailStoreTest, OnCounterPrefUpdated) {
 
 // ChromeOS does not support signing out
 #if !BUILDFLAG(IS_CHROMEOS)
-// Tests that the `OnExtendedAccountInfoRemoved` method will remove
-// `kAccountNameEmail` profile
-TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoRemoved) {
+
+// Tests that the user's gets their `kAutofillNameAndEmailProfileSignature` pref
+// cleared on signout and the kAccountNameEmail profile is removed.
+TEST_F(AccountNameEmailStoreTest, SignOut) {
   CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
   ASSERT_THAT(
       address_data_manager().GetProfiles(),
       ElementsAre(Property(&AutofillProfile::record_type,
                            AutofillProfile::RecordType::kAccountNameEmail)));
 
+  pref_service().SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter, 5);
+  pref_service().SetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed, true);
+
   identity_test_env().EnableRemovalOfExtendedAccountInfo();
   identity_test_env().ClearPrimaryAccount();
+  sync_service().SetSignedOut();
+  sync_service().FireStateChanged();
 
   EXPECT_THAT(address_data_manager().GetProfiles(), testing::IsEmpty());
+  EXPECT_THAT(
+      pref_service().GetString(prefs::kAutofillNameAndEmailProfileSignature),
+      IsEmpty());
+  EXPECT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+  EXPECT_FALSE(
+      pref_service().GetBoolean(prefs::kAutofillWasNameAndEmailProfileUsed));
 }
 
 // Tests that the kAccountNameEmail profile will be recreated on sign in after
@@ -407,10 +422,15 @@ TEST_F(AccountNameEmailStoreTest, SignOutAndSignIn) {
   // Sign out.
   identity_test_env().EnableRemovalOfExtendedAccountInfo();
   identity_test_env().ClearPrimaryAccount();
+  sync_service().SetSignedOut();
+  sync_service().FireStateChanged();
   ASSERT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 
   // Sign in.
   CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  sync_service().SetSignedIn(signin::ConsentLevel::kSync);
+  sync_service().FireStateChanged();
+
   EXPECT_EQ(pref_service().GetInteger(
                 prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
             0);
@@ -422,7 +442,7 @@ TEST_F(AccountNameEmailStoreTest, SignOutAndSignIn) {
 
 // Tests that the kAccountNameEmail profile will not be recreated if the
 // `kAutofillNameAndEmailProfileNotSelectedCounter` pref exceedes the threshold.
-TEST_F(AccountNameEmailStoreTest, SingInAfterHardRemove) {
+TEST_F(AccountNameEmailStoreTest, SignInAfterHardRemove) {
   CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
   ASSERT_THAT(
       address_data_manager().GetProfiles(),
@@ -433,44 +453,37 @@ TEST_F(AccountNameEmailStoreTest, SingInAfterHardRemove) {
 
   identity_test_env().EnableRemovalOfExtendedAccountInfo();
   identity_test_env().ClearPrimaryAccount();
+  sync_service().SetSignedOut();
+  sync_service().FireStateChanged();
 
   CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  sync_service().SetSignedIn(signin::ConsentLevel::kSync);
+  sync_service().SetDownloadStatusFor(
+      {syncer::DataType::PRIORITY_PREFERENCES},
+      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
+  sync_service().FireStateChanged();
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+
+  // The `TestSyncService` uses a mock server, so manually simulate the prefs
+  // being set to correct (i.e. stored on the server) values.
+  pref_service().SetString(
+      prefs::kAutofillNameAndEmailProfileSignature,
+      test_api(&account_name_email_store())
+          .HashAccountInfo(identity_manager().FindExtendedAccountInfo(
+              identity_manager().GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin))));
+  pref_service().SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get() + 1);
+  sync_service().SetDownloadStatusFor(
+      {syncer::DataType::PRIORITY_PREFERENCES},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  sync_service().FireStateChanged();
+
   EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
   EXPECT_GT(pref_service().GetInteger(
                 prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
             features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
-}
-
-// Tests that the `OnExtendedAccountInfoRemoved` method will not remove
-// `kAccountNameEmail` profile if it is called with info of a wrong profile.
-TEST_F(AccountNameEmailStoreTest, OnExtendedAccountInfoRemoved_WrongInfo) {
-  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
-
-  const AccountInfo info2 = identity_test_env().MakeAccountAvailable(
-      kTestEmailAddress2, {std::nullopt, false, kFakeGaiaId});
-
-  ASSERT_THAT(address_data_manager().GetProfiles(),
-              ElementsAre(IsCorrectAccountNameEmail(
-                  base::UTF8ToUTF16(kTestName1),
-                  base::UTF8ToUTF16(kTestEmailAddress1))));
-
-  identity_test_env().EnableRemovalOfExtendedAccountInfo();
-// On mobile platforms, accounts are stored outside of Chrome, thus
-// `AccountsMutator` of an `IdentityManager` is uninitialized.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  CHECK(!identity_manager().GetAccountsMutator());
-  identity_test_env().RemoveRefreshTokenForAccount(info2.account_id);
-#else
-  CHECK(identity_manager().GetAccountsMutator());
-  identity_manager().GetAccountsMutator()->RemoveAccount(
-      info2.account_id,
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
-  EXPECT_THAT(address_data_manager().GetProfiles(),
-              ElementsAre(IsCorrectAccountNameEmail(
-                  base::UTF8ToUTF16(kTestName1),
-                  base::UTF8ToUTF16(kTestEmailAddress1))));
 }
 
 #endif  // !BUILDFLAG(CHROME_OS)

@@ -59,9 +59,6 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   ~AccountNameEmailStore() override;
 
   // IdentityManager::Observer:
-  // Called when the user signs out. Used to soft remove kAccountNameEmail
-  // profile.
-  void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
   // Called when the account's extended information (e.g. full name) is
   // updated. Used to keep the kAccountNameEmail profile up to date.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -86,8 +83,14 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   friend class AccountNameEmailStoreTestApi;
 
   enum class ProfileUpdateBlockReason {
-    kSyncOff = 0,
+    // The user is signed-in, but explicitly disabled
+    // address syncing.
+    kAutofillSyncToggleDisabled = 0,
+    // The user is signed-in, but not all address data
+    // or priority prefs have been loaded.
     kDataNotLoaded = 1,
+    // Signed-out.
+    kUserSignedOut = 2,
   };
 
   // Updates the kAccountNameEmail autofill profile with the account `info`. If
