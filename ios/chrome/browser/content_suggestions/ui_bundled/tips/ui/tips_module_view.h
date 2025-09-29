@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_TIPS_MODULE_VIEW_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_TIPS_MODULE_VIEW_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_UI_TIPS_MODULE_VIEW_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_UI_TIPS_MODULE_VIEW_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_magic_stack_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_magic_stack_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_updating.h"
 
 @protocol MagicStackModuleContentViewDelegate;
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_TIPS_MODULE_VIEW_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_UI_TIPS_MODULE_VIEW_H_

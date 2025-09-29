@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/coordinator/tips_magic_stack_mediator.h"
 
 #import <vector>
 
@@ -21,11 +21,11 @@
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_view_controller_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_magic_stack_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_consumer_source.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_state.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/model/tips_prefs.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_magic_stack_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_audience.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "net/traffic_annotation/network_traffic_annotation.h"

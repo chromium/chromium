@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "save_passwords_instructional_overlay_view_controller_unittest.mm",
+    "save_passwords_instructional_view_controller_unittest.mm",
+    "tips_module_view_unittest.mm",
+    "use_autofill_instructional_overlay_view_controller_unittest.mm",
+    "use_autofill_instructional_view_controller_unittest.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tips/ui",
+    "//ios/chrome/common/ui/colors",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

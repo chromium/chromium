@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_TIPS_METRICS_H_
-#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_TIPS_METRICS_H_
+#ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_MODEL_TIPS_METRICS_H_
+#define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_MODEL_TIPS_METRICS_H_
 
 // UMA histogram names.
 // Logged when Tips (Magic Stack) is displayed for a user. The enumeration
@@ -13,4 +13,4 @@ extern const char kTipsMagicStackModuleDisplayedTypeHistogram[];
 // indicates which tip was interacted with.
 extern const char kTipsMagicStackModuleTappedTypeHistogram[];
 
-#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_TIPS_METRICS_H_
+#endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_TIPS_MODEL_TIPS_METRICS_H_

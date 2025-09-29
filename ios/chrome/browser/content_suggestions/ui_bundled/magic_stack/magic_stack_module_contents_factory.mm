@@ -39,10 +39,10 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/standalone_module_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_audience.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_consumer_source.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_state.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_audience.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_consumer_source.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_view.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 @implementation MagicStackModuleContentsFactory

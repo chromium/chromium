@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_view.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_view.h"
 
 #import <Foundation/Foundation.h>
 
@@ -10,7 +10,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_detail_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/icon_view.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/tips_module_state.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tips/ui/tips_module_state.h"
 #import "testing/platform_test.h"
 
 using segmentation_platform::TipIdentifier;
