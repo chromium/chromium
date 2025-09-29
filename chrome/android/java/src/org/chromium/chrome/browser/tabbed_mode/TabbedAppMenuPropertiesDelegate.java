@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomMenuItemCoordinator;
 import org.chromium.components.browser_ui.accessibility.PageZoomProperties;
@@ -734,11 +735,27 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_file_download_white_24dp : 0));
     }
 
+    /** Determines whether the "Print" menu item should be shown for a given tab. */
     private boolean shouldShowPrintItem(@Nullable Tab currentTab) {
-        return currentTab != null
-                && ShareUtils.shouldEnableShare(currentTab)
-                && DeviceInfo.isDesktop()
-                && UserPrefs.get(currentTab.getProfile()).getBoolean(Pref.PRINTING_ENABLED);
+        // A tab must exist to print from it.
+        if (currentTab == null) {
+            return false;
+        }
+
+        // Check if sharing (which includes printing) is generally enabled for this tab's content.
+        boolean canShareTab = ShareUtils.shouldEnableShare(currentTab);
+
+        // Check if printing is specifically enabled in user preferences for the current profile.
+        Profile profile = currentTab.getProfile();
+        boolean isPrintingEnabled = UserPrefs.get(profile).getBoolean(Pref.PRINTING_ENABLED);
+
+        // Show print item if we're on a desktop device or if the current tab is displaying a native
+        // PDF.
+        NativePage nativePage = currentTab.getNativePage();
+        boolean isPdfPage = nativePage != null && nativePage.isPdf();
+        boolean isEligibleForPrint = DeviceInfo.isDesktop() || isPdfPage;
+
+        return canShareTab && isPrintingEnabled && isEligibleForPrint;
     }
 
     private MVCListAdapter.ListItem buildPrintItem(Tab currentTab) {
