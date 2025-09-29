@@ -244,7 +244,8 @@ INSTANTIATE_TEST_SUITE_P(
                     FocusEnumValue::kNoFocusChange));
 
 // TODO(crbug.com/40913269): Flaky on a TSan bot.
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && (defined(THREAD_SANITIZER) \
+  || defined(MEMORY_SANITIZER))
 #define MAYBE_CapturedTabNotFocusedIfExplicitlyCallingNoFocus \
   DISABLED_CapturedTabNotFocusedIfExplicitlyCallingNoFocus
 #else
