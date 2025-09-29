@@ -38,6 +38,12 @@ AccountNameEmailStore::AccountNameEmailStore(
   address_data_manager_observer_.Observe(&address_data_manager);
   identity_manager_observer_.Observe(&identity_manager);
   sync_service_observer_.Observe(&sync_service);
+
+  pref_registrar_.Init(&pref_service_.get());
+  pref_registrar_.Add(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+      base::BindRepeating(&AccountNameEmailStore::OnCounterPrefUpdated,
+                          base::Unretained(this)));
 }
 
 AccountNameEmailStore::~AccountNameEmailStore() = default;
@@ -215,6 +221,23 @@ AccountNameEmailStore::GetBlockAccountNameEmailUpdateReason() {
     case syncer::SyncService::DataTypeDownloadStatus::kError:
       return std::nullopt;
   }
+}
+
+void AccountNameEmailStore::OnCounterPrefUpdated() {
+  if (pref_service_->GetInteger(
+          prefs::kAutofillNameAndEmailProfileNotSelectedCounter) <=
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get()) {
+    return;
+  }
+
+  const std::vector<const AutofillProfile*> account_name_email_profiles =
+      address_data_manager_->GetProfilesByRecordType(
+          AutofillProfile::RecordType::kAccountNameEmail);
+  if (account_name_email_profiles.empty()) {
+    return;
+  }
+  CHECK_EQ(1u, account_name_email_profiles.size());
+  address_data_manager_->RemoveProfile(account_name_email_profiles[0]->guid());
 }
 
 }  // namespace autofill

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -92,10 +93,16 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   std::optional<ProfileUpdateBlockReason>
   GetBlockAccountNameEmailUpdateReason();
 
+  // Called when `prefs::kAutofillNameAndEmailProfileNotSelectedCounter` pref is
+  // updated. If it's value exceeds
+  // `kAutofillNameAndEmailProfileNotSelectedThreshold` the kAccountNameEmail
+  // profile will be removed.
+  void OnCounterPrefUpdated();
+
   const raw_ref<AddressDataManager> address_data_manager_;
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<syncer::SyncService> sync_service_;
-  const raw_ref<PrefService> pref_service_;
+  raw_ref<PrefService> pref_service_;
 
   // Used to update `kAutofillNameAndEmailProfileNotSelectedCounter` pref in
   // `OnAddressDataChanged` method.
@@ -114,6 +121,10 @@ class AccountNameEmailStore : public signin::IdentityManager::Observer,
   // overridden `OnStateChanged(SyncService*)` method.
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observer_{this};
+
+  // Used to observe `prefs::kAutofillNameAndEmailProfileNotSelectedCounter` and
+  // possibly remove the kAccountNameEmail profile.
+  PrefChangeRegistrar pref_registrar_;
 };
 
 }  // namespace autofill

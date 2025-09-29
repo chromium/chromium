@@ -339,6 +339,36 @@ TEST_F(AccountNameEmailStoreTest, ProfileReappearsAfterNameChange) {
             0);
 }
 
+TEST_F(AccountNameEmailStoreTest, OnCounterPrefUpdated) {
+  ASSERT_EQ(pref_service().GetInteger(
+                prefs::kAutofillNameAndEmailProfileNotSelectedCounter),
+            0);
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  ASSERT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+
+  // Setting the pref to a value smaller or equal to
+  // `kAutofillNameAndEmailProfileNotSelectedThreshold`, shouldn't remove the
+  // profile.
+  pref_service().SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              ElementsAre(IsCorrectAccountNameEmail(
+                  base::UTF8ToUTF16(kTestName1),
+                  base::UTF8ToUTF16(kTestEmailAddress1))));
+
+  // Setting the pref to a value greater than
+  // `kAutofillNameAndEmailProfileNotSelectedThreshold`, should remove the
+  // kAccountNameEmail profile.
+  pref_service().SetInteger(
+      prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
+      features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get() + 1);
+  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
+}
+
 // ChromeOS does not support signing out
 #if !BUILDFLAG(IS_CHROMEOS)
 // Tests that the `OnExtendedAccountInfoRemoved` method will remove
