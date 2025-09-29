@@ -21350,28 +21350,6 @@
             ]
         }
     ],
-    "SafetyHub": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "background-password-check-interval": "30d"
-                    },
-                    "enable_features": [
-                        "SafetyHub"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafetyHubDisruptiveNotificationRevocation": [
         {
             "platforms": [
@@ -21418,6 +21396,27 @@
                     },
                     "enable_features": [
                         "SafetyHubDisruptiveNotificationRevocation"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SafetyHubIncreasePasswordCheckFrequency": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "background-password-check-interval": "10d"
+                    },
+                    "enable_features": [
+                        "SafetyHub"
                     ]
                 }
             ]
