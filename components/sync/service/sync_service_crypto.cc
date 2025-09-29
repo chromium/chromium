@@ -824,6 +824,8 @@ std::unique_ptr<Nigori> SyncServiceCrypto::ReadNigoriFromBootstrapToken(
   } else {
     decryption_result = OSCrypt::DecryptString(decoded_key, &decrypted_key);
   }
+  base::UmaHistogramBoolean("Sync.BootstrapTokenDecryptionResult",
+                            decryption_result);
   if (!decryption_result) {
     return nullptr;
   }
@@ -858,6 +860,8 @@ std::string SyncServiceCrypto::SerializeNigoriAsBootstrapToken(
   } else {
     encryption_result = OSCrypt::EncryptString(serialized_key, &encrypted_key);
   }
+  base::UmaHistogramBoolean("Sync.BootstrapTokenEncryptionResult",
+                            encryption_result);
   if (!encryption_result) {
     return std::string();
   }

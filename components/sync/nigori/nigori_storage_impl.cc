@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
@@ -34,16 +35,18 @@ void NigoriStorageImpl::StoreData(const sync_pb::NigoriLocalData& data) {
   }
 
   std::string encrypted_data;
+  bool encryption_success = false;
   if (encryptor_) {
-    if (!encryptor_->EncryptString(serialized_data, &encrypted_data)) {
-      DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
-      return;
-    }
+    encryption_success = encryptor_->EncryptString(serialized_data, &encrypted_data);
   } else {
-    if (!OSCrypt::EncryptString(serialized_data, &encrypted_data)) {
-      DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
-      return;
-    }
+    encryption_success = OSCrypt::EncryptString(serialized_data, &encrypted_data);
+  }
+
+  base::UmaHistogramBoolean("Sync.NigoriStorageEncryptionResult", encryption_success);
+
+  if (!encryption_success) {
+    DLOG(ERROR) << "Failed to encrypt NigoriLocalData.";
+    return;
   }
 
   if (!base::ImportantFileWriter::WriteFileAtomically(path_, encrypted_data,
@@ -65,16 +68,18 @@ std::optional<sync_pb::NigoriLocalData> NigoriStorageImpl::RestoreData() {
   }
 
   std::string serialized_data;
+  bool decryption_success = false;
   if (encryptor_) {
-    if (!encryptor_->DecryptString(encrypted_data, &serialized_data)) {
-      DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
-      return std::nullopt;
-    }
+    decryption_success = encryptor_->DecryptString(encrypted_data, &serialized_data);
   } else {
-    if (!OSCrypt::DecryptString(encrypted_data, &serialized_data)) {
-      DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
-      return std::nullopt;
-    }
+    decryption_success = OSCrypt::DecryptString(encrypted_data, &serialized_data);
+  }
+
+  base::UmaHistogramBoolean("Sync.NigoriStorageDecryptionResult", decryption_success);
+
+  if (!decryption_success) {
+    DLOG(ERROR) << "Failed to decrypt NigoriLocalData.";
+    return std::nullopt;
   }
 
   sync_pb::NigoriLocalData data;
