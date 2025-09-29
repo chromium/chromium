@@ -33,7 +33,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Generate input parameters for the call.
   std::optional<base::Value> serialized_script_value =
-      base::JSONReader::Read(provider.ConsumeRandomLengthString());
+      base::JSONReader::Read(provider.ConsumeRandomLengthString(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!serialized_script_value.has_value()) {
     return 0;
   }

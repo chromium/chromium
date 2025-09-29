@@ -45,13 +45,15 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
                  policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
                  policy::PolicyScope::POLICY_SCOPE_MACHINE,
                  policy::PolicySource::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                 base::JSONReader::Read(native_input),
+                 base::JSONReader::Read(native_input,
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                  /*external_data_fetcher=*/nullptr);
   policy_map.Set(policy::key::kRelatedWebsiteSetsOverrides,
                  policy::PolicyLevel::POLICY_LEVEL_MANDATORY,
                  policy::PolicyScope::POLICY_SCOPE_MACHINE,
                  policy::PolicySource::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-                 base::JSONReader::Read(native_input),
+                 base::JSONReader::Read(native_input,
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
                  /*external_data_fetcher=*/nullptr);
   policy::PolicyErrorMap errors;
   fps_handler.CheckPolicySettings(policy_map, &errors);

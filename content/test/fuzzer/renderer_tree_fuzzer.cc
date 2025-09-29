@@ -122,7 +122,8 @@ class NodeList : public std::vector<std::unique_ptr<Node>> {
     auto nodes = std::make_unique<NodeList>();
 
     std::optional<base::Value> value(base::JSONReader::Read(
-        std::string(reinterpret_cast<const char*>(data), size)));
+        std::string(reinterpret_cast<const char*>(data), size),
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     if (value && value->is_list())
       nodes->ParseJsonList(value->GetList());
 
