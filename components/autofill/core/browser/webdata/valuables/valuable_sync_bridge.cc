@@ -322,12 +322,19 @@ ValuableDatabaseOperationResult ValuableSyncBridge::SetLoyaltyCards(
 
 ValuableDatabaseOperationResult ValuableSyncBridge::SetEntities(
     std::vector<EntityInstance> entities) {
-  if (entities.empty() ||
-      !base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncMoveValuablesToProfileDb)) {
     return ValuableDatabaseOperationResult::kNoChange;
   }
 
   EntityTable* entity_table = GetEntityTable();
+  // No updates are necessary if both the local and the server list of entities
+  // are empty.
+  if (entities.empty() &&
+      entity_table
+          ->GetEntityInstances(EntityInstance::RecordType::kServerWallet)
+          .empty()) {
+    return ValuableDatabaseOperationResult::kNoChange;
+  }
   bool success = entity_table->DeleteEntityInstances(
       EntityInstance::RecordType::kServerWallet);
 

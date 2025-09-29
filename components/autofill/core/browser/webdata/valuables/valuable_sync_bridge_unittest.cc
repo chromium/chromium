@@ -595,4 +595,26 @@ TEST_F(ValuableSyncBridgeTest, SetEntities_ClearsExistingEntities) {
               UnorderedElementsAre(local_vehicle, new_wallet_vehicle));
 }
 
+// Tests that `SetEntities()` clears any existing entities when the server syncs
+// an empty list.
+TEST_F(ValuableSyncBridgeTest,
+       SetEntities_ClearsExistingEntitiesWhenServerEmpty) {
+  const EntityInstance local_vehicle = GetLocalVehicleEntityInstance(
+      {.guid = "00000000-0000-4000-8000-300000000000"});
+  const EntityInstance wallet_vehicle = GetServerVehicleEntityInstance(
+      {.guid = "00000000-0000-5000-3000-200000000000"});
+
+  AddEntities({local_vehicle, wallet_vehicle});
+  ASSERT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(local_vehicle, wallet_vehicle));
+
+  EXPECT_CALL(backend(), CommitChanges);
+  EXPECT_CALL(backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_VALUABLE));
+
+  EXPECT_TRUE(SyncEntityInstances({}));
+  EXPECT_THAT(GetAllEntityInstancesFromTable(),
+              UnorderedElementsAre(local_vehicle));
+}
+
 }  // namespace autofill
