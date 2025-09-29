@@ -156,6 +156,22 @@ bool TouchToFillPaymentMethodViewImpl::ShowLoyaltyCards(
   return true;
 }
 
+bool TouchToFillPaymentMethodViewImpl::UpdateBnplPaymentMethod(
+    std::optional<uint64_t> extracted_amount,
+    bool is_amount_supported_by_any_issuer) {
+  if (!java_object_) {
+    return false;
+  }
+  std::optional<int64_t> final_extracted_amount;
+  if (extracted_amount.has_value()) {
+    final_extracted_amount = static_cast<int64_t>(extracted_amount.value());
+  }
+  Java_TouchToFillPaymentMethodViewBridge_updateBnplPaymentMethod(
+      base::android::AttachCurrentThread(), java_object_,
+      final_extracted_amount, is_amount_supported_by_any_issuer);
+  return true;
+}
+
 bool TouchToFillPaymentMethodViewImpl::ShowProgressScreen(
     TouchToFillPaymentMethodViewController* controller) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -170,7 +186,6 @@ bool TouchToFillPaymentMethodViewImpl::ShowProgressScreen(
   // Use either the old `java_object_` or the new one created in
   // `IsReadyToShow()` to show the progress screen.
   Java_TouchToFillPaymentMethodViewBridge_showProgressScreen(env, java_object_);
-
   return true;
 }
 

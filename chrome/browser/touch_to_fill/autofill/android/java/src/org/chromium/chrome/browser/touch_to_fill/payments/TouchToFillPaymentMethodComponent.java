@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -117,6 +119,19 @@ interface TouchToFillPaymentMethodComponent {
             List<LoyaltyCard> affiliatedLoyaltyCards,
             List<LoyaltyCard> allLoyaltyCards,
             boolean firstTimeUsage);
+
+    /**
+     * Updates BNPL suggestions on payment methods bottom sheet based on the results of amount
+     * extraction.
+     *
+     * @param extractedAmount The amount extracted from the checkout page, or {@code null} if
+     *     extraction failed or timed out.
+     * @param isAmountSupportedByAnyIssuer Whether the {@code extractedAmount} is supported by at
+     *     least one BNPL issuer. This is only relevant if {@code extractedAmount} is not {@code
+     *     null}.
+     */
+    void updateBnplPaymentMethod(
+            @Nullable Long extractedAmount, boolean isAmountSupportedByAnyIssuer);
 
     /** Displays a progress screen bottomsheet. */
     void showProgressScreen();

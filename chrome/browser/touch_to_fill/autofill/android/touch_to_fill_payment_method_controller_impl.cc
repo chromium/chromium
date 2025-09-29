@@ -138,6 +138,16 @@ bool TouchToFillPaymentMethodControllerImpl::ShowLoyaltyCards(
   return true;
 }
 
+bool TouchToFillPaymentMethodControllerImpl::UpdateBnplPaymentMethod(
+    std::optional<uint64_t> extracted_amount,
+    bool is_amount_supported_by_any_issuer) {
+  if (!view_ || !view_->UpdateBnplPaymentMethod(
+                    extracted_amount, is_amount_supported_by_any_issuer)) {
+    return false;
+  }
+  return true;
+}
+
 bool TouchToFillPaymentMethodControllerImpl::ShowProgressScreen(
     std::unique_ptr<TouchToFillPaymentMethodView> view,
     base::WeakPtr<TouchToFillDelegate> delegate) {

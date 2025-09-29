@@ -58,6 +58,10 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
                base::span<const LoyaltyCard> all_loyalty_cards,
                bool first_time_usage));
   MOCK_METHOD(bool,
+              UpdateBnplPaymentMethod,
+              (std::optional<uint64_t> extracted_amount,
+               bool is_amount_supported_by_any_issuer));
+  MOCK_METHOD(bool,
               ShowProgressScreen,
               (TouchToFillPaymentMethodViewController * controller));
   MOCK_METHOD(bool,
@@ -294,6 +298,35 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   OnAfterAskForValuesToFill();
   EXPECT_CALL(ttf_delegate(), ShowPaymentMethodSettings);
   payment_method_controller().ShowPaymentMethodSettings(nullptr);
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       UpdateBnplPaymentMethodOnPreexistingView) {
+  std::optional<uint64_t> extracted_amount = 12345;
+  EXPECT_CALL(*mock_view_,
+              ShowPaymentMethods(&payment_method_controller(),
+                                 ElementsAreArray(suggestions_),
+                                 /*should_show_scan_credit_card=*/true));
+  EXPECT_CALL(*mock_view_, UpdateBnplPaymentMethod(
+                               extracted_amount,
+                               /*is_amount_supported_by_any_issuer=*/true));
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_);
+  payment_method_controller().UpdateBnplPaymentMethod(
+      extracted_amount, /*is_amount_supported_by_any_issuer=*/true);
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       UpdateBnplPaymentMethodAbortsIfNoViewAvailable) {
+  EXPECT_CALL(*mock_view_, UpdateBnplPaymentMethod(_, _)).Times(0);
+
+  OnBeforeAskForValuesToFill();
+  payment_method_controller().UpdateBnplPaymentMethod(
+      /*extracted_amount=*/12345, /*is_amount_supported_by_any_issuer=*/true);
+  OnAfterAskForValuesToFill();
 }
 
 TEST_F(TouchToFillPaymentMethodControllerTest,

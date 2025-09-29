@@ -80,6 +80,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
@@ -94,6 +95,7 @@ import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMeth
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties;
+import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ProgressIconProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -470,6 +472,32 @@ class TouchToFillPaymentMethodMediator {
         sheetItems.add(buildFooterForLoyaltyCards());
 
         return sheetItems;
+    }
+
+    void updateBnplPaymentMethod(
+            @Nullable Long extractedAmount, boolean isAmountSupportedByAnyIssuer) {
+        assert mSuggestions != null;
+        if (isAmountSupportedByAnyIssuer) {
+            for (int i = 0; i < mSuggestions.size(); ++i) {
+                AutofillSuggestion suggestion = mSuggestions.get(i);
+                if (suggestion.getSuggestionType() == SuggestionType.BNPL_ENTRY) {
+                    suggestion.getPaymentsPayload().setExtractedAmount(extractedAmount);
+                }
+            }
+        } else {
+            ModelList sheetItems = mModel.get(SHEET_ITEMS);
+            for (int i = 0; i < sheetItems.size(); ++i) {
+                if (sheetItems.get(i).type == ItemType.BNPL) {
+                    PropertyModel bnplModel = sheetItems.get(i).model;
+                    bnplModel.set(IS_ENABLED, false);
+                    bnplModel.set(
+                            SECONDARY_TEXT,
+                            getString(
+                                    R.string
+                                            .autofill_bnpl_suggestion_label_for_unavailable_purchase));
+                }
+            }
+        }
     }
 
     public void showProgressScreen() {
@@ -912,6 +940,10 @@ class TouchToFillPaymentMethodMediator {
             }
         }
         return true;
+    }
+
+    private static String getString(@StringRes int messageId) {
+        return ContextUtils.getApplicationContext().getString(messageId);
     }
 
     private static void recordTouchToFillCreditCardOutcomeHistogram(

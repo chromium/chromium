@@ -92,6 +92,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.ALL_TERMS_LABEL_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.COMPLETE_OPACITY_ALPHA;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.GRAYED_OUT_OPACITY_ALPHA;
 
 import android.view.MotionEvent;
 import android.view.View;
@@ -918,7 +920,7 @@ public class TouchToFillPaymentMethodViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         ImageView icon = mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.favicon);
-        assertThat(icon.getAlpha(), is(0.38f));
+        assertThat(icon.getAlpha(), is(GRAYED_OUT_OPACITY_ALPHA));
         assertThat(getCreditCardSuggestions().getChildAt(0).isEnabled(), is(false));
         assertThat(
                 getSuggestionMainTextAt(0).getText(),
@@ -1326,6 +1328,48 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    public void testUpdateBnplPaymentMethod() {
+        String updatedSecondaryText =
+                ContextUtils.getApplicationContext()
+                        .getString(
+                                R.string.autofill_bnpl_suggestion_label_for_unavailable_purchase);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    new ListItem(
+                                            BNPL,
+                                            createBnplSuggestionModel(
+                                                    BNPL_SUGGESTION,
+                                                    mItemCollectionInfo,
+                                                    /* actionCallback= */ CallbackUtils
+                                                            .emptyRunnable())));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        ImageView icon =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_icon);
+        assertTrue(getCreditCardSuggestions().getChildAt(0).isEnabled());
+        assertThat(getSuggestionPrimaryTextAt(0).getText(), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(getSuggestionSecondaryTextAt(0).getText(), is(BNPL_SUGGESTION.getSublabel()));
+
+        runOnUiThreadBlocking(
+                () -> {
+                    PropertyModel bnplModel =
+                            mTouchToFillPaymentMethodModel.get(SHEET_ITEMS).get(0).model;
+                    bnplModel.set(IS_ENABLED, false);
+                    bnplModel.set(SECONDARY_TEXT, updatedSecondaryText);
+                });
+
+        assertThat(icon.getAlpha(), is(GRAYED_OUT_OPACITY_ALPHA));
+        assertFalse(getCreditCardSuggestions().getChildAt(0).isEnabled());
+        assertThat(getSuggestionPrimaryTextAt(0).getText(), is(BNPL_SUGGESTION.getLabel()));
+        assertThat(getSuggestionSecondaryTextAt(0).getText(), is(updatedSecondaryText));
+    }
+
+    @Test
+    @MediumTest
     public void testDeactivatedBnplSuggestionIsStyledCorrectly() {
         runOnUiThreadBlocking(
                 () -> {
@@ -1345,7 +1389,7 @@ public class TouchToFillPaymentMethodViewTest {
 
         ImageView icon =
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_icon);
-        assertThat(icon.getAlpha(), is(0.38f));
+        assertThat(icon.getAlpha(), is(GRAYED_OUT_OPACITY_ALPHA));
         assertFalse(getCreditCardSuggestions().getChildAt(0).isEnabled());
         assertThat(
                 getSuggestionPrimaryTextAt(0).getText(),
@@ -1441,7 +1485,7 @@ public class TouchToFillPaymentMethodViewTest {
                 title.getText().toString(),
                 is(getString(R.string.autofill_bnpl_pay_later_options_text)));
         assertFalse(backButton.isEnabled());
-        assertThat(backButton.getAlpha(), is(0.38f));
+        assertThat(backButton.getAlpha(), is(GRAYED_OUT_OPACITY_ALPHA));
 
         onView(withId(R.id.bnpl_header_back_button)).perform(createClickActionWithFlags(0));
         verify(actionCallback, never()).run();
@@ -1476,7 +1520,7 @@ public class TouchToFillPaymentMethodViewTest {
                 title.getText().toString(),
                 is(getString(R.string.autofill_bnpl_pay_later_options_text)));
         assertTrue(backButton.isEnabled());
-        assertThat(backButton.getAlpha(), is(1.0f));
+        assertThat(backButton.getAlpha(), is(COMPLETE_OPACITY_ALPHA));
 
         onView(withId(R.id.bnpl_header_back_button)).perform(createClickActionWithFlags(0));
         waitForEvent(actionCallback).run();

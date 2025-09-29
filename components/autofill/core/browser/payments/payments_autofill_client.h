@@ -610,6 +610,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::WeakPtr<TouchToFillDelegate> delegate,
       std::vector<LoyaltyCard> loyalty_cards_to_suggest);
 
+  // Updates the BNPL payment method option on the Touch To Fill surface, if
+  // possible, returning `true` on success. Should be called only on Android if
+  // the feature is supported by the platform.
+  virtual bool UpdateTouchToFillBnplPaymentMethod(
+      std::optional<uint64_t> extracted_amount,
+      bool is_amount_supported_by_any_issuer);
+
   // Shows the BNPL progress screen, if possible, returning `true` on success.
   // Should be called only on Android if the feature is supported by the
   // platform. If `delegate` is present, it will be notified of events.

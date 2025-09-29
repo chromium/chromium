@@ -112,6 +112,12 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     }
 
     @Override
+    public void updateBnplPaymentMethod(
+            Long extractedAmount, boolean isAmountSupportedByAnyIssuer) {
+        mMediator.updateBnplPaymentMethod(extractedAmount, isAmountSupportedByAnyIssuer);
+    }
+
+    @Override
     public void showProgressScreen() {
         mMediator.showProgressScreen();
     }

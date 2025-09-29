@@ -79,8 +79,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * PropertyModel} to the suitable method in {@link TouchToFillPaymentMethodView}.
  */
 class TouchToFillPaymentMethodViewBinder {
-    private static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
-    private static final float COMPLETE_OPACITY_ALPHA = 1.0f;
+    static final float GRAYED_OUT_OPACITY_ALPHA = 0.38f;
+    static final float COMPLETE_OPACITY_ALPHA = 1.0f;
 
     /**
      * The collection info is added by setting an instance of this delegate on the last text view

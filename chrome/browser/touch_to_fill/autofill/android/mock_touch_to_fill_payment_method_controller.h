@@ -56,6 +56,11 @@ class MockTouchToFillPaymentMethodController
                bool),
               (override));
   MOCK_METHOD(bool,
+              UpdateBnplPaymentMethod,
+              (std::optional<uint64_t> extracted_amount,
+               bool is_amount_supported_by_any_issuer),
+              (override));
+  MOCK_METHOD(bool,
               ShowProgressScreen,
               (std::unique_ptr<TouchToFillPaymentMethodView> view,
                base::WeakPtr<TouchToFillDelegate> delegate),

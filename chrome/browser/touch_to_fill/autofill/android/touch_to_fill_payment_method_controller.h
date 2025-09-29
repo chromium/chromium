@@ -59,6 +59,16 @@ class TouchToFillPaymentMethodController
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) = 0;
 
+  // Updates the BNPL payment method option on the Touch To Fill suggestion
+  // view. If the `extracted_amount` is null, the option is grayed out and its
+  // message text is updated to inform users that the purchase is not
+  // available. If the amount is present but not supported by any issuer, the
+  // UI is updated with a grayed-out BNPL option. If the amount is available
+  // and supported by at least one issuer, it is set to continue the flow.
+  virtual bool UpdateBnplPaymentMethod(
+      std::optional<uint64_t> extracted_amount,
+      bool is_amount_supported_by_any_issuer) = 0;
+
   // Shows the Touch To Fill progress screen. If the TTF surface is already
   // being shown when this is called, `view` is optional and will override the
   // existing view when present. Otherwise, if the TTF surface is not already

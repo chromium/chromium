@@ -47,6 +47,8 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
                         base::span<const LoyaltyCard> affiliated_loyalty_cards,
                         base::span<const LoyaltyCard> all_loyalty_cards,
                         bool first_time_usage) override;
+  bool UpdateBnplPaymentMethod(std::optional<uint64_t> extracted_amount,
+                               bool is_amount_supported_by_any_issuer) override;
   bool ShowProgressScreen(
       TouchToFillPaymentMethodViewController* controller) override;
   bool ShowBnplIssuers(

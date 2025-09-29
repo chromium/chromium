@@ -236,12 +236,12 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableIntPropertyKey("bnpl_icon_id");
         static final PropertyModel.ReadableObjectPropertyKey<String> PRIMARY_TEXT =
                 new PropertyModel.ReadableObjectPropertyKey<>("primary_text");
-        static final PropertyModel.ReadableObjectPropertyKey<String> SECONDARY_TEXT =
-                new PropertyModel.ReadableObjectPropertyKey<>("secondary_text");
+        static final PropertyModel.WritableObjectPropertyKey<String> SECONDARY_TEXT =
+                new PropertyModel.WritableObjectPropertyKey<>("secondary_text");
         static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_BNPL_CLICK_ACTION =
                 new PropertyModel.ReadableObjectPropertyKey<>("on_bnpl_click_action");
-        static final PropertyModel.ReadableBooleanPropertyKey IS_ENABLED =
-                new PropertyModel.ReadableBooleanPropertyKey("is_enabled");
+        static final PropertyModel.WritableBooleanPropertyKey IS_ENABLED =
+                new PropertyModel.WritableBooleanPropertyKey("is_enabled");
         static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
                 BNPL_ITEM_COLLECTION_INFO =
                         new PropertyModel.ReadableObjectPropertyKey<>("bnpl_item_collection_info");

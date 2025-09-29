@@ -133,6 +133,12 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
   explicit TestPaymentsAutofillClientMock(AutofillClient* client)
       : TestPaymentsAutofillClient(client) {}
   ~TestPaymentsAutofillClientMock() override = default;
+
+  MOCK_METHOD(bool,
+              UpdateTouchToFillBnplPaymentMethod,
+              (std::optional<uint64_t> extracted_amount,
+               bool is_amount_supported_by_any_issuer),
+              (override));
 };
 
 class MockBnplUiDelegate : public BnplUiDelegate {
@@ -2181,5 +2187,58 @@ TEST_F(BnplManagerTest, IsBnplIssuerSupported_KlarnaDisabled) {
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+
+TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithTimeout) {
+  const uint64_t extracted_amount = 12345;
+  EXPECT_CALL(
+      GetPaymentsAutofillClient(),
+      UpdateTouchToFillBnplPaymentMethod(
+          Eq(std::nullopt), /*is_amount_supported_by_any_issuer=*/false));
+
+  bnpl_manager_->OnAmountExtractionReturned(extracted_amount,
+                                            /*timeout_reached=*/true);
+}
+
+TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithInvalidAmount) {
+  EXPECT_CALL(
+      GetPaymentsAutofillClient(),
+      UpdateTouchToFillBnplPaymentMethod(
+          Eq(std::nullopt), /*is_amount_supported_by_any_issuer=*/false));
+
+  bnpl_manager_->OnAmountExtractionReturned(/*extracted_amount=*/std::nullopt,
+                                            /*timeout_reached=*/false);
+}
+
+TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithUnsupportedAmount) {
+  const uint64_t extracted_amount = 0;
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+  EXPECT_CALL(GetPaymentsAutofillClient(),
+              UpdateTouchToFillBnplPaymentMethod(
+                  Eq(extracted_amount),
+                  /*is_amount_supported_by_any_issuer=*/false));
+
+  bnpl_manager_->OnAmountExtractionReturned(extracted_amount,
+                                            /*timeout_reached=*/false);
+}
+
+TEST_F(BnplManagerTest, OnAmountExtractionReturned_WithValidAmount) {
+  const uint64_t extracted_amount = 1000000000;
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+  EXPECT_CALL(GetPaymentsAutofillClient(),
+              UpdateTouchToFillBnplPaymentMethod(
+                  Eq(extracted_amount),
+                  /*is_amount_supported_by_any_issuer=*/true));
+
+  bnpl_manager_->OnAmountExtractionReturned(extracted_amount,
+                                            /*timeout_reached=*/false);
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill::payments

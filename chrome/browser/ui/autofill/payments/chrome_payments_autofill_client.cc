@@ -947,6 +947,18 @@ bool ChromePaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
 #endif
 }
 
+bool ChromePaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
+    std::optional<uint64_t> extracted_amount,
+    bool is_amount_supported_by_any_issuer) {
+#if BUILDFLAG(IS_ANDROID)
+  return GetTouchToFillPaymentMethodController()->UpdateBnplPaymentMethod(
+      extracted_amount, is_amount_supported_by_any_issuer);
+#else
+  // Touch To Fill is not supported on Desktop.
+  NOTREACHED();
+#endif
+}
+
 bool ChromePaymentsAutofillClient::ShowTouchToFillProgress(
     base::WeakPtr<TouchToFillDelegate> delegate) {
 #if BUILDFLAG(IS_ANDROID)
