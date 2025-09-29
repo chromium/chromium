@@ -1203,25 +1203,48 @@
       Your organization turned off saving history and tabs in your Google Account
     </message>
     <!-- Avatar Button Promos Desktop -->
-    <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
-      Sync history?
-    </message>
-    <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button. This is also used to Batch Upload as well.">
-      Back up your stuff?
-    </message>
-    <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO" desc="The avatar button label for the Batch Upload promo. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
-      Save in account?
-    </message>
-    <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO" desc="The avatar button label for the Batch Upload promo with an emphasis on Bookmarks. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
-      Clean up bookmarks?
-    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
+        Sync history?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button. This is also used to Batch Upload as well.">
+        Back up your stuff?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO" desc="The avatar button label for the Batch Upload promo. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Save in account?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO" desc="The avatar button label for the Batch Upload promo with an emphasis on Bookmarks. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Clean up bookmarks?
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
+        Sync History?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button. This is also used to Batch Upload as well.">
+        Back Up Your Stuff?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO" desc="The avatar button label for the Batch Upload promo. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Save in Account?
+      </message>
+      <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO" desc="The avatar button label for the Batch Upload promo with an emphasis on Bookmarks. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+        Clean Up Bookmarks?
+      </message>
+    </if>
     <!-- Profile Menu Promos Desktop -->
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'Sync history?' history sync opt-in identity pill.">
       To easily get back to sites you’ve visited, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
     </message>
-    <message name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="The button label for the sync promo. When clicked, it opens the turn on sync dialog.">
-      Turn on
-    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="The button label for the sync promo. When clicked, it opens the turn on sync dialog.">
+        Turn on
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL" desc="The button label for the sync promo. When clicked, it opens the turn on sync dialog.">
+        Turn On
+      </message>
+    </if>
     <message name="IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO" desc="The description of the identity section in the Profile Menu for users that can see the Sync Promo in the Avatar button. This describes the action presented right below it in the button.">
       Back up your passwords, bookmarks, and more, so you can easily get them on all your devices
     </message>
@@ -1231,9 +1254,16 @@
     <message name="IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD" desc="The description of the identity section in the Profile Menu for users that can see the Batch Upload promo in the Avatar button, when having local data. This describes the action presented right below it in the button.">
       To get your passwords, bookmarks, and more on all your devices, save them in your Google Account
     </message>
-     <message name="IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD" desc="The button label in the Profile Menu identity section for users that can see the Batch Upload promo in the Avatar button, when having local data. When clicked, it opens the Batch Upload dialog.">
-      Save in account
-    </message>
+    <if expr="not use_titlecase">
+      <message name="IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD" desc="The button label in the Profile Menu identity section for users that can see the Batch Upload promo in the Avatar button, when having local data. When clicked, it opens the Batch Upload dialog.">
+        Save in account
+      </message>
+    </if>
+    <if expr="use_titlecase">
+      <message name="IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD" desc="The button label in the Profile Menu identity section for users that can see the Batch Upload promo in the Avatar button, when having local data. When clicked, it opens the Batch Upload dialog.">
+        Save in Account
+      </message>
+    </if>
     <message name="IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD_BOOKMARK_CLEANUP" desc="The description of the identity section in the Profile Menu for users that can see the Batch Upload promo in the Avatar button with the emphasis on Bookmarks cleanup, when having local data. This describes the action presented right below it in the button.">
       To clean up any duplicate bookmarks, save them in your Google Account
     </message>
