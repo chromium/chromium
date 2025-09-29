@@ -617,12 +617,40 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, WaitOnMainThread) {
 // Perform and commit a navigation before NotifyWhenStable is called. Expect
 // that either the remote is disconnected or the NotifyWhenStable callback is
 // executed.
-// TODO(b/447664500): Fix and test the BFCache version of this too.
-IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, NavigationBeforeNotify) {
+IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
+                       NavigationBeforeNotifyNoBFCache) {
   content::DisableBackForwardCacheForTesting(
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
 
+  const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
+  const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  mojo::Remote<mojom::PageStabilityMonitor> monitor =
+      CreatePageStabilityMonitor();
+
+  TestFuture<void> result;
+
+  // With RenderDocument, the navigation will always use a new frame so we
+  // expect to hear a disconnect rather than having the monitor reply to
+  // NotifyWhenStable.
+  monitor.set_disconnect_handler(result.GetCallback());
+
+  // Navigate away and finish the navigation.
+  TestNavigationManager manager(web_contents(), url2);
+  ASSERT_TRUE(ExecJs(web_contents(), JsReplace("window.location = $1", url2)));
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+
+  monitor->NotifyWhenStable(/*observation_delay=*/base::TimeDelta(),
+                            result.GetCallback());
+  EXPECT_TRUE(result.Wait());
+}
+
+// Perform and commit a navigation before NotifyWhenStable is called. Expect
+// that either the remote is disconnected or the NotifyWhenStable callback is
+// executed.
+IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest, NavigationBeforeNotify) {
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -742,11 +770,6 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
 // cause the monitor to immediately complete.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
                        NavigationDuringStartDelay) {
-  // TODO(b/447664500): Remove when fixed.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::DisableForTestingReason::
-                          TEST_REQUIRES_NO_CACHING);
-
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -772,11 +795,6 @@ IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
 // immediately complete.
 IN_PROC_BROWSER_TEST_P(ActorGeneralPageStabilityTest,
                        NavigationDuringMonitoring) {
-  // TODO(b/447664500): Remove when fixed.
-  content::DisableBackForwardCacheForTesting(
-      web_contents(), content::BackForwardCache::DisableForTestingReason::
-                          TEST_REQUIRES_NO_CACHING);
-
   const GURL url = embedded_test_server()->GetURL("/actor/page_stability.html");
   const GURL url2 = embedded_test_server()->GetURL("/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

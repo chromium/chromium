@@ -78,7 +78,12 @@ PageStabilityMonitor::PageStabilityMonitor(content::RenderFrame& frame,
 }
 
 PageStabilityMonitor::~PageStabilityMonitor() {
+  if (state_ == State::kDone) {
+    return;
+  }
+
   // If we have a callback, ensure it replies now.
+  journal_entry_->Log("PageStabilityMonitorDestructor", {});
   MoveToState(State::kRenderFrameGoingAway);
   Cleanup();
 }
@@ -141,6 +146,21 @@ void PageStabilityMonitor::DidFailProvisionalLoad() {
     journal_entry_->Log("DidFailProvisionalLoad", {});
     MoveToState(State::kStartMonitoring);
   }
+}
+
+void PageStabilityMonitor::DidSetPageLifecycleState(
+    bool restoring_from_bfcache) {
+  if (restoring_from_bfcache) {
+    return;
+  }
+
+  // As we may not clean up PageStabilityMonitor, this may happen after `kDone`.
+  if (state_ == State::kDone) {
+    return;
+  }
+
+  journal_entry_->Log("PageStabilityMonitor Page Frozen", {});
+  MoveToState(State::kRenderFrameGoingAway);
 }
 
 void PageStabilityMonitor::OnDestruct() {

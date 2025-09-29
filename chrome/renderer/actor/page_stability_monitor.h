@@ -47,6 +47,7 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // RenderFrameObserver
   void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFailProvisionalLoad() override;
+  void DidSetPageLifecycleState(bool restoring_from_bfcache) override;
   void OnDestruct() override;
 
   // mojom::PageStabilityMonitor:
