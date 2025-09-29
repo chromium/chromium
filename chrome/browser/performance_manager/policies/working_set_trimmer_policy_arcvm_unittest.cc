@@ -274,15 +274,13 @@ TEST_F(WorkingSetTrimmerPolicyArcVmTest, WindowFocused) {
   // Create two fake windows.
   aura::Window* arc_window =
       aura::test::CreateTestWindow(
-          {.parent = &container_window, .bounds = {}, .window_id = 0},
-          SK_ColorGREEN)
+          {.parent = &container_window, .window_id = 0}, SK_ColorGREEN)
           .release();
   arc_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_TRUE(ash::IsArcWindow(arc_window));
   aura::Window* chrome_window =
       aura::test::CreateTestWindow(
-          {.parent = &container_window, .bounds = {}, .window_id = 0},
-          SK_ColorRED)
+          {.parent = &container_window, .window_id = 0}, SK_ColorRED)
           .release();
   ASSERT_FALSE(ash::IsArcWindow(chrome_window));
 

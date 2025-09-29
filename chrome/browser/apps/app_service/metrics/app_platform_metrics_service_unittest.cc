@@ -463,7 +463,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   std::unique_ptr<aura::Window> CreateWebAppWindow(aura::Window* parent) {
     return aura::test::CreateTestWindow({.delegate = &delegate1_,
                                          .parent = parent,
-                                         .bounds = {},
                                          .window_id = 1});
   }
 
