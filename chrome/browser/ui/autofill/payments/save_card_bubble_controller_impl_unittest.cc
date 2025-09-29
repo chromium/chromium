@@ -773,7 +773,13 @@ TEST_P(SaveCardBubbleLoggingTest, Metrics_ShowIconOnly) {
       SaveCardPromptOffer::kNotShownMaxStrikesReached, 1);
 }
 
-TEST_P(SaveCardBubbleLoggingTest, Metrics_SaveButton) {
+// TODO(https://crbug.com/448030345): Flaky on Linux ASan
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_Metrics_SaveButton DISABLED_Metrics_SaveButton
+#else
+#define MAYBE_Metrics_SaveButton Metrics_SaveButton
+#endif
+TEST_P(SaveCardBubbleLoggingTest, MAYBE_Metrics_SaveButton) {
   base::HistogramTester histogram_tester;
   TriggerFlow();
   controller()->OnSaveButton({});
