@@ -164,8 +164,6 @@
         appendSectionsWithIdentifiers:@[ kCustomizationSectionBackground ]];
     [snapshot appendItemsWithIdentifiers:[self identifiersForBackgroundCells]
                intoSectionWithIdentifier:kCustomizationSectionBackground];
-    [snapshot appendItemsWithIdentifiers:@[ kBackgroundPickerCellIdentifier ]
-               intoSectionWithIdentifier:kCustomizationSectionBackground];
   }
 
   // Create toggles section and add items to it.
@@ -459,12 +457,26 @@
 // by the snapshot.
 - (NSArray<NSString*>*)identifiersForBackgroundCells {
   NSMutableArray<NSString*>* identifiers = [[NSMutableArray alloc] init];
+
+  NSUInteger indexAfterDefault = 0;
+
   for (NSString* key in _backgroundCollectionConfiguration.configurationOrder) {
-    if (![_backgroundCollectionConfiguration.configurations objectForKey:key]) {
+    id<BackgroundCustomizationConfiguration> configuration =
+        _backgroundCollectionConfiguration.configurations[key];
+    if (!configuration) {
       continue;
     }
+
     [identifiers addObject:key];
+
+    if (configuration.backgroundStyle ==
+        HomeCustomizationBackgroundStyle::kDefault) {
+      indexAfterDefault = identifiers.count;
+    }
   }
+
+  [identifiers insertObject:kBackgroundPickerCellIdentifier
+                    atIndex:indexAfterDefault];
 
   return [identifiers copy];
 }
