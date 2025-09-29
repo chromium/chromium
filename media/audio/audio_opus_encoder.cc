@@ -160,6 +160,11 @@ void AudioOpusEncoder::Initialize(const Options& options,
     max_packets_in_repacketizer_ =
         final_frame_duration_ / intermediate_frame_duration;
 
+    pending_packets_.resize(max_packets_in_repacketizer_);
+    for (auto& v : pending_packets_) {
+      v = EncodingBuffer::Uninit(kOpusMaxDataBytes);
+    }
+
     opus_repacketizer_ = OwnedOpusRepacketizer(opus_repacketizer_create(),
                                                OpusRepacketizerDeleter);
     if (!opus_repacketizer_) {
@@ -323,7 +328,7 @@ void AudioOpusEncoder::Flush(EncoderStatusCB done_cb) {
 
     // Add silence in order to flush remaining frames in repacketizer as a
     // full packet.
-    if (accumulated_packets_in_repacketizer_ > 0) {
+    if (packets_in_repacketizer_ > 0) {
       waiting_for_output_ = true;
       auto silent_padding = AudioBus::Create(converted_params_.channels(),
                                              intermediate_frame_count_);
@@ -349,6 +354,16 @@ void AudioOpusEncoder::DrainFifoOutput() {
   }
 }
 
+base::span<uint8_t> AudioOpusEncoder::GetEncoderDestination() {
+  if (!opus_repacketizer_) {
+    return encoding_buffer_;
+  }
+
+  // Get the next free packet.
+  CHECK_LT(packets_in_repacketizer_, max_packets_in_repacketizer_);
+  return pending_packets_[packets_in_repacketizer_];
+}
+
 void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   audio_bus->ToInterleaved<Float32SampleTypeTraits>(audio_bus->frames(),
                                                     buffer_.data());
@@ -356,9 +371,11 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
   if (!current_done_cb_)
     return;
 
+  auto buffer = GetEncoderDestination();
+
   auto result = opus_encode_float(opus_encoder_.get(), buffer_.data(),
-                                  intermediate_frame_count_,
-                                  encoding_buffer_.data(), kOpusMaxDataBytes);
+                                  intermediate_frame_count_, buffer.data(),
+                                  kOpusMaxDataBytes);
 
   if (result < 0) {
     DCHECK(current_done_cb_);
@@ -377,8 +394,8 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
     return;
   }
 
-  int status = opus_repacketizer_cat(opus_repacketizer_.get(),
-                                     encoding_buffer_.data(), result);
+  int status =
+      opus_repacketizer_cat(opus_repacketizer_.get(), buffer.data(), result);
 
   if (status != OPUS_OK) {
     DCHECK(current_done_cb_);
@@ -388,9 +405,9 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
     return;
   }
 
-  ++accumulated_packets_in_repacketizer_;
+  ++packets_in_repacketizer_;
 
-  if (accumulated_packets_in_repacketizer_ == max_packets_in_repacketizer_) {
+  if (packets_in_repacketizer_ == max_packets_in_repacketizer_) {
     auto encoded_data_size = opus_repacketizer_out(
         opus_repacketizer_.get(), encoding_buffer_.data(), kOpusMaxDataBytes);
     if (encoded_data_size < 0) {
@@ -401,9 +418,9 @@ void AudioOpusEncoder::DoEncode(const AudioBus* audio_bus) {
     }
     EmitEncodedBuffer(encoded_data_size);
     opus_repacketizer_init(opus_repacketizer_.get());
-    accumulated_packets_in_repacketizer_ = 0;
+    packets_in_repacketizer_ = 0;
   }
-  DCHECK_LT(accumulated_packets_in_repacketizer_, max_packets_in_repacketizer_);
+  DCHECK_LT(packets_in_repacketizer_, max_packets_in_repacketizer_);
 }
 
 void AudioOpusEncoder::EmitEncodedBuffer(size_t encoded_data_size) {

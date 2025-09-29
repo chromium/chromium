@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_encoder.h"
@@ -27,6 +28,8 @@ using OpusRepacketizerDeleterType =
     void (*)(OpusRepacketizer* repacketizer_ptr);
 using OwnedOpusRepacketizer =
     std::unique_ptr<OpusRepacketizer, OpusRepacketizerDeleterType>;
+
+using EncodingBuffer = base::HeapArray<uint8_t>;
 
 // Performs Opus encoding of the input audio. The input audio is converted to a
 // a format suitable for Opus before it is passed to the libopus encoder
@@ -60,6 +63,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   void DrainFifoOutput();
 
   void EmitEncodedBuffer(size_t encoded_data_size);
+
+  base::span<uint8_t> GetEncoderDestination();
 
   CodecDescription PrepareExtraData();
 
@@ -101,7 +106,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // duration of the encoded buffer.
   static inline constexpr int kOpusMaxDataBytes = 4000;
 
-  // Fixed size buffer that all frames are encoded too. Most encoded data is
+  // Fixed size buffer that all frames are encoded to. Most encoded data is
   // generally only a few hundred bytes, so we copy out from this buffer when
   // vending encoded packets.
   std::array<uint8_t, kOpusMaxDataBytes> encoding_buffer_;
@@ -119,7 +124,7 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // example, it can correctly deduce 5ms as two 2.5ms frames, but will not
   // count in 40ms or 60ms frames. It uses 20ms in these cases, requiring us to
   // track the total packets ourselves.
-  size_t accumulated_packets_in_repacketizer_ = 0;
+  size_t packets_in_repacketizer_ = 0;
 
   // This value is the number of intermediate durations that will fit in the
   // final duration.
@@ -136,6 +141,10 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // be concatenated into a large one of size |final_frame_duration_|.
   // Otherwise unused.
   size_t intermediate_frame_count_ = 0;
+
+  // Holds encoded intermediate packets for the repacketizer to ensure
+  // the data pointers remain valid until the combined packet is emitted.
+  std::vector<EncodingBuffer> pending_packets_;
 };
 
 }  // namespace media
