@@ -1406,9 +1406,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_MANAGE_GOOGLE_ACCOUNT" desc="The text label of the Manage Google account item">
             Manage your &amp;Google Account
           </message>
-          <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
-            Other Chrome profiles
-          </message>
           <message name="IDS_OPEN_GUEST_PROFILE" desc="The text label of the open guest profile item">
             &amp;Open Guest profile
           </message>
@@ -1553,9 +1550,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_MANAGE_GOOGLE_ACCOUNT" desc="In Title Case: The text label of the Manage Google account item">
             Manage Your &amp;Google Account
-          </message>
-          <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="In Title Case: The title of the Other Chrome profiles section">
-            Other Chrome Profiles
           </message>
           <message name="IDS_OPEN_GUEST_PROFILE" desc="In Title Case: The text label of the open guest profile item">
             &amp;Open Guest Profile

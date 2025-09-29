@@ -998,10 +998,16 @@ Google Chrome is unable to recover your settings.
             <message name="IDS_CUSTOMIZE_CHROME" desc="In Title Case: The text label of the Customize Chrome menu item">
               C&amp;ustomize Your Chrome
             </message>
+            <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="In Title Case: The title of the Other Chrome profiles section">
+              Other Chrome Profiles
+            </message>
           </then>
           <else>
             <message name="IDS_CUSTOMIZE_CHROME" desc="The text label of the Customize Chrome menu item">
               C&amp;ustomize your Chrome
+            </message>
+            <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
+              Other Chrome profiles
             </message>
           </else>
         </if>
