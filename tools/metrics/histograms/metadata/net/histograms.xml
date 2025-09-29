@@ -3394,6 +3394,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.HttpStreamPool.JobControllerCallRequestCompleteDelay"
+    units="ms" expires_after="2026-02-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Record a delay between an HttpStreamPool::JobController gets a successful
+    stream and the job controller complets the corresponding request. Recorded
+    when the job controller completes the corresponding request.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.HttpStreamPool.JobControllerRequestCompleteTime.{Protocol}"
+    units="ms" expires_after="2026-02-01">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Time from when an HttpStreamPool::JobController is created to when the job
+    controller completes the corresponding request. Recorded when the job
+    controller completes the corresponding request.
+  </summary>
+  <token key="Protocol" variants="NetworkTransactionBlockedProtocol"/>
+</histogram>
+
 <histogram name="Net.HttpStreamPool.JobErrorCode" enum="NetErrorCodes"
     expires_after="2026-03-22">
   <owner>bashi@chromium.org</owner>

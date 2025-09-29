@@ -207,6 +207,8 @@ class HttpStreamPool::JobController : public HttpStreamPool::Job::Delegate,
 
   const base::TimeTicks created_time_;
 
+  std::optional<base::TimeTicks> stream_ready_time_;
+
   // Fields specific to stream request.
   raw_ptr<HttpStreamRequest::Delegate> delegate_;
   raw_ptr<HttpStreamRequest> stream_request_;

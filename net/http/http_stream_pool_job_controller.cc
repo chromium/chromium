@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -198,6 +200,8 @@ void HttpStreamPool::JobController::HandleStreamRequest(
         origin_quic_version_.IsKnown()) {
       StartAltSvcQuicPreconnect();
     }
+    CHECK(!stream_ready_time_.has_value());
+    stream_ready_time_ = base::TimeTicks::Now();
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -330,6 +334,8 @@ void HttpStreamPool::JobController::OnStreamReady(
 
   pending_stream_.emplace(std::move(stream), negotiated_protocol,
                           session_source);
+  CHECK(!stream_ready_time_.has_value());
+  stream_ready_time_ = base::TimeTicks::Now();
 
   // Use PostTask to align the behavior with HttpStreamFactory::Job, see
   // https://crrev.com/2827533002.
@@ -592,6 +598,17 @@ void HttpStreamPool::JobController::CallRequestCompleteAndStreamReady() {
   CHECK(stream_request_);
   CHECK(delegate_);
   CHECK(pending_stream_);
+  CHECK(stream_ready_time_.has_value());
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::UmaHistogramLongTimes100(
+      base::StrCat({"Net.HttpStreamPool.JobControllerRequestCompleteTime.",
+                    NegotiatedProtocolToHistogramSuffix(
+                        pending_stream_->negotiated_protocol)}),
+      now - created_time_);
+  base::UmaHistogramTimes(
+      "Net.HttpStreamPool.JobControllerCallRequestCompleteDelay",
+      now - *stream_ready_time_);
 
   stream_request_->Complete({
       .negotiated_protocol = pending_stream_->negotiated_protocol,
