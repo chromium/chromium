@@ -163,6 +163,13 @@ base::WeakPtr<GlicSharingManager> GlicDelegatingSharingManager::GetWeakPtr() {
 
 void GlicDelegatingSharingManager::SetDelegate(
     base::WeakPtr<GlicSharingManager> sharing_manager_delegate) {
+  // If the new delegate is already the delegate, do nothing, but watch for the
+  // case when the old delegate was invalidated and the new one is null (should
+  // still proceed).
+  if (sharing_manager_delegate &&
+      sharing_manager_delegate.get() == sharing_manager_delegate_.get()) {
+    return;
+  }
   // Grab currently pinned tabs before swapping delegate so we can fire pinned
   // status updates on them.
   auto old_pinned_tabs = GetPinnedTabs();

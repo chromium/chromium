@@ -78,8 +78,6 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
   void SetDelegate(base::WeakPtr<GlicSharingManager> sharing_manager_delegate);
 
  private:
-  base::WeakPtr<GlicSharingManager> sharing_manager_delegate_;
-
   // Callbacks for subscribing to delegate (will be forwarded).
   void OnFocusedTabChangedCallback(const FocusedTabData& focused_tab_data);
   void OnFocusedTabDataChangedCallback(const mojom::TabData* focused_tab_data);
@@ -99,6 +97,8 @@ class GlicDelegatingSharingManager : public GlicSharingManager {
   // TODO(b:444463509): split sharing manager interface up so it's clear which
   // notifications we actually force (i.e. what delegation is possible).
   void ForceNotify(const std::vector<content::WebContents*>& old_pinned_tabs);
+
+  base::WeakPtr<GlicSharingManager> sharing_manager_delegate_;
 
   // Callback lists. Maintains its own callback lists to seamlessly support
   // hot-swapping delegate.
