@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/account_state_fetcher.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -188,9 +187,12 @@ void HistorySyncOptinHelper::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void HistorySyncOptinHelper::NotifyFlowFinished() {
+void HistorySyncOptinHelper::NotifyFlowFinished(bool is_history_screen_skipped) {
   for (Observer& observer : observers_) {
     observer.OnHistorySyncOptinHelperFlowFinished();
+  }
+  if (is_history_screen_skipped) {
+    base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Skipped"));
   }
 }
 
@@ -232,7 +234,7 @@ void HistorySyncOptinHelper::ShowHistorySyncOptinScreen() {
   if (signin_util::ShouldShowHistorySyncOptinScreen(*profile_.get())) {
     delegate_->ShowHistorySyncOptinScreen(
         profile(), base::BindOnce(&HistorySyncOptinHelper::NotifyFlowFinished,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr(), /*is_history_screen_skipped=*/false));
     return;
   }
   // Currently this class is used to for entry points meant to
@@ -255,8 +257,7 @@ signin::Tribool HistorySyncOptinHelper::AccountIsManaged(
 
 void HistorySyncOptinHelper::FinishFlowWithoutHistorySyncOptin() {
   delegate_->FinishFlowWithoutHistorySyncOptin();
-  NotifyFlowFinished();
-  base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Skipped"));
+  NotifyFlowFinished(/*is_history_screen_skipped=*/true);
 }
 
 // HistorySyncOptinHelperInBrowser
@@ -383,11 +384,7 @@ void HistorySyncOptinHelperInProfilePicker::OnAccountManagementScreenClosed(
       // These cases do not apply in the profile picker flow.
       NOTREACHED();
     case signin::SIGNIN_CHOICE_CANCEL:
-      // TODO(crbug.com/404806750): Handle whether the account should be
-      // kept or removed and proceed with the flow which should open the
-      // browser.
-      enterprise_util::SetUserAcceptedAccountManagement(profile(), false);
-      FinishFlowWithoutHistorySyncOptin();
+      NotifyFlowFinished(/*is_history_screen_skipped=*/true);
       return;
     case signin::SIGNIN_CHOICE_NEW_PROFILE:
       // Mark the user having accepted the management.

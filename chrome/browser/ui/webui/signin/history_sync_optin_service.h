@@ -49,6 +49,8 @@ class HistorySyncOptinService : public KeyedService,
   // KeyedService implementation:
   void Shutdown() override;
 
+  void Reset();
+
   // HistorySyncOptinHelper::Observer implementation:
   void OnHistorySyncOptinHelperFlowFinished() override;
 

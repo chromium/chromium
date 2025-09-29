@@ -317,12 +317,12 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
 void ManagedUserProfileNoticeHandler::HandleCancel(
     const base::Value::List& args) {
   canceling_ = true;
-  // Move the `done_callback_` here to avoid it being potentially destroyed
-  // by `process_user_choice_with_confirmation_callback_` since it may destroy
-  // `this`.
   if (IsJavascriptAllowed()) {
     DisallowJavascript();
   }
+  // Move the `done_callback_` here to avoid it being potentially destroyed
+  // by `process_user_choice_with_confirmation_callback_` since it may destroy
+  // `this`.
   auto done_callback = std::move(done_callback_);
   if (process_user_choice_with_confirmation_callback_) {
     std::move(process_user_choice_with_confirmation_callback_)

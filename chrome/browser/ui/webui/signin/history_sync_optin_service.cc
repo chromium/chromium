@@ -72,11 +72,15 @@ bool HistorySyncOptinService::StartHistorySyncOptinFlow(
 }
 
 void HistorySyncOptinService::Shutdown() {
+  Reset();
+}
+
+void HistorySyncOptinService::Reset() {
   history_sync_optin_observation_.Reset();
   history_sync_optin_helper_.reset();
   history_sync_optin_delegate_.reset();
 }
 
 void HistorySyncOptinService::OnHistorySyncOptinHelperFlowFinished() {
-  Shutdown();
+  Reset();
 }

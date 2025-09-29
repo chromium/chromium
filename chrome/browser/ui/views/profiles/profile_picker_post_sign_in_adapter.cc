@@ -61,6 +61,20 @@ GURL GetHistorySyncOptinURL() {
       GURL(chrome::kChromeUIHistorySyncOptinURL),
       HistorySyncOptinLaunchContext::kWindow);
 }
+
+void OnManagementUserChoice(signin::SigninChoiceCallback callback,
+                            signin::SigninChoice choice) {
+  std::move(callback).Run(choice);
+  if (choice != signin::SIGNIN_CHOICE_CANCEL) {
+    return;
+  }
+  // Depending on where the flow started:
+  // - from main view: returns to the main view,
+  // - from FRE: opens a signed out browser,
+  // - from profile menu: closes the picker.
+  ProfilePicker::CancelSignedInFlow();
+}
+
 }  //  namespace
 
 ProfilePickerPostSignInAdapter::ProfilePickerPostSignInAdapter(
@@ -158,7 +172,8 @@ void ProfilePickerPostSignInAdapter::ShowAccountManagementScreen(
     signin::SigninChoiceCallback on_account_management_screen_closed) {
   SwitchToManagedUserProfileNotice(
       ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
-      std::move(on_account_management_screen_closed));
+      base::BindOnce(&OnManagementUserChoice,
+                     std::move(on_account_management_screen_closed)));
 }
 
 void ProfilePickerPostSignInAdapter::FinishFlowWithoutHistorySyncOptin() {

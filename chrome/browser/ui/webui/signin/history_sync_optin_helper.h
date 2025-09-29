@@ -88,6 +88,9 @@ class HistorySyncOptinPolicyHelper {
 // potentially after the account management screen.
 // TODO(crbug.com/404806750):Incorporate spinner screens in the flow while we
 // wait for the above necessary information to be fetched.
+// TODO(crbug.com/448049615): Split the functionality of this class into separate classes for
+// History sync and for management. A third class for the browser/picker cases should
+// managed the calls.
 class HistorySyncOptinHelper {
  public:
   // The two contexts below are mutually exclusive.
@@ -162,6 +165,8 @@ class HistorySyncOptinHelper {
 
   void FinishFlowWithoutHistorySyncOptin();
 
+  void NotifyFlowFinished(bool is_history_screen_skipped);
+
   // Accessors.
   Profile* profile() { return profile_.get(); }
   const AccountInfo& account_info() const { return account_info_; }
@@ -171,8 +176,6 @@ class HistorySyncOptinHelper {
   }
 
  private:
-  void NotifyFlowFinished();
-
   signin::Tribool AccountIsManaged(const AccountInfo& account_info);
 
   base::ObserverList<Observer> observers_;

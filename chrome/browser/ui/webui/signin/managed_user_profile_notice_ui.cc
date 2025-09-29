@@ -320,12 +320,11 @@ void ManagedUserProfileNoticeUI::Initialize(
             base::UTF8ToUTF16(domain)));
     if (type ==
         ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
-      update_data.Set(
-          "cancelLabel",
-          l10n_util::GetStringUTF16(
-              create_param->profile_creation_required_by_policy
-                  ? IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON
-                  : IDS_CANCEL));
+      update_data.Set("cancelLabel",
+                      l10n_util::GetStringUTF16(
+                          create_param->profile_creation_required_by_policy
+                              ? IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON
+                              : IDS_CANCEL));
     }
   } else if (is_school_account) {
     update_data.Set("separateBrowsingDataTitle",

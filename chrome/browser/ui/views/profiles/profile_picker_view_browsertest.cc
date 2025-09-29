@@ -3508,24 +3508,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
                    .has_value());
 }
 
-// TODO(crbug.com/444617960): Fix the test to work with the feature flag
-// enabled and move the tests to ProfilePickerEnterpriseCreationFlowBrowserTest
-// test suite.
-class ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled
-    : public ProfilePickerEnterpriseCreationFlowBrowserTest {
- public:
-  ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled() {
-    scoped_feature_list_.InitAndDisableFeature(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
-    Cancel) {
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest, Cancel) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
   // flow, resulting in managed user notice screen getting displayed.
@@ -3543,8 +3526,11 @@ IN_PROC_BROWSER_TEST_F(
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/
-      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      /*expected_type=*/base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)
+          ? ManagedUserProfileNoticeUI::ScreenType::kProfilePicker
+          : ManagedUserProfileNoticeUI::ScreenType::
+                kEntepriseAccountSyncEnabled,
       /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
 
   // As the profile creation flow was opened directly, the window is closed now.
@@ -3559,9 +3545,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(entry, nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ProfilePickerEnterpriseCreationFlowBrowserTestWithFeatureFlagDisabled,
-    CancelFromPicker) {
+IN_PROC_BROWSER_TEST_F(ProfilePickerEnterpriseCreationFlowBrowserTest,
+                       CancelFromPicker) {
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Simulate a successful sign-in and wait for the sign-in to propagate to the
@@ -3581,8 +3566,11 @@ IN_PROC_BROWSER_TEST_F(
 
   ProfileDeletionObserver observer;
   profiles::testing::ExpectPickerManagedUserNoticeScreenTypeAndProceed(
-      /*expected_type=*/
-      ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
+      /*expected_type=*/base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)
+          ? ManagedUserProfileNoticeUI::ScreenType::kProfilePicker
+          : ManagedUserProfileNoticeUI::ScreenType::
+                kEntepriseAccountSyncEnabled,
       /*choice=*/signin::SIGNIN_CHOICE_CANCEL);
 
   // As the management page was opened, the picker returns to it.
