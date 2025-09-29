@@ -36,30 +36,6 @@ group("ios_web_view_unittests") {
   deps = [ "//ios/web_view/test:ios_web_view_unittests" ]
 }
 
-# Target used to avoid breaking internal builders. Will be removed when all
-# references to the old target label has been fixed.
-group("web_view") {
-  public_deps = [ "//ios/web_view/framework:web_view" ]
-}
-
-# Target used to avoid breaking internal builders. Will be removed when all
-# references to the old target label has been fixed.
-group("web_view+link") {
-  public_deps = [ "//ios/web_view/framework:web_view+link" ]
-}
-
-# Target used to avoid breaking internal builders. Will be removed when all
-# references to the old target label has been fixed.
-group("web_view+bundle") {
-  public_deps = [ "//ios/web_view/framework:web_view+bundle" ]
-}
-
-# Target used to avoid breaking internal builders. Will be removed when all
-# references to the old target label has been fixed.
-group("web_view_sources") {
-  public_deps = [ "//ios/web_view/framework:web_view_sources" ]
-}
-
 _package_dir = "$root_out_dir/ios_web_view"
 
 action("ios_web_view_generate_license") {
