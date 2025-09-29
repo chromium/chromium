@@ -1549,6 +1549,19 @@ TEST_F(SqlPersistentStoreTest, StaticResourceSizeEstimation) {
          "be too conservative.";
 }
 
+// Regression test for crbug.com/447751287.
+TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetweenOneEntry) {
+  CreateAndInitStore();
+  store_->EnableStrictCorruptionCheckForTesting();
+  const base::Time kBaseTime = base::Time::Now();
+  task_environment_.AdvanceClock(base::Minutes(1));
+  const CacheEntryKey kKey("key");
+  ASSERT_TRUE(CreateEntry(kKey).has_value());
+  task_environment_.AdvanceClock(base::Minutes(1));
+  ASSERT_EQ(DeleteLiveEntriesBetween(kBaseTime, base::Time::Now(), {}),
+            SqlPersistentStore::Error::kOk);
+}
+
 TEST_F(SqlPersistentStoreTest, DeleteLiveEntriesBetween) {
   CreateAndInitStore();
   const CacheEntryKey kKey1("key1");

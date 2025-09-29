@@ -1321,8 +1321,8 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntriesBetweenInternal(
   // Update the in-memory and on-disk store status (entry count and total size)
   // and commit the transaction.
   auto error = UpdateStoreStatusAndCommitTransaction(
-      transaction, -deleted_enties.size(), total_size_delta.ValueOrDie(),
-      corruption_detected);
+      transaction, -static_cast<int64_t>(deleted_enties.size()),
+      total_size_delta.ValueOrDie(), corruption_detected);
   return error == Error::kOk
              ? ResIdAndHashKeyListOrError(std::move(deleted_enties))
              : base::unexpected(error);
