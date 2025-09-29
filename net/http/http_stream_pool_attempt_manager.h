@@ -145,8 +145,6 @@ class HttpStreamPool::AttemptManager
     return dns_resolution_end_time_;
   }
 
-  NextProtoSet allowed_alpns() const { return allowed_alpns_; }
-
   const NetLogWithSource& net_log();
 
   // Starts `job` for a stream request. Will call one of Job::Delegate methods
@@ -517,6 +515,9 @@ class HttpStreamPool::AttemptManager
   // attempt for the first time.
   std::optional<InitialAttemptState> initial_attempt_state_;
 
+  // List of allowed protocols. Excludes protocols when, e.g., one protocol or
+  // another is marked as broken or is disabled for one or more jobs. Never
+  // includes NextProto::kProtoUnknown, since that's an alias for any protocol.
   NextProtoSet allowed_alpns_;
 
   // Holds request jobs that are waiting for notifications.

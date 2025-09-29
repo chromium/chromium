@@ -101,13 +101,17 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   static constexpr base::TimeDelta kDefaultConnectionAttemptDelay =
       base::Milliseconds(250);
 
+  // Sets of protocols for use in allowed ALPN fields of several classes.
+  // kProtoUnknown is not used, as it's an alias for all protocols, so causes
+  // issues when excluding one or more protocols.
+  static inline constexpr NextProtoSet kAllProtocols = {
+      NextProto::kProtoHTTP11, NextProto::kProtoHTTP2, NextProto::kProtoQUIC};
   static inline constexpr NextProtoSet kTcpBasedProtocols = {
-      NextProto::kProtoUnknown, NextProto::kProtoHTTP11,
-      NextProto::kProtoHTTP2};
+      NextProto::kProtoHTTP11, NextProto::kProtoHTTP2};
   static inline constexpr NextProtoSet kHttp11Protocols = {
-      NextProto::kProtoUnknown, NextProto::kProtoHTTP11};
+      NextProto::kProtoHTTP11};
   static inline constexpr NextProtoSet kQuicBasedProtocols = {
-      NextProto::kProtoUnknown, NextProto::kProtoQUIC};
+      NextProto::kProtoQUIC};
 
   // Reasons for closing streams.
   static constexpr std::string_view kIpAddressChanged = "IP address changed";

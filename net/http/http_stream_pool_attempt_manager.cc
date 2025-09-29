@@ -80,12 +80,6 @@ base::Value::Dict GetServiceEndpointRequestAsValue(
   return dict;
 }
 
-NextProtoSet AllNextProtosButQuic() {
-  NextProtoSet out = NextProtoSet::All();
-  out.RemoveAll(HttpStreamPool::kQuicBasedProtocols);
-  return out;
-}
-
 }  // namespace
 
 // static
@@ -157,11 +151,13 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       // This must be before the GetTcpBasedAttemptDelay() call, since it needs
       // to know that QUIC is not allowed, or it will try to create an invalid
       // QUIC destination and trigger a CHECK.
-      allowed_alpns_(UsingTls() ? NextProtoSet::All() : AllNextProtosButQuic()),
+      allowed_alpns_(UsingTls() ? kAllProtocols : kTcpBasedProtocols),
       request_jobs_(NUM_PRIORITIES),
       tcp_based_attempt_delay_(GetTcpBasedAttemptDelay()),
       should_block_tcp_based_attempt_(!tcp_based_attempt_delay_.is_zero()) {
   CHECK(group_);
+  // Since this is only one of two fixed values, seems not worth CHECKing.
+  DCHECK(!allowed_alpns_.Has(NextProto::kProtoUnknown));
 
   TRACE_EVENT_BEGIN("net.stream", "AttemptManager::AttemptManager", track_,
                     "destination", stream_key().destination().Serialize());
@@ -1072,6 +1068,8 @@ void HttpStreamPool::AttemptManager::ResetServiceEndpointRequest() {
 
 void HttpStreamPool::AttemptManager::RestrictAllowedProtocols(
     NextProtoSet allowed_alpns) {
+  CHECK(!allowed_alpns.Has(NextProto::kProtoUnknown));
+
   allowed_alpns_ = base::Intersection(allowed_alpns_, allowed_alpns);
   CHECK(!allowed_alpns_.empty());
 

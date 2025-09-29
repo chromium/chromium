@@ -44,7 +44,7 @@ NextProtoSet CalculateAllowedAlpns(HttpStreamPool::Job::Delegate* delegate,
   }
 
   NextProtoSet allowed_alpns = expected_protocol == NextProto::kProtoUnknown
-                                   ? NextProtoSet::All()
+                                   ? HttpStreamPool::kAllProtocols
                                    : NextProtoSet({expected_protocol});
 
   allowed_alpns = Intersection(allowed_alpns, delegate->allowed_alpns());
@@ -207,13 +207,14 @@ void HttpStreamPool::Job::OnStreamReady(
   CHECK(!negotiated_protocol_);
   CHECK(attempt_manager_);
 
-  // The NextProto::kProtoUnknown check is needed because when establishing a
-  // connection, it means allow any protocol, so needs to be removed if specific
-  // protocols aren't allowed, while once a connection is negotiated, it's an
-  // alias for HTTP/1.x.
-  if (!allowed_alpns_.Has(negotiated_protocol) &&
-      !(negotiated_protocol == NextProto::kProtoUnknown &&
-        allowed_alpns_.Has(NextProto::kProtoHTTP11))) {
+  // `allowed_alpns_` never includes kProtoUnknown, which when making a request,
+  // can mean "any protocol", but when receiving a response means "not H2 and
+  // not H3", thus implying H1 (or some other protocol), so when comparing the
+  // protocol of the received stream, replace kProtoUnknown with kProtoHTTP11.
+  NextProto logical_protocol = (negotiated_protocol != NextProto::kProtoUnknown
+                                    ? negotiated_protocol
+                                    : NextProto::kProtoHTTP11);
+  if (!allowed_alpns_.Has(logical_protocol)) {
     OnStreamFailed(ERR_ALPN_NEGOTIATION_FAILED, NetErrorDetails(),
                    ResolveErrorInfo());
     return;
