@@ -26,6 +26,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
+#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -35,9 +36,6 @@
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
-
-using FieldPrediction =
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
 template <>
 struct DenseSetTraits<FieldPrediction::Source>
@@ -540,9 +538,7 @@ void AutofillField::set_server_predictions(
   }
 }
 
-void AutofillField::MaybeAddServerPrediction(
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-        prediction) {
+void AutofillField::MaybeAddServerPrediction(FieldPrediction prediction) {
   overall_type_ = std::nullopt;
   if (server_predictions_.size() == 1 &&
       server_predictions_[0].type() == NO_SERVER_DATA &&

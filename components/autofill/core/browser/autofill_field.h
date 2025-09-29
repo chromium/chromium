@@ -24,14 +24,17 @@
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {
 
-class FormStructure;
+class AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
+enum FormatString_Type : int;
+
+using FieldPrediction =
+    AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
 
 // Enum representing prediction sources that are recognized.
 enum class AutofillPredictionSource {
@@ -191,15 +194,11 @@ class AutofillField : public FormFieldData {
   FieldType heuristic_type(HeuristicSource s) const;
   FieldType server_type() const;
   bool server_type_prediction_is_override() const;
-  const std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
-  server_predictions() const {
+  const std::vector<FieldPrediction>& server_predictions() const {
     return server_predictions_;
   }
 
-  const std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>&
-  experimental_server_predictions() const {
+  const std::vector<FieldPrediction>& experimental_server_predictions() const {
     return experimental_server_predictions_;
   }
   HtmlFieldType html_type() const { return html_type_; }
@@ -213,15 +212,11 @@ class AutofillField : public FormFieldData {
   // Sets the server predictions to `predictions` after performing some
   // filtering. If `predictions` is empty, it creates a `NO_SERVER_DATA`
   // prediction.
-  void set_server_predictions(
-      std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-                      FieldPrediction> predictions);
+  void set_server_predictions(std::vector<FieldPrediction> predictions);
   // Adds `prediction` to the back of the existing `server_predictions_` if
   // the prediction's source passes various validity checks. If the only
   // existing server prediction is an empty one, it replaces that one.
-  void MaybeAddServerPrediction(
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-          prediction);
+  void MaybeAddServerPrediction(FieldPrediction prediction);
 
   void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
@@ -503,14 +498,10 @@ class AutofillField : public FormFieldData {
   size_t rank_in_host_form_signature_group_ = 0;
 
   // The possible types of the field, as determined by the Autofill server.
-  std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
-      server_predictions_;
+  std::vector<FieldPrediction> server_predictions_;
   // Predictions from the Autofill server which are not intended for general
   // consumption. They are used for metrics and/or finch experiments.
-  std::vector<
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
-      experimental_server_predictions_;
+  std::vector<FieldPrediction> experimental_server_predictions_;
 
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.

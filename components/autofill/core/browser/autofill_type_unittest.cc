@@ -13,15 +13,12 @@
 namespace autofill {
 namespace {
 
-using ::testing::AllOf;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
-using FieldPrediction =
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 
 template <typename... Ts>
   requires(sizeof...(Ts) == 0 || (std::same_as<Ts, FieldType> && ...))

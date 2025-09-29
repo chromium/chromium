@@ -11,14 +11,14 @@
 #include "base/types/id_type.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/common/is_required.h"
 
 namespace autofill {
 
-using FieldPrediction =
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
+enum AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction_Source : int;
+using FieldPredictionSource =
+    AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction_Source;
 
 // An identifier to connect the various sub-events of filling together.
 using FillEventId = base::IdTypeU32<class FillEventIdClass>;
@@ -138,10 +138,10 @@ bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
 struct ServerPredictionFieldLogEvent {
   std::optional<FieldType> server_type1 =
       static_cast<FieldType>(internal::IsRequired());  // nocheck
-  FieldPrediction::Source prediction_source1 = internal::IsRequired();
+  FieldPredictionSource prediction_source1 = internal::IsRequired();
   std::optional<FieldType> server_type2 =
       static_cast<FieldType>(internal::IsRequired());  // nocheck
-  FieldPrediction::Source prediction_source2 = internal::IsRequired();
+  FieldPredictionSource prediction_source2 = internal::IsRequired();
   bool server_type_prediction_is_override = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();
 };
