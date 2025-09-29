@@ -35,15 +35,6 @@ using message_center::NotifierType;
 namespace ash::boca {
 namespace {
 
-// Delay in seconds before we attempt to add a tab.
-constexpr base::TimeDelta kAddTabRetryDelay = base::Seconds(1);
-
-// Delay in seconds before we attempt to remove a tab.
-constexpr base::TimeDelta kRemoveTabRetryDelay = base::Seconds(1);
-
-// Delay in seconds before we attempt to pin or unpin the active SWA window.
-constexpr base::TimeDelta kSetPinnedStateDelay = base::Seconds(3);
-
 // Delay in seconds before we attempt to pause or unpause the active SWA window.
 constexpr base::TimeDelta kSetPausedStateDelay = base::Seconds(3);
 
@@ -494,12 +485,9 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::AddTab(
     base::OnceCallback<void(SessionID)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launch_in_progress_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SystemWebAppLaunchHelper::AddTab,
-                       weak_ptr_factory_.GetWeakPtr(), url, restriction_level,
-                       std::move(callback)),
-        kAddTabRetryDelay);
+    pending_tab_management_tasks_.push_back(base::BindOnce(
+        &SystemWebAppLaunchHelper::AddTab, weak_ptr_factory_.GetWeakPtr(), url,
+        restriction_level, std::move(callback)));
     return;
   }
   if (const SessionID window_id =
@@ -517,12 +505,9 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::RemoveTab(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (launch_in_progress_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SystemWebAppLaunchHelper::RemoveTab,
-                       weak_ptr_factory_.GetWeakPtr(), tab_ids_to_remove,
-                       std::move(callback)),
-        kRemoveTabRetryDelay);
+    pending_tab_management_tasks_.push_back(base::BindOnce(
+        &SystemWebAppLaunchHelper::RemoveTab, weak_ptr_factory_.GetWeakPtr(),
+        tab_ids_to_remove, std::move(callback)));
     return;
   }
   if (const SessionID window_id =
@@ -538,32 +523,16 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::
                                   base::RepeatingClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  latest_pin_state_ = pinned;
-  SetPinStateForActiveSWAWindowInternal(pinned, std::move(callback));
-}
-
-void OnTaskSessionManager::SystemWebAppLaunchHelper::
-    SetPinStateForActiveSWAWindowInternal(bool pinned,
-                                          base::RepeatingClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Don't set pin state if the pin state is not the latest.
-  if (pinned != latest_pin_state_) {
-    return;
-  }
-
   if (launch_in_progress_) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &SystemWebAppLaunchHelper::SetPinStateForActiveSWAWindowInternal,
-            weak_ptr_factory_.GetWeakPtr(), pinned, std::move(callback)),
-        kSetPinnedStateDelay);
+    pending_pin_or_unpin_task_ = base::BindOnce(
+        &SystemWebAppLaunchHelper::SetPinStateForActiveSWAWindow,
+        weak_ptr_factory_.GetWeakPtr(), pinned, std::move(callback));
     return;
   }
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
+    pending_pin_or_unpin_task_ = base::NullCallback();
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(pinned,
                                                               window_id);
     std::move(callback).Run();
@@ -579,14 +548,28 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
     return;
   }
 
+  const SessionID window_id =
+      system_web_app_manager_->GetActiveSystemWebAppWindowID();
+  if (!window_id.is_valid()) {
+    // No active window to work with. Return.
+    return;
+  }
+
   // Set up window tracker for the newly launched Boca SWA.
-  if (const SessionID window_id =
-          system_web_app_manager_->GetActiveSystemWebAppWindowID();
-      window_id.is_valid()) {
-    // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
-    // `OnTaskSystemWebAppManager`.
-    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id,
-                                                                   observers_);
+  // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
+  // `OnTaskSystemWebAppManager`.
+  system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(window_id,
+                                                                 observers_);
+
+  // Execute all pending tasks. Start with the tab management ones first to
+  // ensure that the browser keeps immersive mode enabled on window pinning.
+  auto task_it = pending_tab_management_tasks_.begin();
+  while (task_it != pending_tab_management_tasks_.end()) {
+    std::move(*task_it).Run();
+    task_it = pending_tab_management_tasks_.erase(task_it);
+  }
+  if (!pending_pin_or_unpin_task_.is_null()) {
+    std::move(pending_pin_or_unpin_task_).Run();
   }
 }
 
