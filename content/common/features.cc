@@ -276,6 +276,10 @@ BASE_FEATURE(
     kPartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread,
     base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Killswitch for prefetch devtools UA override (crbug.com/422193319).
+BASE_FEATURE(kPrefetchDevtoolsUserAgentOverride,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When true, duplicate navigations are ignored only if they are initiated
 // with a user gesture.
 BASE_FEATURE(kIgnoreDuplicateNavsOnlyWithUserGesture,
