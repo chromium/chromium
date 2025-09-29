@@ -165,6 +165,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_NoActiveBubble_ShowsImmediately) {
                                        BubbleType::kSaveUpdateAddress, 1);
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Show.NoActiveBubble",
                                        BubbleType::kSaveUpdateAddress, 1);
+  histogram_tester_.ExpectTotalCount("Autofill.Bubble.RequestShow.ForceShow",
+                                     0);
 }
 
 // Test that a higher-priority bubble preempts a lower-priority one.
@@ -199,6 +201,8 @@ TEST_F(BubbleManagerImplTest, RequestShow_HigherPriority_PreemptsActive) {
                                        BubbleType::kSaveUpdateAddress, 1);
   histogram_tester_.ExpectUniqueSample("Autofill.Bubble.Show.Preemption",
                                        BubbleType::kSaveUpdateCard, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.WasPreempted",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that hiding the active bubble shows the next highest-priority one from
@@ -323,6 +327,8 @@ TEST_F(BubbleManagerImplTest,
                                          /*force_show=*/false);
   EXPECT_FALSE(password_controller_1->IsShowingBubble());
   EXPECT_TRUE(password_controller_2->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.WasPreempted",
+                                       BubbleType::kPassword, 1);
 }
 
 // Test that a pending request is ignored if a request of the same type
@@ -577,6 +583,11 @@ TEST_F(BubbleManagerImplTest, RequestShow_ForceShow_PreemptsActiveBubble) {
                                          /*force_show=*/true);
   EXPECT_FALSE(card_controller->IsShowingBubble());
   EXPECT_TRUE(address_controller->IsShowingBubble());
+
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.RequestShow.ForceShow",
+                                       BubbleType::kSaveUpdateAddress, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.WasPreempted",
+                                       BubbleType::kSaveUpdateCard, 1);
 }
 
 // Test that the active bubble is hidden and queued when the tab visibility
@@ -604,6 +615,8 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_HidesAndQueuesBubble) {
   EXPECT_CALL(*card_controller, ShowBubble());
   tab_interface()->Activate();
   EXPECT_TRUE(card_controller->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.HideDueToTabHide",
+                                       BubbleType::kSaveUpdateCard, 1);
 }
 
 // Test that a pending bubble is shown when the tab visibility changes to
@@ -649,6 +662,7 @@ TEST_F(BubbleManagerImplTest, OnVisibilityChanged_Hidden_NoActiveBubble) {
   // Simulate the tab becoming hidden. The test will fail if any unexpected
   // methods are called.
   tab_interface()->Deactivate();
+  histogram_tester_.ExpectTotalCount("Autofill.Bubble.HideDueToTabHide", 0);
 }
 
 // Test that `force_show` preempts an active bubble regardless of priority or
@@ -679,6 +693,10 @@ TEST_F(BubbleManagerImplTest,
                                          /*force_show=*/true);
   EXPECT_FALSE(card_controller->IsShowingBubble());
   EXPECT_TRUE(address_controller->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.RequestShow.ForceShow",
+                                       BubbleType::kSaveUpdateAddress, 1);
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.WasPreempted",
+                                       BubbleType::kSaveUpdateCard, 1);
 }
 
 // Test that the active bubble is hidden and queued when the tab is deactivated.
@@ -700,6 +718,8 @@ TEST_F(BubbleManagerImplTest, TabDeactivated_ActiveBubbleIsQueuedAndHidden) {
   EXPECT_CALL(*address_controller, ShowBubble());
   tab_interface()->Activate();
   EXPECT_TRUE(address_controller->IsShowingBubble());
+  histogram_tester_.ExpectUniqueSample("Autofill.Bubble.HideDueToTabHide",
+                                       BubbleType::kSaveUpdateAddress, 1);
 }
 
 // Test that `ProcessPendingBubbles` cleans up stale pointers from the queue.

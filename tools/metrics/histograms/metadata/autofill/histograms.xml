@@ -2155,6 +2155,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Issuer" variants="Autofill.BnplIssuer"/>
 </histogram>
 
+<histogram name="Autofill.Bubble.HideDueToTabHide" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the type of the active bubble that is hidden and moved to the
+    pending queue because its tab was deactivated (moved to the background).
+    Recorded when a tab is about to be hidden.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Bubble.Queue.AddedDueToActiveBubble"
     enum="AutofillBubbleType" expires_after="2026-04-22">
   <owner>vidhanj@google.com</owner>
@@ -2264,6 +2275,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Bubble.RequestShow.ForceShow"
+    enum="AutofillBubbleType" expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    This metric tracks the count of all bubble force show attempts bypassing the
+    priority logic of the BubbleManager. Recorded when a bubble requests to
+    show.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Bubble.Show.NoActiveBubble" enum="AutofillBubbleType"
     expires_after="2026-04-22">
   <owner>vidhanj@google.com</owner>
@@ -2283,6 +2305,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Logged when a new bubble successfully hides and replaces an active bubble.
     It tells the count of bubbles that were shown while hiding another actively
     shown bubble per bubble type.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bubble.WasPreempted" enum="AutofillBubbleType"
+    expires_after="2026-04-22">
+  <owner>vidhanj@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the type of a bubble that was actively showing but was hidden due to
+    preemption by a higher-priority bubble. Recorded at the moment an active
+    bubble is preempted by a new bubble is requested to be shown that has a
+    higher priority or was requested with the force_show flag.
   </summary>
 </histogram>
 

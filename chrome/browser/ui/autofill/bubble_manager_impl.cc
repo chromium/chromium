@@ -134,6 +134,11 @@ BubbleManagerImpl::~BubbleManagerImpl() = default;
 void BubbleManagerImpl::RequestShowController(
     BubbleControllerBase& controller_to_show,
     bool force_show) {
+  if (force_show) {
+    base::UmaHistogramEnumeration("Autofill.Bubble.RequestShow.ForceShow",
+                                  controller_to_show.GetBubbleType());
+  }
+
   base::UmaHistogramEnumeration("Autofill.Bubble.RequestShow",
                                 controller_to_show.GetBubbleType());
   base::WeakPtr<BubbleControllerBase> controller_weak_ptr =
@@ -191,6 +196,9 @@ void BubbleManagerImpl::HideActiveBubbleForPreemption() {
   CHECK(active_bubble_controller_ &&
         active_bubble_controller_->IsShowingBubble());
   CHECK(handling_show_request_);
+
+  base::UmaHistogramEnumeration("Autofill.Bubble.WasPreempted",
+                                active_bubble_controller_->GetBubbleType());
 
   // Queue the old bubble. It will be hidden, and its OnBubbleHiddenByController
   // call will be a no-op for starting the next bubble because we are inside a
@@ -350,6 +358,8 @@ bool BubbleManagerImpl::ShouldReplaceExistingBubble(
 void BubbleManagerImpl::TabWillEnterBackground(
     tabs::TabInterface* tab_interface) {
   if (active_bubble_controller_) {
+    base::UmaHistogramEnumeration("Autofill.Bubble.HideDueToTabHide",
+                                  active_bubble_controller_->GetBubbleType());
     AddToPendingQueue(active_bubble_controller_);
     active_bubble_controller_->HideBubble(/*show_next_bubble=*/false);
     active_bubble_controller_ = nullptr;
