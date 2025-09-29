@@ -81,67 +81,91 @@ class CookieDeprecationLabelBrowserTestBase : public ContentBrowserTest {
   }
 };
 
-class CookieDeprecationLabelDisabledBrowserTest
+class CookieDeprecationLabelDisabledBrowserTestBase
     : public CookieDeprecationLabelBrowserTestBase {
+ protected:
+  void RunTest() {
+    base::HistogramTester histograms;
+
+    auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
+    auto response_a_a =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            https_server.get(), "/a_a");
+    auto response_a_b =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            https_server.get(), "/a_b");
+
+    ASSERT_TRUE(https_server->Start());
+
+    ASSERT_TRUE(NavigateToURL(web_contents(),
+                              https_server->GetURL("d.test", "/hello.html")));
+    AddImageToDocument(/*src_url=*/https_server->GetURL("a.test", "/a_a"));
+
+    // [a.test/a] - Non opted-in request should not receive a label header.
+    response_a_a->WaitForRequest();
+    ASSERT_FALSE(base::Contains(response_a_a->http_request()->headers,
+                                "Sec-Cookie-Deprecation"));
+    auto http_response_a_a =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response_a_a->set_code(net::HTTP_MOVED_PERMANENTLY);
+    http_response_a_a->AddCustomHeader(
+        "Location", https_server->GetURL("a.test", "/a_b").spec());
+    // a.test opts in to receiving the label.
+    http_response_a_a->AddCustomHeader(
+        "Set-Cookie",
+        "receive-cookie-deprecation=any-value; Secure; HttpOnly; "
+        "Path=/; SameSite=None; Partitioned");
+    response_a_a->Send(http_response_a_a->ToResponseString());
+    response_a_a->Done();
+
+    // [a.test/b] - Even if opted-in, the request should not receive a label
+    //              header when the feature is disabled.
+    response_a_b->WaitForRequest();
+    ASSERT_FALSE(base::Contains(response_a_b->http_request()->headers,
+                                "Sec-Cookie-Deprecation"));
+
+    auto http_response_a_b =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response_a_b->set_code(net::HTTP_OK);
+    response_a_b->Send(http_response_a_b->ToResponseString());
+    response_a_b->Done();
+
+    content::FetchHistogramsFromChildProcesses();
+    histograms.ExpectTotalCount(kSecCookieDeprecationHeaderStatus, 0);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class CookieDeprecationLabelDisabledBrowserTest
+    : public CookieDeprecationLabelDisabledBrowserTestBase {
  public:
   CookieDeprecationLabelDisabledBrowserTest() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kCookieDeprecationFacilitatedTesting);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelDisabledBrowserTest,
                        FeatureDisabled_CookieDeprecationLabelHeaderNotAdded) {
-  base::HistogramTester histograms;
+  RunTest();
+}
 
-  auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
-  auto response_a_a =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/a_a");
-  auto response_a_b =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          https_server.get(), "/a_b");
+class CookieDeprecationLabelOnlyDisabledBrowserTest
+    : public CookieDeprecationLabelDisabledBrowserTestBase {
+ public:
+  CookieDeprecationLabelOnlyDisabledBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled=*/{{features::kCookieDeprecationFacilitatedTesting,
+                      {{"label", "label_test"}}}},
+        /*disabled=*/{features::kCookieDeprecationFacilitatedTestingLabels});
+  }
+};
 
-  ASSERT_TRUE(https_server->Start());
-
-  ASSERT_TRUE(NavigateToURL(web_contents(),
-                            https_server->GetURL("d.test", "/hello.html")));
-  AddImageToDocument(/*src_url=*/https_server->GetURL("a.test", "/a_a"));
-
-  // [a.test/a] - Non opted-in request should not receive a label header.
-  response_a_a->WaitForRequest();
-  ASSERT_FALSE(base::Contains(response_a_a->http_request()->headers,
-                              "Sec-Cookie-Deprecation"));
-  auto http_response_a_a =
-      std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response_a_a->set_code(net::HTTP_MOVED_PERMANENTLY);
-  http_response_a_a->AddCustomHeader(
-      "Location", https_server->GetURL("a.test", "/a_b").spec());
-  // a.test opts in to receiving the label.
-  http_response_a_a->AddCustomHeader(
-      "Set-Cookie",
-      "receive-cookie-deprecation=any-value; Secure; HttpOnly; "
-      "Path=/; SameSite=None; Partitioned");
-  response_a_a->Send(http_response_a_a->ToResponseString());
-  response_a_a->Done();
-
-  // [a.test/b] - Even if opted-in, the request should not receive a label
-  //              header when the feature is disabled.
-  response_a_b->WaitForRequest();
-  ASSERT_FALSE(base::Contains(response_a_b->http_request()->headers,
-                              "Sec-Cookie-Deprecation"));
-
-  auto http_response_a_b =
-      std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response_a_b->set_code(net::HTTP_OK);
-  response_a_b->Send(http_response_a_b->ToResponseString());
-  response_a_b->Done();
-
-  content::FetchHistogramsFromChildProcesses();
-  histograms.ExpectTotalCount(kSecCookieDeprecationHeaderStatus, 0);
+IN_PROC_BROWSER_TEST_F(
+    CookieDeprecationLabelOnlyDisabledBrowserTest,
+    LabelsFeatureDisabled_CookieDeprecationLabelHeaderNotAdded) {
+  RunTest();
 }
 
 class CookieDeprecationLabelEnabledBrowserTest

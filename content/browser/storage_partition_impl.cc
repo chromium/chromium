@@ -1461,6 +1461,8 @@ void StoragePartitionImpl::Initialize(
   // "enable_otr_profiles" feature parameter is true.
   if (base::FeatureList::IsEnabled(
           features::kCookieDeprecationFacilitatedTesting) &&
+      base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTestingLabels) &&
       (!is_in_memory() ||
        features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get())) {
     cookie_deprecation_label_manager_ =

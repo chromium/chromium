@@ -41,8 +41,7 @@ class CONTENT_EXPORT CookieDeprecationLabelManagerImpl
                                       const url::Origin& context_origin);
 
  private:
-  // Sets label_value_ to the feature param and returns. Returns std::nullopt
-  // if `kSkipCookieDeprecationLabelForStoragePartitions` is true.
+  // Sets label_value_ to the feature param and returns.
   std::optional<std::string> GetValueInternal();
 
   // `this` is owned by the `StoragePartitionImpl`, which itself is
