@@ -2641,6 +2641,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.TotalIconsMemory.DownloadedForUpdate" units="MB"
+    expires_after="2026-09-29">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Measures the total sizes of icons downloaded as part of the manifest update
+    process when triggered for web apps, for both the old and the new
+    predictable algorithm. This is not a measure of the network resources used
+    while downloading, as that is affected by various factors like whether the
+    image is served from the cache or not, or whether the image was compressed
+    or not. But, since the goal of predictable app updating is to reduce the
+    number of icons being fetched, this is still a reliable measurement.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.TrustedIcons.ReadResult" enum="BooleanSuccess"
     expires_after="2026-09-16">
   <owner>dibyapal@chromium.org</owner>

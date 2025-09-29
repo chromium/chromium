@@ -414,8 +414,10 @@ void MergeFallbackInstallInfoIntoNewInfo(const WebAppInstallInfo& from_info,
   }
 }
 
-void RecordIconUpdateMetrics(IconsDownloadedResult result,
-                             DownloadedIconsHttpResults icons_http_results) {
+void RecordIconUpdateMetrics(
+    IconsDownloadedResult result,
+    const IconsMap& icons_map,
+    const DownloadedIconsHttpResults& icons_http_results) {
   // TODO(crbug.com/40193545): Report `result` and `icons_http_results` in
   // internals.
   base::UmaHistogramEnumeration("WebApp.Icon.DownloadedResultOnUpdate", result);
@@ -423,6 +425,17 @@ void RecordIconUpdateMetrics(IconsDownloadedResult result,
       "WebApp.Icon.DownloadedHttpStatusCodeOnUpdate", icons_http_results);
   RecordDownloadedIconsHttpResultsCodeClass(
       "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
+
+  size_t total_icon_sizes_downloaded = 0;
+  for (const auto& [_, icons] : icons_map) {
+    for (const SkBitmap& bitmap : icons) {
+      total_icon_sizes_downloaded += bitmap.computeByteSize();
+    }
+  }
+
+  // The total size is stored in bytes, so convert to MB.
+  base::UmaHistogramMemoryMB("WebApp.TotalIconsMemory.DownloadedForUpdate",
+                             (total_icon_sizes_downloaded / 1024 / 1024));
 }
 
 }  // namespace
@@ -715,7 +728,7 @@ void ManifestToWebAppInstallInfoJob::OnIconsFetchedGetInstallInfo(
   // TODO(crbug.com/429929887): Return results via callback using a result
   // struct/class.
   if (options_.record_icon_results_on_update) {
-    RecordIconUpdateMetrics(result, icons_http_results);
+    RecordIconUpdateMetrics(result, icons_map, icons_http_results);
   }
 
   // Bypass populating product icons, even generated ones, if icons have not

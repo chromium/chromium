@@ -428,6 +428,7 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
   WebAppInstallInfoConstructOptions construct_options;
   construct_options.fail_all_if_any_fail = true;
   construct_options.defer_icon_fetching = true;
+  construct_options.record_icon_results_on_update = true;
 
   // The `background_installation` and `install_source` fields here don't matter
   // because this is not logged anywhere.

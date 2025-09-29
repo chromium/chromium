@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/buildflag.h"
@@ -318,6 +319,16 @@ TEST_F(ManifestToWebAppInstallInfoJobTest, EmptyNameUsesShortName) {
 
   auto web_app_info = GetWebAppInstallInfoFromJob(*manifest);
   EXPECT_EQ(u"Shorter name", web_app_info->title);
+}
+
+TEST_F(ManifestToWebAppInstallInfoJobTest,
+       UpdateIconMeasurementFlagSetMeasuresMemory) {
+  base::HistogramTester tester;
+  SetupBasicPageState();
+  auto web_app_info = GetWebAppInstallInfoFromJob(
+      *GetPageManifest(), {.record_icon_results_on_update = true});
+  EXPECT_FALSE(web_app_info->icon_bitmaps.empty());
+  tester.ExpectTotalCount("WebApp.TotalIconsMemory.DownloadedForUpdate", 1);
 }
 
 TEST_F(ManifestToWebAppInstallInfoJobTest, IconParsingCorrectly) {
