@@ -1029,6 +1029,9 @@ Chromium is unable to recover your settings.
             <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="In Title Case: The title of the Other Chrome profiles section">
               Other Chromium Profiles
             </message>
+            <message name="IDS_MANAGE_CHROME_PROFILES" desc="In Title Case: The text label of the manage chrome profile item">
+              &amp;Manage Chromium Profiles
+            </message>
           </then>
           <else>
             <message name="IDS_CUSTOMIZE_CHROME" desc="The text label of the Customize Chrome menu item">
@@ -1036,6 +1039,9 @@ Chromium is unable to recover your settings.
             </message>
             <message name="IDS_OTHER_CHROME_PROFILES_TITLE" desc="The title of the Other Chrome profiles section">
               Other Chromium profiles
+            </message>
+            <message name="IDS_MANAGE_CHROME_PROFILES" desc="The text label of the manage chrome profile item">
+              &amp;Manage Chromium profiles
             </message>
           </else>
         </if>

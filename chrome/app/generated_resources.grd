@@ -1412,9 +1412,6 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_ADD_NEW_PROFILE" desc="The text label of the add new profile item">
             &amp;Add new profile
           </message>
-          <message name="IDS_MANAGE_CHROME_PROFILES" desc="The text label of the manage chrome profile item">
-            &amp;Manage Chrome profiles
-          </message>
         </if>
         <if expr="use_titlecase">
           <message name="IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION" desc="In Title Case: The text label of the addresses and more item for the passwords and autofill submenu">
@@ -1556,9 +1553,6 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_ADD_NEW_PROFILE" desc="In Title Case: The text label of the add new profile item">
             &amp;Add New Profile
-          </message>
-          <message name="IDS_MANAGE_CHROME_PROFILES" desc="In Title Case: The text label of the manage chrome profile item">
-            &amp;Manage Chrome Profiles
           </message>
         </if>
       </if>
