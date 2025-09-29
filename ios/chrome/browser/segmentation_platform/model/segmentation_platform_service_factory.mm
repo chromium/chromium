@@ -120,8 +120,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
-  params->profile_id = params->profile_id =
-      base::NumberToString(base::PersistentHash(profile_path.value()));
+  params->profile_id = profile->GetProfileName();
   params->history_service = ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
