@@ -63,6 +63,7 @@ void InitializeSharedGpuContextRaster(
   test_context_provider->BindToCurrentSequence();
   viz::TestRasterInterface* raster =
       test_context_provider->GetTestRasterInterface();
+  raster->set_gpu_rasterization(true);
   SharedGpuContext::SetContextProviderFactoryForTesting(blink::BindRepeating(
       factory, blink::Unretained(raster), blink::Unretained(cache),
       blink::Unretained(test_context_provider), set_context_lost));
