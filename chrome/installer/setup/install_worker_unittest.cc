@@ -256,8 +256,6 @@ class InstallWorkerTest : public testing::Test {
     // Don't bother ensuring that these paths exist. Since we're just
     // building the work item lists and not running them, they shouldn't
     // actually be touched.
-    archive_path_ =
-        base::FilePath(L"C:\\UnlikelyPath\\Temp\\chrome_123\\chrome.7z");
     src_path_ = base::FilePath(
         L"C:\\UnlikelyPath\\Temp\\chrome_123\\source\\Chrome-bin");
     setup_path_ =
@@ -268,7 +266,6 @@ class InstallWorkerTest : public testing::Test {
  protected:
   std::unique_ptr<base::Version> current_version_;
   std::unique_ptr<base::Version> new_version_;
-  base::FilePath archive_path_;
   base::FilePath setup_path_;
   base::FilePath src_path_;
   base::FilePath temp_dir_;
@@ -322,8 +319,8 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
   const base::Version current_version(
       installer_state->GetCurrentVersion(*installation_state));
   installer::InstallParams install_params = {
-      *installer_state, *installation_state, setup_path_, current_version,
-      archive_path_,    src_path_,           temp_dir_,   *new_version_,
+      *installer_state, *installation_state, setup_path_,   current_version,
+      src_path_,        temp_dir_,           *new_version_,
   };
 
   // Set up expectations for setup.exe's on-os-upgrade handler.

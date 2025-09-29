@@ -10,8 +10,6 @@
         {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_BETA\\Application\\$MINI_INSTALLER_FILE_VERSION\\chrome_wer.dll":
         {"exists": true},
-    "$LOCAL_APPDATA\\$CHROME_DIR_BETA\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\chrome.7z":
-        {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_BETA\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe":
         {"exists": true},
     "$LOCAL_APPDATA\\$CHROME_DIR_BETA\\Application\\$MINI_INSTALLER_FILE_VERSION\\IwaKeyDistribution\\iwa-key-distribution.pb":

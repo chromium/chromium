@@ -639,9 +639,6 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_SAME_VERSION_REPAIR_FAILED" desc="Error displayed if installation fails due to Chrome running.">
           Can not install the same Google Chrome version that is currently running. Please close Google Chrome and try again.
         </message>
-        <message name="IDS_SETUP_PATCH_FAILED" desc="Error message when setup.exe fails to patch itself.">
-          Installation failed due to unspecified error. Please download Google Chrome again.
-        </message>
         <message name="IDS_INSTALL_OS_NOT_SUPPORTED" desc="Error displayed if OS is not supported">
           Google Chrome requires Windows 10 or higher.
         </message>

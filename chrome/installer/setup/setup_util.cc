@@ -164,39 +164,6 @@ base::Version* GetMaxVersionFromArchiveDir(const base::FilePath& chrome_path) {
   return (version_found ? max_version.release() : nullptr);
 }
 
-base::FilePath FindArchiveToPatch(const InstallationState& original_state,
-                                  const InstallerState& installer_state,
-                                  const base::Version& desired_version) {
-  if (desired_version.IsValid()) {
-    base::FilePath archive(
-        installer_state.GetInstallerDirectory(desired_version)
-            .Append(kChromeArchive));
-    return base::PathExists(archive) ? archive : base::FilePath();
-  }
-
-  // Check based on the version number advertised to Google Update, since that
-  // is the value used to select a specific differential update. If an archive
-  // can't be found using that, fallback to using the newest version present.
-  base::FilePath patch_source;
-  const ProductState* product =
-      original_state.GetProductState(installer_state.system_install());
-  if (product) {
-    patch_source = installer_state.GetInstallerDirectory(product->version())
-                       .Append(installer::kChromeArchive);
-    if (base::PathExists(patch_source))
-      return patch_source;
-  }
-  std::unique_ptr<base::Version> version(
-      installer::GetMaxVersionFromArchiveDir(installer_state.target_path()));
-  if (version) {
-    patch_source = installer_state.GetInstallerDirectory(*version).Append(
-        installer::kChromeArchive);
-    if (base::PathExists(patch_source))
-      return patch_source;
-  }
-  return base::FilePath();
-}
-
 bool DeleteFileFromTempProcess(const base::FilePath& path,
                                uint32_t delay_before_delete_ms) {
   static const wchar_t kRunDll32Path[] =

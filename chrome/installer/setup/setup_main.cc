@@ -68,7 +68,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
-#include "chrome/installer/setup/archive_patch_helper.h"
 #include "chrome/installer/setup/brand_behaviors.h"
 #include "chrome/installer/setup/configure_app_container_sandbox.h"
 #include "chrome/installer/setup/downgrade_cleanup.h"
@@ -667,10 +666,9 @@ installer::InstallStatus InstallProducts(InstallationState& original_state,
                                          InstallerState* installer_state) {
   DCHECK(installer_state);
   installer::InstallStatus install_status = installer::UNKNOWN_STATUS;
-  installer::ArchiveType archive_type = installer::UNKNOWN_ARCHIVE_TYPE;
   installer_state->SetStage(installer::PRECONDITIONS);
-  // Remove any legacy "-stage:*" values from the product's "ap" value.
-  installer::UpdateInstallStatus(archive_type, install_status);
+  // Remove any legacy "-full" values from the product's "ap" value.
+  installer::UpdateInstallStatus();
 
   // Drop to background processing mode if the process was started below the
   // normal process priority class. This is done here because InstallProducts-
@@ -682,9 +680,8 @@ installer::InstallStatus InstallProducts(InstallationState& original_state,
   if (CheckPreInstallConditions(original_state, *installer_state,
                                 &install_status)) {
     VLOG(1) << "Installing to " << installer_state->target_path().value();
-    install_status =
-        InstallProductsHelper(original_state, setup_exe, cmd_line, prefs,
-                              *installer_state, &archive_type);
+    install_status = InstallProductsHelper(original_state, setup_exe, cmd_line,
+                                           prefs, *installer_state);
   } else {
     // CheckPreInstallConditions must set the status on failure.
     DCHECK_NE(install_status, installer::UNKNOWN_STATUS);
@@ -703,8 +700,6 @@ installer::InstallStatus InstallProducts(InstallationState& original_state,
       ScheduleFileSystemEntityForDeletion(prefs_path);
     }
   }
-
-  UpdateInstallStatus(archive_type, install_status);
 
   return install_status;
 }
@@ -928,43 +923,7 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
   bool handled = true;
   // TODO(tommi): Split these checks up into functions and use a data driven
   // map of switch->function.
-  if (cmd_line.HasSwitch(installer::switches::kUpdateSetupExe)) {
-    installer_state->SetStage(installer::UPDATING_SETUP);
-    installer::InstallStatus status = installer::SETUP_PATCH_FAILED;
-    // If --update-setup-exe command line option is given, we apply the given
-    // patch to current exe, and store the resulting binary in the path
-    // specified by --new-setup-exe. But we need to first unpack the file
-    // given in --update-setup-exe.
-
-    const base::FilePath compressed_archive(
-        cmd_line.GetSwitchValuePath(installer::switches::kUpdateSetupExe));
-    VLOG(1) << "Opening archive " << compressed_archive.value();
-    // The top unpack failure result with 28 days aggregation (>=0.01%)
-    // Setup.Install.LzmaUnPackResult_SetupExePatch
-    // 0.02% PATH_NOT_FOUND
-    //
-    // More information can also be found with metric:
-    // Setup.Install.LzmaUnPackNTSTATUS_SetupExePatch
-
-    // We use the `new_setup_exe` directory as the working directory for
-    // `ArchivePatchHelper::UncompressAndPatch`. For System installs, this
-    // directory would be under %ProgramFiles% (a directory that only admins can
-    // write to by default) and hence a secure location.
-    const base::FilePath new_setup_exe(
-        cmd_line.GetSwitchValuePath(installer::switches::kNewSetupExe));
-    if (installer::ArchivePatchHelper::UncompressAndPatch(
-            new_setup_exe.DirName(), compressed_archive, setup_exe,
-            new_setup_exe, installer::UnPackConsumer::SETUP_EXE_PATCH)) {
-      status = installer::NEW_VERSION_UPDATED;
-    }
-
-    *exit_code = InstallUtil::GetInstallReturnCode(status);
-    if (*exit_code) {
-      LOG(WARNING) << "setup.exe patching failed.";
-      installer_state->WriteInstallerResult(status, IDS_SETUP_PATCH_FAILED_BASE,
-                                            nullptr);
-    }
-  } else if (cmd_line.HasSwitch(installer::switches::kShowEula)) {
+  if (cmd_line.HasSwitch(installer::switches::kShowEula)) {
     // Check if we need to show the EULA. If it is passed as a command line
     // then the dialog is shown and regardless of the outcome setup exits here.
     std::wstring inner_frame =
@@ -1231,9 +1190,7 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
                                     const base::FilePath& setup_exe,
                                     const base::CommandLine& cmd_line,
                                     const InitialPreferences& prefs,
-                                    InstallerState& installer_state,
-                                    ArchiveType* archive_type) {
-  DCHECK(archive_type);
+                                    InstallerState& installer_state) {
   const bool system_install = installer_state.system_install();
 
   // Create a temp folder where we will unpack Chrome archive. If it fails,
@@ -1247,10 +1204,8 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
     return TEMP_DIR_FAILED;
   }
 
-  base::FilePath uncompressed_archive;
-  RETURN_IF_ERROR(UnpackAndMaybePatchChromeArchive(
-      unpack_path, original_state, setup_exe, cmd_line, installer_state,
-      archive_type, uncompressed_archive));
+  RETURN_IF_ERROR(UnpackChromeArchive(unpack_path, original_state, setup_exe,
+                                      cmd_line, installer_state));
 
   VLOG(1) << "unpacked to " << unpack_path.value();
 
@@ -1288,9 +1243,9 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
       const base::Version current_version(
           installer_state.GetCurrentVersion(original_state));
       InstallParams install_params = {
-          installer_state,  original_state,       setup_exe,
-          current_version,  uncompressed_archive, src_path,
-          temp_path.path(), *installer_version,
+          installer_state,    original_state, setup_exe,
+          current_version,    src_path,       temp_path.path(),
+          *installer_version,
       };
 
       install_status =
