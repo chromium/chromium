@@ -95,7 +95,8 @@ TEST_F(TabCollectionObserverTest, OnTabAdded) {
           *GetGroupFactory(), group_id, tab_groups::TabGroupVisualData());
   grouped_collection->AddTab(CreateMockTab(), 0);
 
-  collection->InsertTabGroupAt(std::move(grouped_collection), 0);
+  collection->InsertTabCollectionAt(std::move(grouped_collection), 0, false,
+                                    std::nullopt);
 
   MockTabCollectionObserver& observer = GetObserver();
 
@@ -180,6 +181,86 @@ TEST_F(TabCollectionObserverTest, OnTabAdded) {
 
     collection->AddTabRecursive(std::move(tab), 3, group_id, false);
   }
+}
+
+TEST_F(TabCollectionObserverTest, OnTabCollectionAttached) {
+  MockTabCollectionObserver& observer = GetObserver();
+
+  // Setup with one group
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+
+  EXPECT_CALL(*GetGroupFactory(), Create)
+      .WillOnce(testing::Invoke(
+          [&](tabs::TabGroupTabCollection* collection,
+              const tab_groups::TabGroupId& id,
+              const tab_groups::TabGroupVisualData& visual_data) {
+            // Return a valid MockTabGroup object.
+            return std::make_unique<MockTabGroup>(collection, id, visual_data);
+          }));
+
+  tabs::TabStripCollection* collection = GetTabstripCollection();
+  std::unique_ptr<tabs::TabGroupTabCollection> grouped_collection =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          *GetGroupFactory(), group_id, tab_groups::TabGroupVisualData());
+  grouped_collection->AddTab(CreateMockTab(), 0);
+
+  tabs::TabCollectionHandle group_handle = grouped_collection->GetHandle();
+  TabCollectionNodes expected_handles;
+  expected_handles.push_back(group_handle);
+
+  const tabs::TabCollectionObserver::Position expected_position = {
+      .parent_handle = collection->unpinned_collection()->GetHandle(),
+      .index = 0ul,
+  };
+
+  EXPECT_CALL(
+      observer,
+      OnChildrenAdded(
+          testing::AllOf(
+              testing::Field(&TabCollectionObserver::Position::parent_handle,
+                             testing::Eq(expected_position.parent_handle)),
+              testing::Field(&TabCollectionObserver::Position::index,
+                             testing::Eq(expected_position.index))),
+          testing::Eq(expected_handles)))
+      .Times(1);
+
+  collection->InsertTabCollectionAt(std::move(grouped_collection), 0, false,
+                                    std::nullopt);
+
+  // Add a split to the group
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+  std::unique_ptr<tabs::SplitTabCollection> split_collection_unique =
+      std::make_unique<tabs::SplitTabCollection>(
+          split_id, split_tabs::SplitTabVisualData(
+                        split_tabs::SplitTabLayout::kVertical, 0.5));
+
+  split_collection_unique->AddTab(CreateMockTab(), 0);
+  split_collection_unique->AddTab(CreateMockTab(), 0);
+
+  tabs::TabCollectionHandle split_handle = split_collection_unique->GetHandle();
+
+  TabCollectionNodes expected_handles_split;
+  expected_handles_split.push_back(split_handle);
+
+  const tabs::TabCollectionObserver::Position expected_position_split = {
+      .parent_handle = group_handle,
+      .index = 1ul,
+  };
+
+  EXPECT_CALL(
+      observer,
+      OnChildrenAdded(
+          testing::AllOf(
+              testing::Field(
+                  &TabCollectionObserver::Position::parent_handle,
+                  testing::Eq(expected_position_split.parent_handle)),
+              testing::Field(&TabCollectionObserver::Position::index,
+                             testing::Eq(expected_position_split.index))),
+          testing::Eq(expected_handles_split)))
+      .Times(1);
+
+  collection->InsertTabCollectionAt(std::move(split_collection_unique), 1,
+                                    false, group_id);
 }
 
 }  // namespace tabs

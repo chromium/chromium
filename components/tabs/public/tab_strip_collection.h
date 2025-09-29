@@ -76,6 +76,12 @@ class TabStripCollection : public TabCollection {
   std::unique_ptr<TabCollection> MaybeRemoveCollection(
       TabCollection* collection) override;
 
+  void InsertTabCollectionAt(
+      std::unique_ptr<TabCollection> collection,
+      int index,
+      int pinned,
+      std::optional<tab_groups::TabGroupId> parent_group);
+
   // Adds the `tab_group_collection` to `detached_group_collections_`
   // so that it can be used when inserting a tab to a group.
   void CreateTabGroup(
@@ -97,11 +103,6 @@ class TabStripCollection : public TabCollection {
   std::vector<tab_groups::TabGroupId> GetAllTabGroupIds() const;
   void MoveTabGroupTo(const tab_groups::TabGroupId& group, int to_index);
 
-  // Adds the `tab_group_collection` to the collection hierarchy
-  // with the first tab of the group starting at the recursive `index`.
-  void InsertTabGroupAt(std::unique_ptr<TabGroupTabCollection> group_collection,
-                        int index);
-
   // Detached tab group operations.
 
   // Clears the detached group with `group_id` in `detached_group_collections_`.
@@ -118,10 +119,6 @@ class TabStripCollection : public TabCollection {
                    const std::vector<TabInterface*>& tabs,
                    split_tabs::SplitTabVisualData visual_data);
   void Unsplit(split_tabs::SplitTabId split_id);
-  void InsertSplitTabAt(std::unique_ptr<SplitTabCollection> split_collection,
-                        int index,
-                        int pinned,
-                        std::optional<tab_groups::TabGroupId> group);
   std::unique_ptr<TabCollection> RemoveSplit(SplitTabCollection* split);
   void ValidateData() const;
 

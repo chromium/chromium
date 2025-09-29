@@ -533,7 +533,7 @@ gfx::Range TabStripModel::InsertDetachedSplitTabAt(
 
   return InsertDetachedCollectionImpl(
       split_collection, split->active_index_,
-      base::BindOnce(&tabs::TabStripCollection::InsertSplitTabAt,
+      base::BindOnce(&tabs::TabStripCollection::InsertTabCollectionAt,
                      base::Unretained(contents_data_.get()),
                      std::move(split_collection_unique_ptr), index, pinned,
                      group_id),
@@ -777,7 +777,8 @@ void TabStripModel::InsertDetachedTabGroupImpl(
     int index) {
   group_model_->AddTabGroup(group_collection->GetTabGroup(),
                             base::PassKey<TabStripModel>());
-  contents_data_->InsertTabGroupAt(std::move(group_collection), index);
+  contents_data_->InsertTabCollectionAt(std::move(group_collection), index,
+                                        false, std::nullopt);
 }
 
 std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(

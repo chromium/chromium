@@ -325,13 +325,6 @@ void TabStripCollection::MoveTabGroupTo(const tab_groups::TabGroupId& group,
       to_index - pinned_collection_->TabCountRecursive(), group_collection);
 }
 
-void TabStripCollection::InsertTabGroupAt(
-    std::unique_ptr<TabGroupTabCollection> group_collection,
-    int index) {
-  CHECK(index >= static_cast<int>(pinned_collection_->TabCountRecursive()));
-  AddTabGroup(std::move(group_collection), index);
-}
-
 std::unique_ptr<TabInterface> TabStripCollection::RemoveTabAtIndexRecursive(
     size_t index) {
   TabInterface* tab_to_be_removed = GetTabAtIndexRecursive(index);
@@ -448,17 +441,26 @@ void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
   parent_collection->MaybeRemoveCollection(split).reset();
 }
 
-void TabStripCollection::InsertSplitTabAt(
-    std::unique_ptr<SplitTabCollection> split_collection,
+void TabStripCollection::InsertTabCollectionAt(
+    std::unique_ptr<TabCollection> collection,
     int index,
     int pinned,
-    std::optional<tab_groups::TabGroupId> group) {
-  AddCollectionMapping(split_collection.get());
+    std::optional<tab_groups::TabGroupId> parent_group) {
+  TabCollection* collection_ptr = collection.get();
+  AddCollectionMapping(collection_ptr);
 
-  auto [tab_collection_ptr, insert_index] =
-      GetInsertionDetails(index, pinned, group);
-  CHECK(tab_collection_ptr);
-  tab_collection_ptr->AddCollection(std::move(split_collection), insert_index);
+  std::pair<tabs::TabCollection*, int> insertion_details =
+      GetInsertionDetails(index, pinned, parent_group);
+  auto [tab_collection_ptr, insert_index] = insertion_details;
+
+  CHECK(insertion_details.first);
+  tab_collection_ptr->AddCollection(std::move(collection), insert_index);
+
+  TabCollectionNodes handles_added;
+  handles_added.push_back(collection_ptr->GetHandle());
+
+  tab_collection_ptr->NotifyOnChildrenAdded(GetPassKey(), handles_added,
+                                            insertion_details, this);
 }
 
 std::unique_ptr<TabCollection> TabStripCollection::RemoveSplit(
