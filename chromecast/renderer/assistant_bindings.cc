@@ -143,7 +143,8 @@ void AssistantBindings::FlushV8ToAssistantQueue() {
   DCHECK(message_pipe_.is_bound());
 
   for (auto& request : v8_to_assistant_queue_) {
-    auto value = base::JSONReader::Read(request);
+    auto value =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       LOG(ERROR) << "Unable to parse Assistant message JSON.";
       continue;
