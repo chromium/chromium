@@ -84,7 +84,8 @@ std::string AntiFingerprintingContentRuleListComponentInstallerPolicy::
   if (base::FeatureList::IsEnabled(
           fingerprinting_protection_filter::features::
               kEnableFingerprintingProtectionFilteriOSDryRun)) {
-    std::optional<base::Value> value = base::JSONReader::Read(json);
+    std::optional<base::Value> value =
+        base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       base::UmaHistogramEnumeration(
           "FingerprintingProtection.IOSDryRun.TransformResult",

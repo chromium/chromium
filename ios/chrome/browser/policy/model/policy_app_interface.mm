@@ -74,7 +74,8 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
     return base::Value();
   }
 
-  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value));
+  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value),
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 }  // namespace

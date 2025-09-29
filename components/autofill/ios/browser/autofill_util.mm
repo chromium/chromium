@@ -89,7 +89,8 @@ bool IsContextSecureForWebState(web::WebState* web_state) {
 
 std::unique_ptr<base::Value> ParseJson(NSString* json_string) {
   std::optional<base::Value> json_value =
-      base::JSONReader::Read(base::SysNSStringToUTF8(json_string));
+      base::JSONReader::Read(base::SysNSStringToUTF8(json_string),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_value) {
     return nullptr;
   }

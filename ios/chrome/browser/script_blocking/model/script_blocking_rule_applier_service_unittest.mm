@@ -29,7 +29,8 @@ namespace {
 
 // Helper function to parse a JSON string and return the last rule in the list.
 base::Value::Dict GetLastRule(const std::string& json) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(value.has_value());
   const base::Value::List* list = value->GetIfList();
   CHECK(list);
@@ -194,7 +195,8 @@ TEST_F(ScriptBlockingRuleApplierServiceTest, TestUpdateRuleList) {
 
   // The service will re-serialize the JSON, so we must compare against the
   // canonical representation.
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   std::string expected_json = base::WriteJson(*value).value_or("");
 

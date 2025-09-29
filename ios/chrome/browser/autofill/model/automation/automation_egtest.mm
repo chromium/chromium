@@ -41,7 +41,8 @@ std::string ReadRecipeJsonFromPath(const base::FilePath& path) {
 
 // Parses recipe std::string into base::Value.
 base::Value RecipeJsonToValue(const std::string& recipe_json) {
-  std::optional<base::Value> value = base::JSONReader::Read(recipe_json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(recipe_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   GREYAssert(value.has_value(), @"Unable to parse JSON string.");
   GREYAssert(value.value().is_dict(),
              @"Expecting a dictionary in the recipe JSON string.");

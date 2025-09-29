@@ -51,7 +51,8 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   policy_test_utils::SetPolicy(*json_value, policy_key);
   return base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
     std::optional<base::Value> probed_value = base::JSONReader::Read(
-        policy_test_utils::GetValueForPlatformPolicy(policy_key));
+        policy_test_utils::GetValueForPlatformPolicy(policy_key),
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     return probed_value && value == *probed_value;
   });
 }

@@ -83,8 +83,8 @@ void VerifyPolicies(
                           "JSON.stringify(policies);";
 
   base::Value policies = [ChromeEarlGrey evaluateJavaScript:javascript];
-  std::optional<base::Value> value_ptr =
-      base::JSONReader::Read(policies.GetString());
+  std::optional<base::Value> value_ptr = base::JSONReader::Read(
+      policies.GetString(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   GREYAssertTrue(value_ptr, @"Expected policies, but there weren't any.");
   GREYAssertTrue(value_ptr->is_list(), @"Value is not a list.");
   const base::Value::List& actual_policies = value_ptr->GetList();

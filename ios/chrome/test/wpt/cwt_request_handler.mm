@@ -570,7 +570,8 @@ base::Value CWTRequestHandler::ExecuteScript(const std::string* script,
   }
 
   std::optional<base::Value> result =
-      base::JSONReader::Read(base::SysNSStringToUTF8(result_as_json));
+      base::JSONReader::Read(base::SysNSStringToUTF8(result_as_json),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(result);
   return std::move(*result);
 }

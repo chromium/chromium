@@ -29,7 +29,8 @@ namespace {
 std::optional<base::Value> GetPlatformPolicy(const std::string& key) {
   std::string json_representation = base::SysNSStringToUTF8(
       [PolicyAppInterface valueForPlatformPolicy:base::SysUTF8ToNSString(key)]);
-  return base::JSONReader::Read(json_representation);
+  return base::JSONReader::Read(json_representation,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 // Returns an AppLaunchConfiguration containing the given policy data.

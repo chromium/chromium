@@ -152,7 +152,8 @@ NSError* PrepareAutofillProfileWithValues(
 
 + (NSError*)setAutofillAutomationProfile:(NSString*)profileJSON {
   std::optional<base::Value> readResult =
-      base::JSONReader::Read(base::SysNSStringToUTF8(profileJSON));
+      base::JSONReader::Read(base::SysNSStringToUTF8(profileJSON),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!readResult.has_value()) {
     return testing::NSErrorWithLocalizedDescription(
         @"Unable to parse JSON string in app side.");

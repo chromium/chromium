@@ -1508,7 +1508,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   std::string jsonRepresentation =
       base::SysNSStringToUTF8([ChromeEarlGreyAppInterface
           localStatePrefValue:base::SysUTF8ToNSString(prefName)]);
-  return base::JSONReader::Read(jsonRepresentation);
+  return base::JSONReader::Read(jsonRepresentation,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 - (bool)localStateBooleanPref:(const std::string&)prefName {
@@ -1579,7 +1580,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   std::string jsonRepresentation =
       base::SysNSStringToUTF8([ChromeEarlGreyAppInterface
           userPrefValue:base::SysUTF8ToNSString(prefName)]);
-  return base::JSONReader::Read(jsonRepresentation);
+  return base::JSONReader::Read(jsonRepresentation,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 - (bool)userBooleanPref:(const std::string&)prefName {
