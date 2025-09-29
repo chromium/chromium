@@ -1446,6 +1446,7 @@ constexpr std::array
     kActionableItems_SigninDisallowed_ReplaceSyncPromosEnabled = {
         ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
         ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kGoogleServicesSettingsButton,
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
         ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
         ProfileMenuViewBase::ActionableItem::kManageProfilesButton,

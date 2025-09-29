@@ -90,6 +90,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnGuestProfileButtonClicked();
   void OnExitProfileButtonClicked();
   void OnSyncSettingsButtonClicked();
+  void OnGoogleServicesSettingsButtonClicked();
   void OnAccountSettingsButtonClicked();
   void OnSyncErrorButtonClicked(AvatarSyncErrorType error);
   void OnSigninButtonClicked(CoreAccountInfo account,
@@ -121,6 +122,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void BuildCustomizeProfileButton();
   void MaybeBuildChromeAccountSettingsButtonWithSync();
   void MaybeBuildChromeAccountSettingsButton();
+  void MaybeBuildGoogleServicesSettingsButton();
   void MaybeBuildManageGoogleAccountButton();
   void MaybeBuildCloseBrowsersButton();
   void MaybeBuildSignoutButton();

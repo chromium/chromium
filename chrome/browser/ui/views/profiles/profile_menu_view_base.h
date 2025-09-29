@@ -83,7 +83,9 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     // DEPRECATED: kHistorySyncOptInButton = 23,
     kBatchUploadButton = 24,
     kAccountSettingsButton = 25,
-    kMaxValue = kAccountSettingsButton,
+    kGoogleServicesSettingsButton = 26,
+
+    kMaxValue = kGoogleServicesSettingsButton,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileMenuActionableItem)
 

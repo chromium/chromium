@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -333,6 +334,14 @@ void ProfileMenuView::OnSyncSettingsButtonClicked() {
     return;
   }
   chrome::ShowSettingsSubPage(&browser(), chrome::kSyncSetupSubPage);
+}
+
+void ProfileMenuView::OnGoogleServicesSettingsButtonClicked() {
+  OnActionableItemClicked(ActionableItem::kGoogleServicesSettingsButton);
+  if (!perform_menu_actions()) {
+    return;
+  }
+  chrome::ShowSettingsSubPage(&browser(), chrome::kGoogleServicesSubpage);
 }
 
 void ProfileMenuView::OnAccountSettingsButtonClicked() {
@@ -930,6 +939,28 @@ void ProfileMenuView::MaybeBuildChromeAccountSettingsButtonWithSync() {
       *icon);
 }
 
+void ProfileMenuView::MaybeBuildGoogleServicesSettingsButton() {
+  CHECK(!profile().IsGuestSession());
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(&profile());
+
+  if (!identity_manager) {
+    return;
+  }
+
+  // Show the services settings button  if signin is disallowed.
+  if (profile().GetPrefs()->GetBoolean(prefs::kSigninAllowed)) {
+    return;
+  }
+  AddFeatureButton(
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS),
+      base::BindRepeating(
+          &ProfileMenuView::OnGoogleServicesSettingsButtonClicked,
+          base::Unretained(this)),
+      vector_icons::kSettingsChromeRefreshIcon);
+}
+
 void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
   CHECK(!profile().IsGuestSession());
   signin::IdentityManager* identity_manager =
@@ -1054,6 +1085,10 @@ void ProfileMenuView::BuildFeatureButtons() {
     !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)))
       ? MaybeBuildChromeAccountSettingsButton()
       : MaybeBuildChromeAccountSettingsButtonWithSync();
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    MaybeBuildGoogleServicesSettingsButton();
+  }
   MaybeBuildCloseBrowsersButton();
   MaybeBuildSignoutButton();
 }
