@@ -17,6 +17,25 @@ namespace segmentation_platform {
 // Model to predict whether the user belongs to AndroidHomeModuleRanker segment.
 class AndroidHomeModuleRanker : public DefaultModelProvider {
  public:
+  enum Label {
+    kLabelPriceChange,
+    kLabelSingleTab,
+    kLabelSafetyHub,
+    kLabelCount
+  };
+  enum Feature {
+    kFeatureSingleTabClick,
+    kFeatureSingleTabImpression,
+    kFeaturePriceChangeClick,
+    kFeaturePriceChangeImpression,
+    kFeatureSafetyHubClick,
+    kFeatureSafetyHubImpression,
+    kFeatureSingleTabFreshness,
+    kFeaturePriceChangeFreshness,
+    kFeatureSafetyHubFreshness,
+    kFeatureCount
+  };
+
   AndroidHomeModuleRanker();
   ~AndroidHomeModuleRanker() override = default;
 

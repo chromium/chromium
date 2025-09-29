@@ -5,201 +5,209 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_WRITER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_METADATA_WRITER_H_
 
+#include <array>
 #include <cinttypes>
 #include <cstddef>
 #include <optional>
+#include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
+// TODO(ssid): This file should be moved to public API of segmentation.
+
 namespace segmentation_platform {
 
-// TODO(ssid): This file should be moved to public API of segmentation and
-// macros should be separated from this header.
+namespace features {
 
-// The following `GENERATE` macros are helpers for `DEFINE_FEATURES` and
-// `DEFINE_LABELS` macros. They are used to generate enums and arrays from a
-// list of features or labels. The `feature_list` or `label_list` is expected to
-// be a macro that takes another macro as an argument, and applies it to each
-// feature/label.
+// Defines a feature based on UMA metric.
+struct UMAFeature {
+  STACK_ALLOCATED();
 
-// Generates an enum member from a feature definition.
-#define SEGMENTATION_INTERNAL_GENERATE_ENUM(name, feature) name,
-// Generates a feature struct from a feature definition.
-#define SEGMENTATION_INTERNAL_GENERATE_FEATURE(name, feature) feature,
-// Generates an enum member from a label definition.
-#define SEGMENTATION_INTERNAL_GENERATE_LABEL_ENUM(name, label_string) name,
-// Generates a label string from a label definition.
-#define SEGMENTATION_INTERNAL_GENERATE_LABEL_STRING(name, label_string) \
-  label_string,
+ public:
+  const proto::SignalType signal_type{proto::SignalType::UNKNOWN_SIGNAL_TYPE};
+  const char* name{nullptr};
+  const uint64_t bucket_count{0};
+  const uint64_t tensor_length{0};
+  const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
+  const size_t enum_ids_size{0};
+  const int32_t* const accepted_enum_ids = nullptr;
+  const size_t default_values_size{0};
+  const float* const default_values = nullptr;
 
-// Public helper macros:
+  static constexpr UMAFeature FromUserAction(const char* name,
+                                             uint64_t bucket_count) {
+    return UMAFeature{.signal_type = proto::SignalType::USER_ACTION,
+                      .name = name,
+                      .bucket_count = bucket_count,
+                      .tensor_length = 1,
+                      .aggregation = proto::Aggregation::COUNT,
+                      .enum_ids_size = 0};
+  }
 
-// A helper macro to define a single UMA feature based on a user action.
-#define SEGMENTATION_USER_ACTION(uma_name, days) \
-  MetadataWriter::Feature::FromUMAFeature(       \
-      MetadataWriter::UMAFeature::FromUserAction(uma_name, days))
+  static constexpr UMAFeature FromValueHistogram(
+      const char* name,
+      uint64_t bucket_count,
+      proto::Aggregation aggregation,
+      size_t default_values_size = 0,
+      const float* const default_values = nullptr) {
+    return UMAFeature{.signal_type = proto::SignalType::HISTOGRAM_VALUE,
+                      .name = name,
+                      .bucket_count = bucket_count,
+                      .tensor_length = 1,
+                      .aggregation = aggregation,
+                      .enum_ids_size = 0,
+                      .default_values_size = default_values_size,
+                      .default_values = default_values};
+  }
 
-// A helper macro to define a single UMA feature based on an enum histogram.
-#define SEGMENTATION_UMA_ENUM(uma_name, days, enum_ids, enum_size)            \
-  MetadataWriter::Feature::FromUMAFeature(                                    \
-      MetadataWriter::UMAFeature::FromEnumHistogram(uma_name, days, enum_ids, \
-                                                    enum_size))
+  static constexpr UMAFeature FromEnumHistogram(const char* name,
+                                                uint64_t bucket_count,
+                                                const int32_t* const enum_ids,
+                                                size_t enum_ids_size) {
+    return UMAFeature{.signal_type = proto::SignalType::HISTOGRAM_ENUM,
+                      .name = name,
+                      .bucket_count = bucket_count,
+                      .tensor_length = 1,
+                      .aggregation = proto::Aggregation::COUNT,
+                      .enum_ids_size = enum_ids_size,
+                      .accepted_enum_ids = enum_ids};
+  }
 
-// A helper macro to define a custom input feature.
-#define SEGMENTATION_INPUT_CONTEXT(input_name)                          \
-  MetadataWriter::Feature::FromCustomInput(MetadataWriter::CustomInput{ \
-      .tensor_length = 1,                                               \
-      .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,       \
-      .name = input_name})
+  static constexpr UMAFeature FromEnumHistogram(
+      const char* name,
+      uint64_t bucket_count,
+      base::span<const int32_t> enum_ids) {
+    return UMAFeature{.signal_type = proto::SignalType::HISTOGRAM_ENUM,
+                      .name = name,
+                      .bucket_count = bucket_count,
+                      .tensor_length = 1,
+                      .aggregation = proto::Aggregation::COUNT,
+                      .enum_ids_size = enum_ids.size(),
+                      .accepted_enum_ids = enum_ids.data()};
+  }
+};
 
-// A helper macro to define a list of features. This macro generates an enum for
-// feature indices and a constexpr array of `MetadataWriter::Feature` structs.
-#define SEGMENTATION_DEFINE_FEATURES(array_name, feature_list)          \
-  enum {                                                                \
-    feature_list(SEGMENTATION_INTERNAL_GENERATE_ENUM) array_name##Count \
-  };                                                                    \
-  inline constexpr MetadataWriter::Feature array_name[] = {             \
-      feature_list(SEGMENTATION_INTERNAL_GENERATE_FEATURE)}
+// Defines a feature based on a SQL query.
+struct SqlFeature {
+  STACK_ALLOCATED();
 
-// A helper macro to define a list of output labels. This macro generates an
-// enum for label indices and a constexpr array of label strings.
-#define SEGMENTATION_DEFINE_LABELS(array_name, label_list)                  \
-  enum {                                                                    \
-    label_list(SEGMENTATION_INTERNAL_GENERATE_LABEL_ENUM) array_name##Count \
-  };                                                                        \
-  inline constexpr const char* array_name[] = {                             \
-      label_list(SEGMENTATION_INTERNAL_GENERATE_LABEL_STRING)}
+ public:
+  const char* const sql{nullptr};
+  struct EventAndMetrics {
+    STACK_ALLOCATED();
+
+   public:
+    const UkmEventHash event_hash;
+    const UkmMetricHash* const metrics = nullptr;
+    const size_t metrics_size{0};
+  };
+  const EventAndMetrics* const events = nullptr;
+  const size_t events_size{0};
+};
+
+// Defines a feature based on a custom input.
+struct CustomInput {
+  STACK_ALLOCATED();
+
+ public:
+  const uint64_t tensor_length{0};
+  const proto::CustomInput::FillPolicy fill_policy{
+      proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
+  const size_t default_values_size{0};
+  const float* const default_values = nullptr;
+  const char* name{nullptr};
+
+  using Arg = std::pair<const char*, const char*>;
+  const Arg* arg{nullptr};
+  const size_t arg_size{0};
+};
+
+using BindValueType = proto::SqlFeature::BindValue::ParamType;
+using BindValue = std::pair<BindValueType, CustomInput>;
+using BindValues = std::vector<BindValue>;
+
+// Defines a feature that can be one of UMA, SQL or CustomInput.
+struct Feature {
+  STACK_ALLOCATED();
+
+ public:
+  static constexpr Feature FromUMAFeature(UMAFeature uma_feature) {
+    return Feature{.uma_feature = uma_feature};
+  }
+  static constexpr Feature FromSqlFeature(SqlFeature sql_feature) {
+    return Feature{.sql_feature = sql_feature};
+  }
+  static constexpr Feature FromCustomInput(CustomInput custom_input) {
+    return Feature{.custom_input = custom_input};
+  }
+
+  const std::optional<UMAFeature> uma_feature;
+  const std::optional<SqlFeature> sql_feature;
+  const std::optional<CustomInput> custom_input;
+};
+
+constexpr Feature UserAction(const char* name, uint64_t bucket_count) {
+  return Feature::FromUMAFeature(
+      UMAFeature::FromUserAction(name, bucket_count));
+}
+
+template <size_t N>
+constexpr Feature UMAEnum(const char* name,
+                          uint64_t bucket_count,
+                          const std::array<const int32_t, N>& enum_ids) {
+  return Feature::FromUMAFeature(
+      UMAFeature::FromEnumHistogram(name, bucket_count, enum_ids));
+}
+
+constexpr Feature UMAEnum(const char* name,
+                          uint64_t bucket_count,
+                          base::span<const int32_t> enum_ids) {
+  return Feature::FromUMAFeature(
+      UMAFeature::FromEnumHistogram(name, bucket_count, enum_ids));
+}
+
+constexpr Feature InputContext(const char* name) {
+  return Feature::FromCustomInput(
+      CustomInput{.tensor_length = 1,
+                  .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+                  .name = name});
+}
+
+}  // namespace features
+
+template <typename EnumType>
+using FeaturePair = std::pair<EnumType, const features::Feature>;
+
+template <typename EnumType>
+using FeatureSet = base::span<const FeaturePair<EnumType>>;
+
+template <typename EnumType>
+using LabelPair = std::pair<EnumType, const char*>;
+
+template <typename EnumType>
+using LabelSet = base::span<const LabelPair<EnumType>>;
 
 // Utility to write metadata proto for default models.
 class MetadataWriter {
  public:
+  // DEPRECATED: Use features::helper to create features.
+  using UMAFeature = features::UMAFeature;
+  using SqlFeature = features::SqlFeature;
+  using CustomInput = features::CustomInput;
+  using Feature = features::Feature;
+  using BindValueType = features::BindValueType;
+  using BindValue = features::BindValue;
+  using BindValues = features::BindValues;
+
   explicit MetadataWriter(proto::SegmentationModelMetadata* metadata);
   ~MetadataWriter();
 
   MetadataWriter(const MetadataWriter&) = delete;
   MetadataWriter& operator=(const MetadataWriter&) = delete;
-
-  // Defines a feature based on UMA metric.
-  struct UMAFeature {
-    STACK_ALLOCATED();
-
-   public:
-    const proto::SignalType signal_type{proto::SignalType::UNKNOWN_SIGNAL_TYPE};
-    const char* name{nullptr};
-    const uint64_t bucket_count{0};
-    const uint64_t tensor_length{0};
-    const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
-    const size_t enum_ids_size{0};
-    const int32_t* const accepted_enum_ids = nullptr;
-    const size_t default_values_size{0};
-    const float* const default_values = nullptr;
-
-    static constexpr UMAFeature FromUserAction(const char* name,
-                                               uint64_t bucket_count) {
-      return MetadataWriter::UMAFeature{
-          .signal_type = proto::SignalType::USER_ACTION,
-          .name = name,
-          .bucket_count = bucket_count,
-          .tensor_length = 1,
-          .aggregation = proto::Aggregation::COUNT,
-          .enum_ids_size = 0};
-    }
-
-    static constexpr UMAFeature FromValueHistogram(
-        const char* name,
-        uint64_t bucket_count,
-        proto::Aggregation aggregation,
-        size_t default_values_size = 0,
-        const float* const default_values = nullptr) {
-      return MetadataWriter::UMAFeature{
-          .signal_type = proto::SignalType::HISTOGRAM_VALUE,
-          .name = name,
-          .bucket_count = bucket_count,
-          .tensor_length = 1,
-          .aggregation = aggregation,
-          .enum_ids_size = 0,
-          .default_values_size = default_values_size,
-          .default_values = default_values};
-    }
-
-    static constexpr UMAFeature FromEnumHistogram(const char* name,
-                                                  uint64_t bucket_count,
-                                                  const int32_t* const enum_ids,
-                                                  size_t enum_ids_size) {
-      return MetadataWriter::UMAFeature{
-          .signal_type = proto::SignalType::HISTOGRAM_ENUM,
-          .name = name,
-          .bucket_count = bucket_count,
-          .tensor_length = 1,
-          .aggregation = proto::Aggregation::COUNT,
-          .enum_ids_size = enum_ids_size,
-          .accepted_enum_ids = enum_ids};
-    }
-  };
-
-  // Defines a feature based on a SQL query.
-  struct SqlFeature {
-    STACK_ALLOCATED();
-
-   public:
-    const char* const sql{nullptr};
-    struct EventAndMetrics {
-      STACK_ALLOCATED();
-
-     public:
-      const UkmEventHash event_hash;
-      const UkmMetricHash* const metrics = nullptr;
-      const size_t metrics_size{0};
-    };
-    const EventAndMetrics* const events = nullptr;
-    const size_t events_size{0};
-  };
-
-  // Defines a feature based on a custom input.
-  struct CustomInput {
-    STACK_ALLOCATED();
-
-   public:
-    const uint64_t tensor_length{0};
-    const proto::CustomInput::FillPolicy fill_policy{
-        proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
-    const size_t default_values_size{0};
-    const float* const default_values = nullptr;
-    const char* name{nullptr};
-
-    using Arg = std::pair<const char*, const char*>;
-    const Arg* arg{nullptr};
-    const size_t arg_size{0};
-  };
-  using BindValueType = proto::SqlFeature::BindValue::ParamType;
-  using BindValue = std::pair<BindValueType, CustomInput>;
-  using BindValues = std::vector<BindValue>;
-
-  // Defines a feature that can be one of UMA, SQL or CustomInput.
-  struct Feature {
-    STACK_ALLOCATED();
-
-   public:
-    static constexpr Feature FromUMAFeature(
-        MetadataWriter::UMAFeature uma_feature) {
-      return Feature{.uma_feature = uma_feature};
-    }
-    static constexpr Feature FromSqlFeature(
-        MetadataWriter::SqlFeature sql_feature) {
-      return Feature{.sql_feature = sql_feature};
-    }
-    static constexpr Feature FromCustomInput(
-        MetadataWriter::CustomInput custom_input) {
-      return Feature{.custom_input = custom_input};
-    }
-
-    const std::optional<MetadataWriter::UMAFeature> uma_feature;
-    const std::optional<MetadataWriter::SqlFeature> sql_feature;
-    const std::optional<MetadataWriter::CustomInput> custom_input;
-  };
 
   // Appends the list of UMA features in order.
   void AddUmaFeatures(const UMAFeature features[],
@@ -208,6 +216,13 @@ class MetadataWriter {
 
   // Appends the list of features in order.
   void AddFeatures(const base::span<const Feature> features);
+
+  template <typename FeatureEnum>
+  void AddFeatures(const FeatureSet<FeatureEnum> features_set) {
+    for (const auto& pair : features_set) {
+      AddFeatures({pair.second});
+    }
+  }
 
   // Appends the list of SQL features in order.
   proto::SqlFeature* AddSqlFeature(const SqlFeature& feature);
@@ -265,6 +280,20 @@ class MetadataWriter {
       const std::vector<std::string>& class_labels,
       int top_k_outputs,
       std::optional<float> threshold);
+
+  template <typename LabelEnum>
+  void AddOutputConfigForMultiClassClassifier(
+      const LabelSet<LabelEnum> class_labels_set,
+      std::optional<float> threshold) {
+    std::vector<const char*> class_labels_vector;
+    class_labels_vector.reserve(class_labels_set.size());
+    for (const auto& pair : class_labels_set) {
+      class_labels_vector.push_back(pair.second);
+    }
+    AddOutputConfigForMultiClassClassifier(
+        base::span<const char* const>(class_labels_vector),
+        class_labels_vector.size(), threshold);
+  }
 
   // Adds a MultiClassClassifier with one threshold per label.
   void AddOutputConfigForMultiClassClassifier(

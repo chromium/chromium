@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
@@ -29,33 +30,67 @@ constexpr int64_t kSignalStorageLength = 28;
 constexpr int64_t kMinSignalCollectionLength = 7;
 
 // Labels for the classification output.
-#define TIPS_NOTIFICATIONS_LABELS(F)                    \
-  F(kEnhancedSafeBrowsingTipIdx, kEnhancedSafeBrowsing) \
-  F(kQuickDeleteTipIdx, kQuickDelete)                   \
-  F(kGoogleLensTipIdx, kGoogleLens)                     \
-  F(kBottomOmniboxTipIdx, kBottomOmnibox)
+constexpr LabelPair<TipsNotificationsRanker::Label> kTipsNotificationsLabels[] =
+    {{TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx,
+      kEnhancedSafeBrowsing},
+     {TipsNotificationsRanker::kQuickDeleteTipIdx, kQuickDelete},
+     {TipsNotificationsRanker::kGoogleLensTipIdx, kGoogleLens},
+     {TipsNotificationsRanker::kBottomOmniboxTipIdx, kBottomOmnibox}};
 
-SEGMENTATION_DEFINE_LABELS(kTipsNotificationsLabels, TIPS_NOTIFICATIONS_LABELS);
+// Enum values for histograms.
+constexpr std::array<int32_t, 1> kEnumValueForEnhancedSafeBrowsingUsage{
+    /*EnhancedSafeBrowsing=*/1};
+
+constexpr std::array<int32_t, 1> kEnumValueForQuickDeleteMagicStackImpression{
+    /*QuickDelete=*/9};
+
+constexpr FeaturePair<TipsNotificationsRanker::Feature>
+    kTipsNotificationsRankerFeatures[] = {
+        {TipsNotificationsRanker::kEnhancedSafeBrowsingUseCountIdx,
+         features::UMAEnum("SafeBrowsing.Settings.UserAction.Default",
+                           28,
+                           kEnumValueForEnhancedSafeBrowsingUsage)},
+        {TipsNotificationsRanker::kQuickDeleteMagicStackShownCountIdx,
+         features::UMAEnum("MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
+                           28,
+                           kEnumValueForQuickDeleteMagicStackImpression)},
+        {TipsNotificationsRanker::kGoogleLensNewTabPageUseCountIdx,
+         features::UserAction("NewTabPage.SearchBox.Lens", 28)},
+        {TipsNotificationsRanker::kGoogleLensMobileOmniboxUseCountIdx,
+         features::UserAction("MobileOmniboxLens", 28)},
+        {TipsNotificationsRanker::kGoogleLensTasksSurfaceUseCountIdx,
+         features::UserAction("TasksSurface.FakeBox.Lens", 28)},
+        {TipsNotificationsRanker::kEnhancedSafeBrowsingIsEnabledIdx,
+         features::InputContext(kEnhancedSafeBrowsingStatus)},
+        {TipsNotificationsRanker::kQuickDeleteWasEverUsedIdx,
+         features::InputContext(kQuickDeleteUsage)},
+        {TipsNotificationsRanker::kBottomOmniboxIsEnabledIdx,
+         features::InputContext(kBottomOmniboxStatus)},
+        {TipsNotificationsRanker::kBottomOmniboxWasEverUsedIdx,
+         features::InputContext(kBottomOmniboxUsage)}};
 
 std::vector<int> GetTipsPriorityRankingList() {
   std::vector<int> tips_list;
   // Define the priority ranking based on the feature param.
   // First in the list represents highest priority and last is lowest.
   if (features::kTrustAndSafety.Get()) {
-    tips_list.emplace_back(kEnhancedSafeBrowsingTipIdx);
-    tips_list.emplace_back(kQuickDeleteTipIdx);
-    tips_list.emplace_back(kGoogleLensTipIdx);
-    tips_list.emplace_back(kBottomOmniboxTipIdx);
+    tips_list.emplace_back(
+        TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
   } else if (features::kEssential.Get()) {
-    tips_list.emplace_back(kQuickDeleteTipIdx);
-    tips_list.emplace_back(kBottomOmniboxTipIdx);
-    tips_list.emplace_back(kEnhancedSafeBrowsingTipIdx);
-    tips_list.emplace_back(kGoogleLensTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
+    tips_list.emplace_back(
+        TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
   } else if (features::kNewFeatures.Get()) {
-    tips_list.emplace_back(kGoogleLensTipIdx);
-    tips_list.emplace_back(kBottomOmniboxTipIdx);
-    tips_list.emplace_back(kQuickDeleteTipIdx);
-    tips_list.emplace_back(kEnhancedSafeBrowsingTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
+    tips_list.emplace_back(
+        TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
   }
   return tips_list;
 }
@@ -107,12 +142,11 @@ TipsNotificationsRanker::GetModelConfig() {
   metadata.set_upload_tensors(false);
 
   // Set output config.
-  writer.AddOutputConfigForMultiClassClassifier(kTipsNotificationsLabels,
-                                                kTipsNotificationsLabelsCount,
-                                                /*threshold=*/0.5);
+  writer.AddOutputConfigForMultiClassClassifier<Label>(kTipsNotificationsLabels,
+                                                       /*threshold=*/0.5);
 
   // Set UMA features and custom inputs.
-  writer.AddFeatures(base::span(kTipsNotificationsRankerFeatures));
+  writer.AddFeatures<Feature>(kTipsNotificationsRankerFeatures);
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }
@@ -121,13 +155,13 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kTipsNotificationsRankerFeaturesCount) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  ModelProvider::Response response(kTipsNotificationsLabelsCount, 0);
+  ModelProvider::Response response(kLabelCount, 0);
   // TODO(crbug.com/444281425): Include logic for trying to schedule once a week
   // and to cycle the tips via histogram on notif showing for L28 or max 1 time.
   // Counts refer to the L28 days and bools are represented through 0 or 1.
