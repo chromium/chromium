@@ -666,7 +666,6 @@ TEST_P(MediaCodecVideoDecoderTest, ResetDoesNotDrainCodecs) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, ElidedEOSForConfigChange) {
-  base::test::ScopedFeatureList enabled(kMediaCodecElideEOS);
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   ASSERT_TRUE(codec);
@@ -694,7 +693,6 @@ TEST_P(MediaCodecVideoDecoderTest, ElidedEOSForConfigChange) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, ElidedEOSSkippedForCodecChange) {
-  base::test::ScopedFeatureList enabled(kMediaCodecElideEOS);
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   ASSERT_TRUE(codec);

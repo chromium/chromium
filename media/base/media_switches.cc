@@ -982,12 +982,6 @@ BASE_FEATURE(kEnableSurfaceInputForAndroidVEA,
 // Enables block model (LinearBlock) on supported devices.
 BASE_FEATURE(kMediaCodecBlockModel, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow FrameInfoHelper to guess coded size information for MediaCodec frames.
-BASE_FEATURE(kMediaCodecCodedSizeGuessing, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allow EOS buffers to be elided by MediaCodecVideoDecoder.
-BASE_FEATURE(kMediaCodecElideEOS, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Allow selection of low latency decoders in low delay mode.
 BASE_FEATURE(kMediaCodecLowDelayMode, base::FEATURE_DISABLED_BY_DEFAULT);
 

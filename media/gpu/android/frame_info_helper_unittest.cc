@@ -136,8 +136,6 @@ TEST_F(FrameInfoHelperTest, TextureOwner) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
-  base::test::ScopedFeatureList scoped_enable(kMediaCodecCodedSizeGuessing);
-
   auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
       0, nullptr, nullptr, true);
 
@@ -190,8 +188,6 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSize) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
-  base::test::ScopedFeatureList scoped_enable(kMediaCodecCodedSizeGuessing);
-
   auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
       0, nullptr, nullptr, true);
 
@@ -261,8 +257,6 @@ TEST_F(FrameInfoHelperTest, TextureOwnerGuessCodedSizeFailRender) {
 }
 
 TEST_F(FrameInfoHelperTest, TextureOwnerGuessedWrongCodedSize) {
-  base::test::ScopedFeatureList scoped_enable(kMediaCodecCodedSizeGuessing);
-
   auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
       0, nullptr, nullptr, true);
 

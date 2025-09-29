@@ -787,19 +787,16 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   // Since we can't get the coded size w/o rendering the frame, we try to guess
   // in cases where we are unable to render the frame (resolution changes). If
   // we can't guess, there will be a visible rendering glitch.
-  std::optional<gfx::Size> coded_size_alignment;
-  if (base::FeatureList::IsEnabled(kMediaCodecCodedSizeGuessing)) {
-    coded_size_alignment =
-        MediaCodecUtil::LookupCodedSizeAlignment(codec_name_);
-    if (coded_size_alignment) {
-      MEDIA_LOG(INFO, media_log_) << "Using a coded size alignment of "
-                                  << coded_size_alignment->ToString();
-    } else {
-      // TODO(crbug.com/40917948): If the known cases work well, we can try
-      // guessing generically since we get a glitch either way.
-      MEDIA_LOG(WARNING, media_log_)
-          << "Unable to lookup coded size alignment for codec " << codec_name_;
-    }
+  std::optional<gfx::Size> coded_size_alignment =
+      MediaCodecUtil::LookupCodedSizeAlignment(codec_name_);
+  if (coded_size_alignment) {
+    MEDIA_LOG(INFO, media_log_) << "Using a coded size alignment of "
+                                << coded_size_alignment->ToString();
+  } else {
+    // TODO(crbug.com/40917948): If the known cases work well, we can try
+    // guessing generically since we get a glitch either way.
+    MEDIA_LOG(WARNING, media_log_)
+        << "Unable to lookup coded size alignment for codec " << codec_name_;
   }
 
   max_input_size_ = codec->GetMaxInputSize();
@@ -974,8 +971,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
   //
   // If this ever changes, the code below runs the risk of dropping all frames
   // which haven't been received and rendered from the MediaCodec instance.
-  if (base::FeatureList::IsEnabled(kMediaCodecElideEOS) &&
-      pending_buffer->end_of_stream() && pending_buffer->next_config()) {
+  if (pending_buffer->end_of_stream() && pending_buffer->next_config()) {
     const auto new_config =
         std::get<VideoDecoderConfig>(*pending_buffer->next_config());
 
