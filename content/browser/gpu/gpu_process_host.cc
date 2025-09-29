@@ -37,7 +37,6 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
-#include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/child_process_launcher.h"
@@ -87,7 +86,6 @@
 #include "sandbox/policy/switches.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/webnn_switches.h"
-#include "skia/buildflags.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -533,22 +531,6 @@ void BindDiscardableMemoryReceiverOnUI(
           discardable_memory::DiscardableSharedMemoryManager::Get()));
 }
 
-// Initialize PersistentCacheSandboxedFileFactory instance.
-// TODO(crbug.com/399642827): Consider moving this to
-// src/content/browser/browser_main_loop.cc once the persistent cache is used
-// for all cache types.
-void InitGpuPersistentCacheFileFactoryOnce() {
-#if BUILDFLAG(SKIA_USE_DAWN)
-  if (features::kSkiaGraphiteDawnUsePersistentCache.Get() &&
-      !viz::PersistentCacheSandboxedFileFactory::GetInstance()) {
-    base::FilePath cache_root_dir =
-        GetContentClient()->browser()->GetShaderDiskCacheDirectory();
-    viz::PersistentCacheSandboxedFileFactory::CreateInstance(
-        cache_root_dir.AppendASCII("PersistentCache"));
-  }
-#endif
-}
-
 }  // anonymous namespace
 
 // static
@@ -594,10 +576,6 @@ GpuProcessHost* GpuProcessHost::Get(GpuProcessKind kind, bool force_create) {
   if (BrowserMainRunner::ExitedMainMessageLoop()) {
     DLOG(ERROR) << "BrowserMainRunner::ExitedMainMessageLoop()";
     return nullptr;
-  }
-
-  if (kind != GPU_PROCESS_KIND_INFO_COLLECTION) {
-    InitGpuPersistentCacheFileFactoryOnce();
   }
 
   static int last_host_id = 0;

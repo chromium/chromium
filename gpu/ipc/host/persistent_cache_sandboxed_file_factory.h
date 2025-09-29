@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_VIZ_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
-#define COMPONENTS_VIZ_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
+#ifndef GPU_IPC_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
+#define GPU_IPC_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
 
 #include <optional>
 #include <string>
@@ -13,16 +13,13 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/viz/host/viz_host_export.h"
 
-namespace viz {
+namespace gpu {
 
 struct PersistentCacheSandboxedFiles {
   base::File db_file;
   base::File journal_file;
-  base::UnsafeSharedMemoryRegion shared_lock;
 };
 
 // This class supports opening file handles in a persistent cache directory.
@@ -32,13 +29,14 @@ struct PersistentCacheSandboxedFiles {
 // version. When a version change happens, the older versioned files will
 // be automatically deleted. TODO(crbug.com/399642827): This is a temporary
 // solution until PersistentCache supports max size limit and trimming.
-class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
+class PersistentCacheSandboxedFileFactory
     : public base::RefCountedThreadSafe<PersistentCacheSandboxedFileFactory> {
  public:
   using CacheIdString = base::FilePath::StringType;
 
-  static void CreateInstance(const base::FilePath& cache_root_dir);
-  static PersistentCacheSandboxedFileFactory* GetInstance();
+  PersistentCacheSandboxedFileFactory(
+      const base::FilePath& cache_root_dir,
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
 
   PersistentCacheSandboxedFileFactory(
       const PersistentCacheSandboxedFileFactory&) = delete;
@@ -76,20 +74,14 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
                        const std::string& product,
                        ClearFilesCallback callback);
 
- protected:
-  // Make ctor protected so that the tests can derive and test it directly.
-  PersistentCacheSandboxedFileFactory(
-      const base::FilePath& cache_root_dir,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
-  virtual ~PersistentCacheSandboxedFileFactory();
-
  private:
   friend class base::RefCountedThreadSafe<PersistentCacheSandboxedFileFactory>;
+  ~PersistentCacheSandboxedFileFactory();
 
   base::FilePath cache_root_dir_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 };
 
-}  // namespace viz
+}  // namespace gpu
 
-#endif  // COMPONENTS_VIZ_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_
+#endif  // GPU_IPC_HOST_PERSISTENT_CACHE_SANDBOXED_FILE_FACTORY_H_

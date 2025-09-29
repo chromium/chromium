@@ -86,9 +86,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   // Sets the caching interface. This must be called before graphite context
   // is created and before device is shared with any other threads.
   void SetCachingInterface(
-      std::unique_ptr<dawn::platform::CachingInterface> caching_interface);
-
-  dawn::platform::CachingInterface* GetCachingInterface() const;
+      std::unique_ptr<webgpu::DawnCachingInterface> caching_interface);
 
   bool use_thread_safe_shared_context() const;
 

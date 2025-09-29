@@ -66,8 +66,6 @@ GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnBackendValidation;
 GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
     kSkiaGraphiteDawnBackendDebugLabels;
-GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
-    kSkiaGraphiteDawnUsePersistentCache;
 GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kSkiaGraphiteMaxPendingRecordings;
 GPU_CONFIG_EXPORT extern const base::FeatureParam<bool>
