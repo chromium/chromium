@@ -292,9 +292,20 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       // Ensure we release the network and main thread idle callback slots.
       network_idle_callback_.Cancel();
       main_thread_idle_callback_.Cancel();
-      // Call the callback on a separate task.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, std::move(is_stable_callback_));
+      if (receiver_.is_bound()) {
+        // It's important to run the callback synchronously so a mojo reply is
+        // sent before disconnect. This is because we reset the receiver when
+        // moving to kDone. Once GeneralPageStability is enabled the mojo is the
+        // only caller so we can always invoke synchronously.
+        std::move(is_stable_callback_).Run();
+      } else {
+        // This path is only used when the monitor is called from the renderer
+        // and can be removed when GeneralPageStability is fully enabled.
+        CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
+                 features::ActorGeneralPageStabilityMode::kAllEnabled);
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(is_stable_callback_));
+      }
       MoveToState(State::kDone);
       break;
     }

@@ -5,8 +5,9 @@
     <title>Page Stability Tests</title>
     <script>
       onload = () => {
-        // Note: this file doesn't exist. Tests intercept and manually provide
-        // a response.
+        // Note: this file doesn't exist. Tests intercept and manually provide a
+        // response. This must match kFetchPath in
+        // page_stability_browsertest.cc.
         const fetch_path = '/fetchtarget.html';
 
         const fetch_button = document.getElementById('btnFetch');
@@ -14,7 +15,7 @@
         const work_forever_button = document.getElementById('btnWorkForever');
         const output = document.getElementById('output');
 
-        function doFetch(afterFetch) {
+        window.doFetch = function(afterFetch) {
           window.fetch(fetch_path)
               .then((res) => {
                 if (!res.ok) {
@@ -29,8 +30,7 @@
               .catch(error => { output.innerText = error; });
         }
 
-        function doBusyWork(tasks_to_run = 3) {
-          const task_duration_ms = 300;
+        window.doBusyWork = function(tasks_to_run = 3, task_duration_ms = 300) {
           // Use 0 delay to keep the main thread busy.
           const task_delay_ms = 0;
 
