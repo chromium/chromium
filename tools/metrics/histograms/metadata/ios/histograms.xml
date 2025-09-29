@@ -3952,6 +3952,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.NTP.LandscapeMode" enum="Boolean"
+    expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records whether the NTP on iOS is displayed in landscape. This is logged as
+    true when the NTP is opened directly in landscape mode or when the device is
+    rotated to landscape while the NTP is visible.
+  </summary>
+</histogram>
+
 <histogram name="IOS.NTP.LensButtonNewBadgeShown"
     enum="IOSNTPNewBadgeShownResult" expires_after="2024-11-17">
   <owner>hujasonx@google.com</owner>

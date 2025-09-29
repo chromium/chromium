@@ -223,6 +223,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   std::unique_ptr<PlaceholderServiceObserverBridge> _placeholderServiceObserver;
   // Feature engagement tracker for handling "new" badge IPH.
   raw_ptr<feature_engagement::Tracker, DanglingUntriaged> _tracker;
+  // Tracks whether the NTP was ever in landscape.
+  BOOL _wasNTPInLandscape;
 }
 
 // Synthesized from NewTabPageMutator.
@@ -296,6 +298,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }
 
 #pragma mark - NewTabPageMutator
+
+- (void)notifyNtpDisplayedInLandscape {
+  _wasNTPInLandscape = YES;
+}
 
 - (void)checkNewBadgeEligibility {
   // Notify the badge holdback period has been satisfied if this is not the
@@ -397,6 +403,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       base::FeatureList::IsEnabled(omnibox::kOmniboxMobileParityUpdateV2)) {
     self.placeholderService = nullptr;
   }
+  base::UmaHistogramBoolean("IOS.NTP.LandscapeMode", _wasNTPInLandscape);
 }
 
 - (void)saveNTPStateForWebState:(web::WebState*)webState {

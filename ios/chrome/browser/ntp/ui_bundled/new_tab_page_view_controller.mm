@@ -383,6 +383,10 @@ CGFloat SpaceBetweenModules() {
 
   self.viewDidAppear = YES;
   _appearing = NO;
+
+  if ([self isOrientationLandscapeForSize:self.view.bounds.size]) {
+    [self.mutator notifyNtpDisplayedInLandscape];
+  }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -444,6 +448,10 @@ CGFloat SpaceBetweenModules() {
                         }
                         [self updateFeedContainerSizeAndPosition];
                       }];
+
+  if ([self isOrientationLandscapeForSize:size]) {
+    [self.mutator notifyNtpDisplayedInLandscape];
+  }
 }
 
 #if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
@@ -1762,6 +1770,21 @@ CGFloat SpaceBetweenModules() {
   [_backgroundImageView setImage:_backgroundImage
               framingCoordinates:_framingCoordinates];
   _backgroundImageView.hidden = !_backgroundImage;
+}
+
+// Returns if the given size represents a landscape orientation on an iPhone or
+// iPad.
+- (BOOL)isOrientationLandscapeForSize:(CGSize)size {
+  BOOL isLandscape = size.width > size.height;
+  if (isLandscape) {
+    UIUserInterfaceIdiom deviceIdiom =
+        [[UIDevice currentDevice] userInterfaceIdiom];
+    if (deviceIdiom == UIUserInterfaceIdiomPad ||
+        deviceIdiom == UIUserInterfaceIdiomPhone) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 #pragma mark - Helpers
