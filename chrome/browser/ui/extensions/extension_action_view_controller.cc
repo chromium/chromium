@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
@@ -135,18 +136,19 @@ GetHoverCardPolicyState(Profile& profile,
 std::unique_ptr<ExtensionActionViewController>
 ExtensionActionViewController::Create(
     const extensions::ExtensionId& extension_id,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ExtensionsContainer* extensions_container) {
   DCHECK(browser);
   DCHECK(extensions_container);
 
-  auto* registry = extensions::ExtensionRegistry::Get(browser->profile());
+  Profile* profile = browser->GetProfile();
+  auto* registry = extensions::ExtensionRegistry::Get(profile);
   scoped_refptr<const extensions::Extension> extension =
       registry->enabled_extensions().GetByID(extension_id);
   DCHECK(extension);
   extensions::ExtensionAction* extension_action =
-      extensions::ExtensionActionManager::Get(browser->profile())
-          ->GetExtensionAction(*extension);
+      extensions::ExtensionActionManager::Get(profile)->GetExtensionAction(
+          *extension);
   DCHECK(extension_action);
 
   // WrapUnique() because the constructor is private.
@@ -170,13 +172,13 @@ bool ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
 
 ExtensionActionViewController::ExtensionActionViewController(
     scoped_refptr<const extensions::Extension> extension,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     extensions::ExtensionAction* extension_action,
     extensions::ExtensionRegistry* extension_registry,
     ExtensionsContainer* extensions_container)
     : extension_(std::move(extension)),
       browser_(browser),
-      profile_(browser->profile()),
+      profile_(browser->GetProfile()),
       extension_action_(extension_action),
       extensions_container_(extensions_container),
       popup_host_(nullptr),
@@ -643,8 +645,8 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
   const GURL popup_url = extension_action_->GetPopupUrl(tab_id);
 
   std::unique_ptr<extensions::ExtensionViewHost> host =
-      extensions::ExtensionViewHostFactory::CreatePopupHost(popup_url,
-                                                            browser_);
+      extensions::ExtensionViewHostFactory::CreatePopupHost(
+          popup_url, browser_->GetBrowserForMigrationOnly());
   // Creating a host should never fail in this case, since the extension is
   // valid and has a valid popup URL.
   CHECK(host);
