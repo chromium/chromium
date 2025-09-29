@@ -46,7 +46,7 @@ class RemotingClientIOProxy {
 
   // Stops the `remoting::RemotingClient` if there is an active session and
   // releases the resources for the next session.
-  virtual void StopCrdClient() = 0;
+  virtual void StopCrdClient(base::OnceClosure on_stopped_callback) = 0;
 
  protected:
   RemotingClientIOProxy() = default;
@@ -77,7 +77,7 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
                       std::string oauth_access_token,
                       std::string authorized_helper_email,
                       base::OnceClosure crd_session_ended_callback) override;
-  void StopCrdClient() override;
+  void StopCrdClient(base::OnceClosure on_stopped_callback) override;
 
  private:
   // Accepts the CRD ended event on the current sequence and forwards it to the
@@ -96,7 +96,8 @@ class RemotingClientIOProxyImpl : public RemotingClientIOProxy,
   // for a previous session.
   void ResetRemotingClient(
       std::unique_ptr<remoting::RemotingClient> remoting_client,
-      std::unique_ptr<SpotlightFrameConsumer> frame_consumer);
+      std::unique_ptr<SpotlightFrameConsumer> frame_consumer,
+      base::OnceClosure on_stopped_callback);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

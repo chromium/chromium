@@ -426,7 +426,7 @@ void BocaSessionManager::StartCrdClient(
 
 void BocaSessionManager::EndSpotlightSession() {
   CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
-  remoting_client_manager_->StopCrdClient();
+  remoting_client_manager_->StopCrdClient(base::DoNothing());
 }
 
 std::string BocaSessionManager::GetDeviceRobotEmail() {

@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -97,13 +98,17 @@ void SpotlightRemotingClientManagerImpl::StartCrdClient(
       weak_factory_.GetWeakPtr(), std::move(crd_connection_code))));
 }
 
-void SpotlightRemotingClientManagerImpl::StopCrdClient() {
+void SpotlightRemotingClientManagerImpl::StopCrdClient(
+    base::OnceClosure on_stopped_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!session_in_progress_) {
+    std::move(on_stopped_callback).Run();
     return;
   }
 
-  remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient);
+  remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient)
+      .WithArgs(
+          base::BindPostTaskToCurrentDefault(std::move(on_stopped_callback)));
   Reset();
 }
 
@@ -157,7 +162,8 @@ void SpotlightRemotingClientManagerImpl::UpdateState(CrdConnectionState state) {
   }
   status_updated_callback_.Run(state);
   if (state == CrdConnectionState::kTimeout) {
-    remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient);
+    remoting_client_io_proxy_->AsyncCall(&RemotingClientIOProxy::StopCrdClient)
+        .WithArgs(base::DoNothing());
     Reset();
   }
 }

@@ -108,7 +108,7 @@ class BocaReceiverUntrustedPageHandler
 
   mojo::Remote<mojom::UntrustedPage> page_;
   const raw_ptr<ReceiverHandlerDelegate> delegate_;
-  const std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_;
+  std::unique_ptr<boca::SpotlightRemotingClientManager> remoting_client_;
   std::unique_ptr<boca::InvalidationServiceImpl> invalidation_service_;
   std::unique_ptr<google_apis::RequestSender> registration_request_sender_;
   std::optional<std::string> receiver_id_;

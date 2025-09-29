@@ -51,7 +51,7 @@ class SpotlightRemotingClientManager {
       SpotlightFrameConsumer::FrameReceivedCallback frame_received_callback,
       SpotlightCrdStateUpdatedCallback status_updated_callback) = 0;
 
-  virtual void StopCrdClient() = 0;
+  virtual void StopCrdClient(base::OnceClosure on_stopped_callback) = 0;
 
   virtual std::string GetDeviceRobotEmail() = 0;
 
@@ -89,7 +89,7 @@ class SpotlightRemotingClientManagerImpl
       SpotlightCrdStateUpdatedCallback status_updated_callback) override;
   // Forwards the request to stop the crd client to the
   // `remoting_client_io_proxy_`.
-  void StopCrdClient() override;
+  void StopCrdClient(base::OnceClosure on_stopped_callback) override;
   std::string GetDeviceRobotEmail() override;
 
  private:

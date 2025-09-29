@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -63,7 +64,7 @@ class MockRemotingClientIOProxy : public RemotingClientIOProxy {
                std::string authorized_helper_email,
                base::OnceClosure crd_session_ended_callback),
               (override));
-  MOCK_METHOD(void, StopCrdClient, (), (override));
+  MOCK_METHOD(void, StopCrdClient, (base::OnceClosure), (override));
 };
 
 class SpotlightRemotingClientManagerImplTest : public testing::Test {
@@ -145,13 +146,13 @@ TEST_F(SpotlightRemotingClientManagerImplTest, StartCrdClientSuccess) {
 }
 
 TEST_F(SpotlightRemotingClientManagerImplTest, StopCrdClient) {
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> stop_future;
   manager_->StartCrdClient(std::string(kValidConnectionCode), base::DoNothing(),
                            base::DoNothing(), base::DoNothing());
   EXPECT_CALL(*remoting_client_io_proxy_, StopCrdClient)
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
-  manager_->StopCrdClient();
-  run_loop.Run();
+      .WillOnce([](base::OnceClosure cb) { std::move(cb).Run(); });
+  manager_->StopCrdClient(stop_future.GetCallback());
+  EXPECT_TRUE(stop_future.Wait());
 }
 
 TEST_F(SpotlightRemotingClientManagerImplTest, GetDeviceRobotEmail) {

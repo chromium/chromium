@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/boca/spotlight/remoting_client_io_proxy.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/sequence_checker.h"
@@ -72,7 +73,8 @@ void RemotingClientIOProxyImpl::StartCrdClient(
                                  {oauth_access_token, authorized_helper_email});
 }
 
-void RemotingClientIOProxyImpl::StopCrdClient() {
+void RemotingClientIOProxyImpl::StopCrdClient(
+    base::OnceClosure on_stopped_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   crd_session_ended_callback_.Reset();
@@ -93,7 +95,8 @@ void RemotingClientIOProxyImpl::StopCrdClient() {
       FROM_HERE,
       base::BindOnce(&RemotingClientIOProxyImpl::ResetRemotingClient,
                      weak_factory_.GetWeakPtr(), std::move(remoting_client_),
-                     std::move(frame_consumer_)),
+                     std::move(frame_consumer_),
+                     std::move(on_stopped_callback)),
       base::Seconds(3));
 }
 
@@ -120,10 +123,12 @@ void RemotingClientIOProxyImpl::OnFrameReceived(
 
 void RemotingClientIOProxyImpl::ResetRemotingClient(
     std::unique_ptr<remoting::RemotingClient> remoting_client,
-    std::unique_ptr<SpotlightFrameConsumer> frame_consumer) {
+    std::unique_ptr<SpotlightFrameConsumer> frame_consumer,
+    base::OnceClosure on_stopped_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remoting_client.reset();
   frame_consumer.reset();
+  std::move(on_stopped_callback).Run();
 }
 
 }  // namespace ash::boca
