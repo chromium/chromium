@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/secure_client.h"
+#include "components/legion/client.h"
 
 #include <memory>
 #include <optional>
@@ -27,8 +27,8 @@ using base::test::RunOnceCallback;
 
 namespace {
 
-// Mock implementation of the SecureChannelClient interface.
-class MockSecureChannelClient : public SecureChannelClient {
+// Mock implementation of the SecureChannel interface.
+class MockSecureChannelClient : public SecureChannel {
  public:
   MockSecureChannelClient() = default;
   ~MockSecureChannelClient() override = default;
@@ -36,16 +36,16 @@ class MockSecureChannelClient : public SecureChannelClient {
   MOCK_METHOD(
       void,
       Write,
-      (Request request, SecureChannelClient::OnWriteCompletedCallback callback),
+      (Request request, SecureChannel::OnWriteCompletedCallback callback),
       (override));
 };
 
 }  // namespace
 
-class SecureClientTest : public ::testing::Test {
+class ClientTest : public ::testing::Test {
  public:
-  SecureClientTest() = default;
-  ~SecureClientTest() override = default;
+  ClientTest() = default;
+  ~ClientTest() override = default;
 
   using RequestFuture =
       base::test::TestFuture<ResultCode, std::optional<Response>>;
@@ -53,18 +53,18 @@ class SecureClientTest : public ::testing::Test {
   void SetUp() override {
     auto mock_secure_channel = std::make_unique<MockSecureChannelClient>();
     mock_secure_channel_ = mock_secure_channel.get();
-    client_ = std::make_unique<SecureClient>(
+    client_ = std::make_unique<Client>(
         std::move(mock_secure_channel), "test_api_key");
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<SecureClient> client_;
+  std::unique_ptr<Client> client_;
   raw_ptr<MockSecureChannelClient> mock_secure_channel_;  // Owned by client_
 };
 
 // Test the successful request flow.
-TEST_F(SecureClientTest, SendRequestSuccess) {
+TEST_F(ClientTest, SendRequestSuccess) {
   Request request = {1, 2, 3};
   Response expected_response_data = {4, 5, 6};
 
@@ -80,8 +80,8 @@ TEST_F(SecureClientTest, SendRequestSuccess) {
   EXPECT_EQ(*future.Get<1>(), expected_response_data);
 }
 
-// Test the flow where the SecureChannelClient indicates a network error.
-TEST_F(SecureClientTest, SendRequestNetworkError) {
+// Test the flow where the SecureChannel indicates a network error.
+TEST_F(ClientTest, SendRequestNetworkError) {
   Request request = {7, 8, 9};
 
   EXPECT_CALL(*mock_secure_channel_, Write(Eq(request), _))
@@ -94,8 +94,8 @@ TEST_F(SecureClientTest, SendRequestNetworkError) {
   EXPECT_FALSE(future.Get<1>().has_value());
 }
 
-// Test the flow where the SecureChannelClient indicates a generic error.
-TEST_F(SecureClientTest, SendRequestGenericError) {
+// Test the flow where the SecureChannel indicates a generic error.
+TEST_F(ClientTest, SendRequestGenericError) {
   Request request = {10, 11, 12};
 
   EXPECT_CALL(*mock_secure_channel_, Write(Eq(request), _))
@@ -109,12 +109,12 @@ TEST_F(SecureClientTest, SendRequestGenericError) {
 }
 
 // Test the flow where authentication fails due to an empty API key.
-TEST_F(SecureClientTest, SendRequestAuthenticationFailed) {
+TEST_F(ClientTest, SendRequestAuthenticationFailed) {
   auto mock_secure_channel = std::make_unique<MockSecureChannelClient>();
   EXPECT_CALL(*mock_secure_channel, Write(_, _)).Times(0);
 
   // Create a client with an empty API key.
-  auto client = std::make_unique<SecureClient>(
+  auto client = std::make_unique<Client>(
       std::move(mock_secure_channel), "");
 
   Request request = {13, 14, 15};

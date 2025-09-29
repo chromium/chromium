@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LEGION_SECURE_CHANNEL_CLIENT_H_
-#define COMPONENTS_LEGION_SECURE_CHANNEL_CLIENT_H_
+#ifndef COMPONENTS_LEGION_SECURE_CHANNEL_H_
+#define COMPONENTS_LEGION_SECURE_CHANNEL_H_
 
 #include <cstdint>
 #include <memory>
@@ -35,12 +35,12 @@ enum class ResultCode {
 // This layer is responsible for handling the secure communication
 // with the service, likely wrapping the Backend client logic
 // and using the WebSocketClient for transport.
-class SecureChannelClient {
+class SecureChannel {
  public:
   using OnWriteCompletedCallback =
       base::OnceCallback<void(ResultCode, std::optional<Response>)>;
 
-  virtual ~SecureChannelClient() = default;
+  virtual ~SecureChannel() = default;
 
   // Asynchronously performs the operation over the secure channel.
   virtual void Write(Request request, OnWriteCompletedCallback callback) = 0;
@@ -48,4 +48,4 @@ class SecureChannelClient {
 
 }  // namespace legion
 
-#endif  // COMPONENTS_LEGION_SECURE_CHANNEL_CLIENT_H_
+#endif  // COMPONENTS_LEGION_SECURE_CHANNEL_H_

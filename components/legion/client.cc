@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/secure_client.h"
+#include "components/legion/client.h"
 
 #include <memory>
 #include <optional>
@@ -13,20 +13,19 @@
 
 namespace legion {
 
-SecureClient::SecureClient(
-    std::unique_ptr<SecureChannelClient> secure_channel_client,
+Client::Client(
+    std::unique_ptr<SecureChannel> secure_channel,
     const std::string& api_key)
-    : secure_channel_client_(std::move(secure_channel_client)),
+    : secure_channel_(std::move(secure_channel)),
       api_key_(api_key) {
-  CHECK(secure_channel_client_);
+  CHECK(secure_channel_);
 }
 
-SecureClient::~SecureClient() = default;
+Client::~Client() = default;
 
-bool SecureClient::Authenticate() {
-  // TODO(nikhiljakhar): Implement API Key based Authentication.
+bool Client::Authenticate() {
   // This is a placeholder. API key will be added to requests
-  // within the SecureChannelClient or its transport.
+  // within the SecureChannel or its transport.
   DVLOG(1) << "Performing Authentication (API Key)...";
   if (api_key_.empty()) {
     LOG(ERROR) << "API Key is empty.";
@@ -37,7 +36,7 @@ bool SecureClient::Authenticate() {
   return true;
 }
 
-void SecureClient::SendRequest(
+void Client::SendRequest(
     Request request,
     OnRequestCompletedCallback callback) {
   DVLOG(1) << "SendRequest started.";
@@ -52,10 +51,10 @@ void SecureClient::SendRequest(
   DVLOG(1) << "Authentication successful.";
 
   DVLOG(1) << "Calling SecureChannelClient to execute the request.";
-  // The SecureChannelClient is responsible for using the underlying
+  // The SecureChannel is responsible for using the underlying
   // transport (WebSocketClient) to communicate with the service,
   // including adding the api_key_ to the request headers/parameters.
-  secure_channel_client_->Write(
+  secure_channel_->Write(
       std::move(request),
       base::BindOnce(
           [](OnRequestCompletedCallback cb, ResultCode result,
