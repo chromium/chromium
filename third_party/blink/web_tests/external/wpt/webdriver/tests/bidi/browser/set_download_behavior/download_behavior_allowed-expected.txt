@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_allow_and_reset_no_destination_folder
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Download in non-default user contexts requires `destinationFolder`)
+Harness: the test ran to completion.
+

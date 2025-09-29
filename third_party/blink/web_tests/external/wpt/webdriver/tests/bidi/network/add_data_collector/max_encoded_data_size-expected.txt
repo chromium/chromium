@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_max_encoded_data_size
+  Failed: DID NOT RAISE <class 'webdriver.bidi.error.NoSuchNetworkDataException'>
+Harness: the test ran to completion.
+
