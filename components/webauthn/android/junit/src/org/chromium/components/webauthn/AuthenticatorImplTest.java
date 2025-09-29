@@ -114,7 +114,7 @@ public class AuthenticatorImplTest {
         mAuthenticator.getClientCapabilities(callback);
 
         verify(callback).call(mCapabilitiesCaptor.capture());
-        assertEquals(7, mCapabilitiesCaptor.getValue().length);
+        assertEquals(10, mCapabilitiesCaptor.getValue().length);
     }
 
     @Test
@@ -179,7 +179,7 @@ public class AuthenticatorImplTest {
 
         verify(callback).call(mCapabilitiesCaptor.capture());
         WebAuthnClientCapability[] capabilities = mCapabilitiesCaptor.getValue();
-        assertEquals(7, capabilities.length);
+        assertEquals(10, capabilities.length);
         assertCapabilitySupported(
                 capabilities, AuthenticatorConstants.CAPABILITY_CONDITIONAL_GET, false);
         assertCapabilitySupported(
@@ -192,6 +192,14 @@ public class AuthenticatorImplTest {
         assertCapabilitySupported(capabilities, AuthenticatorConstants.CAPABILITY_PPAA, true);
         assertCapabilitySupported(
                 capabilities, AuthenticatorConstants.CAPABILITY_IMMEDIATE_GET, false);
+        assertCapabilitySupported(
+                capabilities,
+                AuthenticatorConstants.CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS,
+                false);
+        assertCapabilitySupported(
+                capabilities, AuthenticatorConstants.CAPABILITY_SIGNAL_CURRENT_USER_DETAILS, false);
+        assertCapabilitySupported(
+                capabilities, AuthenticatorConstants.CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL, false);
     }
 
     private void testCapability(String capability, boolean expectedSupported) {

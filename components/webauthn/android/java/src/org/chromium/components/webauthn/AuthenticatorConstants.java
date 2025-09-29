@@ -23,4 +23,8 @@ public final class AuthenticatorConstants {
     public static final String CAPABILITY_CONDITIONAL_CREATE = "conditionalCreate";
     public static final String CAPABILITY_CONDITIONAL_GET = "conditionalGet";
     public static final String CAPABILITY_IMMEDIATE_GET = "immediateGet";
+    public static final String CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS =
+            "signalAllAcceptedCredentials";
+    public static final String CAPABILITY_SIGNAL_CURRENT_USER_DETAILS = "signalCurrentUserDetails";
+    public static final String CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL = "signalUnknownCredential";
 }

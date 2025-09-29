@@ -38,12 +38,6 @@ namespace {
 // https://www.w3.org/TR/webauthn/#dom-publickeycredential-type-slot:
 constexpr char kPublicKeyCredentialType[] = "public-key";
 
-// This is the subset of client capabilities computed by the renderer. See also
-// //content/browser/webauth/authenticator_common_impl.h
-constexpr char kSignalAllAcceptedCredentials[] = "signalAllAcceptedCredentials";
-constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";
-constexpr char kSignalUnknownCredential[] = "signalUnknownCredential";
-
 void OnIsUserVerifyingComplete(ScriptPromiseResolver<IDLBoolean>* resolver,
                                bool available) {
   resolver->Resolve(available);
@@ -68,10 +62,6 @@ void OnGetClientCapabilitiesComplete(
   for (const auto& capability : capabilities) {
     results.emplace_back(std::move(capability->name), capability->supported);
   }
-
-  results.emplace_back(kSignalAllAcceptedCredentials, true);
-  results.emplace_back(kSignalCurrentUserDetails, true);
-  results.emplace_back(kSignalUnknownCredential, true);
 
   // Extensions are added from the AuthenticationExtensionsClientInputs
   // dictionary defined in authentication_extensions_client_inputs.idl.

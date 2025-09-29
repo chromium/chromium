@@ -307,6 +307,16 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         capabilities.add(
                 createWebAuthnClientCapability(AuthenticatorConstants.CAPABILITY_PPAA, true));
 
+        capabilities.add(
+                createWebAuthnClientCapability(
+                        AuthenticatorConstants.CAPABILITY_SIGNAL_ALL_ACCEPTED_CREDENTIALS, false));
+        capabilities.add(
+                createWebAuthnClientCapability(
+                        AuthenticatorConstants.CAPABILITY_SIGNAL_CURRENT_USER_DETAILS, false));
+        capabilities.add(
+                createWebAuthnClientCapability(
+                        AuthenticatorConstants.CAPABILITY_SIGNAL_UNKNOWN_CREDENTIAL, false));
+
         if (!couldSupportUvpaa()) {
             capabilities.add(
                     createWebAuthnClientCapability(

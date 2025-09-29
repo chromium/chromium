@@ -824,6 +824,9 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
       client_capabilities::kUserVerifyingPlatformAuthenticator,
       client_capabilities::kRelatedOrigins,
       client_capabilities::kConditionalCreate,
+      client_capabilities::kSignalAllAcceptedCredentials,
+      client_capabilities::kSignalCurrentUserDetails,
+      client_capabilities::kSignalUnknownCredential,
   };
 
   // Ensure no extra capabilities
@@ -867,7 +870,7 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_RelatedOrigins) {
   ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
 }
 
-TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditonalCreate) {
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_ConditionalCreate) {
   for (const bool enabled : {false, true}) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatureState(device::kWebAuthnPasskeyUpgrade, enabled);
@@ -887,6 +890,15 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_ImmediateGet) {
     ExpectCapability(capabilities, client_capabilities::kImmediateGet,
                      enabled ? std::optional<bool>(true) : std::nullopt);
   }
+}
+
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_SignalApi) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+  ExpectCapability(capabilities,
+                   client_capabilities::kSignalAllAcceptedCredentials, true);
+  ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
+  ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
 }
 
 // Parses its arguments as JSON and expects that all the keys in the first are
