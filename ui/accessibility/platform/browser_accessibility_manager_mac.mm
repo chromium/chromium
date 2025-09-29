@@ -91,7 +91,7 @@ void BrowserAccessibilityManagerMac::FireBlinkEvent(ax::mojom::Event event_type,
   NSString* mac_notification = nullptr;
   switch (event_type) {
     case ax::mojom::Event::kAutocorrectionOccured:
-      mac_notification = CrNSAccessibilityAutocorrectionOccurredNotification;
+      mac_notification = NSAccessibilityAutocorrectionOccurredNotification;
       break;
     case ax::mojom::Event::kLoadComplete:
       if (!ShouldFireLoadCompleteNotification())

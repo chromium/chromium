@@ -76,7 +76,7 @@ bool IsValidAXAttribute(const std::string& attribute) {
     NSAccessibilityARIARowIndexAttribute,
     NSAccessibilityARIASetSizeAttribute,
     NSAccessibilityAutocompleteValueAttribute,
-    CrNSAccessibilityBlockQuoteLevelAttribute,
+    NSAccessibilityBlockQuoteLevelAttribute,
     NSAccessibilityBrailleLabelAttribute,
     NSAccessibilityBrailleRoleDescription,
     NSAccessibilityChromeAXNodeIdAttribute,
@@ -114,7 +114,7 @@ bool IsValidAXAttribute(const std::string& attribute) {
     NSAccessibilityTitleAttribute,
     NSAccessibilityTitleUIElementAttribute,
     NSAccessibilityURLAttribute,
-    CrNSAccessibilityVisitedAttribute,
+    NSAccessibilityVisitedAttribute,
   ]];
 
   return [valid_attributes containsObject:base::SysUTF8ToNSString(attribute)];
