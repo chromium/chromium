@@ -52,6 +52,8 @@ class TabStripNudgeButton : public TabStripControlButton {
   void SetCloseButtonFocusBehavior(views::View::FocusBehavior focus_behavior);
   bool is_showing_nudge_ = false;
 
+  views::View* close_button() { return close_button_; }
+
  private:
   void SetCloseButton(PressedCallback callback);
   float width_factor_ = 0;

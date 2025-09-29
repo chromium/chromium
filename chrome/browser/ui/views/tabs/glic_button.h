@@ -102,7 +102,9 @@ class GlicButton : public TabStripNudgeButton,
     return tab_strip_controller_->GetProfile()->GetPrefs();
   }
 
-  void UpdateTextColor();
+  void UpdateTextAndBackgroundColors();
+  void UpdateIcon();
+  bool IsHighlightVisible() const;
 
 #if BUILDFLAG(ENABLE_GLIC)
   void PanelStateChanged(bool active);
@@ -149,6 +151,9 @@ class GlicButton : public TabStripNudgeButton,
 
   // View to be drawn behind the icon and label with a background color.
   raw_ptr<View> highlight_view_ = nullptr;
+
+  const ui::ImageModel normal_icon_;
+  const ui::ImageModel icon_for_highlight_;
 };
 
 }  // namespace glic

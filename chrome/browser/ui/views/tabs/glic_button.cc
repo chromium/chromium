@@ -45,14 +45,17 @@
 namespace glic {
 namespace {
 
-constexpr int kIconLeftMargin = 6;
+constexpr int kIconLeftMargin = 4;
 constexpr int kIconRightMargin = 4;
 constexpr int kHighlightCornerRadius = 8;
 constexpr int kHighlightMargin = 2;
-constexpr int kLabelRightMargin = 12;
+constexpr int kLabelRightMargin = 8;
+constexpr int kHighlightCloseButtonLeftMargin = 4;
+constexpr int kHighlightCloseButtonRightMargin = 8;
 constexpr ui::ColorId kHighlightColorId = ui::kColorSysPrimary;
+constexpr ui::ColorId kTextOnHighlight = ui::kColorSysOnPrimary;
 
-constexpr gfx::Size kAltIconSize{16, 16};
+constexpr int kIconSize = 16;
 
 bool EntrypointVariationsEnabled() {
   return base::FeatureList::IsEnabled(features::kGlicEntrypointVariations);
@@ -74,21 +77,38 @@ bool ShouldUseAltIcon() {
          features::kGlicEntrypointVariationsAltIcon.Get();
 }
 
-const gfx::VectorIcon& GetIconForTabStripControlButton() {
+bool HighlightNudgeEnabled() {
+  return EntrypointVariationsEnabled() &&
+         features::kGlicEntrypointVariationsHighlightNudge.Get();
+}
+
+const gfx::VectorIcon& GlicVectorIcon() {
+  return glic::GlicVectorIconManager::GetVectorIcon(
+      IDR_GLIC_BUTTON_VECTOR_ICON);
+}
+
+ui::ImageModel GetNormalIcon() {
   if (ShouldUseAltIcon()) {
-    // If using the alt icon, set it up in GlicButton's constructor body and
-    // pass an empty icon to TabStripNudgeButton.
-    return gfx::VectorIcon::EmptyIcon();
-  } else {
-    return glic::GlicVectorIconManager::GetVectorIcon(
-        IDR_GLIC_BUTTON_VECTOR_ICON);
+    return ui::ImageModel::FromImageSkia(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+            IDR_GLIC_BUTTON_ALT_ICON));
   }
+  return ui::ImageModel::FromVectorIcon(GlicVectorIcon(),
+                                        ui::kColorSysOnSurface, kIconSize);
+}
+
+ui::ImageModel GetIconForHighlight() {
+  if (HighlightNudgeEnabled()) {
+    return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kTextOnHighlight,
+                                          kIconSize);
+  }
+  return {};
 }
 
 std::unique_ptr<views::View> CreateHighlightView() {
   auto view = std::make_unique<views::View>();
   view->SetBackground(views::CreateRoundedRectBackground(
-      kHighlightColorId, kHighlightCornerRadius, 0));
+      SK_ColorTRANSPARENT, kHighlightCornerRadius, 0));
   view->SetProperty(views::kMarginsKey, gfx::Insets(kHighlightMargin));
   // Don't steal hover events
   view->SetCanProcessEventsWithinSubtree(false);
@@ -114,31 +134,28 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
                           GetLabelText(),
                           kGlicNudgeButtonElementId,
                           Edge::kNone,
-                          GetIconForTabStripControlButton(),
+                          gfx::VectorIcon::EmptyIcon(),
                           /*show_close_button=*/true),
       menu_model_(CreateMenuModel()),
       tab_strip_controller_(tab_strip_controller),
       hovered_callback_(std::move(hovered_callback)),
-      mouse_down_callback_(std::move(mouse_down_callback)) {
+      mouse_down_callback_(std::move(mouse_down_callback)),
+      normal_icon_(GetNormalIcon()),
+      icon_for_highlight_(GetIconForHighlight()) {
   SetProperty(views::kElementIdentifierKey, kGlicButtonElementId);
 
-  if (ShouldUseAltIcon()) {
-    const ui::ImageModel icon_image_model = ui::ImageModel::FromImageSkia(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_GLIC_BUTTON_ALT_ICON));
-    SetImageModel(views::Button::STATE_NORMAL, icon_image_model);
-    SetImageModel(views::Button::STATE_HOVERED, icon_image_model);
-    SetImageModel(views::Button::STATE_PRESSED, icon_image_model);
-
-    auto* image_view = static_cast<views::ImageView*>(image_container_view());
-    image_view->SetImageSize(kAltIconSize);
-    image_view->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets().set_left_right(kIconLeftMargin, kIconRightMargin));
+  UpdateIcon();
+  auto* image_view = static_cast<views::ImageView*>(image_container_view());
+  image_view->SetImageSize({kIconSize, kIconSize});
+  int icon_left_margin = kIconLeftMargin;
+  if (!HighlightNudgeEnabled()) {
+    icon_left_margin += kHighlightMargin;
   }
+  image_view->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_left_right(icon_left_margin, kIconRightMargin));
 
-  if (EntrypointVariationsEnabled() &&
-      features::kGlicEntrypointVariationsHighlightNudge.Get()) {
+  if (HighlightNudgeEnabled()) {
     std::optional<size_t> icon_index = GetIndexOf(image_container_view());
     CHECK(icon_index);
     highlight_view_ = AddChildViewAt(CreateHighlightView(), *icon_index);
@@ -146,6 +163,11 @@ GlicButton::GlicButton(TabStripController* tab_strip_controller,
     // Reparent icon and label under the highlight.
     highlight_view_->AddChildView(RemoveChildViewT(image_container_view()));
     highlight_view_->AddChildView(RemoveChildViewT(label()));
+
+    close_button()->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_left_right(kHighlightCloseButtonLeftMargin,
+                                     kHighlightCloseButtonRightMargin));
   }
 
   set_context_menu_controller(this);
@@ -216,7 +238,6 @@ void GlicButton::SetIsShowingNudge(bool is_showing) {
     SetCloseButtonVisible(true);
     SetCloseButtonFocusBehavior(FocusBehavior::ALWAYS);
     AnnounceNudgeShown();
-    SetWidthFactor(1);
   } else {
     SetCloseButtonVisible(false);
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
@@ -230,7 +251,8 @@ void GlicButton::SetIsShowingNudge(bool is_showing) {
   }
 
   is_showing_nudge_ = is_showing;
-  UpdateTextColor();
+  UpdateTextAndBackgroundColors();
+  UpdateIcon();
   PreferredSizeChanged();
 }
 
@@ -269,7 +291,8 @@ void GlicButton::StateChanged(ButtonState old_state) {
     hovered_callback_.Run();
   }
 
-  UpdateTextColor();
+  UpdateTextAndBackgroundColors();
+  UpdateIcon();
 }
 
 void GlicButton::SetDropToAttachIndicator(bool indicate) {
@@ -316,8 +339,6 @@ void GlicButton::ExecuteCommand(int command_id, int event_flags) {
 
 void GlicButton::SetText(std::u16string_view text) {
   TabStripNudgeButton::SetText(text);
-  label()->SetAutoColorReadabilityEnabled(true);
-  UpdateColors();
 }
 
 bool GlicButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -329,7 +350,7 @@ bool GlicButton::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void GlicButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (!initial_width_) {
+  if (ShouldShowLabel() && !initial_width_) {
     initial_width_ = GetLayoutManager()->GetPreferredSize(this).width();
   }
   TabStripNudgeButton::OnBoundsChanged(previous_bounds);
@@ -379,19 +400,39 @@ void GlicButton::SetDefaultColors() {
   SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
+
+  UpdateTextAndBackgroundColors();
 }
 
-void GlicButton::UpdateTextColor() {
-  if (highlight_view_) {
-    // Set the background color so that auto-readability updates the foreground
-    // color.
-    if (is_showing_nudge_ && GetState() != STATE_HOVERED) {
-      label()->SetBackgroundColor(kHighlightColorId);
+void GlicButton::UpdateTextAndBackgroundColors() {
+  const bool highlight_visible = IsHighlightVisible();
+  if (highlight_visible || ShouldUseAltIcon()) {
+    SetBackgroundFrameActiveColorId(ui::kColorSysBase);
+
+    if (highlight_visible) {
+      SetForegroundFrameActiveColorId(kTextOnHighlight);
     } else {
-      label()->SetBackgroundColor(SK_ColorTRANSPARENT);
+      SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
     }
-    UpdateColors();
+  } else {
+    SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+    SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
   }
+
+  UpdateColors();
+}
+
+void GlicButton::UpdateIcon() {
+  const ui::ImageModel& model =
+      IsHighlightVisible() ? icon_for_highlight_ : normal_icon_;
+
+  SetImageModel(views::Button::STATE_NORMAL, model);
+  SetImageModel(views::Button::STATE_HOVERED, model);
+  SetImageModel(views::Button::STATE_PRESSED, model);
+}
+
+bool GlicButton::IsHighlightVisible() const {
+  return highlight_view_ && is_showing_nudge_ && GetState() != STATE_HOVERED;
 }
 
 BEGIN_METADATA(GlicButton)
