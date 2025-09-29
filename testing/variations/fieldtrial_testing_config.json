@@ -26147,6 +26147,30 @@
             ]
         }
     ],
+    "V8IneffectiveMarkCompact": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "HighSizeAndCpuThreshold",
+                    "params": {
+                        "ineffective_gc_mutator_utilization_threshold": "0.2",
+                        "ineffective_gc_size_threshold": "0.95"
+                    },
+                    "enable_features": [
+                        "V8Flag_detect_ineffective_gcs_near_heap_limit"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8LargePagePool": [
         {
             "platforms": [
