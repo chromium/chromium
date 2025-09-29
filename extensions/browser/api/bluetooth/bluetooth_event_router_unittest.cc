@@ -120,14 +120,14 @@ TEST_F(BluetoothEventRouterTest, SetDiscoveryFilter) {
   EXPECT_CALL(
       *mock_adapter_,
       StartScanWithFilter_(testing::Pointee(IsFilterEqual(&df)), testing::_))
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](const device::BluetoothDiscoveryFilter* filter,
              base::OnceCallback<void(
                  /*is_error*/ bool,
                  device::UMABluetoothDiscoverySessionOutcome)>& callback) {
             std::move(callback).Run(
                 false, device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
-          }));
+          });
 
   // RemoveDiscoverySession will be called when the BluetoothDiscoverySession
   // is destroyed
