@@ -1921,15 +1921,6 @@ void RasterImplementation::EndGpuRaster() {
   NOTREACHED();
 }
 
-void RasterImplementation::BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
-                                                                GLenum mode) {
-  NOTREACHED();
-}
-
-void RasterImplementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
-  NOTREACHED();
-}
-
 void RasterImplementation::TraceBeginCHROMIUM(const char* category_name,
                                               const char* trace_name) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
