@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -1195,6 +1196,81 @@ TEST_F(LevelDbBackingStoreTest, CompactionTaskTiming) {
   task_environment_.FastForwardBy(kMaxBucketCompactionDelay);
 
   EXPECT_TRUE(backing_store()->ShouldRunCompaction());
+}
+
+TEST_F(LevelDbBackingStoreTest, InSessionCleanupVerification) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {content::indexed_db::level_db::kIdbInSessionDbCleanup,
+       content::indexed_db::level_db::kIdbVerifyInSessionDbCleanup},
+      /*disabled_features=*/{});
+
+  const int object_store_id = 1;
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  indexed_db::BackingStore::Database& db = **db_creation_result;
+
+  {
+    auto txn =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::VersionChange);
+    txn->Begin(CreateDummyLock());
+
+    EXPECT_TRUE(txn->CreateObjectStore(object_store_id, u"object_store_name",
+                                       IndexedDBKeyPath(u"object_store_key"),
+                                       /*auto_increment=*/true)
+                    .ok());
+    CommitTransactionAndVerify(*txn);
+  }
+
+  {
+    auto txn =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+    txn->Begin(CreateDummyLock());
+    EXPECT_TRUE(txn->PutRecord(object_store_id, IndexedDBKey("key"),
+                               IndexedDBValue("value", {}))
+                    .has_value());
+    CommitTransactionAndVerify(*txn);
+  }
+
+  // Verify that cleanup verification only occurs once in a while, not on every
+  // cleanup.
+  base::HistogramTester histograms;
+
+  // Verify on first cleanup.
+  backing_store()->OnCleanupStarted();
+  backing_store()->OnCleanupDone();
+  histograms.ExpectBucketCount(
+      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+      level_db::BackingStore::InSessionCleanupVerificationEvent::
+          kCleanupStarted,
+      1);
+
+  // Don't verify on next few cleanups.
+  for (int i = 0; i < 60; ++i) {
+    backing_store()->OnCleanupStarted();
+    backing_store()->OnCleanupDone();
+  }
+
+  histograms.ExpectBucketCount(
+      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+      level_db::BackingStore::InSessionCleanupVerificationEvent::
+          kCleanupStarted,
+      1);
+
+  // Verify again eventually.
+  for (int i = 0; i < 60; ++i) {
+    backing_store()->OnCleanupStarted();
+    backing_store()->OnCleanupDone();
+  }
+
+  histograms.ExpectBucketCount(
+      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+      level_db::BackingStore::InSessionCleanupVerificationEvent::
+          kCleanupStarted,
+      2);
 }
 
 }  // namespace content::indexed_db::level_db

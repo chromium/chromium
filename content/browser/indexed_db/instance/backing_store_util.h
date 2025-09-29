@@ -7,6 +7,8 @@
 
 #include "base/values.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
+#include "content/browser/indexed_db/status.h"
+#include "content/common/content_export.h"
 
 namespace content::indexed_db {
 
@@ -23,15 +25,11 @@ namespace content::indexed_db {
 // the output.
 //
 // NB: the entire DB is loaded into a DictValue which can consume a lot of
-// memory! To cut down on total memory requirements, all values and longer keys
-// will be hashed. However a database with millions of records could still
-// be problematic. If/when it's necessary to run this on production databases,
-// further compression will be required.
-//
-// For now, this function is a utility for testing only. In the future, it's
-// likely that this will be used for verifying database migrations in
-// production.
-base::DictValue DumpDatabase(BackingStore::Database& db);
+// memory! To cut down on total memory requirements, hashing is applied to
+// larger keys, values, and object stores. Care should still be taken to limit
+// its usage and impact on real users.
+CONTENT_EXPORT StatusOr<base::DictValue> SnapshotDatabase(
+    BackingStore::Database& db);
 
 }  // namespace content::indexed_db
 

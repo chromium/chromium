@@ -25,6 +25,10 @@ namespace content::indexed_db::level_db {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdbInSessionDbCleanup);
 
+// Whether to run extra checks before/after in-session cleanup. Check results
+// are logged to histograms.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdbVerifyInSessionDbCleanup);
+
 class LevelDbTombstoneSweeper;
 
 // Sweeps the IndexedDB LevelDB database looking for index tombstones, followed
@@ -55,20 +59,11 @@ class CONTENT_EXPORT LevelDBCleanupScheduler {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:LevelDBCleanupSchedulerPhase)
 
-  // Abstraction of backing store calls which are required
-  // by the scheduler.
+  // Implemented by the backing store.
   class Delegate {
    public:
-    // This function updates the next run timestamp for the
-    // tombstone sweeper in the database metadata.
-    // Virtual for testing.
-    // Returns `true`  if the update was successful.
-    virtual bool UpdateEarliestSweepTime() = 0;
-    // This function updates the next run timestamp for the
-    // level db compaction in the database metadata.
-    // Virtual for testing.
-    // Returns `true` if the update was successful.
-    virtual bool UpdateEarliestCompactionTime() = 0;
+    virtual void OnCleanupStarted() = 0;
+    virtual void OnCleanupDone() = 0;
     virtual Status GetCompleteMetadata(
         std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*
             output) = 0;

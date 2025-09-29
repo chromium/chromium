@@ -478,22 +478,25 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   void StopPreCloseTasks() override;
   StatusOr<std::unique_ptr<indexed_db::BackingStore::Database>>
   CreateOrOpenDatabase(const std::u16string& name) override;
-
   uintptr_t GetIdentifierForMemoryDump() override;
   void FlushForTesting() override;
-
   StatusOr<bool> DatabaseExists(std::u16string_view database_name) override;
-
   StatusOr<std::vector<blink::mojom::IDBNameAndVersionPtr>>
   GetDatabaseNamesAndVersions() override;
+  int64_t GetInMemorySize() const override;
+
+  // LevelDBCleanupScheduler::Delegate:
+  void OnCleanupStarted() override;
+  void OnCleanupDone() override;
+  Status GetCompleteMetadata(
+      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* output)
+      override;
 
   base::FilePath GetBlobFileName(int64_t database_id, int64_t key) const;
 
   TransactionalLevelDBDatabase* db() { return db_.get(); }
 
   const std::string& origin_identifier() { return origin_identifier_; }
-
-  int64_t GetInMemorySize() const override;
 
 #if DCHECK_IS_ON()
   int NumBlobFilesDeletedForTesting() { return num_blob_files_deleted_; }
@@ -532,6 +535,20 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
                 bool is_first_attempt,
                 bool create_if_missing);
 
+  // LINT.IfChange(InSessionCleanupVerificationEvent)
+  enum class InSessionCleanupVerificationEvent {
+    kCleanupStarted = 0,
+    kErrorOpeningBefore = 1,
+    kErrorSnapshottingBefore = 2,
+    kErrorOpeningAfter = 3,
+    kErrorSnapshottingAfter = 4,
+    kMatchedSnapshot = 5,
+    kMismatchedSnapshot = 6,
+
+    kMaxValue = kMismatchedSnapshot,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbLevelDbCleanupVerificationEvent)
+
  private:
   FRIEND_TEST_ALL_PREFIXES(LevelDbBackingStoreTestWithExternalObjects,
                            ActiveBlobJournal);
@@ -559,21 +576,16 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   StatusOr<std::vector<std::u16string>> GetDatabaseNames();
 
-  // LevelDBCleanupScheduler::Delegate:
-  // This function updates the next run timestamp for the
-  // tombstone sweeper in the database metadata.
-  // Virtual for testing.
-  // Returns if the update was successful.
-  bool UpdateEarliestSweepTime() override;
-  // This function updates the next run timestamp for the
-  // level db compaction in the database metadata.
-  // Virtual for testing.
-  // Returns if the update was successful.
-  bool UpdateEarliestCompactionTime() override;
-  // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
-  Status GetCompleteMetadata(
-      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* output)
-      override;
+  // Updates the next run timestamp for the tombstone sweeper in the database
+  // metadata. Returns if writing the update to the LevelDB db was successful.
+  bool UpdateEarliestSweepTime();
+  // Updates the next run timestamp for the level db compaction in the database
+  // metadata. Returns if writing the update to the LevelDB db was successful.
+  bool UpdateEarliestCompactionTime();
+
+  // Dumps and returns all the databases in this store. If an error Status is
+  // returned, this method will also log UMA to that effect.
+  StatusOr<base::ListValue> SnapshotAllDatabases(bool before_cleanup);
 
   // A helper function for V4 schema migration.
   // It iterates through all blob files.  It will add to the db entry both the
@@ -682,7 +694,14 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   bool initialized_ = false;
 #endif
 
+  // Snapshot of all known DBs. Used for debugging/verification of potentially
+  // destructive cleanup operations.
+  std::optional<base::ListValue> dbs_snapshot_;
+
   std::unique_ptr<BackingStorePreCloseTaskQueue> pre_close_task_queue_;
+
+  // Path to the leveldb database, or empty if in-memory.
+  base::FilePath database_path_;
 
   base::WeakPtrFactory<BackingStore> weak_factory_{this};
 };

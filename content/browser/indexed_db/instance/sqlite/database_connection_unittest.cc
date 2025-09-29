@@ -254,7 +254,9 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
     ASSERT_TRUE(value.has_value());
     EXPECT_EQ(value.value().bits, kValue.bits);
 
-    base::DictValue contents_before_corruption = DumpDatabase(*db);
+    StatusOr<base::DictValue> contents_before_corruption =
+        SnapshotDatabase(*db);
+    ASSERT_TRUE(contents_before_corruption.has_value());
 
     // Close the database and then corrupt it.
     db.reset();
@@ -286,7 +288,9 @@ class DatabaseConnectionCorruptionTest : public DatabaseConnectionTest {
       ASSERT_NO_FATAL_FAILURE(InitializeDbWithOneRecord(*db));
       recovered_value = read_value();
 #else
-      EXPECT_EQ(DumpDatabase(*db), contents_before_corruption);
+      StatusOr<base::DictValue> contents_after_recovery = SnapshotDatabase(*db);
+      ASSERT_TRUE(contents_after_recovery.has_value());
+      EXPECT_EQ(*contents_after_recovery, *contents_before_corruption);
 #endif
 
       // Read works because the DB was recovered (or, on Fuchsia, was deleted,

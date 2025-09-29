@@ -43,9 +43,8 @@ class LevelDBCleanupSchedulerTest : public testing::Test,
 
   void TearDown() override { scheduler_.reset(); }
 
-  bool UpdateEarliestSweepTime() override { return true; }
-
-  bool UpdateEarliestCompactionTime() override { return true; }
+  void OnCleanupStarted() override {}
+  void OnCleanupDone() override {}
 
   Status GetCompleteMetadata(
       std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* out)

@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
+#include "content/browser/indexed_db/instance/backing_store_util.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -95,6 +96,121 @@ TEST_P(BackingStoreTest, PutGetConsistency) {
   }
 }
 
+TEST_P(BackingStoreTest, Snapshots) {
+  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
+  ASSERT_TRUE(db_creation_result.has_value());
+  BackingStore::Database& db = **db_creation_result;
+
+  StatusOr<base::DictValue> empty_snapshot = SnapshotDatabase(db);
+  ASSERT_TRUE(empty_snapshot.has_value());
+
+  {
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        CreateAndBeginTransaction(
+            db, blink::mojom::IDBTransactionMode::VersionChange);
+
+    EXPECT_TRUE(transaction
+                    ->CreateObjectStore(1, u"object_store_name",
+                                        IndexedDBKeyPath(u"object_store_key"),
+                                        /*auto_increment=*/true)
+                    .ok());
+    CommitTransactionAndVerify(*transaction);
+  }
+
+  int total_record_count = 0;
+  auto add_records = [&](size_t num_records) {
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    transaction->Begin(CreateDummyLock());
+
+    for (size_t i = 0; i < num_records; ++i) {
+      IndexedDBKey key(i + total_record_count,
+                       blink::mojom::IDBKeyType::Number);
+      EXPECT_TRUE(transaction->PutRecord(1, key, value1_.Clone()).has_value());
+    }
+    total_record_count += num_records;
+    CommitTransactionAndVerify(*transaction);
+  };
+  add_records(100);
+
+  StatusOr<base::DictValue> snapshot = SnapshotDatabase(db);
+  ASSERT_TRUE(snapshot.has_value());
+
+  // Adding a record changes the snapshot.
+  add_records(3);
+  StatusOr<base::DictValue> snapshot2 = SnapshotDatabase(db);
+  ASSERT_TRUE(snapshot2.has_value());
+  EXPECT_NE(*snapshot, *snapshot2);
+
+  // Updating a value changes the snapshot.
+  {
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    transaction->Begin(CreateDummyLock());
+
+    IndexedDBKey key(15, blink::mojom::IDBKeyType::Number);
+    EXPECT_TRUE(transaction->PutRecord(1, key, value2_.Clone()).has_value());
+    CommitTransactionAndVerify(*transaction);
+  };
+
+  StatusOr<base::DictValue> snapshot3 = SnapshotDatabase(db);
+  ASSERT_TRUE(snapshot3.has_value());
+  EXPECT_NE(*snapshot2, *snapshot3);
+
+  // Changing the updated value back to the original, snapshot should revert
+  // too.
+  {
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    transaction->Begin(CreateDummyLock());
+
+    IndexedDBKey key(15, blink::mojom::IDBKeyType::Number);
+    EXPECT_TRUE(transaction->PutRecord(1, key, value1_.Clone()).has_value());
+    CommitTransactionAndVerify(*transaction);
+  };
+  StatusOr<base::DictValue> snapshot4 = SnapshotDatabase(db);
+  ASSERT_TRUE(snapshot4.has_value());
+  EXPECT_EQ(*snapshot2, *snapshot4);
+
+  // Exercise the whole-store hashing code.
+  add_records(1000);
+  StatusOr<base::DictValue> snapshot5 = SnapshotDatabase(db);
+  ASSERT_TRUE(snapshot5.has_value());
+  EXPECT_LT(snapshot5->DebugString().size(), snapshot4->DebugString().size());
+
+  add_records(2);
+  StatusOr<base::DictValue> snapshot6 = SnapshotDatabase(db);
+  ASSERT_TRUE(snapshot6.has_value());
+  EXPECT_NE(*snapshot5, *snapshot6);
+  // Size should not have changed since the row would change the digest but not
+  // the size of the digest. Note that this sort of cheats because the digest is
+  // actually omitted from the debug string due to being a binary, but even if
+  // we were to encode it as a string (e.g. with base64), this check would pass.
+  EXPECT_EQ(snapshot6->DebugString().size(), snapshot5->DebugString().size());
+
+  // Delete all records and verify the snapshot works, and is distinct from the
+  // one for a database that lacks object stores/indices.
+  {
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                             blink::mojom::IDBTransactionMode::ReadWrite);
+
+    transaction->Begin(CreateDummyLock());
+
+    EXPECT_TRUE(transaction->DeleteRange(1, blink::IndexedDBKeyRange()).ok());
+    CommitTransactionAndVerify(*transaction);
+  };
+  StatusOr<base::DictValue> no_record_snapshot = SnapshotDatabase(db);
+  ASSERT_TRUE(no_record_snapshot.has_value());
+  EXPECT_NE(*empty_snapshot, *no_record_snapshot);
+}
+
 // Deleting an index should delete the index metadata and the index data.
 TEST_P(BackingStoreTest, CreateAndDeleteIndex) {
   const int64_t object_store_id = 99;
@@ -110,7 +226,6 @@ TEST_P(BackingStoreTest, CreateAndDeleteIndex) {
     std::unique_ptr<BackingStore::Transaction> transaction =
         CreateAndBeginTransaction(
             **db, blink::mojom::IDBTransactionMode::VersionChange);
-
     EXPECT_TRUE(transaction
                     ->CreateObjectStore(object_store_id, u"object_store_name",
                                         object_store_key_path,

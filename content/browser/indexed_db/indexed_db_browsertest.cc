@@ -29,6 +29,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/thread_test_helper.h"
@@ -44,6 +45,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -683,8 +685,11 @@ class IndexedDBBrowserTestsWithCleanupScheduler
     : public IndexedDBLevelDBOnlyTest {
  public:
   IndexedDBBrowserTestsWithCleanupScheduler() {
-    scoped_feature_list_.InitAndEnableFeature(
-        content::indexed_db::level_db::kIdbInSessionDbCleanup);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {content::indexed_db::level_db::kIdbInSessionDbCleanup,
+         content::indexed_db::level_db::kIdbVerifyInSessionDbCleanup},
+        /*disabled_features=*/{});
   }
 
  protected:
@@ -695,6 +700,7 @@ class IndexedDBBrowserTestsWithCleanupScheduler
 // More details in `index_deletion_regression_tests.js`.
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
                        RollbackTrasactionDuringTombstoneSweep) {
+  base::HistogramTester histograms;
   const GURL kTestUrl =
       GetTestUrl("indexeddb", "index_deletion_regression_tests.html");
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
@@ -709,12 +715,23 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
   ASSERT_TRUE(
       ExecJs(shell(), base::StringPrintf("runRollbackTest(%d, %d)", num_entries,
                                          delay_for_sweeper_run)));
+
+  // The transaction rollback interrupts the cleanup, and cleanup will be
+  // completed after a short delay.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(
+               "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+               level_db::BackingStore::InSessionCleanupVerificationEvent::
+                   kMatchedSnapshot) > 0;
+  }));
 }
 
 // Regression test for crbug.com/413540372.
 // More details in `index_deletion_regression_tests.js`.
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
                        TransactionInterleavedWithSweeper) {
+  base::HistogramTester histograms;
+
   const GURL kTestUrl =
       GetTestUrl("indexeddb", "index_deletion_regression_tests.html");
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
@@ -735,6 +752,21 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestsWithCleanupScheduler,
       shell(), base::StringPrintf("runInterleavedTest(%d, %d, %d)", num_entries,
                                   delay_before_interleaved_updates,
                                   delay_to_finish_sweeper)));
+
+  histograms.ExpectTotalCount("IndexedDB.LevelDB.InSessionCleanupSnapshotTime",
+                              2);
+  histograms.ExpectTotalCount(
+      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent", 2);
+  histograms.ExpectBucketCount(
+      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+      level_db::BackingStore::InSessionCleanupVerificationEvent::
+          kCleanupStarted,
+      1);
+  histograms.ExpectBucketCount(
+      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
+      level_db::BackingStore::InSessionCleanupVerificationEvent::
+          kMatchedSnapshot,
+      1);
 }
 
 class IndexedDBBrowserTestWithCorruptLevelDB : public
