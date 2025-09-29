@@ -50,12 +50,12 @@ NSTimeInterval kAnimationDuration = 0.3;
   // Button's background subview.
   UIView* _backgroundView;
   // Whether the new badge is visible.
-  BOOL _isNewBadgeVisible;
+  BOOL _newBadgeVisible;
   // "New" badge in top-left corner.
   NewFeatureBadgeView* _newBadgeView;
 }
 
-- (instancetype)initWithNewBadgeVisible:(BOOL)isNewBadgeVisible {
+- (instancetype)init {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     _backgroundView = [[UIView alloc] init];
@@ -74,7 +74,7 @@ NSTimeInterval kAnimationDuration = 0.3;
     }
 
     [self createBackgroundView];
-    [self setNewBadgeVisible:isNewBadgeVisible];
+    [self applyDefaultButtonState];
 
     [NSLayoutConstraint activateConstraints:@[
       [self.widthAnchor constraintGreaterThanOrEqualToConstant:kMinimumWidth],
@@ -89,10 +89,13 @@ NSTimeInterval kAnimationDuration = 0.3;
   return self;
 }
 
-- (void)setNewBadgeVisible:(BOOL)enabled {
-  _isNewBadgeVisible = enabled;
+- (void)setNewBadgeVisible:(BOOL)visible {
+  if (_newBadgeVisible == visible) {
+    return;
+  }
+  _newBadgeVisible = visible;
 
-  if (_isNewBadgeVisible) {
+  if (_newBadgeVisible) {
     [self setEntrypointIconWithScale:kHighlightScaling];
     [self setUpButtonWithNewFeatureBadge];
   } else {
@@ -100,7 +103,7 @@ NSTimeInterval kAnimationDuration = 0.3;
     [UIView animateWithDuration:kAnimationDuration
                      animations:^{
                        [weakSelf removeNewFeatureBadge];
-                       [weakSelf resetButtonState];
+                       [weakSelf applyDefaultButtonState];
                      }];
   }
 }
@@ -124,7 +127,7 @@ NSTimeInterval kAnimationDuration = 0.3;
     self.tintColor = [UIColor colorNamed:kSolidWhiteColor];
     _backgroundView.hidden = NO;
   } else {
-    [self resetButtonState];
+    [self applyDefaultButtonState];
   }
 }
 
@@ -172,8 +175,8 @@ NSTimeInterval kAnimationDuration = 0.3;
   }
 }
 
-// Resets button to default state.
-- (void)resetButtonState {
+// Sets the button to default state.
+- (void)applyDefaultButtonState {
   [self setEntrypointIconWithScale:kNormalScaling];
   self.tintColor = [UIColor colorNamed:kToolbarButtonColor];
   self.layer.shadowOpacity = 0;

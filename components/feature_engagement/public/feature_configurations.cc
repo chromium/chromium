@@ -2885,35 +2885,34 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   if (kIPHiOSAIHubNewBadge.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
-    config.availability = Comparator(ANY, 0);  // Available immediately
-    config.session_rate = Comparator(LESS_THAN, 1);
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
 
     // This badge showing does not affect the session count for other IPHs.
     config.session_rate_impact.type = SessionRateImpact::Type::NONE;
     config.blocked_by.type = BlockedBy::Type::NONE;
     config.blocking.type = Blocking::Type::NONE;
 
-    // Feature should show as long as used event count is 0.
+    // Feature should show as long as the AI Hub was never used.
     config.used =
         EventConfig(events::kIOSAIHubNewBadgeUsed, Comparator(EQUAL, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
 
-    // Should trigger no matter how many impressions there are given that other
-    // criterias also allow this feature to show.
+    // Should trigger no matter how many impressions there are.
     config.trigger =
         EventConfig(events::kIOSAIHubNewBadgeTriggered, Comparator(ANY, 0),
                     feature_engagement::kMaxStoragePeriod,
                     feature_engagement::kMaxStoragePeriod);
 
-    // This feature can start showing only after the Gemini promo was shown once
-    // within the past 2 weeks. After 2 weeks since the first time the Gemini
-    // promo was shown, this feature, AI Hub "New" badge, should no longer show.
-    config.event_configs.insert(EventConfig(
-        events::kIOSGeminiPromoFirstCompletion, Comparator(EQUAL, 1), 14,
-        feature_engagement::kMaxStoragePeriod));
+    // This feature should show for 2 weeks after the client was first
+    // considered eligible for the AI Hub.
+    config.event_configs.insert(
+        EventConfig(events::kIOSGeminiEligiblity, Comparator(EQUAL, 1), 14,
+                    feature_engagement::kMaxStoragePeriod));
     return config;
   }
+
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

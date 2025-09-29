@@ -826,6 +826,10 @@ inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
 // 0 means Gemini is enabled (default), and 1 means it's disabled.
 inline constexpr char kGeminiEnabledByPolicy[] = "ios.gemini_enabled_by_policy";
 
+// A boolean specifying whether the user has ever been eligible for AI Hub.
+inline constexpr char kAIHubEligibilityTriggered[] =
+    "ios.ai_hub_eligibility_triggered";
+
 // A boolean specifying if the multi-profile force-migration is done.
 inline constexpr char kMultiProfileForcedMigrationDone[] =
     "ios.multi_profile_forced_migration_done";

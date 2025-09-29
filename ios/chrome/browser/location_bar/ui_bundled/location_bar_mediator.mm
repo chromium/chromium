@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mediator.h"
 
 #import "base/memory/ptr_util.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
@@ -20,6 +23,7 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -259,6 +263,21 @@ const CGFloat kIconPointSize = 16.0;
   }
 
   if ([self isAIHubAvailable]) {
+    // If this is the user's first time being eligible for the AI Hub, notify
+    // the FET.
+    if (!_webStateList || !_webStateList->GetActiveWebState()) {
+      return;
+    }
+    web::WebState* webState = _webStateList->GetActiveWebState();
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(webState->GetBrowserState());
+    PrefService* prefs = profile->GetPrefs();
+    if (!prefs->GetBoolean(prefs::kAIHubEligibilityTriggered)) {
+      prefs->SetBoolean(prefs::kAIHubEligibilityTriggered, true);
+      feature_engagement::TrackerFactory::GetForProfile(profile)->NotifyEvent(
+          feature_engagement::events::kIOSGeminiEligiblity);
+    }
+
     // Record Gemini entry point impression when AI Hub is available and shown.
     RecordGeminiEntryPointImpression();
     [self.consumer

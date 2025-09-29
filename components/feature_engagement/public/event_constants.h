@@ -353,14 +353,17 @@ extern const char kIOSReaderModeUsed[];
 // Event fired when the Reader Mode "What's new" badge is displayed.
 extern const char kIOSIPHBadgedReaderModeTriggered[];
 
-// Event fired when the AI Hub's "New" badge entrypoint is tapped.
+// Event fired when the AI Hub's "New" badge entrypoint is shown.
 extern const char kIOSAIHubNewBadgeTriggered[];
 
-// AI Hub's "New" badge entrypoint was used.
+// Event fired when the AI Hub's entry point is tapped.
 extern const char kIOSAIHubNewBadgeUsed[];
 
 // Event fired when the Gemini Promo is completed for the first time on iOS.
 extern const char kIOSGeminiPromoFirstCompletion[];
+
+// Event fired when the user first became eligible for Ask Gemini.
+extern const char kIOSGeminiEligiblity[];
 
 // The user has tapped on the Reader Mode options in-product help.
 extern const char kIOSIPHReaderModeOptionsUsed[];

@@ -37,6 +37,8 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/infobars/model/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -236,7 +238,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   id<HelpCommands> helpHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
   [self.viewController setHelpCommandsHandler:helpHandler];
-  self.viewController.isAIHubNewBadgeVisible = [self isAIHubNewBadgeVisible];
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self);
   _locationBar->SetURLLoader(self);
@@ -714,6 +715,15 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)locationBarDidTapAIHubNewBadge {
   _tracker->NotifyUsedEvent(feature_engagement::kIPHiOSAIHubNewBadge);
 }
+
+- (BOOL)shouldShowAIHubNewFeatureBadge {
+  if (!base::FeatureList::IsEnabled(kAIHubNewBadge)) {
+    return NO;
+  }
+  return _tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSAIHubNewBadge);
+}
+
 #pragma mark - ContextualPanelEntrypointCoordinatorDelegate
 
 - (BOOL)canShowLargeContextualPanelEntrypoint:
@@ -857,16 +867,6 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   }
 
   [self cancelOmniboxEdit];
-}
-
-// Decides if AI Hub new badge should show.
-- (BOOL)isAIHubNewBadgeVisible {
-  if (!base::FeatureList::IsEnabled(kAIHubNewBadge)) {
-    return NO;
-  }
-
-  return _tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSAIHubNewBadge);
 }
 
 @end

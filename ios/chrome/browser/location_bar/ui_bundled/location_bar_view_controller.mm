@@ -301,8 +301,7 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 
   if (IsPageActionMenuEnabled()) {
-    _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc]
-        initWithNewBadgeVisible:_isAIHubNewBadgeVisible];
+    _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc] init];
     [_pageActionMenuEntrypointView
                addTarget:self
                   action:@selector(handlePageActionMenuEntrypointTapped)
@@ -1059,11 +1058,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 - (void)handlePageActionMenuEntrypointTapped {
   // TODO(crbug.com/402827015): Log opens.
-  if (_isAIHubNewBadgeVisible) {
+  if (_pageActionMenuEntrypointView.newBadgeVisible) {
     RecordAIHubNewBadgeTapped();
-    [_pageActionMenuEntrypointView setNewBadgeVisible:NO];
-    _isAIHubNewBadgeVisible = NO;
     [self.delegate locationBarDidTapAIHubNewBadge];
+    _pageActionMenuEntrypointView.newBadgeVisible = NO;
   }
   if (IsDirectBWGEntryPoint()) {
     [self.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
@@ -1116,6 +1114,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
       CHECK(IsPageActionMenuEnabled());
       self.locationBarSteadyView.placeholderView =
           _pageActionMenuEntrypointView;
+      if (!_pageActionMenuEntrypointView.newBadgeVisible) {
+        _pageActionMenuEntrypointView.newBadgeVisible =
+            [self.delegate shouldShowAIHubNewFeatureBadge];
+      }
       break;
     case LocationBarPlaceholderType::kDefaultSearchEngineIcon:
       self.locationBarSteadyView.placeholderView = _defaultSearchEngineIconView;
