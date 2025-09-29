@@ -4933,9 +4933,6 @@ extern const char kSupervisedUserLocalWebApprovalsDescription[];
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-extern const char kHistoryPageHistorySyncPromoName[];
-extern const char kHistoryPageHistorySyncPromoDescription[];
-
 extern const char kHistoryOptInEducationalTipName[];
 extern const char kHistoryOptInEducationalTipDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

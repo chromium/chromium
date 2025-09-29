@@ -22,10 +22,7 @@ namespace switches {
 // can be exported by the signin_switches component. This prevents issues with
 // component layering.
 
-// Command line switches, sorted by name. These switches should not be queried
-// from CommandLine::HasSwitch() directly. Always go through the helper
-// functions in account_consistency_method.h to properly take into account the
-// state of field trials.
+// Command line switches, sorted by name.
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kClearTokenService[];
@@ -224,16 +221,6 @@ BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHistoryOptInEducationalTip);
 extern const base::FeatureParam<int> kHistoryOptInEducationalTipVariation;
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kHistoryPageHistorySyncPromo);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kHistoryPagePromoCtaStringVariation);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
