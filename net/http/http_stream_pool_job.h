@@ -146,10 +146,6 @@ class HttpStreamPool::Job {
     return delegate_->enable_ip_based_pooling_for_h2();
   }
 
-  bool enable_alternative_services() const {
-    return delegate_->enable_alternative_services();
-  }
-
   const ProxyInfo& proxy_info() const { return delegate_->proxy_info(); }
 
   const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs() const {

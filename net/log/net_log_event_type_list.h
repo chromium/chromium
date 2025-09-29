@@ -1527,8 +1527,9 @@ EVENT_TYPE(HTTP_STREAM_POOL_GROUP_HANDLE_CREATED)
 //   {
 //     "priority": <The priority of the erquest>,
 //     "allowed_bad_certs": <The list of allowed bad certs>,
-//     "enable_ip_based_pooling": <True when the request enables IP based
-//                                 pooling>,
+//     "enable_ip_based_pooling_for_h2": <True when the request enables IP based
+//                                        pooling for H2>,
+//     "allowed_alpns": <The list of allowed protocols>,
 //     "quic_version": <The QUIC version to attempt>,
 //     "source_dependency": <The source identifier of the request>
 //   }
@@ -1573,6 +1574,10 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 // Some HTTP_STREAM_POOL_ATTEMPT_MANAGER_* events have the following common
 // event parameters.
 //   {
+//     "num_active_sockets": <The number of active sockets>,
+//     "num_idle_sockets": <The number of idle sockets>,
+//     "num_handed_out_sockets": <The number of handed out sockets>,
+//     "num_total_sockets": <The number of total sockets>,
 //     "num_jobs": <The number of active jobs>,
 //     "num_notified_jobs": <The number of jobs that are notified results but
 //                           are still not destroyed yet>,
@@ -1580,6 +1585,11 @@ EVENT_TYPE(HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE)
 //     "num_inflight_attempts": <The number of in-flight TCP/TLS attempts>,
 //     "num_slow_attempts": <The number of in-flight TCP/TLS attempts that are
 //                           treated as slow>,
+//     "num_tcp_based_attempt_slots": <The total number of slots for TCP-based
+//                           connection attempts.
+//     "enable_ip_based_pooling_for_h2": <True when the request enables IP based
+//                                        pooling for H2>,
+//     "allowed_alpns": <List of allowed ALPNs>,
 //     "quic_attempt_alive": <True when a QuicAttempt is alive>,
 //     "quic_attempt_result": <The result of a QuicAttempt, if it is already
 //                             finished>

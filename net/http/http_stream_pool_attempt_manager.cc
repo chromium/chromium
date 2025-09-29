@@ -80,6 +80,19 @@ base::Value::Dict GetServiceEndpointRequestAsValue(
   return dict;
 }
 
+// Converts a NextProtoSet containing allowed ALPNs to a value usable in NetLog
+// events - currently a std::string, though could make it a Value::List instead.
+std::string AllowedAlpnsToValue(const NextProtoSet& allowed_alpns) {
+  std::string list;
+  for (const auto proto : allowed_alpns) {
+    if (!list.empty()) {
+      list.append(",");
+    }
+    list.append(NextProtoToString(proto));
+  }
+  return list;
+}
+
 }  // namespace
 
 // static
@@ -231,8 +244,7 @@ void HttpStreamPool::AttemptManager::RequestStream(Job* job) {
         dict.Set("allowed_bad_certs", std::move(allowed_bad_certs_list));
         dict.Set("enable_ip_based_pooling_for_h2",
                  job->enable_ip_based_pooling_for_h2());
-        dict.Set("enable_alternative_services",
-                 job->enable_alternative_services());
+        dict.Set("allowed_alpns", AllowedAlpnsToValue(job->allowed_alpns()));
         dict.Set("quic_version",
                  quic::ParsedQuicVersionToString(job->quic_version()));
         job->net_log().source().AddToEventParameters(dict);
@@ -525,7 +537,6 @@ void HttpStreamPool::AttemptManager::OnJobComplete(Job* job) {
   preconnect_jobs_.erase(job);
   limit_ignoring_jobs_.erase(job);
   ip_based_pooling_disabling_jobs_.erase(job);
-  alternative_service_disabling_jobs_.erase(job);
 
   auto notified_it = notified_jobs_.find(job);
   if (notified_it != notified_jobs_.end()) {
@@ -961,7 +972,7 @@ base::Value::Dict HttpStreamPool::AttemptManager::GetStatesAsNetLogParams()
   dict.Set("num_slow_attempts",
            static_cast<int>(slow_tcp_based_attempt_count_));
   dict.Set("enable_ip_based_pooling_for_h2", IsIpBasedPoolingEnabledForH2());
-  dict.Set("enable_alternative_services", IsAlternativeServiceEnabled());
+  dict.Set("allowed_alpns", AllowedAlpnsToValue(allowed_alpns_));
   dict.Set("quic_attempt_alive", !!quic_attempt_);
   if (quic_attempt_result_.has_value()) {
     dict.Set("quic_attempt_result", *quic_attempt_result_);
@@ -1007,10 +1018,6 @@ void HttpStreamPool::AttemptManager::StartInternal(Job* job) {
 
   if (!job->enable_ip_based_pooling_for_h2()) {
     ip_based_pooling_disabling_jobs_.emplace(job);
-  }
-
-  if (!job->enable_alternative_services()) {
-    alternative_service_disabling_jobs_.emplace(job);
   }
 
   quic_version_ = job->quic_version();
@@ -1433,10 +1440,6 @@ bool HttpStreamPool::AttemptManager::ShouldRespectLimits() const {
 
 bool HttpStreamPool::AttemptManager::IsIpBasedPoolingEnabledForH2() const {
   return ip_based_pooling_disabling_jobs_.empty();
-}
-
-bool HttpStreamPool::AttemptManager::IsAlternativeServiceEnabled() const {
-  return alternative_service_disabling_jobs_.empty();
 }
 
 bool HttpStreamPool::AttemptManager::SupportsSpdy() const {
@@ -2090,7 +2093,6 @@ void HttpStreamPool::AttemptManager::MaybeComplete() {
 
   CHECK(limit_ignoring_jobs_.empty());
   CHECK(ip_based_pooling_disabling_jobs_.empty());
-  CHECK(alternative_service_disabling_jobs_.empty());
 
   if (on_complete_callback_for_testing_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
