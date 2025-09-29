@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/host/persistent_cache_sandboxed_file_factory.h"
+#include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -11,10 +11,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "components/persistent_cache/sqlite/vfs/sandboxed_file.h"
 
-namespace gpu {
+namespace viz {
 
 namespace {
+
+PersistentCacheSandboxedFileFactory* g_instance = nullptr;
 
 struct PersistentCacheFilePaths {
   base::FilePath db_path;
@@ -80,20 +84,36 @@ bool CreateCacheDirectory(const base::FilePath& cache_dir) {
 
 }  // namespace
 
+/* static */
+void PersistentCacheSandboxedFileFactory::CreateInstance(
+    const base::FilePath& cache_root_dir) {
+  DCHECK(!g_instance);
+  g_instance = new PersistentCacheSandboxedFileFactory(
+      cache_root_dir,
+      /*task_runner=*/base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+  g_instance->AddRef();
+}
+
+/* static */
+PersistentCacheSandboxedFileFactory*
+PersistentCacheSandboxedFileFactory::GetInstance() {
+  return g_instance;
+}
+
 PersistentCacheSandboxedFileFactory::PersistentCacheSandboxedFileFactory(
     const base::FilePath& cache_root_dir,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : cache_root_dir_(cache_root_dir),
       background_task_runner_(std::move(background_task_runner)) {
-  if (cache_root_dir_.empty()) {
-    cache_root_dir_ = base::FilePath(base::FilePath::kCurrentDirectory);
-  } else {
-    background_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const base::FilePath& dir) { CreateCacheDirectory(dir); },
-            cache_root_dir_));
-  }
+  CHECK(!cache_root_dir_.empty());
+
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::FilePath& dir) { CreateCacheDirectory(dir); },
+          cache_root_dir_));
 }
 
 PersistentCacheSandboxedFileFactory::~PersistentCacheSandboxedFileFactory() =
@@ -116,8 +136,10 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
   }
 
   auto open_and_check_file = [](const base::FilePath& path) {
-    base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                              base::File::FLAG_WRITE);
+    const auto flags = base::File::AddFlagsForPassingToUntrustedProcess(
+        base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+        base::File::FLAG_WRITE);
+    base::File file(path, flags);
     if (!file.IsValid()) {
       LOG(ERROR) << "Failed to open persistent cache file: " << path
                  << " error: "
@@ -136,8 +158,16 @@ PersistentCacheSandboxedFileFactory::CreateFiles(const CacheIdString& cache_id,
     return std::nullopt;
   }
 
-  return PersistentCacheSandboxedFiles{std::move(db_file),
-                                       std::move(journal_file)};
+  base::UnsafeSharedMemoryRegion shared_lock =
+      base::UnsafeSharedMemoryRegion::Create(
+          sizeof(persistent_cache::LockState));
+  if (!shared_lock.IsValid()) {
+    LOG(ERROR) << "Failed to create shared lock";
+    return std::nullopt;
+  }
+
+  return PersistentCacheSandboxedFiles{
+      std::move(db_file), std::move(journal_file), std::move(shared_lock)};
 }
 
 void PersistentCacheSandboxedFileFactory::CreateFilesAsync(
@@ -176,4 +206,4 @@ void PersistentCacheSandboxedFileFactory::ClearFilesAsync(
       std::move(callback));
 }
 
-}  // namespace gpu
+}  // namespace viz

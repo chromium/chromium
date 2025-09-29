@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/viz/common/buildflags.h"
+#include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
 #include "components/viz/host/viz_host_export.h"
 #include "components/viz/service/debugger/mojom/viz_debugger.mojom.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -234,6 +235,12 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void TerminateGpuProcess(const std::string& message);
 #endif  // BUILDFLAG(IS_OZONE)
 
+  void InitPersistentCache();
+  void SetChannelPersistentCacheFile(
+      int client_id,
+      const gpu::GpuDiskCacheHandle& handle,
+      std::optional<PersistentCacheSandboxedFiles> files);
+
   std::string GetShaderPrefixKey();
 
   void LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
@@ -330,6 +337,12 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   base::flat_map<int, EstablishChannelCallback> channel_requests_;
 
   base::OneShotTimer shutdown_timeout_;
+
+  // Opened persistent cache files for GraphiteDawn.
+  // TODO(crbug.com/399642827): Support persistent cache for other cache types.
+  std::optional<PersistentCacheSandboxedFiles>
+      graphite_dawn_persistent_cache_files_;
+  bool pending_graphite_dawn_persistent_cache_files_request_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

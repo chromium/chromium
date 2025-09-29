@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/host/persistent_cache_sandboxed_file_factory.h"
+#include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/test/task_environment.h"
+#include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace gpu {
+namespace viz {
 
 namespace {
 
@@ -42,6 +43,21 @@ std::vector<base::FilePath> GetDirsInDir(const base::FilePath& dir) {
   return dirs;
 }
 
+// Derive PersistentCacheSandboxedFileFactory and make ctor public.
+class TestFactory : public PersistentCacheSandboxedFileFactory {
+ public:
+  TestFactory(const base::FilePath& cache_root_dir,
+              scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+      : PersistentCacheSandboxedFileFactory(cache_root_dir,
+                                            std::move(background_task_runner)) {
+  }
+
+ private:
+  friend class base::RefCountedThreadSafe<TestFactory>;
+
+  ~TestFactory() override = default;
+};
+
 }  // namespace
 
 class PersistentCacheSandboxedFileFactoryTest : public testing::Test {
@@ -52,13 +68,16 @@ class PersistentCacheSandboxedFileFactoryTest : public testing::Test {
 
  protected:
   void FlushMainThreadTasks() {
-    auto quit = task_environment_.QuitClosure();
-
-    task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE, quit);
-    task_environment_.RunUntilQuit();
+    base::RunLoop run_loop;
+    main_thread_task_runner()->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner() {
+    CHECK(base::SingleThreadTaskRunner::GetCurrentDefault());
+    return base::SingleThreadTaskRunner::GetCurrentDefault();
+  }
+
   base::ScopedTempDir temp_dir_;
 };
 
@@ -70,8 +89,8 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, DeletesStaleFiles) {
   const base::FilePath cache_dir = cache_root_path().Append(kCacheId);
 
   // Create old, stale cache files.
-  auto factory_old = base::MakeRefCounted<PersistentCacheSandboxedFileFactory>(
-      cache_root_path(), task_environment_.GetMainThreadTaskRunner());
+  auto factory_old = base::MakeRefCounted<TestFactory>(
+      cache_root_path(), main_thread_task_runner());
   auto files_old = factory_old->CreateFiles(kCacheId, kOldProduct);
   ASSERT_TRUE(files_old);
   files_old.reset();  // Close the files.
@@ -85,9 +104,8 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, DeletesStaleFiles) {
   const base::FilePath::StringType kOtherCacheId = FILE_PATH_LITERAL("456");
   const base::FilePath other_cache_dir =
       cache_root_path().Append(kOtherCacheId);
-  auto factory_other =
-      base::MakeRefCounted<PersistentCacheSandboxedFileFactory>(
-          cache_root_path(), task_environment_.GetMainThreadTaskRunner());
+  auto factory_other = base::MakeRefCounted<TestFactory>(
+      cache_root_path(), main_thread_task_runner());
   auto files_other = factory_other->CreateFiles(kOtherCacheId, kOldProduct);
   ASSERT_TRUE(files_other);
   files_other.reset();  // Close the file.
@@ -101,8 +119,8 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, DeletesStaleFiles) {
 
   // Now, create a factory for the new version. This should trigger the async
   // deletion of the stale files for kCacheId.
-  auto factory_new = base::MakeRefCounted<PersistentCacheSandboxedFileFactory>(
-      cache_root_path(), task_environment_.GetMainThreadTaskRunner());
+  auto factory_new = base::MakeRefCounted<TestFactory>(
+      cache_root_path(), main_thread_task_runner());
   auto files_new = factory_new->CreateFiles(kCacheId, kNewProduct);
   ASSERT_TRUE(files_new);
 
@@ -124,8 +142,8 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, ClearFiles) {
   const base::FilePath cache_dir = cache_root_path().Append(kCacheId);
 
   // Create cache files.
-  auto factory = base::MakeRefCounted<PersistentCacheSandboxedFileFactory>(
-      cache_root_path(), task_environment_.GetMainThreadTaskRunner());
+  auto factory = base::MakeRefCounted<TestFactory>(cache_root_path(),
+                                                   main_thread_task_runner());
   auto files = factory->CreateFiles(kCacheId, kProduct);
   ASSERT_TRUE(files);
   files.reset();  // Close the files.
@@ -144,8 +162,8 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, ClearFilesAsync) {
   const base::FilePath cache_dir = cache_root_path().Append(kCacheId);
 
   // Create cache files.
-  auto factory = base::MakeRefCounted<PersistentCacheSandboxedFileFactory>(
-      cache_root_path(), task_environment_.GetMainThreadTaskRunner());
+  auto factory = base::MakeRefCounted<TestFactory>(cache_root_path(),
+                                                   main_thread_task_runner());
   auto files = factory->CreateFiles(kCacheId, kProduct);
   ASSERT_TRUE(files);
   files.reset();  // Close the files.
@@ -155,14 +173,15 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, ClearFilesAsync) {
 
   // Clear the files asynchronously.
   bool callback_result = false;
+  base::RunLoop run_loop;
   factory->ClearFilesAsync(
       kCacheId, kProduct,
       base::BindOnce([](bool* result, bool success) { *result = success; },
                      &callback_result)
-          .Then(task_environment_.QuitClosure()));
+          .Then(run_loop.QuitClosure()));
 
   // Wait for the async deletion task to complete.
-  task_environment_.RunUntilQuit();
+  run_loop.Run();
 
   EXPECT_TRUE(callback_result);
 
@@ -170,27 +189,4 @@ TEST_F(PersistentCacheSandboxedFileFactoryTest, ClearFilesAsync) {
   EXPECT_EQ(0u, GetDirsInDir(cache_dir).size());
 }
 
-// Test that the factory correctly uses the current working directory when an
-// empty root path is provided.
-TEST_F(PersistentCacheSandboxedFileFactoryTest,
-       CreateFiles_EmptyRootPath_UsesCurrentDirectory) {
-  ScopedCurrentDirectory scoped_cwd(cache_root_path());
-
-  auto factory = base::MakeRefCounted<PersistentCacheSandboxedFileFactory>(
-      /*cache_root_dir=*/base::FilePath(),
-      task_environment_.GetMainThreadTaskRunner());
-
-  auto files = factory->CreateFiles(kCacheId, kProduct);
-  ASSERT_TRUE(files);
-  EXPECT_TRUE(files->db_file.IsValid());
-  EXPECT_TRUE(files->journal_file.IsValid());
-
-  // Close the files so we can check the paths.
-  files->db_file.Close();
-  files->journal_file.Close();
-
-  // The factory should have used the current directory.
-  EXPECT_TRUE(base::PathExists(cache_root_path().Append(kCacheId)));
-}
-
-}  // namespace gpu
+}  // namespace viz
