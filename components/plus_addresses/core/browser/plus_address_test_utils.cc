@@ -64,7 +64,7 @@ std::string MakeCreationResponse(const PlusProfile& profile) {
           }
         )",
       {MakePlusProfile(profile)}, nullptr);
-  DCHECK(base::JSONReader::Read(json));
+  DCHECK(base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   return json;
 }
 
@@ -116,7 +116,7 @@ std::string MakePlusProfile(const PlusProfile& profile) {
       {*profile.profile_id, profile.facet.canonical_spec(),
        *profile.plus_address, mode},
       nullptr);
-  DCHECK(base::JSONReader::Read(json));
+  DCHECK(base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   return json;
 }
 

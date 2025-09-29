@@ -117,7 +117,8 @@ TEST_F(RpcDispatcherImplTest, SendsMessages) {
 
   EXPECT_EQ(1u, message_port().posted_messages().size());
   std::optional<base::Value> value =
-      base::JSONReader::Read(message_port().posted_messages()[0]);
+      base::JSONReader::Read(message_port().posted_messages()[0],
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
 
   std::string message_type;

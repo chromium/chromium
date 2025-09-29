@@ -498,8 +498,8 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
 base::Value::Dict TailoredSecurityService::ReadResponse(Request* request) {
   base::Value::Dict result;
   if (request->GetResponseCode() == net::HTTP_OK) {
-    std::optional<base::Value> json_value =
-        base::JSONReader::Read(request->GetResponseBody());
+    std::optional<base::Value> json_value = base::JSONReader::Read(
+        request->GetResponseBody(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (json_value && json_value.value().is_dict())
       result = std::move(json_value->GetDict());
     else

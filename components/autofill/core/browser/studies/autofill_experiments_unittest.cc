@@ -487,7 +487,8 @@ TEST_F(AutofillExperimentsTest,
 
   std::string output_js;
   ASSERT_TRUE(base::JSONWriter::Write(dictionary, &output_js));
-  EXPECT_EQ(dictionary, *base::JSONReader::Read(output_js));
+  EXPECT_EQ(dictionary, *base::JSONReader::Read(
+                            output_js, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 }
 
 #if BUILDFLAG(IS_ANDROID)

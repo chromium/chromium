@@ -140,7 +140,8 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(msg);
+    const auto root =
+        base::JSONReader::Read(msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value* request_val = root->GetDict().Find("request");
     ASSERT_TRUE(request_val);
@@ -215,7 +216,8 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    const std::optional<base::Value> root_val = base::JSONReader::Read(msg);
+    const std::optional<base::Value> root_val =
+        base::JSONReader::Read(msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     const base::Value::Dict& root = root_val->GetDict();
     const base::Value::Dict* request = root.FindDict("request");
@@ -256,7 +258,8 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(msg);
+    const auto root =
+        base::JSONReader::Read(msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
     const base::Value& app_val = CHECK_DEREF(request->FindList("apps"))[0];
@@ -294,7 +297,8 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(msg);
+    const auto root =
+        base::JSONReader::Read(msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
     const base::Value::Dict& app =
@@ -332,7 +336,8 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(msg);
+    const auto root =
+        base::JSONReader::Read(msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
     const base::Value& app_val = CHECK_DEREF(request->FindList("apps"))[0];
@@ -365,7 +370,8 @@ TEST_P(PingManagerTest, SendPing) {
       RunThreads();
 
       ASSERT_EQ(interceptor->GetCount(), 1);
-      const auto root = base::JSONReader::Read(interceptor->GetRequestBody(0));
+      const auto root = base::JSONReader::Read(
+          interceptor->GetRequestBody(0), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       interceptor->Reset();
 
       ASSERT_TRUE(root);
@@ -401,7 +407,8 @@ TEST_P(PingManagerTest, SendPing) {
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
     const auto msg = interceptor->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(msg);
+    const auto root =
+        base::JSONReader::Read(msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const base::Value::Dict* request = root->GetDict().FindDict("request");
     const base::Value& app_val = CHECK_DEREF(request->FindList("apps"))[0];

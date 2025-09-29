@@ -139,8 +139,8 @@ void UserInfoFetcher::OnFetchComplete(
   DCHECK(unparsed_data);
   DVLOG_POLICY(1, POLICY_AUTH)
       << "Received UserInfo response: " << *unparsed_data;
-  std::optional<base::Value> parsed_value =
-      base::JSONReader::Read(*unparsed_data);
+  std::optional<base::Value> parsed_value = base::JSONReader::Read(
+      *unparsed_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (parsed_value && parsed_value->is_dict()) {
     RecordFetchStatus(EnterpriseUserInfoFetchStatus::kSuccess);
     delegate_->OnGetUserInfoSuccess(parsed_value->GetDict());

@@ -35,7 +35,8 @@ base::Value Base64UrlEncodedJsonToValue(std::string_view input) {
   std::string json;
   EXPECT_TRUE(base::Base64UrlDecode(
       input, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &json));
-  std::optional<base::Value> result = base::JSONReader::Read(json);
+  std::optional<base::Value> result =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(result.has_value());
   return std::move(*result);
 }

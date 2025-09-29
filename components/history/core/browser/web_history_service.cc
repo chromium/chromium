@@ -364,8 +364,8 @@ std::optional<base::Value::Dict> WebHistoryService::ReadResponse(
   if (request->GetResponseCode() != net::HTTP_OK) {
     return std::nullopt;
   }
-  std::optional<base::Value> value =
-      base::JSONReader::Read(request->GetResponseBody());
+  std::optional<base::Value> value = base::JSONReader::Read(
+      request->GetResponseBody(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (value && value->is_dict()) {
     return std::move(*value).TakeDict();
   }

@@ -49,7 +49,8 @@ DomainReliabilityConfig::~DomainReliabilityConfig() = default;
 // static
 std::unique_ptr<const DomainReliabilityConfig>
 DomainReliabilityConfig::FromJSON(std::string_view json) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return nullptr;
 

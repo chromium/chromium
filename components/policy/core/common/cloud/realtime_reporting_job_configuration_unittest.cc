@@ -256,8 +256,8 @@ TEST_P(RealtimeReportingJobConfigurationTest, ValidatePayload) {
           extension_event.extension_action_type());
     }
   } else {
-    std::optional<base::Value> payload =
-        base::JSONReader::Read(configuration_->GetPayload());
+    std::optional<base::Value> payload = base::JSONReader::Read(
+        configuration_->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(payload.has_value());
     const base::Value::Dict& payload_dict = payload->GetDict();
     EXPECT_EQ(kDummyToken, *payload_dict.FindStringByDottedPath(
@@ -453,8 +453,8 @@ TEST_P(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
     EXPECT_EQ(kIds[1], request.events(0).event_id());
   } else {
     // If using the JSON format, validate the request.
-    std::optional<base::Value> payload =
-        base::JSONReader::Read(configuration_->GetPayload());
+    std::optional<base::Value> payload = base::JSONReader::Read(
+        configuration_->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     base::Value::List* events = payload->GetDict().FindList(
         RealtimeReportingJobConfiguration::kEventListKey);
     EXPECT_EQ(1u, events->size());

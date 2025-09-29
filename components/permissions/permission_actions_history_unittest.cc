@@ -131,8 +131,8 @@ class PermissionActionHistoryTest : public testing::Test {
     const std::string formatted_legacy_prefs =
         base::StringPrintf(kLegacyPrefs, base::NumberToString(time).c_str(),
                            base::NumberToString(time).c_str());
-    std::optional<base::Value> legacy_pref_value =
-        base::JSONReader::Read(formatted_legacy_prefs);
+    std::optional<base::Value> legacy_pref_value = base::JSONReader::Read(
+        formatted_legacy_prefs, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     GetPermissionActionsHistory()->GetPrefServiceForTesting()->Set(
         prefs::kPermissionActions, legacy_pref_value.value());
     // Record the actions needed to support test cases. This is the structure

@@ -220,7 +220,8 @@ std::unique_ptr<LogoMetadata> LogoCache::LogoMetadataFromString(
     const std::string& str,
     int* logo_num_bytes,
     int* dark_logo_num_bytes) {
-  std::optional<base::Value> value = base::JSONReader::Read(str);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return nullptr;
   }

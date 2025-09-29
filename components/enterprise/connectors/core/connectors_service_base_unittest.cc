@@ -224,7 +224,9 @@ TEST_P(ConnectorsServiceBaseReportingSettingsTest, Test) {
   TestConnectorsService service;
   service.set_connectors_manager_base();
   if (pref_value()) {
-    service.GetPrefs()->Set(pref(), *base::JSONReader::Read(pref_value()));
+    service.GetPrefs()->Set(
+        pref(), *base::JSONReader::Read(pref_value(),
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     service.GetPrefs()->SetInteger(scope_pref(), policy::POLICY_SCOPE_MACHINE);
   }
 

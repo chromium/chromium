@@ -81,7 +81,7 @@ base::Value::List ReadJsonList(const std::string& file_name) {
     return base::Value::List();
 
   std::optional<base::Value> parsed_content =
-      base::JSONReader::Read(raw_content);
+      base::JSONReader::Read(raw_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_content)
     return base::Value::List();
 

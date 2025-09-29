@@ -186,7 +186,8 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
       continue;
     }
 
-    std::optional<base::Value> dictionary = base::JSONReader::Read(line);
+    std::optional<base::Value> dictionary =
+        base::JSONReader::Read(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(dictionary);
 
     CHECK(dictionary->is_dict());

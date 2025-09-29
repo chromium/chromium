@@ -29,7 +29,8 @@ TEST_F(CommerceUtilsTest, GetProductSpecsTabUrl) {
   ASSERT_TRUE(net::GetValueForKeyInQuery(output, "urls", &urls_param));
 
   // The value should be a valid JSON list.
-  auto json = base::JSONReader::Read(urls_param);
+  auto json =
+      base::JSONReader::Read(urls_param, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(json != std::nullopt);
   ASSERT_TRUE(json.value().is_list());

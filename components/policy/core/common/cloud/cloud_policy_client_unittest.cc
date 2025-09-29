@@ -2572,7 +2572,8 @@ TEST_P(CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
-  std::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      job_payload_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();
 
@@ -2664,7 +2665,8 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNoResponse) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
-  std::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      job_payload_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();
 
@@ -2863,8 +2865,8 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
 
   // The second config should trump the first.
   DeviceManagementService::JobConfiguration* job_config = config.get();
-  std::optional<base::Value> payload =
-      base::JSONReader::Read(job_config->GetPayload());
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      job_config->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();
 

@@ -69,7 +69,8 @@ class BnplTosControllerImplTest : public Test {
             "{ \"line\" : [ { \"template\": \"This is a legal message with"
             "{0}.\", \"template_parameter\": [ { \"display_text\": "
             "\"a link\", \"url\": \"http://www.example.com/\" "
-            "} ] }] }")
+            "} ] }] }",
+            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
             ->GetDict(),
         &legal_message_lines_, true);
 

@@ -39,7 +39,8 @@ const PartitionKey& PartitionKey::WipGetDefault() {
 
 // static
 std::optional<PartitionKey> PartitionKey::Deserialize(const std::string& data) {
-  const auto json = base::JSONReader::Read(data);
+  const auto json =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json.has_value()) {
     return std::nullopt;
   }

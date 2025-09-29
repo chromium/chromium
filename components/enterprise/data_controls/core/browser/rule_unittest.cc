@@ -21,7 +21,8 @@ namespace data_controls {
 namespace {
 
 std::optional<Rule> MakeRule(const std::string& value) {
-  auto dict = base::JSONReader::Read(value);
+  auto dict =
+      base::JSONReader::Read(value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(dict) << value << " is not valid JSON";
   return Rule::Create(*dict);
 }

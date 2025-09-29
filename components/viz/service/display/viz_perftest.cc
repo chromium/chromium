@@ -43,7 +43,8 @@ std::optional<base::Value> ReadValueFromJson(base::FilePath& json_path) {
   std::string json_text;
   if (!base::ReadFileToString(json_path, &json_text))
     return std::nullopt;
-  return base::JSONReader::Read(json_text);
+  return base::JSONReader::Read(json_text,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 }  // namespace

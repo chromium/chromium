@@ -516,7 +516,8 @@ void ContextualSearchDelegateImpl::DecodeSearchTermFromJsonResponse(
   const std::string& proper_json =
       contains_xssi_escape ? response.substr(sizeof(kXssiEscape) - 1)
                            : response;
-  std::optional<base::Value> root = base::JSONReader::Read(proper_json);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(proper_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return;
   }

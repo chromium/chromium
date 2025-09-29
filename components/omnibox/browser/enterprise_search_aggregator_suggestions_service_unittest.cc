@@ -167,9 +167,10 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
       base::JSONReader::Read(resource_request.request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
-                                 .AsStringPiece());
-  std::optional<base::Value> test_request_body_value =
-      base::JSONReader::Read(test_request_body);
+                                 .AsStringPiece(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  std::optional<base::Value> test_request_body_value = base::JSONReader::Read(
+      test_request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(request_body, test_request_body_value);
 }
 
@@ -234,9 +235,10 @@ TEST_F(EnterpriseSearchAggregatorSuggestionsServiceTest,
       base::JSONReader::Read(resource_request.request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
-                                 .AsStringPiece());
-  std::optional<base::Value> test_request_body_value =
-      base::JSONReader::Read(test_request_body);
+                                 .AsStringPiece(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  std::optional<base::Value> test_request_body_value = base::JSONReader::Read(
+      test_request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(request_body, test_request_body_value);
 }
 

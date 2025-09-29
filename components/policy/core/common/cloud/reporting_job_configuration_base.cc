@@ -276,7 +276,8 @@ void ReportingJobConfigurationBase::OnURLLoadComplete(
     int net_error,
     int response_code,
     const std::string& response_body) {
-  std::optional<base::Value> response = base::JSONReader::Read(response_body);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   // Parse the response even if |response_code| is not a success since the
   // response data may contain an error message.

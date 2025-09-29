@@ -78,7 +78,8 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettings) {
                                     "      }"
                                     "    ]"
                                     "  }"
-                                    "]"),
+                                    "]",
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS),
              nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* pref_value = nullptr;
@@ -95,7 +96,8 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettings) {
 
   // Note the protocols and ending slashes added to urls, which were not in the
   // value set earlier.
-  std::optional<base::Value> expected = base::JSONReader::Read(R"(
+  std::optional<base::Value> expected =
+      base::JSONReader::Read(R"(
     [
       {
         "name": "Google",
@@ -128,7 +130,8 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettings) {
         ]
       }
     ]
-  )");
+  )",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(expected, *pref_value);
 }
 
@@ -143,7 +146,8 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettingsNoTitle) {
                                     "    \"name\": \"Google\","
                                     "    \"url\": \"google.com\""
                                     "  }"
-                                    "]"),
+                                    "]",
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS),
              nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* pref_value = nullptr;
@@ -160,14 +164,16 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettingsNoTitle) {
 
   // Note the protocol and ending slash added to url, which was not in the value
   // set earlier.
-  std::optional<base::Value> expected = base::JSONReader::Read(R"(
+  std::optional<base::Value> expected =
+      base::JSONReader::Read(R"(
     [
       {
         "name": "Google",
         "url": "http://google.com/"
       }
     ]
-  )");
+  )",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(expected, *pref_value);
 }
 
@@ -198,7 +204,8 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, UnknownKeys) {
                                     "    \"unknown\": \"should be ignored\","
                                     "    \"url\": \"google.com\""
                                     "  }"
-                                    "]"),
+                                    "]",
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS),
              nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* pref_value = nullptr;
@@ -207,14 +214,16 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, UnknownKeys) {
 
   // Note the protocol and ending slash added to url, which was not in the value
   // set earlier.
-  std::optional<base::Value> expected = base::JSONReader::Read(R"(
+  std::optional<base::Value> expected =
+      base::JSONReader::Read(R"(
     [
       {
         "name": "Google",
         "url": "http://google.com/"
       }
     ]
-  )");
+  )",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(expected, *pref_value);
 }
 
@@ -239,7 +248,8 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, BadBookmark) {
                                     "    \"name\": \"Google\","
                                     "    \"url\": \"google.com\""
                                     "  }"
-                                    "]"),
+                                    "]",
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS),
              nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* pref_value = nullptr;

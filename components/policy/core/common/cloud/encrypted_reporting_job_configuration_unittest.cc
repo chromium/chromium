@@ -295,8 +295,8 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
   }
 
   base::Value* GetPayload(EncryptedReportingJobConfiguration* configuration) {
-    std::optional<base::Value> payload_result =
-        base::JSONReader::Read(configuration->GetPayload());
+    std::optional<base::Value> payload_result = base::JSONReader::Read(
+        configuration->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     EXPECT_TRUE(payload_result.has_value());
     payload_ = std::move(payload_result.value());
@@ -780,8 +780,8 @@ TEST_F(EncryptedReportingJobConfigurationTest, PayloadTopLevelFields) {
       client_.dm_token(), client_.client_id(), base::DoNothing(),
       base::DoNothing());
 
-  std::optional<base::Value> payload =
-      base::JSONReader::Read(configuration.GetPayload());
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      configuration.GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(payload);
   ASSERT_TRUE(payload->is_dict());

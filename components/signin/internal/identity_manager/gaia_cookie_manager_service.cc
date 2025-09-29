@@ -248,7 +248,8 @@ void GaiaCookieManagerService::ExternalCcResultFetcher::TimeoutForTests() {
 
 void GaiaCookieManagerService::ExternalCcResultFetcher::
     OnGetCheckConnectionInfoSuccess(const std::string& data) {
-  std::optional<base::Value> value = base::JSONReader::Read(data);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_list()) {
     CleanupTransientState();
     GetCheckConnectionInfoCompleted(false);

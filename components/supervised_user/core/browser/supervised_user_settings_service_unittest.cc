@@ -82,7 +82,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
     }
     ASSERT_TRUE(expected_value);
     EXPECT_EQ(*expected_value,
-              base::JSONReader::Read(supervised_user_setting.value()));
+              base::JSONReader::Read(supervised_user_setting.value(),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
 
   void OnNewSettingsAvailable(const base::Value::Dict& settings) {
@@ -108,7 +109,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
               base::JSONReader::Read(sync_change.sync_data()
                                          .GetSpecifics()
                                          .managed_user_setting()
-                                         .value()));
+                                         .value(),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
     // It should also show up in local Sync data.
     syncer::SyncDataList sync_data = settings_service_.GetAllSyncDataForTesting(
@@ -119,7 +121,8 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
         EXPECT_EQ(
             std::optional<base::Value>(true),
             base::JSONReader::Read(
-                sync_data_item.GetSpecifics().managed_user_setting().value()));
+                sync_data_item.GetSpecifics().managed_user_setting().value(),
+                base::JSON_PARSE_CHROMIUM_EXTENSIONS));
         return;
       }
     }

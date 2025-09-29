@@ -614,8 +614,8 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   ASSERT_TRUE(base::ReadFileToString(input_file, &input_json_text));
 
   // Convert to JSON dictionary.
-  std::optional<base::Value> opt_json_file =
-      base::JSONReader::Read(input_json_text);
+  std::optional<base::Value> opt_json_file = base::JSONReader::Read(
+      input_json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(opt_json_file);
   base::Value::Dict* json_file = opt_json_file->GetIfDict();
   ASSERT_TRUE(json_file);

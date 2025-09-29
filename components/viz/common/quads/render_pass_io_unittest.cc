@@ -320,7 +320,8 @@ TEST(RenderPassIOTest, CompositorRenderPassList) {
   std::string json_text;
   ASSERT_TRUE(base::ReadFileToString(json_path, &json_text));
 
-  std::optional<base::Value> dict0 = base::JSONReader::Read(json_text);
+  std::optional<base::Value> dict0 =
+      base::JSONReader::Read(json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(dict0.has_value());
   CompositorRenderPassList render_pass_list;
   EXPECT_TRUE(
@@ -359,7 +360,8 @@ TEST(RenderPassIOTest, CompositorFrameData) {
   std::string json_text;
   ASSERT_TRUE(base::ReadFileToString(json_path, &json_text));
 
-  std::optional<base::Value> list0 = base::JSONReader::Read(json_text);
+  std::optional<base::Value> list0 =
+      base::JSONReader::Read(json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(list0.has_value());
   std::vector<FrameData> frame_data_list;
   EXPECT_TRUE(FrameDataFromList(list0->GetList(), &frame_data_list));

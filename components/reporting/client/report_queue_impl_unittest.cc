@@ -158,7 +158,8 @@ TEST_F(ReportQueueImplTest, SuccessfulBaseValueRecord) {
   EXPECT_THAT(test_storage_module()->record().has_timestamp_us(), Eq(true));
 
   std::optional<base::Value> value_result =
-      base::JSONReader::Read(test_storage_module()->record().data());
+      base::JSONReader::Read(test_storage_module()->record().data(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value_result.has_value());
   EXPECT_EQ(value_result.value().GetDict(), test_dict);
 }

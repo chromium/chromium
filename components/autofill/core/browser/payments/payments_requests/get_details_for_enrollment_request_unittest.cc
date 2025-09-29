@@ -80,7 +80,8 @@ TEST_P(GetDetailsForEnrollmentRequestTest, GetRequestContent) {
 TEST_P(GetDetailsForEnrollmentRequestTest, ParseResponse) {
   std::optional<base::Value> response = base::JSONReader::Read(
       "{ \"google_legal_message\": {}, \"external_legal_message\": {}, "
-      "\"context_token\": \"some_token\" }");
+      "\"context_token\": \"some_token\" }",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 

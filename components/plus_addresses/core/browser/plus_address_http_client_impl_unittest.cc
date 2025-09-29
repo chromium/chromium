@@ -180,7 +180,8 @@ TEST_F(PlusAddressHttpClientRequests, ReservePlusAddress_IssuesCorrectRequest) {
                                  .request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
-                                 .AsStringPiece());
+                                 .AsStringPiece(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(body.has_value() && body->is_dict());
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);
@@ -213,7 +214,8 @@ TEST_F(PlusAddressHttpClientRequests,
                                  .request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
-                                 .AsStringPiece());
+                                 .AsStringPiece(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(body.has_value() && body->is_dict());
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);
@@ -247,7 +249,8 @@ TEST_F(PlusAddressHttpClientRequests, ConfirmPlusAddress_IssuesCorrectRequest) {
                                  .request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
-                                 .AsStringPiece());
+                                 .AsStringPiece(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(body.has_value() && body->is_dict());
   std::string* facet_entry = body->GetDict().FindString("facet");
   ASSERT_NE(facet_entry, nullptr);

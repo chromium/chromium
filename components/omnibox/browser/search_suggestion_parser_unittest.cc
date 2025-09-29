@@ -85,7 +85,8 @@ TEST(SearchSuggestionParserTest, DeserializeMalformedJsonIsInvalid) {
 
 TEST(SearchSuggestionParserTest, DeserializeJsonData) {
   std::string json_data = R"([{"one": 1}])";
-  std::optional<base::Value> manifest_value = base::JSONReader::Read(json_data);
+  std::optional<base::Value> manifest_value =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(manifest_value);
   std::optional<base::Value::List> result =
       SearchSuggestionParser::DeserializeJsonData(json_data);
@@ -140,7 +141,8 @@ TEST(SearchSuggestionParserTest, ParseEmptyValueIsInvalid) {
 
 TEST(SearchSuggestionParserTest, ParseNonSuggestionValueIsInvalid) {
   std::string json_data = R"([{"one": 1}])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   AutocompleteInput input;
@@ -197,7 +199,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
           {"2":"0:54","4":10003}
           ]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -279,7 +282,8 @@ TEST(SearchSuggestionParserTest, ParsePrerenderSuggestion) {
           "pre": 1
         }
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -315,7 +319,8 @@ TEST(SearchSuggestionParserTest, ParseBothPrefetchAndPrerenderSuggestion) {
           "pre": 1
         }
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -461,7 +466,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
         "google:suggestrelevance": [607, 606, 605, 604],
         "google:suggesttype": ["QUERY", "PERSONALIZED_QUERY", "QUERY", "QUERY"]
       }])";
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -557,7 +563,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionGroupInfo) {
         "google:suggestrelevance": [607, 606, 605, 604, 603],
         "google:suggesttype": ["QUERY", "QUERY", "QUERY", "QUERY", "QUERY"]
       }])";
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -678,7 +685,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
         "google:verbatimrelevance": 851
       }])";
 
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -739,7 +747,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionEntityInfo) {
         "google:verbatimrelevance": 851
       }])";
 
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -829,7 +838,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
       }
     ])";
 
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -901,7 +911,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         "google:verbatimrelevance": 1300
       }
     ])";
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -969,7 +980,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         "google:verbatimrelevance": 1300
       }
     ])";
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -1040,7 +1052,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         "google:verbatimrelevance": 1300
       }
     ])";
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -1111,7 +1124,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestionTemplateInfo) {
         "google:verbatimrelevance": 851
       }
     ])";
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -1149,7 +1163,8 @@ TEST(SearchSuggestionParserTest, ParseValidTypes) {
         "google:suggestrelevance": [607, 606, 605, 604, 603, 602],
         "google:suggesttype": ["QUERY", "ENTITY", "CATEGORICAL_QUERY", 1, "UNKNOWN"]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -1209,7 +1224,8 @@ TEST(SearchSuggestionParserTest, ParseValidSubtypes) {
         "google:suggestrelevance": [607, 606, 605, 604],
         "google:suggesttype": ["QUERY", "QUERY", "QUERY", "QUERY"]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -1256,7 +1272,8 @@ TEST(SearchSuggestionParserTest, IgnoresExcessiveSubtypeEntries) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -1285,7 +1302,8 @@ TEST(SearchSuggestionParserTest, IgnoresMissingSubtypeEntries) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -1316,7 +1334,8 @@ TEST(SearchSuggestionParserTest, IgnoresUnexpectedSubtypeValues) {
         "google:suggestrelevance": [607, 606, 605, 604, 603],
         "google:suggesttype": ["QUERY", "QUERY", "QUERY", "QUERY", "QUERY"]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -1348,7 +1367,8 @@ TEST(SearchSuggestionParserTest, IgnoresSubtypesIfNotAList) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -1377,7 +1397,8 @@ TEST(SearchSuggestionParserTest, SubtypesWithEmptyArraysAreValid) {
         "google:suggestrelevance": [607, 606],
         "google:suggesttype": ["QUERY", "QUERY"]
       }])";
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
   TestSchemeClassifier scheme_classifier;
@@ -1416,7 +1437,8 @@ TEST(SearchSuggestionParserTest, BadAnswersFailGracefully) {
 
   auto test = [](std::vector<std::string> cases) {
     for (std::string json_data : cases) {
-      std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+      std::optional<base::Value> root_val = base::JSONReader::Read(
+          json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       ASSERT_TRUE(root_val);
       ASSERT_TRUE(root_val.value().is_list());
       TestSchemeClassifier scheme_classifier;
@@ -1499,7 +1521,8 @@ TEST(SearchSuggestionParserTest, ParseCalculatorSuggestion) {
     }
   ])";
 
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
 
@@ -1590,7 +1613,8 @@ TEST(SearchSuggestionParserTest, ParseTailSuggestion) {
     }
   ])";
 
-  std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  std::optional<base::Value> root_val =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_val);
   ASSERT_TRUE(root_val.value().is_list());
 
@@ -1668,7 +1692,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
               "google:suggesttype": ["QUERY", "ENTITY", "QUERY"],
               "google:verbatimrelevance": 851
             }])"});
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
@@ -1726,7 +1751,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestTemplateFromSuggestResults) {
         "google:verbatimrelevance": 851
       }])";
 
-    std::optional<base::Value> root_val = base::JSONReader::Read(json_data);
+    std::optional<base::Value> root_val =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root_val);
     ASSERT_TRUE(root_val.value().is_list());
 
