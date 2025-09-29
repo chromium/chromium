@@ -252,7 +252,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
                 .AddError("Failed to wait for new frame presentation due to no "
                           "compositor.")
                 .Build());
-        MoveToState(State::kInvokeCallback);
+        MoveToState(State::kMaybeDelayCallback);
       }
       break;
     }
