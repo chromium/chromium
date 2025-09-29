@@ -519,6 +519,11 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
         break;
       }
 #endif  // BUILDFLAG(IS_WIN)
+      case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY: {
+        // TODO(crbug.com/394092280): Decide to what to do with preemptive
+        // process kill failures here.
+        break;
+      }
       case base::TERMINATION_STATUS_MAX_ENUM: {
         NOTREACHED();
       }

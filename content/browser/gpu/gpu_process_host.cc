@@ -231,6 +231,8 @@ GpuTerminationStatus ConvertToGpuTerminationStatus(
       return GpuTerminationStatus::LAUNCH_FAILED;
     case base::TERMINATION_STATUS_OOM:
       return GpuTerminationStatus::OOM;
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
+      return GpuTerminationStatus::OOM;
     case base::TERMINATION_STATUS_MAX_ENUM:
       NOTREACHED();
       // Do not add default.
@@ -879,6 +881,10 @@ GpuProcessHost::~GpuProcessHost() {
         unexpected_exit = true;
         break;
 #endif
+      case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
+        message += "evicted for memory.";
+        unexpected_exit = true;
+        break;
       case base::TERMINATION_STATUS_MAX_ENUM:
         NOTREACHED();
     }

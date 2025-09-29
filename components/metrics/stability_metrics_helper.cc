@@ -270,6 +270,7 @@ void StabilityMetricsHelper::LogRendererCrash(
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_OOM:
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
       LogRendererCrashImpl(coarse_renderer_type, exit_code);
       break;
 #if BUILDFLAG(IS_CHROMEOS)
