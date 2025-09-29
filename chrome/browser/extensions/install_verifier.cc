@@ -22,6 +22,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_signer.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -43,10 +44,6 @@
 #include "extensions/common/manifest_url_handlers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_service.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -370,17 +367,9 @@ void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
         }
       }
       if (success || GetStatus() == VerifyStatus::ENFORCE_STRICT) {
-#if BUILDFLAG(IS_ANDROID)
-        NOTIMPLEMENTED() << "CheckManagementPolicy";
-#else
-        // TODO(crbug.com/409824638): Enable the following code for desktop
-        // android when ExtensionManagement is ported on desktop android and
-        // ExtensionService::CheckManagementPolicy() is refactored out of
-        // ExtensionService.
         ExtensionSystem::Get(context_)
             ->extension_service()
             ->CheckManagementPolicy();
-#endif  // !BUILDFLAG(IS_ANDROID)
       }
       break;
     // We don't need to check disable reasons for provisional adds or removals.
