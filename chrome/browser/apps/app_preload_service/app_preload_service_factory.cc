@@ -49,10 +49,6 @@ AppPreloadServiceFactory* AppPreloadServiceFactory::GetInstance() {
 
 // static
 bool AppPreloadServiceFactory::IsAvailable(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kAppPreloadService)) {
-    return false;
-  }
-
   // Ensure that the build uses the Google-internal file containing the
   // official API keys, which are required to make queries to the Almanac.
   if (!google_apis::IsGoogleChromeAPIKeyUsed() && !g_skip_api_key_check) {

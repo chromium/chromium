@@ -42,10 +42,6 @@ const base::FeatureParam<base::TimeDelta>
         &kGlicActor, "actor-paint-stability-subsequent-paint-timeout",
         base::Milliseconds(500)};
 
-#if BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kAppPreloadService, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_WIN)
 // When enabled, notifications from PWA's will use the PWA icon and name,
 // as long as the PWA is on the start menu.  b/40285965.

@@ -56,8 +56,8 @@ class AppPreloadServiceTest : public testing::Test {
   AppPreloadServiceTest()
       : startup_check_resetter_(
             AppPreloadService::DisablePreloadsOnStartupForTesting()) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAppPreloadService, kAppPreloadServiceEnableShelfPin}, {});
+    scoped_feature_list_.InitWithFeatures({kAppPreloadServiceEnableShelfPin},
+                                          {});
     AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
   }
 
