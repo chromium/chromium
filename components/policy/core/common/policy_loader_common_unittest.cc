@@ -25,7 +25,9 @@ base::Value::List ToList(const std::vector<std::string>& values) {
 }
 
 base::Value::Dict ToDict(const std::string& json) {
-  return base::JSONReader::Read(json).value().TakeDict();
+  return base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+      .value()
+      .TakeDict();
 }
 
 }  // namespace
