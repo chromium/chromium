@@ -69,22 +69,22 @@ TEST_F(DnsRequestTest, Success) {
   MockNetworkContext mock_network_context;
   mojo::Receiver<network::mojom::HostResolver> receiver(&mock_host_resolver);
   EXPECT_CALL(mock_network_context, CreateHostResolver(_, _))
-      .WillOnce(Invoke([&](const std::optional<net::DnsConfigOverrides>&,
-                           mojo::PendingReceiver<network::mojom::HostResolver>
-                               pending_receiver) {
+      .WillOnce([&](const std::optional<net::DnsConfigOverrides>&,
+                    mojo::PendingReceiver<network::mojom::HostResolver>
+                        pending_receiver) {
         receiver.Bind(std::move(pending_receiver));
-      }));
+      });
 
   EXPECT_CALL(mock_host_resolver, ResolveHost(_, _, _, _))
-      .WillOnce(WithArgs<3>(
-          Invoke([](mojo::PendingRemote<network::mojom::ResolveHostClient>
-                        response_client) {
+      .WillOnce(
+          WithArgs<3>([](mojo::PendingRemote<network::mojom::ResolveHostClient>
+                             response_client) {
             mojo::Remote<network::mojom::ResolveHostClient> client(
                 std::move(response_client));
             client->OnTextResults({"iss=record1"});
             client->OnComplete(net::OK, net::ResolveErrorInfo(net::OK),
                                net::AddressList(), {});
-          })));
+          }));
 
   DnsRequest dns_request(base::BindRepeating(
       [](network::mojom::NetworkContext* network_context) {
@@ -96,7 +96,7 @@ TEST_F(DnsRequestTest, Success) {
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;
   EXPECT_CALL(callback,
               Run(testing::Optional(std::vector<std::string>{"iss=record1"})))
-      .WillOnce(Invoke([&]() { run_loop.Quit(); }));
+      .WillOnce([&]() { run_loop.Quit(); });
 
   dns_request.SendRequest("hostname", callback.Get());
   run_loop.Run();
@@ -107,23 +107,23 @@ TEST_F(DnsRequestTest, NetError) {
   MockNetworkContext mock_network_context;
   mojo::Receiver<network::mojom::HostResolver> receiver(&mock_host_resolver);
   EXPECT_CALL(mock_network_context, CreateHostResolver(_, _))
-      .WillOnce(Invoke([&](const std::optional<net::DnsConfigOverrides>&,
-                           mojo::PendingReceiver<network::mojom::HostResolver>
-                               pending_receiver) {
+      .WillOnce([&](const std::optional<net::DnsConfigOverrides>&,
+                    mojo::PendingReceiver<network::mojom::HostResolver>
+                        pending_receiver) {
         receiver.Bind(std::move(pending_receiver));
-      }));
+      });
 
   EXPECT_CALL(mock_host_resolver, ResolveHost(_, _, _, _))
-      .WillOnce(WithArgs<3>(
-          Invoke([](mojo::PendingRemote<network::mojom::ResolveHostClient>
-                        response_client) {
+      .WillOnce(
+          WithArgs<3>([](mojo::PendingRemote<network::mojom::ResolveHostClient>
+                             response_client) {
             mojo::Remote<network::mojom::ResolveHostClient> client(
                 std::move(response_client));
             client->OnComplete(
                 net::ERR_NAME_NOT_RESOLVED,
                 net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
                 net::AddressList(), {});
-          })));
+          }));
 
   DnsRequest dns_request(base::BindRepeating(
       [](network::mojom::NetworkContext* network_context) {
@@ -133,9 +133,9 @@ TEST_F(DnsRequestTest, NetError) {
 
   base::RunLoop run_loop;
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;
-  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt))).WillOnce(Invoke([&]() {
+  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt))).WillOnce([&]() {
     run_loop.Quit();
-  }));
+  });
 
   dns_request.SendRequest("hostname", callback.Get());
   run_loop.Run();
@@ -147,9 +147,9 @@ TEST_F(DnsRequestTest, NetworkContextGetterReturnsNull) {
 
   base::RunLoop run_loop;
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;
-  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt))).WillOnce(Invoke([&]() {
+  EXPECT_CALL(callback, Run(testing::Eq(std::nullopt))).WillOnce([&]() {
     run_loop.Quit();
-  }));
+  });
 
   dns_request.SendRequest("hostname", callback.Get());
   run_loop.Run();
@@ -160,22 +160,22 @@ TEST_F(DnsRequestTest, MultipleTxtRecords) {
   MockNetworkContext mock_network_context;
   mojo::Receiver<network::mojom::HostResolver> receiver(&mock_host_resolver);
   EXPECT_CALL(mock_network_context, CreateHostResolver(_, _))
-      .WillOnce(Invoke([&](const std::optional<net::DnsConfigOverrides>&,
-                           mojo::PendingReceiver<network::mojom::HostResolver>
-                               pending_receiver) {
+      .WillOnce([&](const std::optional<net::DnsConfigOverrides>&,
+                    mojo::PendingReceiver<network::mojom::HostResolver>
+                        pending_receiver) {
         receiver.Bind(std::move(pending_receiver));
-      }));
+      });
 
   EXPECT_CALL(mock_host_resolver, ResolveHost(_, _, _, _))
-      .WillOnce(WithArgs<3>(
-          Invoke([](mojo::PendingRemote<network::mojom::ResolveHostClient>
-                        response_client) {
+      .WillOnce(
+          WithArgs<3>([](mojo::PendingRemote<network::mojom::ResolveHostClient>
+                             response_client) {
             mojo::Remote<network::mojom::ResolveHostClient> client(
                 std::move(response_client));
             client->OnTextResults({"iss=hello.coop", "iss=foo.com"});
             client->OnComplete(net::OK, net::ResolveErrorInfo(net::OK),
                                net::AddressList(), {});
-          })));
+          }));
 
   DnsRequest dns_request(base::BindRepeating(
       [](network::mojom::NetworkContext* network_context) {
@@ -187,7 +187,7 @@ TEST_F(DnsRequestTest, MultipleTxtRecords) {
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;
   EXPECT_CALL(callback, Run(testing::Optional(std::vector<std::string>{
                             "iss=hello.coop", "iss=foo.com"})))
-      .WillOnce(Invoke([&]() { run_loop.Quit(); }));
+      .WillOnce([&]() { run_loop.Quit(); });
 
   dns_request.SendRequest("hostname", callback.Get());
   run_loop.Run();

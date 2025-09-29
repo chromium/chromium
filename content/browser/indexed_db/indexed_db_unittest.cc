@@ -1572,7 +1572,7 @@ TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
   MockMojoFactoryClient client;
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
   EXPECT_CALL(client, MockedOpenSuccess)
-      .WillOnce(testing::DoAll(MoveArgPointee<0>(&pending_database)));
+      .WillOnce(MoveArgPointee<0>(&pending_database));
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
   factory_remote_->Open(client.CreateInterfacePtrAndBind(),
                         database_callbacks.CreateInterfacePtrAndBind(),
@@ -2062,8 +2062,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
     EXPECT_CALL(client, DeleteSuccess)
-        .WillOnce(
-            testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
                                    /*force_close=*/false);
@@ -2096,8 +2095,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
     EXPECT_CALL(client, DeleteSuccess)
-        .WillOnce(
-            testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->DeleteDatabase(client.CreateInterfacePtrAndBind(), u"db",
                                    /*force_close=*/false);
@@ -2233,8 +2231,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDiskFull) {
   MockMojoDatabaseCallbacks database_callbacks;
   base::RunLoop run_loop;
   EXPECT_CALL(client, Error)
-      .WillOnce(
-          testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+      .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
   mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
   factory_remote->Open(client.CreateInterfacePtrAndBind(),
                        database_callbacks.CreateInterfacePtrAndBind(), u"db",
@@ -2273,8 +2270,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
     MockMojoDatabaseCallbacks database_callbacks;
     base::RunLoop run_loop;
     EXPECT_CALL(client, MockedUpgradeNeeded)
-        .WillOnce(
-            testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(),
@@ -2332,8 +2328,7 @@ TEST_P(IndexedDBTest, DataLoss) {
     base::RunLoop run_loop;
     EXPECT_CALL(client, MockedUpgradeNeeded(
                             _, _, blink::mojom::IDBDataLoss::None, _, _))
-        .WillOnce(
-            testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(),
@@ -2365,8 +2360,7 @@ TEST_P(IndexedDBTest, DataLoss) {
     MockMojoDatabaseCallbacks database_callbacks;
     EXPECT_CALL(client, MockedUpgradeNeeded(
                             _, _, blink::mojom::IDBDataLoss::Total, _, _))
-        .WillOnce(
-            testing::DoAll(::base::test::RunClosure(run_loop.QuitClosure())));
+        .WillOnce(::base::test::RunClosure(run_loop.QuitClosure()));
     mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
     factory_remote->Open(client.CreateInterfacePtrAndBind(),
                          database_callbacks.CreateInterfacePtrAndBind(),

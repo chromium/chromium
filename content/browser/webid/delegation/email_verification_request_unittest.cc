@@ -82,14 +82,13 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
 
   EXPECT_CALL(*mock_dns_request_,
               SendRequest("email._web-identity.example.com", _))
-      .WillOnce(
-          WithArgs<1>(Invoke([&](DnsRequest::DnsRequestCallback callback) {
-            std::move(callback).Run(
-                std::vector<std::string>{"iss=issuer.example.com"});
-          })));
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
 
   EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
-      .WillOnce(WithArgs<1>(Invoke(
+      .WillOnce(WithArgs<1>(
           [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
             IdpNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
@@ -97,13 +96,13 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                 IdpNetworkRequestManager::FetchStatus{
                     IdpNetworkRequestManager::ParseStatus::kSuccess},
                 well_known);
-          })));
+          }));
 
   EXPECT_CALL(*mock_network_manager_,
               SendTokenRequest(kIssuanceEndpoint, kEmail, _, _, _, _, _))
       .WillOnce(WithArgs<2, 4>(
-          Invoke([&](const std::string& url_encoded_post_data,
-                     IdpNetworkRequestManager::TokenRequestCallback callback) {
+          [&](const std::string& url_encoded_post_data,
+              IdpNetworkRequestManager::TokenRequestCallback callback) {
             base::StringPairs params;
             EXPECT_TRUE(base::SplitStringIntoKeyValuePairs(
                 url_encoded_post_data, '=', '&', &params));
@@ -159,7 +158,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                 IdpNetworkRequestManager::FetchStatus{
                     IdpNetworkRequestManager::ParseStatus::kSuccess},
                 std::move(result));
-          })));
+          }));
 
   base::test::TestFuture<std::optional<std::string>> future;
   std::string nonce = kNonce;
