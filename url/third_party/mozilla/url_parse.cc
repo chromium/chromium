@@ -740,7 +740,7 @@ int DoParsePort(const CHAR* spec, const Component& component) {
 }
 
 template <typename CHAR>
-void DoExtractFileName(const CHAR* spec,
+void DoExtractFileName(std::basic_string_view<CHAR> spec,
                        const Component& path,
                        Component* file_name) {
   // Handle empty paths: they have no file names.
@@ -962,13 +962,13 @@ bool IsAuthorityTerminator(char16_t ch, ParserMode parser_mode) {
   return ch == '/' || ch == '?' || ch == '#';
 }
 
-void ExtractFileName(const char* url,
+void ExtractFileName(std::string_view url,
                      const Component& path,
                      Component* file_name) {
   DoExtractFileName(url, path, file_name);
 }
 
-void ExtractFileName(const char16_t* url,
+void ExtractFileName(std::u16string_view url,
                      const Component& path,
                      Component* file_name) {
   DoExtractFileName(url, path, file_name);

@@ -408,7 +408,7 @@ int GURL::EffectiveIntPort() const {
 
 std::string GURL::ExtractFileName() const {
   url::Component file_component;
-  url::ExtractFileName(spec_.data(), parsed_.path, &file_component);
+  url::ExtractFileName(spec_, parsed_.path, &file_component);
   return ComponentString(file_component);
 }
 

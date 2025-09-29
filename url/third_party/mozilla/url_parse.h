@@ -440,11 +440,11 @@ int ParsePort(const char16_t* url, const Component& port);
 //
 // The 8-bit version requires UTF-8 encoding.
 COMPONENT_EXPORT(URL)
-void ExtractFileName(const char* url,
+void ExtractFileName(std::string_view url,
                      const Component& path,
                      Component* file_name);
 COMPONENT_EXPORT(URL)
-void ExtractFileName(const char16_t* url,
+void ExtractFileName(std::u16string_view url,
                      const Component& path,
                      Component* file_name);
 

@@ -67,13 +67,14 @@ void AssertProtocolIsGood(const StringView protocol) {
 
 // Note: You must ensure that |spec| is a valid canonicalized URL before calling
 // this function.
-const char* AsURLChar8Subtle(const String& spec) {
+std::string_view AsURLChar8Subtle(const String& spec) {
   DCHECK(spec.Is8Bit());
-  // characters8 really return characters in Latin-1, but because we
+  // Span8() really return characters in Latin-1, but because we
   // canonicalize URL strings, we know that everything before the fragment
   // identifier will actually be ASCII, which means this cast is safe as long as
   // you don't look at the fragment component.
-  return base::as_chars(spec.Span8()).data();
+  base::span<const char> span = base::as_chars(spec.Span8());
+  return std::string_view(span.begin(), span.end());
 }
 
 // Returns the characters for the given string, or a pointer to a static empty
@@ -353,7 +354,9 @@ StringView KURL::LastPathComponent() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), path, &file);
   } else {
-    url::ExtractFileName(UNSAFE_TODO(string_.Characters16()), path, &file);
+    base::span<const UChar> span = string_.Span16();
+    url::ExtractFileName(std::u16string_view(span.begin(), span.end()), path,
+                         &file);
   }
 
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
@@ -379,7 +382,7 @@ uint16_t KURL::Port() const {
   DCHECK(!string_.IsNull());
   int port =
       string_.Is8Bit()
-          ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
+          ? url::ParsePort(AsURLChar8Subtle(string_).data(), parsed_.port)
           : url::ParsePort(UNSAFE_TODO(string_.Characters16()), parsed_.port);
   DCHECK_NE(port, url::PORT_UNSPECIFIED);  // Checked port.len <= 0 already.
   DCHECK_NE(port, url::PORT_INVALID);      // Checked is_valid_ already.
@@ -825,7 +828,7 @@ bool KURL::IsStandard() const {
   if (string_.IsNull() || parsed_.scheme.is_empty())
     return false;
   return string_.Is8Bit() ? url::IsStandard(parsed_.scheme.as_string_view_on(
-                                AsURLChar8Subtle(string_)))
+                                AsURLChar8Subtle(string_).data()))
                           : url::IsStandard(parsed_.scheme.as_string_view_on(
                                 UNSAFE_TODO(string_.Characters16())));
 }
@@ -880,8 +883,9 @@ unsigned KURL::PathAfterLastSlash() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), parsed_.path, &filename);
   } else {
-    url::ExtractFileName(UNSAFE_TODO(string_.Characters16()), parsed_.path,
-                         &filename);
+    base::span<const UChar> span = string_.Span16();
+    url::ExtractFileName(std::u16string_view(span.begin(), span.end()),
+                         parsed_.path, &filename);
   }
   return filename.begin;
 }
@@ -893,7 +897,7 @@ bool ProtocolIs(const String& url, const char* protocol) {
   if (url.IsNull())
     return false;
   if (url.Is8Bit()) {
-    return url::FindAndCompareScheme(AsURLChar8Subtle(url), url.length(),
+    return url::FindAndCompareScheme(AsURLChar8Subtle(url).data(), url.length(),
                                      protocol, nullptr);
   }
   return url::FindAndCompareScheme(UNSAFE_TODO(url.Characters16()),
