@@ -1091,6 +1091,8 @@ void BtmBounceDetector::WebAuthnAssertionRequestSucceeded() {
 void RedirectChainDetector::WebAuthnAssertionRequestSucceeded(
     RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
+    // TODO: crbug.com/448047352 - Investigate (and handle, if applicable) late
+    //   WAA notifications.
     return;
   }
 

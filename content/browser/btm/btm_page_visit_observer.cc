@@ -339,8 +339,8 @@ void BtmPageVisitObserver::FrameReceivedUserActivation(
 void BtmPageVisitObserver::WebAuthnAssertionRequestSucceeded(
     RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
-    CHECK(render_frame_host->GetOutermostMainFrameOrEmbedder()
-              ->IsInPrimaryMainFrame());
+    // TODO: crbug.com/448047352 - Investigate (and handle, if applicable) late
+    //   WAA notifications.
     return;
   }
   current_page_.had_successful_web_authn_assertion = true;
