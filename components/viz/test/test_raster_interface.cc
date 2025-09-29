@@ -96,16 +96,6 @@ gpu::SyncToken TestRasterInterface::ScheduleImageDecode(
   return gpu::SyncToken();
 }
 
-GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
-    const gpu::Mailbox& mailbox) {
-  NOTREACHED();
-}
-
-GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  NOTREACHED();
-}
-
 void TestRasterInterface::DeleteGpuRasterTexture(GLuint texture) {
   NOTREACHED();
 }

@@ -468,12 +468,6 @@ GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
   return gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
 }
 
-GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  CHECK(shared_image);
-  return CreateAndConsumeForGpuRaster(shared_image->mailbox());
-}
-
 void RasterImplementationGLES::DeleteGpuRasterTexture(GLuint texture) {
   gl_->DeleteTextures(1u, &texture);
 }

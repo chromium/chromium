@@ -1900,16 +1900,6 @@ void RasterImplementation::IssueImageDecodeCacheEntryCreation(
       sync_token.release_count(), target_color_space, needs_mips);
 }
 
-GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
-    const gpu::Mailbox& mailbox) {
-  NOTREACHED();
-}
-
-GLuint RasterImplementation::CreateAndConsumeForGpuRaster(
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  NOTREACHED();
-}
-
 void RasterImplementation::DeleteGpuRasterTexture(GLuint texture) {
   NOTREACHED();
 }
