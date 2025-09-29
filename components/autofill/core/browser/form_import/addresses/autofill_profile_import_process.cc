@@ -142,7 +142,7 @@ bool ProfileImportProcess::UserAccepted() const {
 void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   // If there is reason to believe that the `observed_profile_`'s country was
-  // complemented incorrectly, remove remove the country.
+  // complemented incorrectly, remove the country.
   if (import_metadata_.did_complement_country &&
       ShouldCountryApproximationBeRemoved(observed_profile_,
                                           address_data_manager_->GetProfiles(),
