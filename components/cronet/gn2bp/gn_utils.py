@@ -134,7 +134,7 @@ class GnParser:
 
       def __init__(self):
         self.sources = set()
-        self.cflags = set()
+        self.cflags = []
         self.defines = set()
         self.include_dirs = set()
         self.deps = set()
@@ -257,6 +257,10 @@ class GnParser:
     def cflags(self):
       return self.arch['common'].cflags
 
+    @cflags.setter
+    def cflags(self, val):
+      self.arch['common'].cflags = val
+
     @property
     def defines(self):
       return self.arch['common'].defines
@@ -313,12 +317,23 @@ class GnParser:
     def update(self, other, arch):
       for key in ('cflags', 'defines', 'deps', 'include_dirs', 'ldflags',
                   'proto_deps', 'proto_paths'):
-        getattr(self, key).update(getattr(other, key, []))
+        val = getattr(self, key)
+        if isinstance(val, set):
+          # The pylint is confused as it does not understand that this line is protected
+          # behind a type-check via `isinstance`
+          # pylint: disable=no-member
+          val.update(getattr(other, key, ()))
+        elif isinstance(val, list):
+          val.extend(getattr(other, key, []))
 
       for key_in_arch in ('cflags', 'defines', 'include_dirs', 'deps',
                           'ldflags', 'libs'):
-        getattr(self.arch[arch],
-                key_in_arch).update(getattr(other.arch[arch], key_in_arch, []))
+        val = getattr(self.arch[arch], key_in_arch)
+        if isinstance(val, set):
+          val.update(getattr(other.arch[arch], key_in_arch, []))
+        elif isinstance(val, list):
+          val.extend(getattr(other.arch[arch], key_in_arch, []))
+
 
     def get_archs(self):
       """ Returns a dict of archs without the common arch """
@@ -645,7 +660,7 @@ class GnParser:
     public_headers = [x for x in desc.get('public', []) if x != '*']
     target.public_headers.update(public_headers)
     target.build_file_path = _get_build_path_from_label(target_name)
-    target.arch[arch].cflags.update(
+    target.arch[arch].cflags.extend(
         desc.get('cflags', []) + desc.get('cflags_cc', []))
     target.arch[arch].libs.update(desc.get('libs', []))
     target.arch[arch].ldflags.update(desc.get('ldflags', []))

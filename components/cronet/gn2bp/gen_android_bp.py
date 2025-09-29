@@ -706,7 +706,7 @@ class Module:
       self.static_libs = set()
       self.whole_static_libs = set()
       self.header_libs = set()
-      self.cflags = set()
+      self.cflags = list()
       self.stl = None
       self.cppflags = set()
       self.include_dirs = set()
@@ -786,7 +786,7 @@ class Module:
     self.export_static_lib_headers = set()
     self.export_header_lib_headers = set()
     self.defaults = set()
-    self.cflags = set()
+    self.cflags = list()
     self.include_dirs = set()
     self.local_include_dirs = set()
     self.header_libs = set()
@@ -1475,13 +1475,13 @@ def create_gcc_preprocess_modules(blueprint, target):
                              bp_module_name + '_preprocess', target.name)
   # -E: stop after preprocessing.
   # -P: disable line markers, i.e. '#line 309'
-  preprocess_module.cflags.update(['-E', '-P', '-DANDROID'])
+  preprocess_module.cflags.extend(['-E', '-P', '-DANDROID'])
   preprocess_module.srcs.add(':' + rename_module.name)
   defines = [
       '-D' + target.args[i + 1] for i, arg in enumerate(target.args)
       if arg == '--define'
   ]
-  preprocess_module.cflags.update(defines)
+  preprocess_module.cflags.extend(defines)
   blueprint.add_module(preprocess_module)
 
   # Generates srcjar using soong_zip
@@ -2575,9 +2575,9 @@ def create_jni_zero_proxy_only_module(jni_zero_generator_module):
 
 
 def _get_cflags(cflags, defines):
-  cflags = {flag for flag in cflags if flag in cflag_allowlist}
+  cflags = [flag for flag in cflags if flag in cflag_allowlist]
   # Consider proper allowlist or denylist if needed
-  cflags |= set("-D%s" % define.replace("\"", "\\\"") for define in defines)
+  cflags.extend(["-D%s" % define.replace("\"", "\\\"") for define in defines])
   return cflags
 
 
@@ -2627,8 +2627,20 @@ def create_concatenated_generated_headers_module(bp_module_name,
   return module
 
 
-def configure_cc_module(module, cflags, defines, ldflags, libs):
-  module.cflags.update(_get_cflags(cflags, defines))
+def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
+  cpp_stds = [
+      cflag.removeprefix('-std=') for cflag in cflags
+      if cflag.startswith('-std=')
+  ]
+  if cpp_stds:
+    # There can be multiple cpp std in cflags list. Return the last one as this will
+    # override any previous version.
+    return cpp_stds[-1]
+  return None
+
+
+def configure_cc_module(module, cflags, defines, ldflags, libs, main_module):
+  module.cflags.extend(_get_cflags(cflags, defines))
   module.ldflags.update({
       flag
       for flag in ldflags
@@ -2645,10 +2657,16 @@ def configure_cc_module(module, cflags, defines, ldflags, libs):
       module.shared_libs.add(android_lib)
   # TODO: implement proper cflag parsing.
   for flag in cflags:
-    if '-std=' in flag:
-      module.cpp_std = flag[len('-std='):]
     if '-fexceptions' in flag:
       module.cppflags.add('-fexceptions')
+  cpp_std = _get_cpp_std(cflags)
+  if cpp_std:
+    assert main_module.cpp_std is None or main_module.cpp_std == cpp_std, f"Found different CPP version across different architectures!, target name: {main_module.name}, first cpp version: {main_module.cpp_std}, current cpp version: {cpp_std}"
+    # The -std= compiler option has a dedicated property in Android.bp, called cpp_std. That property
+    # can only be set at module top level; it cannot be set per-target. However in GN
+    # cflags are arch-specific, so we will find -std= when running on the
+    # arch-specific module. Hence we need to go back to the main module and set it there.
+    main_module.cpp_std = cpp_std
 
 
 def _create_rust_build_script_output_copy_genrule(module_name,
@@ -2877,13 +2895,13 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
 
     if target.type in gn_utils.LINKER_UNIT_TYPES:
       configure_cc_module(module, target.cflags, target.defines, target.ldflags,
-                          target.libs)
+                          target.libs, module)
       set_module_include_dirs(module, target.cflags, target.include_dirs)
       # TODO: set_module_xxx is confusing, apply similar function to module and target in better way.
       for arch_name, arch in target.get_archs().items():
         # TODO(aymanm): Make libs arch-specific.
         configure_cc_module(module.target[arch_name], arch.cflags, arch.defines,
-                            arch.ldflags, arch.libs)
+                            arch.ldflags, arch.libs, module)
         # -Xclang -target-feature -Xclang +mte are used to enable MTE (Memory Tagging Extensions).
         # Flags which does not start with '-' could not be in the cflags so enabling MTE by
         # -march and -mcpu Feature Modifiers. MTE is only available on arm64. This is needed for
@@ -3376,6 +3394,8 @@ def apply_post_processing(module):
     curr = getattr(module, key)
     if add_val and isinstance(add_val, set) and isinstance(curr, set):
       curr.update(add_val)
+    elif isinstance(curr, list):
+      curr.extend(add_val)
     elif isinstance(add_val, str) and (not curr or isinstance(curr, str)):
       setattr(module, key, add_val)
     elif isinstance(add_val, bool) and (not curr or isinstance(curr, bool)):
