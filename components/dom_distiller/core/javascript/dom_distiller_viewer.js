@@ -42,32 +42,24 @@ function addToPage(html) {
 /**
  * A utility class for classifying images in distilled content.
  *
- * This class uses a multi-stage heuristic to determine whether an image should
- * be displayed as a small inline element (e.g., an icon, symbol, or inline
- * formula) or as a full-width block element (e.g., a feature image). The
- * classification is density-aware to ensure consistent behavior across
- * different screen resolutions.
+ * Uses a prioritized cascade of heuristics to classify an image as either
+ * inline (e.g., icon) or full-width (e.g., feature image). The checks are:
+ * 1. Rendered size vs. viewport size (for visually dominant images).
+ * 2. Intrinsic size and metadata (for small or decorative images).
+ * 3. Structural context (e.g., inside a <figure>).
+ * 4. A final fallback based on intrinsic width.
  *
- * The primary entry point is the static method `processImagesIn()`, which finds
- * all images within a given DOM element and applies the appropriate CSS class
- * (`distilled-inline-img` or `distilled-full-width-img`).
+ * All checks use density-independent units (CSS pixels).
  */
 class ImageClassifier {
   static INLINE_CLASS = 'distilled-inline-img';
   static FULL_WIDTH_CLASS = 'distilled-full-width-img';
+  static DOMINANT_IMAGE_MIN_VIEWPORT_RATIO = 0.8;
 
   constructor() {
-    const density = window.devicePixelRatio || 1;
-
-    // Baseline thresholds in density-independent units (dp).
-    const SMALL_AREA_UPPER_BOUND_DP = 64 * 64;
-    const INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP = 300;
-
-    // Calculate density-aware thresholds in pixels (px) once.
-    this.smallAreaUpperBoundPx =
-        SMALL_AREA_UPPER_BOUND_DP * (density * density);
-    this.inlineWidthFallbackUpperBoundPx =
-        INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP * density;
+    // Baseline thresholds in density-independent units (CSS pixels).
+    this.smallAreaUpperBoundDp = 64 * 64;
+    this.inlineWidthFallbackUpperBoundDp = 300;
 
     // Matches common keywords for icons or mathematical formulas.
     const mathyKeywords =
@@ -83,15 +75,16 @@ class ImageClassifier {
   }
 
   /**
-   * Checks for strong signals that the image is INLINE.
+   * Checks for strong signals that the image is INLINE based on its intrinsic
+   * properties.
    * @param {HTMLImageElement} img The image element to check.
    * @return {boolean} True if the image should be inline.
    * @private
    */
   _isDefinitelyInline(img) {
-    // Accept small images, but skip unloaded or broken ones (area == 0).
-    const area = img.width * img.height;
-    if (area > 0 && area < this.smallAreaUpperBoundPx) {
+    // Use natural dimensions (in CSS pixels) to check for small area.
+    const area = img.naturalWidth * img.naturalHeight;
+    if (area > 0 && area < this.smallAreaUpperBoundDp) {
       return true;
     }
 
@@ -161,23 +154,34 @@ class ImageClassifier {
   }
 
   /**
-   * Classifies the image based on a simple width fallback.
+   * Classifies the image based on a simple intrinsic width fallback.
    * @param {HTMLImageElement} img The image element to check.
    * @return {string} The CSS class to apply.
    * @private
    */
   _classifyByFallback(img) {
-    return img.width > this.inlineWidthFallbackUpperBoundPx ?
+    // Use naturalWidth (in CSS pixels) and compare against the dp threshold.
+    return img.naturalWidth > this.inlineWidthFallbackUpperBoundDp ?
         ImageClassifier.FULL_WIDTH_CLASS :
         ImageClassifier.INLINE_CLASS;
   }
 
   /**
-   * Determines if an image should be displayed inline or as a full-width block.
+   * Determines an image's display style using a prioritized cascade of checks.
    * @param {HTMLImageElement} img The image element to classify.
    * @return {string} The CSS class to apply.
    */
   classify(img) {
+    // Check for visually dominant images first, as this is the most reliable
+    // signal and overrides all other heuristics.
+    const renderedWidth = img.getBoundingClientRect().width;
+    if (renderedWidth > 0 && window.innerWidth > 0 &&
+        (renderedWidth / window.innerWidth) >
+            ImageClassifier.DOMINANT_IMAGE_MIN_VIEWPORT_RATIO) {
+      return ImageClassifier.FULL_WIDTH_CLASS;
+    }
+
+    // Fall back to checks based on intrinsic properties and structure.
     if (this._isDefinitelyInline(img)) {
       return ImageClassifier.INLINE_CLASS;
     }
