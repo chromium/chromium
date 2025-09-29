@@ -26008,7 +26008,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithMediumIdleTimeout",
+                    "params": {
+                        "idle_before_heavyweight": "2s"
+                    },
                     "enable_features": [
                         "UserEducationExperienceVersion2Point5"
                     ]

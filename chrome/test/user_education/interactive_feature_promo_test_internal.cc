@@ -115,7 +115,11 @@ void InteractiveFeaturePromoTestPrivate::CommitControllerMode() {
             user_education::features::kUserEducationExperienceVersion2Point5,
             {{"low_priority_timeout", "3s"},
              {"medium_priority_timeout", "2s"},
-             {"high_priority_timeout", "1s"}}));
+             {"high_priority_timeout", "1s"},
+             // Idle timeout must be larger than low priority timeout for
+             // timeout tests to work, otherwise it's not possible for the test
+             // to time out due to user input.
+             {"idle_before_heavyweight", "5s"}}));
       } else {
         enable.push_back(base::test::FeatureRefAndParams(
             user_education::features::kUserEducationExperienceVersion2Point5,

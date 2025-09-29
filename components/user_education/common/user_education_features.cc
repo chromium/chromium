@@ -54,7 +54,7 @@ inline constexpr base::TimeDelta kDefaultLowPriorityTimeout = base::Seconds(30);
 
 inline constexpr char kIdleTimeBeforeHeavyweight[] = "idle_before_heavyweight";
 inline constexpr base::TimeDelta kDefaultIdleTimeBeforeHeavyweight =
-    base::Seconds(5);
+    base::Seconds(2);
 
 inline constexpr char kPollingInterval[] = "polling_interval";
 inline constexpr base::TimeDelta kDefaultPollingInterval =
