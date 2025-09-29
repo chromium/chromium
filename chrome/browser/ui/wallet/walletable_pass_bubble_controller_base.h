@@ -43,7 +43,7 @@ class WalletablePassBubbleControllerBase
       const WalletablePassBubbleControllerBase&) = delete;
 
   // BubbleControllerBase:
-  void HideBubble(bool show_next_bubble) override;
+  void HideBubble() override;
   bool IsShowingBubble() const override;
   bool IsMouseHovered() const override;
 
@@ -61,7 +61,7 @@ class WalletablePassBubbleControllerBase
 
   void QueueOrShowBubble(bool force_show = false);
 
-  void ResetBubbleViewAndInformBubbleManager(bool show_next_bubble);
+  void ResetBubbleViewAndInformBubbleManager();
 
   tabs::TabInterface& tab() { return tab_.get(); }
 

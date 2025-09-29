@@ -132,7 +132,7 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
     bool iban_saved,
     bool hit_max_strikes) {
   // Hide the current bubble if still showing.
-  HideBubble(/*show_next_bubble=*/false);
+  HideBubble();
 
   is_reshow_ = false;
   current_bubble_type_ = IbanBubbleType::kUploadCompleted;
@@ -154,7 +154,7 @@ void IbanBubbleControllerImpl::ShowConfirmationBubbleView(
     auto_close_confirmation_timer_.Start(
         FROM_HERE, kAutoCloseConfirmationBubbleWaitSec,
         base::BindOnce(&IbanBubbleControllerImpl::HideBubble,
-                       base::Unretained(this), /*show_next_bubble=*/true));
+                       base::Unretained(this)));
   }
 }
 
@@ -321,7 +321,7 @@ void IbanBubbleControllerImpl::OnBubbleClosed(
     }
   }
 
-  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
+  ResetBubbleViewAndInformBubbleManager();
 
   auto get_metric = [](PaymentsUiClosedReason reason) {
     switch (reason) {

@@ -100,7 +100,7 @@ void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
     autofill_vcn_enroll_bottom_sheet_bridge_->Hide();
   }
 #else  // !BUILDFLAG(IS_ANDROID)
-  HideBubble(/*show_next_bubble=*/false);
+  HideBubble();
   ResetBubble();
   UpdatePageActionIcon();
   if (result == PaymentsRpcResult::kClientSideTimeout) {
@@ -139,7 +139,7 @@ VirtualCardEnrollBubbleControllerImpl::GetVirtualCardBubbleView() const {
 
 #if !BUILDFLAG(IS_ANDROID)
 void VirtualCardEnrollBubbleControllerImpl::HideIconAndBubble() {
-  HideBubble(/*show_next_bubble=*/true);
+  HideBubble();
   ResetBubble();
   UpdatePageActionIcon();
 }
@@ -211,7 +211,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 
 void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
+  ResetBubbleViewAndInformBubbleManager();
   UpdatePageActionIcon();
 
   // If the dialog is to be shown again because user clicked on links, do not
@@ -318,7 +318,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
     QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*show_next_bubble=*/false);
+    HideBubble();
     if (bubble_state_ != BubbleState::kShowingIcon) {
       bubble_state_ = BubbleState::kHidden;
     }
@@ -343,7 +343,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
 #else
   // If bubble is already showing for another card, close it.
   if (bubble_view()) {
-    HideBubble(/*show_next_bubble=*/false);
+    HideBubble();
   }
 
   bubble_state_ = BubbleState::kShowingIconAndBubble;

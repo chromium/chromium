@@ -153,7 +153,7 @@ void AddressBubblesController::ShowEditor(
       is_editing_existing_address, is_migration_to_account_,
       base::BindOnce(&AddressBubblesController::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr()));
-  HideBubble(/*show_next_bubble=*/false);
+  HideBubble();
 }
 
 void AddressBubblesController::OnUserDecision(
@@ -185,7 +185,7 @@ void AddressBubblesController::OnUserDecision(
 }
 
 void AddressBubblesController::OnBubbleClosed() {
-  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
+  ResetBubbleViewAndInformBubbleManager();
   is_showing_sign_in_promo_ = false;
   UpdatePageActionIcon();
 }
@@ -320,7 +320,7 @@ void AddressBubblesController::MaybeShowSignInPromo(
   }
 
   // Close the current save bubble.
-  HideBubble(/*show_next_bubble=*/false);
+  HideBubble();
 
   // Open the bubble with the sign in promo.
   SetBubbleView(*ShowSignInPromo(web_contents(), autofill_profile.value()));

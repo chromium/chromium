@@ -62,7 +62,7 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
   // If another bubble is visible, dismiss it and show a new one since the card
   // information can be different.
   if (bubble_view()) {
-    HideBubble(/*show_next_bubble=*/true);
+    HideBubble();
   }
 
   if (!MaySetUpBubble()) {
@@ -231,7 +231,7 @@ void FilledCardInformationBubbleControllerImpl::OnLinkClicked() {
 
 void FilledCardInformationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
+  ResetBubbleViewAndInformBubbleManager();
 
   // Log bubble result according to the closed reason.
   autofill_metrics::FilledCardInformationBubbleResult metric;
@@ -355,7 +355,7 @@ void FilledCardInformationBubbleControllerImpl::PrimaryPageChanged(
   should_icon_be_visible_ = false;
   bubble_has_been_shown_ = false;
   UpdatePageActionIcon();
-  HideBubble(/*show_next_bubble=*/true);
+  HideBubble();
 }
 
 void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
@@ -373,7 +373,7 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
       should_icon_be_visible_) {
     QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*show_next_bubble=*/false);
+    HideBubble();
   }
 }
 

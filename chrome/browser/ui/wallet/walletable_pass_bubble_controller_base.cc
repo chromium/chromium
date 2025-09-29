@@ -45,10 +45,10 @@ bool WalletablePassBubbleControllerBase::IsShowingBubble() const {
   return bubble_view_ != nullptr;
 }
 
-void WalletablePassBubbleControllerBase::HideBubble(bool show_next_bubble) {
+void WalletablePassBubbleControllerBase::HideBubble() {
   if (IsShowingBubble()) {
     bubble_view_->CloseBubble();
-    ResetBubbleViewAndInformBubbleManager(show_next_bubble);
+    ResetBubbleViewAndInformBubbleManager();
   }
 }
 
@@ -61,7 +61,7 @@ void WalletablePassBubbleControllerBase::OnBubbleClosed(
   if (callback_) {
     std::move(callback_).Run(GetResult(reason));
   }
-  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
+  ResetBubbleViewAndInformBubbleManager();
 }
 
 void WalletablePassBubbleControllerBase::SetBubbleView(
@@ -86,14 +86,13 @@ void WalletablePassBubbleControllerBase::QueueOrShowBubble(bool force_show) {
   ShowBubble();
 }
 
-void WalletablePassBubbleControllerBase::ResetBubbleViewAndInformBubbleManager(
-    bool show_next_bubble) {
+void WalletablePassBubbleControllerBase::
+    ResetBubbleViewAndInformBubbleManager() {
   if (IsShowingBubble() &&
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager = autofill::BubbleManager::GetForTab(&tab())) {
-      manager->OnBubbleHiddenByController(
-          *this, /*show_next_bubble=*/show_next_bubble);
+      manager->OnBubbleHiddenByController(*this);
     }
   }
   bubble_view_ = nullptr;

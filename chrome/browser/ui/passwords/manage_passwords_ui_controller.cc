@@ -510,7 +510,7 @@ void ManagePasswordsUIController::OnCredentialLeak(
 
   // Hide the manage passwords bubble if currently shown.
   if (IsShowingBubble()) {
-    HideBubble(/*show_next_bubble=*/true);
+    HideBubble();
   } else {
     ClearPopUpFlagForBubble();
   }
@@ -913,11 +913,8 @@ void ManagePasswordsUIController::OnBubbleHidden() {
           autofill::features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager =
             autofill::BubbleManager::GetForWebContents(web_contents())) {
-      manager->OnBubbleHiddenByController(
-          *this,
-          /*show_next_bubble=*/show_next_bubble_.value_or(true));
+      manager->OnBubbleHiddenByController(*this);
     }
-    show_next_bubble_.reset();
   }
 }
 
@@ -1368,7 +1365,7 @@ void ManagePasswordsUIController::OnVisibilityChanged(
   }
 
   if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*show_next_bubble=*/false);
+    HideBubble();
   }
 }
 
@@ -1414,7 +1411,7 @@ void ManagePasswordsUIController::ClearPopUpFlagForBubble() {
 }
 
 void ManagePasswordsUIController::DestroyPopups() {
-  HideBubble(/*show_next_bubble=*/true);
+  HideBubble();
   if (dialog_controller_ && dialog_controller_->IsShowingAccountChooser()) {
     dialog_controller_.reset();
     passwords_data_.TransitionToState(password_manager::ui::MANAGE_STATE);
@@ -1432,7 +1429,7 @@ void ManagePasswordsUIController::WebContentsDestroyed() {
   if (account_password_store) {
     account_password_store->RemoveObserver(this);
   }
-  HideBubble(/*show_next_bubble=*/false);
+  HideBubble();
   web_contents()->RemoveUserData(UserDataKey());
   // `this` is now destroyed - do not add code here.
 }
@@ -1499,9 +1496,8 @@ void ManagePasswordsUIController::ShowBubble() {
   }
 }
 
-void ManagePasswordsUIController::HideBubble(bool show_next_bubble) {
+void ManagePasswordsUIController::HideBubble() {
   is_mouse_hovered_ = false;
-  show_next_bubble_ = show_next_bubble;
   if (TabDialogs* tab_dialogs = TabDialogs::FromWebContents(web_contents())) {
     tab_dialogs->HideManagePasswordsBubble();
   }

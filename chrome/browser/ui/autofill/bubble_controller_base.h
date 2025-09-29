@@ -47,9 +47,7 @@ class BubbleControllerBase {
   virtual void ShowBubble() = 0;
 
   // Instructs the controller to hide the bubble view.
-  // `show_next_bubble` indicates to the bubble manager whether to show the next
-  // pending bubble when this bubble is hidden.
-  virtual void HideBubble(bool show_next_bubble) = 0;
+  virtual void HideBubble() = 0;
 
   // Returns the corresponding `BubbleType` for the controller.
   virtual BubbleType GetBubbleType() const = 0;

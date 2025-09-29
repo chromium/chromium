@@ -204,7 +204,7 @@ void BubbleManagerImpl::HideActiveBubbleForPreemption() {
   // call will be a no-op for starting the next bubble because we are inside a
   // show request (`handling_show_request_` is true).
   AddToPendingQueue(active_bubble_controller_);
-  active_bubble_controller_->HideBubble(/*show_next_bubble=*/false);
+  active_bubble_controller_->HideBubble();
 }
 
 void BubbleManagerImpl::AddToPendingQueue(
@@ -294,16 +294,13 @@ void BubbleManagerImpl::ProcessPendingBubbles() {
 }
 
 void BubbleManagerImpl::OnBubbleHiddenByController(
-    BubbleControllerBase& controller_to_hide,
-    bool show_next_bubble) {
+    BubbleControllerBase& controller_to_hide) {
   base::WeakPtr<BubbleControllerBase> controller_weak_ptr =
       controller_to_hide.GetBubbleControllerBaseWeakPtr();
 
   if (active_bubble_controller_.get() == controller_weak_ptr.get()) {
     active_bubble_controller_ = nullptr;
-    if (show_next_bubble) {
-      ProcessPendingBubbles();
-    }
+    ProcessPendingBubbles();
   } else {
     // The hidden bubble was not the active one, so remove it from the queue.
     for (auto it = pending_bubbles_queue_.begin();
@@ -361,7 +358,7 @@ void BubbleManagerImpl::TabWillEnterBackground(
     base::UmaHistogramEnumeration("Autofill.Bubble.HideDueToTabHide",
                                   active_bubble_controller_->GetBubbleType());
     AddToPendingQueue(active_bubble_controller_);
-    active_bubble_controller_->HideBubble(/*show_next_bubble=*/false);
+    active_bubble_controller_->HideBubble();
     active_bubble_controller_ = nullptr;
   }
 }

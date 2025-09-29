@@ -681,7 +681,7 @@ void BrowserActions::InitializeBrowserActions() {
                       ManagePasswordsUIController::FromWebContents(
                           web_contents);
                   if (controller->IsShowingBubble()) {
-                    controller->HideBubble(/*show_next_bubble=*/true);
+                    controller->HideBubble();
                   } else {
                     chrome::ManagePasswordsForPage(bwi);
                   }

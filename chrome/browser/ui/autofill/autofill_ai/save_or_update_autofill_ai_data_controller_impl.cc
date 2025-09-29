@@ -337,7 +337,7 @@ void SaveOrUpdateAutofillAiDataControllerImpl::OnBubbleClosed(
   if (bubble_view()) {
     EmitBubbleFunnelMetrics(IsSavePrompt(), new_entity_->type(), close_reason);
   }
-  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
+  ResetBubbleViewAndInformBubbleManager();
   UpdatePageActionIcon();
   if (!save_prompt_acceptance_callback_.is_null()) {
     std::move(save_prompt_acceptance_callback_)

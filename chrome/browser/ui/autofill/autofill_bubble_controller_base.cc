@@ -22,7 +22,7 @@ AutofillBubbleControllerBase::AutofillBubbleControllerBase(
     : content::WebContentsObserver(web_contents) {}
 
 AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
-  HideBubble(/*show_next_bubble=*/false);
+  HideBubble();
 }
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
@@ -34,14 +34,14 @@ void AutofillBubbleControllerBase::OnVisibilityChanged(
   }
 
   if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*show_next_bubble=*/false);
+    HideBubble();
   }
 }
 
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
-    ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/false);
+    ResetBubbleViewAndInformBubbleManager();
   }
 }
 
@@ -62,10 +62,10 @@ void AutofillBubbleControllerBase::ShowBubble() {
   UpdatePageActionIcon();
 }
 
-void AutofillBubbleControllerBase::HideBubble(bool show_next_bubble) {
+void AutofillBubbleControllerBase::HideBubble() {
   if (IsShowingBubble()) {
     bubble_view_->Hide();
-    ResetBubbleViewAndInformBubbleManager(show_next_bubble);
+    ResetBubbleViewAndInformBubbleManager();
   }
 }
 
@@ -110,8 +110,7 @@ void AutofillBubbleControllerBase::SetBubbleView(
   bubble_view_ = &bubble_view;
 }
 
-void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager(
-    bool show_next_bubble) {
+void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager() {
 #if !BUILDFLAG(IS_ANDROID)
   const bool was_showing = IsShowingBubble();
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -122,8 +121,7 @@ void AutofillBubbleControllerBase::ResetBubbleViewAndInformBubbleManager(
   if (was_showing && base::FeatureList::IsEnabled(
                          features::kAutofillShowBubblesBasedOnPriorities)) {
     if (auto* manager = BubbleManager::GetForWebContents(web_contents())) {
-      manager->OnBubbleHiddenByController(
-          *this, /*show_next_bubble=*/show_next_bubble);
+      manager->OnBubbleHiddenByController(*this);
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -142,7 +142,7 @@ std::u16string MandatoryReauthBubbleControllerImpl::GetExplanationText() const {
 
 void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  ResetBubbleViewAndInformBubbleManager(/*show_next_bubble=*/true);
+  ResetBubbleViewAndInformBubbleManager();
 
 // After resetting the raw pointer to the view in the base class, the Android
 // view has to be deleted.
