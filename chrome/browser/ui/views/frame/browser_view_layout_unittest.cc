@@ -225,8 +225,9 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
         /*vertical_tab_strip_container=*/nullptr, toolbar_, infobar_container_,
         /*main_contents_region=*/main_container_, contents_container_,
         /*multi_contents_view=*/nullptr, left_aligned_side_panel_separator_,
-        /*unified_side_panel=*/nullptr, right_aligned_side_panel_separator_,
-        side_panel_rounded_corner_, separator_);
+        /*contents_height_side_panel=*/nullptr,
+        right_aligned_side_panel_separator_, side_panel_rounded_corner_,
+        separator_);
     layout->set_webui_tab_strip(webui_tab_strip());
     layout_ = layout.get();
     browser_view_->SetLayoutManager(std::move(layout));

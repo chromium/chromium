@@ -1136,10 +1136,10 @@ gfx::Size GlicWindowControllerImpl::GetSize() {
   }
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(attached_browser_);
-  CHECK(browser_view->unified_side_panel());
+  CHECK(browser_view->contents_height_side_panel());
   // This returns the size of the entire side panel (including content,
   // heading, and surrounding padding).
-  return browser_view->unified_side_panel()->size();
+  return browser_view->contents_height_side_panel()->size();
 }
 
 void GlicWindowControllerImpl::SetDraggableAreas(
@@ -1479,8 +1479,8 @@ bool GlicWindowControllerImpl::IsActive() {
   if (IsAttached()) {
     auto* browser_view =
         BrowserView::GetBrowserViewForBrowser(attached_browser_);
-    DCHECK(browser_view->unified_side_panel());
-    return browser_view->unified_side_panel()->HasFocus();
+    DCHECK(browser_view->contents_height_side_panel());
+    return browser_view->contents_height_side_panel()->HasFocus();
   }
   return IsDetached() && GetGlicWidget()->IsActive();
 }

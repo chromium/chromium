@@ -248,7 +248,7 @@ BrowserViewLayout::BrowserViewLayout(
     views::View* contents_container,
     MultiContentsView* multi_contents_view,
     views::View* left_aligned_side_panel_separator,
-    views::View* unified_side_panel,
+    views::View* contents_height_side_panel,
     views::View* right_aligned_side_panel_separator,
     views::View* side_panel_rounded_corner,
     views::View* top_container_separator)
@@ -265,7 +265,7 @@ BrowserViewLayout::BrowserViewLayout(
       main_container_(main_container),
       contents_container_(contents_container),
       multi_contents_view_(multi_contents_view),
-      unified_side_panel_(unified_side_panel),
+      contents_height_side_panel_(contents_height_side_panel),
       left_aligned_side_panel_separator_(left_aligned_side_panel_separator),
       right_aligned_side_panel_separator_(right_aligned_side_panel_separator),
       side_panel_rounded_corner_(side_panel_rounded_corner),
@@ -741,7 +741,7 @@ BrowserViewLayout::CalculateContentsContainerLayout(
   }
 
   const bool side_panel_visible =
-      unified_side_panel_ && unified_side_panel_->GetVisible();
+      contents_height_side_panel_ && contents_height_side_panel_->GetVisible();
   if (!side_panel_visible) {
     // The contents container takes all available space, and we're done.
     return ContentsContainerLayoutResult{contents_container_bounds,
@@ -752,7 +752,8 @@ BrowserViewLayout::CalculateContentsContainerLayout(
                                          gfx::Rect()};
   }
 
-  SidePanel* side_panel = views::AsViewClass<SidePanel>(unified_side_panel_);
+  SidePanel* side_panel =
+      views::AsViewClass<SidePanel>(contents_height_side_panel_);
 
   const bool side_panel_right_aligned = side_panel->IsRightAligned();
   views::View* side_panel_separator =
@@ -784,7 +785,8 @@ BrowserViewLayout::CalculateContentsContainerLayout(
 
   double side_panel_visible_width =
       side_panel_bounds.width() *
-      views::AsViewClass<SidePanel>(unified_side_panel_)->GetAnimationValue();
+      views::AsViewClass<SidePanel>(contents_height_side_panel_)
+          ->GetAnimationValue();
 
   // Shrink container bounds to fit the side panel.
   contents_container_bounds.set_width(contents_container_bounds.width() -
@@ -849,8 +851,8 @@ void BrowserViewLayout::LayoutContentsContainerView(
       CalculateContentsContainerLayout(main_container_->GetLocalBounds());
   contents_container_->SetBoundsRect(layout_result.contents_container_bounds);
 
-  if (unified_side_panel_) {
-    unified_side_panel_->SetBoundsRect(layout_result.side_panel_bounds);
+  if (contents_height_side_panel_) {
+    contents_height_side_panel_->SetBoundsRect(layout_result.side_panel_bounds);
   }
 
   if (multi_contents_view_) {
@@ -938,7 +940,7 @@ void BrowserViewLayout::UpdateTopContainerBounds(
 int BrowserViewLayout::GetMinWebContentsWidth() const {
   int min_width =
       kMainBrowserContentsMinimumWidth -
-      unified_side_panel_->GetMinimumSize().width() -
+      contents_height_side_panel_->GetMinimumSize().width() -
       (right_aligned_side_panel_separator_
            ? right_aligned_side_panel_separator_->GetPreferredSize().width()
            : 0);

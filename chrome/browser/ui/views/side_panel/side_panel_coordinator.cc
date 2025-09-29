@@ -194,7 +194,7 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
   extensions_model_observation_.Observe(
       ToolbarActionsModel::Get(browser_view_->browser()->profile()));
 
-  browser_view_->unified_side_panel()->AddHeaderView(CreateHeader());
+  browser_view_->contents_height_side_panel()->AddHeaderView(CreateHeader());
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() = default;
@@ -244,7 +244,7 @@ void SidePanelCoordinator::Toggle(
   // If an entry is already showing in the sidepanel, the sidepanel
   // should be closed.
   if (IsSidePanelEntryShowing(key) &&
-      !browser_view_->unified_side_panel()->IsClosing()) {
+      !browser_view_->contents_height_side_panel()->IsClosing()) {
     Close();
     return;
   }
@@ -267,7 +267,7 @@ void SidePanelCoordinator::Toggle(
 }
 
 void SidePanelCoordinator::OpenInNewTab() {
-  if (!browser_view_->unified_side_panel() || !current_key()) {
+  if (!browser_view_->contents_height_side_panel() || !current_key()) {
     return;
   }
 
@@ -351,7 +351,7 @@ content::WebContents* SidePanelCoordinator::GetWebContentsForTest(
 }
 
 void SidePanelCoordinator::DisableAnimationsForTesting() {
-  browser_view_->unified_side_panel()
+  browser_view_->contents_height_side_panel()
       ->DisableAnimationsForTesting();  // IN-TEST
 }
 
@@ -397,9 +397,9 @@ void SidePanelCoordinator::Show(
     waiter_->ResetLoadingEntryIfNecessary();
 
     // If the side panel is in the process of closing, show it instead.
-    if (browser_view_->unified_side_panel()->state() ==
+    if (browser_view_->contents_height_side_panel()->state() ==
         SidePanel::State::kClosing) {
-      browser_view_->unified_side_panel()->Open(/*animated=*/true);
+      browser_view_->contents_height_side_panel()->Open(/*animated=*/true);
       NotifyPinnedContainerOfActiveStateChange(
           entry->key(), entry->should_show_ephemerally_in_toolbar());
     }
@@ -441,7 +441,7 @@ base::CallbackListSubscription SidePanelCoordinator::RegisterSidePanelShown(
 //   mechanism, this method is not called.
 void SidePanelCoordinator::Close(bool suppress_animations) {
   if (!IsSidePanelShowing() ||
-      browser_view_->unified_side_panel()->IsClosing()) {
+      browser_view_->contents_height_side_panel()->IsClosing()) {
     return;
   }
 
@@ -454,7 +454,7 @@ void SidePanelCoordinator::Close(bool suppress_animations) {
       entry->OnEntryWillHide(SidePanelEntryHideReason::kSidePanelClosed);
     }
   }
-  browser_view_->unified_side_panel()->Close(
+  browser_view_->contents_height_side_panel()->Close(
       /*animated=*/!suppress_animations);
 
   MaybeEndPinPromo(/*pinned=*/false);
@@ -486,14 +486,15 @@ void SidePanelCoordinator::PopulateSidePanel(
                           base::Unretained(this), unique_key));
 
   auto* content_wrapper =
-      browser_view_->unified_side_panel()->GetContentParentView();
+      browser_view_->contents_height_side_panel()->GetContentParentView();
   DCHECK(content_wrapper);
   // |content_wrapper| should have either no child views or one child view for
   // the currently hosted SidePanelEntry.
   DCHECK(content_wrapper->children().size() <= 1);
 
   content_wrapper->SetVisible(true);
-  browser_view_->unified_side_panel()->Open(/*animated=*/!suppress_animations);
+  browser_view_->contents_height_side_panel()->Open(
+      /*animated=*/!suppress_animations);
 
   SidePanelEntry* previous_entry = current_entry().get();
 
@@ -540,16 +541,16 @@ void SidePanelCoordinator::PopulateSidePanel(
 
   // The header should only be visible for the kContent side panel type.
   if (entry->should_show_header()) {
-    browser_view_->unified_side_panel()->SetHeaderVisibility(true);
+    browser_view_->contents_height_side_panel()->SetHeaderVisibility(true);
     UpdateNewTabButtonState();
     UpdateHeaderPinButtonState();
     header_more_info_button_->SetVisible(entry->SupportsMoreInfoButton());
   } else {
-    browser_view_->unified_side_panel()->SetHeaderVisibility(false);
+    browser_view_->contents_height_side_panel()->SetHeaderVisibility(false);
   }
 
   if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
-    browser_view_->unified_side_panel()->UpdateWidthOnEntryChanged();
+    browser_view_->contents_height_side_panel()->UpdateWidthOnEntryChanged();
   }
 
   shown_callback_list_.Notify();
@@ -734,7 +735,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
   // Show an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).
   if (IsSidePanelShowing() &&
-      !browser_view_->unified_side_panel()->IsClosing()) {
+      !browser_view_->contents_height_side_panel()->IsClosing()) {
     // Attempt to find a suitable entry to be shown after the tab switch and if
     // one is found, show it.
     if (std::optional<UniqueKey> unique_key = GetNewActiveKeyOnTabChanged()) {
@@ -752,7 +753,7 @@ void SidePanelCoordinator::MaybeShowEntryOnTabStripModelChanged(
           current_key()->tab_handle &&
           (*active_entry)->key() == current_key()->key) {
         auto* content_wrapper =
-            browser_view_->unified_side_panel()->GetContentParentView();
+            browser_view_->contents_height_side_panel()->GetContentParentView();
         DCHECK(content_wrapper->children().size() == 1);
         auto current_entry_view = content_wrapper->RemoveChildViewT(
             content_wrapper->children().front());
@@ -912,7 +913,7 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   // already have deleted the content container, so check that it still
   // exists.
   auto* content_wrapper =
-      browser_view_->unified_side_panel()->GetContentParentView();
+      browser_view_->contents_height_side_panel()->GetContentParentView();
   if (!content_wrapper->children().empty()) {
     content_wrapper->RemoveChildViewT(content_wrapper->children().front());
   }

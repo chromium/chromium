@@ -52,7 +52,7 @@ void BrowserViewAsh::Layout(PassKey) {
 
 void BrowserViewAsh::UpdateWindowRoundedCorners(
     const gfx::RoundedCornersF& window_radii) {
-  SidePanel* side_panel = unified_side_panel();
+  SidePanel* side_panel = contents_height_side_panel();
   const bool right_aligned_side_panel_showing =
       side_panel->GetVisible() && side_panel->IsRightAligned();
   const bool left_aligned_side_panel_showing =

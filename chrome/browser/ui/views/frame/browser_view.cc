@@ -855,7 +855,7 @@ BrowserView::BrowserView(Browser* browser)
 
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
-  unified_side_panel_ =
+  contents_height_side_panel_ =
       main_container_->AddChildView(std::make_unique<SidePanel>(
           this, is_right_aligned ? SidePanel::HorizontalAlignment::kRight
                                  : SidePanel::HorizontalAlignment::kLeft));
@@ -876,8 +876,9 @@ BrowserView::BrowserView(Browser* browser)
     side_panel_rounded_corner_ =
         main_container_->AddChildView(std::make_unique<ContentsRoundedCorner>(
             this, views::ShapeContextTokens::kContentSeparatorRadius,
-            base::BindRepeating(&SidePanel::IsRightAligned,
-                                base::Unretained(unified_side_panel_))));
+            base::BindRepeating(
+                &SidePanel::IsRightAligned,
+                base::Unretained(contents_height_side_panel_))));
     side_panel_rounded_corner_->SetProperty(
         views::kElementIdentifierKey, kSidePanelRoundedCornerViewElementId);
   }
@@ -979,7 +980,7 @@ BrowserView::~BrowserView() {
   window_scrim_view_ = nullptr;
   contents_container_ = nullptr;
   vertical_tab_strip_container_ = nullptr;
-  unified_side_panel_ = nullptr;
+  contents_height_side_panel_ = nullptr;
   right_aligned_side_panel_separator_ = nullptr;
   left_aligned_side_panel_separator_ = nullptr;
   side_panel_rounded_corner_ = nullptr;
@@ -2635,7 +2636,7 @@ bool BrowserView::AreDraggableRegionsEnabled() const {
 void BrowserView::UpdateSidePanelHorizontalAlignment() {
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
-  unified_side_panel_->SetHorizontalAlignment(
+  contents_height_side_panel_->SetHorizontalAlignment(
       is_right_aligned ? SidePanel::HorizontalAlignment::kRight
                        : SidePanel::HorizontalAlignment::kLeft);
   GetBrowserViewLayout()->Layout(this);
@@ -4736,8 +4737,8 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (infobar_container_) {
     panes->push_back(infobar_container_);
   }
-  if (unified_side_panel_) {
-    panes->push_back(unified_side_panel_);
+  if (contents_height_side_panel_) {
+    panes->push_back(contents_height_side_panel_);
   }
   if (multi_contents_view_) {
     for (views::View* pane : multi_contents_view_->GetAccessiblePanes()) {
@@ -5104,7 +5105,7 @@ void BrowserView::AddedToWidget() {
   // to hit web apps. See https://crbug.com/1267781.
   auto* side_panel_coordinator =
       browser_->GetFeatures().side_panel_coordinator();
-  unified_side_panel_->AddObserver(side_panel_coordinator);
+  contents_height_side_panel_->AddObserver(side_panel_coordinator);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TopControlsSlideController must be initialized here in AddedToWidget()
@@ -5151,7 +5152,7 @@ void BrowserView::AddedToWidget() {
           web_app_window_title_, tab_strip_region_view_,
           vertical_tab_strip_container_, toolbar_, infobar_container_,
           main_container_, contents_container_, multi_contents_view_,
-          left_aligned_side_panel_separator_, unified_side_panel_,
+          left_aligned_side_panel_separator_, contents_height_side_panel_,
           right_aligned_side_panel_separator_, side_panel_rounded_corner_,
           top_container_separator_));
   browser_view_layout->SetUseBrowserContentMinimumSize(

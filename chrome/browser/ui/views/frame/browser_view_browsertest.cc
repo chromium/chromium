@@ -158,7 +158,9 @@ class BrowserViewWithoutSideBySideTest : public BrowserViewTest {
     scoped_feature_list_.InitWithFeatures({}, {features::kSideBySide});
   }
 
-  SidePanel* side_panel() { return browser_view()->unified_side_panel(); }
+  SidePanel* side_panel() {
+    return browser_view()->contents_height_side_panel();
+  }
 
   views::View* side_panel_rounded_corner() {
     return browser_view()->GetSidePanelRoundedCornerForTesting();

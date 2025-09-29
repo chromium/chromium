@@ -248,7 +248,9 @@ class BrowserView : public BrowserWindow,
 
   views::View* main_container() { return main_container_; }
 
-  SidePanel* unified_side_panel() { return unified_side_panel_; }
+  SidePanel* contents_height_side_panel() {
+    return contents_height_side_panel_;
+  }
 
   MultiContentsView* multi_contents_view() { return multi_contents_view_; }
 
@@ -1257,7 +1259,7 @@ class BrowserView : public BrowserWindow,
   // depending on the kSidePanelHorizontalAlignment pref's value.
   // Conceptually this member should exist if and only if the
   // side_panel_coordinator is created.
-  raw_ptr<SidePanel> unified_side_panel_ = nullptr;
+  raw_ptr<SidePanel> contents_height_side_panel_ = nullptr;
 
   // These are only non-null when the `SideBySide` feature is disabled.
   // Otherwise, `multi_contents_view_` will create its own separators.

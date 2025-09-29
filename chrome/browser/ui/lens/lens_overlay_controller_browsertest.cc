@@ -1289,8 +1289,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelModalDialog) {
   // Wait for open animation to progress. This is important, otherwise when we
   // close the lens overlay at a later time the side panel will be closed
   // together synchronously.
-  SidePanel* side_panel =
-      BrowserView::GetBrowserViewForBrowser(browser())->unified_side_panel();
+  SidePanel* side_panel = BrowserView::GetBrowserViewForBrowser(browser())
+                              ->contents_height_side_panel();
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return side_panel->GetAnimationValue() > 0; }));
 
@@ -4084,7 +4084,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Make the side panel larger.
   const int increment = -50;
   BrowserView::GetBrowserViewForBrowser(browser())
-      ->unified_side_panel()
+      ->contents_height_side_panel()
       ->OnResize(increment, true);
   // Popping the query should load the previous query into the results frame.
   content::TestNavigationObserver pop_observer(
@@ -4540,7 +4540,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelOpen) {
       browser()->GetFeatures().side_panel_coordinator();
   side_panel_coordinator->Show(SidePanelEntry::Id::kBookmarks);
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()->GetBrowserView().unified_side_panel()->state() ==
+    return browser()->GetBrowserView().contents_height_side_panel()->state() ==
            SidePanel::State::kOpen;
   }));
 
@@ -4552,7 +4552,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, SidePanelOpen) {
       [&]() { return controller->state() == State::kOverlay; }));
 
   // And the side-panel should be hidden.
-  EXPECT_EQ(browser()->GetBrowserView().unified_side_panel()->state(),
+  EXPECT_EQ(browser()->GetBrowserView().contents_height_side_panel()->state(),
             SidePanel::State::kClosed);
 }
 

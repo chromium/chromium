@@ -92,9 +92,9 @@ void WebUIBrowserSidePanelUI::Show(
 
     // TODO(webium): Implement the following:
     // If the side panel is in the process of closing, show it instead.
-    // if (browser_view_->unified_side_panel()->state() ==
+    // if (browser_view_->contents_height_side_panel()->state() ==
     // SidePanel::State::kClosing) {
-    // browser_view_->unified_side_panel()->Open(/*animated=*/true);
+    // browser_view_->contents_height_side_panel()->Open(/*animated=*/true);
     // NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
     // }
     return;

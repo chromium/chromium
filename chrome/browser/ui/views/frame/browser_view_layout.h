@@ -64,7 +64,7 @@ class BrowserViewLayout : public views::LayoutManager {
                     views::View* contents_container,
                     MultiContentsView* multi_contents_view,
                     views::View* left_aligned_side_panel_separator,
-                    views::View* unified_side_panel,
+                    views::View* contents_height_side_panel,
                     views::View* right_aligned_side_panel_separator,
                     views::View* side_panel_rounded_corner,
                     views::View* top_container_separator);
@@ -125,7 +125,7 @@ class BrowserViewLayout : public views::LayoutManager {
   void LayoutInfoBar(gfx::Rect& available_bounds);
 
   // Helper struct and function for LayoutContentsContainerView that calculates
-  // bounds for `contents_container_` and `unified_side_panel_`.
+  // bounds for `contents_container_` and `contents_height_side_panel_`.
   struct ContentsContainerLayoutResult;
   ContentsContainerLayoutResult CalculateContentsContainerLayout(
       const gfx::Rect& available_bounds) const;
@@ -169,7 +169,7 @@ class BrowserViewLayout : public views::LayoutManager {
   const raw_ptr<views::View> main_container_ = nullptr;
   const raw_ptr<views::View> contents_container_ = nullptr;
   const raw_ptr<MultiContentsView> multi_contents_view_ = nullptr;
-  const raw_ptr<views::View> unified_side_panel_ = nullptr;
+  const raw_ptr<views::View> contents_height_side_panel_ = nullptr;
 
   // TODO(crbug.com/424236535): These can be removed once `SideBySide` is
   // launched.
