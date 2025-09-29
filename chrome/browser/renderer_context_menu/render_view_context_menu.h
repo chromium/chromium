@@ -301,7 +301,7 @@ class RenderViewContextMenu
   void AppendPartialTranslateItem();
   void AppendTranslateItem();
   void AppendMediaRouterItem();
-  void AppendReadingModeItem();
+  void AppendReadAnythingItem();
   void AppendGlicItems();
   void AppendRotationItems();
   void AppendSpellingAndSearchSuggestionItems();

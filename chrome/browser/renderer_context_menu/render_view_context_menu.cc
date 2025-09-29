@@ -1155,7 +1155,7 @@ void RenderViewContextMenu::InitMenu() {
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_SMART_SELECTION) &&
       !content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE)) {
-    AppendReadingModeItem();
+    AppendReadAnythingItem();
   }
 
   // Partial Translate is not supported on ChromeOS.
@@ -2175,7 +2175,7 @@ void RenderViewContextMenu::AppendPageItems() {
   if (IsRegionSearchEnabled()) {
     AppendRegionSearchItem();
   }
-  AppendReadingModeItem();
+  AppendReadAnythingItem();
 
   // Note: `has_sharing_menu_items = true` also implies a separator was added
   // for sharing section.
@@ -2297,7 +2297,7 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
   }
 }
 
-void RenderViewContextMenu::AppendReadingModeItem() {
+void RenderViewContextMenu::AppendReadAnythingItem() {
   // Show Read Anything option if it's not already open in the side panel.
   if (GetBrowser() && GetBrowser()->is_type_normal() &&
       !IsReadAnythingEntryShowing(GetBrowser())) {
@@ -2506,7 +2506,7 @@ void RenderViewContextMenu::AppendOtherEditableItems() {
                                     IDS_CONTENT_CONTEXT_SELECTALL);
   }
 
-  AppendReadingModeItem();
+  AppendReadAnythingItem();
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
