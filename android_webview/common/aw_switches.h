@@ -34,7 +34,6 @@ extern const char kWebViewInterceptedCookieHeader[];
 extern const char kWebViewUseStartupTasksLogic[];
 extern const char kWebViewUseStartupTasksLogicP2[];
 extern const char kWebViewStartupTasksYieldToNative[];
-extern const char kWebViewUseBackgroundThreadForGms[];
 extern const char kStartupNonBlockingWebViewConstructor[];
 
 }  // namespace switches

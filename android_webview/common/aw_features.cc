@@ -257,11 +257,6 @@ BASE_FEATURE(kWebViewStartupTasksYieldToNative,
 BASE_FEATURE(kAndroidMetricsAsyncMetricLogging,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Tells the Google Service, GMS, to use a background thread for its
-// Service bind and connection calls.
-BASE_FEATURE(kWebViewUseBackgroundThreadForGms,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Reduce when the app's copy of the finch seed expires. This makes WebView more
 // aggressive in requesting a new copy of its finch seed.
 BASE_FEATURE(kWebViewReducedSeedExpiration, base::FEATURE_DISABLED_BY_DEFAULT);
