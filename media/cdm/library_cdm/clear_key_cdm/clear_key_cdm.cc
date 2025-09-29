@@ -67,22 +67,45 @@ const char kDummyIndividualizationRequest[] = "dummy individualization request";
 
 static bool g_is_cdm_module_initialized = false;
 
-// Copies |input_buffer| into a DecoderBuffer. If the |input_buffer| is
-// empty, an empty (end-of-stream) DecoderBuffer is returned.
-static scoped_refptr<media::DecoderBuffer> CopyDecoderBufferFrom(
+namespace {
+
+class CdmInputBufferExternalMemory
+    : public media::DecoderBuffer::ExternalMemory {
+ public:
+  explicit CdmInputBufferExternalMemory(base::span<const uint8_t> data)
+      : data_(data) {}
+  CdmInputBufferExternalMemory() = delete;
+  CdmInputBufferExternalMemory(const CdmInputBufferExternalMemory&) = delete;
+  CdmInputBufferExternalMemory& operator=(const CdmInputBufferExternalMemory&) =
+      delete;
+
+  const base::span<const uint8_t> Span() const override { return data_; }
+
+ private:
+  base::raw_span<const uint8_t> data_;
+};
+
+}  // namespace
+
+// Creates a DecoderBuffer from |input_buffer|. If the |input_buffer| is empty,
+// an empty (end-of-stream) DecoderBuffer is returned.
+static scoped_refptr<media::DecoderBuffer> DecoderBufferFrom(
     const cdm::InputBuffer_2& input_buffer) {
   if (!input_buffer.data) {
     CHECK(!input_buffer.data_size);
     return media::DecoderBuffer::CreateEOSBuffer();
   }
 
-  // TODO(xhwang): Get rid of this copy.
+  // Take |input_buffer|'s underlying memory and store it into |output_buffer|.
+  // This is safe because this method is only used in Decrypt(). Decrypt() is
+  // called synchronously and |input_buffer| and |output_buffer| will get
+  // destroyed when Decrypt() goes out of scope.
+  auto external_memory = std::make_unique<CdmInputBufferExternalMemory>(
+      // SAFETY: `data` and `data_size` from `input_buffer` must be
+      // consistent.
+      UNSAFE_BUFFERS(base::span(input_buffer.data, input_buffer.data_size)));
   scoped_refptr<media::DecoderBuffer> output_buffer =
-      media::DecoderBuffer::CopyFrom(
-          // SAFETY: `data` and `data_size` from `input_buffer` must be
-          // consistent.
-          UNSAFE_BUFFERS(
-              base::span(input_buffer.data, input_buffer.data_size)));
+      media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
   output_buffer->set_timestamp(base::Microseconds(input_buffer.timestamp));
 
   if (input_buffer.encryption_scheme == cdm::EncryptionScheme::kUnencrypted)
@@ -760,7 +783,7 @@ cdm::Status ClearKeyCdm::DecryptToMediaDecoderBuffer(
     scoped_refptr<DecoderBuffer>* decrypted_buffer) {
   CHECK(decrypted_buffer);
 
-  scoped_refptr<DecoderBuffer> buffer = CopyDecoderBufferFrom(encrypted_buffer);
+  scoped_refptr<DecoderBuffer> buffer = DecoderBufferFrom(encrypted_buffer);
 
   // EOS and unencrypted streams can be returned as-is.
   if (buffer->end_of_stream() || !buffer->decrypt_config()) {
