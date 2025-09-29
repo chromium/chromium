@@ -154,6 +154,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kInitImageDecodeLastUseTime);
 // frame production to 60Hz.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kThrottleMainFrameTo60Hz);
 
+// When main frame production is throttled, whether the throttling should be
+// paused for some duration after an urgent main frame request is processed.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBoostFrameRateForUrgentMainFrame);
+
 // We only want to test the feature value if the client satisfies an eligibility
 // criteria, as testing the value enters the client into an experimental group,
 // and we only want the groups (including control) to only contain eligibilie
