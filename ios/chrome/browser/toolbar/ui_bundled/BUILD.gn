@@ -75,6 +75,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/popup_menu/ui_bundled/public",
     "//ios/chrome/browser/prerender/model",
+    "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/search_engines/model",

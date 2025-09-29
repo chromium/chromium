@@ -25519,6 +25519,13 @@ should be able to be added at any place in this file.
   <description>User pressed 'Listen to this page' in the app menu.</description>
 </action>
 
+<action name="MobileMenuReaderMode">
+  <owner>fernandex@google.com</owner>
+  <description>
+    User pressed 'Show/Hide Reading Mode' in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuReadingList">
   <owner>gambard@chromium.org</owner>
   <description>User pressed 'Reading List' in the app menu.</description>
@@ -28804,6 +28811,14 @@ should be able to be added at any place in this file.
 <action name="MobileToolbarShowMenu">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>
+</action>
+
+<action name="MobileToolbarShowMenuFromReaderMode">
+  <owner>fernandex@google.com</owner>
+  <description>
+    User pressed the toolbar's button to open the app menu from Reader Mode. iOS
+    only.
+  </description>
 </action>
 
 <action name="MobileToolbarShowNewTabMenu">

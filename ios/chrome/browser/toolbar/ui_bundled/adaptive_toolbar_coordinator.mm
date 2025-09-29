@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -161,6 +162,12 @@ using tab_groups::VersioningMessageController;
         .SetHasExitedManually(true)
         .Record(ukm::UkmRecorder::Get());
   }
+}
+
+- (BOOL)isReaderModeActive {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  return IsReaderModeActiveInWebState(webState);
 }
 
 #pragma mark - NewTabPageControllerDelegate

@@ -536,6 +536,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
     base::RecordAction(base::UserMetricsAction("MobileToolbarStop"));
   } else if (sender == self.view.toolsMenuButton) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarShowMenu"));
+    if (self.adaptiveDelegate.isReaderModeActive) {
+      base::RecordAction(
+          base::UserMetricsAction("MobileToolbarShowMenuFromReaderMode"));
+    }
   } else if (sender == self.view.tabGridButton) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarShowStackView"));
   } else if (sender == self.view.shareButton) {
