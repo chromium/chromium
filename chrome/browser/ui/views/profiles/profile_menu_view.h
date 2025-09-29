@@ -13,10 +13,12 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/web_app_profile_switcher.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
@@ -127,8 +129,17 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void MaybeBuildCloseBrowsersButton();
   void MaybeBuildSignoutButton();
   void BuildFeatureButtons();
-  IdentitySectionParams GetIdentitySectionParams(
+  // Returns `std::nullopt` if the params cannot be deduced directly, the
+  // currently computed params are moved to the callback that will get the
+  // results when ready.
+  std::optional<IdentitySectionParams> GetIdentitySectionParams(
       const ProfileAttributesEntry& entry);
+  // Callback used to complete the `params` when depending on the `promo_Type`
+  // result.
+  void OnPromoTypeReadyWithParams(
+      IdentitySectionParams params,
+      signin_metrics::AccessPoint access_point,
+      std::optional<signin::ProfileMenuAvatarButtonPromoType> promo_type);
   void BuildIdentityWithCallToAction();
 
   // Gets the profiles to be displayed in the "Other profiles" section. Does not
@@ -153,6 +164,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
   std::optional<WebAppProfileSwitcher> app_profile_switcher_;
 
   std::optional<signin_metrics::AccessPoint> explicit_signin_access_point_;
+
+  base::WeakPtrFactory<ProfileMenuView> weak_pointer_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_VIEW_H_

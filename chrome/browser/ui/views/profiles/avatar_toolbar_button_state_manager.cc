@@ -815,6 +815,9 @@ class HistorySyncOptinCoordinator
       public AvatarToolbarButtonStateManager::Observer,
       public signin::IdentityManager::Observer {
  public:
+  static constexpr signin_metrics::AccessPoint kHistoryOptinAccessPoint =
+      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
+
   static HistorySyncOptinCoordinator& GetOrCreateForProfile(Profile& profile) {
     HistorySyncOptinCoordinator* coordinator =
         static_cast<HistorySyncOptinCoordinator*>(
@@ -827,9 +830,7 @@ class HistorySyncOptinCoordinator
     return *coordinator;
   }
 
-  bool triggered() const { return triggered_; }
-
-  signin_metrics::AccessPoint access_point() const { return access_point_; }
+  bool IsPromoShowing() const { return promo_type_.has_value(); }
 
   base::CallbackListSubscription AddStateChangedCallback(
       base::RepeatingClosure callback) {
@@ -841,16 +842,14 @@ class HistorySyncOptinCoordinator
     base::UmaHistogramMediumTimes(
         "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
         before_promo_used_elapsed_timer_->Elapsed());
-    sync_promo_identity_pill_manager_.RecordPromoUsed();
+    CHECK(promo_type_.has_value());
+    sync_promo_identity_pill_manager_.RecordPromoUsed(promo_type_.value());
     Collapse();
   }
 
   void ClearForTesting() { Collapse(); }
 
-  void ForceShowingPromoForTesting() {
-    Trigger(
-        signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
-  }
+  void ForceShowingPromoForTesting() { Trigger(); }
 
   // AvatarToolbarButtonStateManager::Observer:
   void OnButtonStateChanged(std::optional<ButtonState> old_state,
@@ -884,8 +883,7 @@ class HistorySyncOptinCoordinator
       case ButtonState::kShowIdentityName:
         // `ShowIdentityName` state should be followed by `HistorySyncOptin`
         // state.
-        Trigger(signin_metrics::AccessPoint::
-                    kHistorySyncOptinExpansionPillOnStartup);
+        Trigger();
         break;
       case ButtonState::kOnSignin:
       case ButtonState::kIncognitoProfile:
@@ -930,39 +928,39 @@ class HistorySyncOptinCoordinator
         IdentityManagerFactory::GetForProfile(&profile));
   }
 
-  bool ShouldProfileShowPromo() const {
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
-      return signin_util::ShouldShowHistorySyncOptinScreen(profile_.get());
+  void Trigger() {
+    if (promo_type_.has_value()) {
+      return;
     }
 
-    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-    return signin_util::ShouldShowAvatarSyncPromo(&profile_.get());
+    signin::ComputeProfileMenuAvatarButtonPromoType(
+        profile_.get(),
+        base::BindOnce(&HistorySyncOptinCoordinator::OnPromoTypeResult,
+                       base::Unretained(this)));
   }
 
-  void Trigger(signin_metrics::AccessPoint access_point) {
-    if (triggered_) {
+  void OnPromoTypeResult(
+      std::optional<signin::ProfileMenuAvatarButtonPromoType> promo_type) {
+    promo_type_.reset();
+    if (!promo_type.has_value()) {
       return;
     }
-    if (!sync_promo_identity_pill_manager_.ShouldShowPromo()) {
+    if (!sync_promo_identity_pill_manager_.ShouldShowPromo(
+            promo_type.value())) {
       return;
     }
-    if (!ShouldProfileShowPromo()) {
-      return;
-    }
-    access_point_ = access_point;
-    triggered_ = true;
+    promo_type_ = promo_type;
     state_changed_callbacks.Notify();
   }
 
   void Collapse() {
-    if (!triggered_) {
+    if (!promo_type_.has_value()) {
       return;
     }
     if (collapse_timer_.IsRunning()) {
       collapse_timer_.Stop();
     }
-    triggered_ = false;
+    promo_type_.reset();
     before_promo_used_elapsed_timer_.reset();
     state_changed_callbacks.Notify();
   }
@@ -975,9 +973,10 @@ class HistorySyncOptinCoordinator
     }
     before_promo_used_elapsed_timer_.emplace();
     has_been_shown_since_startup_ = true;
-    sync_promo_identity_pill_manager_.RecordPromoShown();
+    CHECK(promo_type_.has_value());
+    sync_promo_identity_pill_manager_.RecordPromoShown(promo_type_.value());
     base::UmaHistogramEnumeration("Signin.SyncOptIn.IdentityPill.Shown",
-                                  access_point_);
+                                  kHistoryOptinAccessPoint);
     collapse_timer_.Start(FROM_HERE,
                           g_history_sync_optin_duration_for_testing.value_or(
                               kHistorySyncOptinDuration),
@@ -988,9 +987,8 @@ class HistorySyncOptinCoordinator
                                          base::Unretained(this)));
   }
 
-  signin_metrics::AccessPoint access_point_ =
-      signin_metrics::AccessPoint::kUnknown;
-  bool triggered_ = false;
+  // Type of the promo currently showing - std::nullopt if no promo.
+  std::optional<signin::ProfileMenuAvatarButtonPromoType> promo_type_;
   bool has_been_shown_since_startup_ = false;
   base::OneShotTimer collapse_timer_;
 
@@ -1010,10 +1008,8 @@ class HistorySyncOptinCoordinator
       identity_manager_observation_{this};
 };
 
-// With the addition of `switches::kAvatarButtonSyncPromo` feature, this
-// provider may either show a SyncPromo or a HistorySyncPromo.
-// SyncPromo has a higher priority, check
-// `HistorySyncOptinCoordinator::ShouldProfileShowPromo()`.
+// Check `signin::ComputeProfileMenuAvatarButtonPromoType()` for promo priority
+// computation.
 class HistorySyncOptinStateProvider : public StateProvider {
  public:
   explicit HistorySyncOptinStateProvider(Browser* browser,
@@ -1025,7 +1021,7 @@ class HistorySyncOptinStateProvider : public StateProvider {
   ~HistorySyncOptinStateProvider() override = default;
 
   // StateProvider:
-  bool IsActive() const override { return coordinator_->triggered(); }
+  bool IsActive() const override { return coordinator_->IsPromoShowing(); }
 
   std::u16string GetText() const override {
     if (base::FeatureList::IsEnabled(
@@ -1042,7 +1038,7 @@ class HistorySyncOptinStateProvider : public StateProvider {
         coordinator_->AddStateChangedCallback(
             base::BindRepeating(&HistorySyncOptinStateProvider::RequestUpdate,
                                 base::Unretained(this)));
-    if (coordinator_->triggered()) {
+    if (coordinator_->IsPromoShowing()) {
       RequestUpdate();
     }
   }
@@ -1065,7 +1061,8 @@ class HistorySyncOptinStateProvider : public StateProvider {
  private:
   void OnButtonClick(bool is_source_accelerator) {
     browser_->GetFeatures().profile_menu_coordinator()->Show(
-        is_source_accelerator, coordinator_->access_point());
+        is_source_accelerator,
+        HistorySyncOptinCoordinator::kHistoryOptinAccessPoint);
     coordinator_->PromoUsed();
   }
 
