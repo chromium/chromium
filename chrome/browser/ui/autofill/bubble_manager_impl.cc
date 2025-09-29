@@ -249,11 +249,11 @@ void BubbleManagerImpl::AddToPendingQueue(
 }
 
 void BubbleManagerImpl::ProcessPendingBubbles() {
-  if (handling_show_request_ ||
+  if (handling_show_request_ || handling_tab_will_enter_background_request_ ||
       (active_bubble_controller_ &&
        active_bubble_controller_->IsShowingBubble())) {
-    // The bubble is hidden due to preemption and added to the queue. Therefore,
-    // do not show any new bubbles.
+    // The bubble is hidden due to preemption and added to the queue. Or the tab
+    // is about to hide. Therefore, do not show any new bubbles.
     return;
   }
 
@@ -354,6 +354,8 @@ bool BubbleManagerImpl::ShouldReplaceExistingBubble(
 
 void BubbleManagerImpl::TabWillEnterBackground(
     tabs::TabInterface* tab_interface) {
+  base::AutoReset<bool> hide_request_guard(
+      &handling_tab_will_enter_background_request_, true);
   if (active_bubble_controller_) {
     base::UmaHistogramEnumeration("Autofill.Bubble.HideDueToTabHide",
                                   active_bubble_controller_->GetBubbleType());

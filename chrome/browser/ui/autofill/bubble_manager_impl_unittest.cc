@@ -127,9 +127,8 @@ class BubbleManagerImplTest : public ::testing::Test {
     Test::SetUp();
 
     tab_interface_ = std::make_unique<FakeTabInterface>(&profile_);
-    tab_interface_->Activate();
-
     bubble_manager_ = std::make_unique<BubbleManagerImpl>(tab_interface_.get());
+    tab_interface_->Activate();
   }
 
   void FastForwardBy(base::TimeDelta time) {

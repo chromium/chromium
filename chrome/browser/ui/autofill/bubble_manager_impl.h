@@ -94,6 +94,10 @@ class BubbleManagerImpl : public BubbleManager {
   // bubble. This could mean another bubble is in the process of preemption.
   bool handling_show_request_ = false;
 
+  // A boolean indicating that the manager is in the process of hiding the
+  // bubble since the tab is to enter the background.
+  bool handling_tab_will_enter_background_request_ = false;
+
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 };
 
