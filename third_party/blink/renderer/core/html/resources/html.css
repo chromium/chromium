@@ -2069,11 +2069,20 @@ dialog:where(:modal) {
      * if underlying performance issues with lh units are fixed. */
     min-block-size: -internal-auto-base(24px, max(24px, 1lh));
     font-weight: -internal-auto-base(normal, inherit);
+    align-items: center;
+    gap: 0.5em;
+  }
+  select:not(:-internal-list-box):not([multiple]) option {
+    padding-inline: -internal-auto-base(2px, 0.5em);
+    padding-block-end: -internal-auto-base(1px, 0);
+    display: -internal-auto-base(block, flex);
+  }
+  /* In the multiple case, we want to use the same styles as base appearance
+   * because the picker is rendered as a popover. */
+  select:not(:-internal-list-box)[multiple] option {
     padding-inline: 0.5em;
     padding-block-end: 0;
     display: flex;
-    align-items: center;
-    gap: 0.5em;
   }
 }
 
