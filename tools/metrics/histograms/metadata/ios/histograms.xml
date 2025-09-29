@@ -2473,6 +2473,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.Background.Color.ClickCount"
+    units="count" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the total number of color selection changes made while the Home
+    Customization color picker is open. This value is recorded once when the
+    user dismisses the color picker.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.Background.Color.Outcome"
     enum="IOSBackgroundSelectionOutcome" expires_after="2026-03-01">
   <owner>cheickcisse@google.com</owner>
@@ -2481,6 +2492,17 @@ chromium-metrics-reviews@google.com.
     Records the outcome of a user's interaction with the color picker. Logged
     each time the background picker action sheet is dismissed, capturing whether
     the user applied a color, canceled, or canceled after selecting a color.
+  </summary>
+</histogram>
+
+<histogram name="IOS.HomeCustomization.Background.Gallery.ClickCount"
+    units="count" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the total number of item selection changes made while the Home
+    Customization background gallery is open. This value is recorded once when
+    the user dismisses the gallery view.
   </summary>
 </histogram>
 
@@ -2583,6 +2605,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the background style loaded on the NTP. This is logged each time on
     NTP initial load.
+  </summary>
+</histogram>
+
+<histogram name="IOS.HomeCustomization.Background.RecentlyUsed.ClickCount"
+    units="count" expires_after="2026-03-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Records the total number of times recently used backgrounds are selected
+    while the Home Customization panel is open. This value is recorded once when
+    the user dismisses the panel.
   </summary>
 </histogram>
 

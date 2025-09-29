@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
@@ -62,6 +63,10 @@
 
   // The id of the selected background cell.
   NSString* _selectedBackgroundId;
+
+  // The number of times a background is selected from the recently used
+  // section.
+  int _recentBackgroundClickCount;
 }
 
 // Synthesized from HomeCustomizationViewControllerProtocol.
@@ -96,6 +101,13 @@
   self.view = _collectionView;
 
   [_collectionConfigurator configureNavigationBar];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  base::UmaHistogramCounts10000(
+      "IOS.HomeCustomization.Background.RecentlyUsed.ClickCount",
+      _recentBackgroundClickCount);
+  [super viewWillDisappear:animated];
 }
 
 #pragma mark - Private
@@ -340,6 +352,8 @@
 
   [self.customizationMutator
       applyBackgroundForConfiguration:backgroundConfiguration];
+
+  _recentBackgroundClickCount += 1;
 
   if (backgroundConfiguration.backgroundStyle ==
       HomeCustomizationBackgroundStyle::kDefault) {

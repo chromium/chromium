@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/home_customization/ui/background_collection_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/background_customization_configuration.h"
@@ -62,6 +63,9 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
   // Currently selected color index in the palette.
   NSString* _selectedColorId;
+
+  // The number of times a color option is selected.
+  int _colorClickCount;
 }
 @end
 
@@ -118,6 +122,12 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
   ]];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+  base::UmaHistogramCounts10000(
+      "IOS.HomeCustomization.Background.Color.ClickCount", _colorClickCount);
+  [super viewWillDisappear:animated];
+}
+
 #pragma mark - HomeCustomizationBackgroundConfigurationConsumer
 
 - (void)setBackgroundCollectionConfigurations:
@@ -141,6 +151,12 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     didSelectItemAtIndexPath:(NSIndexPath*)indexPath {
   NSString* selectedID =
       _backgroundCollectionConfiguration.configurationOrder[indexPath.item];
+
+  // Prevent background updates when a user clicks on an already selected cell.
+  if (_selectedColorId == selectedID) {
+    return;
+  }
+
   id<BackgroundCustomizationConfiguration> backgroundConfiguration =
       _backgroundCollectionConfiguration.configurations[selectedID];
   _selectedColorId = backgroundConfiguration.configurationID;
@@ -151,6 +167,7 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     base::RecordAction(base::UserMetricsAction(
         "IOS.HomeCustomization.Background.ResetDefault.Tapped"));
   }
+  _colorClickCount += 1;
 }
 
 - (UICollectionViewCell*)collectionView:(UICollectionView*)collectionView

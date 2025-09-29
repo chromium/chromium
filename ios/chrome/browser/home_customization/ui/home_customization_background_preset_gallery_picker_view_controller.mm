@@ -79,6 +79,9 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   // Tracking for maximum visible indices
   NSInteger _maxVisibleSectionIndex;
   NSInteger _maxVisibleItemIndex;
+
+  // The number of times an item from the gallery is selected.
+  int _galleryClickCount;
 }
 @end
 
@@ -191,6 +194,10 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   base::UmaHistogramSparse(
       "IOS.HomeCustomization.Background.Gallery.MaxVisibleItemIndex",
       _maxVisibleItemIndex);
+  // Log the total number of selection changes while the gallery was open.
+  base::UmaHistogramCounts10000(
+      "IOS.HomeCustomization.Background.Gallery.ClickCount",
+      _galleryClickCount);
   [self stopLoadingAnimation];
 }
 
@@ -240,6 +247,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   [self.mutator applyBackgroundForConfiguration:
                     _backgroundCustomizationConfigurationMap[itemIdentifier]];
+  _galleryClickCount += 1;
 }
 
 - (void)collectionView:(UICollectionView*)collectionView
