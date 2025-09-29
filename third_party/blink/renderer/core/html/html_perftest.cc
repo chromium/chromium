@@ -41,8 +41,8 @@ TEST(HTMLParsePerfTest, Speedometer) {
   std::optional<Vector<char>> serialized =
       test::ReadFromFile(test::CoreTestDataPath(filename));
   CHECK(serialized);
-  std::optional<base::Value> json =
-      base::JSONReader::Read(base::as_string_view(*serialized));
+  std::optional<base::Value> json = base::JSONReader::Read(
+      base::as_string_view(*serialized), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json.has_value()) {
     char msg[256];
     UNSAFE_TODO(snprintf(msg, sizeof(msg),

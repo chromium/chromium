@@ -45,7 +45,8 @@ std::optional<base::Value::Dict> DecodeIdToken(std::string_view id_token) {
     VLOG(1) << "Invalid id_token: not in Base64Url encoding";
     return std::nullopt;
   }
-  std::optional<base::Value> decoded_payload = base::JSONReader::Read(payload);
+  std::optional<base::Value> decoded_payload =
+      base::JSONReader::Read(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!decoded_payload.has_value() ||
       decoded_payload->type() != base::Value::Type::DICT) {
     VLOG(1) << "Invalid id_token: paylod is not a well-formed JSON";

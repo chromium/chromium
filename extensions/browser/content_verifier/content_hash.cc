@@ -223,7 +223,8 @@ std::unique_ptr<VerifiedContents> ContentHash::StoreAndRetrieveVerifiedContents(
   // can be a login redirect html, xml file, etc. if you aren't logged in with
   // the right cookies).  TODO(asargent) - It would be a nice enhancement to
   // move to parsing this in a sandboxed helper (https://crbug.com/372878).
-  std::optional<base::Value> parsed = base::JSONReader::Read(*fetched_contents);
+  std::optional<base::Value> parsed = base::JSONReader::Read(
+      *fetched_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     LOG(ERROR)
         << "Failed to parse fetched verified_contents.json for extension id: "

@@ -103,7 +103,8 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
     return std::nullopt;
   }
 
-  std::optional<base::Value> top_dictionary = base::JSONReader::Read(contents);
+  std::optional<base::Value> top_dictionary =
+      base::JSONReader::Read(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* dictionary =
       top_dictionary ? top_dictionary->GetIfDict() : nullptr;
   if (!dictionary) {

@@ -1333,8 +1333,8 @@ void HttpHandler::HandleCommand(
   }
 
   if (request.data.length()) {
-    std::optional<base::Value> parsed_body =
-        base::JSONReader::Read(request.data);
+    std::optional<base::Value> parsed_body = base::JSONReader::Read(
+        request.data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     base::Value::Dict* body_params =
         parsed_body ? parsed_body->GetIfDict() : nullptr;
     if (!body_params) {
@@ -2072,7 +2072,8 @@ bool internal::IsNewSession(const CommandMapping& command) {
 Status internal::ParseBidiCommand(const std::string& data,
                                   base::Value::Dict& parsed) {
   Status status{kOk};
-  std::optional<base::Value> maybe_bidi_command = base::JSONReader::Read(data);
+  std::optional<base::Value> maybe_bidi_command =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_bidi_command.has_value()) {
     return Status{kInvalidArgument, "unable to parse BiDi command: " + data};
   }

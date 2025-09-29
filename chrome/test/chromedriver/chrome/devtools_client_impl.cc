@@ -1457,7 +1457,8 @@ bool ParseInspectorMessage(const std::string& message,
 }
 
 Status ParseInspectorError(const std::string& error_json) {
-  std::optional<base::Value> error = base::JSONReader::Read(error_json);
+  std::optional<base::Value> error =
+      base::JSONReader::Read(error_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* error_dict = error ? error->GetIfDict() : nullptr;
   if (!error_dict)
     return Status(kUnknownError, "inspector error with no error message");

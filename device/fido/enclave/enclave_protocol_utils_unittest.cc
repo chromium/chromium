@@ -289,8 +289,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_Success) {
   BuildCommandCompletionWaiter waiter;
   auto entity = PasskeyEntity();
   entity.set_rp_id(kRpId);
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kGetAssertionRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kGetAssertionRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -335,8 +335,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
   BuildCommandCompletionWaiter waiter;
   auto entity = PasskeyEntity();
   entity.set_rp_id(kRpId);
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kGetAssertionRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kGetAssertionRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -371,8 +371,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildGetAssertionRequest_WithPIN) {
 
 TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
   BuildCommandCompletionWaiter waiter;
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kMakeCredentialRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kMakeCredentialRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -407,8 +407,8 @@ TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_Success) {
 
 TEST_F(EnclaveProtocolUtilsTest, BuildMakeCredentialRequest_WithPIN) {
   BuildCommandCompletionWaiter waiter;
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kMakeCredentialRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kMakeCredentialRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));
@@ -676,8 +676,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseGetAssertionResponse_LargeBlob_Success) {
 TEST_F(EnclaveProtocolUtilsTest, RedactEnclaveRequest) {
   auto entity = PasskeyEntity();
   entity.set_rp_id(kRpId);
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(kGetAssertionRequestJson);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      kGetAssertionRequestJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(parsed_json);
   auto json_request =
       base::MakeRefCounted<JSONRequest>(std::move(*parsed_json));

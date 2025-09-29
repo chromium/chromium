@@ -325,7 +325,8 @@ OAuthMultiloginResult::OAuthMultiloginResult(
     const CookieDecryptor& cookie_decryptor) {
   std::string_view data = StripXSSICharacters(raw_data);
   status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
-  std::optional<base::Value> json_data = base::JSONReader::Read(data);
+  std::optional<base::Value> json_data =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_data) {
     RecordMultiloginResponseStatus(status_);
     return;

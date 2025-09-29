@@ -167,8 +167,8 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
     ReadData(ui::ClipboardFormatType::WebCustomFormatMap(), data_dst,
              &custom_format_json);
     if (!custom_format_json.empty()) {
-      std::optional<base::Value> json_val =
-          base::JSONReader::Read(custom_format_json);
+      std::optional<base::Value> json_val = base::JSONReader::Read(
+          custom_format_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (json_val.has_value() && json_val->is_dict()) {
         for (const auto it : json_val->GetDict()) {
           const std::string* custom_format_name = it.second.GetIfString();

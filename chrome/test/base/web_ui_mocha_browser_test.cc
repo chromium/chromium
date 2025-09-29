@@ -78,7 +78,9 @@ std::tuple<bool, std::vector<SubTestResult>> ProcessMessagesFromJsTest(
       return std::make_tuple(false, results);
     }
 
-    std::optional<base::Value> msg = base::JSONReader::Read(message);
+    std::optional<base::Value> msg =
+        base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS,
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     SubTestResult sub_test_result;
     std::string* test_name = msg->GetDict().FindString("fullTitle");

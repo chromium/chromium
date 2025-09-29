@@ -57,7 +57,8 @@ bool ParseMessage(const std::string& message,
                   std::string* method,
                   base::Value::Dict* params,
                   std::string* session_id) {
-  std::optional<base::Value> value = base::JSONReader::Read(message);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(value);
   EXPECT_TRUE(value && value->is_dict());
   if (!value || !value->is_dict()) {

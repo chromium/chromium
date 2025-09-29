@@ -95,7 +95,8 @@ bool ParseMessage(const std::string& message,
                   std::string* method,
                   base::Value::Dict* params,
                   std::string* session_id) {
-  std::optional<base::Value> value = base::JSONReader::Read(message);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(value);
   EXPECT_TRUE(value && value->is_dict());
   if (!value || !value->is_dict()) {
@@ -2701,14 +2702,15 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     size_t count = expression->size() - expected_exression_start.size() - 1;
     std::string bidi_arg_str =
         expression->substr(expected_exression_start.size(), count);
-    std::optional<base::Value> bidi_arg = base::JSONReader::Read(bidi_arg_str);
+    std::optional<base::Value> bidi_arg = base::JSONReader::Read(
+        bidi_arg_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(bidi_arg->is_string()) << bidi_arg_str;
     if (!bidi_arg->is_string()) {
       return false;
     }
     const std::string& bidi_expr_msg = bidi_arg->GetString();
-    std::optional<base::Value> bidi_expr =
-        base::JSONReader::Read(bidi_expr_msg);
+    std::optional<base::Value> bidi_expr = base::JSONReader::Read(
+        bidi_expr_msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     EXPECT_TRUE(bidi_expr) << bidi_expr_msg;
     EXPECT_TRUE(bidi_expr->is_dict()) << bidi_expr_msg;

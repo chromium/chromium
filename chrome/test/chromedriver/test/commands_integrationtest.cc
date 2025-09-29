@@ -138,7 +138,8 @@ class ResponseInterceptingSocket : public SyncWebSocketWrapper {
       std::optional<base::Value> maybe_value = std::nullopt;
       if (code == StatusCode::kOk && interception_started_ &&
           !detach_is_detected_) {
-        maybe_value = base::JSONReader::Read(received_message);
+        maybe_value = base::JSONReader::Read(
+            received_message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       }
       if (maybe_value && maybe_value->is_dict()) {
         // target detach is not intercepted yet.
@@ -161,7 +162,8 @@ class ResponseInterceptingSocket : public SyncWebSocketWrapper {
     if (!interception_started_ || awaited_response_id_ >= 0) {
       return;
     }
-    std::optional<base::Value> maybe_value = base::JSONReader::Read(message);
+    std::optional<base::Value> maybe_value =
+        base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!maybe_value || !maybe_value->is_dict()) {
       return;
     }

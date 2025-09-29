@@ -44,11 +44,12 @@ class LuciTestResultTest : public testing::Test {
 
     std::string json;
     ASSERT_TRUE(ReadFileToString(GetResultFilePath(), &json));
-    std::optional<base::Value> value = base::JSONReader::Read(json);
+    std::optional<base::Value> value =
+        base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(value.has_value());
 
-    std::optional<base::Value> expected_value =
-        base::JSONReader::Read(expected_json);
+    std::optional<base::Value> expected_value = base::JSONReader::Read(
+        expected_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(expected_value.has_value());
 
     EXPECT_EQ(expected_value, value) << "Expected:\n====\n"

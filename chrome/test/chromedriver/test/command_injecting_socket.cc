@@ -54,7 +54,8 @@ bool CommandInjectingSocket::Send(const std::string& message) {
 }
 
 bool CommandInjectingSocket::InterceptResponse(const std::string& message) {
-  std::optional<base::Value> maybe_response = base::JSONReader::Read(message);
+  std::optional<base::Value> maybe_response =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_response.has_value() || !maybe_response->is_dict()) {
     return false;
   }

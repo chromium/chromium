@@ -35,7 +35,8 @@ void NativeMessagingPipe::OnDisconnect() {
 
 void NativeMessagingPipe::PostMessageFromNativeHost(
     const std::string& message) {
-  std::optional<base::Value> json = base::JSONReader::Read(message);
+  std::optional<base::Value> json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   channel_->SendMessage(json);
 }
 

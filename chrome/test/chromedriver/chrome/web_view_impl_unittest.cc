@@ -382,7 +382,8 @@ class MockSyncWebSocket : public SyncWebSocket {
   }
 
   bool Send(const std::string& message) override {
-    std::optional<base::Value> value = base::JSONReader::Read(message);
+    std::optional<base::Value> value =
+        base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       return false;
     }

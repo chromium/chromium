@@ -373,8 +373,9 @@ void DevToolsListener::DispatchProtocolMessage(
   if (VLOG_IS_ON(2))
     VLOG(2) << SpanToStringPiece(message);
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(SpanToStringPiece(message));
+  std::optional<base::Value> value = base::JSONReader::Read(
+      SpanToStringPiece(message), base::JSON_PARSE_CHROMIUM_EXTENSIONS,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(value.has_value()) << "Cannot parse as JSON: "
                            << SpanToStringPiece(message);
 

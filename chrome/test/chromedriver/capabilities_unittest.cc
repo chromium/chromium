@@ -852,8 +852,8 @@ namespace {
 
 base::Value::Dict CreateCapabilitiesDict(const std::string& mobile_emulation) {
   base::Value::Dict result;
-  std::optional<base::Value> maybe_mobile_emulation =
-      base::JSONReader::Read(mobile_emulation);
+  std::optional<base::Value> maybe_mobile_emulation = base::JSONReader::Read(
+      mobile_emulation, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(maybe_mobile_emulation.has_value() &&
               maybe_mobile_emulation->is_dict());
   if (!maybe_mobile_emulation.has_value() ||

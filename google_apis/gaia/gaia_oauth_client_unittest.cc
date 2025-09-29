@@ -466,8 +466,8 @@ TEST_F(GaiaOAuthClientTest, GetUserInfo) {
   auth.GetUserInfo("access_token", 1, &delegate);
   FlushNetwork();
 
-  std::optional<base::Value> expected_value =
-      base::JSONReader::Read(kDummyFullUserInfoResult);
+  std::optional<base::Value> expected_value = base::JSONReader::Read(
+      kDummyFullUserInfoResult, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(expected_value);
   ASSERT_TRUE(expected_value->is_dict());
   EXPECT_EQ(expected_value->GetDict(), captured_result);

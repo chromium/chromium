@@ -198,7 +198,8 @@ static StylePerfResult MeasureStyleForDumpedPage(
       return result;
     }
     std::optional<base::Value> json =
-        base::JSONReader::Read(base::as_string_view(*serialized));
+        base::JSONReader::Read(base::as_string_view(*serialized),
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(json.has_value());
     page = LoadDumpedPage(json->GetDict(), result.parse_time, reporter);
   }

@@ -58,7 +58,8 @@ constexpr int kUnknownSwitch = 101;
 constexpr int kBadCommand = 102;
 
 base::Value ValueFromString(const std::string& values) {
-  std::optional<base::Value> results_value = base::JSONReader::Read(values);
+  std::optional<base::Value> results_value =
+      base::JSONReader::Read(values, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(results_value) << values;
   return results_value->Clone();
 }

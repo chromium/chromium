@@ -70,7 +70,8 @@ base::expected<void, JsonFileSanitizer::Error> JsonFileSanitizer::ProcessFile(
     return base::unexpected(Error::kFileDeleteError);
   }
 
-  std::optional<base::Value> result = base::JSONReader::Read(contents);
+  std::optional<base::Value> result =
+      base::JSONReader::Read(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result.has_value() || !result->is_dict()) {
     return base::unexpected(Error::kDecodingError);
   }

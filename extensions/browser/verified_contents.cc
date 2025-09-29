@@ -114,7 +114,8 @@ std::unique_ptr<VerifiedContents> VerifiedContents::Create(
   if (!verified_contents->GetPayload(contents, &payload))
     return nullptr;
 
-  std::optional<base::Value> dictionary_value = base::JSONReader::Read(payload);
+  std::optional<base::Value> dictionary_value =
+      base::JSONReader::Read(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dictionary_value || !dictionary_value->is_dict()) {
     return nullptr;
   }
@@ -253,7 +254,8 @@ bool VerifiedContents::TreeHashRootEquals(const base::FilePath& relative_path,
 // enterprise installs).
 bool VerifiedContents::GetPayload(std::string_view contents,
                                   std::string* payload) {
-  std::optional<base::Value> top_list = base::JSONReader::Read(contents);
+  std::optional<base::Value> top_list =
+      base::JSONReader::Read(contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!top_list || !top_list->is_list())
     return false;
 

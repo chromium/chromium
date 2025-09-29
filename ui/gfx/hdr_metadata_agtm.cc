@@ -218,7 +218,8 @@ bool HdrMetadataAgtmParsed::Parse(const HdrMetadataAgtm& agtm) {
   }
   auto value = base::JSONReader::Read(
       std::string_view(reinterpret_cast<const char*>(agtm.payload->data()),
-                       agtm.payload->size()));
+                       agtm.payload->size()),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     DVLOG(1) << "Failed to parse AGTM metadata JSON";
     return false;

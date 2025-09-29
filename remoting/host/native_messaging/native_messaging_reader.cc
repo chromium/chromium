@@ -126,7 +126,8 @@ void NativeMessagingReader::Core::ReadMessage() {
       return;
     }
 
-    std::optional<base::Value> message = base::JSONReader::Read(message_json);
+    std::optional<base::Value> message = base::JSONReader::Read(
+        message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!message) {
       LOG(ERROR) << "Failed to parse JSON message: " << message_json;
       NotifyEof();

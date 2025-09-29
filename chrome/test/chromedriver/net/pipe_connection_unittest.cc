@@ -327,7 +327,8 @@ TEST_F(PipeConnectionTest, DetermineRecipient) {
             connection->ReceiveNextMessage(&message, long_timeout()));
 
   // Getting message id and method
-  std::optional<base::Value> message_value = base::JSONReader::Read(message);
+  std::optional<base::Value> message_value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(message_value.has_value());
   base::Value::Dict* message_dict = message_value->GetIfDict();
   EXPECT_TRUE(message_dict);

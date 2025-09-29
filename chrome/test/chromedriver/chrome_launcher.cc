@@ -1141,8 +1141,8 @@ Status ProcessExtension(const std::string& extension,
   std::string manifest_data;
   if (!base::ReadFileToString(manifest_path, &manifest_data))
     return Status(kUnknownError, "cannot read manifest");
-  std::optional<base::Value> manifest_value =
-      base::JSONReader::Read(manifest_data);
+  std::optional<base::Value> manifest_value = base::JSONReader::Read(
+      manifest_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* manifest =
       manifest_value ? manifest_value->GetIfDict() : nullptr;
   if (!manifest)
