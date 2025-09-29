@@ -1038,6 +1038,13 @@ void DiskCacheBackendTest::BackendShutdownWithPendingCreate(bool fast) {
     // Nothing is actually pending with memory backend.
     return;
   }
+  bool speculative_entry_creation = false;
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (backend_to_test() == BackendToTest::kSql) {
+    speculative_entry_creation = true;
+  }
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
   TestEntryResultCompletionCallback cb;
 
@@ -1050,8 +1057,14 @@ void DiskCacheBackendTest::BackendShutdownWithPendingCreate(bool fast) {
 
     EntryResult result =
         cache_->CreateEntry("some key", net::HIGHEST, cb.callback());
-    ASSERT_THAT(result.net_error(), IsError(net::ERR_IO_PENDING));
 
+    if (speculative_entry_creation) {
+      ASSERT_THAT(result.net_error(), IsOk());
+      auto* entry = result.ReleaseEntry();
+      entry->Close();
+    } else {
+      ASSERT_THAT(result.net_error(), IsError(net::ERR_IO_PENDING));
+    }
     ResetCaches();
     EXPECT_FALSE(cb.have_result());
   }
@@ -5474,6 +5487,14 @@ TEST_P(DiskCacheGenericBackendTest, ImmediateCloseNoDangle) {
   if (backend_to_test() == BackendToTest::kMemory) {
     return;
   }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (backend_to_test() == BackendToTest::kSql) {
+    // The SQL backend always creates entries speculatively, and CreateEntry()
+    // returns synchronously.
+    return;
+  }
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
   InitCache();
   base::RunLoop run_loop;

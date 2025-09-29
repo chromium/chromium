@@ -150,11 +150,13 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   virtual void OpenEntry(const CacheEntryKey& key,
                          OptionalEntryInfoOrErrorCallback callback) = 0;
 
-  // Creates a new entry with the given `key`.
+  // Creates a new entry with the given `key`. `creation_time` is the time the
+  // entry is created and will be used as the initial `last_used` time.
   // The `callback` is invoked with the new entry's information on success. If
   // an entry with this key already exists, the callback is invoked with a
   // `kAlreadyExists` error.
   virtual void CreateEntry(const CacheEntryKey& key,
+                           base::Time creation_time,
                            EntryInfoOrErrorCallback callback) = 0;
 
   // Marks an entry for future deletion. When an entry is "doomed", it is

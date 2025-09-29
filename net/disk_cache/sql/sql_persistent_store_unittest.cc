@@ -188,7 +188,7 @@ class SqlPersistentStoreTest : public testing::Test {
   // Synchronous wrapper for CreateEntry.
   SqlPersistentStore::EntryInfoOrError CreateEntry(const CacheEntryKey& key) {
     base::test::TestFuture<SqlPersistentStore::EntryInfoOrError> future;
-    store_->CreateEntry(key, future.GetCallback());
+    store_->CreateEntry(key, base::Time::Now(), future.GetCallback());
     return future.Take();
   }
 
@@ -3028,10 +3028,10 @@ TEST_F(SqlPersistentStoreTest, CreateEntryCallbackNotRunOnStoreDestruction) {
   const CacheEntryKey kKey("my-key");
   bool callback_run = false;
 
-  store_->CreateEntry(kKey, base::BindLambdaForTesting(
-                                [&](SqlPersistentStore::EntryInfoOrError) {
-                                  callback_run = true;
-                                }));
+  store_->CreateEntry(
+      kKey, base::Time::Now(),
+      base::BindLambdaForTesting(
+          [&](SqlPersistentStore::EntryInfoOrError) { callback_run = true; }));
   store_.reset();
   FlushPendingTask();
 

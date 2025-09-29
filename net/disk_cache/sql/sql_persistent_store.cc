@@ -333,6 +333,7 @@ class Backend {
       const CacheEntryKey& key);
   OptionalEntryInfoOrError OpenEntry(const CacheEntryKey& key);
   EntryInfoOrErrorAndEvictionRequested CreateEntry(const CacheEntryKey& key,
+                                                   base::Time creation_time,
                                                    bool run_existance_check);
 
   ErrorAndEvictionRequested DoomEntry(const CacheEntryKey& key, ResId res_id);
@@ -391,6 +392,7 @@ class Backend {
                                              bool& corruption_detected);
   OptionalEntryInfoOrError OpenEntryInternal(const CacheEntryKey& key);
   EntryInfoOrError CreateEntryInternal(const CacheEntryKey& key,
+                                       base::Time creation_time,
                                        bool run_existance_check,
                                        bool& corruption_detected);
   Error DoomEntryInternal(ResId res_id, bool& corruption_detected);
@@ -728,7 +730,8 @@ EntryInfoOrError Backend::OpenOrCreateEntryInternal(const CacheEntryKey& key,
     return base::unexpected(open_result.error());
   }
   // If the entry was not found, try to create a new one.
-  return CreateEntryInternal(key, /*run_existance_check=*/false,
+  return CreateEntryInternal(key, base::Time::Now(),
+                             /*run_existance_check=*/false,
                              corruption_detected);
 }
 
@@ -787,6 +790,7 @@ OptionalEntryInfoOrError Backend::OpenEntryInternal(const CacheEntryKey& key) {
 
 EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
     const CacheEntryKey& key,
+    base::Time creation_time,
     bool run_existance_check) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.CreateEntry", "data",
                      [&](perfetto::TracedValue trace_context) {
@@ -796,8 +800,8 @@ EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result =
-      CreateEntryInternal(key, run_existance_check, corruption_detected);
+  auto result = CreateEntryInternal(key, creation_time, run_existance_check,
+                                    corruption_detected);
   RecordTimeAndErrorResultHistogram("CreateEntry", timer.Elapsed(),
                                     result.error_or(Error::kOk),
                                     corruption_detected);
@@ -812,6 +816,7 @@ EntryInfoOrErrorAndEvictionRequested Backend::CreateEntry(
 }
 
 EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
+                                              base::Time creation_time,
                                               bool run_existance_check,
                                               bool& corruption_detected) {
   if (simulate_db_failure_for_testing_) {
@@ -833,7 +838,7 @@ EntryInfoOrError Backend::CreateEntryInternal(const CacheEntryKey& key,
     }
   }
   EntryInfo entry_info;
-  entry_info.last_used = base::Time::Now();
+  entry_info.last_used = creation_time;
   entry_info.body_end = 0;
   entry_info.head = nullptr;
   entry_info.opened = false;
@@ -2415,10 +2420,11 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
         .Then(WrapCallback(std::move(callback)));
   }
   void CreateEntry(const CacheEntryKey& key,
+                   base::Time creation_time,
                    EntryInfoOrErrorCallback callback) override {
     bool run_existance_check = !index_ || index_->Contains(key.hash());
     backend_.AsyncCall(&Backend::CreateEntry)
-        .WithArgs(key, run_existance_check)
+        .WithArgs(key, creation_time, run_existance_check)
         .Then(WrapEntryInfoOrErrorCallback(
             std::move(callback), key, IndexMismatchLocation::kCreateEntry));
   }

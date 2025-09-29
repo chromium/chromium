@@ -4,9 +4,12 @@
 
 #include "net/disk_cache/sql/sql_backend_impl.h"
 
+#include <variant>
+
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -882,6 +885,15 @@ TEST_F(SqlBackendImplTest, MultipleDoomsOnSameEntry) {
   entry->Doom();
   entry->Doom();
 
+  {
+    // When the entry was created speculatively, the doomed flag is updated
+    // asynchronously. So need to flush the pending database operations.
+    base::RunLoop run_loop;
+    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   EXPECT_TRUE(static_cast<SqlEntryImpl*>(entry)->doomed());
   entry->Close();
 
@@ -1138,7 +1150,10 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
   auto* entry1 = CreateEntryAndWriteData(backend.get(), kKey1, kData);
   auto* entry2 = CreateEntryAndWriteData(backend.get(), kKey2, kData);
   auto* entry3 = CreateEntryAndWriteData(backend.get(), kKey3, kData);
-  auto res_id = static_cast<SqlEntryImpl*>(entry3)->res_id();
+  CHECK(std::holds_alternative<SqlPersistentStore::ResId>(
+      static_cast<SqlEntryImpl*>(entry3)->res_id_or_error()->data.value()));
+  auto res_id = std::get<SqlPersistentStore::ResId>(
+      static_cast<SqlEntryImpl*>(entry3)->res_id_or_error()->data.value());
   entry1->Close();
   entry2->Close();
   entry3->Close();
@@ -1202,6 +1217,283 @@ TEST_F(SqlBackendImplTest, DoomedEntriesCleanup) {
 
   entry1->Close();
   entry2->Close();
+}
+
+TEST_F(SqlBackendImplTest, SpeculativeCreateEntry) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+
+  // 1. Create an entry. This should return immediately with a speculatively
+  //    created entry.
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // 2. The res_id should not be available yet.
+  auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
+  EXPECT_FALSE(sql_entry->res_id_or_error()->data.has_value());
+
+  // 3. Wait for the database operation to complete.
+  while (!sql_entry->res_id_or_error()->data.has_value()) {
+    base::RunLoop run_loop;
+    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // 4. Now the res_id should be available.
+  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
+  EXPECT_TRUE(std::holds_alternative<SqlPersistentStore::ResId>(
+      sql_entry->res_id_or_error()->data.value()));
+
+  // 5. Doom the entry.
+  entry->Doom();
+  EXPECT_TRUE(sql_entry->doomed());
+  entry->Close();
+
+  // 6. Verify that the entry is gone.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
+TEST_F(SqlBackendImplTest, SpeculativeCreateEntrySyncClose) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  entry->Close();
+
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  entry = open_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, SpeculativeCreateEntrySyncDoom) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  entry->Doom();
+  entry->Close();
+
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
+TEST_F(SqlBackendImplTest, SpeculativeCreateEntrySyncWrite) {
+  auto backend = CreateBackendAndInit();
+  const std::string kKey = "my-key";
+  const std::string kData = "some data";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  net::TestCompletionCallback write_cb;
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+  EXPECT_EQ(write_cb.GetResult(entry->WriteData(1, 0, write_buffer.get(),
+                                                write_buffer->size(),
+                                                write_cb.callback(), false)),
+            static_cast<int>(write_buffer->size()));
+
+  entry->Close();
+
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  ASSERT_THAT(open_result.net_error(), IsOk());
+  entry = open_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+
+  base::test::TestFuture<int> read_future;
+  int rv = entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
+                           read_future.GetCallback());
+  ASSERT_THAT(rv, IsError(net::ERR_IO_PENDING));
+  ASSERT_EQ(read_future.Get(), write_buffer->size());
+
+  EXPECT_EQ(std::string_view(read_buffer->data(), kData.size()), kData);
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, SpeculativeCreateEntryWithDbFailure) {
+  auto backend = CreateBackendAndInit();
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+  const std::string kKey = "my-key";
+
+  // 1. Create an entry. This should return immediately with a speculatively
+  //    created entry.
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result =
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback());
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  // 2. The res_id should not be available yet.
+  auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
+  EXPECT_FALSE(sql_entry->res_id_or_error()->data.has_value());
+
+  // 3. Wait for the database operation to complete.
+  while (!sql_entry->res_id_or_error()->data.has_value()) {
+    base::RunLoop run_loop;
+    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // 4. Now the res_id should be available and hold a kFailedForTesting.
+  ASSERT_TRUE(sql_entry->res_id_or_error()->data.has_value());
+  ASSERT_TRUE(std::holds_alternative<SqlPersistentStore::Error>(
+      sql_entry->res_id_or_error()->data.value()));
+  EXPECT_EQ(std::get<SqlPersistentStore::Error>(
+                sql_entry->res_id_or_error()->data.value()),
+            SqlPersistentStore::Error::kFailedForTesting);
+
+  // 5. Doom the entry.
+  entry->Doom();
+  EXPECT_TRUE(sql_entry->doomed());
+  entry->Close();
+
+  // 6. Verify that the entry is not found.
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
+  EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
+TEST_F(SqlBackendImplTest,
+       SpeculativeCreateEntryDbFailureOperationsBeforeErrorSet) {
+  auto backend = CreateBackendAndInit();
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+  TestEntryResultCompletionCallback cb;
+  disk_cache::EntryResult entry_result =
+      backend->CreateEntry("key", net::HIGHEST, cb.callback());
+  ASSERT_THAT(entry_result.net_error(), IsOk());
+  auto* entry = entry_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  net::TestCompletionCallback write_cb;
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
+  EXPECT_EQ(entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
+                             write_cb.callback(), false),
+            net::ERR_IO_PENDING);
+
+  net::TestCompletionCallback read_cb;
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  EXPECT_EQ(entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
+                            read_cb.callback()),
+            net::ERR_IO_PENDING);
+
+  base::test::TestFuture<const RangeResult&> range_future;
+  EXPECT_EQ(
+      entry->GetAvailableRange(0, 10, range_future.GetCallback()).net_error,
+      net::ERR_IO_PENDING);
+
+  EXPECT_THAT(write_cb.WaitForResult(), IsError(net::ERR_FAILED));
+  EXPECT_THAT(read_cb.WaitForResult(), IsError(net::ERR_FAILED));
+  EXPECT_THAT(range_future.Get().net_error, IsError(net::ERR_FAILED));
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest,
+       SpeculativeCreateEntryDbFailureOperationsAfterErrorSet) {
+  auto backend = CreateBackendAndInit();
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+  TestEntryResultCompletionCallback cb;
+  disk_cache::EntryResult entry_result =
+      backend->CreateEntry("key", net::HIGHEST, cb.callback());
+  ASSERT_THAT(entry_result.net_error(), IsOk());
+  auto* entry = entry_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
+  while (!sql_entry->res_id_or_error()->data.has_value()) {
+    base::RunLoop run_loop;
+    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>("data");
+  EXPECT_EQ(entry->WriteData(0, 0, write_buffer.get(), write_buffer->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(write_buffer->size()));
+
+  net::TestCompletionCallback write_cb;
+  EXPECT_EQ(entry->WriteData(1, 0, write_buffer.get(), write_buffer->size(),
+                             write_cb.callback(), false),
+            net::ERR_IO_PENDING);
+  EXPECT_THAT(write_cb.WaitForResult(), IsError(net::ERR_FAILED));
+
+  net::TestCompletionCallback read_cb;
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(10);
+  EXPECT_EQ(entry->ReadData(1, 0, read_buffer.get(), read_buffer->size(),
+                            read_cb.callback()),
+            net::ERR_IO_PENDING);
+  EXPECT_THAT(read_cb.WaitForResult(), IsError(net::ERR_FAILED));
+
+  base::test::TestFuture<const RangeResult&> range_future;
+  EXPECT_EQ(
+      entry->GetAvailableRange(0, 10, range_future.GetCallback()).net_error,
+      net::ERR_IO_PENDING);
+  EXPECT_THAT(range_future.Get().net_error, IsError(net::ERR_FAILED));
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureDoom) {
+  auto backend = CreateBackendAndInit();
+  backend->GetSqlStoreForTest()->SetSimulateDbFailureForTesting(true);
+  TestEntryResultCompletionCallback cb;
+  disk_cache::EntryResult entry_result =
+      backend->CreateEntry("key", net::HIGHEST, cb.callback());
+  ASSERT_THAT(entry_result.net_error(), IsOk());
+  auto* entry = entry_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  auto* sql_entry = static_cast<SqlEntryImpl*>(entry);
+  while (!sql_entry->res_id_or_error()->data.has_value()) {
+    base::RunLoop run_loop;
+    backend->GetBackgroundTaskRunnerForTest()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  entry->Doom();
+  EXPECT_TRUE(static_cast<SqlEntryImpl*>(entry)->doomed());
+  entry->Close();
+  entry = nullptr;
+
+  TestEntryResultCompletionCallback cb_open;
+  disk_cache::EntryResult open_result = cb_open.GetResult(
+      backend->OpenEntry("key", net::HIGHEST, cb_open.callback()));
+  EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
 }
 
 }  // namespace
