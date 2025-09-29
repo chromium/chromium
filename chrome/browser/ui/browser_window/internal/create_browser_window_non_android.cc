@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 
@@ -45,4 +49,16 @@ BrowserWindowInterface* CreateBrowserWindow(
   browser_params.initial_show_state = create_params.initial_show_state;
 
   return Browser::Create(browser_params);
+}
+
+void CreateBrowserWindow(
+    BrowserWindowCreateParams create_params,
+    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
+  auto* browser_window = CreateBrowserWindow(std::move(create_params));
+
+  // Although browser window creation is synchronous on non-Android platforms,
+  // we still invoke the callback asynchronously, but on the same thread as the
+  // caller, to maintain the asynchronous behavior across all platforms.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), browser_window));
 }

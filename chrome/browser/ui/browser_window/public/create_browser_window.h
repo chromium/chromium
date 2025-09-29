@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -53,8 +54,29 @@ struct BrowserWindowCreateParams {
 };
 
 // Creates a new browser window according to the given `create_params`.
+//
 // This may fail, in which case null is returned.
+//
+// Otherwise, a `BrowserWindowInterface` will be synchronously returned.
+// However, due to OS differences, we can't guarantee the browser window is
+// fully initialized. If the browser window isn't fully initialized, calls to
+// `BrowserWindowInterface` APIs that will change the window will be queued
+// first, then executed once the OS has fully initialized the window. We
+// recommend all code calling this function to anticipate this scenario.
+//
+// If you need to ensure the browser window is fully initialized, please use the
+// asynchronous version of this function.
 BrowserWindowInterface* CreateBrowserWindow(
     BrowserWindowCreateParams create_params);
+
+// The asynchronous version of `CreateBrowserWindow`. The given `callback` will
+// always be invoked asynchronously with the newly created
+// `BrowserWindowInterface`.
+//
+// On all platforms, if the `BrowserWindowInterface` passed to the `callback` is
+// not null, the `BrowserWindowInterface` has been fully initialized.
+void CreateBrowserWindow(
+    BrowserWindowCreateParams create_params,
+    base::OnceCallback<void(BrowserWindowInterface*)> callback);
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_CREATE_BROWSER_WINDOW_H_
