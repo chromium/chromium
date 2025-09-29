@@ -213,7 +213,7 @@ void AnalyserHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
 
   AudioHandler::CheckNumberOfChannelsForInput(input);
 
-  UpdatePullStatusIfNeeded();
+  Context()->GetDeferredTaskHandler().UpdatePullStatusWithFeatureCheck(this);
 }
 
 }  // namespace blink

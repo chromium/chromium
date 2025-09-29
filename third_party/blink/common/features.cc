@@ -2492,6 +2492,11 @@ BASE_FEATURE(kWebAppManifestLockScreen, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebAudioAllowDenormalInProcessing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use deferred pull status update instead of updating the status directly
+// on audio thread. See https://crbug.com/40249972.
+BASE_FEATURE(kWebAudioDeferPullStatusUpdate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 /// Enables cache-aware WebFonts loading. See https://crbug.com/570205.
 // The feature is disabled on Android for WebView API issue discussed at
 // https://crbug.com/942440.

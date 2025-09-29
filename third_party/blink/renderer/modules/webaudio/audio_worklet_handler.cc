@@ -225,7 +225,7 @@ void AudioWorkletHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   }
 
   AudioHandler::CheckNumberOfChannelsForInput(input);
-  UpdatePullStatusIfNeeded();
+  Context()->GetDeferredTaskHandler().UpdatePullStatusWithFeatureCheck(this);
 }
 
 void AudioWorkletHandler::UpdatePullStatusIfNeeded() {

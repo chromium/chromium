@@ -156,7 +156,7 @@ void MediaStreamAudioDestinationHandler::CheckNumberOfChannelsForInput(
 
   AudioHandler::CheckNumberOfChannelsForInput(input);
 
-  UpdatePullStatusIfNeeded();
+  Context()->GetDeferredTaskHandler().UpdatePullStatusWithFeatureCheck(this);
 }
 
 void MediaStreamAudioDestinationHandler::UpdatePullStatusIfNeeded() {

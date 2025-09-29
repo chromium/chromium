@@ -27,6 +27,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
@@ -200,6 +201,40 @@ void DeferredTaskHandler::ProcessAutomaticPullNodes(
   }
 }
 
+void DeferredTaskHandler::RequestPullStatusUpdate(AudioHandler* handler) {
+  DCHECK(IsAudioThread());
+
+  deferred_pull_status_updates_.insert(handler);
+}
+
+void DeferredTaskHandler::UpdatePullStatusWithFeatureCheck(
+    AudioHandler* handler) {
+  DCHECK(IsAudioThread());
+
+  if (defer_pull_status_update_) {
+    RequestPullStatusUpdate(handler);
+  } else {
+    handler->UpdatePullStatusIfNeeded();
+  }
+}
+
+void DeferredTaskHandler::ProcessDeferredPullStatusUpdates() {
+  DCHECK(IsAudioThread());
+
+  if (deferred_pull_status_updates_.empty()) {
+    return;
+  }
+
+  // Move the set to a local variable so the member variable is clear for
+  // the upcoming rendering cycle.
+  HashSet<AudioHandler*> updates_to_process =
+      std::move(deferred_pull_status_updates_);
+
+  for (AudioHandler* handler : updates_to_process) {
+    handler->UpdatePullStatusIfNeeded();
+  }
+}
+
 void DeferredTaskHandler::AddTailProcessingHandler(
     scoped_refptr<AudioHandler> handler) {
   DCHECK(accepts_tail_processing_);
@@ -305,7 +340,9 @@ void DeferredTaskHandler::UpdateChangedChannelInterpretation() {
 
 DeferredTaskHandler::DeferredTaskHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)),
+    : defer_pull_status_update_(base::FeatureList::IsEnabled(
+          features::kWebAudioDeferPullStatusUpdate)),
+      task_runner_(std::move(task_runner)),
       audio_thread_(base::kInvalidThreadId) {}
 
 scoped_refptr<DeferredTaskHandler> DeferredTaskHandler::Create(
@@ -320,6 +357,9 @@ void DeferredTaskHandler::HandleDeferredTasks() {
   UpdateChangedChannelInterpretation();
   HandleDirtyAudioSummingJunctions();
   HandleDirtyAudioNodeOutputs();
+  if (defer_pull_status_update_) {
+    ProcessDeferredPullStatusUpdates();
+  }
   UpdateAutomaticPullNodes();
   UpdateTailProcessingHandlers();
 }
