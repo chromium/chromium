@@ -11,7 +11,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/embedder_support/switches.h"
-#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "headless/lib/browser/headless_browser_context_options.h"
@@ -150,10 +149,9 @@ class HeadlessProxyConfigMonitor
 // static
 std::unique_ptr<HeadlessRequestContextManager>
 HeadlessRequestContextManager::CreateSystemContext(
-    const HeadlessBrowserContextOptions* options,
-    os_crypt_async::OSCryptAsync* os_crypt_async) {
+    const HeadlessBrowserContextOptions* options) {
   auto manager = std::make_unique<HeadlessRequestContextManager>(
-      options, base::FilePath(), os_crypt_async);
+      options, base::FilePath());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   auto auth_params = ::network::mojom::HttpAuthDynamicParams::New();
@@ -184,8 +182,7 @@ HeadlessRequestContextManager::CreateSystemContext(
 
 HeadlessRequestContextManager::HeadlessRequestContextManager(
     const HeadlessBrowserContextOptions* options,
-    base::FilePath user_data_path,
-    os_crypt_async::OSCryptAsync* os_crypt_async)
+    base::FilePath user_data_path)
     :
 // On Windows, Cookie encryption requires access to local_state prefs.
 #if BUILDFLAG(IS_WIN) && !defined(HEADLESS_USE_PREFS)
@@ -195,7 +192,6 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
           !base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kDisableCookieEncryption)),
 #endif
-      os_crypt_async_(os_crypt_async),
       user_data_path_(std::move(user_data_path)),
       disk_cache_dir_(options->disk_cache_dir()),
       accept_language_(options->accept_language()),
@@ -204,10 +200,6 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
           options->proxy_config()
               ? std::make_unique<net::ProxyConfig>(*options->proxy_config())
               : nullptr) {
-  if (cookie_encryption_enabled_) {
-    cookie_encryption_provider_ =
-        std::make_unique<CookieEncryptionProviderImpl>(os_crypt_async_.get());
-  }
   if (!proxy_config_) {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     if (command_line->HasSwitch(switches::kNoSystemProxyConfigService)) {
@@ -221,13 +213,8 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
 
 HeadlessRequestContextManager::~HeadlessRequestContextManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (proxy_config_monitor_) {
+  if (proxy_config_monitor_)
     HeadlessProxyConfigMonitor::DeleteSoon(std::move(proxy_config_monitor_));
-  }
-  if (cookie_encryption_provider_) {
-    content::GetUIThreadTaskRunner({})->DeleteSoon(
-        FROM_HERE, cookie_encryption_provider_.release());
-  }
 }
 
 void HeadlessRequestContextManager::ConfigureNetworkContextParams(
@@ -262,10 +249,6 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
 
   if (!user_data_path_.empty()) {
     context_params->enable_encrypted_cookies = cookie_encryption_enabled_;
-    if (cookie_encryption_enabled_) {
-      context_params->cookie_encryption_provider =
-          cookie_encryption_provider_->BindNewRemote();
-    }
     context_params->file_paths =
         ::network::mojom::NetworkContextFilePaths::New();
     context_params->file_paths->data_directory =

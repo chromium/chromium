@@ -203,10 +203,7 @@ AwBrowserContext::AwBrowserContext(std::string name,
       is_default_(is_default),
       context_storage_path_(BuildStoragePath(relative_path_)),
       http_cache_path_(BuildHttpCachePath(relative_path_)),
-      simple_factory_key_(GetPath(), IsOffTheRecord()),
-      cookie_encryption_provider_(
-          std::make_unique<CookieEncryptionProviderImpl>(
-              AwBrowserProcess::GetInstance()->GetOSCryptAsync())) {
+      simple_factory_key_(GetPath(), IsOffTheRecord()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   TRACE_EVENT("startup", "AwBrowserContext::AwBrowserContext", "name", name_);
 
@@ -587,8 +584,6 @@ void AwBrowserContext::ConfigureNetworkContextParams(
           switches::kWebViewEnableModernCookieSameSite)
           ? network::mojom::CookieAccessDelegateType::ALWAYS_NONLEGACY
           : network::mojom::CookieAccessDelegateType::ALWAYS_LEGACY;
-  context_params->cookie_encryption_provider =
-      cookie_encryption_provider_->BindNewRemote();
 
   context_params->initial_ssl_config = network::mojom::SSLConfig::New();
   // Allow SHA-1 to be used for locally-installed trust anchors, as WebView

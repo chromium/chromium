@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
@@ -49,9 +48,7 @@ ChromeExtensionCookies::ChromeExtensionCookies(Profile* profile)
         profile_->GetPath().Append(chrome::kExtensionsCookieFilename),
         profile_->ShouldRestoreOldSessionCookies(),
         profile_->ShouldPersistSessionCookies()));
-    creation_config->crypto_delegate = cookie_config::GetCookieCryptoDelegate(
-        g_browser_process->os_crypt_async(),
-        content::GetUIThreadTaskRunner({}));
+    creation_config->crypto_delegate = cookie_config::GetCookieCryptoDelegate();
   }
   creation_config->cookieable_schemes.push_back(extensions::kExtensionScheme);
 

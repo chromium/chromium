@@ -37,7 +37,6 @@
 #include "content/public/browser/zoom_level_delegate.h"
 #include "net/http/http_request_headers.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
-#include "services/network/public/cpp/cookie_encryption_provider_impl.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
@@ -301,8 +300,6 @@ class AwBrowserContext : public content::BrowserContext,
   //
   // In generally, use GetCookieManager() rather than using this directly.
   std::unique_ptr<CookieManager> cookie_manager_;
-
-  std::unique_ptr<CookieEncryptionProviderImpl> cookie_encryption_provider_;
 
   std::unique_ptr<AwPrefetchManager> prefetch_manager_;
   std::unique_ptr<AwPreconnector> preconnector_;
