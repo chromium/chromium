@@ -257,6 +257,7 @@ component("base") {
     "containers/to_value_list.h",
     "containers/to_vector.h",
     "containers/unique_ptr_adapters.h",
+    "containers/variant_map.cc",
     "containers/variant_map.h",
     "containers/vector_buffer.h",
     "critical_closure.h",

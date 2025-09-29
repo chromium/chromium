@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/features.h"
+#include "base/gtest_prod_util.h"
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -45,6 +46,12 @@ enum class MapType {
   // See FlatHashMapVariant
   kFlatHashMap,
 };
+
+// Whether the AbslFlatMapInVariantMap feature is enabled.
+BASE_EXPORT bool IsAbslFlatMapInVariantMapEnabled();
+
+// Initializes VariantMap features. See `base::features::Init()`.
+BASE_EXPORT void InitializeVariantMapFeatures();
 
 // Class used to evaluate the performance of switching from std::map to
 // absl::flat_hash_map in place. This class is used exactly like the underlying
@@ -297,8 +304,9 @@ class VariantMap {
         }()) {}
 
   VariantMap()
-      : VariantMap(base::features::IsReducePPMsEnabled() ? MapType::kFlatHashMap
-                                                         : MapType::kStdMap) {}
+      : VariantMap(base::IsAbslFlatMapInVariantMapEnabled()
+                       ? MapType::kFlatHashMap
+                       : MapType::kStdMap) {}
 
   // The variant that holds one of the two map types.
   Map data_;
