@@ -1203,6 +1203,12 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
   if (!frame) {
     return;
   }
+
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(isolate);
+  if (!thread_debugger) {
+    return;
+  }
+
   auto dict = std::move(context).WriteDictionary();
   String frameType = "page";
   if (frame->Parent() || frame->IsFencedFrameRoot()) {
@@ -1211,11 +1217,8 @@ void inspector_target_rundown_event::Data(perfetto::TracedValue context,
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   dict.Add("frameType", frameType);
   dict.Add("url", window->Url().GetString());
-  ThreadDebugger* thread_debugger = ThreadDebugger::From(isolate);
-  DCHECK(thread_debugger);
-  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
-  DCHECK(inspector);
-  dict.Add("isolate", inspector->isolateId());
+  dict.Add("isolate",
+           String::Number(thread_debugger->GetV8Inspector()->isolateId()));
 
   // ExecutionContext related info
   DOMWrapperWorld& world = scriptState->World();
@@ -1324,17 +1327,19 @@ void inspector_function_call_event::Data(
   if (function.IsEmpty())
     return;
 
+  ThreadDebugger* thread_debugger = ThreadDebugger::From(context->GetIsolate());
+  if (!thread_debugger) {
+    return;
+  }
+
   v8::Local<v8::Function> original_function = GetBoundFunction(function);
   v8::Local<v8::Value> function_name = original_function->GetDebugName();
   if (!function_name.IsEmpty() && function_name->IsString()) {
     dict.Add("functionName", ToCoreString(context->GetIsolate(),
                                           function_name.As<v8::String>()));
   }
-  ThreadDebugger* thread_debugger = ThreadDebugger::From(context->GetIsolate());
-  DCHECK(thread_debugger);
-  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
-  DCHECK(inspector);
-  dict.Add("isolate", inspector->isolateId());
+  dict.Add("isolate",
+           String::Number(thread_debugger->GetV8Inspector()->isolateId()));
   SourceLocation* location =
       CaptureSourceLocation(context->GetIsolate(), original_function);
   dict.Add("scriptId", String::Number(location->ScriptId()));
