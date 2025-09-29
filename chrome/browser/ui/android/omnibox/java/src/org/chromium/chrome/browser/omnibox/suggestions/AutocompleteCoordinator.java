@@ -55,7 +55,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Coordinator that handles the interactions with the autocomplete system. */
@@ -68,7 +67,7 @@ public class AutocompleteCoordinator
     private final AutocompleteMediator mMediator;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final OmniboxSuggestionsDropdownAdapter mAdapter;
-    private final Optional<PreWarmingRecycledViewPool> mRecycledViewPool;
+    private final @Nullable PreWarmingRecycledViewPool mRecycledViewPool;
     private @Nullable OmniboxSuggestionsContainer mContainer;
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
     private final ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
@@ -178,9 +177,9 @@ public class AutocompleteCoordinator
         mAdapter = new OmniboxSuggestionsDropdownAdapter(listItems);
 
         if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-            mRecycledViewPool = Optional.of(new PreWarmingRecycledViewPool(mAdapter, context));
+            mRecycledViewPool = new PreWarmingRecycledViewPool(mAdapter, context);
         } else {
-            mRecycledViewPool = Optional.empty();
+            mRecycledViewPool = null;
         }
 
         // https://crbug.com/966227 Set initial layout direction ahead of inflating the suggestions.
@@ -189,7 +188,9 @@ public class AutocompleteCoordinator
 
     /** Clean up resources used by this class. */
     public void destroy() {
-        mRecycledViewPool.ifPresent(p -> p.destroy());
+        if (mRecycledViewPool != null) {
+            mRecycledViewPool.destroy();
+        }
         mProfileSupplier.removeObserver(mProfileChangeCallback);
         mMediator.destroy();
         if (mContainer != null) {
@@ -234,7 +235,9 @@ public class AutocompleteCoordinator
                         container.findViewById(R.id.omnibox_suggestions_dropdown);
 
                 dropdown.setAdapter(mAdapter);
-                mRecycledViewPool.ifPresent(p -> dropdown.setRecycledViewPool(p));
+                if (mRecycledViewPool != null) {
+                    dropdown.setRecycledViewPool(mRecycledViewPool);
+                }
                 mHolder = new SuggestionListViewHolder(suggestionsContainer, dropdown);
                 for (int i = 0; i < mCallbacks.size(); i++) {
                     mCallbacks.get(i).onResult(mHolder);
@@ -300,7 +303,9 @@ public class AutocompleteCoordinator
     /** Signals that native initialization has completed. */
     public void onNativeInitialized() {
         mMediator.onNativeInitialized();
-        mRecycledViewPool.ifPresent(p -> p.onNativeInitialized());
+        if (mRecycledViewPool != null) {
+            mRecycledViewPool.onNativeInitialized();
+        }
     }
 
     /**
