@@ -160,15 +160,12 @@ class TopBackgroundView : public views::View {
     const SkColor background_color =
         GetColorProvider()->GetColor(kColorOmniboxResultsBackground);
 
-    if (GetVisible()) {
-      // Paint a stroke of the background color as a 1 px border to hide the
-      // underlying antialiased location bar/toolbar edge.  The round rect here
-      // is not antialiased, since the goal is to completely cover the
-      // underlying pixels, and AA would let those on the edge partly bleed
-      // through.
-      SetBackground(location_bar_->CreateRoundRectBackground(
-          SK_ColorTRANSPARENT, background_color, SkBlendMode::kSrc, false));
-    }
+    // Paint a stroke of the background color as a 1 px border to hide the
+    // underlying antialiased location bar/toolbar edge.  The round rect here is
+    // not antialiased, since the goal is to completely cover the underlying
+    // pixels, and AA would let those on the edge partly bleed through.
+    SetBackground(location_bar_->CreateRoundRectBackground(
+        SK_ColorTRANSPARENT, background_color, SkBlendMode::kSrc, false));
   }
 
 #if !defined(USE_AURA)

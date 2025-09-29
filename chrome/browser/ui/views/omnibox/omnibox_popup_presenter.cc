@@ -32,51 +32,59 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
   OmniboxPopupWebContentsHelper::CreateForWebContents(GetWebContents());
   OmniboxPopupWebContentsHelper::FromWebContents(GetWebContents())
       ->set_omnibox_controller(controller);
+
   LoadInitialURL(GURL(chrome::kChromeUIOmniboxPopupURL));
 
-  location_bar_observation_.Observe(location_bar_view_);
-
-  widget_ =
-      std::make_unique<ThemeCopyingWidget>(location_bar_view_->GetWidget());
-
-  const views::Widget* parent_widget = location_bar_view_->GetWidget();
-  views::Widget::InitParams params(
-      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_POPUP);
-
-#if BUILDFLAG(IS_WIN)
-  // On Windows use the software compositor to ensure that we don't block
-  // the UI thread during command buffer creation. See http://crbug.com/125248
-  params.force_software_compositing = true;
-#endif
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.parent = parent_widget->GetNativeView();
-  params.context = parent_widget->GetNativeWindow();
-
-  RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, widget_.get());
-  widget_->Init(std::move(params));
-  widget_->SetContentsView(
-      std::make_unique<RoundedOmniboxResultsFrame>(this, location_bar_view_));
-  // On Show(), the widget height can not be 0 or else the compositor thinks
-  // the webview is hidden and will not calculate its preferred size.
-  SetWidgetContentHeight(1);
+  location_bar_view_->AddObserver(this);
 }
 
-OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;
+OmniboxPopupPresenter::~OmniboxPopupPresenter() {
+  location_bar_view_->RemoveObserver(this);
+  ReleaseWidget(false);
+}
 
 void OmniboxPopupPresenter::Show() {
-  widget_->Show();
+  if (!widget_) {
+    widget_ = new ThemeCopyingWidget(location_bar_view_->GetWidget());
+
+    const views::Widget* parent_widget = location_bar_view_->GetWidget();
+    views::Widget::InitParams params(
+        views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+        views::Widget::InitParams::TYPE_POPUP);
+#if BUILDFLAG(IS_WIN)
+    // On Windows use the software compositor to ensure that we don't block
+    // the UI thread during command buffer creation. See http://crbug.com/125248
+    params.force_software_compositing = true;
+#endif
+    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+    params.parent = parent_widget->GetNativeView();
+    params.context = parent_widget->GetNativeWindow();
+
+    RoundedOmniboxResultsFrame::OnBeforeWidgetInit(&params, widget_);
+
+    widget_->Init(std::move(params));
+
+    widget_->ShowInactive();
+
+    widget_->SetContentsView(
+        std::make_unique<RoundedOmniboxResultsFrame>(this, location_bar_view_));
+    widget_->AddObserver(this);
+
+    // On Show(), the widget height can not be 0 or else the compositor thinks
+    // the webview is hidden and will not calculate its preferred size.
+    SetWidgetContentHeight(1);
+  }
 }
 
 void OmniboxPopupPresenter::Hide() {
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {
-    widget_->Hide();
+    ReleaseWidget(true);
   }
 }
 
 bool OmniboxPopupPresenter::IsShown() const {
-  return widget_ && widget_->IsVisible();
+  return !!widget_;
 }
 
 WebuiOmniboxHandler* OmniboxPopupPresenter::GetHandler() {
@@ -102,6 +110,12 @@ void OmniboxPopupPresenter::AddedToWidget() {
   gfx::RoundedCornersF rounded_corner_radii =
       gfx::RoundedCornersF(0, 0, corner_radius, corner_radius);
   holder()->SetCornerRadii(rounded_corner_radii);
+}
+
+void OmniboxPopupPresenter::OnWidgetDestroyed(views::Widget* widget) {
+  if (widget == widget_) {
+    widget_ = nullptr;
+  }
 }
 
 void OmniboxPopupPresenter::SetWidgetContentHeight(int content_height) {
@@ -142,6 +156,27 @@ bool OmniboxPopupPresenter::IsHandlerReady() {
       GetWebContents()->GetWebUI()->GetController());
   return omnibox_popup_ui->handler() &&
          omnibox_popup_ui->handler()->IsRemoteBound();
+}
+
+void OmniboxPopupPresenter::ReleaseWidget(bool close) {
+  if (widget_) {
+    // Avoid possibility of dangling raw_ptr by nulling before cleanup.
+    views::Widget* widget = widget_;
+    widget_ = nullptr;
+
+    widget->RemoveObserver(this);
+    if (close) {
+      // Ensure we close `widget_` synchronously.  This is necessary as the
+      // `widget_`'s contents view has dependencies on the hosting widget's
+      // BrowserView (see `SetContentsView()` above). Since the popup widget is
+      // owned by its NativeWidget there is a risk of dangling pointers if it is
+      // not destroyed synchronously with its parent.
+      // TODO(crbug.com/40232479): Once this is migrated to CLIENT_OWNS_WIDGET
+      // this will no longer be necessary.
+      widget->CloseNow();
+    }
+  }
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 BEGIN_METADATA(OmniboxPopupPresenter)
