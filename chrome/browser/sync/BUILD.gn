@@ -172,6 +172,7 @@ source_set("sync") {
     ]
     deps += [
       "//chrome/browser/sync/android:jni_headers",
+      "//chrome/browser/tab",
       "//chrome/browser/ui/android/tab_model",
     ]
   } else {
