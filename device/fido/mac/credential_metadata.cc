@@ -9,8 +9,7 @@
 
 #include "device/fido/mac/credential_metadata.h"
 
-#include <ostream>
-#include <string_view>
+#include <array>
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -19,10 +18,10 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "crypto/hash.h"
+#include "crypto/kdf.h"
+#include "crypto/random.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "third_party/boringssl/src/include/openssl/digest.h"
-#include "third_party/boringssl/src/include/openssl/hkdf.h"
-#include "third_party/boringssl/src/include/openssl/rand.h"
 
 namespace device::fido::mac {
 
@@ -115,15 +114,11 @@ std::optional<crypto::Aead::AeadAlgorithm> Cryptor::ToAeadAlgorithm(
 }
 
 std::string Cryptor::DeriveKey(Algorithm alg) const {
-  static constexpr size_t kKeyLength = 32u;
-  std::string key;
-  const uint8_t info = static_cast<uint8_t>(alg);
-  const bool hkdf_init =
-      ::HKDF(reinterpret_cast<uint8_t*>(base::WriteInto(&key, kKeyLength + 1)),
-             kKeyLength, EVP_sha256(),
-             reinterpret_cast<const uint8_t*>(secret_.data()), secret_.size(),
-             nullptr /* salt */, 0, &info, 1);
-  DCHECK(hkdf_init);
+  std::string key(32u, 0);
+  const std::array<uint8_t, 1> info = {static_cast<uint8_t>(alg)};
+  const base::span<const uint8_t> no_salt;
+  crypto::kdf::Hkdf(crypto::hash::kSha256, base::as_byte_span(secret_), no_salt,
+                    info, base::as_writable_byte_span(key));
   return key;
 }
 
@@ -190,11 +185,8 @@ bool CredentialMetadata::operator==(const CredentialMetadata& other) const {
 }
 
 std::string GenerateCredentialMetadataSecret() {
-  static constexpr size_t kSecretSize = 32u;
-  std::string secret;
-  RAND_bytes(
-      reinterpret_cast<uint8_t*>(base::WriteInto(&secret, kSecretSize + 1)),
-      kSecretSize);
+  std::string secret(32u, 0);
+  crypto::RandBytes(base::as_writable_byte_span(secret));
   return secret;
 }
 
@@ -238,7 +230,7 @@ std::vector<uint8_t> SealCredentialMetadata(
   DCHECK(pt);
 
   std::vector<uint8_t> nonce(kNonceLength);
-  RAND_bytes(nonce.data(), nonce.size());  // RAND_bytes always returns 1.
+  crypto::RandBytes(nonce);
   const std::vector<uint8_t> ct =
       Cryptor(secret).Seal(Cryptor::Algorithm::kAes256Gcm, nonce, *pt,
                            MakeAad(metadata.version, rp_id));
@@ -470,8 +462,7 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
   }
   auto nonce_begin = result.insert(result.end(), 12, 0);
   base::span<uint8_t> nonce(nonce_begin, result.end());
-  DCHECK_EQ(nonce.size(), 12u);
-  RAND_bytes(nonce.data(), nonce.size());  // RAND_bytes always returns 1.
+  crypto::RandBytes(nonce);
 
   // Only V1 includes the `is_resident` bit. `sign_counter_type=kTimestamp` was
   // implicit before V3 and thus not encoded.
