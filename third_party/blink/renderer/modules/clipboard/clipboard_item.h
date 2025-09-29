@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -18,7 +19,7 @@ class ScriptState;
 // A `ClipboardItem` holds data that was read from or will be written to the
 // system clipboard. Spec:
 // https://w3c.github.io/clipboard-apis/#clipboard-item-interface
-class ClipboardItem final : public ScriptWrappable {
+class MODULES_EXPORT ClipboardItem final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

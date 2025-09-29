@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -193,6 +194,9 @@ class MODULES_EXPORT ClipboardPromise final
   Vector<String> write_custom_format_types_;
   // Stores the types provided by the web authors.
   Vector<String> write_clipboard_item_types_;
+  // Stores the types that the web author requested to receive for a clipboard
+  // read operation
+  std::optional<HashSet<String>> read_clipboard_item_types_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

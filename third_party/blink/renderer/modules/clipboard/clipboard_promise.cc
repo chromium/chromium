@@ -265,6 +265,18 @@ void ClipboardPromise::HandleRead(ClipboardReadOptions* options) {
     will_read_unprocessed_html_ = true;
   }
 
+  if (RuntimeEnabledFeatures::SelectiveClipboardFormatReadEnabled() &&
+      options && options->hasTypes()) {
+    read_clipboard_item_types_ = HashSet<String>();
+    if (options->types().has_value()) {
+      const auto& types = options->types();
+      for (const String& type : *types) {
+        if (ClipboardItem::supports(type)) {
+          read_clipboard_item_types_->insert(type);
+        }
+      }
+    }
+  }
   ValidatePreconditions(mojom::blink::PermissionName::CLIPBOARD_READ,
                         /*will_be_sanitized=*/false,
                         BindOnce(&ClipboardPromise::HandleReadWithPermission,
@@ -391,9 +403,22 @@ void ClipboardPromise::OnReadAvailableFormatNames(
     return;
   }
 
-  clipboard_item_data_.ReserveInitialCapacity(format_names.size());
+  const bool check_types_to_read =
+      RuntimeEnabledFeatures::SelectiveClipboardFormatReadEnabled() &&
+      read_clipboard_item_types_.has_value();
+  if (check_types_to_read && read_clipboard_item_types_->empty()) {
+    ResolveRead();  // No supported types to read.
+    return;
+  }
+
+  clipboard_item_data_.ReserveInitialCapacity(
+      check_types_to_read
+          ? std::min(format_names.size(), read_clipboard_item_types_->size())
+          : format_names.size());
   for (const String& format_name : format_names) {
-    if (ClipboardItem::supports(format_name)) {
+    if (ClipboardItem::supports(format_name) &&
+        (!check_types_to_read ||
+         read_clipboard_item_types_->Contains(format_name))) {
       clipboard_item_data_.emplace_back(format_name,
                                         /* Placeholder value. */ nullptr);
     }
