@@ -369,22 +369,6 @@ TEST_F(RasterImplementationGLESTest, DeleteGpuRasterTexture) {
   ri_->DeleteGpuRasterTexture(kTextureId);
 }
 
-TEST_F(RasterImplementationGLESTest, BeginSharedImageAccess) {
-  const GLuint kTextureId = 23;
-  EXPECT_CALL(*gl_,
-              BeginSharedImageAccessDirectCHROMIUM(
-                  kTextureId, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM))
-      .Times(1);
-  ri_->BeginSharedImageAccessDirectCHROMIUM(
-      kTextureId, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-}
-
-TEST_F(RasterImplementationGLESTest, EndSharedImageAccess) {
-  const GLuint kTextureId = 23;
-  EXPECT_CALL(*gl_, EndSharedImageAccessDirectCHROMIUM(kTextureId)).Times(1);
-  ri_->EndSharedImageAccessDirectCHROMIUM(kTextureId);
-}
-
 TEST_F(RasterImplementationGLESTest, BeginGpuRaster) {
   EXPECT_CALL(*gl_, TraceBeginCHROMIUM(StrEq("BeginGpuRaster"),
                                        StrEq("GpuRasterization")))

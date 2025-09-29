@@ -200,7 +200,7 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   const auto& src_row_bytes = src_sk_pixmap.rowBytes();
   DCHECK_GE(src_row_bytes, src_info.minRowBytes());
   GLuint texture_id = CreateAndConsumeForGpuRaster(dest_mailbox);
-  BeginSharedImageAccessDirectCHROMIUM(
+  gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
 
   GLint old_align = 0;
@@ -218,7 +218,7 @@ void RasterImplementationGLES::WritePixels(const gpu::Mailbox& dest_mailbox,
   gl_->PixelStorei(GL_UNPACK_ROW_LENGTH, 0);
   gl_->PixelStorei(GL_UNPACK_ALIGNMENT, old_align);
 
-  EndSharedImageAccessDirectCHROMIUM(texture_id);
+  gl_->EndSharedImageAccessDirectCHROMIUM(texture_id);
   DeleteGpuRasterTexture(texture_id);
 }
 
@@ -304,7 +304,7 @@ void RasterImplementationGLES::ReadbackARGBPixelsAsync(
       dst_info.colorType() == kRGBA_8888_SkColorType ? GL_RGBA : GL_BGRA_EXT;
   gfx::Size dst_gfx_size(dst_info.width(), dst_info.height());
   GLuint texture_id = CreateAndConsumeForGpuRaster(source_mailbox);
-  BeginSharedImageAccessDirectCHROMIUM(
+  gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
 
   // Convert bottom-left GL coordinates to top-left coordinates expected
@@ -344,7 +344,7 @@ void RasterImplementationGLES::OnReadARGBPixelsAsync(
     base::OnceCallback<void(bool)> readback_done,
     bool success) {
   DCHECK(texture_id);
-  EndSharedImageAccessDirectCHROMIUM(texture_id);
+  gl_->EndSharedImageAccessDirectCHROMIUM(texture_id);
   DeleteGpuRasterTexture(texture_id);
 
   std::move(readback_done).Run(success);
@@ -366,7 +366,7 @@ void RasterImplementationGLES::ReadbackYUVPixelsAsync(
     base::OnceCallback<void()> release_mailbox,
     base::OnceCallback<void(bool)> readback_done) {
   GLuint shared_texture_id = CreateAndConsumeForGpuRaster(source_mailbox);
-  BeginSharedImageAccessDirectCHROMIUM(
+  gl_->BeginSharedImageAccessDirectCHROMIUM(
       shared_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
   base::OnceCallback<void()> on_release_mailbox =
       base::BindOnce(&RasterImplementationGLES::OnReleaseMailbox,
@@ -432,7 +432,7 @@ void RasterImplementationGLES::OnReleaseMailbox(
   DCHECK(shared_texture_id);
   DCHECK(!release_mailbox.is_null());
 
-  EndSharedImageAccessDirectCHROMIUM(shared_texture_id);
+  gl_->EndSharedImageAccessDirectCHROMIUM(shared_texture_id);
   DeleteGpuRasterTexture(shared_texture_id);
   std::move(release_mailbox).Run();
 }
@@ -494,17 +494,6 @@ void RasterImplementationGLES::EndGpuRaster() {
 
   // Reset cached raster state.
   gl_->ActiveTexture(GL_TEXTURE0);
-}
-
-void RasterImplementationGLES::BeginSharedImageAccessDirectCHROMIUM(
-    GLuint texture,
-    GLenum mode) {
-  gl_->BeginSharedImageAccessDirectCHROMIUM(texture, mode);
-}
-
-void RasterImplementationGLES::EndSharedImageAccessDirectCHROMIUM(
-    GLuint texture) {
-  gl_->EndSharedImageAccessDirectCHROMIUM(texture);
 }
 
 void RasterImplementationGLES::TraceBeginCHROMIUM(const char* category_name,
