@@ -303,6 +303,14 @@ public class IntentHandler {
     /** The package name for the Google Search App. */
     public static final String PACKAGE_GSA = GSAUtils.GSA_PACKAGE_NAME;
 
+    /** Action to launch the Chrome Item Picker UI, e.g.: tabs. */
+    public static final String EXTRA_OPEN_CHROME_ITEM_PICKER =
+            "org.chromium.chrome.browser.actions.open_chrome_item_picker";
+
+    /** Optional extra for the maximum number of items the user can select. */
+    public static final String EXTRA_ITEM_PICKER_MAX_SELECTABLE_ITEMS =
+            "org.chromium.chrome.browser.extras.item_picker_max_selectable_items";
+
     private static @Nullable Pair<Integer, String> sPendingReferrer;
     private static int sReferrerId;
     private static @Nullable String sPendingIncognitoUrl;

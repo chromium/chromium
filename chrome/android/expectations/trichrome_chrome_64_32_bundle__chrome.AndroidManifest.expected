@@ -188,6 +188,12 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>  # DIFF-ANCHOR: 38d9d906
     </activity>  # DIFF-ANCHOR: 2b0ee4cd
+    <activity  # DIFF-ANCHOR: 81783ca5
+        android:name="org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.WithWindowAnimation">
+    </activity>  # DIFF-ANCHOR: 81783ca5
     <activity  # DIFF-ANCHOR: 44266a6a
         android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|navigation|density|touchscreen|colorMode"
