@@ -13,6 +13,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -106,7 +107,10 @@ class UpdateDialogDelegate : public ui::DialogModelDelegate,
     browser_->GetBrowserView().SetProperty(kIsPwaUpdateDialogShowingKey, true);
   }
   ~UpdateDialogDelegate() override {
-    browser_->GetBrowserView().SetProperty(kIsPwaUpdateDialogShowingKey, false);
+    if (browser_->window()) {
+      browser_->GetBrowserView().SetProperty(kIsPwaUpdateDialogShowingKey,
+                                             false);
+    }
   }
 
   void OnAcceptButtonClicked() {
@@ -312,17 +316,19 @@ void ShowWebAppReviewUpdateDialog(const webapps::AppId& app_id,
                           /*n=*/1,
                           /*vertical_resize=*/views::TableLayout::kFixedSize,
                           /*height=*/0)
-                      .AddChildren(
-                          views::Builder<WebAppUpdateIdentityView>(
-                              std::make_unique<WebAppUpdateIdentityView>(
-                                  update.MakeOldIdentity())),
-                          views::Builder<views::ImageView>().SetImage(
-                              ui::ImageModel::FromVectorIcon(
-                                  vector_icons::kForwardArrowIcon,
-                                  ui::kColorIcon, kArrowIconSizeDp)),
-                          views::Builder<WebAppUpdateIdentityView>(
-                              std::make_unique<WebAppUpdateIdentityView>(
-                                  update.MakeNewIdentity())))
+                      // Using AddChildren() here leads to the evaluation order
+                      // reversed on Windows, making it harder to test
+                      // consistently.
+                      .AddChild(views::Builder<WebAppUpdateIdentityView>(
+                          std::make_unique<WebAppUpdateIdentityView>(
+                              update.MakeOldIdentity())))
+                      .AddChild(views::Builder<views::ImageView>().SetImage(
+                          ui::ImageModel::FromVectorIcon(
+                              vector_icons::kForwardArrowIcon, ui::kColorIcon,
+                              kArrowIconSizeDp)))
+                      .AddChild(views::Builder<WebAppUpdateIdentityView>(
+                          std::make_unique<WebAppUpdateIdentityView>(
+                              update.MakeNewIdentity())))
                       .SetMinimumSize(gfx::Size(
                           layout_provider->GetDistanceMetric(
                               views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH),

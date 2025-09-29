@@ -4,26 +4,44 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_update_review_dialog.h"
 
+#include <optional>
+#include <vector>
+
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_update_identity_view.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/proto/web_app.to_value.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/url_formatter/elide_url.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -31,12 +49,14 @@
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gfx/test/sk_gmock_support.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/root_view.h"
 #include "url/gurl.h"
@@ -64,14 +84,11 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
     web_app_info->icon_bitmaps.any[kIconSizeForUpdateDialog] = old_icon_;
     web_app_info->trusted_icon_bitmaps.any[kIconSizeForUpdateDialog] =
         old_icon_;
-    app_id_ = web_app::test::InstallWebApp(browser()->profile(),
-                                           std::move(web_app_info));
+    app_id_ = web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     update_.old_title = u"Abc";
     update_.old_icon = gfx::Image::CreateFrom1xBitmap(old_icon_);
     update_.old_start_url = kTestUrl;
   }
-
-  void TearDownOnMainThread() override { provider_ = nullptr; }
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -93,6 +110,8 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
                                           dialog_result_.GetCallback());
   }
 
+  Profile* profile() { return browser()->profile(); }
+
   bool VerifyUi() override {
     if (!DialogBrowserTest::VerifyUi()) {
       return false;
@@ -104,13 +123,10 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
   }
 
  protected:
-  raw_ptr<web_app::WebAppProvider> provider_ = nullptr;
   SkBitmap old_icon_;
   SkBitmap new_icon_;
-
   WebAppIdentityUpdate update_;
   std::string app_id_;
-
   base::test::TestFuture<WebAppIdentityUpdateResult> dialog_result_;
 };
 
@@ -217,6 +233,189 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, ShowWhileAlreadyShowing) {
   EXPECT_EQ(update_result.Get(), WebAppIdentityUpdateResult::kUnexpectedError);
 
   dialog_widget->Close();
+}
+
+struct DialogNames {
+  std::u16string from_name;
+  std::u16string to_name;
+};
+
+// Move operations only for simplicity.
+struct DialogIcons {
+  DialogIcons() = default;
+  ~DialogIcons() = default;
+  DialogIcons(DialogIcons&&) = default;
+  DialogIcons& operator=(DialogIcons&&) = default;
+
+  SkBitmap from_icon_bitmap;
+  SkBitmap to_icon_bitmap;
+};
+
+// Test class that verifies the E2E flow of the dialog showing up after being
+// clicked from the app window's 3-dot menu.
+class WebAppUpdateReviewDialogFromMenuItem : public WebAppUpdateReviewDialog {
+ public:
+  WebAppUpdateReviewDialogFromMenuItem() = default;
+  WebAppUpdateReviewDialogFromMenuItem(
+      const WebAppUpdateReviewDialogFromMenuItem&) = delete;
+  WebAppUpdateReviewDialogFromMenuItem& operator=(
+      const WebAppUpdateReviewDialogFromMenuItem&) = delete;
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
+
+  void ShowUi(const std::string& name) override {
+    // Install the app and trigger a navigation.
+    WebAppProvider* provider = WebAppProvider::GetForTest(profile());
+    const GURL app_url =
+        embedded_https_test_server().GetURL("/web_apps/updating/index.html");
+    const webapps::AppId app_id =
+        InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
+    Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+    // TODO(crbug.com/442643377): Delete this wait after the update runs for
+    // every navigation.
+    provider->command_manager().AwaitAllCommandsCompleteForTesting();
+    EXPECT_NE(app_browser, nullptr);
+
+    // Trigger an update, verify pending update info stored.
+    const GURL update_url = embedded_https_test_server().GetURL(
+        "/web_apps/updating/new_icon_page_masking.html");
+    {
+      UpdateAwaiter awaiter(provider->install_manager());
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
+      awaiter.AwaitUpdate();
+      provider->command_manager().AwaitAllCommandsCompleteForTesting();
+    }
+
+    const WebApp* old_web_app = provider->registrar_unsafe().GetAppById(app_id);
+    EXPECT_TRUE(old_web_app->pending_update_info().has_value());
+    old_name_ = base::UTF8ToUTF16(old_web_app->untranslated_name());
+
+    // Mimic the "click" on the menu entry for app updating, verify the update
+    // dialog shows up.
+    views::NamedWidgetShownWaiter update_dialog_waiter(
+        views::test::AnyWidgetTestPasskey(), "WebAppUpdateReviewDialog");
+    WebAppMenuModel model(/*provider=*/nullptr, app_browser);
+    model.Init();
+    model.ExecuteCommand(IDC_WEB_APP_UPGRADE_DIALOG, /*event_flags=*/0);
+    dialog_widget_ = update_dialog_waiter.WaitIfNeededAndGet();
+    ASSERT_TRUE(dialog_widget_ != nullptr);
+  }
+
+  bool VerifyUi() override {
+    // Verify names on the dialog.
+    DialogNames names = GetNamesFromDialog();
+    EXPECT_EQ(old_name_, names.from_name);
+    EXPECT_EQ(u"Web app update with masking", names.to_name);
+
+    // Verify the icons on the dialog.
+    DialogIcons icons = GetIconsFromDialog();
+    EXPECT_THAT(icons.from_icon_bitmap,
+                gfx::test::IsCloseToBitmap(
+                    LoadExpectedBitmapFromDisk(GetFromIconFilePath()),
+                    /*max_per_channel_deviation=*/3));
+    EXPECT_THAT(icons.to_icon_bitmap,
+                gfx::test::IsCloseToBitmap(
+                    LoadExpectedBitmapFromDisk(GetToIconFilePath()),
+                    /*max_per_channel_deviation=*/3));
+
+    return true;
+  }
+
+  // Clean up the raw pointers to prevent them from dangling. It's fine to
+  // skip calling of DialogBrowserTest::DismissUi() because we don't really
+  // need to "close" the UX, that will be cleaned up as part of the test
+  // teardown.
+  void DismissUi() override { dialog_widget_ = nullptr; }
+
+ private:
+  // Returns the collection of views in `dialog_widget_` corresponding to
+  // element identifier `id`.
+  std::vector<views::View*> GetViewsFromDialog(ui::ElementIdentifier id) {
+    views::ElementTrackerViews* tracker_views =
+        views::ElementTrackerViews::GetInstance();
+    ui::ElementContext context =
+        views::ElementTrackerViews::GetContextForWidget(dialog_widget_);
+    return tracker_views->GetAllMatchingViews(id, context);
+  }
+
+  SkBitmap LoadExpectedBitmapFromDisk(const base::FilePath& file_path) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath image_path =
+        base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+            .Append(file_path);
+    std::optional<std::vector<uint8_t>> png_data =
+        base::ReadFileToBytes(image_path);
+    CHECK(png_data.has_value());
+    SkBitmap read_bitmap =
+        gfx::Image::CreateFrom1xPNGBytes(base::as_byte_span(*png_data))
+            .AsBitmap();
+    CHECK_EQ(read_bitmap.width(), web_app::kIconSizeForUpdateDialog);
+    return read_bitmap;
+  }
+
+  // Icons will be masked on Mac and ChromeOS.
+  const base::FilePath GetToIconFilePath() {
+#if BUILDFLAG(IS_MAC)
+    return base::FilePath(FILE_PATH_LITERAL(
+        "chrome/test/data/web_apps/updating/green-masked-mac-96.png"));
+#elif BUILDFLAG(IS_CHROMEOS)
+    return base::FilePath(FILE_PATH_LITERAL(
+        "chrome/test/data/web_apps/updating/green-masked-chromeos-96.png"));
+#else
+    return base::FilePath(
+        FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/green-96.png"));
+#endif
+  }
+
+  const base::FilePath GetFromIconFilePath() {
+    return base::FilePath(
+        FILE_PATH_LITERAL("chrome/test/data/web_apps/updating/from_icon.png"));
+  }
+
+  // Returns the name of the apps on the dialog, and verifies that there should
+  // only be 2 names on the dialog.
+  DialogNames GetNamesFromDialog() {
+    DialogNames names;
+    auto name_labels =
+        GetViewsFromDialog(web_app::WebAppUpdateIdentityView::kNameLabelId);
+    EXPECT_EQ(2u, name_labels.size());
+
+    views::Label* from_label = static_cast<views::Label*>(name_labels[0]);
+    views::Label* to_label = static_cast<views::Label*>(name_labels[1]);
+    names.from_name = from_label->GetText();
+    names.to_name = to_label->GetText();
+    return names;
+  }
+
+  // Returns the icons of the apps on the dialog, and verifies that there should
+  // only be 2 icons on the dialog.
+  DialogIcons GetIconsFromDialog() {
+    DialogIcons icons;
+    auto icon_labels =
+        GetViewsFromDialog(web_app::WebAppUpdateIdentityView::kIconLabelId);
+    EXPECT_EQ(2u, icon_labels.size());
+
+    views::ImageView* from_icon =
+        static_cast<views::ImageView*>(icon_labels[0]);
+    views::ImageView* to_icon = static_cast<views::ImageView*>(icon_labels[1]);
+    EXPECT_FALSE(from_icon->GetImageModel().IsEmpty());
+    EXPECT_FALSE(to_icon->GetImageModel().IsEmpty());
+    icons.from_icon_bitmap = *from_icon->GetImage().bitmap();
+    icons.to_icon_bitmap = *to_icon->GetImage().bitmap();
+    return icons;
+  }
+
+  std::u16string old_name_;
+  raw_ptr<views::Widget> dialog_widget_ = nullptr;
+  OsIntegrationTestOverrideBlockingRegistration override_registration_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kWebAppPredictableAppUpdating};
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialogFromMenuItem, InvokeUi) {
+  ShowAndVerifyUi();
 }
 
 }  // namespace

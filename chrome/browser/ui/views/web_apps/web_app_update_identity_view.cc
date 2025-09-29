@@ -34,9 +34,13 @@ WebAppUpdateIdentityView::WebAppUpdateIdentityView(
   icon_view->SetImageSize(
       gfx::Size(kIconSizeForUpdateDialog, kIconSizeForUpdateDialog));
   icon_view->SetImage(ui::ImageModel::FromImage(identity.icon));
+  icon_view->SetProperty(views::kElementIdentifierKey,
+                         WebAppUpdateIdentityView::kIconLabelId);
 
   auto* name_label = AddChildView(web_app::CreateNameLabel(identity.title));
   name_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  name_label->SetProperty(views::kElementIdentifierKey,
+                          WebAppUpdateIdentityView::kNameLabelId);
 
   auto* origin_label = AddChildView(web_app::CreateOriginLabelFromStartUrl(
       identity.start_url, /*is_primary_text=*/false));
@@ -47,5 +51,8 @@ WebAppUpdateIdentityView::~WebAppUpdateIdentityView() = default;
 
 BEGIN_METADATA(WebAppUpdateIdentityView)
 END_METADATA
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppUpdateIdentityView, kIconLabelId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebAppUpdateIdentityView, kNameLabelId);
 
 }  // namespace web_app

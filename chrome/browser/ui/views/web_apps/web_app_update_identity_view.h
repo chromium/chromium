@@ -17,6 +17,9 @@ class WebAppUpdateIdentityView : public views::View {
   METADATA_HEADER(WebAppUpdateIdentityView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kNameLabelId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIconLabelId);
+
   explicit WebAppUpdateIdentityView(const WebAppIdentity& identity);
 
   WebAppUpdateIdentityView(const WebAppUpdateIdentityView&) = delete;
