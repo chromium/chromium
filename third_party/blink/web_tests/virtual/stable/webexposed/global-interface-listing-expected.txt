@@ -7586,12 +7586,14 @@ interface RestrictionTarget
     method constructor
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
+    getter download
     getter href
     getter interestForElement
     getter rel
     getter relList
     getter target
     method constructor
+    setter download
     setter interestForElement
     setter rel
     setter relList

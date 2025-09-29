@@ -4824,7 +4824,7 @@
     },
     {
       name: "SvgAnchorElementDownloadAttribute",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgAnchorElementRelAttributes",

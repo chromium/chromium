@@ -1564,6 +1564,7 @@ namespace http://www.w3.org/2000/svg
     property webkitRequestFullscreen
     property when
 svg element a
+    property download
     property farthestViewportElement
     property getBBox
     property getCTM
