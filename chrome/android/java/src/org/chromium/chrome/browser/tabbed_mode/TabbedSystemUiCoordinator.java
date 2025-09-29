@@ -24,7 +24,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -75,7 +74,7 @@ public class TabbedSystemUiCoordinator {
             Supplier<SnackbarManager> snackbarManagerSupplier,
             ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
-            Optional<OmniboxSuggestionsVisualState> omniboxSuggestionsVisualState,
+            @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
             ManualFillingComponentSupplier manualFillingComponentSupplier,
             ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,

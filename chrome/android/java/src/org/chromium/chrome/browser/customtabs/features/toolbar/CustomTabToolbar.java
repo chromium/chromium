@@ -157,7 +157,6 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -2685,8 +2684,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState() {
-            return Optional.empty();
+        public @Nullable OmniboxSuggestionsVisualState getOmniboxSuggestionsVisualState() {
+            return null;
         }
 
         @Override

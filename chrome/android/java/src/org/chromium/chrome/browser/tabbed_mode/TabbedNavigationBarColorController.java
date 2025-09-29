@@ -57,7 +57,6 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /** Controls the bottom system navigation bar color for the provided {@link Window}. */
@@ -155,7 +154,7 @@ class TabbedNavigationBarColorController
             Supplier<SnackbarManager> snackbarManagerSupplier,
             ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             BottomSheetController bottomSheetController,
-            Optional<OmniboxSuggestionsVisualState> omniboxSuggestionsVisualState,
+            @Nullable OmniboxSuggestionsVisualState omniboxSuggestionsVisualState,
             ManualFillingComponentSupplier manualFillingComponentSupplier,
             ObservableSupplier<Integer> overviewColorSupplier,
             InsetObserver insetObserver,

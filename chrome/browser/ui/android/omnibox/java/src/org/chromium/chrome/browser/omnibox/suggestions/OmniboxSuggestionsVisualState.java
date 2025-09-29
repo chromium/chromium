@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import org.chromium.build.annotations.NullMarked;
-
-import java.util.Optional;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver;
 
 /**
  * A class that can be observed to be notified of changes to the visual state of the omnibox
@@ -20,6 +20,5 @@ public interface OmniboxSuggestionsVisualState {
      * suggestions. To simply remove the current observer, pass in an empty Optional.
      */
     void setOmniboxSuggestionsVisualStateObserver(
-            Optional<AutocompleteCoordinator.OmniboxSuggestionsVisualStateObserver>
-                    omniboxSuggestionsVisualStateObserver);
+            @Nullable OmniboxSuggestionsVisualStateObserver omniboxSuggestionsVisualStateObserver);
 }

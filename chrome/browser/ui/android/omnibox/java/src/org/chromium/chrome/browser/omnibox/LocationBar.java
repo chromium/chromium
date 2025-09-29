@@ -14,8 +14,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualS
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
-import java.util.Optional;
-
 /** Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}. */
 @NullMarked
 public interface LocationBar {
@@ -101,7 +99,7 @@ public interface LocationBar {
     default void removeOmniboxSuggestionsDropdownScrollListener(
             OmniboxSuggestionsDropdownScrollListener listener) {}
 
-    Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState();
+    @Nullable OmniboxSuggestionsVisualState getOmniboxSuggestionsVisualState();
 
     /**
      * Toggle showing only the origin portion of the URL (as opposed to the default behavior of

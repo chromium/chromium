@@ -52,8 +52,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.insets.InsetObserver;
 
-import java.util.Optional;
-
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.NAV_BAR_COLOR_ANIMATION)
 public class BottomAttachedUiObserverTest {
@@ -145,7 +143,7 @@ public class BottomAttachedUiObserverTest {
                         mSnackbarManager,
                         mContextualSearchManagerSupplier,
                         mBottomSheetController,
-                        Optional.of(mOmniboxSuggestionsVisualState),
+                        mOmniboxSuggestionsVisualState,
                         mManualFillingComponentSupplier,
                         mInsetObserver);
         mBottomAttachedUiObserver.onInsetChanged();
@@ -939,8 +937,7 @@ public class BottomAttachedUiObserverTest {
     @Test
     public void testDestroy() {
         mBottomAttachedUiObserver.destroy();
-        verify(mOmniboxSuggestionsVisualState)
-                .setOmniboxSuggestionsVisualStateObserver(eq(Optional.empty()));
+        verify(mOmniboxSuggestionsVisualState).setOmniboxSuggestionsVisualStateObserver(eq(null));
         verify(mAccessorySheetVisualStateProvider).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mBottomSheetController).removeObserver(eq(mBottomAttachedUiObserver));
         verify(mOverlayPanelStateProvider).removeObserver(eq(mBottomAttachedUiObserver));

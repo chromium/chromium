@@ -67,7 +67,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -914,8 +913,8 @@ public class LocationBarCoordinator
      * @return The location bar's {@link OmniboxSuggestionsVisualState}.
      */
     @Override
-    public Optional<OmniboxSuggestionsVisualState> getOmniboxSuggestionsVisualState() {
-        return Optional.of(mAutocompleteCoordinator);
+    public @Nullable OmniboxSuggestionsVisualState getOmniboxSuggestionsVisualState() {
+        return mAutocompleteCoordinator;
     }
 
     /**
