@@ -513,7 +513,8 @@ std::vector<AccessibilityCharInfo> PDFiumPage::GetCharInfo() {
   const int raw_char_count = GetCharCount();
   // Treat a char count of -1 (error) as 0 (an empty page), since
   // other pages might have valid content.
-  const uint32_t char_count = std::max<uint32_t>(raw_char_count, 0);
+  const uint32_t char_count =
+      raw_char_count < 0 ? 0 : static_cast<uint32_t>(raw_char_count);
 
   std::vector<AccessibilityCharInfo> chars(char_count);
   for (uint32_t i = 0; i < char_count; ++i) {
@@ -1263,7 +1264,8 @@ void PDFiumPage::CalculateTextRuns() {
   const int raw_char_count = GetCharCount();
   // Treat a char count of -1 (error) as 0 (an empty page), since
   // other pages might have valid content.
-  const uint32_t char_count = std::max<uint32_t>(raw_char_count, 0);
+  const uint32_t char_count =
+      raw_char_count < 0 ? 0 : static_cast<uint32_t>(raw_char_count);
   uint32_t char_index = 0;
   while (char_index < char_count) {
     AccessibilityTextRunInfo text_run = GetTextRunInfoAt(char_index).value();
