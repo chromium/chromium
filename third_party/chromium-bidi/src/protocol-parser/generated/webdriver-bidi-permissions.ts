@@ -55,6 +55,7 @@ export namespace Permissions {
       descriptor: Permissions.PermissionDescriptorSchema,
       state: Permissions.PermissionStateSchema,
       origin: z.string(),
+      topLevelOrigin: z.string().optional(),
       userContext: z.string().optional(),
     }),
   );
