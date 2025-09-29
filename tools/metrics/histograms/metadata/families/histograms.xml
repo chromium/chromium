@@ -269,7 +269,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.AppRemoval"
-    enum="OnDeviceControlsAppRemoval" expires_after="2025-11-01">
+    enum="OnDeviceControlsAppRemoval" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -281,7 +281,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.BlockAppAction"
-    enum="OnDeviceControlsBlockAppAction" expires_after="2025-11-01">
+    enum="OnDeviceControlsBlockAppAction" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -294,7 +294,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.BlockedAppDialogShown"
-    enum="OnDeviceControlsBlockedAppDialog" expires_after="2025-11-01">
+    enum="OnDeviceControlsBlockedAppDialog" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -305,7 +305,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.BlockedAppsCount" units="Apps"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -316,7 +316,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.BlockedAppsEngagement" units="Apps"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -327,7 +327,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.DialogAction.{DialogType}"
-    enum="OnDeviceControlsDialogAction" expires_after="2025-11-01">
+    enum="OnDeviceControlsDialogAction" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -344,7 +344,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.PinDialogError"
-    enum="OnDeviceControlsPinDialogError" expires_after="2025-11-01">
+    enum="OnDeviceControlsPinDialogError" expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
@@ -355,7 +355,7 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
 </histogram>
 
 <histogram name="ChromeOS.OnDeviceControls.PinSetupCompleted" enum="Boolean"
-    expires_after="2025-11-01">
+    expires_after="2026-11-01">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
