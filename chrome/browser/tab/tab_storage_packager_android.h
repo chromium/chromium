@@ -1,0 +1,40 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_TAB_TAB_STORAGE_PACKAGER_ANDROID_H_
+#define CHROME_BROWSER_TAB_TAB_STORAGE_PACKAGER_ANDROID_H_
+
+#include <memory>
+#include <string>
+
+#include "base/android/scoped_java_ref.h"
+#include "chrome/browser/tab/android_tab_package.h"
+#include "chrome/browser/tab/tab_storage_package.h"
+#include "chrome/browser/tab/tab_storage_packager.h"
+#include "components/tabs/public/tab_interface.h"
+
+namespace tabs {
+
+// This class is the Android implementation of the TabStoragePackager.
+class TabStoragePackagerAndroid : public TabStoragePackager {
+ public:
+  TabStoragePackagerAndroid();
+  ~TabStoragePackagerAndroid();
+
+  TabStoragePackagerAndroid(const TabStoragePackagerAndroid&) = delete;
+  TabStoragePackagerAndroid& operator=(const TabStoragePackagerAndroid&) =
+      delete;
+
+  // TabStoragePackager overrides:
+  void Package(TabInterface* tab) override;
+  std::unique_ptr<TabStoragePackage> ReleasePackage() override;
+
+ private:
+  // A reference to the Java version of this class.
+  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
+};
+
+}  // namespace tabs
+
+#endif  // CHROME_BROWSER_TAB_TAB_STORAGE_PACKAGER_ANDROID_H_

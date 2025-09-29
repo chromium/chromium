@@ -137,6 +137,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageService.java",
     "java/src/org/chromium/chrome/browser/tab/TabStateStorageServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStoragePackager.java",
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",

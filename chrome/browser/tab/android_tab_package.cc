@@ -8,6 +8,8 @@ namespace tabs {
 
 AndroidTabPackage::AndroidTabPackage(
     int version,
+    int id,
+    int parent_id,
     long timestamp_millis,
     std::unique_ptr<std::string> web_contents_state_bytes,
     std::unique_ptr<std::string> opener_app_id,
@@ -16,6 +18,8 @@ AndroidTabPackage::AndroidTabPackage(
     bool tab_has_sensitive_content,
     int launch_type_at_creation)
     : version_(version),
+      id_(id),
+      parent_id_(parent_id),
       timestamp_millis_(timestamp_millis),
       web_contents_state_bytes_(std::move(web_contents_state_bytes)),
       opener_app_id_(std::move(opener_app_id)),
