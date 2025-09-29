@@ -357,13 +357,6 @@ base::Value::Dict NetLogBadProxyListParams(
   return dict;
 }
 
-// Returns NetLog parameters on a successful proxy resolution.
-base::Value::Dict NetLogFinishedResolvingProxyParams(const ProxyInfo* result) {
-  base::Value::Dict dict;
-  dict.Set("proxy_info", result->ToDebugString());
-  return dict;
-}
-
 // Returns a sanitized copy of |url| which is safe to pass on to a PAC script.
 //
 // PAC scripts are modelled as being controllable by a network-present
@@ -1213,17 +1206,13 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
                                       proxy_retry_info_, result);
 
     net_log.AddEvent(
-        NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
-        [&] { return NetLogFinishedResolvingProxyParams(result); });
+        NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST, [&] {
+          base::Value::Dict dict;
+          dict.Set("proxy_info", result->ToDebugString());
+          return dict;
+        });
 
-    // This check is done to only log the NetLog event when necessary, it's
-    // not a performance optimization.
-    if (!proxy_retry_info_.empty()) {
-      result->DeprioritizeBadProxyChains(proxy_retry_info_);
-      net_log.AddEvent(
-          NetLogEventType::PROXY_RESOLUTION_SERVICE_DEPRIORITIZED_BAD_PROXIES,
-          [&] { return NetLogFinishedResolvingProxyParams(result); });
-    }
+    DeprioritizeBadProxyChains(proxy_retry_info_, result, net_log);
   } else {
     net_log.AddEventWithNetErrorCode(
         NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
@@ -1360,22 +1349,7 @@ base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
   }
 
   // Log Bad Proxies.
-  {
-    base::Value::List list;
-
-    for (const auto& it : proxy_retry_info_) {
-      const std::string& proxy_chain_uri = it.first.ToDebugString();
-      const ProxyRetryInfo& retry_info = it.second;
-
-      base::Value::Dict dict;
-      dict.Set("proxy_chain_uri", proxy_chain_uri);
-      dict.Set("bad_until", NetLog::TickCountToString(retry_info.bad_until));
-
-      list.Append(base::Value(std::move(dict)));
-    }
-
-    net_info_dict.Set(kNetInfoBadProxies, std::move(list));
-  }
+  net_info_dict.Set(kNetInfoBadProxies, BuildBadProxiesList(proxy_retry_info_));
 
   return net_info_dict;
 }

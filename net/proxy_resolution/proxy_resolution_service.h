@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
@@ -105,6 +106,18 @@ class NET_EXPORT ProxyResolutionService {
   static void ProcessProxyRetryInfo(const ProxyRetryInfoMap& new_retry_info,
                                     ProxyRetryInfoMap& proxy_retry_info,
                                     ProxyDelegate* proxy_delegate);
+
+  // Returns a list for bad proxies from the proxy retry info map.
+  static base::Value::List BuildBadProxiesList(
+      const ProxyRetryInfoMap& proxy_retry_info);
+
+  // Helper method to deprioritize bad proxy chains and log the action.
+  // This handles the common pattern of checking if proxy_retry_info is not
+  // empty, calling DeprioritizeBadProxyChains, and logging the event.
+  static void DeprioritizeBadProxyChains(
+      const ProxyRetryInfoMap& proxy_retry_info,
+      ProxyInfo* result,
+      const NetLogWithSource& net_log);
 };
 
 }  // namespace net

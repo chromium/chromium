@@ -355,6 +355,14 @@ EVENT_TYPE(PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC)
 //   {
 //      "net_error": <Net error code that resolver failed with>,
 //   }
+//
+// In the case of Windows system-based proxy resolution, the event also includes
+// WinHTTP status codes and Windows-specific error codes:
+//   {
+//      "winhttp_status": <WinHTTP status code (integer)>,
+//      "windows_error": <Windows system error code (integer)>,
+//      "proxy_info": <Debug string representation of the ProxyInfo result>,
+//   }
 EVENT_TYPE(PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST)
 
 // This event is emitted after proxies marked as bad have been deprioritized.

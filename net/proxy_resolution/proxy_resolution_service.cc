@@ -4,9 +4,13 @@
 
 #include "net/proxy_resolution/proxy_resolution_service.h"
 
+#include <utility>
+
 #include "base/logging.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_event_type.h"
 
 namespace net {
 
@@ -23,19 +27,47 @@ void ProxyResolutionService::ProcessProxyRetryInfo(
     proxy_delegate->OnSuccessfulRequestAfterFailures(new_retry_info);
   }
 
-  for (const auto& iter : new_retry_info) {
-    auto existing = proxy_retry_info.find(iter.first);
-    if (existing == proxy_retry_info.end()) {
-      proxy_retry_info[iter.first] = iter.second;
+  for (const auto& [proxy_chain, retry_info] : new_retry_info) {
+    auto [it, inserted] = proxy_retry_info.try_emplace(proxy_chain, retry_info);
+
+    if (inserted) {
       if (proxy_delegate) {
-        const ProxyChain& bad_proxy = iter.first;
-        DCHECK(!bad_proxy.is_direct());
-        const ProxyRetryInfo& proxy_retry_info_item = iter.second;
-        proxy_delegate->OnFallback(bad_proxy, proxy_retry_info_item.net_error);
+        DCHECK(!proxy_chain.is_direct());
+        proxy_delegate->OnFallback(proxy_chain, retry_info.net_error);
       }
-    } else if (existing->second.bad_until < iter.second.bad_until) {
-      existing->second.bad_until = iter.second.bad_until;
+    } else if (it->second.bad_until < retry_info.bad_until) {
+      it->second.bad_until = retry_info.bad_until;
     }
+  }
+}
+
+// static
+base::Value::List ProxyResolutionService::BuildBadProxiesList(
+    const ProxyRetryInfoMap& proxy_retry_info) {
+  base::Value::List list;
+  list.reserve(proxy_retry_info.size());
+
+  for (const auto& [proxy_chain, retry_info] : proxy_retry_info) {
+    base::Value::Dict dict;
+    dict.Set("proxy_chain_uri", proxy_chain.ToDebugString());
+    dict.Set("bad_until", NetLog::TickCountToString(retry_info.bad_until));
+
+    list.Append(base::Value(std::move(dict)));
+  }
+  return list;
+}
+
+// static
+void ProxyResolutionService::DeprioritizeBadProxyChains(
+    const ProxyRetryInfoMap& proxy_retry_info,
+    ProxyInfo* result,
+    const NetLogWithSource& net_log) {
+  // This check is done to only log the NetLog event when necessary, it's
+  // not a performance optimization.
+  if (!proxy_retry_info.empty()) {
+    result->DeprioritizeBadProxyChains(proxy_retry_info);
+    net_log.AddEvent(
+        NetLogEventType::PROXY_RESOLUTION_SERVICE_DEPRIORITIZED_BAD_PROXIES);
   }
 }
 

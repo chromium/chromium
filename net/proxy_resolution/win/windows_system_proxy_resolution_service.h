@@ -90,6 +90,7 @@ class NET_EXPORT WindowsSystemProxyResolutionService
       const NetworkAnonymizationKey& network_anonymization_key,
       ProxyInfo* result,
       WinHttpStatus winhttp_status,
+      int windows_error,
       const NetLogWithSource& net_log);
 
   // Map of the known bad proxies and the information about the retry time.

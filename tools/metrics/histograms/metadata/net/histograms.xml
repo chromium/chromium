@@ -3289,7 +3289,8 @@ chromium-metrics-reviews@google.com.
     Records Windows error codes returned by the Windows System Proxy Resolver
     when proxy resolution fails. This histogram is only recorded when a non-zero
     Windows error code is returned, indicating a Windows API failure during
-    proxy resolution.
+    proxy resolution. One of the error codes from
+    https://learn.microsoft.com/en-us/windows/win32/com/com-error-codes-4.
   </summary>
 </histogram>
 

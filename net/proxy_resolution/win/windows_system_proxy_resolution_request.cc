@@ -112,7 +112,7 @@ void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
   // Note that DidFinishResolvingProxy might modify |results_|.
   int net_error = service_->DidFinishResolvingProxy(
       url_, method_, network_anonymization_key_, results_, winhttp_status,
-      net_log_);
+      windows_error, net_log_);
 
   // Make a note in the results which configuration was in use at the
   // time of the resolve.

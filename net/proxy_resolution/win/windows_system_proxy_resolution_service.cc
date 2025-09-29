@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "base/win/windows_version.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_info_source_list.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -125,8 +126,20 @@ const ProxyRetryInfoMap& WindowsSystemProxyResolutionService::proxy_retry_info()
 }
 
 base::Value::Dict WindowsSystemProxyResolutionService::GetProxyNetLogValues() {
-  // TODO (https://crbug.com/1032820): Implement net logs.
-  return base::Value::Dict();
+  base::Value::Dict net_info_dict;
+
+  // Log proxy settings - Windows system proxy uses the system configuration
+  {
+    base::Value::Dict dict;
+    dict.Set("source", "system");
+    dict.Set("description", "Windows system proxy configuration");
+    net_info_dict.Set(kNetInfoProxySettings, std::move(dict));
+  }
+
+  // Log Bad Proxies.
+  net_info_dict.Set(kNetInfoBadProxies, BuildBadProxiesList(proxy_retry_info_));
+
+  return net_info_dict;
 }
 
 bool WindowsSystemProxyResolutionService::
@@ -156,19 +169,29 @@ int WindowsSystemProxyResolutionService::DidFinishResolvingProxy(
     const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* result,
     WinHttpStatus winhttp_status,
+    int windows_error,
     const NetLogWithSource& net_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/40111093): Implement net logs.
+  // Log the diagnostic information about the WinHTTP resolution
+  net_log.AddEvent(
+      NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST, [&] {
+        base::Value::Dict resolution_dict;
+        resolution_dict.Set("winhttp_status", static_cast<int>(winhttp_status));
+        resolution_dict.Set("windows_error", windows_error);
+        if (winhttp_status == WinHttpStatus::kOk) {
+          resolution_dict.Set("proxy_info", result->ToDebugString());
+        }
+        return resolution_dict;
+      });
+
   if (winhttp_status == WinHttpStatus::kOk) {
     if (proxy_delegate_) {
       proxy_delegate_->OnResolveProxy(url, network_anonymization_key, method,
                                       proxy_retry_info_, result);
     }
 
-    if (!proxy_retry_info_.empty()) {
-      result->DeprioritizeBadProxyChains(proxy_retry_info_);
-    }
+    DeprioritizeBadProxyChains(proxy_retry_info_, result, net_log);
   } else {
     result->UseDirect();
   }
