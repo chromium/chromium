@@ -2803,7 +2803,7 @@ TEST_F(KcerTokenImplTest, SignRsaSha1Success) {
       chaps_client_,
       Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS,
            std::vector<uint8_t>(), expected_key_handle, expected_digest, _))
-      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+      .WillOnce(RunOnceCallback<5>(result_signature_bytes, result_code));
 
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
@@ -2848,7 +2848,7 @@ TEST_F(KcerTokenImplTest, SignRsaSha256Success) {
       chaps_client_,
       Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS,
            std::vector<uint8_t>(), expected_key_handle, expected_digest, _))
-      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+      .WillOnce(RunOnceCallback<5>(result_signature_bytes, result_code));
 
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
@@ -2894,7 +2894,7 @@ TEST_F(KcerTokenImplTest, SignRsaPssSha256Success) {
       chaps_client_,
       Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS_PSS,
            expected_mechanism_param, expected_key_handle, expected_digest, _))
-      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+      .WillOnce(RunOnceCallback<5>(result_signature_bytes, result_code));
 
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
@@ -2948,7 +2948,7 @@ TEST_F(KcerTokenImplTest, SignEcSha256) {
   EXPECT_CALL(chaps_client_, Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_ECDSA,
                                   std::vector<uint8_t>(), expected_key_handle,
                                   expected_digest, _))
-      .WillOnce(DoAll(RunOnceCallback<5>(result_chaps_signature, result_code)));
+      .WillOnce(RunOnceCallback<5>(result_chaps_signature, result_code));
 
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.Sign(PrivateKeyHandle(public_key), signing_scheme, data_to_sign,
@@ -3074,7 +3074,7 @@ TEST_F(KcerTokenImplTest, SignRsaPkcs1RawSuccess) {
       chaps_client_,
       Sign(pkcs11_slot_id_, chromeos::PKCS11_CKM_RSA_PKCS,
            std::vector<uint8_t>(), expected_key_handle, digest.value(), _))
-      .WillOnce(DoAll(RunOnceCallback<5>(result_signature_bytes, result_code)));
+      .WillOnce(RunOnceCallback<5>(result_signature_bytes, result_code));
 
   base::test::TestFuture<base::expected<Signature, Error>> sign_waiter;
   token_.SignRsaPkcs1Raw(PrivateKeyHandle(public_key), digest,

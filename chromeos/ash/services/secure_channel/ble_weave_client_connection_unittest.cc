@@ -450,7 +450,7 @@ class SecureChannelBluetoothLowEnergyWeaveClientConnectionTest
 
     // Preparing |connection| for a CreateGattConnection call.
     EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
-        .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
+        .WillOnce(MoveArg<0>(&create_gatt_connection_callback_));
 
     connection->Connect();
 
@@ -1423,7 +1423,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
             connection_latency_error_callback_ = std::move(error_callback);
           }));
   EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
-      .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
+      .WillOnce(MoveArg<0>(&create_gatt_connection_callback_));
 
   // No GATT connection should be created before the delay.
   connection->Connect();
@@ -1484,7 +1484,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   ASSERT_FALSE(connection_latency_error_callback_.is_null());
 
   EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
-      .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
+      .WillOnce(MoveArg<0>(&create_gatt_connection_callback_));
   std::move(connection_latency_error_callback_).Run();
   ASSERT_FALSE(create_gatt_connection_callback_.is_null());
 
@@ -1536,7 +1536,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
   ASSERT_FALSE(connection_latency_error_callback_.is_null());
 
   EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
-      .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
+      .WillOnce(MoveArg<0>(&create_gatt_connection_callback_));
 
   // Simulate a timeout.
   test_timer_->Fire();
@@ -1590,7 +1590,7 @@ TEST_F(SecureChannelBluetoothLowEnergyWeaveClientConnectionTest,
 
   // Preparing |connection| for a CreateGattConnection call.
   EXPECT_CALL(*mock_bluetooth_device_, CreateGattConnection(_, _))
-      .WillOnce(DoAll(MoveArg<0>(&create_gatt_connection_callback_)));
+      .WillOnce(MoveArg<0>(&create_gatt_connection_callback_));
 
   connection->Connect();
 
