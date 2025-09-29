@@ -14,9 +14,9 @@
 #define VERSION_MAJOR 3
 #define VERSION_MINOR 13
 #define VERSION_PATCH 1
-#define VERSION_EXTRA "55-gdcfc0bd193"
+#define VERSION_EXTRA "57-g2a70ad7bee"
 #define VERSION_PACKED \
   ((VERSION_MAJOR << 16) | (VERSION_MINOR << 8) | (VERSION_PATCH))
-#define VERSION_STRING_NOSP "3.13.1-55-gdcfc0bd193"
-#define VERSION_STRING " 3.13.1-55-gdcfc0bd193"
+#define VERSION_STRING_NOSP "3.13.1-57-g2a70ad7bee"
+#define VERSION_STRING " 3.13.1-57-g2a70ad7bee"
 #endif  // AOM_VERSION_H_
