@@ -21,6 +21,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -183,13 +184,7 @@ class ConsistencyPromoSigninMediatorTest
                                          [OCMArg anyPointer])
                                   withTimeout:std::nullopt])
         .ignoringNonObjectArgs()
-        .andDo(^(NSInvocation* invocation) {
-          [invocation retainArguments];
-          const base::RepeatingCallback<void(signin::WebSigninTracker::Result)>*
-              callbackPtr = nullptr;
-          [invocation getArgument:&callbackPtr atIndex:5];
-          captured_callback_ = *callbackPtr;
-        });
+        .andAssignStructParameterAtAddressToVariable(captured_callback_, 3);
   }
 
   bool ShouldEnableIdentityInAuthErrorFlag() { return GetParam(); }

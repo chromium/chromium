@@ -5,6 +5,7 @@ include_rules = [
 
   # For unit tests.
   "+ios/testing",
+  "+components/test/ios",
   "+third_party/ocmock",
 
   # To avoid includes from web::HttpServer since it is deprecated. Reference

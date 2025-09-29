@@ -17,6 +17,7 @@
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
+#import "components/test/ios/test_utils.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_action_context.h"
@@ -627,25 +628,19 @@ TEST_F(IOSTabGroupSyncDelegateTest,
                             CreateSavedTabs(saved_tab_group_id),
                             std::make_optional(0), saved_tab_group_id);
 
-  __block const TabGroup* tab_group_shown;
-  __block const TabGroup* tab_group_for_grid;
-  __block BOOL grid_updated = NO;
+  __block const TabGroup* tab_group_shown = nullptr;
+  __block const TabGroup* tab_group_for_grid = nullptr;
   OCMStub([mock_application_handler_
       displayTabGridInMode:TabGridOpeningMode::kRegular]);
 
   OCMStub([mock_tab_groups_handler_
               showTabGroup:(const TabGroup*)[OCMArg anyPointer]])
-      .andDo(^(NSInvocation* invocation) {
-        [invocation getArgument:&tab_group_shown atIndex:2];
-      });
+      .andAssignStructParameterToVariable(tab_group_shown, 0);
 
   OCMStub([mock_tab_grid_handler_
               bringGroupIntoView:(const TabGroup*)[OCMArg anyPointer]
                         animated:NO])
-      .andDo(^(NSInvocation* invocation) {
-        grid_updated = YES;
-        [invocation getArgument:&tab_group_for_grid atIndex:2];
-      });
+      .andAssignStructParameterToVariable(tab_group_for_grid, 0);
   EXPECT_CALL(*mock_service_, GetGroup(saved_tab_group_id))
       .WillOnce(Return(saved_group));
   delegate_->HandleOpenTabGroupRequest(
@@ -665,7 +660,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   // The grid operation is happening with a delay.
   EXPECT_TRUE(
       base::test::ios::WaitUntilConditionOrTimeout(base::Milliseconds(300), ^{
-        return grid_updated;
+        return tab_group_for_grid != nullptr;
       }));
   EXPECT_OCMOCK_VERIFY(mock_tab_grid_handler_);
   EXPECT_EQ(tab_group_shown, tab_group_for_grid);

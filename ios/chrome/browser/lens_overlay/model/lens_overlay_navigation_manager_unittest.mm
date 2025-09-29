@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/uuid.h"
 #import "components/lens/lens_url_utils.h"
+#import "components/test/ios/test_utils.h"
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
@@ -37,10 +38,8 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
     // Stub calls to `loadURL:omniboxText:` and store the arguments.
     OCMStub([[mock_mutator_ ignoringNonObjectArgs] loadURL:GURL()
                                                omniboxText:[OCMArg any]])
+        .andAssignStructParameterAtAddressToVariable(latest_loaded_url_, 0)
         .andDo(^(NSInvocation* invocation) {
-          GURL* url;
-          [invocation getArgument:&url atIndex:2];
-          latest_loaded_url_ = *url;
 
           __unsafe_unretained NSString* omnibox_text;
           [invocation getArgument:&omnibox_text atIndex:3];
