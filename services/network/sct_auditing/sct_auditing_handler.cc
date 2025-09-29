@@ -221,7 +221,8 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
   // Parse the serialized reports.
-  std::optional<base::Value> value = base::JSONReader::Read(serialized);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(serialized, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_list()) {
     base::UmaHistogramCounts100(
         "Security.SCTAuditing.NumPersistedReportsLoaded", 0);

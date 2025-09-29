@@ -85,7 +85,8 @@ class AdaptPerfettoConfigForChromeTest : public ::testing::Test {
 
 base::trace_event::TraceConfig ParseTraceConfigFromJson(
     const std::string& json_config) {
-  auto dict = base::JSONReader::Read(json_config);
+  auto dict =
+      base::JSONReader::Read(json_config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return base::trace_event::TraceConfig(std::move(*dict).TakeDict());
 }
 

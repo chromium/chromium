@@ -243,8 +243,8 @@ class GeolocationNetworkProviderTest : public testing::Test {
     std::string upload_data = network::GetUploadData(pending_request.request);
     ASSERT_FALSE(upload_data.empty());
 
-    std::optional<base::Value> parsed_json =
-        base::JSONReader::Read(upload_data);
+    std::optional<base::Value> parsed_json = base::JSONReader::Read(
+        upload_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed_json);
     ASSERT_TRUE(parsed_json->is_dict());
 
