@@ -315,10 +315,18 @@ class WebAppUpdateReviewDialogFromMenuItem : public WebAppUpdateReviewDialog {
                 gfx::test::IsCloseToBitmap(
                     LoadExpectedBitmapFromDisk(GetFromIconFilePath()),
                     /*max_per_channel_deviation=*/3));
+
+    // The to icon on the dialog are obtained by loading the test icon, resizing
+    // and then masking it to show on the dialog. This leads to a loss of
+    // quality, which can cause comparing with icons stored on the disk flaky.
+    // To prevent that, the comparison constraints of how much pixels can differ
+    // by has been loosened for the to icon. The from icon is not masked and is
+    // just resized, which is why it has a more strict constraint for
+    // difference.
     EXPECT_THAT(icons.to_icon_bitmap,
                 gfx::test::IsCloseToBitmap(
                     LoadExpectedBitmapFromDisk(GetToIconFilePath()),
-                    /*max_per_channel_deviation=*/3));
+                    /*max_per_channel_deviation=*/5));
 
     return true;
   }
