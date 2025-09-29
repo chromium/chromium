@@ -30,12 +30,19 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     ${this.tabSuggestions_.length > 0 ? html`
       <h4 id="tabHeader">${this.i18n('addTab')}</h4>
       ${this.tabSuggestions_.map((tab, index) => html`
-        <button class="dropdown-item" title="${tab.title}"
-            data-index="${index}" @click="${this.addTabContext}">
-          <composebox-tab-favicon .url="${tab.url.url}">
-          </composebox-tab-favicon>
-          <span class="tab-title">${tab.title}</span>
-        </button>
+        <div class="suggestion-container">
+          <button class="dropdown-item"
+              title="${tab.title}" data-index="${index}"
+              @pointerenter="${this.onTabPointerenter_}"
+              @click="${this.addTabContext}">
+            <composebox-tab-favicon .url="${tab.url.url}">
+            </composebox-tab-favicon>
+            <span class="tab-title">${tab.title}</span>
+          </button>
+          ${this.shouldShowTabPreview() ? html`
+            <img class="tab-preview" .src="${this.tabPreviewUrl_}">
+          ` : ''}
+        </div>
       `)}
       <hr/>
     `: ''}

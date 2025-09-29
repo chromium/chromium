@@ -30,6 +30,7 @@
   margin: 0;
   min-width: 128px;
   outline: none;
+  overflow: var(--cr-action-menu-overflow, auto);
   padding: 0;
   position: absolute;
 }

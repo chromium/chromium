@@ -554,6 +554,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        ntp_composebox::IsNtpComposeboxEnabled(profile)));
   source->AddBoolean("composeboxShowContextMenu",
                      ntp_composebox::kShowContextMenu.Get());
+  source->AddBoolean("composeboxShowContextMenuTabPreviews",
+                     ntp_composebox::kShowContextMenuTabPreviews.Get());
   source->AddBoolean("searchboxShowComposebox",
                      ntp_composebox::IsNtpComposeboxEnabled(profile));
   source->AddBoolean("composeboxShowZps",
