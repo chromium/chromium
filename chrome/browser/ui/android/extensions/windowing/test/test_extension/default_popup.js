@@ -42,8 +42,8 @@ function getWindowUpdateInfo() {
             return { focused: true };
         case "focused_false":
             return { focused: false };
-        case "resize_100_200_400_300":
-            return { left: 100, top: 200, width: 400, height: 300 };
+        case "resize_100_600_400_800":
+            return { left: 100, top: 600, width: 400, height: 800 };
         case "state_normal":
             return { state: "normal" };
         case "state_minimized":
