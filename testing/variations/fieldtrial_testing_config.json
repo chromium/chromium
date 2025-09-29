@@ -27720,6 +27720,21 @@
             ]
         }
     ],
+    "WebViewOptInToGmsBindServiceOptimization": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewOptInToGmsBindServiceOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewPrefetchHighestPrefetchPriority": [
         {
             "platforms": [

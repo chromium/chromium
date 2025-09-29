@@ -282,4 +282,8 @@ BASE_FEATURE(kWebViewEarlyPerfettoInit, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewCacheBoundaryInterfaceMethods,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, opts in WebView to GMSCore's bindService optimizations.
+BASE_FEATURE(kWebViewOptInToGmsBindServiceOptimization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace android_webview::features

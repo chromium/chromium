@@ -127,4 +127,9 @@ const char kWebViewStartupTasksYieldToNative[] =
 
 const char kStartupNonBlockingWebViewConstructor[] =
     "startup-non-blocking-webview-constructor";
+
+// Opts in WebView to GMSCore's bindService optimizations
+const char kWebViewOptInToGmsBindServiceOptimization[] =
+    "webview-opt-in-to-gms-bind-service-optimization";
+
 }  // namespace switches

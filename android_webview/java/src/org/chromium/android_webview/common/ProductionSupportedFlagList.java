@@ -1157,6 +1157,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AwFeatures.WEBVIEW_CACHE_BOUNDARY_INTERFACE_METHODS,
                 "Use a cache for reflective method instances in the AndroidX boundary interface"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
+                "Opt-in WebView to GMSCore's bindService optimizations"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
