@@ -155,7 +155,8 @@ class ScopedMappingSharedMemoryMapping
 
 class ScopedMappingMappableBuffer : public ClientSharedImage::ScopedMapping {
  public:
-  ScopedMappingMappableBuffer(const gfx::Size& size, gfx::BufferFormat format)
+  ScopedMappingMappableBuffer(const gfx::Size& size,
+                              viz::SharedImageFormat format)
       : size_(size), format_(format) {}
   ~ScopedMappingMappableBuffer() override {
     if (buffer_) {
@@ -167,13 +168,14 @@ class ScopedMappingMappableBuffer : public ClientSharedImage::ScopedMapping {
   base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
     CHECK(buffer_);
 
-    size_t height_in_pixels;
-    size_t row_size_in_bytes;
+    size_t height_in_pixels =
+        format_.GetPlaneSize(plane_index, Size()).height();
+    size_t row_size_in_bytes = viz::SharedMemoryRowSizeForSharedImageFormat(
+                                   format_, plane_index, Size().width())
+                                   .value();
 
-    CHECK(gfx::PlaneHeightForBufferFormatChecked(
-        Size().height(), format_, plane_index, &height_in_pixels));
-    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), format_,
-                                             plane_index, &row_size_in_bytes));
+    CHECK(height_in_pixels);
+    CHECK(row_size_in_bytes);
 
     // Note that the stride might be larger than the row size due to padding.
     // For all rows other than the last, this is legal data for the client to
@@ -218,7 +220,7 @@ class ScopedMappingMappableBuffer : public ClientSharedImage::ScopedMapping {
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
   RAW_PTR_EXCLUSION MappableBuffer* buffer_ = nullptr;
   gfx::Size size_;
-  gfx::BufferFormat format_;
+  viz::SharedImageFormat format_;
 };
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
@@ -351,10 +353,8 @@ std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
                                          MappableBuffer* mappable_buffer,
                                          bool is_already_mapped) {
-  auto scoped_mapping = base::WrapUnique(new ScopedMappingMappableBuffer(
-      metadata.size,
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          metadata.format)));
+  auto scoped_mapping = base::WrapUnique(
+      new ScopedMappingMappableBuffer(metadata.size, metadata.format));
   if (!scoped_mapping->Init(mappable_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
