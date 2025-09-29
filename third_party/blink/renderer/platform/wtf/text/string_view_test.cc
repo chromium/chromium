@@ -24,6 +24,22 @@ const LChar* Address8(StringView view, size_t offset = 0) {
   return offset ? view.Span8().subspan(offset).data() : view.Span8().data();
 }
 
+const UChar* Address16(const StringImpl& impl, size_t offset = 0) {
+  return offset ? impl.Span16().subspan(offset).data() : impl.Span16().data();
+}
+
+const UChar* Address16(const String& str, size_t offset = 0) {
+  return offset ? str.Span16().subspan(offset).data() : str.Span16().data();
+}
+
+const UChar* Address16(const AtomicString& str, size_t offset = 0) {
+  return offset ? str.Span16().subspan(offset).data() : str.Span16().data();
+}
+
+const UChar* Address16(StringView view, size_t offset = 0) {
+  return offset ? view.Span16().subspan(offset).data() : view.Span16().data();
+}
+
 const char kChars[] = "12345";
 const char16_t kCharsU[] = u"12345";
 const LChar* const kChars8 = reinterpret_cast<const LChar*>(kChars);
@@ -65,16 +81,15 @@ TEST(StringViewTest, ConstructionStringImpl16) {
   // StringView(StringImpl*);
   ASSERT_FALSE(StringView(impl16_bit.get()).Is8Bit());
   EXPECT_FALSE(StringView(impl16_bit.get()).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl16_bit->Characters16(),
-                        StringView(impl16_bit.get()).Characters16()));
+  EXPECT_EQ(Address16(*impl16_bit), Address16(StringView(impl16_bit.get())));
   EXPECT_EQ(impl16_bit->length(), StringView(impl16_bit.get()).length());
   EXPECT_EQ(kChars, StringView(impl16_bit.get()));
 
   // StringView(StringImpl*, unsigned offset);
   ASSERT_FALSE(StringView(impl16_bit.get(), 2).Is8Bit());
   EXPECT_FALSE(StringView(impl16_bit.get(), 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl16_bit->Characters16() + 2,
-                        StringView(impl16_bit.get(), 2).Characters16()));
+  EXPECT_EQ(Address16(*impl16_bit, 2u),
+            Address16(StringView(impl16_bit.get(), 2)));
   EXPECT_EQ(3u, StringView(impl16_bit.get(), 2).length());
   EXPECT_EQ(StringView("345"), StringView(impl16_bit.get(), 2));
   EXPECT_EQ("345", StringView(impl16_bit.get(), 2));
@@ -82,8 +97,8 @@ TEST(StringViewTest, ConstructionStringImpl16) {
   // StringView(StringImpl*, unsigned offset, unsigned length);
   ASSERT_FALSE(StringView(impl16_bit.get(), 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(impl16_bit.get(), 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl16_bit->Characters16() + 2,
-                        StringView(impl16_bit.get(), 2, 1).Characters16()));
+  EXPECT_EQ(Address16(*impl16_bit, 2u),
+            Address16(StringView(impl16_bit.get(), 2, 1)));
   EXPECT_EQ(1u, StringView(impl16_bit.get(), 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(impl16_bit.get(), 2, 1));
   EXPECT_EQ("3", StringView(impl16_bit.get(), 2, 1));
@@ -124,16 +139,14 @@ TEST(StringViewTest, ConstructionStringImplRef16) {
   // StringView(StringImpl&);
   ASSERT_FALSE(StringView(*impl16_bit).Is8Bit());
   EXPECT_FALSE(StringView(*impl16_bit).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl16_bit->Characters16(),
-                        StringView(*impl16_bit).Characters16()));
+  EXPECT_EQ(Address16(*impl16_bit), Address16(StringView(*impl16_bit)));
   EXPECT_EQ(impl16_bit->length(), StringView(*impl16_bit).length());
   EXPECT_EQ(kChars, StringView(*impl16_bit));
 
   // StringView(StringImpl&, unsigned offset);
   ASSERT_FALSE(StringView(*impl16_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(*impl16_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl16_bit->Characters16() + 2,
-                        StringView(*impl16_bit, 2).Characters16()));
+  EXPECT_EQ(Address16(*impl16_bit, 2u), Address16(StringView(*impl16_bit, 2)));
   EXPECT_EQ(3u, StringView(*impl16_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(*impl16_bit, 2));
   EXPECT_EQ("345", StringView(*impl16_bit, 2));
@@ -141,8 +154,8 @@ TEST(StringViewTest, ConstructionStringImplRef16) {
   // StringView(StringImpl&, unsigned offset, unsigned length);
   ASSERT_FALSE(StringView(*impl16_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(*impl16_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(impl16_bit->Characters16() + 2,
-                        StringView(*impl16_bit, 2, 1).Characters16()));
+  EXPECT_EQ(Address16(*impl16_bit, 2u),
+            Address16(StringView(*impl16_bit, 2, 1)));
   EXPECT_EQ(1u, StringView(*impl16_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(*impl16_bit, 2, 1));
   EXPECT_EQ("3", StringView(*impl16_bit, 2, 1));
@@ -181,16 +194,15 @@ TEST(StringViewTest, ConstructionString16) {
   // StringView(const String&);
   ASSERT_FALSE(StringView(string16_bit).Is8Bit());
   EXPECT_FALSE(StringView(string16_bit).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(string16_bit.Characters16(),
-                        StringView(string16_bit).Characters16()));
+  EXPECT_EQ(Address16(string16_bit), Address16(StringView(string16_bit)));
   EXPECT_EQ(string16_bit.length(), StringView(string16_bit).length());
   EXPECT_EQ(kChars, StringView(string16_bit));
 
   // StringView(const String&, unsigned offset);
   ASSERT_FALSE(StringView(string16_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(string16_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(string16_bit.Characters16() + 2,
-                        StringView(string16_bit, 2).Characters16()));
+  EXPECT_EQ(Address16(string16_bit, 2u),
+            Address16(StringView(string16_bit, 2)));
   EXPECT_EQ(3u, StringView(string16_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(string16_bit, 2));
   EXPECT_EQ("345", StringView(string16_bit, 2));
@@ -198,8 +210,8 @@ TEST(StringViewTest, ConstructionString16) {
   // StringView(const String&, unsigned offset, unsigned length);
   ASSERT_FALSE(StringView(string16_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(string16_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(string16_bit.Characters16() + 2,
-                        StringView(string16_bit, 2, 1).Characters16()));
+  EXPECT_EQ(Address16(string16_bit, 2u),
+            Address16(StringView(string16_bit, 2, 1)));
   EXPECT_EQ(1u, StringView(string16_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(string16_bit, 2, 1));
   EXPECT_EQ("3", StringView(string16_bit, 2, 1));
@@ -242,16 +254,14 @@ TEST(StringViewTest, ConstructionAtomicString16) {
   // StringView(const AtomicString&);
   ASSERT_FALSE(StringView(atom16_bit).Is8Bit());
   EXPECT_FALSE(StringView(atom16_bit).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(atom16_bit.Characters16(),
-                        StringView(atom16_bit).Characters16()));
+  EXPECT_EQ(Address16(atom16_bit), Address16(StringView(atom16_bit)));
   EXPECT_EQ(atom16_bit.length(), StringView(atom16_bit).length());
   EXPECT_EQ(kChars, StringView(atom16_bit));
 
   // StringView(const AtomicString&, unsigned offset);
   ASSERT_FALSE(StringView(atom16_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(atom16_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(atom16_bit.Characters16() + 2,
-                        StringView(atom16_bit, 2).Characters16()));
+  EXPECT_EQ(Address16(atom16_bit, 2u), Address16(StringView(atom16_bit, 2)));
   EXPECT_EQ(3u, StringView(atom16_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(atom16_bit, 2));
   EXPECT_EQ("345", StringView(atom16_bit, 2));
@@ -259,8 +269,7 @@ TEST(StringViewTest, ConstructionAtomicString16) {
   // StringView(const AtomicString&, unsigned offset, unsigned length);
   ASSERT_FALSE(StringView(atom16_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(atom16_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(atom16_bit.Characters16() + 2,
-                        StringView(atom16_bit, 2, 1).Characters16()));
+  EXPECT_EQ(Address16(atom16_bit, 2u), Address16(StringView(atom16_bit, 2, 1)));
   EXPECT_EQ(1u, StringView(atom16_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(atom16_bit, 2, 1));
   EXPECT_EQ("3", StringView(atom16_bit, 2, 1));
@@ -299,16 +308,14 @@ TEST(StringViewTest, ConstructionStringView16) {
   // StringView(StringView&);
   ASSERT_FALSE(StringView(view16_bit).Is8Bit());
   EXPECT_FALSE(StringView(view16_bit).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(view16_bit.Characters16(),
-                        StringView(view16_bit).Characters16()));
+  EXPECT_EQ(Address16(view16_bit), Address16(StringView(view16_bit)));
   EXPECT_EQ(view16_bit.length(), StringView(view16_bit).length());
   EXPECT_EQ(kChars, StringView(view16_bit));
 
   // StringView(const StringView&, unsigned offset);
   ASSERT_FALSE(StringView(view16_bit, 2).Is8Bit());
   EXPECT_FALSE(StringView(view16_bit, 2).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(view16_bit.Characters16() + 2,
-                        StringView(view16_bit, 2).Characters16()));
+  EXPECT_EQ(Address16(view16_bit, 2u), Address16(StringView(view16_bit, 2)));
   EXPECT_EQ(3u, StringView(view16_bit, 2).length());
   EXPECT_EQ(StringView("345"), StringView(view16_bit, 2));
   EXPECT_EQ("345", StringView(view16_bit, 2));
@@ -316,8 +323,7 @@ TEST(StringViewTest, ConstructionStringView16) {
   // StringView(const StringView&, unsigned offset, unsigned length);
   ASSERT_FALSE(StringView(view16_bit, 2, 1).Is8Bit());
   EXPECT_FALSE(StringView(view16_bit, 2, 1).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(view16_bit.Characters16() + 2,
-                        StringView(view16_bit, 2, 1).Characters16()));
+  EXPECT_EQ(Address16(view16_bit, 2u), Address16(StringView(view16_bit, 2, 1)));
   EXPECT_EQ(1u, StringView(view16_bit, 2, 1).length());
   EXPECT_EQ(StringView("3"), StringView(view16_bit, 2, 1));
   EXPECT_EQ("3", StringView(view16_bit, 2, 1));
@@ -361,7 +367,7 @@ TEST(StringViewTest, ConstructionLiteral16) {
   // StringView(const UChar* chars);
   ASSERT_FALSE(StringView(kChars16).Is8Bit());
   EXPECT_FALSE(StringView(kChars16).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(kChars16, StringView(kChars16).Characters16()));
+  EXPECT_EQ(kChars16, Address16(StringView(kChars16)));
   EXPECT_EQ(5u, StringView(kChars16).length());
   EXPECT_EQ(String(kChars16), StringView(kChars16));
 
@@ -369,7 +375,7 @@ TEST(StringViewTest, ConstructionLiteral16) {
   StringView uchar2(base::span_from_cstring(kCharsU).first(2u));
   ASSERT_FALSE(uchar2.Is8Bit());
   EXPECT_FALSE(uchar2.IsNull());
-  UNSAFE_TODO(EXPECT_EQ(kChars16, uchar2.Characters16()));
+  EXPECT_EQ(kChars16, Address16(uchar2));
   EXPECT_EQ(StringView("12"), uchar2);
   EXPECT_EQ(StringView(reinterpret_cast<const UChar*>(u"12")), uchar2);
   EXPECT_EQ(2u, uchar2.length());
@@ -391,7 +397,7 @@ TEST(StringViewTest, ConstructionSpan16) {
   const auto kCharsSpan16 = base::span_from_cstring(kCharsU);
   ASSERT_FALSE(StringView(kCharsSpan16).Is8Bit());
   EXPECT_FALSE(StringView(kCharsSpan16).IsNull());
-  UNSAFE_TODO(EXPECT_EQ(kChars16, StringView(kCharsSpan16).Characters16()));
+  EXPECT_EQ(kChars16, Address16(StringView(kCharsSpan16)));
   EXPECT_EQ(5u, StringView(kCharsSpan16).length());
   EXPECT_EQ(String(kChars16), StringView(kCharsSpan16));
 }

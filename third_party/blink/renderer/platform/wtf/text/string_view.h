@@ -198,12 +198,6 @@ class WTF_EXPORT StringView {
     })
   }
 
-  // Use Span16() instead.
-  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
-    DCHECK(!Is8Bit());
-    return static_cast<const UChar*>(bytes_);
-  }
-
   base::span<const LChar> Span8() const {
     DCHECK(Is8Bit());
     // SAFETY: bytes_ have length_ elements.
