@@ -44,7 +44,7 @@ class ScopedGoogleUpdateIsMachine {
 class TestConfiguration : public Configuration {
  public:
   explicit TestConfiguration(const wchar_t* command_line) {
-    EXPECT_TRUE(Initialize(::GetModuleHandle(nullptr)));
+    EXPECT_TRUE(Initialize());
     EXPECT_TRUE(ParseCommandLine(command_line));
   }
 

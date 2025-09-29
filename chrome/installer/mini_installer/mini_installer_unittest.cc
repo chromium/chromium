@@ -30,14 +30,6 @@ namespace mini_installer {
 
 namespace {
 
-#define PREVIOUS_VERSION L"62.0.1234.0"
-constexpr wchar_t kPreviousVersion[] = PREVIOUS_VERSION;
-
-class FakeConfiguration : public Configuration {
- public:
-  FakeConfiguration() { previous_version_ = kPreviousVersion; }
-};
-
 base::FilePath GetTestFileRootPath() {
   base::FilePath test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root);
@@ -142,7 +134,6 @@ TEST_P(MiniInstallerTest, UnpackMiniInstaller) {
 
   int max_delete_attempts = 0;
   PathString setup_path;
-  ResourceTypeString setup_type;
   PathString archive_path;
   ResourceTypeString archive_type;
 
@@ -152,15 +143,14 @@ TEST_P(MiniInstallerTest, UnpackMiniInstaller) {
   ASSERT_TRUE(loaded_module.is_valid());
 
   std::wstring temp_path = temp_dir.GetPath().value() + L"\\";
-  ProcessExitResult exit_code = UnpackBinaryResources(
-      loaded_module.get(), temp_path.c_str(), setup_path, setup_type,
-      archive_path, archive_type, max_delete_attempts);
+  ProcessExitResult exit_code =
+      UnpackBinaryResources(loaded_module.get(), temp_path.c_str(), setup_path,
+                            archive_path, archive_type, max_delete_attempts);
   EXPECT_EQ(exit_code.exit_code, SUCCESS_EXIT_CODE);
 
   base::FilePath expected_setup_path =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("setup.exe"));
   EXPECT_STREQ(setup_path.get(), expected_setup_path.value().c_str());
-  EXPECT_STREQ(setup_type.get(), GetParam().expected_setup_resource_type);
 
   std::string actual_setup_data;
   EXPECT_TRUE(base::ReadFileToString(expected_setup_path, &actual_setup_data));
@@ -180,72 +170,6 @@ TEST_P(MiniInstallerTest, UnpackMiniInstaller) {
   } else {
     EXPECT_EQ(max_delete_attempts, 0);
   }
-}
-
-// A test harness for GetPreviousSetupExePath.
-class GetPreviousSetupExePathTest : public ::testing::Test {
- public:
-  GetPreviousSetupExePathTest(const GetPreviousSetupExePathTest&) = delete;
-  GetPreviousSetupExePathTest& operator=(const GetPreviousSetupExePathTest&) =
-      delete;
-
- protected:
-  GetPreviousSetupExePathTest() = default;
-  ~GetPreviousSetupExePathTest() override = default;
-
-  void SetUp() override {
-    ASSERT_NO_FATAL_FAILURE(
-        registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
-  }
-
-  const Configuration& configuration() const { return configuration_; }
-
-  // Writes |path| to the registry in Chrome's ClientState...UninstallString
-  // value.
-  void SetPreviousSetup(const wchar_t* path) {
-    base::win::RegKey key;
-    const install_static::InstallDetails& details =
-        install_static::InstallDetails::Get();
-    ASSERT_EQ(
-        key.Create(HKEY_CURRENT_USER, details.GetClientStateKeyPath().c_str(),
-                   KEY_SET_VALUE | KEY_WOW64_32KEY),
-        ERROR_SUCCESS);
-    ASSERT_EQ(key.WriteValue(installer::kUninstallStringField, path),
-              ERROR_SUCCESS);
-  }
-
- private:
-  registry_util::RegistryOverrideManager registry_override_manager_;
-  FakeConfiguration configuration_;
-};
-
-// Tests that the path is returned.
-TEST_F(GetPreviousSetupExePathTest, SimpleTest) {
-  static constexpr wchar_t kSetupExePath[] =
-      L"C:\\SomePath\\To\\" PREVIOUS_VERSION L"\\setup.exe";
-  ASSERT_NO_FATAL_FAILURE(SetPreviousSetup(kSetupExePath));
-
-  StackString<MAX_PATH> path;
-  ProcessExitResult result =
-      GetPreviousSetupExePath(configuration(), path.get(), path.capacity());
-  ASSERT_TRUE(result.IsSuccess());
-  EXPECT_STREQ(path.get(), kSetupExePath);
-}
-
-// Tests that quotes are removed, if present.
-TEST_F(GetPreviousSetupExePathTest, QuoteStripping) {
-  static constexpr wchar_t kSetupExePath[] =
-      L"C:\\SomePath\\To\\" PREVIOUS_VERSION L"\\setup.exe";
-  std::wstring quoted_path(L"\"");
-  quoted_path += kSetupExePath;
-  quoted_path += L"\"";
-  ASSERT_NO_FATAL_FAILURE(SetPreviousSetup(quoted_path.c_str()));
-
-  StackString<MAX_PATH> path;
-  ProcessExitResult result =
-      GetPreviousSetupExePath(configuration(), path.get(), path.capacity());
-  ASSERT_TRUE(result.IsSuccess());
-  EXPECT_STREQ(path.get(), kSetupExePath);
 }
 
 }  // namespace mini_installer

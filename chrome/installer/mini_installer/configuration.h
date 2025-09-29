@@ -5,8 +5,6 @@
 #ifndef CHROME_INSTALLER_MINI_INSTALLER_CONFIGURATION_H_
 #define CHROME_INSTALLER_MINI_INSTALLER_CONFIGURATION_H_
 
-#include <windows.h>
-
 namespace mini_installer {
 
 // A simple container of the mini_installer's configuration, as dictated by the
@@ -17,7 +15,7 @@ class Configuration {
   ~Configuration();
 
   // Initializes this instance on the basis of the process's command line.
-  bool Initialize(HMODULE module);
+  bool Initialize();
 
   // Returns the program portion of the command line, or nullptr if it cannot be
   // determined (e.g., by misuse).
@@ -41,9 +39,6 @@ class Configuration {
   // Returns true if any invalid switch is found on the command line.
   bool has_invalid_switch() const { return has_invalid_switch_; }
 
-  // Returns the previous version contained in the image's resource.
-  const wchar_t* previous_version() const { return previous_version_; }
-
   // Returns true if extracted files should be deleted prior to exit.
   bool should_delete_extracted_files() const {
     return should_delete_extracted_files_;
@@ -52,7 +47,6 @@ class Configuration {
  protected:
   void Clear();
   bool ParseCommandLine(const wchar_t* command_line);
-  void ReadResources(HMODULE module);
   void ReadRegistry();
 
   wchar_t** args_;
@@ -62,7 +56,6 @@ class Configuration {
   bool is_system_level_;
   bool has_invalid_switch_;
   bool should_delete_extracted_files_;
-  const wchar_t* previous_version_;
 
  private:
   Configuration(const Configuration&) = delete;
