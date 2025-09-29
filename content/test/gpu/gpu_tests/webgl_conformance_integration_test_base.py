@@ -484,12 +484,13 @@ class WebGLConformanceIntegrationTestBase(
   @staticmethod
   def _DidWebGLTestSucceed(tab: ct.Tab) -> bool:
     # Ensure that we actually ran tests and they all passed.
-    return tab.EvaluateJavaScript('webglTestHarness._allTestSucceeded '
-                                  '&& webglTestHarness._totalTests > 0')
+    return tab.action_runner.EvaluateJavaScript(
+        'webglTestHarness._allTestSucceeded '
+        '&& webglTestHarness._totalTests > 0')
 
   @staticmethod
   def _WebGLTestMessages(tab: ct.Tab) -> str:
-    return tab.EvaluateJavaScript('webglTestHarness._messages')
+    return tab.action_runner.EvaluateJavaScript('webglTestHarness._messages')
 
   @classmethod
   def _ParseTests(cls, path: str, version: str, webgl2_only: bool,
