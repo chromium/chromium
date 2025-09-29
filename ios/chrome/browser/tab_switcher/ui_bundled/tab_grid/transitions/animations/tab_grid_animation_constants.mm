@@ -9,7 +9,7 @@ const CGFloat kGridToTabAnimationDuration = 0.5;
 const CGFloat kGridToTabAnimationDamping = 0.8;
 const CGFloat kTabToGridAnimationDamping = 1.0;
 const CGFloat kTabGridTransitionAnimationInitialVelocity = 1.8;
-const CGFloat kTabGridAnimationScale = 0.75;
+const CGFloat kTabGridAnimationScale = 0.8;
 const UIBlurEffectStyle kTabGridBlurStyle =
     UIBlurEffectStyleSystemUltraThinMaterialDark;
 const CGFloat kGridToTabToolbarsAnimationRelativeStartTime = 0.1;

@@ -31,9 +31,8 @@ UIView* CreateToolbarSnapshotBackgroundView(UIView* snapshot_view,
                                             BOOL align_to_bottom,
                                             CGRect reference_frame);
 
-// Calculates the relative center of `frame` within `active_grid_view` and sets
-// it as the `anchorPoint` for `active_grid_view.layer`.
-void SetActiveGridAnchorPointToFrameCenter(UIView* active_grid_view,
-                                           CGRect frame);
+// Calculates the relative center of `frame` within `view` and sets it as the
+// `anchorPoint` for `view.layer`.
+void SetAnchorPointToFrameCenter(UIView* view, CGRect frame);
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TRANSITIONS_ANIMATIONS_TAB_GRID_ANIMATION_UTILS_H_

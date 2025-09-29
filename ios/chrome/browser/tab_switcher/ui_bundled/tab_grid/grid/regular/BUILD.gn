@@ -59,6 +59,7 @@ source_set("regular") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_ui",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions",
     "//ios/chrome/browser/tabs/model",
     "//ios/web/public",
   ]

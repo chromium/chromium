@@ -26,8 +26,6 @@
   return self;
 }
 
-#pragma mark - TabToGridTransitionAnimation
-
 - (void)animateWithCompletion:(ProceduralBlock)completion {
   UIView* animatedView = _animationParameters.animatedView;
   CGRect destinationFrame = _animationParameters.destinationFrame;
@@ -37,7 +35,9 @@
   UIView* bottomToolbarSnapshotView =
       _animationParameters.bottomToolbarSnapshotView;
   UIView* activeGridView = _animationParameters.activeGrid.view;
-  BOOL isIncognito = _animationParameters.isIncognito;
+  UIView* pinnedTabsView = _animationParameters.pinnedTabs.view;
+  BOOL isActiveCellPinned = _animationParameters.activeCellPinned;
+  BOOL isIncognito = _animationParameters.incognito;
 
   // Ensure the browser view is "reset".
   animatedView.transform = CGAffineTransformIdentity;
@@ -127,10 +127,14 @@
                            belowSubview:animatedView];
   AddSameConstraints(activeGridBlurView.superview, activeGridBlurView);
 
+  [animatedView.superview setNeedsLayout];
+  [animatedView.superview layoutIfNeeded];
+
   // Active grid zoom animation setup. Find the center of the origin frame in
   // the grid view's coordinate system.  This is needed because of the grid
   // view's scroll view.
-  SetActiveGridAnchorPointToFrameCenter(activeGridView, originFrame);
+  SetAnchorPointToFrameCenter(activeGridView, originFrame);
+  SetAnchorPointToFrameCenter(pinnedTabsView, originFrame);
 
   // Perform pre-animations setup.
   animatedView.transform = CGAffineTransformMakeScale(
@@ -164,8 +168,10 @@
     animatedView.frame = destinationFrame;
     contentImageView.frame = imageViewDestinationFrame;
 
-    // Scale the active grid view (zoom effect).
+    // Scale the active grid view and pinned tabs view (zoom effect).
     activeGridView.transform = CGAffineTransformMakeScale(
+        kTabGridAnimationScale, kTabGridAnimationScale);
+    pinnedTabsView.transform = CGAffineTransformMakeScale(
         kTabGridAnimationScale, kTabGridAnimationScale);
 
     // Needed so that the contentImageView's innerImageView frame is animated.
@@ -182,6 +188,16 @@
     bottomToolbarSnapshotView.transform = CGAffineTransformIdentity;
     topToolbarSnapshotView.alpha = 1.0;
     bottomToolbarSnapshotView.alpha = 1.0;
+  };
+
+  if (isActiveCellPinned) {
+    animatedView.alpha = 0.1;
+  }
+
+  // Fade in the animated view at the beginning of the main animation, only
+  // applicable to pinned tabs.
+  void (^fadeInPinnedTabCellAnimation)() = ^{
+    animatedView.alpha = 1.0;
   };
 
   // Animate the toolbars with a delay and relative duration.
@@ -202,6 +218,12 @@
     activeGridView.layer.anchorPoint = CGPointMake(0.5, 0.5);
     activeGridView.frame = oldAnimationFrame;
 
+    // Reset the pinned tabs view.
+    pinnedTabsView.transform = CGAffineTransformIdentity;
+    CGRect oldPinnedTabsFrame = pinnedTabsView.frame;
+    pinnedTabsView.layer.anchorPoint = CGPointMake(0.5, 0.5);
+    pinnedTabsView.frame = oldPinnedTabsFrame;
+
     // Reset the animated view.
     animatedView.transform = CGAffineTransformIdentity;
     animatedView.layer.mask = nil;
@@ -216,6 +238,14 @@
       completion();
     }
   };
+
+  if (isActiveCellPinned) {
+    [UIView animateWithDuration:kGridToTabAnimationDuration / 5
+                          delay:0
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:fadeInPinnedTabCellAnimation
+                     completion:nil];
+  }
 
   // Perform the toolbars animation.
   [UIView animateKeyframesWithDuration:kGridToTabAnimationDuration

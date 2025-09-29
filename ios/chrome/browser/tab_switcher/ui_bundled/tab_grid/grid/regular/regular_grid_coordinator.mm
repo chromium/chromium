@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_view_controller.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/transitions/tab_grid_transition_layout.h"
 
 namespace {
 
@@ -108,12 +109,25 @@ constexpr CGFloat kFacePileAvatarSize = 16;
                 .gridViewController transitionLayout];
   }
 
-  if (IsPinnedTabsEnabled() &&
-      [self.pinnedTabsViewController hasSelectedCell]) {
-    return [self.pinnedTabsViewController transitionLayout];
+  BOOL const usePinnedTabsLayout =
+      IsPinnedTabsEnabled() && [self.pinnedTabsViewController hasSelectedCell];
+
+  TabGridTransitionLayout* transitionLayout =
+      usePinnedTabsLayout ? [self.pinnedTabsViewController transitionLayout]
+                          : [self.gridViewController transitionLayout];
+
+  // If the selected cell is from a pinned tab, ensure the active grid is still
+  // the "normal" grid view controller so that it's animated correctly behind
+  // the selected view. This way, the pinned tabs "grid" is animated with the
+  // active grid (since it's a part of it), instead of animated alone with the
+  // normal grid not having any animations.
+  if (usePinnedTabsLayout) {
+    transitionLayout.activeGrid = self.gridViewController;
+    transitionLayout.isActiveCellPinned = YES;
   }
 
-  return [self.gridViewController transitionLayout];
+  transitionLayout.pinnedTabs = self.pinnedTabsViewController;
+  return transitionLayout;
 }
 
 - (BOOL)isSelectedCellVisible {

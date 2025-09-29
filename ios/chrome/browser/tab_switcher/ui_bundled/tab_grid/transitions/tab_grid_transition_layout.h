@@ -16,13 +16,18 @@
 @property(nonatomic, readonly) TabGridTransitionItem* activeCell;
 
 // The currently active grid of the tab grid (regular, incognito, etc.).
-@property(nonatomic, readonly) UIViewController* activeGrid;
+@property(nonatomic, strong) UIViewController* activeGrid;
+
+// The view controller of the pinned tabs.
+@property(nonatomic, strong) UIViewController* pinnedTabs;
+
+// Whether the active cell is from a pinned tab.
+@property(nonatomic, assign) BOOL isActiveCellPinned;
 
 // Creates a new TabGridTransitionLayout instance with the given `activeCell`
 // and `activeGrid`.
 + (instancetype)layoutWithActiveCell:(TabGridTransitionItem*)activeCell
                           activeGrid:(UIViewController*)activeGrid;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TRANSITIONS_TAB_GRID_TRANSITION_LAYOUT_H_

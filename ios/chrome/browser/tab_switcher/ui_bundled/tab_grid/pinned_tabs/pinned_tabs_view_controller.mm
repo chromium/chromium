@@ -255,7 +255,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (TabGridTransitionLayout*)transitionLayout {
   return [TabGridTransitionLayout
       layoutWithActiveCell:self.transitionItemForActiveCell
-                activeGrid:self];
+                activeGrid:nil];
 }
 
 - (TabGridTransitionItem*)transitionItemForActiveCell {

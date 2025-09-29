@@ -9,6 +9,8 @@
 - (instancetype)initWithDestinationFrame:(CGRect)destinationFrame
                              originFrame:(CGRect)originFrame
                               activeGrid:(UIViewController*)activeGrid
+                              pinnedTabs:(UIViewController*)pinnedTabs
+                        activeCellPinned:(BOOL)activeCellPinned
                             animatedView:(UIView*)animatedView
                          contentSnapshot:(UIImage*)contentSnapshot
                         topToolbarHeight:(CGFloat)topToolbarHeight
@@ -16,7 +18,7 @@
                   topToolbarSnapshotView:(UIView*)topToolbarSnapshotView
                bottomToolbarSnapshotView:(UIView*)bottomToolbarSnapshotView
                    shouldScaleTopToolbar:(BOOL)shouldScaleTopToolbar
-                             isIncognito:(BOOL)isIncognito {
+                               incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
     _destinationFrame = destinationFrame;
@@ -28,8 +30,10 @@
     _topToolbarSnapshotView = topToolbarSnapshotView;
     _bottomToolbarSnapshotView = bottomToolbarSnapshotView;
     _activeGrid = activeGrid;
+    _pinnedTabs = pinnedTabs;
+    _activeCellPinned = activeCellPinned;
     _shouldScaleTopToolbar = shouldScaleTopToolbar;
-    _isIncognito = isIncognito;
+    _incognito = incognito;
   }
   return self;
 }

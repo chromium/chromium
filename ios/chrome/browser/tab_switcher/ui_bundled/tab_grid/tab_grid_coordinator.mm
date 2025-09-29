@@ -761,7 +761,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
            bvcContainerViewController:self.bvcContainer
                     layoutGuideCenter:LayoutGuideCenterForBrowser(browser)
                   isRegularBrowserNTP:isRegularBrowserNTP
-                          isIncognito:isIncognito];
+                            incognito:isIncognito];
   [self.transitionHandler performTransitionWithCompletion:completionHandler];
 }
 

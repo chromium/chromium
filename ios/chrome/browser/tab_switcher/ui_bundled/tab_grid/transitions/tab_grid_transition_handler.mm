@@ -34,6 +34,12 @@
   // The view controller of the currently active tab grid.
   UIViewController* _activeGrid;
 
+  // The view controller of the pinned tabs.
+  UIViewController* _pinnedTabsViewController;
+
+  // Whether the active cell if from a pinned tab.
+  BOOL _activeCellPinned;
+
   // The tab grid transition animation to be performed.
   id<TabGridTransitionAnimation> _animation;
 
@@ -44,7 +50,7 @@
   BOOL _isRegularBrowserNTP;
 
   // Whether the transition is for an incognito tab.
-  BOOL _isIncognito;
+  BOOL _incognito;
 }
 
 #pragma mark - Public
@@ -58,11 +64,11 @@
                 (UIViewController*)bvcContainerViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
-                           isIncognito:(BOOL)isIncognito {
+                             incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
     TabGridTransitionLayout* transitionLayout = [tabGridTransitionLayoutProvider
-        transitionLayoutForIsIncognito:isIncognito];
+        transitionLayoutForIsIncognito:incognito];
     _transitionType = transitionType;
     _direction = direction;
     _tabGridTransitionLayoutProvider = tabGridTransitionLayoutProvider;
@@ -70,9 +76,11 @@
     _BVCContainerViewController = bvcContainerViewController;
     _tabGridCellItem = transitionLayout.activeCell;
     _activeGrid = transitionLayout.activeGrid;
+    _pinnedTabsViewController = transitionLayout.pinnedTabs;
+    _activeCellPinned = transitionLayout.isActiveCellPinned;
     _layoutGuideCenter = layoutGuideCenter;
     _isRegularBrowserNTP = isRegularBrowserNTP;
-    _isIncognito = isIncognito;
+    _incognito = incognito;
   }
   return self;
 }
@@ -234,6 +242,8 @@
            initWithDestinationFrame:destinationFrame
                         originFrame:originFrame
                          activeGrid:_activeGrid
+                         pinnedTabs:_pinnedTabsViewController
+                   activeCellPinned:_activeCellPinned
                        animatedView:_BVCContainerViewController.view
                     contentSnapshot:_tabGridCellItem.snapshot
                    topToolbarHeight:topToolbarHeight
@@ -245,7 +255,7 @@
               [self snapshotOfViewPortionBelowRect:tabContentView
                                         middleRect:contentAreaFrame]
               shouldScaleTopToolbar:scaleTopToolbar
-                        isIncognito:_isIncognito];
+                          incognito:_incognito];
     case TabGridTransitionType::kReducedMotion:
       // TODO(crbug.com/414807974): Handle reduced motion.
       return nil;

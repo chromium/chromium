@@ -42,7 +42,7 @@ enum class TabGridTransitionType {
                 (UIViewController*)bvcContainerViewController
                      layoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter
                    isRegularBrowserNTP:(BOOL)isRegularBrowserNTP
-                           isIncognito:(BOOL)isIncognito
+                             incognito:(BOOL)incognito
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

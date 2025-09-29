@@ -10,8 +10,6 @@
 
 @property(nonatomic, strong, readwrite) TabGridTransitionItem* activeCell;
 
-@property(nonatomic, strong, readwrite) UIViewController* activeGrid;
-
 @end
 
 @implementation TabGridTransitionLayout
