@@ -334,8 +334,8 @@ TEST_F(TestLauncherTest, RepeatTest) {
   command_line->AppendSwitchASCII("gtest_repeat", "2");
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .Times(2)
-      .WillRepeatedly(::testing::DoAll(OnTestResult(
-          &test_launcher, "Test.firstTest", TestResult::TEST_SUCCESS)));
+      .WillRepeatedly(OnTestResult(&test_launcher, "Test.firstTest",
+                                   TestResult::TEST_SUCCESS));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
@@ -347,12 +347,12 @@ TEST_F(TestLauncherTest, RunningMultipleIterationsUntilFailure) {
   command_line->AppendSwitchASCII("gtest_repeat", "4");
   command_line->AppendSwitch("gtest_break_on_failure");
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_SUCCESS)))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_SUCCESS)))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_FAILURE)));
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_SUCCESS))
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_SUCCESS))
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_FAILURE));
   EXPECT_FALSE(test_launcher.Run(command_line.get()));
 }
 
@@ -503,8 +503,8 @@ TEST_F(TestLauncherTest, DoesRunFilteredTests) {
                                  testing::ElementsAreArray(tests_names.cbegin(),
                                                            tests_names.cend()),
                                  _, _))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.secondTest",
-                                              TestResult::TEST_SUCCESS)));
+      .WillOnce(OnTestResult(&test_launcher, "Test.secondTest",
+                             TestResult::TEST_SUCCESS));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
@@ -574,8 +574,8 @@ TEST_F(TestLauncherTest, EnforceRunTestsInExactPositiveFilter) {
                                  testing::ElementsAreArray(tests_names.cbegin(),
                                                            tests_names.cend()),
                                  _, _))
-      .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
-                                              TestResult::TEST_SUCCESS)));
+      .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
+                             TestResult::TEST_SUCCESS));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
 
