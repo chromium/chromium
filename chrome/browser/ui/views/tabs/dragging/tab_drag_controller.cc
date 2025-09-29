@@ -2577,6 +2577,15 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
     return true;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/447246798): Don't allow dragging into an overview item as
+  // the implementation is buggy. Triggering this appears to require drag by
+  // touch, as drag by click causes the overview session to end immediately.
+  if (window->GetProperty(chromeos::kIsShowingInOverviewKey)) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Return false if `other_browser_view` is null or already closed. The latter
   // check is required since the widget may still alive on asynchronous
   // platforms such as Mac.
