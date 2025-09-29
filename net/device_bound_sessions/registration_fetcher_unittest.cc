@@ -1555,7 +1555,8 @@ TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
           "auth_cookie", "Domain=.a.test; Path=/; Secure; SameSite=None")));
 }
 
-TEST_F(RegistrationTest, FetchRegistrationAndChallengeRequired) {
+TEST_F(RegistrationTestWithoutOriginTrialFeedback,
+       FetchRegistrationAndChallengeRequired) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponseForRefreshRequest));
@@ -1681,7 +1682,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
-       FetchRefreshAndChallengeRequired_NewChallenge) {
+       FetchRefreshAndChallengeRequired_NoChallengeToNewChallenge) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   ASSERT_TRUE(server_.InitializeAndListen());
   std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
@@ -1696,11 +1697,6 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
         const std::optional<std::string> challenge =
             GetRequestChallenge(request);
         if (!challenge.has_value()) {
-          response->set_code(HTTP_FORBIDDEN);
-          return response;
-        }
-
-        if (*challenge == "test_challenge") {
           response->set_code(HTTP_FORBIDDEN);
           session->set_cached_challenge("updated_challenge");
           return response;
@@ -1720,8 +1716,61 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   server_.StartAcceptingConnections();
 
   TestRegistrationCallback callback;
-  auto request_param = RegistrationRequestParam::CreateForTesting(
-      GetBaseURL(), kSessionIdentifier, kChallenge);
+  auto request_param = RegistrationRequestParam::CreateForRefresh(*session);
+  auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+  unexportable_keys::UnexportableKeyId key = CreateKey();
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          request_param, session_service(),
+          std::ref(unexportable_key_service()), context_.get(),
+          std::ref(isolation_info),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt);
+  fetcher->StartFetchWithExistingKey(request_param, std::move(key),
+                                     callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_TRUE(out_session.is_session());
+}
+
+TEST_F(RegistrationTestWithOriginTrialFeedback,
+       FetchRefreshAndChallengeRequired_ExistingChallengeToNewChallenge) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  ASSERT_TRUE(server_.InitializeAndListen());
+  std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+  EXPECT_CALL(
+      session_service(),
+      GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
+      .WillOnce(Return(session.get()));
+  server_.RegisterRequestHandler(base::BindRepeating(
+      [](Session* session, const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        auto response = std::make_unique<test_server::BasicHttpResponse>();
+        const std::optional<std::string> challenge =
+            GetRequestChallenge(request);
+        if (*challenge == kChallenge) {
+          response->set_code(HTTP_FORBIDDEN);
+          session->set_cached_challenge("updated_challenge");
+          return response;
+        }
+
+        if (*challenge == "updated_challenge") {
+          response->set_code(HTTP_OK);
+          response->set_content_type("application/json");
+          response->set_content(kBasicValidJson);
+          return response;
+        }
+
+        response->set_code(HTTP_FORBIDDEN);
+        return response;
+      },
+      session.get()));
+  server_.StartAcceptingConnections();
+
+  session->set_cached_challenge(kChallenge);
+
+  TestRegistrationCallback callback;
+  auto request_param = RegistrationRequestParam::CreateForRefresh(*session);
   auto isolation_info = IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
   unexportable_keys::UnexportableKeyId key = CreateKey();
   std::unique_ptr<RegistrationFetcher> fetcher =
