@@ -4,11 +4,12 @@
 
 import 'chrome://print/print_preview.js';
 
-import type {PrintPreviewColorSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
+import type {ColorOption, PrintPreviewColorSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {Destination, DestinationOrigin} from 'chrome://print/print_preview.js';
 
-import {selectOption} from './print_preview_test_utils.js';
+import {getCddTemplateWithAdvancedSettings, selectOption} from './print_preview_test_utils.js';
 
 suite('ColorSettingsTest', function() {
   let colorSection: PrintPreviewColorSettingsElement;
@@ -52,7 +53,6 @@ suite('ColorSettingsTest', function() {
     assertTrue(colorSection.getSetting('color').setFromUi);
   });
 
-  // <if expr="is_chromeos">
   // Tests that if the setting is enforced by enterprise policy it is
   // disabled.
   test('disabled by global policy', function() {
@@ -72,5 +72,36 @@ suite('ColorSettingsTest', function() {
     model.set('settings.color.setByDestinationPolicy', true);
     assertTrue(select.disabled);
   });
-  // </if>
+
+  test('switch destinations', function() {
+    const testDestination1 =
+        new Destination('FooDevice', DestinationOrigin.LOCAL, 'FooName');
+    testDestination1.capabilities =
+        getCddTemplateWithAdvancedSettings(1, 'FooDevice').capabilities;
+    testDestination1.capabilities!.printer.color = {
+      option: [
+        {type: 'STANDARD_COLOR'},
+        {type: 'STANDARD_MONOCHROME', is_default: true},
+      ] as ColorOption[],
+    };
+
+    const testDestination2 =
+        new Destination('BarDevice', DestinationOrigin.LOCAL, 'BarName');
+    testDestination2.capabilities =
+        getCddTemplateWithAdvancedSettings(2, 'BarDevice').capabilities;
+    testDestination2.capabilities!.printer.color = {
+      option: [
+        {type: 'STANDARD_COLOR', is_default: true},
+      ] as ColorOption[],
+    };
+
+    model.destination = testDestination1;
+    model.applyStickySettings();
+    const select = colorSection.shadowRoot!.querySelector('select')!;
+    assertEquals('bw', select.value);
+
+    model.destination = testDestination2;
+    model.applyStickySettings();
+    assertEquals('color', select.value);
+  });
 });
