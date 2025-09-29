@@ -12,6 +12,7 @@ import("//build/config/chromeos/args.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/host_byteorder.gni")
@@ -1165,7 +1166,12 @@ config("compiler") {
     # abort instead of unwinding when panic occurs. In official builds, panics
     # abort immediately (this is configured in the stdlib) to keep binary size
     # down. So we unconditionally match behaviour in unofficial too.
-    if (is_official_build) {
+    # AOSP does not allow the usage of unstable features. This means that
+    # we can't enable `immediate-abort` when building cronet in AOSP until
+    # it has been stabilized.
+    #
+    # TODO(crbug.com/447558108): Use immediate-abort in AOSP once stabilized.
+    if (is_official_build && !is_cronet_for_aosp_build) {
       rustflags += [
         "-Zunstable-options",
         "-Cpanic=immediate-abort",
