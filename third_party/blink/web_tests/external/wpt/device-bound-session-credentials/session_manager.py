@@ -201,10 +201,10 @@ class SessionManager:
             "attributes": cookie_detail.get_attributes(request)
         }, self.get_cookie_details(session_id)))
 
-    def get_session_instructions_response_set_cookie_headers(self, session_id, request):
+    def get_set_cookie_headers(self, cookies, request):
         header_values = list(map(
             lambda cookie_detail: f"{cookie_detail.get_name_and_value()}; {cookie_detail.get_attributes(request)}",
-            self.get_cookie_details(session_id) + self.registration_extra_cookies
+            cookies
         ))
         return [("Set-Cookie", header_value) for header_value in header_values]
 
@@ -233,7 +233,7 @@ class SessionManager:
             "credentials": self.get_sessions_instructions_response_credentials(session_id, request),
             "allowed_refresh_initiators": self.allowed_refresh_initiators,
         }
-        headers = self.get_session_instructions_response_set_cookie_headers(session_id, request) + [
+        headers = self.get_set_cookie_headers(self.get_cookie_details(session_id), request) + [
             ("Content-Type", "application/json"),
             ("Cache-Control", "no-store")
         ]
