@@ -145,8 +145,7 @@ LayoutUnit ResolveInlineLengthInternal(
               (available_size - margins.InlineSum()).ClampNegativeToZero());
     }
     case Length::kAuto:
-      if (length_type == LengthTypeInternal::kMin &&
-          RuntimeEnabledFeatures::LayoutMinSizeAutoIndefiniteEnabled()) {
+      if (length_type == LengthTypeInternal::kMin) {
         return border_padding.InlineSum();
       }
       [[fallthrough]];
@@ -267,8 +266,7 @@ LayoutUnit ResolveBlockLengthInternal(
       return intrinsic_size;
     }
     case Length::kAuto:
-      if (length_type == LengthTypeInternal::kMin &&
-          RuntimeEnabledFeatures::LayoutMinSizeAutoIndefiniteEnabled()) {
+      if (length_type == LengthTypeInternal::kMin) {
         return border_padding.BlockSum();
       }
       [[fallthrough]];

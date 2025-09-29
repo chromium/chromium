@@ -2979,10 +2979,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutMinSizeAutoIndefinite",
-      status: "stable",
-    },
-    {
       name: "LayoutNGShapeCache",
       status: "stable",
       base_feature: "LayoutNGShapeCache",
