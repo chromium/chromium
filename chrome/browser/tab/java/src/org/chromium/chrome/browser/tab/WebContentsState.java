@@ -17,15 +17,15 @@ import org.chromium.url.Origin;
 
 import java.nio.ByteBuffer;
 
-/** Contains the state for a WebContents. */
+/** Contains the state for a {@link WebContents}. */
 @NullMarked
 public class WebContentsState {
     /** Version number used to denote an invalid buffer. */
     public static final int INVALID_BUFFER_VERSION = -1;
 
     /**
-     * Version number of the format used to save the WebContents navigation history, as returned by
-     * TabStateJni.get().getContentsStateAsByteBuffer().
+     * Version number of the format used to save the {@link WebContents} navigation history, as
+     * returned by {@code TabStateJni.get().getContentsStateAsByteBuffer()}.
      *
      * <pre>
      *   Version labels:
@@ -38,23 +38,50 @@ public class WebContentsState {
 
     private static @Nullable WebContentsState sEmptyWebContentsState;
 
-    /**
-     * mBuffer should not be modified once it is set. Also, it is required to be a "direct" buffer
-     * which is allocated outside the JVM heap, so that it can be accessed via the JNI direct buffer
-     * methods, which means it has to be allocated with ByteBuffer.allocateDirect() or similar.
-     */
-    private final ByteBuffer mBuffer;
+    /** A packed (pickle) representation of the navigation entries for a {@link WebContents}. */
+    private static class PackedData {
+        /**
+         * mBuffer should not be modified once it is set. Also, it is required to be a "direct"
+         * buffer which is allocated outside the JVM heap, so that it can be accessed via the JNI
+         * direct buffer methods, which means it has to be allocated with
+         * ByteBuffer.allocateDirect() or similar.
+         */
+        private final ByteBuffer mBuffer;
 
-    private final int mVersion;
+        private final int mVersion;
+
+        /**
+         * @param buffer The buffer for the WebContentsState.
+         * @param version The version of the WebContentsState.
+         */
+        public PackedData(ByteBuffer buffer, int version) {
+            assert buffer.isDirect();
+            mBuffer = buffer;
+            mVersion = version;
+        }
+
+        /** Returns the buffer for the WebContentsState. */
+        public ByteBuffer buffer() {
+            return mBuffer;
+        }
+
+        /** Returns the version of the WebContentsState. */
+        public int version() {
+            return mVersion;
+        }
+    }
+
+    // TODO(crbug.com/447345580): Allow this to swap with an unpacked representation.
+    private final PackedData mPackedData;
 
     private @Nullable String mFallbackUrlForRestorationFailure;
 
     /**
-     * Returns the WebContents' state as a WebContentsState.
+     * Returns the {@link WebContents}' state as a {@link WebContentsState}.
      *
-     * @param webContents WebContents to pickle.
-     * @return WebContentsState containing the state of the WebContents or null if something went
-     *     wrong.
+     * @param webContents {@link WebContents} to pickle.
+     * @return {@link WebContentsState} containing the state of the {@link WebContents} or null if
+     *     something went wrong.
      */
     public static @Nullable WebContentsState getWebContentsStateFromWebContents(
             WebContents webContents) {
@@ -63,7 +90,7 @@ public class WebContentsState {
     }
 
     /**
-     * Creates a WebContentsState for a tab that will be loaded lazily.
+     * Creates a {@link WebContentsState} for a tab that will be loaded lazily.
      *
      * @param profile The profile used for the tab.
      * @param title The title to display.
@@ -87,7 +114,7 @@ public class WebContentsState {
         return newWebContentsStateFromByteBuffer(buffer);
     }
 
-    /** Returns a singleton empty WebContentsState. */
+    /** Returns a singleton empty {@link WebContentsState}. */
     public static WebContentsState getTempWebContentsState() {
         if (sEmptyWebContentsState == null) {
             sEmptyWebContentsState =
@@ -97,23 +124,21 @@ public class WebContentsState {
     }
 
     /**
-     * @param buffer The buffer to use for the WebContentsState.
-     * @param version The version of the WebContentsState.
+     * @param buffer The buffer to use for the {@link WebContentsState}.
+     * @param version The version of the {@link WebContentsState}.
      */
     public WebContentsState(ByteBuffer buffer, int version) {
-        assert buffer.isDirect();
-        mBuffer = buffer;
-        mVersion = version;
+        mPackedData = new PackedData(buffer, version);
     }
 
-    /** Returns the buffer for the WebContentsState. */
+    /** Returns the buffer for the {@link WebContentsState}. */
     public ByteBuffer buffer() {
-        return mBuffer;
+        return mPackedData.buffer();
     }
 
-    /** Returns the version of the WebContentsState. */
+    /** Returns the version of the {@link WebContentsState}. */
     public int version() {
-        return mVersion;
+        return mPackedData.version();
     }
 
     /** Returns the title currently being displayed in the saved state's current entry. */
@@ -137,26 +162,26 @@ public class WebContentsState {
     }
 
     /**
-     * Creates a WebContents from the buffer.
+     * Creates a {@link WebContents from the buffer.
      *
      * @param webContentsState The webContentsState to modify.
      * @param profile The profile used for the tab.
      * @param isHidden Whether or not the tab initially starts hidden.
-     * @return A WebContents object or null if something went wrong.
+     * @return A {@link WebContents} object or null if something went wrong.
      */
     public @Nullable WebContents restoreWebContents(Profile profile, boolean isHidden) {
         return restoreWebContents(profile, isHidden, /* noRenderer= */ false);
     }
 
     /**
-     * Creates a WebContents from the buffer.
+     * Creates a {@link WebContents} from the buffer.
      *
      * @param webContentsState The webContentsState to modify.
      * @param profile The profile used for the tab.
      * @param isHidden Whether or not the tab initially starts hidden.
      * @param noRenderer Explicitly request to create without a renderer. If false a renderer may or
      *     may not be created.
-     * @return A WebContents object or null if something went wrong.
+     * @return A {@link WebContents} object or null if something went wrong.
      */
     public @Nullable WebContents restoreWebContents(
             Profile profile, boolean isHidden, boolean noRenderer) {
@@ -165,11 +190,11 @@ public class WebContentsState {
     }
 
     /**
-     * Deletes navigation entries from this WebContentsState matching the predicate.
+     * Deletes navigation entries from this {@link WebContentsState} matching the predicate.
      *
      * @param predicate Handle for a deletion predicate interpreted by native code. Only valid
      *     during this call frame.
-     * @return A new WebContentsState or null if nothing changed.
+     * @return A new {@link WebContentsState} or null if nothing changed.
      */
     public @Nullable WebContentsState deleteNavigationEntries(long predicate) {
         ByteBuffer newBuffer =
@@ -178,7 +203,7 @@ public class WebContentsState {
     }
 
     /**
-     * Appends a pending navigation to the WebContentsState.
+     * Appends a pending navigation to the {@link WebContentsState}.
      *
      * @param profile The profile used for the tab.
      * @param title The title to display.
@@ -186,7 +211,7 @@ public class WebContentsState {
      * @param referrerUrl URL for the referrer.
      * @param referrerPolicy Policy for the referrer.
      * @param initiatorOrigin Initiator of the navigation.
-     * @return A new WebContentsState with the pending navigation attached.
+     * @return A new {@link WebContentsState} with the pending navigation attached.
      */
     public @Nullable WebContentsState appendPendingNavigation(
             Profile profile,
