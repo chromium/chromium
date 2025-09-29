@@ -117,8 +117,8 @@ TEST_P(GcpWinHttpUrlFetcherTest,
               request_data.headers.at("Authorization").find(access_token));
     ASSERT_EQ(1u, request_data.headers.count(header1));
     ASSERT_EQ(header1_value, request_data.headers.at(header1));
-    std::optional<base::Value> body_value =
-        base::JSONReader::Read(request_data.body);
+    std::optional<base::Value> body_value = base::JSONReader::Read(
+        request_data.body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_EQ(request, body_value->GetDict());
   }
 }

@@ -231,7 +231,8 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
         "security_status": 0
        }
     }
-  )");
+  )",
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(expected, entries[1].params);
 
   entries = net_log_observer.GetEntriesWithType(
@@ -247,7 +248,8 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
        },
        "spn": "HTTP/intranet.google.com"
     }
-  )");
+  )",
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(expected, entries[0].params);
 
   expected = base::JSONReader::Read(R"(
@@ -269,7 +271,8 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
          "security_status": 0
       }
     }
-  )");
+  )",
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(expected, entries[1].params);
 
   expected = base::JSONReader::Read(R"(
@@ -291,7 +294,8 @@ TEST(HttpAuthSSPITest, GenerateAuthToken_FullHandshake_AmbientCreds_Logging) {
          "security_status": 0
       }
     }
-  )");
+  )",
+                                    base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(expected, entries[3].params);
 }
 }  // namespace net
