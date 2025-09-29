@@ -257,24 +257,26 @@ public class WebContentsState {
 
         @Nullable ByteBuffer createSingleNavigationStateAsByteBuffer(
                 @JniType("Profile*") Profile profile,
-                @Nullable String title,
-                String url,
-                @Nullable String referrerUrl,
+                @JniType("std::optional<std::u16string>") @Nullable String title,
+                @JniType("std::string") String url,
+                @JniType("std::optional<std::string>") @Nullable String referrerUrl,
                 int referrerPolicy,
-                @Nullable Origin initiatorOrigin);
+                @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin);
 
         @Nullable ByteBuffer appendPendingNavigation(
                 @JniType("Profile*") Profile profile,
                 ByteBuffer buffer,
                 int savedStateVersion,
-                @Nullable String title,
-                String url,
-                @Nullable String referrerUrl,
+                @JniType("std::optional<std::u16string>") @Nullable String title,
+                @JniType("std::string") String url,
+                @JniType("std::optional<std::string>") @Nullable String referrerUrl,
                 int referrerPolicy,
-                @Nullable Origin initiatorOrigin);
+                @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin);
 
+        @JniType("std::optional<std::u16string>")
         @Nullable String getDisplayTitleFromByteBuffer(ByteBuffer state, int savedStateVersion);
 
+        @JniType("std::optional<std::string>")
         @Nullable String getVirtualUrlFromByteBuffer(ByteBuffer state, int savedStateVersion);
     }
 }

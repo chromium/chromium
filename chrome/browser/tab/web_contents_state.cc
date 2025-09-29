@@ -68,7 +68,7 @@ WebContentsStateByteBuffer::WebContentsStateByteBuffer(
 
 namespace {
 
-ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, jint size) {
+ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, int size) {
   ScopedJavaLocalRef<jclass> clazz =
       base::android::GetClass(env, "java/nio/ByteBuffer");
   jmethodID method = MethodID::Get<MethodID::TYPE_STATIC>(
@@ -122,7 +122,7 @@ ScopedJavaLocalRef<jobject> WriteSerializedNavigationsAsByteBuffer(
   base::Pickle pickle = WriteSerializedNavigationsAsPickle(
       is_off_the_record, navigations, current_entry);
   ScopedJavaLocalRef<jobject> buffer =
-      CreateByteBufferDirect(env, static_cast<jint>(pickle.size()));
+      CreateByteBufferDirect(env, static_cast<int>(pickle.size()));
   if (buffer) {
     UNSAFE_TODO(memcpy(env->GetDirectBufferAddress(buffer.obj()), pickle.data(),
                        pickle.size()));
@@ -156,36 +156,31 @@ ScopedJavaLocalRef<jobject> WriteNavigationsAsByteBuffer(
 }
 
 std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
-    JNIEnv* env,
     BrowserContext* browser_context,
-    const base::android::JavaRef<jstring>& title,
-    const base::android::JavaRef<jstring>& url,
-    const base::android::JavaRef<jstring>& referrer_url,
-    jint referrer_policy,
-    const base::android::JavaParamRef<jobject>& jinitiator_origin) {
+    const std::optional<std::u16string>& title,
+    const std::string& url,
+    const std::optional<std::string>& referrer_url,
+    int referrer_policy,
+    const std::optional<url::Origin>& optional_initiator_origin) {
   content::Referrer referrer;
-  if (referrer_url) {
-    referrer = content::Referrer(
-        GURL(base::android::ConvertJavaStringToUTF8(env, referrer_url)),
-        content::Referrer::ConvertToPolicy(referrer_policy));
+  if (referrer_url.has_value()) {
+    referrer =
+        content::Referrer(GURL(*referrer_url),
+                          content::Referrer::ConvertToPolicy(referrer_policy));
   }
 
-  url::Origin initiator_origin;
-  if (jinitiator_origin) {
-    initiator_origin = url::Origin::FromJavaObject(env, jinitiator_origin);
-  }
+  url::Origin initiator_origin =
+      optional_initiator_origin.value_or(url::Origin());
   // TODO(crbug.com/40062134): Deal with getting initiator_base_url
   // plumbed here too.
   auto navigation_entry = content::NavigationController::CreateNavigationEntry(
-      GURL(base::android::ConvertJavaStringToUTF8(env, url)), referrer,
-      initiator_origin, /* initiator_base_url= */ std::nullopt,
-      ui::PAGE_TRANSITION_LINK,
+      GURL(url), referrer, initiator_origin,
+      /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_LINK,
       /* is_renderer_initiated= */ true,
       /* extra_headers= */ "", browser_context,
       /* blob_url_loader_factory= */ nullptr);
-  if (title) {
-    navigation_entry->SetTitle(
-        base::android::ConvertJavaStringToUTF16(env, title));
+  if (title.has_value()) {
+    navigation_entry->SetTitle(*title);
   }
   return navigation_entry;
 }
@@ -257,7 +252,7 @@ WebContentsState::DeleteNavigationEntriesFromByteBuffer(
       env, is_off_the_record, new_navigations, current_entry_index);
 }
 
-ScopedJavaLocalRef<jstring> WebContentsState::GetDisplayTitleFromByteBuffer(
+std::optional<std::u16string> WebContentsState::GetDisplayTitleFromByteBuffer(
     JNIEnv* env,
     base::span<const uint8_t> buffer,
     int saved_state_version) {
@@ -268,15 +263,15 @@ ScopedJavaLocalRef<jstring> WebContentsState::GetDisplayTitleFromByteBuffer(
       buffer, saved_state_version, &is_off_the_record, &current_entry_index,
       &navigations);
   if (!success) {
-    return ScopedJavaLocalRef<jstring>();
+    return std::nullopt;
   }
 
   sessions::SerializedNavigationEntry nav_entry =
       navigations.at(current_entry_index);
-  return ConvertUTF16ToJavaString(env, nav_entry.title());
+  return nav_entry.title();
 }
 
-ScopedJavaLocalRef<jstring> WebContentsState::GetVirtualUrlFromByteBuffer(
+std::optional<std::string> WebContentsState::GetVirtualUrlFromByteBuffer(
     JNIEnv* env,
     base::span<const uint8_t> buffer,
     int saved_state_version) {
@@ -287,19 +282,19 @@ ScopedJavaLocalRef<jstring> WebContentsState::GetVirtualUrlFromByteBuffer(
       buffer, saved_state_version, &is_off_the_record, &current_entry_index,
       &navigations);
   if (!success) {
-    return ScopedJavaLocalRef<jstring>();
+    return std::nullopt;
   }
 
   sessions::SerializedNavigationEntry nav_entry =
       navigations.at(current_entry_index);
-  return ConvertUTF8ToJavaString(env, nav_entry.virtual_url().spec());
+  return nav_entry.virtual_url().spec();
 }
 
 ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& state,
     BrowserContext* browser_context,
-    jint saved_state_version,
+    int saved_state_version,
     jboolean initially_hidden,
     jboolean no_renderer) {
   base::span<const uint8_t> span =
@@ -418,16 +413,15 @@ ScopedJavaLocalRef<jobject>
 WebContentsState::CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
     BrowserContext* browser_context,
-    const base::android::JavaRef<jstring>& title,
-    const base::android::JavaRef<jstring>& url,
-    const base::android::JavaRef<jstring>& referrer_url,
-    jint referrer_policy,
-    const base::android::JavaParamRef<jobject>& jinitiator_origin) {
+    const std::optional<std::u16string>& title,
+    const std::string& url,
+    const std::optional<std::string>& referrer_url,
+    int referrer_policy,
+    const std::optional<url::Origin>& initiator_origin) {
   bool is_off_the_record = browser_context->IsOffTheRecord();
   std::unique_ptr<content::NavigationEntry> entry =
-      CreatePendingNavigationEntry(env, browser_context, title, url,
-                                   referrer_url, referrer_policy,
-                                   jinitiator_origin);
+      CreatePendingNavigationEntry(browser_context, title, url, referrer_url,
+                                   referrer_policy, initiator_origin);
 
   std::vector<content::NavigationEntry*> navigations(1);
   navigations[0] = entry.get();
@@ -463,11 +457,11 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
     BrowserContext* browser_context,
     base::span<const uint8_t> buffer,
     int saved_state_version,
-    const base::android::JavaRef<jstring>& title,
-    const base::android::JavaRef<jstring>& url,
-    const base::android::JavaRef<jstring>& referrer_url,
-    jint referrer_policy,
-    const base::android::JavaParamRef<jobject>& jinitiator_origin) {
+    const std::optional<std::u16string>& title,
+    const std::string& url,
+    const std::optional<std::string>& referrer_url,
+    int referrer_policy,
+    const std::optional<url::Origin>& initiator_origin) {
   bool is_off_the_record;
   bool is_context_off_the_record = browser_context->IsOffTheRecord();
   int current_entry_index;
@@ -484,7 +478,7 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
                     "previous navigation state.";
     return CreateSingleNavigationStateAsByteBuffer(
         env, browser_context, title, url, referrer_url, referrer_policy,
-        jinitiator_origin);
+        initiator_origin);
   }
 
   std::vector<sessions::SerializedNavigationEntry> new_navigations;
@@ -494,9 +488,8 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
 
   int new_entry_index = current_entry_index + 1;
   std::unique_ptr<content::NavigationEntry> new_entry =
-      CreatePendingNavigationEntry(env, browser_context, title, url,
-                                   referrer_url, referrer_policy,
-                                   jinitiator_origin);
+      CreatePendingNavigationEntry(browser_context, title, url, referrer_url,
+                                   referrer_policy, initiator_origin);
   new_navigations.push_back(
       sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
           new_entry_index, new_entry.get()));
@@ -512,7 +505,7 @@ JNI_WebContentsState_RestoreContentsFromByteBuffer(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& state,
-    jint saved_state_version,
+    int saved_state_version,
     jboolean initially_hidden,
     jboolean no_renderer) {
   return WebContentsState::RestoreContentsFromByteBuffer(
@@ -532,7 +525,7 @@ static base::android::ScopedJavaLocalRef<jobject>
 JNI_WebContentsState_DeleteNavigationEntries(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& state,
-    jint saved_state_version,
+    int saved_state_version,
     jlong predicate_ptr) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
@@ -548,11 +541,11 @@ static ScopedJavaLocalRef<jobject>
 JNI_WebContentsState_CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jstring>& title,
-    const JavaParamRef<jstring>& url,
-    const JavaParamRef<jstring>& referrer_url,
-    jint referrer_policy,
-    const JavaParamRef<jobject>& initiator_origin) {
+    std::optional<std::u16string>& title,
+    std::string& url,
+    std::optional<std::string>& referrer_url,
+    int referrer_policy,
+    std::optional<url::Origin>& initiator_origin) {
   return WebContentsState::CreateSingleNavigationStateAsByteBuffer(
       env, profile, title, url, referrer_url, referrer_policy,
       initiator_origin);
@@ -562,12 +555,12 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
     JNIEnv* env,
     Profile* profile,
     const JavaParamRef<jobject>& state,
-    jint saved_state_version,
-    const JavaParamRef<jstring>& title,
-    const JavaParamRef<jstring>& url,
-    const JavaParamRef<jstring>& referrer_url,
-    jint referrer_policy,
-    const JavaParamRef<jobject>& initiator_origin) {
+    int saved_state_version,
+    std::optional<std::u16string>& title,
+    std::string& url,
+    std::optional<std::string>& referrer_url,
+    int referrer_policy,
+    std::optional<url::Origin>& initiator_origin) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 
@@ -576,30 +569,26 @@ static ScopedJavaLocalRef<jobject> JNI_WebContentsState_AppendPendingNavigation(
       referrer_policy, initiator_origin);
 }
 
-static ScopedJavaLocalRef<jstring>
+static std::optional<std::u16string>
 JNI_WebContentsState_GetDisplayTitleFromByteBuffer(
     JNIEnv* env,
     const JavaParamRef<jobject>& state,
-    jint saved_state_version) {
+    int saved_state_version) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 
-  ScopedJavaLocalRef<jstring> result =
-      WebContentsState::GetDisplayTitleFromByteBuffer(env, span,
-                                                      saved_state_version);
-  return result;
+  return WebContentsState::GetDisplayTitleFromByteBuffer(env, span,
+                                                         saved_state_version);
 }
 
-static ScopedJavaLocalRef<jstring>
+static std::optional<std::string>
 JNI_WebContentsState_GetVirtualUrlFromByteBuffer(
     JNIEnv* env,
     const JavaParamRef<jobject>& state,
-    jint saved_state_version) {
+    int saved_state_version) {
   base::span<const uint8_t> span =
       base::android::JavaByteBufferToSpan(env, state);
 
-  ScopedJavaLocalRef<jstring> result =
-      WebContentsState::GetVirtualUrlFromByteBuffer(env, span,
-                                                    saved_state_version);
-  return result;
+  return WebContentsState::GetVirtualUrlFromByteBuffer(env, span,
+                                                       saved_state_version);
 }
