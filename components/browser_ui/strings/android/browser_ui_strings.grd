@@ -1461,6 +1461,15 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_IMAGE_PREVIEW_PINCH_TO_RESIZE" desc="Text explaining the image could be resized by pinching it.">
         Pinch to resize
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_TYPE_BACKGROUND_COLOR_HEX_TITLE" desc="Title of the edit text box to input a color hex for the background color.">
+        Background Color Hex
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_TYPE_PRIMARY_COLOR_HEX_TITLE" desc="Title of the edit text box to input a color hex for the primary color.">
+        Primary Color Hex
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_HINT_TO_TYPE_COLOR_HEX" desc="Hint in the edit box to ask users to type a color hex.">
+        Type hex here
+      </message>
 
       <!-- Time Last Accessed strings -->
       <message name="IDS_TIME_LAST_ACCESSED_TODAY" desc="A subtitle explaining that a given component was last accessed today.">

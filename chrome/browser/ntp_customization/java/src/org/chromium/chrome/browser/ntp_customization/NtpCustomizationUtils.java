@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static android.support.annotation.VisibleForTesting.PACKAGE_PRIVATE;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
@@ -403,13 +405,14 @@ public class NtpCustomizationUtils {
      *
      * @param color The new background color.
      */
-    static void setBackgroundColor(@ColorInt int color) {
+    @VisibleForTesting(otherwise = PACKAGE_PRIVATE)
+    public static void setBackgroundColor(@ColorInt int color) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, color);
     }
 
     /** Gets the NTP's background color from the SharedPreference. */
-    static @ColorInt int getBackgroundColorFromSharedPreference(@ColorInt int defaultColor) {
+    public static @ColorInt int getBackgroundColorFromSharedPreference(@ColorInt int defaultColor) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, defaultColor);

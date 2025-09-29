@@ -69,21 +69,30 @@ found in the LICENSE file.
         tools:baselinealigned="false"
         android:text="@string/ntp_customization_theme_collections_daily_update" />
 
+    <include
+        android:id="@+id/custom_color_picker_container"
+        layout="@layout/ntp_customization_custom_color_picker"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/chrome_colors_switch_button"
+        app:layout_constraintStart_toStartOf="@id/chrome_colors_switch_button"
+        app:layout_constraintEnd_toEndOf="@id/chrome_colors_switch_button"
+        android:visibility="gone"/>
+
     <FrameLayout
         android:id="@+id/chrome_colors_recycler_view_container"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ntp_customization_ntp_cards_margin"
-        app:layout_constraintTop_toBottomOf="@id/chrome_colors_switch_button"
+        app:layout_constraintTop_toBottomOf="@id/custom_color_picker_container"
         app:layout_constraintStart_toStartOf="@id/chrome_colors_switch_button"
         app:layout_constraintEnd_toEndOf="@id/chrome_colors_switch_button">
-
         <view
             class="org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator$ColorGridView"
         android:id="@+id/chrome_colors_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never" />
-
     </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

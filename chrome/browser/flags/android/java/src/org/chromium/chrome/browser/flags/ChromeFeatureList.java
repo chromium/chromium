@@ -1580,6 +1580,9 @@ public abstract class ChromeFeatureList {
                             "disable_edge_to_edge_layout_color_animation",
                             false);
 
+    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowColorPicker =
+            newBooleanCachedFeatureParam(NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_color_picker", false);
+
     /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
      * separated list of integers, and its index should match {@link #sEdgeToEdgeBottomChinOemList}.
@@ -1810,6 +1813,7 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesReselectLaxSchemeHost,
                     sNavBarColorAnimationDisableBottomChinColorAnimation,
                     sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
+                    sNewTabPageCustomizationV2ShowColorPicker,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,
                     sNotificationTrampolineNormalJobDurationMs,

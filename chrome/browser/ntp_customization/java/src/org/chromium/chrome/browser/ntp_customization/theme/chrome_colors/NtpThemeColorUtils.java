@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 
@@ -81,6 +82,21 @@ public class NtpThemeColorUtils {
                 primaryColorIndex = i - 1;
             }
             chromeColorsList.add(info);
+        }
+
+        // Handles the case of manually inputted primary and background colors. This color doesn't
+        // have a pre-build color id.
+        if (primaryColorIndex == RecyclerView.NO_POSITION && hasPrimaryColor) {
+            @ColorInt
+            int backgroundColor = NtpCustomizationUtils.getBackgroundColorFromSharedPreference(-1);
+            if (backgroundColor == -1) {
+                return primaryColorIndex;
+            }
+            var info =
+                    new NtpThemeColorInfo(
+                            context, backgroundColor, assumeNonNull(primaryColor).intValue());
+            chromeColorsList.add(info);
+            return chromeColorsList.size() - 1;
         }
 
         return primaryColorIndex;

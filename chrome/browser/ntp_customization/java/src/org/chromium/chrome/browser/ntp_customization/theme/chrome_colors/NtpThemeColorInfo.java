@@ -43,6 +43,14 @@ public class NtpThemeColorInfo {
 
     private static final float HIGHLIGHT_COLOR_ALPHA = 0.15f;
 
+    /**
+     * Constructor for predefined colors.
+     *
+     * @param context The Activity context.
+     * @param id The ID of the theme color.
+     * @param backgroundColorResId The resource ID of the background color.
+     * @param primaryColorResId The resource ID of the primary color.
+     */
     public NtpThemeColorInfo(
             Context context,
             @NtpThemeColorId int id,
@@ -53,6 +61,24 @@ public class NtpThemeColorInfo {
         primaryColor = ContextCompat.getColor(context, primaryColorResId);
         highlightColor =
                 ColorUtils.setAlphaComponentWithFloat(this.primaryColor, HIGHLIGHT_COLOR_ALPHA);
+        iconDrawable =
+                NtpThemeColorUtils.createColoredCircle(
+                        context, backgroundColor, primaryColor, highlightColor);
+    }
+
+    /**
+     * Constructor for custom colors.
+     *
+     * @param context The Activity context.
+     * @param backgroundColor The background color.
+     * @param primaryColor The primary color.
+     */
+    public NtpThemeColorInfo(
+            Context context, @ColorInt int backgroundColor, @ColorInt int primaryColor) {
+        this.backgroundColor = backgroundColor;
+        this.primaryColor = primaryColor;
+        this.highlightColor =
+                ColorUtils.setAlphaComponentWithFloat(primaryColor, HIGHLIGHT_COLOR_ALPHA);
         iconDrawable =
                 NtpThemeColorUtils.createColoredCircle(
                         context, backgroundColor, primaryColor, highlightColor);

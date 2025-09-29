@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 
@@ -39,6 +41,11 @@ public class NtpThemeColorUtilsUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
+    }
+
+    @After
+    public void tearDown() {
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
     @Test
@@ -69,19 +76,33 @@ public class NtpThemeColorUtilsUnitTest {
     @Test
     public void testInitColorsListAndFindPrimaryColorIndex_primaryColorNull() {
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                /* primaryColor= */ null, RecyclerView.NO_POSITION);
+                /* primaryColor= */ null, RecyclerView.NO_POSITION, /* expectedSize= */ 2);
     }
 
     @Test
     public void testInitColorsListAndFindPrimaryColorIndex_primaryColorExist() {
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary), 1);
+                ContextCompat.getColor(mContext, R.color.ntp_color_light_blue_primary),
+                /* expectedIndex= */ 1,
+                /* expectedSize= */ 2);
     }
 
     @Test
-    public void testInitColorsListAndFindPrimaryColorIndex_primaryColorDoesNotExist() {
+    public void testInitColorsListAndFindPrimaryColorIndex_customPrimaryColorWithBackgroundColor() {
+        @ColorInt int primaryColor = ContextCompat.getColor(mContext, R.color.default_red);
+        @ColorInt int backgroundColor = ContextCompat.getColor(mContext, R.color.green_50);
+        NtpCustomizationUtils.setBackgroundColor(backgroundColor);
+
         verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-                ContextCompat.getColor(mContext, R.color.default_red), RecyclerView.NO_POSITION);
+                primaryColor, /* expectedIndex= */ 2, /* expectedSize= */ 3);
+    }
+
+    @Test
+    public void testInitColorsListAndFindPrimaryColorIndex_customColorWithoutBackgroundColor() {
+        verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
+                ContextCompat.getColor(mContext, R.color.default_red),
+                RecyclerView.NO_POSITION,
+                /* expectedSize= */ 2);
     }
 
     @Test
@@ -116,13 +137,13 @@ public class NtpThemeColorUtilsUnitTest {
     }
 
     private void verifyInitColorsListAndFindPrimaryColorIndexReturnCorrectIndex(
-            @Nullable @ColorInt Integer primaryColor, int expectedIndex) {
+            @Nullable @ColorInt Integer primaryColor, int expectedIndex, int expectedSize) {
         List<NtpThemeColorInfo> colorList = new ArrayList<>();
 
         int index =
                 NtpThemeColorUtils.initColorsListAndFindPrimaryColorIndex(
                         mContext, colorList, primaryColor);
-        assertEquals(2, colorList.size());
+        assertEquals(expectedSize, colorList.size());
         assertEquals(expectedIndex, index);
     }
 }
