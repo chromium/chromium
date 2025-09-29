@@ -34,9 +34,12 @@ class CORE_EXPORT OutOfFlowData final
 
     std::optional<PhysicalOffset> GetOffsetForAnchor(
         const Element* anchor) const {
-      return offsets_.Contains(anchor)
-                 ? std::optional<PhysicalOffset>{offsets_.at(anchor)}
-                 : std::nullopt;
+      if (!anchor) {
+        return std::nullopt;
+      }
+      auto it = offsets_.find(anchor);
+      return it != offsets_.end() ? std::make_optional(it->value)
+                                  : std::nullopt;
     }
     void SetOffsetForAnchor(const Element* anchor, PhysicalOffset offset) {
       offsets_.Set(anchor, offset);

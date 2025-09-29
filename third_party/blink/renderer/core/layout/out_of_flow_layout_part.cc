@@ -2354,6 +2354,18 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
           try_fit_available_space, default_anchor_scroll_shift,
           &non_overflowing_range);
 
+      // The scroll-range is currently just a delta from the current scroll
+      // offset, adjust it so we can directly compare to total offset later.
+      if (RuntimeEnabledFeatures::CSSAnchorUpdateEnabled()) {
+        if (const auto* offsets = iter.GetCurrentUsedScrollOffsets()) {
+          non_overflowing_range.containing_block_range.Move(
+              offsets
+                  ->GetOffsetForAnchor(
+                      non_overflowing_range.anchor_element.Get())
+                  .value_or(PhysicalOffset()));
+        }
+      }
+
       // Also check if it fits the containing block after applying scroll offset
       // (i.e. the scroll-adjusted inset-modified containing block).
       if (offset_info) {
