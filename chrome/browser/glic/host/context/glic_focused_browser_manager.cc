@@ -22,6 +22,7 @@ namespace glic {
 
 namespace {
 constexpr base::TimeDelta kDebounceDelay = base::Seconds(0.1);
+bool g_testing_mode = false;
 
 // Returns whether `a` and `b` both point to the same object.
 // Note that if both `a` and `b` are invalidated, this returns true, even if
@@ -35,6 +36,10 @@ bool IsWeakPtrSame(const base::WeakPtr<T>& a, const base::WeakPtr<T>& b) {
          std::make_pair(b.get(), b.WasInvalidated());
 }
 }  // namespace
+
+void GlicFocusedBrowserManager::SetTestingModeForTesting(bool testing_mode) {
+  g_testing_mode = testing_mode;
+}
 
 GlicFocusedBrowserManager::GlicFocusedBrowserManager(
     GlicWindowController* window_controller)
@@ -220,7 +225,9 @@ BrowserWindowInterface* GlicFocusedBrowserManager::ComputeBrowserCandidate() {
 
 BrowserWindowInterface* GlicFocusedBrowserManager::ComputeActiveBrowser() {
 #if BUILDFLAG(IS_MAC)
-  if (!ui::IsActiveApplication()) {
+  // Ignore this check when testing because we can't guarantee that the
+  // application is active.
+  if (!g_testing_mode && !ui::IsActiveApplication()) {
     return nullptr;
   }
 #endif

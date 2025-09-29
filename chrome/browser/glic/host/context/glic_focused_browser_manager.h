@@ -78,6 +78,10 @@ class GlicFocusedBrowserManager : public GlicFocusedBrowserManagerInterface,
       const mojom::PanelState&,
       const GlicWindowController::PanelStateContext& context) override;
 
+  // Sets whether the manager is in testing mode. When in testing mode, logic
+  // for determining the active browser is modified to be more deterministic.
+  static void SetTestingModeForTesting(bool testing_mode);
+
  private:
   // Tracks the state of the focused browser and candidate focused browser.
   struct FocusedBrowserState {
