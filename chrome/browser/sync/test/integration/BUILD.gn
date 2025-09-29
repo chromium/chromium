@@ -149,6 +149,7 @@ source_set("sync_integration_tests_impl") {
       "single_client_webauthn_credentials_sync_test.cc",
       "sync_auth_test.cc",
       "sync_errors_test.cc",
+      "sync_os_crypt_async_migration_test.cc",
 
       # Tests with two clients can't run on Android because Android doesn't
       # support multiple profiles.

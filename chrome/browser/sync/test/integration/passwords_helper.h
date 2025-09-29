@@ -91,6 +91,10 @@ int GetPasswordCount(int index,
                      password_manager::PasswordForm::Store store =
                          password_manager::PasswordForm::Store::kProfileStore);
 
+// Gets all passwords from the password store of |profile_index|.
+std::vector<password_manager::PasswordForm> GetAllPasswordsForProfile(
+    int profile_index);
+
 // Returns the number of forms in the password store of the verifier profile.
 int GetVerifierPasswordCount();
 

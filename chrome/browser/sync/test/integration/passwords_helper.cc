@@ -227,6 +227,18 @@ int GetPasswordCount(int index, PasswordForm::Store store) {
   return GetLogins(GetPasswordStoreInterface(index, store)).size();
 }
 
+std::vector<password_manager::PasswordForm> GetAllPasswordsForProfile(
+    int profile_index) {
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> logins =
+      GetLogins(GetProfilePasswordStoreInterface(profile_index));
+  std::vector<password_manager::PasswordForm> passwords;
+  passwords.reserve(logins.size());
+  for (const auto& login : logins) {
+    passwords.push_back(*login);
+  }
+  return passwords;
+}
+
 int GetVerifierPasswordCount() {
   return GetLogins(GetVerifierProfilePasswordStoreInterface()).size();
 }
