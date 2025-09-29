@@ -86,7 +86,8 @@ void ReadExportedPolicyFile(base::Value::Dict* policies,
   // "policies.json" under `output_path`.
   std::string file_contents;
   ASSERT_TRUE(base::ReadFileToString(file_path, &file_contents));
-  std::optional<base::Value> dict_value = base::JSONReader::Read(file_contents);
+  std::optional<base::Value> dict_value = base::JSONReader::Read(
+      file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict_value);
   *policies = std::move(dict_value->GetDict());
 }

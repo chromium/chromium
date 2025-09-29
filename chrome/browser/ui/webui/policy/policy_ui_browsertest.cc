@@ -251,7 +251,8 @@ void PolicyUITest::VerifyPolicies(
       "JSON.stringify(policies);";
   std::string json =
       content::EvalJs(web_contents(), javascript).ExtractString();
-  std::optional<base::Value> value_ptr = base::JSONReader::Read(json);
+  std::optional<base::Value> value_ptr =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value_ptr);
   ASSERT_TRUE(value_ptr->is_list());
   const base::Value::List& actual_policies = value_ptr->GetList();

@@ -63,9 +63,10 @@ class NewTabPageTest : public InProcessBrowserTest,
   // content::DevToolsAgentHostClient:
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {
-    std::optional<base::Value> maybe_parsed_message =
-        base::JSONReader::Read(std::string_view(
-            reinterpret_cast<const char*>(message.data()), message.size()));
+    std::optional<base::Value> maybe_parsed_message = base::JSONReader::Read(
+        std::string_view(reinterpret_cast<const char*>(message.data()),
+                         message.size()),
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(maybe_parsed_message.has_value());
     base::Value::Dict parsed_message =
         std::move(maybe_parsed_message.value()).TakeDict();

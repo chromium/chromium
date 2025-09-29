@@ -1123,7 +1123,8 @@ void SetAnalysisConnector(PrefService* prefs,
     settings_list->clear();
   }
 
-  settings_list->Append(*base::JSONReader::Read(pref_value));
+  settings_list->Append(*base::JSONReader::Read(
+      pref_value, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   prefs->SetInteger(
       AnalysisConnectorScopePref(connector),
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);

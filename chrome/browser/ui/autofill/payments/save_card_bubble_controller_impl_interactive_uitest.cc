@@ -55,7 +55,8 @@ class SaveCardBubbleControllerImplTest
         "        \"url\": \"http://www.example.com/pp\""
         "     } ]"
         "  } ]"
-        "}"));
+        "}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     EXPECT_TRUE(value->is_dict());
     LegalMessageLines legal_message_lines;
     LegalMessageLine::Parse(value->GetDict(), &legal_message_lines,

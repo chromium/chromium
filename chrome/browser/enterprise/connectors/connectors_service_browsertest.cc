@@ -223,8 +223,9 @@ class ConnectorsServiceProfileBrowserTest
                 const char* scope_pref,
                 const char* pref_value,
                 bool profile_scope = true) {
-    browser()->profile()->GetPrefs()->Set(pref,
-                                          *base::JSONReader::Read(pref_value));
+    browser()->profile()->GetPrefs()->Set(
+        pref, *base::JSONReader::Read(pref_value,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     browser()->profile()->GetPrefs()->SetInteger(
         scope_pref, profile_scope ? policy::POLICY_SCOPE_USER
                                   : policy::POLICY_SCOPE_MACHINE);

@@ -135,8 +135,9 @@ class ChromeBrowsingDataLifetimeManagerTest
     // triggered even if the same pref value is set twice in a row.
     GetProfile()->GetPrefs()->ClearPref(
         browsing_data::prefs::kBrowsingDataLifetime);
-    GetProfile()->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
-                                  *base::JSONReader::Read(pref));
+    GetProfile()->GetPrefs()->Set(
+        browsing_data::prefs::kBrowsingDataLifetime,
+        *base::JSONReader::Read(pref, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
     completion_observer.BlockUntilCompletion();
   }
@@ -615,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
   static constexpr char kPref[] = R"([])";
   GetProfile()->GetPrefs()->Set(
       browsing_data::prefs::kClearBrowsingDataOnExitList,
-      *base::JSONReader::Read(kPref));
+      *base::JSONReader::Read(kPref, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -651,7 +652,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
       "hosted_app_data"])";
   GetProfile()->GetPrefs()->Set(
       browsing_data::prefs::kClearBrowsingDataOnExitList,
-      *base::JSONReader::Read(kPref));
+      *base::JSONReader::Read(kPref, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   base::RunLoop().RunUntilIdle();
 }
 

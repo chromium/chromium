@@ -75,7 +75,8 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
                   "with"
                   "{0}.\", \"template_parameter\": [ { \"display_text\": "
                   "\"a link\", \"url\": \"http://www.example.com/\" "
-                  "} ] }] }")
+                  "} ] }] }",
+                  base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                   ->GetDict(),
               &model.legal_message_lines, true);
           controller_->Show(

@@ -44,8 +44,8 @@ std::unique_ptr<APIPermission> UnpackPermissionWithArguments(
     std::string_view permission_arg,
     const std::string& permission_str,
     std::string* error) {
-  std::optional<base::Value> permission_json =
-      base::JSONReader::Read(permission_arg);
+  std::optional<base::Value> permission_json = base::JSONReader::Read(
+      permission_arg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!permission_json) {
     *error = ErrorUtils::FormatErrorMessage(kInvalidParameter, permission_str);
     return nullptr;

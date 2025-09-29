@@ -46,7 +46,8 @@ class LogNetLogTest : public InProcessBrowserTest {
         << "Could not read: " << net_log_path;
 
     // Parse it as JSON.
-    auto parsed = base::JSONReader::Read(file_contents);
+    auto parsed = base::JSONReader::Read(file_contents,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(parsed);
 
     // Detailed checking is done by LogNetLogExplicitFileTest, so this test just
@@ -96,7 +97,8 @@ class LogNetLogExplicitFileTest
         << "Could not read: " << net_log_path_;
 
     // Parse it as JSON.
-    auto parsed = base::JSONReader::Read(file_contents);
+    auto parsed = base::JSONReader::Read(file_contents,
+                                         base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(parsed);
 
     // Ensure the root value is a dictionary.
@@ -181,8 +183,8 @@ class LogNetLogInvalidDurationTest
         << "Could not read: " << net_log_path_;
 
     // Parse it as JSON
-    std::optional<base::Value> log_value =
-        base::JSONReader::Read(file_contents);
+    std::optional<base::Value> log_value = base::JSONReader::Read(
+        file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(log_value.has_value());
     EXPECT_TRUE(log_value->is_dict());
   }
@@ -261,8 +263,8 @@ class LogNetLogValidDurationTest : public InProcessBrowserTest {
       return false;
     }
 
-    std::optional<base::Value> parsed_json =
-        base::JSONReader::Read(file_contents);
+    std::optional<base::Value> parsed_json = base::JSONReader::Read(
+        file_contents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!parsed_json.has_value() || !parsed_json->is_dict()) {
       return false;
     }

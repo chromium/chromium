@@ -1867,7 +1867,8 @@ class NavCaptureParameterizedBrowserTest
           "tests": {}
         })";
     }
-    test_expectations_ = base::JSONReader::Read(json_data);
+    test_expectations_ =
+        base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(test_expectations_) << "Unable to read test expectation file";
     ASSERT_TRUE(test_expectations_.value().is_dict());
   }

@@ -1044,7 +1044,8 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
       []
     ]
   )";
-  SetRules(*base::JSONReader::Read(kRules));
+  SetRules(
+      *base::JSONReader::Read(kRules, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   extension_loader()->set_ignore_manifest_warnings(true);
 

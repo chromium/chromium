@@ -141,7 +141,8 @@ void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
 
 void SetExtensionSettings(const std::string& settings_string,
                           TestingProfile* profile) {
-  std::optional<base::Value> settings = base::JSONReader::Read(settings_string);
+  std::optional<base::Value> settings = base::JSONReader::Read(
+      settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(settings.has_value());
   profile->GetTestingPrefService()->SetManagedPref(
       pref_names::kExtensionManagement,
@@ -383,8 +384,8 @@ class WebstorePrivateBeginInstallWithManifest3Test
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings);
     profile()->GetTestingPrefService()->SetManagedPref(
         pref_names::kExtensionManagement,

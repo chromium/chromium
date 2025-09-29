@@ -479,7 +479,8 @@ TEST_F(MirroringActivityTest, GetScrubbedLogMessage) {
       "type": "OFFER"
     })";
 
-  std::optional<base::Value> message_json = base::JSONReader::Read(message);
+  std::optional<base::Value> message_json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_TRUE(message_json);
   EXPECT_TRUE(message_json.value().is_dict());
   EXPECT_THAT(scrubbed_message,
@@ -836,7 +837,8 @@ TEST_F(MirroringActivityTest, CastStreamingSenderUma) {
       ]
     }
     })";
-  std::optional<base::Value> stats = base::JSONReader::Read(kJsonStats);
+  std::optional<base::Value> stats =
+      base::JSONReader::Read(kJsonStats, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(stats.has_value());
 
   MediaSource source = MediaSource::ForDesktop(kDesktopMediaId, true);

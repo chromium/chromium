@@ -86,7 +86,8 @@ class UpdateServiceTest : public ExtensionUpdateClientBaseTest {
     }
 
     const std::string update_request = std::get<0>(requests[index]);
-    std::optional<base::Value> root = base::JSONReader::Read(update_request);
+    std::optional<base::Value> root = base::JSONReader::Read(
+        update_request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!root) {
       return std::nullopt;
     }
@@ -525,7 +526,8 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
     }
 
     const std::string update_request = std::get<0>(requests[index]);
-    std::optional<base::Value> root = base::JSONReader::Read(update_request);
+    std::optional<base::Value> root = base::JSONReader::Read(
+        update_request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!root) {
       return std::nullopt;
     }

@@ -229,29 +229,29 @@ class CastMirroringServiceHostBrowserTest
 
     base::RunLoop run_loop;
     EXPECT_CALL(*outbound_channel_receiver_, OnMessage(_))
-        .WillOnce(
-            [expected_delay_ms,
-             &run_loop](mirroring::mojom::CastMessagePtr message) {
-              const std::optional<base::Value> root_or_error =
-                  base::JSONReader::Read(message->json_format_data);
-              ASSERT_TRUE(root_or_error);
-              const base::Value::Dict& root = root_or_error->GetDict();
-              const std::string* type = root.FindString("type");
-              ASSERT_TRUE(type);
-              if (*type == "OFFER") {
-                const base::Value::Dict* offer = root.FindDict("offer");
-                EXPECT_TRUE(offer);
-                const base::Value::List* streams =
-                    offer->FindList("supportedStreams");
-                for (auto& stream : *streams) {
-                  const base::Value::Dict& stream_dict = stream.GetDict();
-                  const int stream_target_delay =
-                      stream_dict.FindInt("targetDelay").value();
-                  EXPECT_EQ(stream_target_delay, expected_delay_ms);
-                }
-              }
-              run_loop.Quit();
-            });
+        .WillOnce([expected_delay_ms,
+                   &run_loop](mirroring::mojom::CastMessagePtr message) {
+          const std::optional<base::Value> root_or_error =
+              base::JSONReader::Read(message->json_format_data,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+          ASSERT_TRUE(root_or_error);
+          const base::Value::Dict& root = root_or_error->GetDict();
+          const std::string* type = root.FindString("type");
+          ASSERT_TRUE(type);
+          if (*type == "OFFER") {
+            const base::Value::Dict* offer = root.FindDict("offer");
+            EXPECT_TRUE(offer);
+            const base::Value::List* streams =
+                offer->FindList("supportedStreams");
+            for (auto& stream : *streams) {
+              const base::Value::Dict& stream_dict = stream.GetDict();
+              const int stream_target_delay =
+                  stream_dict.FindInt("targetDelay").value();
+              EXPECT_EQ(stream_target_delay, expected_delay_ms);
+            }
+          }
+          run_loop.Quit();
+        });
     host_->Start(std::move(session_params), std::move(observer),
                  std::move(outbound_channel),
                  inbound_channel_.BindNewPipeAndPassReceiver(), "Sink Name");

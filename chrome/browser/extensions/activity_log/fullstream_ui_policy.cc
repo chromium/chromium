@@ -195,8 +195,8 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
         query.ColumnString(3), query.ColumnInt64(9));
 
     if (query.GetColumnType(4) != sql::ColumnType::kNull) {
-      std::optional<base::Value> parsed_value =
-          base::JSONReader::Read(query.ColumnStringView(4));
+      std::optional<base::Value> parsed_value = base::JSONReader::Read(
+          query.ColumnStringView(4), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (parsed_value && parsed_value->is_list()) {
         action->set_args(std::move(*parsed_value).TakeList());
       }
@@ -207,8 +207,8 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
     action->ParseArgUrl(query.ColumnString(7));
 
     if (query.GetColumnType(8) != sql::ColumnType::kNull) {
-      std::optional<base::Value> parsed_value =
-          base::JSONReader::Read(query.ColumnStringView(8));
+      std::optional<base::Value> parsed_value = base::JSONReader::Read(
+          query.ColumnStringView(8), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (parsed_value && parsed_value->is_dict()) {
         action->set_other(std::move(*parsed_value).TakeDict());
       }

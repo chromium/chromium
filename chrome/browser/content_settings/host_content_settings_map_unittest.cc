@@ -1551,13 +1551,15 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeAndPunycode) {
   TestingProfile profile;
 
   base::Value value =
-      base::JSONReader::Read("{\"[*.]\\xC4\\x87ira.com,*\":{\"setting\":1}}")
+      base::JSONReader::Read("{\"[*.]\\xC4\\x87ira.com,*\":{\"setting\":1}}",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
           .value();
   profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES), value);
 
   // Set punycode equivalent, with different setting.
   base::Value puny_value =
-      base::JSONReader::Read("{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}")
+      base::JSONReader::Read("{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
           .value();
   profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES),
                           puny_value);

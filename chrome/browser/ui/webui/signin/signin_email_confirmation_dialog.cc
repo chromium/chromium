@@ -164,7 +164,8 @@ content::WebContents* SigninEmailConfirmationDialog::GetDialogWebContents()
 void SigninEmailConfirmationDialog::OnDialogClosed(
     const std::string& json_retval) {
   Action action = CLOSE;
-  std::optional<base::Value> ret_value = base::JSONReader::Read(json_retval);
+  std::optional<base::Value> ret_value =
+      base::JSONReader::Read(json_retval, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (ret_value && ret_value->is_dict()) {
     const std::string* action_string =
         ret_value->GetDict().FindString(kSigninEmailConfirmationActionKey);

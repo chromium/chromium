@@ -242,7 +242,9 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
                const std::string& event_name,
                const std::string& json_args) {
     base::RunLoop loop;
-    base::Value args = base::JSONReader::Read(json_args).value();
+    base::Value args =
+        base::JSONReader::Read(json_args, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+            .value();
     waiting_for_ =
         std::make_unique<Event>(profile, event_name, args, base::Time());
     for (const auto& event : events_) {

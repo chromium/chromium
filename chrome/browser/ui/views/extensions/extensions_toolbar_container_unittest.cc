@@ -174,7 +174,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ForcePinnedExtensionsCannotReorder) {
         }
       })",
       extensionC->id().c_str());
-  std::optional<base::Value> settings = base::JSONReader::Read(json);
+  std::optional<base::Value> settings =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(settings.has_value());
   profile()->GetTestingPrefService()->SetManagedPref(
       extensions::pref_names::kExtensionManagement,

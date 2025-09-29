@@ -101,8 +101,8 @@ std::optional<base::Value::Dict> ReadValuesFromFile(
         << "Preference file " << file_path << " does not exist.";
     std::string file_content;
     ASSERT_TRUE(base::ReadFileToString(file_path, &file_content));
-    std::optional<base::Value> json_content =
-        base::JSONReader::Read(file_content);
+    std::optional<base::Value> json_content = base::JSONReader::Read(
+        file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(json_content.has_value() && json_content->is_dict())
         << "Failed to parse file content: " << file_content;
     if (!key.has_value()) {

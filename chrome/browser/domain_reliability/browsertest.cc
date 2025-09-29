@@ -244,7 +244,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   EXPECT_EQ(1, request_count);
   EXPECT_NE("", last_request_content);
 
-  auto body = base::JSONReader::Read(last_request_content);
+  auto body = base::JSONReader::Read(last_request_content,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(body);
   ASSERT_TRUE(body->is_dict());
 

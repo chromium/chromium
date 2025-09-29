@@ -60,7 +60,8 @@ void SettingSyncData::ExtractSyncData(const syncer::SyncData& sync_data) {
 
   extension_id_ = extension_specifics.extension_id();
   key_ = extension_specifics.key();
-  value_ = base::JSONReader::Read(extension_specifics.value());
+  value_ = base::JSONReader::Read(extension_specifics.value(),
+                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!value_) {
     LOG(WARNING) << "Specifics for " << extension_id_ << "/" << key_

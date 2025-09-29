@@ -62,8 +62,8 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
 
   void SetExtensionSettings(const std::string& settings_string,
                             TestingProfile* profile) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings.has_value());
     profile->GetTestingPrefService()->SetManagedPref(
         extensions::pref_names::kExtensionManagement,

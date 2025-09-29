@@ -347,7 +347,8 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   // of a larger JSON initially decoded using the data decoder utility in the
   // PromoService to base::Value. The middle-slot promo part is then reencoded
   // from base::Value to a JSON string stored in |data.middle_slot_json|.
-  auto middle_slot = base::JSONReader::Read(data.middle_slot_json);
+  auto middle_slot = base::JSONReader::Read(
+      data.middle_slot_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!middle_slot.has_value()) {
     return nullptr;
   }
@@ -1212,7 +1213,8 @@ void NewTabPageHandler::OnLogFetchResult(OnDoodleImageRenderedCallback callback,
     std::move(callback).Run("", std::nullopt, "");
     return;
   }
-  auto value = base::JSONReader::Read(body->substr(4));
+  auto value = base::JSONReader::Read(body->substr(4),
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value.has_value()) {
     std::move(callback).Run("", std::nullopt, "");
     return;

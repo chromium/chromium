@@ -254,7 +254,8 @@ void ComponentUpdaterPolicyTest::VerifyExpectations(bool update_disabled) {
                   update_disabled ? " updatedisabled=\"true\"" : "")));
   } else if (base::StartsWith(request, R"({"request":{)",
                               base::CompareCase::SENSITIVE)) {
-    const auto root = base::JSONReader::Read(request);
+    const auto root =
+        base::JSONReader::Read(request, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(root);
     const auto* update_check =
         (*root->GetDict().FindDict("request")->FindList("apps"))[0]

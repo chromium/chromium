@@ -335,7 +335,8 @@ class ConnectorsServiceExemptURLsTest
   void SetUp() override {
     profile_->GetPrefs()->Set(
         AnalysisConnectorPref(connector()),
-        *base::JSONReader::Read(kWildcardAnalysisSettingsPref));
+        *base::JSONReader::Read(kWildcardAnalysisSettingsPref,
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     profile_->GetPrefs()->SetInteger(AnalysisConnectorScopePref(connector()),
                                      policy::POLICY_SCOPE_MACHINE);
   }
@@ -383,15 +384,17 @@ TEST_P(ConnectorsServiceExemptURLsTest, BlobAndFilesystem) {
 
   // Test against a specific pattern policy to validate the correct inner URL is
   // used.
-  profile_->GetPrefs()->Set(AnalysisConnectorPref(connector()),
-                            *base::JSONReader::Read(R"([
+  profile_->GetPrefs()->Set(
+      AnalysisConnectorPref(connector()),
+      *base::JSONReader::Read(R"([
         {
           "service_provider": "google",
           "enable": [
             {"url_list": ["foo.com"], "tags": ["dlp", "malware"]}
           ]
         }
-      ])"));
+      ])",
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   for (const char* url_string :
        {"blob:https://foo.com", "blob:ftp://foo.com/with/path",

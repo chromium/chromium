@@ -472,7 +472,8 @@ std::optional<base::Value::Dict> ReadRecipeFile(
   }
 
   // Convert the file text into a json object.
-  std::optional<base::Value> parsed_json = base::JSONReader::Read(json_text);
+  std::optional<base::Value> parsed_json =
+      base::JSONReader::Read(json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
     ADD_FAILURE() << "Failed to deserialize json text!";
     return std::nullopt;
@@ -998,8 +999,8 @@ bool TestRecipeReplayer::OverrideTimeClock(
     return false;
   }
   // Convert the file text into a json object.
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(decompressed_json_text);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      decompressed_json_text, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
     VLOG(1) << kTimeClockOverrideNotSetMessage << "Failed to deserialize json";
     return false;

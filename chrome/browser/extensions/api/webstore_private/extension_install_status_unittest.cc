@@ -94,8 +94,8 @@ class ExtensionInstallStatusTest : public testing::Test {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings);
     SetPolicy(pref_names::kExtensionManagement,
               base::Value::ToUniquePtrValue(std::move(*settings)));

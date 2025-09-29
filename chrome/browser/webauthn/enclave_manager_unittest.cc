@@ -204,7 +204,9 @@ std::unique_ptr<network::NetworkService> CreateNetwork(
 }
 
 scoped_refptr<device::JSONRequest> JSONFromString(std::string_view json_str) {
-  base::Value json_request = base::JSONReader::Read(json_str).value();
+  base::Value json_request =
+      base::JSONReader::Read(json_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value();
   return base::MakeRefCounted<device::JSONRequest>(std::move(json_request));
 }
 

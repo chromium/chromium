@@ -99,7 +99,8 @@ TEST_F(BrowserSwitchHandlerTest, GetBrowserSwitchInternalsJson) {
   EXPECT_TRUE(call_data.arg2()->GetBool());
 
   const std::string& json_string = call_data.arg3()->GetString();
-  auto parsed_json = base::JSONReader::Read(json_string);
+  auto parsed_json =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   const base::Value::Dict& dict = parsed_json->GetDict();
   const base::Value::Dict* policies = dict.FindDict("policies");
   EXPECT_TRUE(policies->FindBool("BrowserSwitcherEnabled").value());

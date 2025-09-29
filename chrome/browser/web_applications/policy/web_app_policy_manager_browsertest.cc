@@ -122,7 +122,8 @@ class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
     profile()->GetPrefs()->Set(
         prefs::kWebAppInstallForceList,
         base::JSONReader::Read(
-            base::ReplaceStringPlaceholders(json, replacements, nullptr))
+            base::ReplaceStringPlaceholders(json, replacements, nullptr),
+            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
             .value());
   }
 };

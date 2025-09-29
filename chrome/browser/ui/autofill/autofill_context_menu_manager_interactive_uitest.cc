@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      dialog_args_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");
@@ -244,7 +245,8 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Extract autofill metadata from dialog arguments and check for correctness.
   std::string dialog_args_str = feedback_dialog->GetDialogArgs();
-  std::optional<base::Value> value = base::JSONReader::Read(dialog_args_str);
+  std::optional<base::Value> value = base::JSONReader::Read(
+      dialog_args_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value() && value->is_dict());
   const std::string* autofill_metadata =
       value->GetDict().FindString("autofillMetadata");

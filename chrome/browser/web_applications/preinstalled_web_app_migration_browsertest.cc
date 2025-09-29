@@ -266,7 +266,8 @@ class PreinstalledWebAppMigrationBrowserTest
           })",
           {GetWebAppUrl().spec(), kMigrationFlag, uninstall_and_replace_},
           nullptr);
-      app_configs.Append(*base::JSONReader::Read(app_config_string));
+      app_configs.Append(*base::JSONReader::Read(
+          app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
     }
     base::AutoReset<const base::Value::List*> configs_for_testing =
         PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);

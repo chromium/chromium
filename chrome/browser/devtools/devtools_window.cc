@@ -309,7 +309,8 @@ class DevToolsEventForwarder {
 
 void DevToolsEventForwarder::SetWhitelistedShortcuts(
     const std::string& message) {
-  std::optional<base::Value> parsed_message = base::JSONReader::Read(message);
+  std::optional<base::Value> parsed_message =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_message || !parsed_message->is_list()) {
     return;
   }
@@ -1807,7 +1808,8 @@ void DevToolsWindow::RenderProcessGone(bool crashed) {
 }
 
 void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
-  std::optional<base::Value> value = base::JSONReader::Read(cert_chain);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(cert_chain, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(value && value->is_list());
   std::vector<std::string> decoded;
   for (const auto& item : value->GetList()) {

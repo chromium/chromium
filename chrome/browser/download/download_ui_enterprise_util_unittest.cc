@@ -75,12 +75,14 @@ TEST_F(DownloadUiEnterpriseUtilTest, DoesDownloadConnectorBlock) {
   profile_->GetPrefs()->Set(
       enterprise_connectors::AnalysisConnectorPref(
           enterprise_connectors::FILE_DOWNLOADED),
-      *base::JSONReader::Read(kDownloadConnectorEnabledNonBlockingPref));
+      *base::JSONReader::Read(kDownloadConnectorEnabledNonBlockingPref,
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   EXPECT_FALSE(DoesDownloadConnectorBlock(profile_, GURL()));
   profile_->GetPrefs()->Set(
       enterprise_connectors::AnalysisConnectorPref(
           enterprise_connectors::FILE_DOWNLOADED),
-      *base::JSONReader::Read(kDownloadConnectorEnabledBlockingPref));
+      *base::JSONReader::Read(kDownloadConnectorEnabledBlockingPref,
+                              base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   EXPECT_TRUE(DoesDownloadConnectorBlock(profile_, GURL()));
 #else

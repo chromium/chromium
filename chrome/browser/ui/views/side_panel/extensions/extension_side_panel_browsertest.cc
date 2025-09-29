@@ -2418,8 +2418,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
 
   // Parse the JSON string received from the extension.
-  std::optional<base::Value> value =
-      base::JSONReader::Read(opened_listener.message());
+  std::optional<base::Value> value = base::JSONReader::Read(
+      opened_listener.message(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_dict());
   const base::Value::Dict& open_info = value->GetDict();

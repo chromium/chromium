@@ -96,7 +96,8 @@ std::string SerializeValueToJsonOrDie(const base::Value& value) {
 }
 
 base::Value DeserializeValueFromJsonOrDie(std::string_view json) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(value.has_value());
   return *std::move(value);
 }
@@ -382,7 +383,8 @@ TEST(WebAppTest, IsolationDataDebugValue) {
 
   EXPECT_TRUE(app.isolation_data().has_value());
 
-  base::Value expected_isolation_data = base::JSONReader::Read(R"|({
+  base::Value expected_isolation_data =
+      base::JSONReader::Read(R"|({
         "isolated_web_app_location": {
           "owned_bundle": {
             "dev_mode": false,
@@ -394,8 +396,9 @@ TEST(WebAppTest, IsolationDataDebugValue) {
         "opened_tabs_counter_notification_state": null,
         "pending_update_info": null,
         "integrity_block_data": null
-      })|")
-                                            .value();
+      })|",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value();
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
   base::Value::Dict* debug_isolation_data =
@@ -461,12 +464,13 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
         "update_channel": "$4"
       })|";
 
-  base::Value expected_isolation_data =
-      *base::JSONReader::Read(base::ReplaceStringPlaceholders(
+  base::Value expected_isolation_data = *base::JSONReader::Read(
+      base::ReplaceStringPlaceholders(
           kExpectedIsolationDataFormat,
           {ib_data_serialized, ib_data_serialized,
            GURL(kUpdateManifestUrl).spec(), kUpdateChannel.ToString()},
-          /*offsets=*/nullptr));
+          /*offsets=*/nullptr),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
   base::Value::Dict* debug_isolation_data =
@@ -503,7 +507,8 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
 
   EXPECT_TRUE(!app.permissions_policy().empty());
 
-  base::Value expected_permissions_policy = base::JSONReader::Read(R"([
+  base::Value expected_permissions_policy =
+      base::JSONReader::Read(R"([
         {
           "allowed_origins": [  ],
           "feature": "gyroscope",
@@ -522,8 +527,9 @@ TEST(WebAppTest, PermissionsPolicyDebugValue) {
           "matches_all_origins": false,
           "matches_opaque_src": false
         }
-      ])")
-                                                .value();
+      ])",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+          .value();
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
   base::Value::List* debug_permissions_policy =

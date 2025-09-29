@@ -450,7 +450,8 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
       base::FilePath prefs_path = profile_path.AppendASCII("Preferences");
       std::string prefs_string;
       ASSERT_TRUE(base::ReadFileToString(prefs_path, &prefs_string));
-      std::optional<base::Value> prefs = base::JSONReader::Read(prefs_string);
+      std::optional<base::Value> prefs = base::JSONReader::Read(
+          prefs_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       ASSERT_TRUE(prefs);
       ASSERT_TRUE(prefs->is_dict());
       prefs->GetDict().SetByDottedPath(prefs::kGoogleServicesConsentedToSync,

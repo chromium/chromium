@@ -151,7 +151,8 @@ SyncConfigInfo::SyncConfigInfo() = default;
 SyncConfigInfo::~SyncConfigInfo() = default;
 
 bool GetConfiguration(const std::string& json, SyncConfigInfo* config) {
-  std::optional<base::Value> parsed_value = base::JSONReader::Read(json);
+  std::optional<base::Value> parsed_value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_value.has_value() || !parsed_value->is_dict()) {
     DLOG(ERROR) << "GetConfiguration() not passed a Dictionary";
     return false;

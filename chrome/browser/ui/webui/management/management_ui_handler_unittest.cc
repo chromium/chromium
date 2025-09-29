@@ -374,7 +374,8 @@ class ManagementUIHandlerTests :
   void SetConnectorPolicyValue(const char* policy_key,
                                const std::string& value,
                                policy::PolicyMap& policies) {
-    auto policy_value = base::JSONReader::Read(value);
+    auto policy_value =
+        base::JSONReader::Read(value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_TRUE(policy_value.has_value());
     policies.Set(policy_key, policy::POLICY_LEVEL_MANDATORY,
                  policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,

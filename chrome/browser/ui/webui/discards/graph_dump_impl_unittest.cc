@@ -244,20 +244,26 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
   for (const auto& kv : change_stream.process_map()) {
     const auto* process_info = kv.second.get();
     EXPECT_NE(0u, process_info->id);
-    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"process\"}}"),
-              base::JSONReader::Read(process_info->description_json));
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"process\"}}",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              base::JSONReader::Read(process_info->description_json,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
 
   EXPECT_EQ(graph_.GetAllFrameNodes().size(), change_stream.frame_map().size());
   for (const auto& kv : change_stream.frame_map()) {
-    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"frame\"}}"),
-              base::JSONReader::Read(kv.second->description_json));
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"frame\"}}",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              base::JSONReader::Read(kv.second->description_json,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
   EXPECT_EQ(graph_.GetAllWorkerNodes().size(),
             change_stream.worker_map().size());
   for (const auto& kv : change_stream.worker_map()) {
-    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"worker\"}}"),
-              base::JSONReader::Read(kv.second->description_json));
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"worker\"}}",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              base::JSONReader::Read(kv.second->description_json,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
 
   // Count the top-level frames as we go.
@@ -287,8 +293,10 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
     const auto& page = kv.second;
     EXPECT_NE(0u, page->id);
     EXPECT_EQ(kExampleUrl, page->main_frame_url);
-    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"page\"}}"),
-              base::JSONReader::Read(kv.second->description_json));
+    EXPECT_EQ(base::JSONReader::Read("{\"test\":{\"type\":\"page\"}}",
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+              base::JSONReader::Read(kv.second->description_json,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
 
   // Test change notifications.
@@ -338,8 +346,8 @@ TEST_F(DiscardsGraphDumpImplTest, ChangeStream) {
               // Check that the descriptions make sense.
               for (auto kv : node_descriptions_json) {
                 keys_received.push_back(kv.first);
-                std::optional<base::Value> v =
-                    base::JSONReader::Read(kv.second);
+                std::optional<base::Value> v = base::JSONReader::Read(
+                    kv.second, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
                 EXPECT_TRUE(v->is_dict());
                 base::Value::Dict* dict = v->GetDict().FindDict("test");
                 EXPECT_TRUE(dict);

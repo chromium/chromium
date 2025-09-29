@@ -203,7 +203,8 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
     }
 
     bool is_refresh = [&]() {
-      std::optional<base::Value> body = base::JSONReader::Read(request.content);
+      std::optional<base::Value> body = base::JSONReader::Read(
+          request.content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!body || !body->is_dict()) {
         return false;
       }

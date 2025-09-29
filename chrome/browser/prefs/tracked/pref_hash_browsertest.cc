@@ -1238,8 +1238,10 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
     })";
 
     // Try to override default search in all three of available preferences.
-    base::Value attack1 = *base::JSONReader::Read(default_search_provider_data);
-    base::Value attack2 = *base::JSONReader::Read(search_provider_overrides);
+    base::Value attack1 = *base::JSONReader::Read(
+        default_search_provider_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    base::Value attack2 = *base::JSONReader::Read(
+        search_provider_overrides, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     unprotected_preferences->Merge(attack1.GetDict().Clone());
     unprotected_preferences->Merge(attack2.GetDict().Clone());
     if (protected_preferences) {

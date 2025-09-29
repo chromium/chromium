@@ -78,7 +78,8 @@ base::flat_map<std::string, SAMLProfileAttributes>& GetAttributeMap() {
   }
 
   std::optional<base::Value> switch_value = base::JSONReader::Read(
-      command_line.GetSwitchValueASCII(switches::kProfileManagementAttributes));
+      command_line.GetSwitchValueASCII(switches::kProfileManagementAttributes),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!switch_value || !switch_value->is_dict()) {
     VLOG(1) << "[Profile management] Failed to parse attributes JSON.";
     return *profile_attributes;

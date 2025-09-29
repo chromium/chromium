@@ -522,7 +522,8 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
   if (result < 0) {
     return;
   }
-  std::optional<base::Value> value = base::JSONReader::Read(response);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     return;
   }

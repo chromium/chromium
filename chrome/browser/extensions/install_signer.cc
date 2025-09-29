@@ -367,7 +367,8 @@ void InstallSigner::ParseFetchResponse(
   // where |invalid_ids| is a list of ids from the original request that
   // could not be verified to be in the webstore.
 
-  std::optional<base::Value> parsed = base::JSONReader::Read(*response_body);
+  std::optional<base::Value> parsed = base::JSONReader::Read(
+      *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   bool json_success = parsed && parsed->is_dict();
   if (!json_success) {
     ReportErrorViaCallback();

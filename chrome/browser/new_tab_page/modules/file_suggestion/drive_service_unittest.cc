@@ -99,7 +99,8 @@ TEST_F(DriveServiceTest, PassesDataOnSuccess) {
                                ->at(0)
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
-  auto body_value = base::JSONReader::Read(request_body);
+  auto body_value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ("en-US", *body_value->GetDict().FindStringByDottedPath(
                          "client_info.language_code"));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -434,7 +435,8 @@ TEST_F(DriveServiceTest, PassesDataIfSegmentationIsEnabled) {
                                ->at(0)
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
-  auto body_value = base::JSONReader::Read(request_body);
+  auto body_value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ("en-US", *body_value->GetDict().FindStringByDottedPath(
                          "client_info.language_code"));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -490,7 +492,8 @@ TEST_F(DriveServiceTest, AddsClientTagIfRequested) {
                                ->at(0)
                                .As<network::DataElementBytes>()
                                .AsStringPiece());
-  auto body_value = base::JSONReader::Read(request_body);
+  auto body_value = base::JSONReader::Read(
+      request_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ("foo", *body_value->GetDict().FindStringByDottedPath(
                        "client_info.client_tags.name"));
 }

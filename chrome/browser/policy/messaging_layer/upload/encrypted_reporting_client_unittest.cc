@@ -162,7 +162,8 @@ class EncryptedReportingClientTest : public ::testing::Test {
         base::JSONReader::Read(request.request_body->elements()
                                    ->at(0)
                                    .As<network::DataElementBytes>()
-                                   .AsStringPiece());
+                                   .AsStringPiece(),
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(body);
     CHECK(body->is_dict());
     return body->GetDict().Clone();

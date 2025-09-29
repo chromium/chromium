@@ -213,7 +213,9 @@ void BrowserThemePackTest::VerifyColorMap(
 }
 
 void BrowserThemePackTest::LoadColorJSON(const std::string& json) {
-  LoadColorDictionary(&base::JSONReader::Read(json)->GetDict());
+  LoadColorDictionary(
+      &base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+           ->GetDict());
 }
 
 void BrowserThemePackTest::LoadColorDictionary(const base::Value::Dict* value) {
@@ -222,7 +224,9 @@ void BrowserThemePackTest::LoadColorDictionary(const base::Value::Dict* value) {
 }
 
 void BrowserThemePackTest::LoadTintJSON(const std::string& json) {
-  LoadTintDictionary(&base::JSONReader::Read(json)->GetDict());
+  LoadTintDictionary(
+      &base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+           ->GetDict());
 }
 
 void BrowserThemePackTest::LoadTintDictionary(const base::Value::Dict* value) {
@@ -230,7 +234,9 @@ void BrowserThemePackTest::LoadTintDictionary(const base::Value::Dict* value) {
 }
 
 void BrowserThemePackTest::LoadDisplayPropertiesJSON(const std::string& json) {
-  LoadDisplayPropertiesDictionary(&base::JSONReader::Read(json)->GetDict());
+  LoadDisplayPropertiesDictionary(
+      &base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+           ->GetDict());
 }
 
 void BrowserThemePackTest::LoadDisplayPropertiesDictionary(
@@ -256,7 +262,8 @@ void BrowserThemePackTest::ResetTabGroupColorPaletteShades() {
 void BrowserThemePackTest::LoadTabGroupColorPaletteShadesJSON(
     const std::string& json) {
   LoadTabGroupColorPaletteShadesDictionary(
-      &base::JSONReader::Read(json)->GetDict());
+      &base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+           ->GetDict());
 }
 
 void BrowserThemePackTest::LoadTabGroupColorPaletteShadesDictionary(

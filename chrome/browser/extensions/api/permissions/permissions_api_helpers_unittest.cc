@@ -466,7 +466,8 @@ TEST(PermissionsApiHelpersTest, Unpack_UsbDevicePermission) {
   constexpr char kUsbDevicesPermissionJson[] =
       R"(usbDevices|[{"productId":2,"vendorId":1}])";
 
-  auto device_list = base::JSONReader::Read(kDeviceListJson);
+  auto device_list = base::JSONReader::Read(
+      kDeviceListJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(device_list) << "Failed to parse device list JSON.";
 
   auto usb_device_permission = std::make_unique<UsbDevicePermission>(

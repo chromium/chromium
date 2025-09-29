@@ -63,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUIPWATest, RunOnOsLoginApplicationsReported) {
   std::string actual_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  std::optional<base::Value> actual_value = base::JSONReader::Read(actual_json);
+  std::optional<base::Value> actual_value =
+      base::JSONReader::Read(actual_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(actual_value.has_value());
 
