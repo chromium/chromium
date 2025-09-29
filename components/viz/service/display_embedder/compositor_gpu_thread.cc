@@ -149,15 +149,6 @@ CompositorGpuThread::GetSharedContextState() {
   // GL resources with the contexts created on gpu main thread.
   auto context =
       gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
-
-  if (!context && !features::UseGles2ForOopR()) {
-    LOG(ERROR) << "Failed to create GLES3 context, fallback to GLES2.";
-    attribs.client_major_es_version = 2;
-    attribs.client_minor_es_version = 0;
-    context =
-        gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
-  }
-
   if (!context) {
     LOG(ERROR) << "Failed to create shared context";
     return nullptr;
