@@ -26,6 +26,12 @@
   padding-top: var(--cr-searchbox-height);
 }
 
+:host-context([realbox-layout-mode='Tall']) #content {
+  border-radius: var(--cr-searchbox-border-radius);
+  padding-bottom: var(--cr-searchbox-dropdown-padding-bottom);
+  padding-top: var(--cr-searchbox-dropdown-padding-top);
+}
+
 @media (forced-colors: active) {
   #content {
     border: 1px solid ActiveBorder;

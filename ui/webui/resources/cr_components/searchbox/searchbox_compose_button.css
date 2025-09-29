@@ -158,6 +158,17 @@
   right: unset;
 }
 
+:host-context([realbox-layout-mode='Tall']) #composeButton {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+:host-context([realbox-layout-mode='Tall']) .glow-container {
+  height: var(--cr-searchbox-icon-height);
+  top: var(--cr-searchbox-compose-button-position-top);
+  transform: none;
+}
+
 /* A wrapper class to hold each gradient and its mask. Don't show unless on page
  * load or on hover. */
 .gradient-and-mask-wrapper {
