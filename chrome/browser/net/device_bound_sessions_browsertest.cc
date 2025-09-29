@@ -56,19 +56,13 @@ class DeviceBoundSessionBrowserTest : public InProcessBrowserTest,
                                       public testing::WithParamInterface<bool> {
  public:
   DeviceBoundSessionBrowserTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        net::features::kDeviceBoundSessions,
-        unexportable_keys::
-            kEnableBoundSessionCredentialsSoftwareKeysForManualTesting};
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (GetParam()) {
-      enabled_features.push_back(
-          net::features::kDeviceBoundSessionsOriginTrialFeedback);
-    } else {
-      disabled_features.push_back(
-          net::features::kDeviceBoundSessionsOriginTrialFeedback);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {net::features::kDeviceBoundSessions,
+         {{"OriginTrialFeedback", GetParam() ? "true" : "false"}}},
+        {unexportable_keys::
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
+         {}}};
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
   void SetUpOnMainThread() override {

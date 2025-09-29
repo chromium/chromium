@@ -84,8 +84,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     return response;
   } else if (request.relative_url == "/dbsc_required") {
     response->AddCustomHeader(
-        base::FeatureList::IsEnabled(
-            net::features::kDeviceBoundSessionsOriginTrialFeedback)
+        net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
             ? "Secure-Session-Registration"
             : "Sec-Session-Registration",
         "(RS256 "

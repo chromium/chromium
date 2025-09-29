@@ -29,8 +29,7 @@ base::expected<SessionParams::Scope, SessionError> ParseScope(
   SessionParams::Scope scope;
 
   std::optional<bool> include_site = scope_dict.FindBool("include_site");
-  if (base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionsOriginTrialFeedback)) {
+  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get()) {
     if (!include_site.has_value()) {
       return base::unexpected{
           SessionError{SessionError::ErrorType::kInvalidScopeIncludeSite}};

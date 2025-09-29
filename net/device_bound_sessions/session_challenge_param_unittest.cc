@@ -32,8 +32,7 @@ std::string CreateHeaderStringForTest(
 }
 
 const char* GetChallengeHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Secure-Session-Challenge"
              : "Sec-Session-Challenge";
 }

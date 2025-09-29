@@ -474,8 +474,7 @@ void SessionServiceImpl::SetChallengeForBoundSession(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionsOriginTrialFeedback) &&
+  if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
       !session->CanSetBoundCookie(request, first_party_set_metadata)) {
     return;
   }

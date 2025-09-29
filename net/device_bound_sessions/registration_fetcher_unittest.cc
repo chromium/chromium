@@ -244,8 +244,9 @@ class RegistrationTest : public TestWithTaskEnvironment {
 class RegistrationTestWithOriginTrialFeedback : public RegistrationTest {
  protected:
   RegistrationTestWithOriginTrialFeedback() {
-    feature_list_.InitAndEnableFeature(
-        features::kDeviceBoundSessionsOriginTrialFeedback);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeviceBoundSessions,
+        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "true"}});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -254,8 +255,9 @@ class RegistrationTestWithOriginTrialFeedback : public RegistrationTest {
 class RegistrationTestWithoutOriginTrialFeedback : public RegistrationTest {
  protected:
   RegistrationTestWithoutOriginTrialFeedback() {
-    feature_list_.InitAndDisableFeature(
-        features::kDeviceBoundSessionsOriginTrialFeedback);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeviceBoundSessions,
+        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "false"}});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -273,8 +275,7 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponse(
 }
 
 const char* GetSessionChallengeHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Secure-Session-Challenge"
              : "Sec-Session-Challenge";
 }
@@ -433,8 +434,7 @@ MATCHER_P2(EqualsCredential, name, attributes, "") {
 }
 
 const char* GetSessionResponseHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Secure-Session-Response"
              : "Sec-Session-Response";
 }
@@ -1438,8 +1438,7 @@ TEST_F(RegistrationTest, FailOnSslErrorExpired) {
 }
 
 const char* GetSessionIdHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Sec-Secure-Session-Id"
              : "Sec-Session-Id";
 }
@@ -1456,8 +1455,7 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponseForRefreshRequest(
     EXPECT_TRUE(session_iter != request.headers.end() &&
                 !session_iter->second.empty());
 
-    response->set_code(base::FeatureList::IsEnabled(
-                           features::kDeviceBoundSessionsOriginTrialFeedback)
+    response->set_code(features::kDeviceBoundSessionsOriginTrialFeedback.Get()
                            ? HTTP_FORBIDDEN
                            : HTTP_UNAUTHORIZED);
     response->AddCustomHeader(GetSessionChallengeHeaderName(),

@@ -4379,7 +4379,9 @@ const FeatureEntry::FeatureParam
     kStandardBoundSessionCredentialsForDevelopers[] = {
         {"RequireOriginTrialTokens", "false"},
         {"RefreshQuota", "false"},
-        {"CheckSubdomainRegistration", "false"}};
+        {"CheckSubdomainRegistration", "false"},
+        {"OriginTrialFeedback", "true"},
+        {"SchemaVersion", "2"}};
 
 const FeatureEntry::FeatureVariation
     kStandardBoundSessionCredentialsVariations[] = {

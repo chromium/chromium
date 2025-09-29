@@ -58,8 +58,7 @@ const std::string kOrigin2 = "https://example2.com";
 const std::string kChallenge = "challenge";
 
 const char* GetSessionChallengeHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Secure-Session-Challenge"
              : "Sec-Session-Challenge";
 }
@@ -165,8 +164,9 @@ class SessionServiceImplTestWithOriginTrialFeedback
     : public SessionServiceImplTest {
  public:
   SessionServiceImplTestWithOriginTrialFeedback() {
-    scoped_feature_list_.InitAndEnableFeature(
-        net::features::kDeviceBoundSessionsOriginTrialFeedback);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeviceBoundSessions,
+        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "true"}});
   }
 
  private:
@@ -177,8 +177,9 @@ class SessionServiceImplTestWithoutOriginTrialFeedback
     : public SessionServiceImplTest {
  public:
   SessionServiceImplTestWithoutOriginTrialFeedback() {
-    scoped_feature_list_.InitAndDisableFeature(
-        net::features::kDeviceBoundSessionsOriginTrialFeedback);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeviceBoundSessions,
+        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "false"}});
   }
 
  private:

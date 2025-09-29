@@ -35,8 +35,9 @@ class SessionTest : public ::testing::Test, public WithTaskEnvironment {
 class SessionTestWithOriginTrialFeedback : public SessionTest {
  protected:
   SessionTestWithOriginTrialFeedback() {
-    feature_list_.InitAndEnableFeature(
-        features::kDeviceBoundSessionsOriginTrialFeedback);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeviceBoundSessions,
+        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "true"}});
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -45,8 +46,9 @@ class SessionTestWithOriginTrialFeedback : public SessionTest {
 class SessionTestWithoutOriginTrialFeedback : public SessionTest {
  protected:
   SessionTestWithoutOriginTrialFeedback() {
-    feature_list_.InitAndDisableFeature(
-        features::kDeviceBoundSessionsOriginTrialFeedback);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeviceBoundSessions,
+        {{features::kDeviceBoundSessionsOriginTrialFeedback.name, "false"}});
   }
 
   base::test::ScopedFeatureList feature_list_;

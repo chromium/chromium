@@ -32,15 +32,13 @@ namespace net::device_bound_sessions {
 namespace {
 
 const char* GetSessionIdHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Sec-Secure-Session-Id"
              : "Sec-Session-Id";
 }
 
 const char* GetJwtSessionHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Secure-Session-Response"
              : "Sec-Session-Response";
 }
@@ -94,8 +92,7 @@ void SignChallengeWithKey(
   }
 
   std::optional<std::string> header_and_payload;
-  if (!base::FeatureList::IsEnabled(
-          features::kDeviceBoundSessionsOriginTrialFeedback)) {
+  if (!features::kDeviceBoundSessionsOriginTrialFeedback.Get()) {
     auto expected_public_key =
         unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
     if (!expected_public_key.has_value()) {
@@ -523,8 +520,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   }
 
   void OnChallengeNeeded() {
-    if (base::FeatureList::IsEnabled(
-            features::kDeviceBoundSessionsOriginTrialFeedback)) {
+    if (features::kDeviceBoundSessionsOriginTrialFeedback.Get()) {
       if (!session_identifier_.has_value()) {
         RunCallback(RegistrationResult(
             SessionError{SessionError::ErrorType::kPersistentHttpError}));
@@ -578,11 +574,9 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    if ((base::FeatureList::IsEnabled(
-             features::kDeviceBoundSessionsOriginTrialFeedback) &&
+    if ((features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
          response_code == 403) ||
-        (!base::FeatureList::IsEnabled(
-             features::kDeviceBoundSessionsOriginTrialFeedback) &&
+        (!features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
          response_code == 401)) {
       OnChallengeNeeded();
       // `this` may be deleted.
@@ -650,8 +644,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
     // The registration endpoint is required to be same-site with the
     // session. Therefore we don't need any FirstPartySetMetadata.
-    if (base::FeatureList::IsEnabled(
-            features::kDeviceBoundSessionsOriginTrialFeedback) &&
+    if (features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
         !(*session_or_error)
              ->CanSetBoundCookie(url_fetcher_->request(),
                                  FirstPartySetMetadata())) {
@@ -666,8 +659,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // that this subdomain is allowed to register a session for the
     // whole site.
     if (features::kDeviceBoundSessionsCheckSubdomainRegistration.Get() &&
-        base::FeatureList::IsEnabled(
-            features::kDeviceBoundSessionsOriginTrialFeedback) &&
+        features::kDeviceBoundSessionsOriginTrialFeedback.Get() &&
         !IsForRefreshRequest() && params_or_error->scope.include_site &&
         // Skip all validations if the fetcher endpoint is not a subdomain but
         // rather the top-level site (which matches the origin when including

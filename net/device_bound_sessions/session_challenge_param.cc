@@ -14,8 +14,7 @@ namespace {
 // Secure-Session-Challenge header defined in
 // https://github.com/WICG/dbsc/blob/main/README.md#high-level-overview
 const char* GetSessionChallengeHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Secure-Session-Challenge"
              : "Sec-Session-Challenge";
 }

@@ -715,7 +715,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeviceBoundSessionsSchemaVersion);
 // default to facilitate implementation of feedback from the Origin
 // Trial while still being able to get consistent metrics across Chrome
 // releases.
-NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsOriginTrialFeedback);
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                      kDeviceBoundSessionsOriginTrialFeedback);
 
 // This feature controls whether DBSC allows federated sessions.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsFederatedRegistration);

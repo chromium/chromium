@@ -22,8 +22,7 @@ namespace net::device_bound_sessions {
 namespace {
 
 const char* GetRegistrationHeaderName() {
-  return base::FeatureList::IsEnabled(
-             net::features::kDeviceBoundSessionsOriginTrialFeedback)
+  return net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
              ? "Secure-Session-Registration"
              : "Sec-Session-Registration";
 }
