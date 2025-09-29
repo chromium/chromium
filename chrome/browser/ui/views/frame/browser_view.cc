@@ -4592,6 +4592,13 @@ void BrowserView::UpdateContentsInSplitView(
   multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
   multi_contents_view_->GetActiveContentsView()->SetWebContents(nullptr);
 
+  // The browser widget must be active when updating the contents to avoid
+  // re-entrency when focusing the currently active WebContents. See
+  // crbug.com/447369458
+  if (!GetWidget()->IsActive()) {
+    multi_contents_view_->RequestFocus();
+  }
+
   // Set web contents in multi_contents_view_ to match new_tabs and update the
   // active multi_contents_view_ index.
   for (std::pair<tabs::TabInterface*, int> split_tab_with_index : new_tabs) {
