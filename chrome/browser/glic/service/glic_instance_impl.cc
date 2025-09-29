@@ -391,6 +391,10 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
             new_entry.tab_activation_subscription = tab->RegisterDidActivate(
                 base::BindRepeating(&GlicInstanceImpl::OnAssociatedTabActivated,
                                     weak_ptr_factory_.GetWeakPtr()));
+            // Auto-pin on bind.
+            if (!embedders_.contains(key)) {
+              sharing_manager().PinTabs({tab->GetHandle()});
+            }
           },
       },
       key);
