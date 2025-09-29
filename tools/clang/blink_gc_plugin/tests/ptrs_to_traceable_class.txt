@@ -2,49 +2,25 @@ In file included from ptrs_to_traceable_class.cpp:5:
 ./ptrs_to_traceable_class.h:27:1: warning: [blink-gc] Class 'OffGCedHeap' contains invalid fields.
 class OffGCedHeap {
 ^
-./ptrs_to_traceable_class.h:38:3: note: [blink-gc] Raw pointer field 'raw_ptr' to a traceable class declared here:
+./ptrs_to_traceable_class.h:36:3: note: [blink-gc] Raw pointer field 'raw_ptr' to a traceable class declared here:
   Traceable* raw_ptr;
   ^
-./ptrs_to_traceable_class.h:39:3: note: [blink-gc] Raw pointer field 'const_raw_ptr' to a traceable class declared here:
-  const Traceable* const_raw_ptr;
-  ^
-./ptrs_to_traceable_class.h:40:3: note: [blink-gc] Reference pointer field 'ref_ptr' to a traceable class declared here:
+./ptrs_to_traceable_class.h:37:3: note: [blink-gc] Reference pointer field 'ref_ptr' to a traceable class declared here:
   Traceable& ref_ptr;
   ^
-./ptrs_to_traceable_class.h:41:3: note: [blink-gc] std::unique_ptr field 'unique' to a traceable class declared here:
+./ptrs_to_traceable_class.h:38:3: note: [blink-gc] std::unique_ptr field 'unique' to a traceable class declared here:
   std::unique_ptr<Traceable> unique;
   ^
-./ptrs_to_traceable_class.h:42:3: note: [blink-gc] Raw pointer field 'vector' to a traceable class declared here:
-  std::vector<Traceable*> vector;
-  ^
-./ptrs_to_traceable_class.h:45:1: warning: [blink-gc] Class 'OnGCedHeap' contains invalid fields.
+./ptrs_to_traceable_class.h:41:1: warning: [blink-gc] Class 'OnGCedHeap' contains invalid fields.
 class OnGCedHeap : public GarbageCollected<OnGCedHeap> {
 ^
-./ptrs_to_traceable_class.h:56:3: note: [blink-gc] Raw pointer field 'raw_ptr' to a traceable class declared here:
+./ptrs_to_traceable_class.h:50:3: note: [blink-gc] Raw pointer field 'raw_ptr' to a traceable class declared here:
   Traceable* raw_ptr;
   ^
-./ptrs_to_traceable_class.h:57:3: note: [blink-gc] Raw pointer field 'const_raw_ptr' to a traceable class declared here:
-  const Traceable* const_raw_ptr;
-  ^
-./ptrs_to_traceable_class.h:58:3: note: [blink-gc] Reference pointer field 'ref_ptr' to a traceable class declared here:
+./ptrs_to_traceable_class.h:51:3: note: [blink-gc] Reference pointer field 'ref_ptr' to a traceable class declared here:
   Traceable& ref_ptr;
   ^
-./ptrs_to_traceable_class.h:59:3: note: [blink-gc] std::unique_ptr field 'unique' to a traceable class declared here:
+./ptrs_to_traceable_class.h:52:3: note: [blink-gc] std::unique_ptr field 'unique' to a traceable class declared here:
   std::unique_ptr<Traceable> unique;
   ^
-./ptrs_to_traceable_class.h:60:3: note: [blink-gc] Raw pointer field 'vector' to a traceable class declared here:
-  std::vector<Traceable*> vector;
-  ^
-./ptrs_to_traceable_class.h:42:3: warning: [blink-gc] Disallowed collection 'vector<blink::Traceable *>' found; 'Traceable' is a traceable type. Use heap collections to hold garbage-collected objects.
-  std::vector<Traceable*> vector;
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./ptrs_to_traceable_class.h:60:3: warning: [blink-gc] Disallowed collection 'vector<blink::Traceable *>' found; 'Traceable' is a traceable type. Use heap collections to hold garbage-collected objects.
-  std::vector<Traceable*> vector;
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ptrs_to_traceable_class.cpp:24:3: warning: [blink-gc] Disallowed collection 'vector<blink::Traceable>' found; 'Traceable' is a traceable type. Use heap collections to hold garbage-collected objects.
-  std::vector<Traceable> vector;  // Not ok.
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-ptrs_to_traceable_class.cpp:26:3: warning: [blink-gc] Disallowed collection 'vector<blink::Traceable *>' found; 'Traceable' is a traceable type. Use heap collections to hold garbage-collected objects.
-  std::vector<Traceable*> vector_ptrs;  // Not ok.
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-6 warnings generated.
+2 warnings generated.

@@ -33,8 +33,8 @@ class OtherGCed : public GarbageCollected<OtherGCed> {
  private:
   GCed gced_;
   Mixin mixin_;
-  HeapVector<GCed> vector_;              // Not OK
-  HeapHashMap<GCed, int> map_;           // Not OK
+  HeapVector<GCed> vector_;     // OK
+  HeapHashMap<GCed, int> map_;  // OK
   GCedHeapVector<GCed> gced_vector_;     // Not OK
   GCedHeapHashMap<GCed, int> gced_map_;  // Not OK
 };

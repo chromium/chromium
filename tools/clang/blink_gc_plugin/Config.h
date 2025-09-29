@@ -174,17 +174,7 @@ class Config {
 
   static bool IsAnnotated(const clang::Decl* decl, const std::string& anno) {
     clang::AnnotateAttr* attr = decl->getAttr<clang::AnnotateAttr>();
-    if (attr && (attr->getAnnotation() == anno)) {
-      return true;
-    }
-    const clang::FieldDecl* field_decl =
-        clang::dyn_cast<clang::FieldDecl>(decl);
-    if (!field_decl) {
-      return false;
-    }
-    const clang::Decl* parent = field_decl->getParent();
-    assert(parent);
-    return IsAnnotated(parent, anno);
+    return attr && (attr->getAnnotation() == anno);
   }
 
   static bool IsIgnoreAnnotated(const clang::Decl* decl) {

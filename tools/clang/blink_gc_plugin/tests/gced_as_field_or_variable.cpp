@@ -11,8 +11,8 @@ void Foo() {
   (void)gced;
   Mixin mixin;
   (void)mixin;
-  HeapVector<GCed> vector;              // Not OK
-  HeapHashMap<GCed, int> map;           // Not OK
+  HeapVector<GCed> vector;  // OK
+  HeapHashMap<GCed, int> map;           // OK
   GCedHeapVector<GCed> gced_vector;     // Not OK
   GCedHeapHashMap<GCed, int> gced_map;  // Not OK
 }

@@ -268,12 +268,8 @@ const char kVariantUsedWithGC[] =
 
 const char kCollectionOfGced[] =
     "[blink-gc] Disallowed collection %0 found; %1 is a "
-    "garbage-collected type. Use heap collections to hold garbage-collected "
-    "objects.";
-
-const char kCollectionOfTraceable[] =
-    "[blink-gc] Disallowed collection %0 found; %1 is a "
-    "traceable type. Use heap collections to hold garbage-collected objects.";
+    "garbage-collected "
+    "type. Use heap collections to hold garbage-collected objects.";
 
 const char kCollectionOfMembers[] =
     "[blink-gc] Disallowed collection %0 found; %1 is a "
@@ -433,8 +429,6 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kVariantUsedWithGC);
   diag_collection_of_gced_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfGced);
-  diag_collection_of_traceable_ =
-      diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfTraceable);
   diag_collection_of_members_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kCollectionOfMembers);
 }
@@ -889,22 +883,6 @@ void DiagnosticsReporter::CollectionOfGCed(
     const clang::CXXRecordDecl* gc_type) {
   ReportDiagnostic(expr->getBeginLoc(), diag_collection_of_gced_)
       << collection << gc_type << expr->getSourceRange();
-}
-
-void DiagnosticsReporter::CollectionOfTraceable(
-    const clang::Decl* decl,
-    const clang::CXXRecordDecl* collection,
-    const clang::CXXRecordDecl* traceable) {
-  ReportDiagnostic(decl->getBeginLoc(), diag_collection_of_traceable_)
-      << collection << traceable << decl->getSourceRange();
-}
-
-void DiagnosticsReporter::CollectionOfTraceable(
-    const clang::Expr* expr,
-    const clang::CXXRecordDecl* collection,
-    const clang::CXXRecordDecl* traceable) {
-  ReportDiagnostic(expr->getBeginLoc(), diag_collection_of_traceable_)
-      << collection << traceable << expr->getSourceRange();
 }
 
 void DiagnosticsReporter::CollectionOfMembers(

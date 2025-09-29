@@ -11,21 +11,9 @@ class OtherGCed : public GarbageCollected<OtherGCed> {
 ./gced_as_field_or_variable.h:35:3: warning: [blink-gc] Using GC managed class 'Mixin' as field 'mixin_' is not allowed (Allocate with MakeGarbageCollected and use Member or Persistent instead):
   Mixin mixin_;
   ^~~~~~~~~~~~
-./gced_as_field_or_variable.h:36:3: warning: [blink-gc] Disallowed collection 'BasicHeapVector<blink::internal::HeapCollectionType::kDisallowNew, blink::GCed, 0>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  HeapVector<GCed> vector_;              // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~~
-./gced_as_field_or_variable.h:37:3: warning: [blink-gc] Disallowed collection 'BasicHeapHashMap<blink::internal::HeapCollectionType::kDisallowNew, blink::GCed, int>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  HeapHashMap<GCed, int> map_;           // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-./gced_as_field_or_variable.h:38:3: warning: [blink-gc] Disallowed collection 'BasicHeapVector<blink::internal::HeapCollectionType::kGCed, blink::GCed, 0>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  GCedHeapVector<GCed> gced_vector_;     // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ./gced_as_field_or_variable.h:38:3: warning: [blink-gc] Using GC managed class 'BasicHeapVector<blink::internal::HeapCollectionType::kGCed, blink::GCed, 0>' as field 'gced_vector_' is not allowed (Allocate with MakeGarbageCollected and use Member or Persistent instead):
   GCedHeapVector<GCed> gced_vector_;     // Not OK
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./gced_as_field_or_variable.h:39:3: warning: [blink-gc] Disallowed collection 'BasicHeapHashMap<blink::internal::HeapCollectionType::kGCed, blink::GCed, int>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  GCedHeapHashMap<GCed, int> gced_map_;  // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ./gced_as_field_or_variable.h:39:3: warning: [blink-gc] Using GC managed class 'BasicHeapHashMap<blink::internal::HeapCollectionType::kGCed, blink::GCed, int>' as field 'gced_map_' is not allowed (Allocate with MakeGarbageCollected and use Member or Persistent instead):
   GCedHeapHashMap<GCed, int> gced_map_;  // Not OK
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,22 +23,10 @@ gced_as_field_or_variable.cpp:10:3: warning: [blink-gc] Using GC managed class '
 gced_as_field_or_variable.cpp:12:3: warning: [blink-gc] Using GC managed class 'Mixin' as variable 'mixin' is not allowed (Allocate with MakeGarbageCollected and use raw pointer instead):
   Mixin mixin;
   ^~~~~~~~~~~
-gced_as_field_or_variable.cpp:14:3: warning: [blink-gc] Disallowed collection 'BasicHeapVector<blink::internal::HeapCollectionType::kDisallowNew, blink::GCed, 0>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  HeapVector<GCed> vector;              // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~
-gced_as_field_or_variable.cpp:15:3: warning: [blink-gc] Disallowed collection 'BasicHeapHashMap<blink::internal::HeapCollectionType::kDisallowNew, blink::GCed, int>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  HeapHashMap<GCed, int> map;           // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~
-gced_as_field_or_variable.cpp:16:3: warning: [blink-gc] Disallowed collection 'BasicHeapVector<blink::internal::HeapCollectionType::kGCed, blink::GCed, 0>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  GCedHeapVector<GCed> gced_vector;     // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gced_as_field_or_variable.cpp:16:3: warning: [blink-gc] Using GC managed class 'BasicHeapVector<blink::internal::HeapCollectionType::kGCed, blink::GCed, 0>' as variable 'gced_vector' is not allowed (Allocate with MakeGarbageCollected and use raw pointer instead):
   GCedHeapVector<GCed> gced_vector;     // Not OK
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-gced_as_field_or_variable.cpp:17:3: warning: [blink-gc] Disallowed collection 'BasicHeapHashMap<blink::internal::HeapCollectionType::kGCed, blink::GCed, int>' found; 'GCed' is a garbage-collected type. Use heap collections to hold garbage-collected objects.
-  GCedHeapHashMap<GCed, int> gced_map;  // Not OK
-  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gced_as_field_or_variable.cpp:17:3: warning: [blink-gc] Using GC managed class 'BasicHeapHashMap<blink::internal::HeapCollectionType::kGCed, blink::GCed, int>' as variable 'gced_map' is not allowed (Allocate with MakeGarbageCollected and use raw pointer instead):
   GCedHeapHashMap<GCed, int> gced_map;  // Not OK
   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-17 warnings generated.
+9 warnings generated.
