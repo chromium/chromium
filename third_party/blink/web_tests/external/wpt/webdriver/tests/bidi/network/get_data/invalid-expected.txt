@@ -1,5 +1,0 @@
-This is a wdspec test.
-[FAIL] test_params_collector_not_in_collected_data
-  Failed: DID NOT RAISE <class 'webdriver.bidi.error.NoSuchNetworkDataException'>
-Harness: the test ran to completion.
-
