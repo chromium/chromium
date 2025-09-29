@@ -91,14 +91,6 @@ class BrowserList {
     return browsers_ordered_by_activation_.rend();
   }
 
-  // Convenience method for iterating over browsers in activation order. I.e.
-  // the most recently used browser will be at the front of the list.
-  // Example:
-  // for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation())
-  BrowsersOrderedByActivationRange OrderedByActivation() const {
-    return {raw_ref(*this)};
-  }
-
   // Returns the set of browsers that are currently in the closing state.
   const BrowserSet& currently_closing_browsers() const {
     return currently_closing_browsers_;
