@@ -88,14 +88,10 @@ history-synced-device-card {
   align-items: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  overflow-x: hidden;
-  text-align: center;
 }
 
 .sync-history-promo {
   margin-top: 12px;
-  color: #202124;
   text-align: center;
   font-size: 24px;
   font-weight: 500;
@@ -105,10 +101,9 @@ history-synced-device-card {
 .sync-history-promo-desc {
   margin-top: 8px;
   max-width: 684px;
-  color: #5E5E5E;
+  color: var(--cr-secondary-text-color);
   text-align: center;
   font-size: 16px;
-  font-weight: 400;
   line-height: 24px;
 }
 
@@ -129,13 +124,11 @@ history-synced-device-card {
 }
 
 .image-container {
-  align-self: center;
   align-items: center;
   display: flex;
   /* The height must be set so that the height of this relatively positioned
   container is taken into account in the height calculator of the entire screen. */
   height: 162px;
-  justify-content: center;
   /* Establishes a positioning context for absolute children. */
   position: relative;
   margin-top: 36px;
@@ -164,7 +157,7 @@ history-synced-device-card {
 }
 
 .account-email {
-  color: #474747;
+  color: var(--cr-primary-text-color);
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;

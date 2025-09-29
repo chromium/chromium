@@ -361,7 +361,7 @@ suite('<history-sync-optin>', function() {
   let element: HistorySyncedDeviceManagerElement;
   let testService: TestBrowserService;
 
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     window.history.replaceState({}, '', '/');
     testService = new TestBrowserService();
@@ -375,22 +375,21 @@ suite('<history-sync-optin>', function() {
 
     // Need to ensure lazy_load.html has been imported so that the device
     // manager custom element is defined.
-    return ensureLazyLoaded().then(() => {
-      element = document.createElement('history-synced-device-manager');
-      // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
-      // the same order in tests, in order to catch regressions like
-      // https://crbug.com/915641.
-      element.searchTerm = '';
-      element.configureSignInForTest({
-        // Setting the sign in state to WEB_ONLY_SIGNED_IN, because user's name,
-        // email and profile icon are only shown on the page when the sign in
-        // state is WEB_ONLY_SIGNED_IN.
-        signInState: HistorySignInState.WEB_ONLY_SIGNED_IN,
-        signInAllowed: true,
-        guestSession: false,
-      });
-      document.body.appendChild(element);
+    await ensureLazyLoaded();
+    element = document.createElement('history-synced-device-manager');
+    // |signInState| is generally set after |searchTerm| in Polymer 2. Set in
+    // the same order in tests, in order to catch regressions like
+    // https://crbug.com/915641.
+    element.searchTerm = '';
+    element.configureSignInForTest({
+      // Setting the sign in state to WEB_ONLY_SIGNED_IN, because user's name,
+      // email and profile icon are only shown on the page when the sign in
+      // state is WEB_ONLY_SIGNED_IN.
+      signInState: HistorySignInState.WEB_ONLY_SIGNED_IN,
+      signInAllowed: true,
+      guestSession: false,
     });
+    document.body.appendChild(element);
   });
 
   test('check history sync optin elements are visible', async () => {
