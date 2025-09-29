@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -38,6 +39,24 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "ui/base/webui/web_ui_util.h"
+
+namespace {
+
+class MockTabContextualizationController
+    : public lens::TabContextualizationController {
+ public:
+  explicit MockTabContextualizationController(tabs::TabInterface* tab)
+      : lens::TabContextualizationController(tab) {}
+
+  MOCK_METHOD(void,
+              CaptureScreenshot,
+              (std::optional<lens::ImageEncodingOptions> image_options,
+               CaptureScreenshotCallback callback),
+              (override));
+};
+
+}  // namespace
 
 class SearchboxHandlerTest : public ::testing::Test {
  public:
@@ -249,6 +268,10 @@ class RealboxHandlerTabsTest : public RealboxHandlerTest {
     tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
     tab_features->SetTabUIHelperForTesting(
         std::make_unique<TabUIHelper>(*tab_interface));
+    auto tab_contextualization_controller =
+        std::make_unique<MockTabContextualizationController>(tab_interface);
+    tab_features->SetTabContextualizationControllerForTesting(
+        std::move(tab_contextualization_controller));
     std::unique_ptr<tabs::TabAlertController> tab_alert_controller =
         tabs::TabFeatures::GetUserDataFactoryForTesting()
             .CreateInstance<tabs::TabAlertController>(*tab_interface,
@@ -352,6 +375,55 @@ TEST_F(RealboxHandlerTabsTest, ActiveTabsCountMetric) {
 
   histogram_tester().ExpectUniqueSample(
       "NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen", 3, 1);
+}
+
+TEST_F(RealboxHandlerTabsTest, GetTabPreview_InvalidTab) {
+  base::test::TestFuture<const std::optional<std::string>&> future;
+  handler()->GetTabPreview(12345, future.GetCallback());
+  std::optional<std::string> preview = future.Get();
+  ASSERT_FALSE(preview.has_value());
+}
+
+TEST_F(RealboxHandlerTabsTest, GetTabPreview_CaptureFails) {
+  tabs::TabInterface* tab = AddTab(GURL("https://a1.com"));
+
+  MockTabContextualizationController* controller =
+      static_cast<MockTabContextualizationController*>(
+          tab->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller, CaptureScreenshot(testing::_, testing::_))
+      .WillOnce(
+          [](std::optional<lens::ImageEncodingOptions> image_options,
+             lens::TabContextualizationController::CaptureScreenshotCallback
+                 callback) { std::move(callback).Run(SkBitmap()); });
+
+  base::test::TestFuture<const std::optional<std::string>&> future;
+  handler()->GetTabPreview(tab->GetHandle().raw_value(), future.GetCallback());
+  std::optional<std::string> preview = future.Get();
+  ASSERT_FALSE(preview.has_value());
+}
+
+TEST_F(RealboxHandlerTabsTest, GetTabPreview_Success) {
+  tabs::TabInterface* tab = AddTab(GURL("https://a1.com"));
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorRED);
+
+  MockTabContextualizationController* controller =
+      static_cast<MockTabContextualizationController*>(
+          tab->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*controller, CaptureScreenshot(testing::_, testing::_))
+      .WillOnce(
+          [&bitmap](
+              std::optional<lens::ImageEncodingOptions> image_options,
+              lens::TabContextualizationController::CaptureScreenshotCallback
+                  callback) { std::move(callback).Run(bitmap); });
+
+  base::test::TestFuture<const std::optional<std::string>&> future;
+  handler()->GetTabPreview(tab->GetHandle().raw_value(), future.GetCallback());
+  std::optional<std::string> preview = future.Get();
+  ASSERT_TRUE(preview.has_value());
+  EXPECT_EQ(preview.value(), webui::GetBitmapDataUrl(bitmap));
 }
 
 class LensSearchboxHandlerTest : public SearchboxHandlerTest {

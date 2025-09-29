@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -21,6 +22,7 @@ class MetricsReporter;
 class OmniboxController;
 class Profile;
 class OmniboxEditModel;
+class SkBitmap;
 
 namespace content {
 class WebContents;
@@ -117,6 +119,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   AutocompleteController* autocomplete_controller() const;
   OmniboxEditModel* edit_model() const;
 
+  void OnPreviewReceived(GetTabPreviewCallback callback,
+                         const SkBitmap& preview_bitmap);
+
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url);
 
   raw_ptr<Profile> profile_;
@@ -155,6 +160,8 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       bookmarks::BookmarkModel* bookmark_model,
       const PrefService* prefs,
       const TemplateURLService* turl_service);
+
+  base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_

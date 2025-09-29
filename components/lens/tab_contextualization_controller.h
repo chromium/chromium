@@ -83,7 +83,7 @@ class TabContextualizationController : public content::WebContentsObserver {
 
   // Captures a screenshot of the current tab's viewport, downscales it if
   // necessary, and calls the callback with the screenshot.
-  void CaptureScreenshot(
+  virtual void CaptureScreenshot(
       std::optional<lens::ImageEncodingOptions> image_options,
       CaptureScreenshotCallback callback);
 

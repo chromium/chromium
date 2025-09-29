@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
@@ -33,6 +34,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/lens/tab_contextualization_controller.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -281,6 +283,14 @@ std::string GetBase64UrlVariations(Profile* profile) {
                         &variations_base64url);
 
   return variations_base64url;
+}
+
+constexpr int kThumbnailWidth = 125;
+constexpr int kThumbnailHeight = 200;
+
+std::optional<lens::ImageEncodingOptions> CreateThumbnailEncodingOptions() {
+  return lens::ImageEncodingOptions{.max_height = kThumbnailHeight,
+                                    .max_width = kThumbnailWidth};
 }
 
 }  // namespace
@@ -1036,10 +1046,29 @@ void SearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
 // this class.
 void SearchboxHandler::GetTabPreview(int32_t tab_id,
                                      GetTabPreviewCallback callback) {
-  // TODO(crbug.com/443939809): Implement tab preview generation.
-  std::move(callback).Run(std::nullopt);
+  const tabs::TabHandle handle = tabs::TabHandle(tab_id);
+  tabs::TabInterface* const tab = handle.Get();
+  if (!tab) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  lens::TabContextualizationController* tab_context_controller =
+      tab->GetTabFeatures()->tab_contextualization_controller();
+
+  tab_context_controller->CaptureScreenshot(
+      CreateThumbnailEncodingOptions(),
+      base::BindOnce(&SearchboxHandler::OnPreviewReceived,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void SearchboxHandler::OnPreviewReceived(GetTabPreviewCallback callback,
+                                         const SkBitmap& preview_bitmap) {
+  std::move(callback).Run(
+      preview_bitmap.isNull()
+          ? std::nullopt
+          : std::make_optional(webui::GetBitmapDataUrl(preview_bitmap)));
+}
 void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
                                        bool default_match_changed) {
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
