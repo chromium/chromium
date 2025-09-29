@@ -21,6 +21,9 @@
 // should be removed from this file and included transitively instead.
 #include "build/build_config.h"
 
+// The server-side documentation and definition for a given capability can be
+// found at go/capability-alias (eg. go/capability-alias/ge2dinbnmnqxa).
+
 // clang-format off
 // keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif
 // clang-format on
