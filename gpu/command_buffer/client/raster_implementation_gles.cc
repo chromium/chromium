@@ -507,20 +507,6 @@ void RasterImplementationGLES::EndSharedImageAccessDirectCHROMIUM(
   gl_->EndSharedImageAccessDirectCHROMIUM(texture);
 }
 
-void RasterImplementationGLES::InitializeDiscardableTextureCHROMIUM(
-    GLuint texture) {
-  gl_->InitializeDiscardableTextureCHROMIUM(texture);
-}
-
-void RasterImplementationGLES::UnlockDiscardableTextureCHROMIUM(
-    GLuint texture) {
-  gl_->UnlockDiscardableTextureCHROMIUM(texture);
-}
-
-bool RasterImplementationGLES::LockDiscardableTextureCHROMIUM(GLuint texture) {
-  return gl_->LockDiscardableTextureCHROMIUM(texture);
-}
-
 void RasterImplementationGLES::TraceBeginCHROMIUM(const char* category_name,
                                                   const char* trace_name) {
   gl_->TraceBeginCHROMIUM(category_name, trace_name);

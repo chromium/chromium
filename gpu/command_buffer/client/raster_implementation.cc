@@ -1930,19 +1930,6 @@ void RasterImplementation::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
   NOTREACHED();
 }
 
-void RasterImplementation::InitializeDiscardableTextureCHROMIUM(
-    GLuint texture) {
-  NOTREACHED();
-}
-
-void RasterImplementation::UnlockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED();
-}
-
-bool RasterImplementation::LockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED();
-}
-
 void RasterImplementation::TraceBeginCHROMIUM(const char* category_name,
                                               const char* trace_name) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();

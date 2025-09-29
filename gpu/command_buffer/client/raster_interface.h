@@ -202,10 +202,6 @@ class RasterInterface : public InterfaceBase {
                                                     GLenum mode) = 0;
   virtual void EndSharedImageAccessDirectCHROMIUM(GLuint texture) = 0;
 
-  virtual void InitializeDiscardableTextureCHROMIUM(GLuint texture) = 0;
-  virtual void UnlockDiscardableTextureCHROMIUM(GLuint texture) = 0;
-  virtual bool LockDiscardableTextureCHROMIUM(GLuint texture) = 0;
-
 // Include the auto-generated part of this class. We split this because
 // it means we can easily edit the non-auto generated parts right here in
 // this file instead of having to edit some template or the code generator.

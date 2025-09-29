@@ -154,9 +154,6 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   void BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                             GLenum mode) override;
   void EndSharedImageAccessDirectCHROMIUM(GLuint texture) override;
-  void InitializeDiscardableTextureCHROMIUM(GLuint texture) override;
-  void UnlockDiscardableTextureCHROMIUM(GLuint texture) override;
-  bool LockDiscardableTextureCHROMIUM(GLuint texture) override;
   void TraceBeginCHROMIUM(const char* category_name,
                           const char* trace_name) override {}
   void TraceEndCHROMIUM() override {}
