@@ -204,7 +204,8 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest, IgnoresIfExempt) {
   auto* prefetch_service = PrefetchService::GetFromFrameTreeNodeId(
       shell()->web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId());
   auto owned_delegate = std::make_unique<MockPrefetchServiceDelegate>();
-  EXPECT_CALL(*owned_delegate, IsContaminationExempt(referrer_url))
+  EXPECT_CALL(*owned_delegate,
+              IsContaminationExempt(url::Origin::Create(referrer_url)))
       .WillRepeatedly(testing::Return(true));
   prefetch_service->SetPrefetchServiceDelegateForTesting(
       std::move(owned_delegate));
@@ -245,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(ContaminationDelayBrowserTest,
   // is actually triggered.
   auto owned_delegate = std::make_unique<MockPrefetchServiceDelegate>(
       /*num_on_prefetch_likely_calls=*/0);
-  EXPECT_CALL(*owned_delegate, IsContaminationExemptPerOrigin(referring_origin))
+  EXPECT_CALL(*owned_delegate, IsContaminationExempt(referring_origin))
       .WillRepeatedly(testing::Return(true));
   prefetch_service->SetPrefetchServiceDelegateForTesting(
       std::move(owned_delegate));

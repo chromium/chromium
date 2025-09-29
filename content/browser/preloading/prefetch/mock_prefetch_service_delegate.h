@@ -44,11 +44,7 @@ class MockPrefetchServiceDelegate : public PrefetchServiceDelegate {
   MOCK_METHOD(bool, IsDataSaverEnabled, (), (override));
   MOCK_METHOD(bool, IsBatterySaverEnabled, (), (override));
   MOCK_METHOD(bool, IsDomainInPrefetchAllowList, (const GURL&), (override));
-  MOCK_METHOD(bool, IsContaminationExempt, (const GURL&), (override));
-  MOCK_METHOD(bool,
-              IsContaminationExemptPerOrigin,
-              (const url::Origin&),
-              (override));
+  MOCK_METHOD(bool, IsContaminationExempt, (const url::Origin&), (override));
   MOCK_METHOD(void, OnPrefetchLikely, (WebContents*), (override));
   MOCK_METHOD(void, SetAcceptLanguageHeader, (std::string), (override));
 };

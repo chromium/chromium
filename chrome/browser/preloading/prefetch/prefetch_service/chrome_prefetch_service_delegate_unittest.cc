@@ -43,14 +43,8 @@ TEST_F(ChromePrefetchServiceDelegateTest,
   template_url_service()->SetUserSelectedDefaultSearchProvider(search_engine);
 
   ChromePrefetchServiceDelegate delegate(&profile());
-  EXPECT_TRUE(delegate.IsContaminationExempt(
-      GURL("https://sherlock.example/?q=professor+moriarty")));
-  EXPECT_FALSE(
-      delegate.IsContaminationExempt(GURL("https://another.example/")));
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(delegate.IsContaminationExemptPerOrigin(
-      url::Origin::Create(GURL("https://sherlock.example/"))));
-  EXPECT_FALSE(delegate.IsContaminationExemptPerOrigin(
+  EXPECT_TRUE(delegate.IsContaminationExempt(url::Origin::Create(
+      GURL("https://sherlock.example/?q=professor+moriarty"))));
+  EXPECT_FALSE(delegate.IsContaminationExempt(
       url::Origin::Create(GURL("https://another.example/"))));
-#endif  // BUILDFLAG(IS_ANDROID)
 }

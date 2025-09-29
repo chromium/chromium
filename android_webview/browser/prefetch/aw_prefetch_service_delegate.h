@@ -40,9 +40,7 @@ class AwPrefetchServiceDelegate : public content::PrefetchServiceDelegate {
   bool IsBatterySaverEnabled() override;
   bool IsExtendedPreloadingEnabled() override;
   bool IsDomainInPrefetchAllowList(const GURL& referring_url) override;
-  bool IsContaminationExempt(const GURL& referring_url) override;
-  bool IsContaminationExemptPerOrigin(
-      const url::Origin& referring_origin) override;
+  bool IsContaminationExempt(const url::Origin& referring_origin) override;
   void OnPrefetchLikely(content::WebContents* web_contents) override;
   void SetAcceptLanguageHeader(std::string accept_language_header) override;
 
