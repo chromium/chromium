@@ -129,36 +129,8 @@ export function createSpeechSynthesisVoice(
       overrides || {});
 }
 
-
-export function setSimpleAxTreeWithText(text: string) {
-  const axTree = {
-    rootId: 1,
-    nodes: [
-      {
-        id: 1,
-        role: 'rootWebArea',
-        htmlTag: '#document',
-        childIds: [2],
-      },
-      {id: 2, role: 'staticText', name: text},
-    ],
-  };
-  chrome.readingMode.setContentForTesting(axTree, [2]);
-}
-
-// TODO: crbug.com/440400392- Merge setSimpleNodeStoreWithText with
-// setSimpleNodeStoreWithTextAndModel
-function setSimpleNodeStoreWithText(text: string) {
-  const id = 2;
-  chrome.readingMode.getCurrentTextSegments =
-      () => [{nodeId: id, start: 0, length: text.length}];
-  chrome.readingMode.getCurrentTextContent = () => text;
-  chrome.readingMode.getTextContent = () => text;
-  NodeStore.getInstance().setDomNode(document.createTextNode(text), id);
-}
-
-export function setSimpleNodeStoreWithTextAndModel(
-    text: string, model?: TestReadAloudModelBrowserProxy): Node {
+export function setContent(
+    text: string, model: TestReadAloudModelBrowserProxy): Node {
   const id = 2;
   const node = document.createTextNode(text);
   NodeStore.getInstance().setDomNode(node, id);
@@ -169,11 +141,4 @@ export function setSimpleNodeStoreWithTextAndModel(
     model.setCurrentTextContent(text);
   }
   return node;
-}
-
-
-// Sets up the simple AX tree and node store with the given text.
-export function setSimpleTreeWithText(text: string) {
-  setSimpleAxTreeWithText(text);
-  setSimpleNodeStoreWithText(text);
 }

@@ -5,14 +5,15 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {BrowserProxy, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setSimpleTreeWithText, setupBasicSpeech} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('AppReceivesToolbarChanges', () => {
@@ -21,6 +22,7 @@ suite('AppReceivesToolbarChanges', () => {
   let metrics: TestMetricsBrowserProxy;
   let voiceLanguageController: VoiceLanguageController;
   let speechController: SpeechController;
+  let readAloudModel: TestReadAloudModelBrowserProxy;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -89,6 +91,8 @@ suite('AppReceivesToolbarChanges', () => {
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     metrics = mockMetrics();
+    readAloudModel = new TestReadAloudModelBrowserProxy();
+    setInstance(readAloudModel);
     voiceLanguageController = new VoiceLanguageController();
     VoiceLanguageController.setInstance(voiceLanguageController);
     speechController = new SpeechController();
@@ -228,7 +232,8 @@ suite('AppReceivesToolbarChanges', () => {
 
   test('on speech rate change speech rate updated', async () => {
     setupBasicSpeech(speech);
-    setSimpleTreeWithText('we mean no harm');
+    readAloudModel.setInitialized(true);
+    setContent('we mean no harm', readAloudModel);
     app.updateContent();
     await emitPlayPause();
 
@@ -260,12 +265,11 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('play/pause', () => {
     setup(() => {
-      app.updateContent();
-      return microtasksFinished();
+      readAloudModel.setInitialized(true);
+      setContent('We come in peace', readAloudModel);
     });
 
     test('on first click starts speech', async () => {
-      setSimpleTreeWithText('We come in peace');
       await emitPlayPause();
       assertTrue(speechController.isSpeechActive());
       assertTrue(speechController.isSpeechTreeInitialized());
@@ -273,7 +277,6 @@ suite('AppReceivesToolbarChanges', () => {
     });
 
     test('on second click stops speech', async () => {
-      setSimpleTreeWithText('Don\'t be alarmed!');
       await emitPlayPause();
       await emitPlayPause();
 
@@ -343,7 +346,8 @@ suite('AppReceivesToolbarChanges', () => {
   suite('on granularity change', () => {
     setup(() => {
       setupBasicSpeech(speech);
-      setSimpleTreeWithText('we mean no harm');
+      readAloudModel.setInitialized(true);
+      setContent('we mean no harm', readAloudModel);
       app.updateContent();
       return emitPlayPause();
     });

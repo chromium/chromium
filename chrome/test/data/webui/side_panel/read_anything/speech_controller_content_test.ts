@@ -6,7 +6,7 @@ import type {AppElement, Segment} from 'chrome-untrusted://read-anything-side-pa
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
-import {createApp, createSpeechSynthesisVoice, setSimpleNodeStoreWithTextAndModel, stubAnimationFrame} from './common.js';
+import {createApp, createSpeechSynthesisVoice, setContent, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
@@ -123,7 +123,7 @@ suite('SpeechController', () => {
       // Before any content has been set, init is not called.
       assertEquals(0, readAloudModel.getCallCount('init'));
 
-      setSimpleNodeStoreWithTextAndModel('hello', readAloudModel);
+      setContent('hello', readAloudModel);
       app.updateContent();
       assertEquals(1, readAloudModel.getCallCount('init'));
 
@@ -137,11 +137,11 @@ suite('SpeechController', () => {
       await createApp();
       assertEquals(1, readAloudModel.getCallCount('resetModel'));
 
-      setSimpleNodeStoreWithTextAndModel('hello', readAloudModel);
+      setContent('hello', readAloudModel);
       app.updateContent();
       assertEquals(2, readAloudModel.getCallCount('resetModel'));
 
-      setSimpleNodeStoreWithTextAndModel('hello, it\'s me', readAloudModel);
+      setContent('hello, it\'s me', readAloudModel);
       app.updateContent();
       assertEquals(3, readAloudModel.getCallCount('resetModel'));
     });
@@ -151,11 +151,11 @@ suite('SpeechController', () => {
       await createApp();
       assertEquals(0, readAloudModel.getCallCount('resetModel'));
 
-      setSimpleNodeStoreWithTextAndModel('hello', readAloudModel);
+      setContent('hello', readAloudModel);
       app.updateContent();
       assertEquals(0, readAloudModel.getCallCount('resetModel'));
 
-      setSimpleNodeStoreWithTextAndModel('hello, it\'s me', readAloudModel);
+      setContent('hello, it\'s me', readAloudModel);
       app.updateContent();
       assertEquals(0, readAloudModel.getCallCount('resetModel'));
     });
@@ -175,7 +175,7 @@ suite('SpeechController', () => {
 
   test('clearReadAloudState', () => {
     const text = 'And I am a massive deal';
-    const node: Node = setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
+    const node: Node = setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
@@ -211,7 +211,7 @@ suite('SpeechController', () => {
     };
     const text = 'You bring the corsets';
     readAloudModel.setInitialized(true);
-    const node = setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
+    const node = setContent(text, readAloudModel);
 
     speechController.onPlayPauseToggle(node as HTMLElement);
     const spoken = await speech.whenCalled('speak');
@@ -253,8 +253,7 @@ suite('SpeechController', () => {
       'onPlayPauseToggle resume with word boundaries cancels and re-speaks',
       () => {
         const textContent = 'And our fame and our faces';
-        const node =
-            setSimpleNodeStoreWithTextAndModel(textContent, readAloudModel);
+        const node = setContent(textContent, readAloudModel);
         speechController.onPlayPauseToggle(node as HTMLElement);
         speechController.onPlayPauseToggle(node as HTMLElement);
         wordBoundaries.updateBoundary(10);
@@ -377,8 +376,7 @@ suite('SpeechController', () => {
   });
 
   test('onNextGranularityClick updates state', () => {
-    setSimpleNodeStoreWithTextAndModel(
-        'Know all about the glories', readAloudModel);
+    setContent('Know all about the glories', readAloudModel);
     wordBoundaries.updateBoundary(5);
     assertEquals(1, speech.getCallCount('cancel'));
 
@@ -390,7 +388,7 @@ suite('SpeechController', () => {
   });
 
   test('onPreviousGranularityClick updates state', () => {
-    setSimpleNodeStoreWithTextAndModel('And the disgraces', readAloudModel);
+    setContent('And the disgraces', readAloudModel);
     wordBoundaries.updateBoundary(5);
     assertEquals(1, speech.getCallCount('cancel'));
 
@@ -403,7 +401,7 @@ suite('SpeechController', () => {
 
   test('onVoiceMenuClose resume speech only if it was active before', () => {
     const text = 'You must agree that baby';
-    setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
+    setContent(text, readAloudModel);
     speechController.onVoiceMenuOpen();
 
     speechController.onVoiceMenuClose();
@@ -426,7 +424,7 @@ suite('SpeechController', () => {
 
   test('set previous reading position without saved state does nothing', () => {
     const text = 'But I took your hand';
-    setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
+    setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
@@ -448,7 +446,7 @@ suite('SpeechController', () => {
 
   test('set previous reading position restores saved state', () => {
     const text = 'And promised I\'d withstand';
-    setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
+    setContent(text, readAloudModel);
     wordBoundaries.updateBoundary(4);
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.sentenceHighlighting);
@@ -472,7 +470,7 @@ suite('SpeechController', () => {
   test('onTabMuteStateChange updates speech volume', async () => {
     const text = 'We\'ll bring the cinches';
     readAloudModel.setInitialized(true);
-    setSimpleNodeStoreWithTextAndModel(text, readAloudModel);
+    setContent(text, readAloudModel);
 
     speechController.onTabMuteStateChange(true);
     onPlayPauseToggle(text);

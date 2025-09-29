@@ -8,7 +8,7 @@ import {BrowserProxy, ContentController, ContentType, NodeStore, ReadAloudNode, 
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createApp, emitEvent, setSimpleNodeStoreWithTextAndModel, setSimpleTreeWithText, setupBasicSpeech} from './common.js';
+import {createApp, emitEvent, setContent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
@@ -75,7 +75,7 @@ suite('AppContent', () => {
   });
 
   test('showLoading clears read aloud state', () => {
-    setSimpleTreeWithText('My name is Regina George');
+    setContent('My name is Regina George', readAloudModel);
     emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     assertTrue(speechController.isSpeechActive());
 
@@ -448,7 +448,7 @@ suite('AppContent', () => {
     });
 
     test('selection disallowed when speech active', async () => {
-      setSimpleNodeStoreWithTextAndModel('Been there, done that');
+      setContent('Been there, done that', readAloudModel);
 
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       await microtasksFinished();
@@ -460,7 +460,7 @@ suite('AppContent', () => {
     });
 
     test('selection allowed after speech stops', async () => {
-      setSimpleNodeStoreWithTextAndModel('Who do you think you\'re kidding?');
+      setContent('Who do you think you\'re kidding?', readAloudModel);
 
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
       await microtasksFinished();

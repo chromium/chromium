@@ -1,13 +1,14 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SelectionController, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {BrowserProxy, MAX_SPEECH_LENGTH, NodeStore, ReadAloudHighlighter, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertEquals, assertFalse, assertGE, assertGT, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setSimpleTreeWithText} from './common.js';
+import {createSpeechErrorEvent, createSpeechSynthesisVoice, createWordBoundaryEvent, mockMetrics, setContent} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('SpeechController', () => {
@@ -24,10 +25,12 @@ suite('SpeechController', () => {
   let voiceLanguageController: VoiceLanguageController;
   let readingMode: FakeReadingMode;
   let selectionController: SelectionController;
+  let readAloudModel: TestReadAloudModelBrowserProxy;
 
   // TODO: crbug.com/440400392- Move all tests relying on chrome.readingMode
   // for text segmentation to use TestReadAloudModelBrowserProxy instead.
   function onPlayPauseToggle(text: string) {
+    setContent(text, readAloudModel);
     const element = document.createElement('p');
     element.textContent = text;
     speechController.onPlayPauseToggle(element);
@@ -68,6 +71,9 @@ suite('SpeechController', () => {
       },
     };
 
+    readAloudModel = new TestReadAloudModelBrowserProxy();
+    setInstance(readAloudModel);
+    readAloudModel.setInitialized(true);
     voiceLanguageController = new VoiceLanguageController();
     voiceLanguageController.setUserPreferredVoice(
         createSpeechSynthesisVoice({lang: 'en', name: 'Google Alpaca'}));
@@ -154,7 +160,7 @@ suite('SpeechController', () => {
 
   test('onSpeechSettingsChange cancels and resumes speech if playing', () => {
     const text = 'In all the time I\'ve been by your side';
-    setSimpleTreeWithText(text);
+    setContent(text, readAloudModel);
     onPlayPauseToggle(text);
     speech.reset();
 
@@ -171,7 +177,7 @@ suite('SpeechController', () => {
 
   test('onSpeechSettingsChange does not resume speech if not playing', () => {
     speechController.setHasSpeechBeenTriggered(true);
-    setSimpleTreeWithText('I\'ve never lost control');
+    setContent('I\'ve never lost control', readAloudModel);
 
     speechController.onSpeechSettingsChange();
 
@@ -198,7 +204,7 @@ suite('SpeechController', () => {
 
   test('onPlayPauseToggle waits for engine load', async () => {
     const text = 'Sorry not sorry bout what I said';
-    setSimpleTreeWithText(text);
+    setContent(text, readAloudModel);
 
     onPlayPauseToggle(text);
     const spoken = await speech.whenCalled('speak');
@@ -222,7 +228,7 @@ suite('SpeechController', () => {
     const text = 'I\'m just tryna have some fun';
     chrome.readingMode.speechRate = rate;
     chrome.readingMode.baseLanguageForSpeech = lang;
-    setSimpleTreeWithText(text);
+    setContent(text, readAloudModel);
 
     onPlayPauseToggle(text);
 
@@ -233,6 +239,7 @@ suite('SpeechController', () => {
 
   test('onPlayPauseToggle pauses with button click', () => {
     onPlayPauseToggle('A story that you think');
+    speech.reset();
     onPlayPauseToggle('A story that you think');
 
     assertTrue(isSpeechActiveChanged);
@@ -265,7 +272,7 @@ suite('SpeechController', () => {
 
   test('word boundary received updates words heard', () => {
     const textContent = 'You\'re all I can think of';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     onPlayPauseToggle(textContent);
     const spoken = speech.getArgs('speak')[0];
 
@@ -277,7 +284,7 @@ suite('SpeechController', () => {
 
   test('words heard not updated for whitespace', () => {
     const textContent = 'Every drop I drink up';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     onPlayPauseToggle(textContent);
     const spoken = speech.getArgs('speak')[0];
 
@@ -289,7 +296,7 @@ suite('SpeechController', () => {
 
   test('words heard reset on clear', () => {
     const textContent = 'You\'re my soda pop';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     onPlayPauseToggle(textContent);
     const spoken = speech.getArgs('speak')[0];
 
@@ -304,7 +311,7 @@ suite('SpeechController', () => {
 
   test('sentence end with word boundaries, does not count sentence', () => {
     const textContent = 'My little soda pop';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     onPlayPauseToggle(textContent);
     const spoken = speech.getArgs('speak')[0];
 
@@ -317,7 +324,7 @@ suite('SpeechController', () => {
 
   test('sentence end with no word boundaries, counts sentence', () => {
     const textContent = 'Cool me down, you\'re so hot';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     onPlayPauseToggle(textContent);
     const spoken = speech.getArgs('speak')[0];
 
@@ -350,7 +357,7 @@ suite('SpeechController', () => {
         'here I stay- let the storm rage on';
 
     setup(() => {
-      setSimpleTreeWithText(longSentences);
+      setContent(longSentences, readAloudModel);
     });
 
     test('uses max speech length', () => {
@@ -362,7 +369,7 @@ suite('SpeechController', () => {
       assertGT(expectedNumSegments, 0);
       for (let i = 0; i < expectedNumSegments; i++) {
         assertEquals(i + 1, speech.getCallCount('speak'));
-        assertGT(
+        assertGE(
             MAX_SPEECH_LENGTH, speech.getArgs('speak')[i].text.trim().length);
         speech.getArgs('speak')[i].onend();
       }
@@ -394,7 +401,7 @@ suite('SpeechController', () => {
   test('stops speech on language-unavailable', async () => {
     const textContent = 'I\'m done cuz all this time';
     const pageLanguage = 'es';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
@@ -420,7 +427,7 @@ suite('SpeechController', () => {
   test('stops speech on voice-unavailable', async () => {
     const textContent = 'I\'ve been just one word';
     const pageLanguage = 'es';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
     voiceLanguageController.onPageLanguageChanged();
@@ -445,7 +452,7 @@ suite('SpeechController', () => {
   test('invalid argument updates speech rate', () => {
     const textContent = 'In a stupid rhyme';
     const pageLanguage = 'es';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
@@ -470,7 +477,7 @@ suite('SpeechController', () => {
   test('speech interrupt while repositioning keeps playing speech', () => {
     const textContent = 'So I picked up a pen and a microphone';
     const pageLanguage = 'es';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
@@ -497,7 +504,7 @@ suite('SpeechController', () => {
   test('speech interrupt stops speech', async () => {
     const textContent = 'History\'s about to get overthrown';
     const pageLanguage = 'es';
-    setSimpleTreeWithText(textContent);
+    setContent(textContent, readAloudModel);
     assertNotEquals(chrome.readingMode.defaultLanguageForSpeech, pageLanguage);
     chrome.readingMode.speechRate = 4;
     chrome.readingMode.baseLanguageForSpeech = pageLanguage;
@@ -528,11 +535,7 @@ suite('SpeechController', () => {
 
   test('speech finished clears state', async () => {
     const text = 'New phone who dis?';
-    setSimpleTreeWithText(text);
-    let resetGranularityIndex = false;
-    chrome.readingMode.resetGranularityIndex = () => {
-      resetGranularityIndex = true;
-    };
+    setContent(text, readAloudModel);
 
     onPlayPauseToggle(text);
 
@@ -541,11 +544,11 @@ suite('SpeechController', () => {
 
     speech.reset();
     isSpeechActiveChanged = false;
-    chrome.readingMode.getCurrentTextSegments = () => [];
+    readAloudModel.setCurrentTextSegments([]);
     spoken.onend();
 
     assertTrue(isSpeechActiveChanged);
-    assertTrue(resetGranularityIndex);
+    assertEquals(1, readAloudModel.getCallCount('resetSpeechToBeginning'));
     assertFalse(speechController.isSpeechActive());
     assertFalse(speechController.isPausedFromButton());
     assertFalse(speechController.isTemporaryPause());
@@ -556,32 +559,18 @@ suite('SpeechController', () => {
   });
 
   test('onNextGranularityClick propagates change', () => {
-    let movedToNext = false;
-    chrome.readingMode.getCurrentTextSegments = () => [];
-    chrome.readingMode.movePositionToNextGranularity = () => {
-      movedToNext = true;
-    };
-
     speechController.onNextGranularityClick();
-
-    assertTrue(movedToNext);
+    assertEquals(1, readAloudModel.getCallCount('moveSpeechForward'));
   });
 
   test('onPreviousGranularityClick propagates change', () => {
-    let movedToPrevious: boolean = false;
-    chrome.readingMode.getCurrentTextSegments = () => [];
-    chrome.readingMode.movePositionToPreviousGranularity = () => {
-      movedToPrevious = true;
-    };
-
     speechController.onPreviousGranularityClick();
-
-    assertTrue(movedToPrevious);
+    assertEquals(1, readAloudModel.getCallCount('moveSpeechBackwards'));
   });
 
   test('onHighlightGranularityChange draws highlight', () => {
     const granularity = chrome.readingMode.wordHighlighting;
-    setSimpleTreeWithText('no more melon cake');
+    setContent('no more melon cake', readAloudModel);
     assertFalse(highlighter.hasCurrentGranularity());
 
     speechController.onHighlightGranularityChange(granularity);
