@@ -73,23 +73,17 @@ omnibox::NTPComposeboxConfig GetNTPComposeboxConfig() {
   placeholder_config->set_fade_text_animation_duration_ms(250);
 
   placeholder_config->add_placeholders(
-      omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_ASK);
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_ASK);
   placeholder_config->add_placeholders(
-      omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_PLAN);
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_PLAN);
   placeholder_config->add_placeholders(
-      omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_COMPARE);
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_COMPARE);
   placeholder_config->add_placeholders(
-      omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_RESEARCH);
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_RESEARCH);
   placeholder_config->add_placeholders(
-      omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_TEACH);
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_TEACH);
   placeholder_config->add_placeholders(
-      omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_WRITE);
+      omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_WRITE);
 
   // Attempt to parse the config proto from the feature parameter if it is set.
   omnibox::NTPComposeboxConfig fieldtrial_config;

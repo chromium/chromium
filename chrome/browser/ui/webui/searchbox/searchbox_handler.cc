@@ -932,33 +932,27 @@ void SearchboxHandler::GetPlaceholderConfig(
   std::vector<std::u16string> placeholders = {};
   for (auto& text : placeholder_config.placeholders()) {
     switch (text) {
-      case omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_ASK:
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_ASK:
         placeholders.emplace_back(l10n_util::GetStringUTF16(
             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_ASK_GOOGLE));
         break;
-      case omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_PLAN:
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_PLAN:
         placeholders.emplace_back(l10n_util::GetStringUTF16(
             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_PLAN));
         break;
-      case omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_COMPARE:
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_COMPARE:
         placeholders.emplace_back(l10n_util::GetStringUTF16(
             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_COMPARE));
         break;
-      case omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_RESEARCH:
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_RESEARCH:
         placeholders.emplace_back(l10n_util::GetStringUTF16(
             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_RESEARCH));
         break;
-      case omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_TEACH:
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_TEACH:
         placeholders.emplace_back(l10n_util::GetStringUTF16(
             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_TEACH));
         break;
-      case omnibox::
-          NTPComposeboxConfig_Composebox_PlaceholderConfig_Placeholder_WRITE:
+      case omnibox::NTPComposeboxConfig_PlaceholderConfig_Placeholder_WRITE:
         placeholders.emplace_back(l10n_util::GetStringUTF16(
             IDS_NTP_SEARCH_BOX_DYNAMIC_PLACEHOLDER_WRITE));
         break;
