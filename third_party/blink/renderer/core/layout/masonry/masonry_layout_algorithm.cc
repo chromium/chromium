@@ -919,14 +919,15 @@ Vector<LayoutUnit> MasonryLayoutAlgorithm::GetIntrinsicRepeaterTrackSizes(
     // During the first pass to calculate the intrinsic repeater track
     // sizes, we consolidate all spanners to a single span and place
     // the largest contribution in every track position, which will
-    // guarentee that each set will have a single track.
+    // guarantee that each set will have a single track.
     CHECK_EQ(current_set.track_count, 1U);
 
     // Note that when `needs_intrinsic_track_size` is true, we skip the
     // steps to distribute free space during track sizing. This means that
     // the base track size at this point represents the size of the
-    // intrinsic track without free space distribution.
-    intrinsic_repeat_track_sizes[i] = current_set.BaseSize();
+    // intrinsic track without free space distribution and hasn't taken the
+    // growth limit into account.
+    intrinsic_repeat_track_sizes[i] = current_set.GrowthLimit();
   }
   return intrinsic_repeat_track_sizes;
 }
