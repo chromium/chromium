@@ -11,31 +11,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkBarPreloadPipelineManager);
-
 BookmarkBarPreloadPipelineManager::BookmarkBarPreloadPipelineManager(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<BookmarkBarPreloadPipelineManager>(
-          *web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 BookmarkBarPreloadPipelineManager::~BookmarkBarPreloadPipelineManager() =
     default;
-
-// static
-BookmarkBarPreloadPipelineManager*
-BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-    content::WebContents* web_contents) {
-  auto* bookmarkbar_preload_manager =
-      BookmarkBarPreloadPipelineManager::FromWebContents(web_contents);
-  if (!bookmarkbar_preload_manager) {
-    BookmarkBarPreloadPipelineManager::CreateForWebContents(web_contents);
-    bookmarkbar_preload_manager =
-        BookmarkBarPreloadPipelineManager::FromWebContents(web_contents);
-  }
-
-  return bookmarkbar_preload_manager;
-}
 
 void BookmarkBarPreloadPipelineManager::StartPrefetch(const GURL& url) {
   EnsurePipelineForUrl(url);

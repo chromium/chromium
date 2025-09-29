@@ -20,6 +20,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Browser;
+class BookmarkBarPreloadPipelineManager;
 
 // Base class for buttons used on the bookmark bar.
 class BookmarkButtonBase : public views::LabelButton {
@@ -80,6 +81,8 @@ class BookmarkButton : public BookmarkButtonBase, public views::WidgetObserver {
   void StartPreloading(const GURL& url, content::PreloadingType preloadingType);
   void StartPreconnecting(GURL url);
   void StopPreloadingTimers();
+
+  BookmarkBarPreloadPipelineManager* GetBookmarkBarPreloadPipelineManager();
 
   void UpdateMaxTooltipWidth();
 

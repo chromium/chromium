@@ -47,8 +47,9 @@ class BookmarkBarPreloadPipelineManagerTest
         factory_util.model()->Add(
             std::make_unique<TemplateURL>(template_url_data)));
 
-    BookmarkBarPreloadPipelineManager::CreateForWebContents(
-        GetActiveWebContents());
+    bookmarkbar_preload_manager_ =
+        std::make_unique<BookmarkBarPreloadPipelineManager>(
+            GetActiveWebContents());
   }
 
   content::WebContents* GetActiveWebContents() { return web_contents(); }
@@ -65,7 +66,7 @@ class BookmarkBarPreloadPipelineManagerTest
   GURL GetUrl(const std::string& path) { return test_server_.GetURL(path); }
 
   BookmarkBarPreloadPipelineManager* bookmarkbar_preload_manager() {
-    return BookmarkBarPreloadPipelineManager::FromWebContents(web_contents());
+    return bookmarkbar_preload_manager_.get();
   }
 
  private:
@@ -74,6 +75,9 @@ class BookmarkBarPreloadPipelineManagerTest
   content::test::PrerenderTestHelper prerender_helper_;
 
   net::EmbeddedTestServer test_server_;
+
+  std::unique_ptr<BookmarkBarPreloadPipelineManager>
+      bookmarkbar_preload_manager_;
 };
 
 // Test that a search related url is ignored by the prerender BookmarkBar

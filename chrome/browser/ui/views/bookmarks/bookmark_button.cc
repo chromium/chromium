@@ -16,6 +16,7 @@
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_button_util.h"
@@ -218,14 +219,12 @@ void BookmarkButton::StopPreloadingTimers() {
 void BookmarkButton::OnMouseExited(const ui::MouseEvent& event) {
   BookmarkButtonBase::OnMouseExited(event);
   StopPreloadingTimers();
-  auto* active_web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (!active_web_contents) {
+
+  if (!GetBookmarkBarPreloadPipelineManager()) {
     return;
   }
-  BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-      active_web_contents)
-      ->ResetPrerender();
+
+  GetBookmarkBarPreloadPipelineManager()->ResetPrerender();
 }
 
 bool BookmarkButton::OnMousePressed(const ui::MouseEvent& event) {
@@ -266,12 +265,8 @@ void BookmarkButton::StartPreconnecting(GURL url) {
   CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect));
   // TODO(crbug.com/413259638): Introduce preconnect related tests once the
   // related infrastructure is completed.
-  auto* active_web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (active_web_contents &&
-      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-          active_web_contents)
-          ->IsPreloadingStarted()) {
+  if (!GetBookmarkBarPreloadPipelineManager() ||
+      GetBookmarkBarPreloadPipelineManager()->IsPreloadingStarted()) {
     return;
   }
 
@@ -286,22 +281,16 @@ void BookmarkButton::StartPreconnecting(GURL url) {
 
 void BookmarkButton::StartPreloading(const GURL& url,
                                      content::PreloadingType preloadingType) {
-  auto* active_web_contents =
-      browser_->tab_strip_model()->GetActiveWebContents();
-  if (!active_web_contents) {
+  if (!GetBookmarkBarPreloadPipelineManager()) {
     return;
   }
 
   switch (preloadingType) {
     case content::PreloadingType::kPrerender:
-      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-          active_web_contents)
-          ->StartPrerender(url);
+      GetBookmarkBarPreloadPipelineManager()->StartPrerender(url);
       break;
     case content::PreloadingType::kPrefetch:
-      BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-          active_web_contents)
-          ->StartPrefetch(url);
+      GetBookmarkBarPreloadPipelineManager()->StartPrefetch(url);
       break;
     case content::PreloadingType::kUnspecified:
     case content::PreloadingType::kPreconnect:
@@ -326,6 +315,13 @@ void BookmarkButton::UpdateMaxTooltipWidth() {
     max_tooltip_width_ = max_tooltip_width;
     UpdateTooltipText();
   }
+}
+
+BookmarkBarPreloadPipelineManager*
+BookmarkButton::GetBookmarkBarPreloadPipelineManager() {
+  tabs::TabInterface* active_tab = browser_->tab_strip_model()->GetActiveTab();
+  CHECK(active_tab);
+  return active_tab->GetTabFeatures()->bookmarkbar_preload_pipeline_manager();
 }
 
 BEGIN_METADATA(BookmarkButton)

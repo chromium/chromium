@@ -459,8 +459,11 @@ class PreloadBookmarkBarNavigationTestBase
   }
 
   BookmarkBarPreloadPipelineManager* GetBookmarkBarPreloadPipelineManager() {
-    return BookmarkBarPreloadPipelineManager::GetOrCreateForWebContents(
-        GetActiveWebContents());
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveTab()
+        ->GetTabFeatures()
+        ->bookmarkbar_preload_pipeline_manager();
   }
 
   void WaitForPrefetchCompleteOrFailed() {

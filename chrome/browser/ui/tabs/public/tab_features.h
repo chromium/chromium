@@ -32,6 +32,7 @@ class TabUIHelper;
 class TranslatePageActionController;
 class QwacWebContentsObserver;
 class ManagePasswordsPageActionController;
+class BookmarkBarPreloadPipelineManager;
 
 namespace autofill {
 class BubbleManager;
@@ -286,6 +287,10 @@ class TabFeatures {
   }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 
+  BookmarkBarPreloadPipelineManager* bookmarkbar_preload_pipeline_manager() {
+    return bookmarkbar_preload_pipeline_manager_.get();
+  }
+
   // Called exactly once to initialize features.
   void Init(TabInterface& tab, Profile* profile);
 
@@ -441,6 +446,9 @@ class TabFeatures {
 
   std::unique_ptr<RollBackModeBInfoBarController>
       roll_back_mode_b_infobar_controller_;
+
+  std::unique_ptr<BookmarkBarPreloadPipelineManager>
+      bookmarkbar_preload_pipeline_manager_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
