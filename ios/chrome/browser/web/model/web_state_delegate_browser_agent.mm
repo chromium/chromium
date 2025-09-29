@@ -381,3 +381,14 @@ bool WebStateDelegateBrowserAgent::CanRunOpenPanel(web::WebState* source) const
   // override the native open panel behaviour.
   return false;
 }
+
+void WebStateDelegateBrowserAgent::RunOpenPanel(
+    web::WebState* source,
+    WKOpenPanelParameters* parameters,
+    WKFrameInfo* frame,
+    base::OnceCallback<void(NSArray<NSURL*>*)> completion) const
+    API_AVAILABLE(ios(18.4)) {
+  // TODO(crbug.com/441659098): Forward the request to show the upload panel to
+  // the appropriate tab helper.
+  std::move(completion).Run(nil);
+}

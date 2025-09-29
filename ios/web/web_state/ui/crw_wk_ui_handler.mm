@@ -348,9 +348,8 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
          "completionHandler:] was called while the associated WebState's "
          "delegate cannot show an open panel (delegate->CanRunOpenPanel() "
          "returned false).";
-  // TODO(crbug.com/441659098): Forward parameters and completion handler to the
-  // delegate instead of passing nil.
-  completionHandler(nil);
+  delegate->RunOpenPanel(self.webStateImpl, parameters, frame,
+                         base::BindOnce(completionHandler));
 }
 
 #pragma mark - CRWMediaCapturePermissionPresenter

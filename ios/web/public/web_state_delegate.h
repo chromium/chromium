@@ -18,6 +18,8 @@
 
 @protocol CRWResponderInputView;
 @class UIViewController;
+@class WKFrameInfo;
+@class WKOpenPanelParameters;
 
 namespace web {
 
@@ -130,6 +132,17 @@ class WebStateDelegate {
   // Whether the delegate implements the `RunOpenPanel()` method for `source`.
   // If this returns `false`, then the native open panel will run instead.
   virtual bool CanRunOpenPanel(web::WebState* source) const
+      API_AVAILABLE(ios(18.4));
+
+  // Displays a file upload panel and calls `completion` with file URLs selected
+  // by the user. `parameters` describe the file upload control which initiated
+  // the call from `frame`. This is not called if `OverrideOpenPanel()` returns
+  // false.
+  virtual void RunOpenPanel(
+      web::WebState* source,
+      WKOpenPanelParameters* parameters,
+      WKFrameInfo* frame,
+      base::OnceCallback<void(NSArray<NSURL*>*)> completion) const
       API_AVAILABLE(ios(18.4));
 
  protected:
