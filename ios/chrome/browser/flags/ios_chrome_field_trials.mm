@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/path_service.h"
-#import "components/metrics/fre_source_trial.h"
 #import "components/metrics/persistent_histograms.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -39,7 +38,4 @@ void IOSChromeFieldTrials::SetUpClientSideFieldTrials(
   if (tests_hook::DisableClientSideFieldTrials()) {
     return;
   }
-  metrics::fre_source_trial::Create(GetApplicationContext()->GetLocalState(),
-                                    entropy_providers.default_entropy(),
-                                    GetChannel(), IsFirstRun());
 }

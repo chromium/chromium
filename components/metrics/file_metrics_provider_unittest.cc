@@ -31,7 +31,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/metrics/fre_source_trial.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_system_profile.h"
@@ -1401,61 +1400,15 @@ TEST_P(FileMetricsProviderTest, MetricsDisabledRegisterActiveFile) {
   EXPECT_TRUE(base::PathExists(metrics_file()));
 }
 
-class FileMetricsProviderFRETrialTest : public FileMetricsProviderTestBase {
+#if BUILDFLAG(IS_IOS)
+class FileMetricsProviderFirstRunTest : public FileMetricsProviderTestBase {
  public:
-  explicit FileMetricsProviderFRETrialTest(bool is_fre = false)
-      : FileMetricsProviderTestBase(/*create_large_files=*/false, is_fre),
-        entropy_providers_(
-            std::make_unique<const variations::MockEntropyProviders>(
-                variations::MockEntropyProviders::Results{
-                    .low_entropy = variations::kAlwaysUseLastGroup})) {}
-
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitWithEmptyFeatureAndFieldTrialLists();
-    fre_source_trial::RegisterLocalStatePrefs(local_state_.registry());
-    ASSERT_FALSE(
-        base::FieldTrialList::TrialExists(fre_source_trial::kFRESourceTrial));
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  TestingPrefServiceSimple local_state_;
-  std::unique_ptr<const variations::MockEntropyProviders> entropy_providers_;
+  FileMetricsProviderFirstRunTest()
+      : FileMetricsProviderTestBase(/*create_large_files=*/false,
+                                    /*is_fre=*/true) {}
 };
 
-TEST_F(FileMetricsProviderFRETrialTest, DoNotParticipateInExperiment) {
-  fre_source_trial::Create(&local_state_, entropy_providers_->default_entropy(),
-                           version_info::Channel::DEV, /*is_fre=*/false);
-  EXPECT_FALSE(
-      base::FieldTrialList::TrialExists(fre_source_trial::kFRESourceTrial));
-}
-
-class FileMetricsProviderFRETrialFirstRunTest
-    : public FileMetricsProviderFRETrialTest {
- public:
-  FileMetricsProviderFRETrialFirstRunTest()
-      : FileMetricsProviderFRETrialTest(/*is_fre=*/true) {}
-};
-
-TEST_F(FileMetricsProviderFRETrialFirstRunTest, FirstRunAssignTrialGroup) {
-  fre_source_trial::Create(&local_state_, entropy_providers_->default_entropy(),
-                           version_info::Channel::DEV, /*is_fre=*/true);
-  EXPECT_TRUE(
-      base::FieldTrialList::TrialExists(fre_source_trial::kFRESourceTrial));
-}
-
-TEST_F(FileMetricsProviderFRETrialFirstRunTest, FREFilesLimit) {
-  local_state_.SetString(fre_source_trial::kFRESourceTrial,
-                         fre_source_trial::kEnabledGroup);
-  fre_source_trial::Create(&local_state_,
-                           entropy_providers_.get()->default_entropy(),
-                           version_info::Channel::DEV, /*is_fre=*/true);
-  ASSERT_TRUE(
-      base::FieldTrialList::TrialExists(fre_source_trial::kFRESourceTrial));
-  ASSERT_EQ(
-      base::FieldTrialList::FindFullName(fre_source_trial::kFRESourceTrial),
-      fre_source_trial::kEnabledGroup);
-
+TEST_F(FileMetricsProviderFirstRunTest, FREFilesLimit) {
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
   base::FilePath dir = metrics_files.GetPath();
@@ -1485,42 +1438,7 @@ TEST_F(FileMetricsProviderFRETrialFirstRunTest, FREFilesLimit) {
   }
 }
 
-class FileMetricsProviderFRETrialFirstRunGroupsTest
-    : public FileMetricsProviderFRETrialFirstRunTest,
-      public testing::WithParamInterface<std::string> {};
-
-INSTANTIATE_TEST_SUITE_P(FRETrialFirstRunGroups,
-                         FileMetricsProviderFRETrialFirstRunGroupsTest,
-                         testing::Values(fre_source_trial::kDefaultGroup,
-                                         fre_source_trial::kControlGroup,
-                                         fre_source_trial::kEnabledGroup,
-                                         fre_source_trial::kControlGroup20,
-                                         fre_source_trial::kEnabledGroup20));
-
-TEST_P(FileMetricsProviderFRETrialFirstRunGroupsTest, FRETrialKeepTrialGroup) {
-  const std::string_view trial_group = GetParam();
-  local_state_.SetString(fre_source_trial::kFRESourceTrial, trial_group);
-  fre_source_trial::Create(&local_state_, entropy_providers_->default_entropy(),
-                           version_info::Channel::DEV, /*is_fre=*/true);
-  EXPECT_TRUE(
-      base::FieldTrialList::TrialExists(fre_source_trial::kFRESourceTrial));
-  EXPECT_EQ(
-      base::FieldTrialList::FindFullName(fre_source_trial::kFRESourceTrial),
-      trial_group);
-}
-
-TEST_P(FileMetricsProviderFRETrialFirstRunGroupsTest,
-       FRETrialFirstRunExperience) {
-  const std::string_view trial_group = GetParam();
-  local_state_.SetString(fre_source_trial::kFRESourceTrial, trial_group);
-  fre_source_trial::Create(&local_state_, entropy_providers_->default_entropy(),
-                           version_info::Channel::DEV, /*is_fre=*/true);
-  ASSERT_TRUE(
-      base::FieldTrialList::TrialExists(fre_source_trial::kFRESourceTrial));
-  ASSERT_EQ(
-      base::FieldTrialList::FindFullName(fre_source_trial::kFRESourceTrial),
-      trial_group);
-
+TEST_F(FileMetricsProviderFirstRunTest, FirstRunExperience) {
   base::ScopedTempDir metrics_files;
   ASSERT_TRUE(metrics_files.CreateUniqueTempDir());
   base::FilePath dir = metrics_files.GetPath();
@@ -1534,44 +1452,17 @@ TEST_P(FileMetricsProviderFRETrialFirstRunGroupsTest,
   ASSERT_TRUE(base::PathExists(dir));
   ASSERT_TRUE(base::PathExists(dir.AppendASCII("h1.pma")));
   ASSERT_TRUE(base::PathExists(dir.AppendASCII("h2.pma")));
-  provider()
-      ->RegisterSource(
-          FileMetricsProvider::Params(
-              metrics_files.GetPath(),
-              FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
-              FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE, kMetricsName),
-          /*metrics_reporting_enabled=*/false);
-
+  provider()->RegisterSource(
+      FileMetricsProvider::Params(
+          metrics_files.GetPath(),
+          FileMetricsProvider::SOURCE_HISTOGRAMS_ATOMIC_DIR,
+          FileMetricsProvider::ASSOCIATE_INTERNAL_PROFILE, kMetricsName),
+      /*metrics_reporting_enabled=*/false);
   task_environment()->RunUntilIdle();
-
-  bool should_keep_dir = trial_group == fre_source_trial::kEnabledGroup ||
-                         trial_group == fre_source_trial::kEnabledGroup20;
-  EXPECT_EQ(base::PathExists(dir), should_keep_dir);
+  EXPECT_TRUE(base::PathExists(dir));
 }
 
-class FileMetricsProviderFRETrialSubsequentRunGroupsTest
-    : public FileMetricsProviderFRETrialTest,
-      public testing::WithParamInterface<std::string> {};
-
-INSTANTIATE_TEST_SUITE_P(FRETrialSubsequentRunGroups,
-                         FileMetricsProviderFRETrialSubsequentRunGroupsTest,
-                         testing::Values(fre_source_trial::kDefaultGroup,
-                                         fre_source_trial::kControlGroup,
-                                         fre_source_trial::kEnabledGroup,
-                                         fre_source_trial::kControlGroup20,
-                                         fre_source_trial::kEnabledGroup20));
-
-TEST_P(FileMetricsProviderFRETrialSubsequentRunGroupsTest, FRETrialPostFRERun) {
-  const std::string_view trial_group = GetParam();
-  local_state_.SetString(fre_source_trial::kFRESourceTrial, trial_group);
-  fre_source_trial::Create(&local_state_, entropy_providers_->default_entropy(),
-                           version_info::Channel::DEV, /*is_fre=*/false);
-  ASSERT_TRUE(
-      base::FieldTrialList::TrialExists(fre_source_trial::kFRESourceTrial));
-  ASSERT_EQ(
-      base::FieldTrialList::FindFullName(fre_source_trial::kFRESourceTrial),
-      trial_group);
-
+TEST_F(FileMetricsProviderTestBase, PostFRERun) {
   base::ScopedTempDir metrics_files;
   EXPECT_TRUE(metrics_files.CreateUniqueTempDir());
   base::FilePath dir = metrics_files.GetPath();
@@ -1596,5 +1487,6 @@ TEST_P(FileMetricsProviderFRETrialSubsequentRunGroupsTest, FRETrialPostFRERun) {
 
   EXPECT_FALSE(base::PathExists(dir));
 }
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace metrics

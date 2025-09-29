@@ -163,7 +163,6 @@ if (!is_cronet_build || is_ios) {
       "expired_histograms_checker.cc",
       "field_trials_provider.cc",
       "file_metrics_provider.cc",
-      "fre_source_trial.cc",
       "install_date_provider.cc",
       "log_decoder.cc",
       "metrics_data_validation.cc",

@@ -43,7 +43,6 @@
 #import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/entropy_state_provider.h"
 #import "components/metrics/field_trials_provider.h"
-#import "components/metrics/fre_source_trial.h"
 #import "components/metrics/install_date_provider.h"
 #import "components/metrics/metrics_data_validation.h"
 #import "components/metrics/metrics_log_uploader.h"
@@ -189,7 +188,6 @@ void IOSChromeMetricsServiceClient::RegisterPrefs(
   metrics::RegisterMetricsReportingStatePrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
   metrics::dwa::DwaService::RegisterPrefs(registry);
-  metrics::fre_source_trial::RegisterLocalStatePrefs(registry);
 }
 
 variations::SyntheticTrialRegistry*
