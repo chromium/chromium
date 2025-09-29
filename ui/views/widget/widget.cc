@@ -2773,15 +2773,17 @@ void Widget::HandleWidgetDestroyed() {
 }
 
 void Widget::OnChildAdded(Widget* child_widget) {
-  if (ax_manager_) {
-    ax_manager_->OnChildAdded(child_widget->ax_manager_.get());
+  CHECK(child_widget);
+  if (ax_manager_ && child_widget->ax_manager_) {
+    ax_manager_->OnChildManagerAdded(*child_widget->ax_manager_);
   }
   observers_.Notify(&WidgetObserver::OnWidgetChildAdded, this, child_widget);
 }
 
 void Widget::OnChildRemoved(Widget* child_widget) {
-  if (ax_manager_) {
-    ax_manager_->OnChildRemoved(child_widget->ax_manager_.get());
+  CHECK(child_widget);
+  if (ax_manager_ && child_widget->ax_manager_) {
+    ax_manager_->OnChildManagerRemoved(*child_widget->ax_manager_);
   }
   observers_.Notify(&WidgetObserver::OnWidgetChildRemoved, this, child_widget);
 }

@@ -23,6 +23,7 @@
 
 namespace ui {
 class BrowserAccessibilityManager;
+struct AXUpdatesAndEvents;
 }  // namespace ui
 
 namespace views {
@@ -58,8 +59,11 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   void OnEvent(ViewAccessibility& view_ax, ax::mojom::Event event_type);
   void OnDataChanged(ViewAccessibility& view_ax);
 
-  void OnChildAdded(WidgetAXManager* child_manager);
-  void OnChildRemoved(WidgetAXManager* child_manager);
+  void OnChildAdded(ViewAccessibility& child, ViewAccessibility& parent);
+  void OnChildRemoved(ViewAccessibility& child, ViewAccessibility& parent);
+
+  void OnChildManagerAdded(WidgetAXManager& child_manager);
+  void OnChildManagerRemoved(WidgetAXManager& child_manager);
 
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;

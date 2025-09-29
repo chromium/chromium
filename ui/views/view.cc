@@ -3220,6 +3220,7 @@ void View::PropagateRemoveNotifications(View* old_parent,
 
   if (is_removed_from_widget) {
     RemovedFromWidget();
+    GetViewAccessibility().OnViewRemovedFromWidget();
     observers_.Notify(&ViewObserver::OnViewRemovedFromWidget, this);
   }
 }

@@ -380,6 +380,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
       std::optional<std::u16string> old_tooltip_text = std::nullopt);
 
   void OnViewAddedToWidget();
+  void OnViewRemovedFromWidget();
 
   void SetPlaceholder(const std::string& placeholder);
 

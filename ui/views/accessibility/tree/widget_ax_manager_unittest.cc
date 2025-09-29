@@ -209,16 +209,18 @@ TEST_F(WidgetAXManagerTest, OnDataChanged_PostsSingleTaskAndQueuesCorrectly) {
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before + 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 0u);
-  EXPECT_EQ(api.pending_data_updates().size(), 2u);
+  // Three unique IDs: v1, v2, and their parent view.
+  EXPECT_EQ(api.pending_data_updates().size(), 3u);
 
   // Duplicate data-change for v1 should not grow the set.
   before = task_environment()->GetPendingMainThreadTaskCount();
   manager()->OnDataChanged(v1->GetViewAccessibility());
-  EXPECT_EQ(api.pending_data_updates().size(), 2u);
+  EXPECT_EQ(api.pending_data_updates().size(), 3u);
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before);
 
   // After run, clear everything.
   task_environment()->RunUntilIdle();
+
   EXPECT_EQ(api.pending_data_updates().size(), 0u);
   EXPECT_FALSE(api.processing_update_posted());
 }
@@ -486,6 +488,30 @@ TEST_F(WidgetAXManagerTest, GetOrCreateAXNodeUniqueId) {
 
   EXPECT_EQ(manager()->GetOrCreateAXNodeUniqueId(v->GetUniqueId()),
             v->GetUniqueId());
+}
+
+TEST_F(WidgetAXManagerTest, OnChildAddedAndRemoved_ReserializeOnParent) {
+  WidgetAXManagerTestApi api(manager());
+
+  manager()->Enable();
+
+  auto child = ViewAccessibility::Create(nullptr);
+  auto parent = ViewAccessibility::Create(nullptr);
+
+  // Adding a child should schedule a pending serialization on the parent.
+  manager()->OnChildAdded(*child, *parent);
+  EXPECT_EQ(api.pending_data_updates().size(), 1u);
+  EXPECT_TRUE(api.pending_data_updates().contains(parent->GetUniqueId()));
+
+  // Process the pending update to clear it.
+  task_environment()->RunUntilIdle();
+
+  // Removing a child should also schedule a pending serialization on the
+  // parent.
+  EXPECT_TRUE(api.pending_data_updates().empty());
+  manager()->OnChildRemoved(*child, *parent);
+  EXPECT_EQ(api.pending_data_updates().size(), 1u);
+  EXPECT_TRUE(api.pending_data_updates().contains(parent->GetUniqueId()));
 }
 
 }  // namespace views::test

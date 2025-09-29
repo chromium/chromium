@@ -62,6 +62,9 @@ void WidgetAXManager::Enable() {
   update.root_id = root_data.id;
   update.nodes.push_back(root_data);
 
+  // TODO(crbug.com/40672441): Do we probably don't need to seed the `cache_`
+  // with the root view. It should be done automatically upon the initial
+  // serialization.
   cache_->Insert(&widget_->GetRootView()->GetViewAccessibility());
 
   ax_tree_manager_.reset(
@@ -77,8 +80,6 @@ void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
   pending_events_.push_back({view_ax.GetUniqueId(), event_type});
   pending_data_updates_.insert(view_ax.GetUniqueId());
 
-  cache_->Insert(&view_ax);
-
   SchedulePendingUpdate();
 }
 
@@ -88,19 +89,40 @@ void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
   }
 
   pending_data_updates_.insert(view_ax.GetUniqueId());
-  cache_->Insert(&view_ax);
 
   SchedulePendingUpdate();
 }
 
-void WidgetAXManager::OnChildAdded(WidgetAXManager* child_manager) {
-  CHECK(child_manager);
-  child_manager->parent_ax_tree_id_ = ax_tree_id_;
+void WidgetAXManager::OnChildAdded(ViewAccessibility& child,
+                                   ViewAccessibility& parent) {
+  if (!is_enabled_) {
+    return;
+  }
+
+  pending_data_updates_.insert(parent.GetUniqueId());
+  // TODO(https://crbug.com/40672441): Add child to the cache.
+
+  SchedulePendingUpdate();
 }
 
-void WidgetAXManager::OnChildRemoved(WidgetAXManager* child_manager) {
-  CHECK(child_manager);
-  child_manager->parent_ax_tree_id_ = ui::AXTreeID();
+void WidgetAXManager::OnChildRemoved(ViewAccessibility& child,
+                                     ViewAccessibility& parent) {
+  if (!is_enabled_) {
+    return;
+  }
+
+  pending_data_updates_.insert(parent.GetUniqueId());
+  // TODO(https://crbug.com/40672441): Remove child from the cache.
+
+  SchedulePendingUpdate();
+}
+
+void WidgetAXManager::OnChildManagerAdded(WidgetAXManager& child_manager) {
+  child_manager.parent_ax_tree_id_ = ax_tree_id_;
+}
+
+void WidgetAXManager::OnChildManagerRemoved(WidgetAXManager& child_manager) {
+  child_manager.parent_ax_tree_id_ = ui::AXTreeID();
 }
 
 void WidgetAXManager::OnAXModeAdded(ui::AXMode mode) {
@@ -287,24 +309,62 @@ void WidgetAXManager::SendPendingUpdate() {
   pending_events_.clear();
   pending_data_updates_.clear();
 
-  // Serialize the events first.
+  absl::flat_hash_set<ui::AXNodeID> already_serialized_ids;
+
+  // Serialize all changes first. This is necessary to ensure the nodes are
+  // added in the cache (through the SerializeChanges call below).
+  for (auto& id : pending_data_changes_copy) {
+    if (already_serialized_ids.contains(id)) {
+      // Don't serialize already serialized nodes a second time.
+      continue;
+    }
+
+    ViewAccessibility* view_ax = cache_->Get(id);
+    if (!view_ax) {
+      continue;
+    }
+
+    ui::AXTreeUpdate update;
+    if (!tree_serializer_->SerializeChanges(view_ax, &update)) {
+      return;
+    }
+
+    for (auto& node : update.nodes) {
+      already_serialized_ids.insert(node.id);
+    }
+
+    tree_updates.push_back(std::move(update));
+  }
+
+  // Serialize the events after.
   for (auto& event_copy : pending_events_copy) {
     const int id = event_copy.id;
     const ax::mojom::Event event_type = event_copy.event_type;
-    ViewAccessibility* view_ax = cache_->Get(id);
 
+    ViewAccessibility* view_ax = cache_->Get(id);
     if (!view_ax) {
       continue;
     }
 
     // We must fire the event if the node is in the client tree. To determine
-    // if it is, we need to serialize the node first.
-    ui::AXTreeUpdate update;
-    if (!tree_serializer_->SerializeChanges(view_ax, &update)) {
-      return;
+    // if it is, we need to serialize the node first. We might have serialized
+    // it already in the previous loop, so don't serialize it again if
+    // it's already in the pending data changes. This happens when a view
+    // updates its data and fires an event related to that data change. In the
+    // pending_data_changes_copy loop above, we would have already serialized
+    // the node in such a case -- no need to do it again.
+    if (!pending_data_changes_copy.contains(id)) {
+      if (already_serialized_ids.contains(id)) {
+        // Don't serialize already serialized nodes a second time.
+        continue;
+      }
+
+      ui::AXTreeUpdate update;
+      if (!tree_serializer_->SerializeChanges(view_ax, &update)) {
+        return;
+      }
+      tree_updates.push_back(std::move(update));
     }
-    tree_updates.push_back(std::move(update));
-    pending_data_changes_copy.erase(id);
 
     // Fire the event on the node, but only if it's actually in the tree.
     // Sometimes we get events fired on nodes with an ancestor that's
@@ -320,20 +380,6 @@ void WidgetAXManager::SendPendingUpdate() {
       event.event_type = event_type;
       events.push_back(std::move(event));
     }
-  }
-
-  // Serialize any changes that were not associated with an event.
-  ui::AXTreeUpdate update;
-  for (auto& id : pending_data_changes_copy) {
-    ViewAccessibility* view_ax = cache_->Get(id);
-    if (!view_ax) {
-      continue;
-    }
-
-    if (!tree_serializer_->SerializeChanges(view_ax, &update)) {
-      return;
-    }
-    tree_updates.push_back(std::move(update));
   }
 
   // TODO(crbug.com/40672441): Make sure the focused node is serialized.

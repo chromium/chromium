@@ -99,4 +99,34 @@ void AXUpdateNotifier::NotifyVirtualViewDataChanged(
   }
 }
 
+void AXUpdateNotifier::NotifyChildAdded(views::ViewAccessibility* child,
+                                        views::ViewAccessibility* parent) {
+  CHECK(child);
+  CHECK(parent);
+  observers_.Notify(&AXUpdateObserver::OnChildAdded, child, parent);
+
+  // Directly notify the WidgetAXManager of the parent's widget, avoiding the
+  // need to register all WidgetAXManagers as observers and broadcasting updates
+  // to unrelated widgets.
+  auto* widget = parent->GetWidget();
+  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+    widget->ax_manager()->OnChildAdded(*child, *parent);
+  }
+}
+
+void AXUpdateNotifier::NotifyChildRemoved(views::ViewAccessibility* child,
+                                          views::ViewAccessibility* parent) {
+  CHECK(child);
+  CHECK(parent);
+  observers_.Notify(&AXUpdateObserver::OnChildRemoved, child, parent);
+
+  // Directly notify the WidgetAXManager of the parent's widget, avoiding the
+  // need to register all WidgetAXManagers as observers and broadcasting updates
+  // to unrelated widgets.
+  auto* widget = parent->GetWidget();
+  if (::features::IsAccessibilityTreeForViewsEnabled() && widget) {
+    widget->ax_manager()->OnChildRemoved(*child, *parent);
+  }
+}
+
 }  // namespace views

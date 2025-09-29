@@ -968,6 +968,10 @@ void ViewAccessibility::OnTooltipTextChanged(
 }
 
 void ViewAccessibility::OnViewAddedToWidget() {
+  if (ViewAccessibility* parent = GetUnignoredParent()) {
+    AXUpdateNotifier::Get()->NotifyChildAdded(this, parent);
+  }
+
   // The accessibility class name is set after the view has been attached
   // to a widget, ensuring the object is fully constructed and its class
   // name is stable.
@@ -989,6 +993,12 @@ void ViewAccessibility::OnViewAddedToWidget() {
 #endif  // BUILDFLAG(IS_WIN)
 
   SetClassName(effective_class);
+}
+
+void ViewAccessibility::OnViewRemovedFromWidget() {
+  if (ViewAccessibility* parent = GetUnignoredParent()) {
+    AXUpdateNotifier::Get()->NotifyChildRemoved(this, parent);
+  }
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {

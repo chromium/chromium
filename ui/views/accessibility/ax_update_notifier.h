@@ -14,6 +14,7 @@ namespace views {
 class AXUpdateObserver;
 class AXVirtualView;
 class View;
+class ViewAccessibility;
 
 // AXUpdateNotifier allows observation of accessibility updates for all views
 // and notifies per-widget accessibility managers of changes.
@@ -38,6 +39,11 @@ class VIEWS_EXPORT AXUpdateNotifier {
   // Notifies observers of a data change. `view` must not be null.
   void NotifyViewDataChanged(views::View* view);
   void NotifyVirtualViewDataChanged(views::AXVirtualView* virtual_view);
+
+  void NotifyChildAdded(views::ViewAccessibility* child,
+                        views::ViewAccessibility* parent);
+  void NotifyChildRemoved(views::ViewAccessibility* child,
+                          views::ViewAccessibility* parent);
 
  private:
   base::ObserverList<AXUpdateObserver> observers_;

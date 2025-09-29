@@ -13,6 +13,7 @@ namespace views {
 
 class AXVirtualView;
 class View;
+class ViewAccessibility;
 
 // AXUpdateObserver is notified for accessibility events and data changes on all
 // views.
@@ -24,6 +25,11 @@ class VIEWS_EXPORT AXUpdateObserver : public base::CheckedObserver {
 
   virtual void OnDataChanged(views::View* view) {}
   virtual void OnVirtualViewDataChanged(views::AXVirtualView* virtual_view) {}
+
+  virtual void OnChildAdded(views::ViewAccessibility* child,
+                            views::ViewAccessibility* parent) {}
+  virtual void OnChildRemoved(views::ViewAccessibility* child,
+                              views::ViewAccessibility* parent) {}
 
  protected:
   AXUpdateObserver();
