@@ -89,7 +89,6 @@ component("fido") {
       "//device/base",
       "//device/fido/strings",
       "//services/data_decoder/public/cpp",
-      "//third_party/microsoft_webauthn",
       "//ui/base",
     ]
 
@@ -301,6 +300,7 @@ component("fido") {
         "win/webauthn_api.cc",
         "win/webauthn_api.h",
       ]
+      deps += [ "//third_party/microsoft_webauthn" ]
       libs = [ "wtsapi32.lib" ]
     }
 

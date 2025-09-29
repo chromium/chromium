@@ -9,7 +9,7 @@
 
 #include <ostream>
 
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_RP_ENTITY_INFORMATION& in);

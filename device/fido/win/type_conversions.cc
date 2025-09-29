@@ -30,7 +30,7 @@
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 

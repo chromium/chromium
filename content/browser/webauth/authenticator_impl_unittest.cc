@@ -152,7 +152,7 @@
 #include "device/fido/fido_test_data.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/util.h"
-#include "third_party/microsoft_webauthn/webauthn.h"  // nogncheck
+#include "third_party/microsoft_webauthn/src/webauthn.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

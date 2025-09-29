@@ -2498,6 +2498,11 @@ deps = {
     'condition': 'checkout_win',
   },
 
+  'src/third_party/microsoft_webauthn/src': {
+    'url': Var('chromium_git') + '/external/github.com/microsoft/webauthn.git' + '@' + '706d98d73a8c3d888e77f0d524f630d551b194c3',
+    'condition': 'checkout_win',
+  },
+
   'src/third_party/mig/bin': {
       'packages': [
           {

@@ -32,7 +32,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/type_conversions.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

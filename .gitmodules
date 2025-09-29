@@ -424,6 +424,10 @@
 	path = third_party/microsoft_dxheaders/src
 	url = https://chromium.googlesource.com/external/github.com/microsoft/DirectX-Headers
 	gclient-condition = checkout_win
+[submodule "third_party/microsoft_webauthn/src"]
+	path = third_party/microsoft_webauthn/src
+	url = https://chromium.googlesource.com/external/github.com/microsoft/webauthn
+	gclient-condition = checkout_win
 [submodule "third_party/minigbm/src"]
 	path = third_party/minigbm/src
 	url = https://chromium.googlesource.com/chromiumos/platform/minigbm

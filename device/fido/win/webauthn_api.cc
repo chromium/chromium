@@ -26,7 +26,7 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/win/logging.h"
 #include "device/fido/win/type_conversions.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 

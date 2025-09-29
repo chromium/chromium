@@ -33,7 +33,7 @@
 #include "device/fido/win/type_conversions.h"
 #include "device/fido/win/util.h"
 #include "device/fido/win/webauthn_api.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 

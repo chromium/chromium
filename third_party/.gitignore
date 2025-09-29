@@ -88,6 +88,7 @@
 /llvm-build/
 /mesa/src
 /microsoft_dxheaders/src
+/webauthn/src
 /mingw-w64
 /mkl
 /mocha

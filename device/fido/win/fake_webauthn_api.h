@@ -6,6 +6,7 @@
 #define DEVICE_FIDO_WIN_FAKE_WEBAUTHN_API_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <vector>
@@ -18,7 +19,7 @@
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/win/webauthn_api.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 

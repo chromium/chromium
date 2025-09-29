@@ -167,6 +167,7 @@ per-file third_party/llvm-libc/src=*
 per-file third_party/lss=*
 per-file third_party/material_color_utilities/src=*
 per-file third_party/material_design_icons/src=*
+per-file third_party/microsoft_webauthn/src=*
 per-file third_party/mingw-w64/mingw/bin=*
 per-file third_party/minigbm/src=*
 per-file third_party/ml=*
