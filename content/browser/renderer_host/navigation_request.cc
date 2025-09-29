@@ -6601,6 +6601,7 @@ void NavigationRequest::CommitNavigation() {
                                        origin_to_commit)) ||
        (base::FeatureList::IsEnabled(
             blink::features::kStickyUserActivationAcrossSameOriginNavigation) &&
+        !commit_params_->is_browser_initiated &&
         frame_tree_node_->IsMainFrame() &&
         old_frame_host->GetLastCommittedOrigin() == origin_to_commit));
 
