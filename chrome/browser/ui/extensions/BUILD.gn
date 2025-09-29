@@ -217,7 +217,6 @@ source_set("unit_tests") {
     sources += [
       "controlled_home_dialog_controller_unittest.cc",
       "extension_installed_bubble_model_unittest.cc",
-      "extension_installed_waiter_unittest.cc",
       "extension_settings_overridden_dialog_unittest.cc",
       "extensions_overrides/simple_overrides_unittest.cc",
       "settings_api_bubble_helpers_unittest.cc",
@@ -264,6 +263,7 @@ source_set("browser_tests") {
       "extension_enable_flow_test_delegate.cc",
       "extension_enable_flow_test_delegate.h",
       "extension_image_util_browsertest.cc",
+      "extension_installed_waiter_browsertest.cc",
       "hosted_app_browsertest.cc",
       "notifications_custom_bindings_browsertest.cc",
       "settings_overridden_params_providers_browsertest.cc",

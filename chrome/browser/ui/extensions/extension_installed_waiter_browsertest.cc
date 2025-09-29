@@ -4,41 +4,26 @@
 
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 
-#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "content/public/test/browser_task_environment.h"
+#include "base/test/run_until.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::Extension;
 
-class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
+class ExtensionInstalledWaiterTest : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionInstalledWaiterTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~ExtensionInstalledWaiterTest() override = default;
-
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    extensions::LoadErrorReporter::Init(false);
-    extensions::TestExtensionSystem* extension_system =
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(profile()));
-    extension_system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-  }
-
-  void TearDown() override {
+  void TearDownOnMainThread() override {
     ExtensionInstalledWaiter::SetGivingUpCallbackForTesting(
         base::NullCallback());
-    BrowserWithTestWindowTest::TearDown();
+    extensions::ExtensionBrowserTest::TearDownOnMainThread();
   }
 
   void WaitFor(scoped_refptr<const Extension> extension,
@@ -70,7 +55,8 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
   }
 };
 
-TEST_F(ExtensionInstalledWaiterTest, ExtensionIsAlreadyInstalled) {
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+                       ExtensionIsAlreadyInstalled) {
   auto extension = MakeExtensionNamed("foo");
   extension_registrar()->AddExtension(extension);
 
@@ -78,7 +64,7 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionIsAlreadyInstalled) {
   EXPECT_EQ(1, done_called_);
 }
 
-TEST_F(ExtensionInstalledWaiterTest, ExtensionInstall) {
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest, ExtensionInstall) {
   auto extension = MakeExtensionNamed("foo");
 
   WaitFor(extension);
@@ -89,14 +75,14 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionInstall) {
   // ExtensionInstalledWaiter must *not* call the done callback on the same
   // runloop cycle as the extension installation, to allow all the other
   // observers to run.
-  EXPECT_FALSE(task_environment()->MainThreadIsIdle());
   EXPECT_EQ(0, done_called_);
 
-  task_environment()->RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&] { return done_called_ >= 1; }));
   EXPECT_EQ(1, done_called_);
 }
 
-TEST_F(ExtensionInstalledWaiterTest, NotTheExtensionYouAreLookingFor) {
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+                       NotTheExtensionYouAreLookingFor) {
   auto foo = MakeExtensionNamed("foo");
   auto bar = MakeExtensionNamed("bar");
 
@@ -104,55 +90,52 @@ TEST_F(ExtensionInstalledWaiterTest, NotTheExtensionYouAreLookingFor) {
   EXPECT_EQ(0, done_called_);
 
   extension_registrar()->AddExtension(bar);
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(0, done_called_);
-
   extension_registrar()->AddExtension(foo);
-  task_environment()->RunUntilIdle();
+
+  ASSERT_TRUE(base::test::RunUntil([&] { return done_called_ >= 1; }));
   EXPECT_EQ(1, done_called_);
 }
 
-TEST_F(ExtensionInstalledWaiterTest, ExtensionUninstalledWhileWaiting) {
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+                       ExtensionUninstalledWhileWaiting) {
   auto extension = MakeExtensionNamed("foo");
 
   WaitFor(extension);
   EXPECT_EQ(0, done_called_);
+  EXPECT_EQ(0, giving_up_called_);
 
   extension_registrar()->AddExtension(extension);
   extension_registrar()->RemoveExtension(
       extension->id(), extensions::UnloadedExtensionReason::UNINSTALL);
-  EXPECT_EQ(1, giving_up_called_);
 
-  task_environment()->RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&] { return giving_up_called_ >= 1; }));
+  EXPECT_EQ(1, giving_up_called_);
   EXPECT_EQ(0, done_called_);
 }
 
-TEST_F(ExtensionInstalledWaiterTest, BrowserShutdownWhileWaiting) {
-  std::unique_ptr<Browser> browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
-
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+                       BrowserShutdownWhileWaiting) {
   auto foo = MakeExtensionNamed("foo");
-  WaitFor(foo, browser.get());
+  WaitFor(foo, browser());
 
-  browser.reset();
+  CloseBrowserSynchronously(browser());
   EXPECT_EQ(1, giving_up_called_);
   EXPECT_EQ(0, done_called_);
 }
 
 // Regression test for https://crbug.com/1049190.
-TEST_F(ExtensionInstalledWaiterTest, BrowserShutdownWhileWaitingDoesntCrash) {
-  std::unique_ptr<Browser> browser =
-      CreateBrowser(profile(), Browser::TYPE_NORMAL, false);
-
+IN_PROC_BROWSER_TEST_F(ExtensionInstalledWaiterTest,
+                       BrowserShutdownWhileWaitingDoesntCrash) {
   auto foo = MakeExtensionNamed("foo");
-  WaitFor(foo, browser.get());
+  WaitFor(foo, browser());
 
   // Null out the giving-up callback, which is how the class is actually used in
   // production.
   ExtensionInstalledWaiter::SetGivingUpCallbackForTesting({});
 
   // If the fix for https://crbug.com/1049190 regresses, this will crash:
-  browser->OnWindowClosing();
+  chrome::CloseWindow(browser());
+  ui_test_utils::WaitForBrowserToClose(browser());
 
   EXPECT_EQ(0, giving_up_called_);
   EXPECT_EQ(0, done_called_);
