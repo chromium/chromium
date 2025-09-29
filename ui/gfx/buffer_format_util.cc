@@ -142,7 +142,8 @@ size_t BytesPerPixelForBufferFormatInternal(BufferFormat format, size_t plane) {
   NOTREACHED();
 }
 
-size_t RowByteAlignmentForBufferFormat(BufferFormat format, size_t plane) {
+size_t RowByteAlignmentForBufferFormatInternal(BufferFormat format,
+                                               size_t plane) {
   switch (format) {
     case BufferFormat::R_8:
     case BufferFormat::R_16:
@@ -183,7 +184,8 @@ bool RowSizeForBufferFormatChecked(size_t width,
   base::CheckedNumeric<size_t> checked_size =
       PlaneWidthForBufferFormatCheckedInternal(width, format, plane);
   checked_size *= BytesPerPixelForBufferFormatInternal(format, plane);
-  const size_t alignment = RowByteAlignmentForBufferFormat(format, plane);
+  const size_t alignment =
+      RowByteAlignmentForBufferFormatInternal(format, plane);
   checked_size = (checked_size + alignment - 1) & ~(alignment - 1);
   if (!checked_size.IsValid())
     return false;
