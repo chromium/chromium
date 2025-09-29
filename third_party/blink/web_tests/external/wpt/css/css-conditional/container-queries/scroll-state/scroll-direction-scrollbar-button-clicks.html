@@ -7,6 +7,7 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
 <style>
   #scroller {
@@ -47,10 +48,18 @@
   }
 
   promise_test(async t => {
+    assert_equals(scroller.scrollTop, 0);
+
+    let scrollEndPromise = waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
+
     /* Scrollbar down button should be located on bottom right side */
     const track_position = { x: 200, y: 200 };
     await scrollbar_track_click(track_position);
+
+    await scrollEndPromise;
     await waitForAnimationFrames(2);
+
+    assert_not_equals(scroller.scrollTop, 0);
     assert_equals(getComputedStyle(target).getPropertyValue("--y"), "yes");
 
   }, "Scrollbar button clicks scroll");

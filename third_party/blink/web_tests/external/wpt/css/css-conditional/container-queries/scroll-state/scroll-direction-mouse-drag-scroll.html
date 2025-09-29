@@ -7,6 +7,7 @@
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/web-animations/testcommon.js"></script>
+<script src="/dom/events/scrolling/scroll_support.js"></script>
 <script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
 <style>
   #scroller {
@@ -54,6 +55,8 @@
   }
 
   promise_test(async t => {
+    let scrollEndPromise = waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
+
     // Skip test on platforms that do not have a visible scrollbar (e.g.
     // overlay scrollbar).
     const scrollbar_width = scroller.offsetWidth - scroller.clientWidth;
@@ -70,6 +73,7 @@
     const end_pos = { x: 200, y: 200 };
 
     await drag_scrollbar(start_pos, end_pos);
+    await scrollEndPromise;
     await waitForAnimationFrames(2);
 
     assert_not_equals(scroller.scrollTop, 0);
@@ -79,6 +83,8 @@
   }, "Vertical scrollbar drag scroll");
 
   promise_test(async t => {
+    let scrollEndPromise = waitForScrollEndFallbackToDelayWithoutScrollEvent(scroller);
+
     // Skip test on platforms that do not have a visible scrollbar (e.g.
     // overlay scrollbar).
     const scrollbar_height = scroller.offsetHeight - scroller.clientHeight;
@@ -95,6 +101,7 @@
     const end_pos = { x: 200, y: 200 };
 
     await drag_scrollbar(start_pos, end_pos);
+    await scrollEndPromise;
     await waitForAnimationFrames(2);
 
     assert_not_equals(scroller.scrollLeft, 0);
