@@ -56,10 +56,6 @@ class WebGPUInterface;
 }  // namespace webgpu
 }  // namespace gpu
 
-namespace skia_bindings {
-class GrContextForGLES2Interface;
-}
-
 namespace viz {
 
 enum class WebGLContextType { kWebGL1, kWebGL2 };
@@ -230,8 +226,6 @@ class ContextProviderCommandBuffer
 
   // END IMPORTANT NOTE                                                       //
   //////////////////////////////////////////////////////////////////////////////
-
-  std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
 
   std::unique_ptr<ContextCacheController> cache_controller_;
 

@@ -44,7 +44,6 @@
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkTraceMemoryDump.h"
@@ -535,8 +534,6 @@ void ContextProviderCommandBuffer::OnLostContext() {
 
   for (auto& observer : observers_)
     observer.OnContextLost();
-  if (gr_context_)
-    gr_context_->OnLostContext();
 
   gpu::CommandBuffer::State state = GetCommandBufferProxy()->GetLastState();
   command_buffer_metrics::UmaRecordContextLost(context_type_, state.error,
@@ -578,15 +575,6 @@ bool ContextProviderCommandBuffer::OnMemoryDump(
   impl_->OnMemoryDump(args, pmd);
   helper_->OnMemoryDump(args, pmd);
 
-  if (gr_context_) {
-    if (args.level_of_detail ==
-        base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
-      gpu::raster::DumpBackgroundGrMemoryStatistics(gr_context_->get(), pmd);
-    } else {
-      gpu::raster::DumpGrMemoryStatistics(gr_context_->get(), pmd,
-                                          gles2_impl_->ShareGroupTracingGUID());
-    }
-  }
   return true;
 }
 
