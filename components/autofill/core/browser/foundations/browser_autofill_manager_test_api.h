@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/filling/form_filler_test_api.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager_impl.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -54,6 +55,10 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
 
   autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
     return &manager_->metrics_->credit_card_form_event_logger;
+  }
+
+  autofill_metrics::OtpFormEventLogger* get_otp_form_event_logger() {
+    return &manager_->metrics_->otp_form_event_logger;
   }
 
   void set_credit_card_access_manager(

@@ -790,7 +790,8 @@ BrowserAutofillManager::MetricsState::MetricsState(
     BrowserAutofillManager* owner)
     : address_form_event_logger(owner),
       credit_card_form_event_logger(owner),
-      loyalty_card_form_event_logger(owner) {}
+      loyalty_card_form_event_logger(owner),
+      otp_form_event_logger(owner) {}
 
 BrowserAutofillManager::MetricsState::~MetricsState() {
   if (has_parsed_forms) {
@@ -803,6 +804,7 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
   credit_card_form_event_logger.OnDestroyed();
   address_form_event_logger.OnDestroyed();
   loyalty_card_form_event_logger.OnDestroyed();
+  otp_form_event_logger.OnDestroyed();
 }
 
 BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
@@ -1060,6 +1062,8 @@ void BrowserAutofillManager::LogSubmissionMetrics(
   if (client().IsAutofillEnabled()) {
     metrics_->loyalty_card_form_event_logger.OnFormSubmitted(*submitted_form);
   }
+
+  metrics_->otp_form_event_logger.OnWillSubmitForm(*submitted_form);
 }
 
 void BrowserAutofillManager::OnTextFieldValueChangedImpl(
@@ -2717,8 +2721,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
             // notification to the delegate here.
           },
           [&](const OtpFillData*) {
-            // TODO(crbug.com/415272525): Notify the OTP manager to track
-            // OTP filling acceptance.
+            metrics_->otp_form_event_logger.OnDidFillOtpSuggestion(
+                form, trigger_field);
           }},
       filling_payload);
 }
@@ -3091,6 +3095,8 @@ void BrowserAutofillManager::OnDidIdentifyFormForMetrics(
   const bool address_form = base::Contains(form_types, FormType::kAddressForm);
   const bool loyalty_card_form =
       base::Contains(form_types, FormType::kLoyaltyCardForm);
+  const bool otp_form =
+      base::Contains(form_types, FormType::kOneTimePasswordForm);
   if (card_form) {
     metrics_->credit_card_form_event_logger.OnDidIdentifyForm(
         form_structure, identification_time);
@@ -3102,6 +3108,10 @@ void BrowserAutofillManager::OnDidIdentifyFormForMetrics(
   if (loyalty_card_form) {
     metrics_->loyalty_card_form_event_logger.OnDidIdentifyForm(
         form_structure, identification_time);
+  }
+  if (otp_form) {
+    metrics_->otp_form_event_logger.OnDidIdentifyForm(form_structure,
+                                                      identification_time);
   }
 }
 
@@ -3319,8 +3329,8 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
       return &metrics_->credit_card_form_event_logger;
     case FormType::kLoyaltyCardForm:
       return &metrics_->loyalty_card_form_event_logger;
-      // TODO(crbug.com/443693025): Add event logger for OTP fields
     case FormType::kOneTimePasswordForm:
+      return &metrics_->otp_form_event_logger;
     case FormType::kPasswordForm:
     case FormType::kUnknownFormType:
       return nullptr;

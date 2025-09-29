@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/metrics/otp_form_event_logger.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
@@ -103,6 +104,47 @@ class BrowserAutofillManager;
 // forms. One per frame; owned by the AutofillDriver.
 class BrowserAutofillManager : public AutofillManager {
  public:
+  // Utilities for logging form events. The loggers emit metrics during their
+  // destruction, effectively when the BrowserAutofillManager is reset or
+  // destroyed.
+  struct MetricsState {
+    explicit MetricsState(BrowserAutofillManager* owner);
+    ~MetricsState();
+
+    // The address and credit card event loggers are used to emit key and funnel
+    // metrics.
+    autofill_metrics::AddressFormEventLogger address_form_event_logger;
+    autofill_metrics::CreditCardFormEventLogger credit_card_form_event_logger;
+    autofill_metrics::LoyaltyCardFormEventLogger loyalty_card_form_event_logger;
+    autofill_metrics::OtpFormEventLogger otp_form_event_logger;
+
+    // Have we logged whether Autofill is enabled for this page load?
+    bool has_logged_autofill_enabled = false;
+    // Has the user manually edited at least one form field among the
+    // autofillable ones?
+    bool user_did_type = false;
+
+    // TODO(crbug.com/354043809): Move out of BAM.
+    // Does |this| have any parsed forms?
+    bool has_parsed_forms = false;
+    // Is there a field with autocomplete="one-time-code" observed?
+    bool has_observed_one_time_code_field = false;
+    // Is there a field with phone number collection observed?
+    bool has_observed_phone_number_field = false;
+
+    // Should be set at the beginning of the interaction and reused
+    // throughout the context of this manager.
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics =
+        AutofillMetrics::PaymentsSigninState::kUnknown;
+
+    // When the user first interacted with a potentially fillable form on this
+    // page.
+    base::TimeTicks initial_interaction_timestamp;
+
+    // When the form was submitted.
+    base::TimeTicks form_submitted_timestamp;
+  };
+
   // Triggered when `GenerateSuggestionsAndMaybeShowUIPhase2` is complete.
   // `show_suggestions` indicates whether or not the list of `suggestions`
   // should be displayed (via the `external_delegate_`).
@@ -307,6 +349,8 @@ class BrowserAutofillManager : public AutofillManager {
   autofill_metrics::FormEventLoggerBase* GetEventFormLogger(
       const AutofillField& field);
 
+  std::optional<MetricsState>& GetMetricState() { return metrics_; }
+
  protected:
   // Returns the card image for `credit_card`. If the `credit_card` has a card
   // art image linked, prefer it. Otherwise fall back to the network icon.
@@ -340,45 +384,6 @@ class BrowserAutofillManager : public AutofillManager {
  private:
   friend class BrowserAutofillManagerTestApi;
 
-  // Utilities for logging form events. The loggers emit metrics during their
-  // destruction, effectively when the BrowserAutofillManager is reset or
-  // destroyed.
-  struct MetricsState {
-    explicit MetricsState(BrowserAutofillManager* owner);
-    ~MetricsState();
-
-    // The address and credit card event loggers are used to emit key and funnel
-    // metrics.
-    autofill_metrics::AddressFormEventLogger address_form_event_logger;
-    autofill_metrics::CreditCardFormEventLogger credit_card_form_event_logger;
-    autofill_metrics::LoyaltyCardFormEventLogger loyalty_card_form_event_logger;
-
-    // Have we logged whether Autofill is enabled for this page load?
-    bool has_logged_autofill_enabled = false;
-    // Has the user manually edited at least one form field among the
-    // autofillable ones?
-    bool user_did_type = false;
-
-    // TODO(crbug.com/354043809): Move out of BAM.
-    // Does |this| have any parsed forms?
-    bool has_parsed_forms = false;
-    // Is there a field with autocomplete="one-time-code" observed?
-    bool has_observed_one_time_code_field = false;
-    // Is there a field with phone number collection observed?
-    bool has_observed_phone_number_field = false;
-
-    // Should be set at the beginning of the interaction and re-used
-    // throughout the context of this manager.
-    AutofillMetrics::PaymentsSigninState signin_state_for_metrics =
-        AutofillMetrics::PaymentsSigninState::kUnknown;
-
-    // When the user first interacted with a potentially fillable form on this
-    // page.
-    base::TimeTicks initial_interaction_timestamp;
-
-    // When the form was submitted.
-    base::TimeTicks form_submitted_timestamp;
-  };
 
   // Emits all metrics that should be recorded at submission time.
   void LogSubmissionMetrics(const FormStructure* submitted_form,

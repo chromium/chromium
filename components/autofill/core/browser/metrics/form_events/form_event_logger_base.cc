@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <string>
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -170,8 +171,9 @@ void FormEventLoggerBase::SetTimeFromInteractionToSubmission(
 
 void FormEventLoggerBase::OnWillSubmitForm(const FormStructure& form) {
   // Not logging this kind of form if we haven't logged a user interaction.
-  if (!has_logged_interacted_)
+  if (!has_logged_interacted_) {
     return;
+  }
 
   // Not logging twice.
   if (has_logged_will_submit_)
@@ -397,7 +399,7 @@ void FormEventLoggerBase::RecordKeyMetrics() {
 }
 
 void FormEventLoggerBase::RecordFillingReadiness(LogBuffer& logs) const {
-  bool has_logged_data_to_fill_available = HasLoggedDataToFillAvailable();
+  const bool has_logged_data_to_fill_available = HasLoggedDataToFillAvailable();
   for (std::string_view form_type : GetParsedFormTypesAsStringViews()) {
     base::UmaHistogramBoolean(
         base::StrCat({"Autofill.KeyMetrics.FillingReadiness.", form_type}),

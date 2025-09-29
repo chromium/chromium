@@ -1565,11 +1565,13 @@ TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_CVC) {
 }
 
 // Test that the correct logger is returned for a one time password field.
-TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_OneTimePassword) {
+TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_Otp) {
   AutofillField otp_field;
   otp_field.SetTypeTo(AutofillType(ONE_TIME_CODE), std::nullopt);
-  EXPECT_EQ(autofill_manager().GetFormEventLoggerForTesting(otp_field),
-            nullptr);
+  EXPECT_EQ(autofill_manager()
+                .GetFormEventLoggerForTesting(otp_field)
+                ->GetFormTypeNameForTesting(),
+            "OneTimePassword");
 }
 
 // Test that the correct logger is returned for a password field..

@@ -9,6 +9,7 @@
 #include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 
@@ -21,11 +22,11 @@ std::vector<std::string> OtpsToSuggestionStrings(
 }
 }  // namespace
 
-OtpManagerImpl::OtpManagerImpl(AutofillManager* autofill_manager,
+OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager* owner,
                                one_time_tokens::SmsOtpBackend* sms_otp_backend)
-    : sms_otp_backend_(sms_otp_backend) {
-  if (autofill_manager) {
-    autofill_manager_observation_.Observe(autofill_manager);
+    : owner_(owner), sms_otp_backend_(sms_otp_backend) {
+  if (owner_) {
+    autofill_manager_observation_.Observe(owner);
   }
 
   // TODO(crbug.com/415273270) This is just a hack to prepopulate the OTPs in
@@ -85,6 +86,10 @@ void OtpManagerImpl::OnFieldTypesDetermined(
     return;
   }
 
+  StartOtpRetrieval();
+}
+
+void OtpManagerImpl::StartOtpRetrieval() {
   sms_otp_retrieval_was_ever_started_ = true;
   sms_otp_retrieval_in_progress_ = true;
   sms_otp_backend_->RetrieveSmsOtp(base::BindOnce(
@@ -101,6 +106,10 @@ void OtpManagerImpl::OnOtpRetrievalComplete(
                     return token.value() == reply.otp_value.value().value();
                   });
     otp_suggestions_.push_back(reply.otp_value.value());
+
+    if (owner_ && owner_->GetMetricState().has_value()) {
+      owner_->GetMetricState()->otp_form_event_logger.OnOtpAvailable();
+    }
   }
 
   // Process the last pending callbacks from the UI to provide suggestions.

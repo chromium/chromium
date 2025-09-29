@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/metrics/otp_form_event_logger.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 
@@ -19,6 +20,8 @@ struct OtpFetchReply;
 }  // namespace one_time_tokens
 
 namespace autofill {
+
+class BrowserAutofillManager;
 
 // This class triggers the fetching of OTPs from the `SmsOtpBackend` as soon
 // as `OnFieldTypesDetermined()` is notified about the classification of
@@ -31,7 +34,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   using GetOtpSuggestionsCallback =
       base::OnceCallback<void(std::vector<std::string>)>;
 
-  OtpManagerImpl(AutofillManager* autofill_manager,
+  OtpManagerImpl(BrowserAutofillManager* owner,
                  one_time_tokens::SmsOtpBackend* sms_otp_backend);
   OtpManagerImpl(const OtpManagerImpl&) = delete;
   OtpManagerImpl& operator=(const OtpManagerImpl&) = delete;
@@ -45,9 +48,16 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
       FormGlobalId form,
       AutofillManager::Observer::FieldTypeSource source) override;
 
+  void StartOtpRetrievalForTesting() { StartOtpRetrieval(); }
+
  private:
+  void StartOtpRetrieval();
+
   // Handler for when the SMS backend returns OTPs.
   void OnOtpRetrievalComplete(const one_time_tokens::OtpFetchReply& reply);
+
+  // The owning BrowserAutofillManager.
+  raw_ptr<BrowserAutofillManager> owner_;
 
   // May be nullptr on platforms that don't support SMS OTP fetching.
   raw_ptr<one_time_tokens::SmsOtpBackend> sms_otp_backend_ = nullptr;
@@ -67,7 +77,7 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   std::optional<GetOtpSuggestionsCallback>
       last_pending_get_suggestions_callback_;
 
-  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+  base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};
 
   base::WeakPtrFactory<OtpManagerImpl> weak_ptr_factory_{this};

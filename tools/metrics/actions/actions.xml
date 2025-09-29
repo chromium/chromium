@@ -4705,6 +4705,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Autofill_ParsedOtpForm">
+  <owner>koerber@google.com</owner>
+  <description>
+    The browser parsed a form containing a one-time password field.
+  </description>
+</action>
+
 <action name="Autofill_ParsedProfileForm" not_user_triggered="true">
   <owner>battre@chromium.org</owner>
   <description>
@@ -4856,6 +4863,13 @@ should be able to be added at any place in this file.
   <description>
     This user action is logged when the user is shown some loyalty card
     suggestions.
+  </description>
+</action>
+
+<action name="Autofill_ShowedOtpSuggestions">
+  <owner>koerber@google.com</owner>
+  <description>
+    The browser showed a one-time password suggestion to the user.
   </description>
 </action>
 
