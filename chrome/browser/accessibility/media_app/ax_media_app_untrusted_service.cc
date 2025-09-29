@@ -906,7 +906,7 @@ void AXMediaAppUntrustedService::DisconnectFromOcrService() {
   ocr_.reset();
   // To avoid redoing OCR on the content if accessibility is temporarily turned
   // off / on, we keep the existing OCR results and do not reset the
-  // `ocr_state_`.
+  // `ocr_status_`.
 }
 
 void AXMediaAppUntrustedService::StartWatchingForAccessibilityEvents() {
@@ -1288,9 +1288,11 @@ void AXMediaAppUntrustedService::OnBitmapReceived(
     OnPageOcred(dirty_page_id, ui::AXTreeUpdate());
     return;
   }
-  ocr_->PerformOCR(
-      bitmap, base::BindOnce(&AXMediaAppUntrustedService::OnPageOcred,
-                             weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
+  if (IsOcrServiceEnabled()) {
+    ocr_->PerformOCR(
+        bitmap, base::BindOnce(&AXMediaAppUntrustedService::OnPageOcred,
+                               weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
+  }
 }
 
 void AXMediaAppUntrustedService::OnPageOcred(
