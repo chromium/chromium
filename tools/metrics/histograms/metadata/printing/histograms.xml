@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobCancelled" units="ms"
-    expires_after="2025-11-02">
+    expires_after="2026-05-02">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.JobDuration.JobDone" units="ms"
-    expires_after="2025-11-02">
+    expires_after="2026-05-02">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Printing.CUPS.PrinterSetupResult.SettingsDiscoveredPrinters"
-    enum="PrinterSetupResult" expires_after="2025-11-16">
+    enum="PrinterSetupResult" expires_after="2026-05-16">
   <owner>gavinwill@google.com</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>src/chromeos/printing/OWNERS</owner>
