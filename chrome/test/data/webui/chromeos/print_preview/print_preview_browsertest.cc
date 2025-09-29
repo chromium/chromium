@@ -1339,3 +1339,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest,
                        DestinationPolicyAllowsSingleSettingValue) {
   RunTestCase("DestinationPolicyAllowsSingleSettingValue");
 }
+
+IN_PROC_BROWSER_TEST_F(PrintPreviewManagedPrintOptionsTest, DuplexSetting) {
+  RunTestCase("DuplexSetting");
+}

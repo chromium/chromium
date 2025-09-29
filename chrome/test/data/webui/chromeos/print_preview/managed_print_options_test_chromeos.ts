@@ -318,4 +318,115 @@ suite('ManagedPrintOptionsTest', () => {
     assertTrue(model.getSetting('color').setByDestinationPolicy);
     assertTrue(model.getSetting('dpi').setByDestinationPolicy);
   });
+
+  class DuplexSettingTestCase {
+    managedPrintOptions: ManagedPrintOptions;
+    duplexSetByDestinationPolicy: boolean;
+    duplexShortEdgeSetByDestinationPolicy: boolean;
+
+    constructor(
+        managedPrintOptions: ManagedPrintOptions,
+        duplexSetByDestinationPolicy: boolean,
+        duplexShortEdgeSetByDestinationPolicy: boolean) {
+      this.managedPrintOptions = managedPrintOptions;
+      this.duplexSetByDestinationPolicy = duplexSetByDestinationPolicy;
+      this.duplexShortEdgeSetByDestinationPolicy =
+          duplexShortEdgeSetByDestinationPolicy;
+    }
+  }
+
+  test('DuplexSetting', () => {
+    const testCases: DuplexSettingTestCase[] = [
+      // All values are allowed.
+      new DuplexSettingTestCase(
+          ({
+            duplex: {
+              allowedValues: [
+
+                ManagedPrintOptionsDuplexType.ONE_SIDED,
+                ManagedPrintOptionsDuplexType.SHORT_EDGE,
+                ManagedPrintOptionsDuplexType.LONG_EDGE,
+              ],
+            },
+          }),
+          /* duplexSetByDestinationPolicy= */ false,
+          /* duplexShortEdgeSetByDestinationPolicy= */ false),
+      // Only (all) two-sided values are allowed.
+      new DuplexSettingTestCase(
+          ({
+            duplex: {
+              allowedValues: [
+                ManagedPrintOptionsDuplexType.SHORT_EDGE,
+                ManagedPrintOptionsDuplexType.LONG_EDGE,
+              ],
+            },
+          }),
+          /* duplexSetByDestinationPolicy= */ true,
+          /* duplexShortEdgeSetByDestinationPolicy= */ false),
+      // Only a single two-sided value is allowed.
+      new DuplexSettingTestCase(
+          ({
+            duplex: {
+              allowedValues: [
+                ManagedPrintOptionsDuplexType.LONG_EDGE,
+              ],
+            },
+          }),
+          /* duplexSetByDestinationPolicy= */ true,
+          /* duplexShortEdgeSetByDestinationPolicy= */ true),
+      // Only one-sided value are allowed.
+      new DuplexSettingTestCase(
+          ({
+            duplex: {
+              allowedValues: [
+                ManagedPrintOptionsDuplexType.ONE_SIDED,
+              ],
+            },
+          }),
+          /* duplexSetByDestinationPolicy= */ true,
+          // This value doesn't matter, since it controls the element that is
+          // not visible anyway.
+          /* duplexShortEdgeSetByDestinationPolicy= */ true),
+      // One-sided value and a single two-sided value are allowed.
+      new DuplexSettingTestCase(
+          ({
+            duplex: {
+              allowedValues: [
+                ManagedPrintOptionsDuplexType.ONE_SIDED,
+                ManagedPrintOptionsDuplexType.LONG_EDGE,
+              ],
+            },
+          }),
+          /* duplexSetByDestinationPolicy= */ false,
+          /* duplexShortEdgeSetByDestinationPolicy= */ true),
+    ];
+
+    for (const testCase of testCases) {
+      const params: DestinationOptionalParams = {
+        managedPrintOptions: testCase.managedPrintOptions,
+      };
+
+      const testDestination1 = new Destination(
+          /*id_=*/ 'TestDestination1',
+          /*origin_=*/ DestinationOrigin.LOCAL,
+          /*displayName_=*/ 'TestDestination1',
+          /*params_=*/ params);
+
+      testDestination1.capabilities =
+          getCddTemplate('TestDestination1').capabilities;
+
+      testDestination1.applyAllowedManagedPrintOptions();
+      initializeModel();
+
+      model.destination = testDestination1;
+      model.applyDestinationSpecificPolicies();
+
+      assertEquals(
+          testCase.duplexSetByDestinationPolicy,
+          model.getSetting('duplex').setByDestinationPolicy);
+      assertEquals(
+          testCase.duplexShortEdgeSetByDestinationPolicy,
+          model.getSetting('duplexShortEdge').setByDestinationPolicy);
+    }
+  });
 });
