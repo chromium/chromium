@@ -163,7 +163,7 @@ void LensSearchController::OpenLensOverlay(
     return;
   }
 
-  if (lens::features::IsLensSearchZeroStateCsbEnabled()) {
+  if (lens::features::IsLensSearchZeroStateCsbEnabled() && IsOff()) {
     std::string query_text =
         lens::features::GetZeroStateCsbQuery().empty()
             ? l10n_util::GetStringUTF8(
