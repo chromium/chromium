@@ -47,16 +47,19 @@ class DecodeOperation : public base::RefCountedThreadSafe<DecodeOperation> {
   }
 
   // Start must be called only once. May block.
-  void Start(const base::FilePath& in_path) {
+  void Start(UpdaterScope scope, const base::FilePath& in_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     std::optional<base::FilePath> updater_path =
-        GetUpdaterExecutablePath(GetUpdaterScope());
+        GetUpdaterExecutablePath(scope);
     if (!updater_path) {
       Done(false);
       return;
     }
     base::CommandLine command_line(*updater_path);
     command_line.AppendSwitch(kUnzipWorkerSwitch);
+    if (IsSystemInstall(scope)) {
+      command_line.AppendSwitch(kSystemSwitch);
+    }
 
     base::LaunchOptions options;
     mojo::PlatformChannel channel;
@@ -144,7 +147,8 @@ class DecodeOperation : public base::RefCountedThreadSafe<DecodeOperation> {
 
 }  // namespace
 
-OutOfProcessUnzipper::OutOfProcessUnzipper() = default;
+OutOfProcessUnzipper::OutOfProcessUnzipper(UpdaterScope scope)
+    : scope_(scope) {}
 
 OutOfProcessUnzipper::~OutOfProcessUnzipper() = default;
 
@@ -172,17 +176,18 @@ base::OnceClosure OutOfProcessUnzipper::DecodeXz(
   const scoped_refptr<base::SequencedTaskRunner> runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-  runner->PostTask(FROM_HERE,
-                   base::BindOnce(&DecodeOperation::Start, op, xz_path));
+  runner->PostTask(
+      FROM_HERE, base::BindOnce(&DecodeOperation::Start, op, scope_, xz_path));
   return base::BindPostTask(runner,
                             base::BindOnce(&DecodeOperation::Cancel, op));
 }
 
-OutOfProcessUnzipperFactory::OutOfProcessUnzipperFactory() = default;
+OutOfProcessUnzipperFactory::OutOfProcessUnzipperFactory(UpdaterScope scope)
+    : scope_(scope) {}
 
 std::unique_ptr<update_client::Unzipper> OutOfProcessUnzipperFactory::Create()
     const {
-  return std::make_unique<OutOfProcessUnzipper>();
+  return std::make_unique<OutOfProcessUnzipper>(scope_);
 }
 
 }  // namespace updater

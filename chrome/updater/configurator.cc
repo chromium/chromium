@@ -64,7 +64,7 @@ Configurator::Configurator(scoped_refptr<UpdaterPrefs> prefs,
           std::make_unique<ActivityDataService>(scope))),
       policy_service_(base::MakeRefCounted<PolicyService>(external_constants,
                                                           persisted_data_)),
-      unzip_factory_(base::MakeRefCounted<OutOfProcessUnzipperFactory>()),
+      unzip_factory_(base::MakeRefCounted<OutOfProcessUnzipperFactory>(scope)),
       patch_factory_(
           base::MakeRefCounted<update_client::InProcessPatcherFactory>()),
       crx_cache_(base::MakeRefCounted<update_client::CrxCache>(
