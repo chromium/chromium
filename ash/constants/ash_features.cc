@@ -1353,6 +1353,11 @@ BASE_FEATURE(kLobsterUseRewrittenQuery, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables / Disables the lobster feature from the feature management module.
 BASE_FEATURE(kFeatureManagementLobster, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabling this flag allows password complexity checks when setting a local pin
+// or password.
+BASE_FEATURE(kLocalFactorsPasswordComplexity,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables local authentication controller with PIN support.
 BASE_FEATURE(kLocalAuthenticationWithPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -1376,6 +1381,10 @@ BASE_FEATURE(kLockScreenNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature to allow MAC address randomization to be enabled for WiFi networks.
 BASE_FEATURE(kMacAddressRandomization, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enabling this flag allows the managed local pin and password related changes to be
+// applied.
+BASE_FEATURE(kManagedLocalPinAndPassword, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Mahi on PDF contents in the Media App.
 BASE_FEATURE(kMediaAppPdfMahi, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3801,6 +3810,14 @@ bool IsUseTokenHandleStoreEnabled() {
 
 bool IsFwupdDeveloperModeEnabled() {
   return base::FeatureList::IsEnabled(kFwupdDeveloperMode);
+}
+
+bool IsLocalFactorsPasswordComplexityEnabled() {
+  return base::FeatureList::IsEnabled(kLocalFactorsPasswordComplexity);
+}
+
+bool IsManagedLocalPinAndPasswordEnabled() {
+  return base::FeatureList::IsEnabled(kManagedLocalPinAndPassword);
 }
 
 }  // namespace ash::features
