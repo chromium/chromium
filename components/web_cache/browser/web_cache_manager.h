@@ -11,7 +11,6 @@
 #include <stddef.h>
 
 #include <map>
-#include <set>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -56,9 +55,10 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
 
   // content::RenderProcessHostObserver:
   void RenderProcessExited(
-      content::RenderProcessHost* host,
+      content::RenderProcessHost* process_host,
       const content::ChildProcessTerminationInfo& info) override;
-  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+  void RenderProcessHostDestroyed(
+      content::RenderProcessHost* process_host) override;
 
  private:
   friend class base::NoDestructor<WebCacheManager>;
@@ -72,10 +72,10 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
   // When a render process is created, it registers itself with the cache
   // manager host. The renderer will populate its cache, which may need to get
   // cleared later.
-  void Add(content::ChildProcessId renderer_id);
+  void Add(content::RenderProcessHost* process_host);
 
   // Unregister the renderer when it gets destroyed.
-  void Remove(content::ChildProcessId renderer_id);
+  void Remove(content::RenderProcessHost* process_host);
 
   enum ClearCacheOccasion {
     // Instructs to clear the cache instantly.
@@ -85,11 +85,9 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
     ON_NAVIGATION
   };
 
-  // Inform all |renderers| to clear their cache.
-  void ClearRendererCache(const std::set<content::ChildProcessId>& renderers,
-                          ClearCacheOccasion occation);
+  // Inform all renderers to clear their cache.
+  void ClearRendererCache(ClearCacheOccasion occasion);
 
-  std::set<content::ChildProcessId> renderers_;
   // Maps every renderer_id with its corresponding
   // mojo::Remote<mojom::WebCache>. The key is the unique id of every render
   // process host.

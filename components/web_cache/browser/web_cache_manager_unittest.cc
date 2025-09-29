@@ -4,24 +4,28 @@
 
 #include "components/web_cache/browser/web_cache_manager.h"
 
-#include "content/public/browser/child_process_id.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace web_cache {
 
-TEST(WebCacheManagerTest, AddRemoveRendererTest) {
-  content::BrowserTaskEnvironment task_environment_;
+using WebCacheManagerTest = content::RenderViewHostTestHarness;
+
+TEST_F(WebCacheManagerTest, AddRemoveRendererTest) {
   WebCacheManager manager;
-  const content::ChildProcessId kRendererID = content::ChildProcessId(146);
+  // The main_rfh's process is added during the constructor of
+  // 'WebCacheManager'.
+  EXPECT_EQ(1U, manager.web_cache_services_.size());
 
-  EXPECT_EQ(0U, manager.renderers_.size());
+  manager.Remove(process());
+  EXPECT_EQ(0U, manager.web_cache_services_.size());
 
-  manager.Add(kRendererID);
-  EXPECT_EQ(1U, manager.renderers_.count(kRendererID));
+  manager.Add(process());
+  EXPECT_EQ(1U, manager.web_cache_services_.size());
 
-  manager.Remove(kRendererID);
-  EXPECT_EQ(0U, manager.renderers_.size());
+  manager.Remove(process());
+  EXPECT_EQ(0U, manager.web_cache_services_.size());
 }
 
 }  // namespace web_cache
