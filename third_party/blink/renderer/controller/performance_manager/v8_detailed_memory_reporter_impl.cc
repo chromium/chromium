@@ -195,8 +195,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
     for (const auto& entry :
          CanvasResourceTracker::For(isolate_)->GetResourceMap()) {
       ExecutionContextToken token = entry.value->GetExecutionContextToken();
-      base::ByteCount memory_used =
-          base::ByteCount::FromUnsigned(entry.key->GetMemoryUsage());
+      base::ByteCount memory_used = entry.key->GetMemoryUsage();
       if (memory_used.is_zero()) {
         // Ignore canvas elements that do not have buffers.
         continue;

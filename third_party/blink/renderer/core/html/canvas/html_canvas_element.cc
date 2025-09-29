@@ -326,8 +326,7 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
           gfx::Size(kDefaultCanvasWidth, kDefaultCanvasHeight)),
       context_creation_was_blocked_(false),
       origin_clean_(true),
-      surface_layer_bridge_(nullptr),
-      externally_allocated_memory_(0) {
+      surface_layer_bridge_(nullptr) {
   UseCounter::Count(document, WebFeature::kHTMLCanvasElement);
   // Create supplements now, as they may be needed at a
   // time when garbage collected objects can not be created.
@@ -342,12 +341,7 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
   SetHasCustomStyleCallbacks();
 }
 
-HTMLCanvasElement::~HTMLCanvasElement() {
-  if (externally_allocated_memory_ > 0) {
-    external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
-                                        externally_allocated_memory_);
-  }
-}
+HTMLCanvasElement::~HTMLCanvasElement() = default;
 
 bool HTMLCanvasElement::PrepareTransferableResource(
     viz::TransferableResource* out_resource,
@@ -2048,31 +2042,6 @@ UniqueFontSelector* HTMLCanvasElement::GetFontSelector() {
           GetDocument().GetExecutionContext()));
   unique_font_selector_ = unique_font_selector;
   return unique_font_selector;
-}
-
-void HTMLCanvasElement::UpdateMemoryUsage() {
-  intptr_t externally_allocated_memory =
-      context_ ? context_->AllocatedBufferSize() : 0;
-
-  // Subtracting two intptr_t that are known to be positive will never
-  // underflow.
-  intptr_t delta_bytes =
-      externally_allocated_memory - externally_allocated_memory_;
-
-  // TODO(junov): We assume that it is impossible to be inside a FastAPICall
-  // from a host interface other than the rendering context.  This assumption
-  // may need to be revisited in the future depending on how the usage of
-  // [NoAllocDirectCall] evolves.
-
-  // ExternalMemoryAccounter::Update() with a positive delta can trigger a GC,
-  // which is not allowed when `IsAllocationAllowed() == false`.
-  CHECK(delta_bytes <= 0 || ThreadState::Current()->IsAllocationAllowed());
-  external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
-  externally_allocated_memory_ = externally_allocated_memory;
-}
-
-size_t HTMLCanvasElement::GetMemoryUsage() const {
-  return base::saturated_cast<size_t>(externally_allocated_memory_);
 }
 
 scoped_refptr<StaticBitmapImage> HTMLCanvasElement::GetTransparentImage() {

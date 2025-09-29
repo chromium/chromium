@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -49,6 +50,13 @@ bool CanUseGPU() {
 CanvasRenderingContextHost::CanvasRenderingContextHost(HostType host_type,
                                                        const gfx::Size& size)
     : size_(size), host_type_(host_type) {}
+
+CanvasRenderingContextHost::~CanvasRenderingContextHost() {
+  if (externally_allocated_memory_ > 0) {
+    external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
+                                        externally_allocated_memory_);
+  }
+}
 
 void CanvasRenderingContextHost::Trace(Visitor* visitor) const {
   visitor->Trace(plain_text_painter_);
@@ -72,6 +80,27 @@ void CanvasRenderingContextHost::RecordCanvasSizeToUMA() {
                                   std::sqrt(Size().Area64()), 1, 5000, 100);
       break;
   }
+}
+
+void CanvasRenderingContextHost::UpdateMemoryUsage() {
+  intptr_t externally_allocated_memory =
+      RenderingContext() ? RenderingContext()->AllocatedBufferSize() : 0;
+
+  // Subtracting two intptr_t that are known to be positive will never
+  // underflow.
+  intptr_t delta_bytes =
+      externally_allocated_memory - externally_allocated_memory_;
+
+  // TODO(junov): We assume that it is impossible to be inside a FastAPICall
+  // from a host interface other than the rendering context.  This assumption
+  // may need to be revisited in the future depending on how the usage of
+  // [NoAllocDirectCall] evolves.
+
+  // ExternalMemoryAccounter::Update() with a positive delta can trigger a GC,
+  // which is not allowed when `IsAllocationAllowed() == false`.
+  CHECK(delta_bytes <= 0 || ThreadState::Current()->IsAllocationAllowed());
+  external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
+  externally_allocated_memory_ = externally_allocated_memory;
 }
 
 scoped_refptr<StaticBitmapImage>

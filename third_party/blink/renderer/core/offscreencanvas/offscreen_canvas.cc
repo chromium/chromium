@@ -100,10 +100,6 @@ OffscreenCanvas* OffscreenCanvas::Create(ScriptState* script_state,
       gfx::Size(ClampTo<int>(width), ClampTo<int>(height)));
 }
 
-OffscreenCanvas::~OffscreenCanvas() {
-  external_memory_accounter_.Decrease(v8::Isolate::GetCurrent(), memory_usage_);
-}
-
 void OffscreenCanvas::Dispose() {
   // We need to drop frame dispatcher, to prevent mojo calls from completing.
   disposing_ = true;
@@ -635,30 +631,6 @@ UniqueFontSelector* OffscreenCanvas::GetFontSelector() {
       RuntimeEnabledFeatures::CanvasTextNgEnabled(GetExecutionContext()));
   unique_font_selector_ = unique_font_selector;
   return unique_font_selector;
-}
-
-void OffscreenCanvas::UpdateMemoryUsage() {
-  intptr_t externally_allocated_memory =
-      context_ ? context_->AllocatedBufferSize() : 0;
-
-  // Subtracting two intptr_t that are known to be positive will never
-  // underflow.
-  intptr_t delta_bytes = externally_allocated_memory - memory_usage_;
-
-  // TODO(junov): We assume that it is impossible to be inside a FastAPICall
-  // from a host interface other than the rendering context.  This assumption
-  // may need to be revisited in the future depending on how the usage of
-  // [NoAllocDirectCall] evolves.
-
-  // ExternalMemoryAccounter::Update() with a positive delta can trigger a GC,
-  // which is not allowed when `IsAllocationAllowed() == false`.
-  CHECK(delta_bytes <= 0 || ThreadState::Current()->IsAllocationAllowed());
-  external_memory_accounter_.Update(v8::Isolate::GetCurrent(), delta_bytes);
-  memory_usage_ = externally_allocated_memory;
-}
-
-size_t OffscreenCanvas::GetMemoryUsage() const {
-  return base::saturated_cast<size_t>(memory_usage_);
 }
 
 void OffscreenCanvas::Trace(Visitor* visitor) const {

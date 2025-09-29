@@ -159,7 +159,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsage) {
   SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(
       GetDocument().getElementById(AtomicString("canvas")));
-  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+  EXPECT_TRUE(canvas->GetMemoryUsage().is_zero());
 
   auto* script = GetDocument().CreateRawElement(html_names::kScriptTag);
   script->setTextContent(R"JS(
@@ -170,11 +170,12 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsage) {
   )JS");
   GetDocument().body()->appendChild(script);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(10u * 10u * /* Buffer Count */ 1u * /* Bytes per pixel */ 4u,
-            canvas->GetMemoryUsage());
+  EXPECT_EQ(
+      base::ByteCount(10 * 10 * /* Buffer Count */ 1 * /* Bytes per pixel */ 4),
+      canvas->GetMemoryUsage());
 
   canvas->NotifyGpuContextLost();
-  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+  EXPECT_TRUE(canvas->GetMemoryUsage().is_zero());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
@@ -192,7 +193,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
   SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(
       GetDocument().getElementById(AtomicString("canvas")));
-  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+  EXPECT_TRUE(canvas->GetMemoryUsage().is_zero());
 
   auto* script = GetDocument().CreateRawElement(html_names::kScriptTag);
   script->setTextContent(R"JS(
@@ -203,11 +204,12 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageGpuAccelerated) {
   )JS");
   GetDocument().body()->appendChild(script);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(10u * 10u * /* Buffer Count */ 3u * /* Bytes per pixel */ 4u,
-            canvas->GetMemoryUsage());
+  EXPECT_EQ(
+      base::ByteCount(10 * 10 * /* Buffer Count */ 3 * /* Bytes per pixel */ 4),
+      canvas->GetMemoryUsage());
 
   canvas->NotifyGpuContextLost();
-  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+  EXPECT_TRUE(canvas->GetMemoryUsage().is_zero());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageInvalidContext) {
@@ -217,7 +219,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageInvalidContext) {
   SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(
       GetDocument().getElementById(AtomicString("canvas")));
-  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+  EXPECT_TRUE(canvas->GetMemoryUsage().is_zero());
 
   // Create a canvas that too big to allocate, causing invalid context.
   auto* script = GetDocument().CreateRawElement(html_names::kScriptTag);
@@ -233,7 +235,7 @@ TEST_P(HTMLCanvasElementTest, CanvasMemoryUsageInvalidContext) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(canvas->RenderingContext() == nullptr ||
               canvas->RenderingContext()->isContextLost());
-  EXPECT_EQ(0u, canvas->GetMemoryUsage());
+  EXPECT_TRUE(canvas->GetMemoryUsage().is_zero());
 }
 
 TEST_P(HTMLCanvasElementTest, CanvasInvalidation) {

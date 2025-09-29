@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_HOST_H_
 
+#include "base/byte_count.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -75,8 +77,10 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual DispatchEventResult HostDispatchEvent(Event*) = 0;
   virtual const KURL& GetExecutionContextUrl() const = 0;
 
-  virtual void UpdateMemoryUsage() = 0;
-  virtual size_t GetMemoryUsage() const = 0;
+  void UpdateMemoryUsage();
+  base::ByteCount GetMemoryUsage() const {
+    return base::ByteCount(externally_allocated_memory_);
+  }
 
   // Initialize the indicated cc::Layer with the HTMLCanvasElement's CSS
   // properties. This is a no-op if `this` is not an HTMLCanvasElement.
@@ -150,7 +154,7 @@ class CORE_EXPORT CanvasRenderingContextHost
   virtual void DiscardResources() = 0;
 
  protected:
-  ~CanvasRenderingContextHost() override = default;
+  ~CanvasRenderingContextHost() override;
 
   scoped_refptr<StaticBitmapImage> CreateTransparentImage() const;
 
@@ -171,6 +175,11 @@ class CORE_EXPORT CanvasRenderingContextHost
   bool did_record_canvas_size_to_uma_ = false;
   HostType host_type_ = HostType::kNone;
   RasterModeHint preferred_2d_raster_mode_ = RasterModeHint::kPreferCPU;
+
+  // GPU Memory Management
+  intptr_t externally_allocated_memory_;
+  // NO_UNIQUE_ADDRESS allows making this member empty in production.
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
 
 }  // namespace blink
