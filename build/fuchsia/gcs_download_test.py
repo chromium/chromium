@@ -48,7 +48,7 @@ class TestDownloadAndUnpackFromCloudStorage(unittest.TestCase):
         mock.call.MkTmpD(),
         mock.call.MkTmpD().__enter__(),
         mock.call.Run(mock.ANY, check=True),
-        mock.call.Untar(name=image_tgz_path, mode='r|gz'),
+        mock.call.Untar(name=image_tgz_path, mode='r:gz'),
         mock.call.Untar().extractall(path=output_dir),
         mock.call.MkTmpD().__exit__(None, None, None)
     ],
