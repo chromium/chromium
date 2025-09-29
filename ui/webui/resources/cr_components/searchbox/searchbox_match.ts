@@ -11,7 +11,7 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
-import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {ACMatchClassification, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {SelectionLineState, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {createAutocompleteMatch, SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
@@ -75,10 +75,7 @@ export class SearchboxMatchElement extends CrLitElement {
       //========================================================================
 
       /** Element's 'aria-label' attribute. */
-      ariaLabel: {
-        type: String,
-        reflect: true,
-      },
+      ariaLabel: {type: String},
 
       hasAction: {
         type: Boolean,
@@ -297,14 +294,6 @@ export class SearchboxMatchElement extends CrLitElement {
   // Helpers
   //============================================================================
 
-  /**
-   * @returns Index of the action in the autocomplete match. Passed to the
-   *     action so it knows its position in the list of actions.
-   */
-  protected actionIndex_(action: Action): number {
-    return this.match?.actions?.indexOf(action) ?? -1;
-  }
-
   private computeAriaLabel_(): string {
     if (!this.match) {
       return '';
@@ -352,19 +341,6 @@ export class SearchboxMatchElement extends CrLitElement {
     return this.match?.actions?.length > 0;
   }
 
-  private computeTailSuggestPrefix_(): string {
-    if (!this.match || !this.match.tailSuggestCommonPrefix) {
-      return '';
-    }
-    const prefix = decodeString16(this.match.tailSuggestCommonPrefix);
-    // Replace last space with non breaking space since spans collapse
-    // trailing white spaces and the prefix always ends with a white space.
-    if (prefix.slice(-1) === ' ') {
-      return prefix.slice(0, -1) + '\u00A0';
-    }
-    return prefix;
-  }
-
   private computeHasImage_(): boolean {
     return this.match && !!this.match.imageUrl;
   }
@@ -391,6 +367,19 @@ export class SearchboxMatchElement extends CrLitElement {
     return this.getMatchDescription_() ?
         loadTimeData.getString('searchboxSeparator') :
         '';
+  }
+
+  private computeTailSuggestPrefix_(): string {
+    if (!this.match || !this.match.tailSuggestCommonPrefix) {
+      return '';
+    }
+    const prefix = decodeString16(this.match.tailSuggestCommonPrefix);
+    // Replace last space with non breaking space since spans collapse
+    // trailing white spaces and the prefix always ends with a white space.
+    if (prefix.slice(-1) === ' ') {
+      return prefix.slice(0, -1) + '\u00A0';
+    }
+    return prefix;
   }
 
   private computeShowEllipsis_(): boolean {

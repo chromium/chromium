@@ -9,8 +9,8 @@ import type {SearchboxActionElement} from './searchbox_action.js';
 export function getHtml(this: SearchboxActionElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div class="contents" title="${this.tooltip_}">
-  <div id="action-icon" style="${this.actionIconStyle_}"></div>
+<div class="contents" title="${this.suggestionContents}">
+  <div id="action-icon" style="${this.iconStyle_}"></div>
   <div id="text" .innerHTML="${this.hintHtml_}"></div>
 </div>
 <!--_html_template_end_-->`;

@@ -27,10 +27,14 @@ export function getHtml(this: SearchboxMatchElement) {
     <span id="description" .innerHTML="${this.descriptionHtml_}"></span>
   </div>
   <div class="actions container" aria-hidden="true">
-    ${this.match.actions.map(item => html`
+    ${this.match.actions.map((item, index) => html`
       <div id="actions-focus-border">
-        <cr-searchbox-action id="action" .action="${item}"
-            action-index="${this.actionIndex_(item)}"
+        <cr-searchbox-action id="action"
+            hint="${item.hint}"
+            suggestion-contents="${item.suggestionContents}"
+            icon-path="${item.iconPath}"
+            aria-label="${item.a11yLabel}"
+            action-index="${index}"
             @execute-action="${this.onExecuteAction_}" tabindex="1">
         </cr-searchbox-action>
       </div>

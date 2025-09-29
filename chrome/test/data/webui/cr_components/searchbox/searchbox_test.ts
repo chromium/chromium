@@ -1972,10 +1972,10 @@ suite('NewTabPageRealboxTest', () => {
 
     const matches = [createSearchMatch({
       actions: [{
-        a11yLabel: stringToMojoString16(''),
-        hint: stringToMojoString16('Clear Browsing History'),
-        suggestionContents: stringToMojoString16(''),
+        hint: 'Clear Browsing History',
+        suggestionContents: '',
         iconPath: 'chrome://theme/current-channel-logo',
+        a11yLabel: '',
       }],
       fillIntoEdit: stringToMojoString16('clear browsing history'),
       supportsDeletion: true,
@@ -2705,18 +2705,18 @@ suite('NewTabPageRealboxTest', () => {
     const matches = [
       createSearchMatch({
         actions: [{
-          a11yLabel: stringToMojoString16(''),
-          hint: stringToMojoString16('Open Email'),
-          suggestionContents: stringToMojoString16(''),
+          hint: 'Open Email',
+          suggestionContents: '',
           iconPath: 'data:image/random',
+          a11yLabel: '',
         }],
       }),
       createSearchMatch({
         actions: [{
-          a11yLabel: stringToMojoString16(''),
-          hint: stringToMojoString16('Open Email'),
-          suggestionContents: stringToMojoString16(''),
+          hint: 'Open Email',
+          suggestionContents: '',
           iconPath: 'icon.png',
+          a11yLabel: '',
         }],
       }),
     ];
@@ -2761,10 +2761,10 @@ suite('NewTabPageRealboxTest', () => {
     realbox.$.input.dispatchEvent(new InputEvent('input'));
     const matches = [createSearchMatch({
       actions: [{
-        a11yLabel: stringToMojoString16(''),
-        hint: stringToMojoString16('Clear Browsing History'),
-        suggestionContents: stringToMojoString16(''),
+        hint: 'Clear Browsing History',
+        suggestionContents: '',
         iconPath: 'chrome://theme/current-channel-logo',
+        a11yLabel: '',
       }],
     })];
     testProxy.callbackRouterRemote.autocompleteResultChanged(
@@ -2806,16 +2806,16 @@ suite('NewTabPageRealboxTest', () => {
       createSearchMatch({
         actions: [
           {
-            a11yLabel: stringToMojoString16(''),
-            hint: stringToMojoString16('Clear Browsing History'),
-            suggestionContents: stringToMojoString16(''),
+            hint: 'Clear Browsing History',
+            suggestionContents: '',
             iconPath: 'chrome://theme/current-channel-logo',
+            a11yLabel: '',
           },
           {
-            a11yLabel: stringToMojoString16(''),
-            hint: stringToMojoString16('Tab Switch'),
-            suggestionContents: stringToMojoString16(''),
+            hint: 'Tab Switch',
+            suggestionContents: '',
             iconPath: 'chrome://theme/current-channel-logo',
+            a11yLabel: '',
           },
         ],
       }),

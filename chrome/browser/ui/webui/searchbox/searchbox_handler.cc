@@ -25,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -35,6 +36,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/lens/tab_contextualization_controller.h"
+#include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -678,8 +683,9 @@ SearchboxHandler::CreateAutocompleteMatches(
       const OmniboxAction::LabelStrings& label_strings =
           action->GetLabelStrings();
       mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
-          label_strings.accessibility_hint, label_strings.hint,
-          label_strings.suggestion_contents, icon_path));
+          base::UTF16ToUTF8(label_strings.hint),
+          base::UTF16ToUTF8(label_strings.suggestion_contents), icon_path,
+          base::UTF16ToUTF8(label_strings.accessibility_hint)));
     }
     std::u16string header_text =
         edit_model->GetSuggestionGroupHeaderText(match.suggestion_group_id);

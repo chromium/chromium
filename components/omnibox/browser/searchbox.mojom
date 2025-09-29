@@ -21,13 +21,14 @@ struct ACMatchClassification {
 
 // See components/omnibox/browser/actions/omnibox_action.h
 struct Action {
-  mojo_base.mojom.String16 a11y_label;
-  mojo_base.mojom.String16 hint;
-  mojo_base.mojom.String16 suggestion_contents;
-  // The url for the action icon. This is a relative url pointing to a
-  // bundled resource and is used directly in CSS to show the icon.
-  // |icon_path| is a relative url or a data URI.
+  // Controls contents in action chip. Can be HTML or text.
+  string hint;
+  // Determines the tooltip of the action chip.
+  string suggestion_contents;
+  // The relative URL pointing to a bundled resource or a data URI. Used for the
+  // action icon. Used directly in CSS to show the icon. Or it's a data URI.
   string icon_path;
+  string a11y_label;
 };
 
 // See components/omnibox/browser/suggestion_answer.h
