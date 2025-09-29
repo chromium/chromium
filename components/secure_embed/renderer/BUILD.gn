@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/secure_embed/buildflags/buildflags.gni")
+
+assert(enable_secure_embed)
+
+component("renderer") {
+  public = [
+    "create_plugin.h"
+  ]
+
+  sources = [
+    "create_plugin.cc"
+  ]
+
+  deps = [
+    "//third_party/blink/public:blink",
+  ]
+}

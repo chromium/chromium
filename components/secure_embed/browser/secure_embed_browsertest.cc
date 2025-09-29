@@ -13,6 +13,9 @@ namespace content_capture {
 
 static constexpr char kTestUrl[] = "/secure_embed/embed_tag.html";
 
+// TODO(secure-embed): This needs to be in //chrome/test where a plugin is
+// instantiated by the embedder via ContentRenderClient. ContentBrowserTest
+// uses content shell and does not override ContentRenderClient.
 class SecureEmbedBrowserTest : public content::ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -32,7 +35,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, EmbedTagCreatesPlugin) {
-  // TODO: add expectations of the creation of SecureEmbedHost and other browser
+  // TODO(secure-embed): add expectations of the creation of SecureEmbedHost and other browser
   // side objects.
 }
 

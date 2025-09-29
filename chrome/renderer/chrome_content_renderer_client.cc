@@ -117,6 +117,7 @@
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler.h"
+#include "components/secure_embed/buildflags/buildflags.h"
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller_delegate_impl.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
@@ -241,6 +242,10 @@
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
 #include "components/paint_preview/renderer/paint_preview_recorder_impl.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#include "components/secure_embed/renderer/create_plugin.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -889,6 +894,12 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
   if (!extensions::ExtensionsRendererClient::Get()->OverrideCreatePlugin(
           render_frame, params)) {
     return false;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+  if (secure_embed::MayCreatePlugin(render_frame, params, plugin)) {
+    return true;
   }
 #endif
 
