@@ -35,13 +35,7 @@ TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
 testing::NiceMock<MockBnplManager>*
 TestBrowserAutofillManager::GetPaymentsBnplManager() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return &mock_bnpl_manager_;
-#else
-  return nullptr;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 }
 
 void TestBrowserAutofillManager::OnLanguageDetermined(

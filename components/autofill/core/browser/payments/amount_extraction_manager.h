@@ -79,7 +79,7 @@ class AmountExtractionManager {
   //   There is a feature that can use amount extraction on the current
   //   checkout page;
   //   Amount Extraction feature is enabled;
-  DenseSet<EligibleFeature> GetEligibleFeatures(
+  virtual DenseSet<EligibleFeature> GetEligibleFeatures(
       bool is_autofill_payments_enabled,
       bool should_suppress_suggestions,
       bool has_suggestions,
