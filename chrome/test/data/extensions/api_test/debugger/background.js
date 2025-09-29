@@ -447,5 +447,53 @@ chrome.test.getConfig(config => chrome.test.runTests([
             {autoAttach: true, waitForDebuggerOnStart: false}, finish);
       });
     });
+  },
+
+  async function detachFromOOPIFAllowed() {
+    if (!config.customArg) {
+      chrome.test.succeed();
+      return;
+    }
+
+    const urls = config.customArg.split(";");
+    const mainFrameUrl = urls[0];
+    const oopFrameUrl = urls[1];
+
+    chrome.tabs.query({url: "http://*/*" + mainFrameUrl}, function(tabs) {
+      chrome.test.assertNoLastError();
+      const debuggee = {tabId: tabs[0].id};
+
+      function onEvent(_, method, params) {
+        if (method === "Target.attachedToTarget") {
+          chrome.test.assertTrue(
+              params.targetInfo.url.indexOf(oopFrameUrl) !== -1);
+
+          chrome.debugger.sendCommand(
+              debuggee,
+              "Target.detachFromTarget", { sessionId: params.sessionId},
+              function(response) {
+                // Extension should be allowed to detach from
+                // auto-attached targets.
+                chrome.test.assertNoLastError();
+                chrome.test.assertEq({}, response);
+                finish();
+              });
+        }
+      }
+
+      function finish() {
+        chrome.test.assertNoLastError();
+        chrome.debugger.onEvent.removeListener(onEvent);
+        chrome.debugger.detach(debuggee, pass());
+      }
+
+      chrome.debugger.attach(debuggee, protocolVersion, () => {
+        chrome.test.assertNoLastError();
+        chrome.debugger.onEvent.addListener(onEvent);
+        chrome.debugger.sendCommand(debuggee, "Target.setAutoAttach",
+            {autoAttach: true, waitForDebuggerOnStart: false});
+      });
+    });
   }
+
 ]));

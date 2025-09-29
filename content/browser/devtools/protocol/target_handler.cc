@@ -1166,9 +1166,6 @@ Response TargetHandler::AttachToBrowserTarget(std::string* out_session_id) {
 
 Response TargetHandler::DetachFromTarget(std::optional<std::string> session_id,
                                          std::optional<std::string> target_id) {
-  if (access_mode_ == AccessMode::kAutoAttachOnly) {
-    return Response::ServerError(kNotAllowedError);
-  }
   Session* session = nullptr;
   Response response =
       FindSession(std::move(session_id), std::move(target_id), &session);
