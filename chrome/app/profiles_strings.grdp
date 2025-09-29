@@ -1202,14 +1202,20 @@
     <message name="IDS_HISTORY_SYNC_DISABLED_ERROR_DESCRIPTION" desc="Message that is shown in an error dialog when a user tries to sign in to use a service that requires history sync opt in (e.g. sharing/joining tab groups), but sync is disabled.">
       Your organization turned off saving history and tabs in your Google Account
     </message>
-    <!-- History Sync Opt-in Expansion Pill Desktop -->
+    <!-- Avatar Button Promos Desktop -->
     <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
       Sync history?
     </message>
-    <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button.">
+    <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button. This is also used to Batch Upload as well.">
       Back up your stuff?
     </message>
-    <!-- Profile Menu Sync Promo Desktop -->
+    <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO" desc="The avatar button label for the Batch Upload promo. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+      Save in account?
+    </message>
+    <message name="IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO" desc="The avatar button label for the Batch Upload promo with an emphasis on Bookmarks. When clicked, it opens the profile menu with a button that would open the Batch Upload.">
+      Clean up bookmarks?
+    </message>
+    <!-- Profile Menu Promos Desktop -->
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'Sync history?' history sync opt-in identity pill.">
       To easily get back to sites you’ve visited, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>
     </message>
@@ -1221,6 +1227,15 @@
     </message>
     <message name="IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO" desc="The button label in the Profile Menu identity section for users that can see the Sync Promo in the Avatar button. When clicked, it opens the turn on sync dialog.">
       Continue
+    </message>
+    <message name="IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD" desc="The description of the identity section in the Profile Menu for users that can see the Batch Upload promo in the Avatar button, when having local data. This describes the action presented right below it in the button.">
+      To get your passwords, bookmarks, and more on all your devices, save them in your Google Account
+    </message>
+     <message name="IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD" desc="The button label in the Profile Menu identity section for users that can see the Batch Upload promo in the Avatar button, when having local data. When clicked, it opens the Batch Upload dialog.">
+      Save in account
+    </message>
+    <message name="IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD_BOOKMARK_CLEANUP" desc="The description of the identity section in the Profile Menu for users that can see the Batch Upload promo in the Avatar button with the emphasis on Bookmarks cleanup, when having local data. This describes the action presented right below it in the button.">
+      To clean up any duplicate bookmarks, save them in your Google Account
     </message>
   </if>
     <message name="IDS_SIGN_IN_BENEFITS_IPH_TEXT" desc="Text of the IPH bubble announcing benefits for users who signed in before the sync-to-signin migration.">
