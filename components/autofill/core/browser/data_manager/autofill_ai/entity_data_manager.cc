@@ -85,9 +85,7 @@ void EntityDataManager::LoadEntities() {
           self->entities_ =
               base::flat_set<EntityInstance, EntityInstance::CompareByGuid>(
                   std::move(result).GetValue());
-          if (!self->entities_.empty()) {
-            self->NotifyEntityInstancesChanged();
-          }
+          self->NotifyEntityInstancesChanged();
         }
       },
       weak_ptr_factory_.GetWeakPtr()));

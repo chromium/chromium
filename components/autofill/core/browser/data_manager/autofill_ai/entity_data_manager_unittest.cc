@@ -38,6 +38,7 @@ namespace {
 
 using base::Bucket;
 using base::BucketsAre;
+using ::testing::AtLeast;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
@@ -172,7 +173,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, AddEntityInstance) {
 
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance dl = test::GetDriversLicenseEntityInstance();
-  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(2);
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(AtLeast(2));
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   entity_data_manager().AddOrUpdateEntityInstance(dl);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
@@ -208,7 +209,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, UpdateEntityInstance) {
 
   EntityInstance pp = test::GetPassportEntityInstance(
       {.date_modified = test::kJune2017 - base::Days(3)});
-  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(2);
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(AtLeast(2));
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp));
 
@@ -227,7 +228,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, RemoveEntityInstance) {
 
   EntityInstance pp = test::GetPassportEntityInstance();
   EntityInstance dl = test::GetDriversLicenseEntityInstance();
-  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(3);
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(AtLeast(3));
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   entity_data_manager().AddOrUpdateEntityInstance(dl);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
@@ -266,7 +267,7 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty,
   entity_data_manager().AddOrUpdateEntityInstance(dl);
   ASSERT_THAT(GetEntityInstances(), UnorderedElementsAre(pp, dl));
 
-  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(1);
+  EXPECT_CALL(observer, OnEntityInstancesChanged).Times(AtLeast(1));
   entity_data_manager().RemoveEntityInstancesModifiedBetween(
       test::kJune2017 - base::Days(1), test::kJune2017);
   EXPECT_THAT(GetEntityInstances(), UnorderedElementsAre(dl));
