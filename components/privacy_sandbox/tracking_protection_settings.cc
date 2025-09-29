@@ -82,7 +82,7 @@ TrackingProtectionSettings::TrackingProtectionSettings(
   // It's possible enterprise status changed while profile was shut down.
   OnEnterpriseControlForPrefsChanged();
 
-  if (IsTrackingProtection3pcdEnabled() &&
+  if (pref_service_->GetBoolean(prefs::kTrackingProtection3pcdEnabled) &&
       base::FeatureList::IsEnabled(kRollBackModeB)) {
     // Hardcode this as using CookieControlsMode creates a circular dependency.
     const int kBlockThirdParty = 1;

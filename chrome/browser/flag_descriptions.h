@@ -2454,9 +2454,6 @@ extern const char kTpcdMetadataGrantsDescription[];
 extern const char kTrackingProtection3pcdName[];
 extern const char kTrackingProtection3pcdDescription[];
 
-extern const char kTrackingProtection3pcdRollbackName[];
-extern const char kTrackingProtection3pcdRollbackDescription[];
-
 extern const char kUnsafeWebGPUName[];
 extern const char kUnsafeWebGPUDescription[];
 
