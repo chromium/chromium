@@ -18,12 +18,6 @@ import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers
 
 
-def ProcessJavacOutput(output, target_name):
-  output_processor = javac_output_processor.JavacOutputProcessor(target_name)
-  lines = output_processor.Process(output.split('\n'))
-  return '\n'.join(lines)
-
-
 def main(argv):
   build_utils.InitLogging('TURBINE_DEBUG')
   argv = build_utils.ExpandFileArgs(argv[1:])
@@ -139,7 +133,7 @@ def main(argv):
       action_helpers.atomic_output(options.generated_jar_path) as gensrc_jar:
     cmd += ['--output', output_jar.name, '--gensrc_output', gensrc_jar.name]
     process_javac_output_partial = functools.partial(
-        ProcessJavacOutput, target_name=options.target_name)
+        javac_output_processor.Process, options.target_name)
 
     logging.debug('Command: %s', cmd)
     start = time.time()
