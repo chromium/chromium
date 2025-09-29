@@ -25,7 +25,10 @@ void HistorySyncOptinServiceDefaultDelegate::ShowHistorySyncOptinScreen(
     base::OnceClosure history_optin_completed_closure) {
   CHECK(profile);
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
-  CHECK(browser);
+  if (!browser) {
+    // The browser has been closed in the meantime, nothing to do.
+    return;
+  }
   browser->GetFeatures()
       .signin_view_controller()
       ->ShowModalHistorySyncOptInDialog(
