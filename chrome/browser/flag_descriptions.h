@@ -577,6 +577,9 @@ extern const char kAutofillImprovedLabelsDescription[];
 extern const char kAutofillPreferBuyNowPayLaterBlocklistsName[];
 extern const char kAutofillPreferBuyNowPayLaterBlocklistsDescription[];
 
+extern const char kAutofillPrioritizeSaveCardOverMandatoryReauthName[];
+extern const char kAutofillPrioritizeSaveCardOverMandatoryReauthDescription[];
+
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 

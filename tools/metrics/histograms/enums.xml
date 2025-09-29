@@ -8260,6 +8260,8 @@ from previous Chrome versions.
   <int value="-2101682955" label="EnableNotificationIndicator:enabled"/>
   <int value="-2101674991" label="EnableExternalDisplayHDR10Mode:enabled"/>
   <int value="-2101626055" label="FeedPositionAndroid:disabled"/>
+  <int value="-2101469479"
+      label="AutofillPrioritizeSaveCardOverMandatoryReauth:disabled"/>
   <int value="-2101437559" label="StartSurfaceReturnTime:disabled"/>
   <int value="-2101338272" label="EnablePciguardUi:disabled"/>
   <int value="-2101337189" label="AutofillOffNoServerData:disabled"/>
@@ -18225,6 +18227,8 @@ from previous Chrome versions.
       label="CellularBypassESimInstallationConnectivityCheck:disabled"/>
   <int value="1451160278"
       label="AutofillRequireValidLocalCardsInSettings:disabled"/>
+  <int value="1451731352"
+      label="AutofillPrioritizeSaveCardOverMandatoryReauth:enabled"/>
   <int value="1451960103" label="LensVideoCitations:enabled"/>
   <int value="1452411293" label="ShowFeaturedEnterpriseSiteSearch:enabled"/>
   <int value="1452546183" label="PwaPersistentNotification:enabled"/>

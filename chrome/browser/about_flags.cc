@@ -13315,6 +13315,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensVideoCitationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensVideoCitations)},
 #endif
+
+    {"autofill-prioritize-save-card-over-mandatory-reauth",
+     flag_descriptions::kAutofillPrioritizeSaveCardOverMandatoryReauthName,
+     flag_descriptions::
+         kAutofillPrioritizeSaveCardOverMandatoryReauthDescription,
+     kOsMac | kOsWin | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillPrioritizeSaveCardOverMandatoryReauth)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
