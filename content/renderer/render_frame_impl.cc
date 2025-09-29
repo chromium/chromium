@@ -6275,7 +6275,7 @@ void RenderFrameImpl::BeginNavigationInternal(
     }
   }
   base::UmaHistogramBoolean(
-      "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck",
+      "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck2",
       is_duplicate_navigation);
   if (is_duplicate_navigation) {
     // The navigation is similar to a previous navigation. Check if it's started
@@ -6284,10 +6284,10 @@ void RenderFrameImpl::BeginNavigationInternal(
     bool start_diff_under_threshold =
         (nav_start_diff <= features::kDuplicateNavThreshold.Get());
     base::UmaHistogramBoolean(
-        "Navigation.RendererInitiated.DuplicateNavIsUnderThreshold",
+        "Navigation.RendererInitiated.DuplicateNavIsUnderThreshold2",
         start_diff_under_threshold);
     base::UmaHistogramTimes(
-        "Navigation.RendererInitiated.DuplicateNavStartTimeDiff",
+        "Navigation.RendererInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
     if (start_diff_under_threshold &&
         base::FeatureList::IsEnabled(features::kIgnoreDuplicateNavs)) {

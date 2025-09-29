@@ -3293,7 +3293,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Navigation{Initiator}.DuplicateNavIsUnderThreshold"
+<histogram name="Navigation{Initiator}.DuplicateNavIsUnderThreshold2"
     enum="Boolean" expires_after="2026-02-09">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>
@@ -3310,7 +3310,7 @@ chromium-metrics-reviews@google.com.
   <token key="Initiator" variants="Initiator"/>
 </histogram>
 
-<histogram name="Navigation{Initiator}.DuplicateNavStartTimeDiff" units="ms"
+<histogram name="Navigation{Initiator}.DuplicateNavStartTimeDiff2" units="ms"
     expires_after="2026-02-09">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -3326,7 +3326,7 @@ chromium-metrics-reviews@google.com.
   <token key="Initiator" variants="Initiator"/>
 </histogram>
 
-<histogram name="Navigation{Initiator}.IsDuplicateWithoutThresholdCheck"
+<histogram name="Navigation{Initiator}.IsDuplicateWithoutThresholdCheck2"
     enum="Boolean" expires_after="2026-02-01">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>
