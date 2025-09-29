@@ -45,7 +45,7 @@
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{جمع کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> زبانه.}one{جمع کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه.}other{جمع کردن گروه زبانه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> زبانه.}}</translation>
 <translation id="2498435670446402865">تغییر نام گروه زبانه</translation>
 <translation id="2536366509642644298">گروه‌های زبانه «<ph name="TAB_GROUP_NAME_1" />» و «<ph name="TAB_GROUP_NAME_2" />» دیگر دردسترس نیستند</translation>
-<translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
+<translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> زبانه.}one{جمع کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه.}other{جمع کردن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه.}}</translation>
 <translation id="2569352796411618312">پیشنهاد: <ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
 <translation id="257674075312929031">گروه</translation>
 <translation id="2660792762186871190">{NUMBER_OF_TABS,plural, =1{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_ONE" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}one{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}other{گروه زبانه‌های متشکل از <ph name="TABS_COUNT_MANY" /> زبانه، به‌رنگ <ph name="COLOR_NAME" /> بازیابی و باز می‌شود.}}</translation>
@@ -116,7 +116,7 @@
 <translation id="5339733443032484186">آخرین زبانه شما</translation>
 <translation id="5380159289133845234">بایگانی کردن برگه‌های تکراری</translation>
 <translation id="5446043142172831860">برداشتن زبانه و ترک کردن گروه</translation>
-<translation id="5490235265819901748">گروه برگه گسترده شد</translation>
+<translation id="5490235265819901748">گروه زبانه گسترده شد</translation>
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5551694449008560081">{NUMBER_OF_TABS,plural, =1{بستن گروه زبانه با <ph name="TABS_COUNT_ONE" /> زبانه، رنگ <ph name="COLOR_NAME" />.}one{بستن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}other{بستن گروه زبانه با <ph name="TABS_COUNT_MANY" /> زبانه، رنگ <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5556417849629758491">مشاهده اطلاعات فروشگاه، گزینه مربوطه در نزدیکی بالای صفحه قرار دارد</translation>
@@ -166,7 +166,7 @@
 <translation id="747459581954555080">بازیابی همه</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{‫<ph name="TABS_COUNT_ONE" /> مورد}one{‫<ph name="TABS_COUNT_MANY" /> مورد}other{‫<ph name="TABS_COUNT_MANY" /> مورد}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{بازیابی <ph name="TABS_COUNT_ONE" /> مورد انتخاب‌شده}one{بازیابی <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}other{بازیابی <ph name="TABS_COUNT_MANY" /> مورد انتخاب‌شده}}</translation>
-<translation id="753732157349120914">تعویض‌کننده برگه</translation>
+<translation id="753732157349120914">تعویض‌کننده زبانه</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏<ph name="REVIEWS_COUNT_ONE" /> مرور از Google}one{‏<ph name="REVIEWS_COUNT_MANY" /> مرور از Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> مرور از Google}}</translation>
 <translation id="7559245342362162951">نمایش برگه‌های گروه در شبکه تمام‌صفحه</translation>
 <translation id="7658239707568436148">لغو</translation>

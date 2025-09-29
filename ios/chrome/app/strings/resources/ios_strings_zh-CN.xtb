@@ -405,7 +405,7 @@
 <translation id="251837347827266434">您将退出账号，标签页将被关闭，而且浏览数据将被删除</translation>
 <translation id="2520787026086861736">如需关闭此功能，请前往<ph name="BEGIN_LINK" />自动填充与密码<ph name="END_LINK" />部分</translation>
 <translation id="2523295204312809179">关闭标签页分组后，系统会自动将其保存在此处</translation>
-<translation id="2524699375503213836">获取 Safari 中的数据</translation>
+<translation id="2524699375503213836">导入 Safari 中的数据</translation>
 <translation id="2529021024822217800">全部打开</translation>
 <translation id="2536991091671391962">您可在任何设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="2538103551183528357">目前为隐藏状态的密码</translation>
@@ -1055,7 +1055,7 @@
 <translation id="5141363746588976328">隐藏“您打开的标签页中有降价”卡片</translation>
 <translation id="514154868070499296">字体：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">离开标签页切换器</translation>
-<translation id="5148717509369231739">Safari 导入</translation>
+<translation id="5148717509369231739">从 Safari 导入</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">专为 iPadOS 打造</translation>
@@ -1756,7 +1756,7 @@
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
 <translation id="7812377703891978671">您可选择“<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />”来访问您的所有浏览记录。</translation>
-<translation id="78146569776629510">下载</translation>
+<translation id="78146569776629510">下载内容</translation>
 <translation id="7815852444315004084">暂时隐藏</translation>
 <translation id="7825973332242257878">标签页分组</translation>
 <translation id="7839994177130598711">现在，您的家庭成员可在使用 Google 密码管理工具登录 <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" /> 时使用您的用户名和密码。</translation>
@@ -1875,7 +1875,7 @@
 <translation id="8221665793629393739">重新访问提醒</translation>
 <translation id="8232956427053453090">保留数据</translation>
 <translation id="8233237502828137700">关闭横幅宣传内容</translation>
-<translation id="8258734532103758067">我已导出数据</translation>
+<translation id="8258734532103758067">数据已导出</translation>
 <translation id="8258999165172757081">已添加</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="82619448491672958">查看其他标签页</translation>
