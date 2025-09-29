@@ -38,6 +38,7 @@ INSTANTIATE_TEST_SUITE_P(
         AutofillProfileRecordTypeCategory::kAccountNonChrome,
         AutofillProfileRecordTypeCategory::kAccountHome,
         AutofillProfileRecordTypeCategory::kAccountWork,
+        AutofillProfileRecordTypeCategory::kAccountNameEmail,
     }));
 
 // Tests that no profile count metrics for the corresponding category are

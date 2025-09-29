@@ -4524,6 +4524,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     <variant name="AccountChrome"
         summary="Only kAccount profiles originating from Chrome were used"/>
     <variant name="AccountHome" summary="Only a kAccountHome profile was used"/>
+    <variant name="AccountNameEmail"
+        summary="Only a kAccountNameEmail profile was used"/>
     <variant name="AccountNonChrome"
         summary="Only kAccount profiles originating from outside Chrome were
                  used"/>
