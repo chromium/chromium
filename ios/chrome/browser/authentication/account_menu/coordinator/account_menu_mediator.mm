@@ -167,6 +167,7 @@
 
 - (BOOL)isGaiaIDManaged:(NSString*)gaiaID {
   id<SystemIdentity> identity = [self identityForGaiaID:gaiaID];
+  CHECK(identity, base::NotFatalUntil::M147);
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
     return managed.value();

@@ -157,6 +157,7 @@
 
 + (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity {
+  CHECK(identity);
   CHECK(IsIdentityManaged(identity).value_or(NO));
   if (![self isIdentityAdded:identity]) {
     // For convenience, add the identity, if it was not added yet.

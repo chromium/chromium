@@ -436,6 +436,7 @@ void FakeSystemIdentityManager::GetHostedDomain(id<SystemIdentity> identity,
 NSString* FakeSystemIdentityManager::GetCachedHostedDomainForIdentity(
     id<SystemIdentity> identity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(identity);
   if (instantly_fill_hosted_domain_cache_ ||
       [hosted_domain_cache_ containsObject:identity]) {
     NSString* domain = FakeGetHostedDomainForIdentity(identity);

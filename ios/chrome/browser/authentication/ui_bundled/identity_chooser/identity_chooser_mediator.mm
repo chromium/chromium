@@ -125,6 +125,7 @@
 // Updates an TableViewIdentityItem based on a SystemIdentity.
 - (void)updateTableViewIdentityItem:(TableViewIdentityItem*)item
                        withIdentity:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M147);
   item.gaiaID = identity.gaiaID;
   item.name = identity.userFullName;
   item.email = identity.userEmail;
@@ -141,6 +142,7 @@
     FetchManagedStatusForIdentity(
         identity, base::BindOnce(^(bool managed) {
           if (managed) {
+            CHECK(identity, base::NotFatalUntil::M147);
             [weakSelf updateTableViewIdentityItem:item withIdentity:identity];
           }
         }));
@@ -154,6 +156,7 @@
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  CHECK(identity, base::NotFatalUntil::M147);
   TableViewIdentityItem* item =
       [self.consumer tableViewIdentityItemWithGaiaID:identity.gaiaID];
   [self updateTableViewIdentityItem:item withIdentity:identity];

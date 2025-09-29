@@ -310,6 +310,7 @@ NSString* GetPromoLabelString(
   id<SystemIdentity> selectedIdentity = self.selectedIdentity;
   UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
       selectedIdentity, IdentityAvatarSize::TableViewIcon);
+  CHECK(self.selectedIdentity, base::NotFatalUntil::M147);
   BOOL isManaged = [self isIdentityKnownToBeManaged:selectedIdentity];
   [self.consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
                                       givenName:selectedIdentity.userGivenName
@@ -331,6 +332,7 @@ NSString* GetPromoLabelString(
 // called asynchronously when the management status if retrieved and the
 // identity is managed.
 - (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M147);
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
     return managed.value();
