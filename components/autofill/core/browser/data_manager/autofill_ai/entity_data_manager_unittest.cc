@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_service.h"
@@ -59,8 +60,8 @@ class EntityDataManagerTest : public testing::Test {
   EntityDataManagerTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillAiWithDataSchema,
-         features::kAutofillAiWalletFlightReservation,
-         features::kAutofillAiWalletVehicleRegistration},
+         syncer::kSyncWalletFlightReservations,
+         syncer::kSyncWalletVehicleRegistrations},
         {});
   }
 

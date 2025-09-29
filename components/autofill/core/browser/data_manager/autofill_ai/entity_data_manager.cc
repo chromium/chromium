@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/webdata/common/web_data_results.h"
 
@@ -25,10 +26,8 @@ namespace {
 // Returns true if any of the features that use wallet public passes are
 // enabled.
 bool WalletPublicPassesEnabled() {
-  return base::FeatureList::IsEnabled(
-             features::kAutofillAiWalletFlightReservation) ||
-         base::FeatureList::IsEnabled(
-             features::kAutofillAiWalletVehicleRegistration);
+  return base::FeatureList::IsEnabled(syncer::kSyncWalletFlightReservations) ||
+         base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
 }
 
 }  // namespace
