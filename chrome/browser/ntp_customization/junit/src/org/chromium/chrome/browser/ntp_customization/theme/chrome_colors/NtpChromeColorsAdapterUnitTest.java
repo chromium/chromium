@@ -88,7 +88,6 @@ public class NtpChromeColorsAdapterUnitTest {
     public void testBindViewHolder() {
         ViewGroup parent = new FrameLayout(mContext);
         mViewHolder = mAdapter.onCreateViewHolder(parent, /* viewType= */ 0);
-        assertFalse(mViewHolder.getIsInitializedForTesting());
 
         int selectedPosition = 0;
         int bindingAdaptorPosition = 0;
@@ -100,7 +99,6 @@ public class NtpChromeColorsAdapterUnitTest {
                 selectedPosition,
                 bindingAdaptorPosition);
         assertTrue(mViewHolder.itemView.isActivated());
-        assertTrue(mViewHolder.getIsInitializedForTesting());
 
         // Test unselected item case.
         selectedPosition = 1;
@@ -110,7 +108,6 @@ public class NtpChromeColorsAdapterUnitTest {
                 selectedPosition,
                 bindingAdaptorPosition);
         assertFalse(mViewHolder.itemView.isActivated());
-        assertTrue(mViewHolder.getIsInitializedForTesting());
     }
 
     @Test

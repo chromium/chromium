@@ -99,8 +99,6 @@ public class NtpChromeColorsAdapter
 
     /** ColorViewHolder that holds references to the views for a single color item. */
     public static class ColorViewHolder extends RecyclerView.ViewHolder {
-        private boolean mIsInitialized;
-
         public ColorViewHolder(@NonNull View itemView) {
             super(itemView);
         }
@@ -119,12 +117,9 @@ public class NtpChromeColorsAdapter
                 View.OnClickListener onClickListener,
                 int selectedPosition,
                 int bindingAdaptorPosition) {
-            if (!mIsInitialized) {
-                ImageView colorCircle = itemView.findViewById(R.id.color_circle);
-                colorCircle.setForeground(colorInfo.iconDrawable);
-                itemView.setOnClickListener(onClickListener);
-                mIsInitialized = true;
-            }
+            ImageView colorCircle = itemView.findViewById(R.id.color_circle);
+            colorCircle.setForeground(colorInfo.iconDrawable);
+            itemView.setOnClickListener(onClickListener);
 
             // Sets the activated status.
             if (bindingAdaptorPosition == selectedPosition) {
@@ -132,10 +127,6 @@ public class NtpChromeColorsAdapter
             } else {
                 itemView.setActivated(false);
             }
-        }
-
-        public boolean getIsInitializedForTesting() {
-            return mIsInitialized;
         }
     }
 }
