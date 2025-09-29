@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Container view for personalized signin promos. */
@@ -30,19 +31,37 @@ public class PersonalizedSigninPromoView extends FrameLayout {
 
     public PersonalizedSigninPromoView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        LayoutInflater.from(context).inflate(R.layout.sync_promo_view, this);
+        LayoutInflater.from(context).inflate(getLayoutResource(), this, true);
+    }
+
+    private int getLayoutResource() {
+        if (SigninFeatureMap.getInstance().getSeamlessSigninPromoType()
+                == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
+            return R.layout.two_buttons_signin_promo_view;
+        }
+        return R.layout.sync_promo_view;
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mImage = findViewById(R.id.sync_promo_image);
-        mDismissButton = findViewById(R.id.sync_promo_close_button);
-        mPrimaryButton = findViewById(R.id.sync_promo_signin_button);
-        mSecondaryButton = findViewById(R.id.sync_promo_choose_account_button);
-        mTitle = findViewById(R.id.sync_promo_title);
-        mDescription = findViewById(R.id.sync_promo_description);
+        if (SigninFeatureMap.getInstance().getSeamlessSigninPromoType()
+                == SigninFeatureMap.SeamlessSigninPromoType.NON_SEAMLESS) {
+            mImage = findViewById(R.id.sync_promo_image);
+            mDismissButton = findViewById(R.id.sync_promo_close_button);
+            mPrimaryButton = findViewById(R.id.sync_promo_signin_button);
+            mSecondaryButton = findViewById(R.id.sync_promo_choose_account_button);
+            mTitle = findViewById(R.id.sync_promo_title);
+            mDescription = findViewById(R.id.sync_promo_description);
+        } else {
+            mImage = findViewById(R.id.signin_promo_image);
+            mDismissButton = findViewById(R.id.signin_promo_dismiss_button);
+            mTitle = findViewById(R.id.signin_promo_title);
+            mDescription = findViewById(R.id.signin_promo_description);
+            mPrimaryButton = findViewById(R.id.signin_promo_primary_button);
+            mSecondaryButton = findViewById(R.id.signin_promo_secondary_button);
+        }
     }
 
     /**

@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+import androidx.annotation.IntDef;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -25,6 +27,35 @@ public final class SigninFeatureMap extends FeatureMap {
     public static final CachedFlag sMigrateAccountManagerDelegate =
             new CachedFlag(sInstance, SigninFeatures.MIGRATE_ACCOUNT_MANAGER_DELEGATE, false);
     public static final List<CachedFlag> sCachedFlags = List.of(sMigrateAccountManagerDelegate);
+
+    /** Layout type for the sign-in promo. */
+    @IntDef({
+        SeamlessSigninPromoType.NON_SEAMLESS,
+        SeamlessSigninPromoType.COMPACT,
+        SeamlessSigninPromoType.TWO_BUTTONS
+    })
+    public @interface SeamlessSigninPromoType {
+        int NON_SEAMLESS = 0;
+        int COMPACT = 1;
+        int TWO_BUTTONS = 2;
+    }
+
+    /** Returns the currently enabled sign-in promo type. */
+    public @SeamlessSigninPromoType int getSeamlessSigninPromoType() {
+        String promoType =
+                SigninFeatureMap.getInstance()
+                        .getFieldTrialParamByFeature(
+                                SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+                                "seamless-signin-promo-type");
+        switch (promoType) {
+            case "compact":
+                return SeamlessSigninPromoType.COMPACT;
+            case "twoButtons":
+                return SeamlessSigninPromoType.TWO_BUTTONS;
+            default:
+                return SeamlessSigninPromoType.NON_SEAMLESS;
+        }
+    }
 
     /**
      * @return the singleton SigninFeatureMap.
