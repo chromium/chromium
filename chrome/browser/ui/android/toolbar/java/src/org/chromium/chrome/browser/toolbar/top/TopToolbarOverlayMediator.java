@@ -318,6 +318,12 @@ public class TopToolbarOverlayMediator {
     }
 
     private int getBookmarkBarAdjustedContentOffset() {
+        // To resolve conflict with LockTopControls features, when either is enabled, we do not
+        // adjust the offset by the bookmarks bar or the toolbar will appear over the tab strip.
+        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mContext)) {
+            return mBrowserControlsStateProvider.getTopControlsHeight();
+        }
+
         int offset = mBookmarkBarHeightSupplier != null ? mBookmarkBarHeightSupplier.get() : 0;
         return mBrowserControlsStateProvider.getTopControlsHeight() - offset;
     }
