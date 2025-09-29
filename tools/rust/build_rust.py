@@ -653,9 +653,6 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
-    # TODO(https://crbug.com/441524277): remove revert after resolving issue upstream
-    GitRevert(RUST_SRC_DIR, '8ea3b093819aabd92a605b42989341da0c97c0d6')
-
     # TODO(crbug.com/446690349): Remove once
     # https://github.com/rust-lang/rust/pull/146905 lands and we roll past it.
     GitCherryPick(RUST_SRC_DIR, 'f9c040b7318f86e54fc57119ba5e0664df117600',
