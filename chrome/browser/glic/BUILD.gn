@@ -409,6 +409,7 @@ source_set("interactive_ui_tests") {
     "host/glic_actor_script_tool_interactive_uitest.cc",
     "host/glic_actor_task_management_interactive_uitest.cc",
     "host/glic_actor_toctou_interactive_uitest.cc",
+    "host/glic_actor_type_tool_interactive_uitest.cc",
     "host/glic_actor_window_management_tool_interactive_uitest.cc",
     "host/glic_annotation_manager_interactive_uitest.cc",
     "host/glic_api_interactive_uitest.cc",

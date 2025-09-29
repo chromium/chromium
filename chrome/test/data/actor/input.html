@@ -13,7 +13,8 @@
     <!-- method=dialog prevents the form from navigating the page -->
     <form id="form" method="dialog">
       <input type="text" name="input" id="input">
-      <input type="text" name="input2" id="input2">
+      <input type="text" name="input2" id="input2" aria-label="test-input">
+      <input type="text" name="input3" id="input3" aria-label="disabled-input" disabled>
       <input type="submit" id="submit">
     </form>
     <script>
@@ -47,7 +48,7 @@
 
     <div>
       This input calls preventDefault on all key events.
-      <input type="text" id="keyHandlingInput">
+      <input type="text" id="keyHandlingInput" aria-label="key-handling-input">
       <script>
         document.getElementById('keyHandlingInput')
             .addEventListener('keydown', e => {

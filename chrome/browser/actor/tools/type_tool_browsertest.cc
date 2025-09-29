@@ -29,6 +29,12 @@ namespace actor {
 
 namespace {
 
+// NOTE: A separate suite of UI interaction tests validates the
+// end-to-end integration from the Glic client, through the action proto
+// conversion, to the execution of this tool.
+//
+// For Glic integration coverage of these scenarios, see the interactive
+// UI tests in the chrome/browser/glic/host/ directory.
 class ActorTypeToolBrowserTest
     : public ActorToolsTest,
       public ::testing::WithParamInterface<

@@ -83,13 +83,21 @@ optimization_guide::proto::Actions MakeCreateTab(SessionID window_id,
 optimization_guide::proto::Actions MakeActivateWindow(SessionID window_id);
 optimization_guide::proto::Actions MakeCreateWindow();
 optimization_guide::proto::Actions MakeCloseWindow(SessionID window_id);
-optimization_guide::proto::Actions MakeType(content::RenderFrameHost& rfh,
-                                            int content_node_id,
-                                            std::string_view text,
-                                            bool follow_by_enter);
-optimization_guide::proto::Actions MakeType(const gfx::Point& type_point,
-                                            std::string_view text,
-                                            bool follow_by_enter);
+
+optimization_guide::proto::Actions MakeType(
+    content::RenderFrameHost& rfh,
+    int content_node_id,
+    std::string_view text,
+    bool follow_by_enter,
+    optimization_guide::proto::TypeAction::TypeMode mode =
+        optimization_guide::proto::TypeAction_TypeMode_DELETE_EXISTING);
+optimization_guide::proto::Actions MakeType(
+    tabs::TabHandle tab_handle,
+    const gfx::Point& type_point,
+    std::string_view text,
+    bool follow_by_enter,
+    optimization_guide::proto::TypeAction::TypeMode mode =
+        optimization_guide::proto::TypeAction_TypeMode_DELETE_EXISTING);
 optimization_guide::proto::Actions MakeSelect(content::RenderFrameHost& rfh,
                                               int content_node_id,
                                               std::string_view value);
