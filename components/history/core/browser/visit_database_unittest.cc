@@ -1489,7 +1489,8 @@ TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_NoVisits) {
   EXPECT_EQ(0, result.total_visits);
 }
 
-TEST_F(VisitDatabaseTest, GetDailyVisitsToOrigin_404s) {
+// TODO(crbug.com/448019671): This test is flaky and has been disabled.
+TEST_F(VisitDatabaseTest, DISABLED_GetDailyVisitsToOrigin_404s) {
   base::Time begin_time = base::Time::Now();
   base::Time end_time = begin_time + base::Days(10);
 
