@@ -8,6 +8,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.InsetDrawable;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -63,6 +65,7 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     private final FaviconHelper mFaviconHelper;
     private final ImageFetcher mImageFetcher;
     private final int mSearchEngineLogoTargetSizePixels;
+    private final int mSearchEngineLogoPaddingSizePixels;
     private final ObserverList<SearchBoxHintTextObserver> mSearchBoxHintTextObservers =
             new ObserverList<>();
     private final ObserverList<SearchEngineIconObserver> mSearchEngineIconObservers =
@@ -131,6 +134,9 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
         mSearchEngineLogoTargetSizePixels =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_favicon_size);
+        mSearchEngineLogoPaddingSizePixels =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_search_engine_logo_padding_size);
 
         // Apply safe fallback values.
         setSearchBoxHintText(
@@ -314,7 +320,9 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     }
 
     private void onFaviconRetrieveCompleted(GURL faviconUrl, Bitmap bitmap) {
-        setSearchEngineIcon(new StatusIconResource(faviconUrl.getSpec(), bitmap, 0));
+        var bitmapDrawable = new BitmapDrawable(mContext.getResources(), bitmap);
+        var insetDrawable = new InsetDrawable(bitmapDrawable, mSearchEngineLogoPaddingSizePixels);
+        setSearchEngineIcon(new StatusIconResource(insetDrawable, faviconUrl.getSpec()));
         recordEvent(Events.FETCH_SUCCESS);
     }
 

@@ -169,6 +169,7 @@ found in the LICENSE file.
 
     <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_favicon_size">17dp</dimen>
+    <dimen name="omnibox_search_engine_logo_padding_size">0.5dp</dimen>
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
 
     <!-- Button highlight dimensions. -->

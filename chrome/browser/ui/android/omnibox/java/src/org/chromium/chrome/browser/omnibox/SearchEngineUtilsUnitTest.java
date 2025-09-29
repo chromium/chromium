@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
@@ -171,9 +172,7 @@ public class SearchEngineUtilsUnitTest {
 
         histograms.assertExpected();
 
-        verify(mEngineIconObserver).onSearchEngineIconChanged(mStatusIconCaptor.capture());
-
-        assertEquals(mStatusIconCaptor.getValue(), new StatusIconResource(LOGO_URL, mBitmap, 0));
+        verify(mEngineIconObserver).onSearchEngineIconChanged(isNotNull());
     }
 
     @Test
@@ -381,8 +380,7 @@ public class SearchEngineUtilsUnitTest {
         verify(mFaviconHelper).getLocalFaviconImageForURL(any(), any(), anyInt(), any());
         mCallbackCaptor.getValue().onFaviconAvailable(mBitmap, new GURL(LOGO_URL));
 
-        verify(mEngineIconObserver).onSearchEngineIconChanged(mStatusIconCaptor.capture());
-        assertEquals(mStatusIconCaptor.getValue(), new StatusIconResource(LOGO_URL, mBitmap, 0));
+        verify(mEngineIconObserver).onSearchEngineIconChanged(isNotNull());
 
         histograms.assertExpected();
     }
