@@ -102,6 +102,9 @@ uint32_t DragOperationsToDndActions(int operations) {
   if (operations & DragDropTypes::DRAG_MOVE) {
     dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_MOVE;
   }
+  if (operations & DragDropTypes::DRAG_LINK) {
+    dnd_actions |= WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY;
+  }
   return dnd_actions;
 }
 

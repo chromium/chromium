@@ -315,6 +315,23 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   ReadAndCheckData(kMimeTypePlainText, {});
 }
 
+TEST_P(WaylandDataDragControllerTest, StartDragWithLink) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // The client starts dragging offering link data
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetURL(GURL("www.abc.com"), u"ABC");
+  int operations = DragDropTypes::DRAG_LINK;
+  drag_controller()->StartSession(os_exchange_data, operations,
+                                  DragEventSource::kMouse);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* data_source = server->data_device_manager()->data_source();
+    EXPECT_TRUE(data_source->actions() &
+                WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+  });
+}
+
 // Ensures data drag controller properly offers dragged data with custom
 // formats. Regression test for a bunch of bugs, such as:
 //  - https://crbug.com/1236708
