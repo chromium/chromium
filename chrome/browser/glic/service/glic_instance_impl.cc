@@ -65,7 +65,9 @@ GlicInstanceImpl::GlicInstanceImpl(
   browser_list_observation_.Observe(BrowserList::GetInstance());
   // Start warming the contents.
   host_.SetDelegate(&empty_embedder_delegate_);
-  host_.CreateContents(/*initially_hidden=*/true);
+  // TODO(crbug.com/448160018): Figure out how to signal the web contents
+  // opening so that this can be set to `true`.
+  host_.CreateContents(/*initially_hidden=*/false);
 }
 
 GlicInstanceImpl::~GlicInstanceImpl() = default;
@@ -416,6 +418,7 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
 
   // Create the WebContents if it's not already created.
   host_.CreateContents(/*initially_hidden=*/false);
+  host_.webui_contents()->WasShown();
   host_.NotifyWindowIntentToShow();
 
   // TODO: NotifyPanelStateChanged() here
