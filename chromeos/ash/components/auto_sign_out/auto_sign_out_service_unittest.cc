@@ -151,12 +151,30 @@ class AutoSignOutTest : public testing::Test {
 
 // Verifies that local device info timestamp is updated when service is created.
 TEST_F(AutoSignOutTest, TimestampUpdatedAfterServiceCreation) {
-  EXPECT_FALSE(
+  ASSERT_FALSE(
       local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
 
   AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
                                            test_sync_service(),
                                            session_manager(), prefs());
+
+  EXPECT_TRUE(
+      local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
+}
+
+// Verifies that local device info timestamp is updated when AutoSignOutEnabled
+// policy is enabled after it was initially disabled.
+TEST_F(AutoSignOutTest, TimestampUpdatedAfterPolicyIsEnabled) {
+  prefs()->SetBoolean(chromeos::prefs::kAutoSignOutEnabled, false);
+
+  AutoSignOutService auto_sign_out_service(fake_device_info_sync_service(),
+                                           test_sync_service(),
+                                           session_manager(), prefs());
+
+  ASSERT_FALSE(
+      local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
+
+  prefs()->SetBoolean(chromeos::prefs::kAutoSignOutEnabled, true);
 
   EXPECT_TRUE(
       local_device_info()->auto_sign_out_last_signin_timestamp().has_value());
