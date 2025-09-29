@@ -8633,6 +8633,10 @@ TEST_F(BrowserAutofillManagerTest,
 // associations. Regression test for crbug.com/395812863.
 TEST_F(BrowserAutofillManagerTest,
        FormAssociationSetOnFilledAndSubmittedForms) {
+  // Prevent the test from triggering a migration prompt.
+  personal_data()
+      .test_address_data_manager()
+      .SetIsEligibleForAddressAccountStorage(false);
   // The `url` of the forms created in this test. Forms need to share the same
   // origin to be associated with each other.
   const GURL url = GURL("https://myform.com/form.html");

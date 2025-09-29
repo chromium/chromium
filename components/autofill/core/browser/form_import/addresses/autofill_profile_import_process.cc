@@ -171,19 +171,34 @@ void ProfileImportProcess::DetermineProfileImportType() {
   std::vector<ImportCandidate> candidates =
       GetImportCandidates(mergeable_profiles);
 
-  // Collect all silently updatable profiles.
+  // Attempt to show an update prompt (prioritized over migrations).
+  // Assume the user autofilled the submitted form. In this case, Chrome
+  // shouldn't show an update prompt, even if a profile exists for which
+  // `QualifiesForUpdateProfilePrompt()` is true. It would be surprising to see
+  // an update prompt for data that was just autofilled and is therefore already
+  // known to Autofill.
+  // In general, if any mergeable profile exists with a change type other than
+  // `kSettingVisibleChange`, the submitted data already exists in Autofill and
+  // the prompt should be suppressed. With the next milestone release, the
+  // deduplication logic will remove any profiles that would have caused the
+  // update prompt without special handling.
+  auto update_candidate_it = std::ranges::find_if(
+      candidates, [&](auto& c) { return QualifiesForUpdateProfilePrompt(c); });
+  if (update_candidate_it != candidates.end() &&
+      std::ranges::all_of(candidates, [](auto& c) {
+        return c.change == ImportCandidate::Change::kSettingVisibleChange;
+      })) {
+    DetermineUpdateProfileImportType(*update_candidate_it);
+    return;
+  }
+
+  // Collect all silently updatable profiles. Due to the condition about setting
+  // visibility for update prompts, silent updates are only possible if no
+  // update prompt is shown.
   for (const ImportCandidate& candidate : candidates) {
     if (QualifiesForSilentUpdate(candidate)) {
       silently_updated_profiles_.push_back(candidate.merged_profile);
     }
-  }
-
-  // Attempt to show an update prompt (prioritized over migrations).
-  auto update_candidate_it = std::ranges::find_if(
-      candidates, [&](auto& c) { return QualifiesForUpdateProfilePrompt(c); });
-  if (update_candidate_it != candidates.end()) {
-    DetermineUpdateProfileImportType(*update_candidate_it);
-    return;
   }
 
   // Attempt to show a migration prompt.
