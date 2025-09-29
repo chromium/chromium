@@ -13,7 +13,7 @@ export function getHtml(this: WatermarkAppElement) {
     <div class="controls-card">
       <div class="card-header">
         <div class="header-text">
-          <h2>Watermark testing</h2>
+          <h1>Watermark testing</h1>
           <p>Customize the watermark style and test it live</p>
         </div>
         <cr-button @click="${this.onCopyJsonClick_}">
