@@ -264,7 +264,6 @@ cc_component("cc") {
     "raster/raster_query_queue.h",
     "raster/raster_source.cc",
     "raster/raster_source.h",
-    "raster/scoped_grcontext_access.h",
     "raster/single_thread_task_graph_runner.cc",
     "raster/single_thread_task_graph_runner.h",
     "raster/staging_buffer_pool.cc",

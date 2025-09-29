@@ -36,7 +36,6 @@
 #include "cc/base/histograms.h"
 #include "cc/base/switches.h"
 #include "cc/paint/paint_flags.h"
-#include "cc/raster/scoped_grcontext_access.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
 #include "cc/tiles/raster_dark_mode_filter.h"
