@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>ObservationDelayController Test</title>
+    <script>
+        // Note: this file doesn't exist. Tests intercept and manually provide
+        // a response.
+        const fetch_path = '/fetchtarget.html';
+
+        function doFetch() {
+          const output = document.getElementById('output');
+          window.fetch(fetch_path)
+              .then((res) => {
+                if (!res.ok) {
+                  output.innerText = `FAILED: ${res.status}`;
+                } else {
+                  res.text().then((str) => {
+                    output.innerText = str;
+                  });
+                }
+              })
+              .catch(error => { output.innerText = error; });
+        }
+
+        // Add a handler for new same-document navigations. This will cause a
+        // fetch.
+        window.navigation.addEventListener('navigate', (e) => {
+          if (!e.hashChange) {
+            return;
+          }
+          doFetch();
+        });
+    </script>
+  </head>
+  <body>
+    <p id="output">INITIAL</p>
+  </body>
+</html>

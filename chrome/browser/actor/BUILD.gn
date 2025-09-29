@@ -286,6 +286,7 @@ source_set("browser_tests") {
       "tools/history_tool_browsertest.cc",
       "tools/mouse_move_tool_browsertest.cc",
       "tools/navigate_tool_browsertest.cc",
+      "tools/observation_delay_controller_browsertest.cc",
       "tools/page_stability_browsertest.cc",
       "tools/script_tool_browsertest.cc",
       "tools/scroll_to_tool_browsertest.cc",

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_OBSERVATION_DELAY_CONTROLLER_H_
 
 #include <optional>
+#include <ostream>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -67,14 +69,29 @@ class ObservationDelayController : public content::WebContentsObserver {
   void OnMonitorDisconnected();
 
   enum class State {
+    kInitial,
+    kWaitForPageStability,
+    kWaitForLoadCompletion,
+    kDone
+  };
+  static std::string_view StateToString(State state);
+  friend std::ostream& operator<<(
+      std::ostream& o,
+      const ObservationDelayController::State& state);
+
+  enum class LoadState {
     kWaitingForLoadStart,
     kWaitingForLoadStop,
     kWaitingForVisualUpdate,
     kDone
   };
-  static std::string_view StateToString(State state);
+  LoadState load_state_ = LoadState::kWaitingForLoadStart;
 
-  State state_ = State::kWaitingForLoadStart;
+  void MoveToState(State state);
+  void DCheckStateTransition(State old_state, State new_state);
+  base::OnceClosure MoveToStateClosure(State new_state);
+
+  State state_ = State::kInitial;
   ReadyCallback ready_callback_;
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry_;
   mojo::Remote<mojom::PageStabilityMonitor> page_stability_monitor_remote_;
