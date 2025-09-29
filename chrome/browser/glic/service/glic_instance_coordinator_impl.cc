@@ -475,7 +475,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   CHECK(helper);
   helper->SetInstanceId(target_instance->id());
 
-  target_instance->Toggle(GlicInstanceImpl::EmbedderType::kSidePanel, tab);
+  target_instance->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab);
 
   std::move(callback).Run(std::nullopt);
 }
