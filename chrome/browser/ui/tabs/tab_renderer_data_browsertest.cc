@@ -21,20 +21,13 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs {
 
 class TabRendererDataTest : public InProcessBrowserTest {
  protected:
-  void SimulateWebContentsCrash(content::WebContents* contents) {
-    content::MockRenderProcessHost* rph =
-        static_cast<content::MockRenderProcessHost*>(
-            contents->GetPrimaryMainFrame()->GetProcess());
-    rph->SimulateCrash();
-  }
-
   void UpdateTitleForEntry(content::WebContents* contents,
                            const std::u16string& title) {
     content::NavigationEntry* entry =
@@ -242,9 +235,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldRenderEmptyTitle) {
 #endif
 }
 
-// TODO(crbug.com/443124230): Re-Enable CrashedStatus Browser Test for
-// TabRendererData
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DISABLED_CrashedStatus) {
+IN_PROC_BROWSER_TEST_F(TabRendererDataTest, CrashedStatus) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -255,13 +246,11 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DISABLED_CrashedStatus) {
   EXPECT_EQ(data_initial.crashed_status,
             base::TERMINATION_STATUS_STILL_RUNNING);
   EXPECT_FALSE(data_initial.IsCrashed());
-
-  SimulateWebContentsCrash(wc);
-
+  content::CrashTab(wc);
   TabRendererData data_crashed =
       TabRendererData::FromTabInModel(tab_strip_model, 0);
   EXPECT_EQ(data_crashed.crashed_status,
-            base::TERMINATION_STATUS_PROCESS_CRASHED);
+            base::TERMINATION_STATUS_PROCESS_WAS_KILLED);
   EXPECT_TRUE(data_crashed.IsCrashed());
 }
 
