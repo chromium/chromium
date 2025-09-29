@@ -82,9 +82,7 @@ BrowserMemoryConsumerRegistry::ConsumerGroup::ConsumerGroup(
     ProcessType process_type)
     : traits_(traits), process_type_(process_type) {}
 
-BrowserMemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() {
-  CHECK(memory_consumers_.empty());
-}
+BrowserMemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() = default;
 
 void BrowserMemoryConsumerRegistry::ConsumerGroup::OnReleaseMemory() {
   for (base::RegisteredMemoryConsumer& consumer : memory_consumers_) {
@@ -114,6 +112,25 @@ void BrowserMemoryConsumerRegistry::ConsumerGroup::RemoveMemoryConsumer(
 BrowserMemoryConsumerRegistry::BrowserMemoryConsumerRegistry() = default;
 
 BrowserMemoryConsumerRegistry::~BrowserMemoryConsumerRegistry() {
+  // Clear all references to consumers that live in a child process, as it's not
+  // worth the hassle to wait until all disconnect notifications are received.
+
+  // `consumer_infos_` must be cleared before `consumer_groups_` to avoid a
+  // dangling pointer.
+  std::erase_if(consumer_infos_, [](const auto& consumer_info) {
+    return consumer_info.process_type != content::PROCESS_TYPE_BROWSER;
+  });
+
+  // `consumer_groups_` must be cleared before `child_memory_consumers_` to
+  // avoid a dangling pointer.
+  std::erase_if(consumer_groups_, [](const auto& element) {
+    return std::get<1>(element.first) != ChildProcessId();
+  });
+  child_memory_consumers_.clear();
+  receivers_.Clear();
+
+  // This checks that all local consumers have unregistered in time.
+  CHECK(consumer_groups_.empty());
   CHECK(consumer_infos_.empty());
 }
 
