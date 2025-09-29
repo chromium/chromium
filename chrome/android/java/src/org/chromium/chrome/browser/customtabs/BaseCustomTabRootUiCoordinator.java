@@ -732,10 +732,15 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                 new RelativeLayout.LayoutParams(contentView.getLayoutParams());
         if (headerAsOverlay) {
             layoutParams.removeRule(RelativeLayout.BELOW);
+            layoutParams.topMargin =
+                    getDesktopWindowStateManager()
+                            .getAppHeaderState()
+                            .getCaptionControlsTopOffset();
         } else {
             layoutParams.addRule(
                     RelativeLayout.BELOW,
                     org.chromium.chrome.browser.web_app_header.R.id.web_app_header_layout);
+            layoutParams.topMargin = 0;
         }
 
         mHeaderAsOverlay = headerAsOverlay;

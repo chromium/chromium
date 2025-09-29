@@ -17,7 +17,6 @@ import static org.robolectric.Shadows.shadowOf;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Looper;
-import android.util.Pair;
 import android.view.View;
 
 import org.junit.Before;
@@ -597,7 +596,7 @@ public class WebAppHeaderLayoutMediatorTest {
         assertEquals(
                 "Bars should be hidden when browser controls are visible",
                 null,
-                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS));
+                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS));
     }
 
     @Test
@@ -618,12 +617,14 @@ public class WebAppHeaderLayoutMediatorTest {
         setupDesktopWindowing(/* isInDesktopWindow= */ true, WIDEST_UNOCCLUDED_RECT);
         mMediator.onAppHeaderStateChanged(mAppHeaderState);
         mMediator.setBrowserControlsVisible(false);
-        verify(mSetHeaderAsOverlayCallback).onResult(true);
+        verify(mSetHeaderAsOverlayCallback, times(2)).onResult(true);
         verify(mWebContents, times(2)).updateWindowControlsOverlay(WIDEST_UNOCCLUDED_RECT);
+
+        List<Rect> cutouts = mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS);
+        assertEquals("There should be only one cutout", 1, cutouts.size());
         assertEquals(
-                "Bar widths should match padding",
-                new Pair<>((float) LEFT_INSET, (float) RIGHT_INSET),
-                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS));
+                new Rect(LEFT_INSET, 0, SCREEN_WIDTH - RIGHT_INSET, SYS_APP_HEADER_HEIGHT),
+                cutouts.get(0));
     }
 
     @Test
@@ -632,7 +633,7 @@ public class WebAppHeaderLayoutMediatorTest {
         assertEquals(
                 "Default value should be null",
                 null,
-                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS));
+                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS));
     }
 
     @Test
@@ -643,7 +644,7 @@ public class WebAppHeaderLayoutMediatorTest {
         assertEquals(
                 "Value should be null when not an overlay",
                 null,
-                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS));
+                mModel.get(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS));
     }
 
     @Test

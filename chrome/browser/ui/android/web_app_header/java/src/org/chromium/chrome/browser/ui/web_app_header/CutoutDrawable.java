@@ -6,39 +6,43 @@ package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.List;
 
 /**
- * Custom drawable that renders two rectangular bars on the left/right sides of the view. All
- * remaining space in the middle should be transparent.
- *
- * <p>If either bar width is -1, then this will render one continuous rectangular bar for the entire
- * drawable bounds.
+ * Custom drawable that fills in the entire area with a solid color, but will leave certain "cutout"
+ * regions transparent. These regions can be specified as `Rect`s via the `setCutouts` method.
  */
 @NullMarked
 class CutoutDrawable extends ColorDrawable {
 
-    private final Paint mPaint;
-    private float mLeftBarWidth;
-    private float mRightBarWidth;
+    private final Paint mBackgroundPaint;
+    private final Paint mCutoutPaint;
+    private @Nullable List<Rect> mCutouts;
 
     CutoutDrawable() {
-        mPaint = new Paint();
-        mPaint.setStyle(Paint.Style.FILL);
+        mBackgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBackgroundPaint.setStyle(Paint.Style.FILL);
+
+        mCutoutPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mCutoutPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
     }
 
-    public void setBarWidths(float leftBarWidth, float rightBarWidth) {
-        mLeftBarWidth = leftBarWidth;
-        mRightBarWidth = rightBarWidth;
+    public void setCutouts(@Nullable List<Rect> cutouts) {
+        mCutouts = cutouts;
         invalidateSelf();
     }
 
     @Override
     public void setColor(int color) {
-        mPaint.setColor(color);
+        mBackgroundPaint.setColor(color);
         super.setColor(color);
     }
 
@@ -46,16 +50,17 @@ class CutoutDrawable extends ColorDrawable {
     public void draw(Canvas canvas) {
         Rect bounds = getBounds();
 
-        // -1 for either side indicates that there should not be any cutout in the middle
-        if (mLeftBarWidth < 0 || mRightBarWidth < 0) {
-            canvas.drawRect(bounds.left, bounds.top, bounds.right, bounds.bottom, mPaint);
-            return;
+        int saveCount =
+                canvas.saveLayer(bounds.left, bounds.top, bounds.right, bounds.bottom, null);
+
+        canvas.drawRect(bounds.left, bounds.top, bounds.right, bounds.bottom, mBackgroundPaint);
+
+        if (mCutouts != null && !mCutouts.isEmpty()) {
+            for (Rect rect : mCutouts) {
+                canvas.drawRect(rect, mCutoutPaint);
+            }
         }
 
-        float leftBarRightX = bounds.left + mLeftBarWidth;
-        canvas.drawRect(bounds.left, bounds.top, leftBarRightX, bounds.bottom, mPaint);
-
-        float rightBarLeftX = bounds.right - mRightBarWidth;
-        canvas.drawRect(rightBarLeftX, bounds.top, bounds.right, bounds.bottom, mPaint);
+        canvas.restoreToCount(saveCount);
     }
 }

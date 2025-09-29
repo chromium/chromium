@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.graphics.Rect;
-import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
@@ -30,6 +29,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -173,22 +173,33 @@ class WebAppHeaderLayoutMediator
         if (webContents == null) return;
 
         if (mCurrentHeaderState == null || !mHeaderAsOverlay) {
-            mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS, null);
+            mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS, null);
             webContents.updateWindowControlsOverlay(new Rect());
             return;
         }
 
         final int leftPadding = mCurrentHeaderState.getLeftPadding();
-        final int rightPadding = mCurrentHeaderState.getRightPadding();
+
+        Rect cutoutRect =
+                new Rect(
+                        leftPadding,
+                        mCurrentHeaderState.getCaptionControlsTopOffset(),
+                        leftPadding + mCurrentHeaderState.getUnoccludedRectWidth(),
+                        mCurrentHeaderState.getAppHeaderHeight());
+        mModel.set(WebAppHeaderLayoutProperties.BACKGROUND_CUTOUTS, Arrays.asList(cutoutRect));
+
+        // The area passed to the web contents is different from the cutout specified in the app
+        // header because the app header needs to account for the status bar when making the cutout,
+        // whereas the web contents is not aware that the status bar exists.
+        //
+        // Therefore, the cutout rect should be offset vertically by the caption controls top offset
+        // while the web contents WCO rect should not be offset vertically.
         webContents.updateWindowControlsOverlay(
                 new Rect(
                         leftPadding,
                         0,
                         leftPadding + mCurrentHeaderState.getUnoccludedRectWidth(),
-                        mCurrentHeaderState.getAppHeaderHeight()));
-        mModel.set(
-                WebAppHeaderLayoutProperties.BACKGROUND_BAR_WIDTHS,
-                new Pair<Float, Float>((float) leftPadding, (float) rightPadding));
+                        mCurrentHeaderState.getCaptionControlsHeight()));
     }
 
     @Override
@@ -202,7 +213,7 @@ class WebAppHeaderLayoutMediator
         mCurrentHeaderState = newState;
 
         updatePaddings();
-        updateBackgroundBars();
+        updateHeaderAsOverlay();
 
         mAppHeaderUnoccludedWidthSupplier.set(mCurrentHeaderState.getUnoccludedRectWidth());
         mModel.set(
@@ -288,7 +299,7 @@ class WebAppHeaderLayoutMediator
                             0,
                             mCurrentHeaderState.getLeftPadding()
                                     + mCurrentHeaderState.getUnoccludedRectWidth(),
-                            mCurrentHeaderState.getAppHeaderHeight()));
+                            mCurrentHeaderState.getCaptionControlsHeight()));
         }
 
         mModel.set(
