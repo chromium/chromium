@@ -112,9 +112,7 @@ AutocompleteMatch CreateStarterPackMatch(std::u16string keyword) {
   match.type = AutocompleteMatchType::Type::STARTER_PACK;
   match.contents = keyword;
   match.keyword = keyword;
-  match.associated_keyword = std::make_unique<AutocompleteMatch>(
-      nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  match.associated_keyword->keyword = keyword;
+  match.associated_keyword = keyword;
   return match;
 }
 
@@ -123,9 +121,7 @@ AutocompleteMatch CreateFeaturedEnterpriseSearch(std::u16string keyword) {
   match.type = AutocompleteMatchType::Type::FEATURED_ENTERPRISE_SEARCH;
   match.contents = keyword;
   match.keyword = keyword;
-  match.associated_keyword = std::make_unique<AutocompleteMatch>(
-      nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  match.associated_keyword->keyword = keyword;
+  match.associated_keyword = keyword;
   return match;
 }
 
@@ -231,8 +227,7 @@ AutocompleteMatch CreateKeywordHintMatch(std::string name,
       name, AutocompleteMatchType::SEARCH_SUGGEST, false, false,
       traditional_relevance, std::nullopt);
   match.keyword = u"keyword";
-  match.associated_keyword = std::make_unique<AutocompleteMatch>(
-      nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  match.associated_keyword = u"keyword";
   return match;
 }
 

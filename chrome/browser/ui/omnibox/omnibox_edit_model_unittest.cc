@@ -660,23 +660,17 @@ TEST_F(OmniboxEditModelPopupTest,
   AutocompleteMatch gemini_match(nullptr, 0, false,
                                  AutocompleteMatchType::STARTER_PACK);
   gemini_match.keyword = u"@gemini";
-  gemini_match.associated_keyword =
-      std::make_unique<AutocompleteMatch>(gemini_match);
+  gemini_match.associated_keyword = u"@gemini";
 
   AutocompleteMatch sitesearch_featured_match(
       nullptr, 0, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
   sitesearch_featured_match.keyword = u"@sitesearch";
-  sitesearch_featured_match.associated_keyword =
-      std::make_unique<AutocompleteMatch>(sitesearch_featured_match);
+  sitesearch_featured_match.associated_keyword = u"@sitesearch";
 
-  AutocompleteMatch sitesearch_other_engine(
-      nullptr, 0, false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
-  sitesearch_other_engine.keyword = u"sitesearch";
   AutocompleteMatch sitesearch_nonfeatured_match(
       nullptr, 0, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   sitesearch_nonfeatured_match.keyword = u"google.com";
-  sitesearch_nonfeatured_match.associated_keyword =
-      std::make_unique<AutocompleteMatch>(sitesearch_other_engine);
+  sitesearch_nonfeatured_match.associated_keyword = u"sitesearch";
 
   // Create a result with matches.
   ACMatches matches;
@@ -791,13 +785,11 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelection) {
   matches[1].deletable = true;
   // Make match index 2 only have an associated keyword to verify we can step
   // backwards into keyword search mode if keyword search button is enabled.
-  matches[2].associated_keyword =
-      std::make_unique<AutocompleteMatch>(matches.back());
+  matches[2].associated_keyword = u"keyword";
   // Make match index 3 have an associated keyword, tab match, and deletable to
   // verify keyword mode doesn't override tab match and remove suggestion
   // buttons (as it does with button row disabled)
-  matches[3].associated_keyword =
-      std::make_unique<AutocompleteMatch>(matches.back());
+  matches[3].associated_keyword = u"keyword";
   matches[3].has_tab_match = true;
   matches[3].deletable = true;
   // Make match index 4 have a suggestion_group_id to test header behavior.
@@ -1327,7 +1319,7 @@ TEST_F(OmniboxEditModelPopupTest,
   match.type = AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH;
   match.destination_url = GURL("https://sitesearch.com");
   match.keyword = u"sitesearch";
-  match.associated_keyword = std::make_unique<AutocompleteMatch>(match);
+  match.associated_keyword = u"sitesearch";
 
   gfx::Image image = model()->GetMatchIcon(match, 0);
   gfx::test::CheckColors(bitmap.getColor(0, 0),
@@ -1359,8 +1351,7 @@ TEST_F(OmniboxEditModelPopupTest,
   AutocompleteMatch search_aggregator_match(
       nullptr, 1350, false, AutocompleteMatchType::FEATURED_ENTERPRISE_SEARCH);
   search_aggregator_match.keyword = u"searchaggregator";
-  search_aggregator_match.associated_keyword =
-      std::make_unique<AutocompleteMatch>(search_aggregator_match);
+  search_aggregator_match.associated_keyword = u"searchaggregator";
   search_aggregator_match.icon_url = GURL("https://aggregator.com/icon.png");
   matches.push_back(search_aggregator_match);
   AutocompleteMatch url_match(nullptr, 1000, false,
@@ -1667,14 +1658,12 @@ TEST_F(OmniboxEditModelPopupTest,
   AutocompleteMatch match_without_bitmap(
       nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
   match_without_bitmap.keyword = u"match_without_bitmap";
-  match_without_bitmap.associated_keyword =
-      std::make_unique<AutocompleteMatch>(match_without_bitmap);
+  match_without_bitmap.associated_keyword = u"match_without_bitmap";
   matches.push_back(match_without_bitmap);
   AutocompleteMatch match_with_bitmap(
       nullptr, 1000, false, AutocompleteMatchType::URL_WHAT_YOU_TYPED);
   match_with_bitmap.keyword = u"match_with_bitmap";
-  match_with_bitmap.associated_keyword =
-      std::make_unique<AutocompleteMatch>(match_with_bitmap);
+  match_with_bitmap.associated_keyword = u"match_with_bitmap";
   matches.push_back(match_with_bitmap);
   auto* result = &controller()->autocomplete_controller()->published_result_;
   result->AppendMatches(matches);

@@ -66,7 +66,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::URL);
     search_match.keyword = u"match";
-    search_match.associated_keyword = std::make_unique<AutocompleteMatch>();
+    search_match.associated_keyword = u"match";
 
     auto tab_switch_action = base::MakeRefCounted<TabSwitchAction>(GURL());
     AutocompleteMatch switch_to_tab_match(nullptr, 500, false,
@@ -107,8 +107,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
         ACMatchClassification::MATCH | ACMatchClassification::URL,
         ACMatchClassification::URL);
     multiple_actions_match.keyword = u"match";
-    multiple_actions_match.associated_keyword =
-        std::make_unique<AutocompleteMatch>();
+    multiple_actions_match.associated_keyword = u"match";
     multiple_actions_match.has_tab_match = true;
     multiple_actions_match.actions.push_back(tab_switch_action);
 

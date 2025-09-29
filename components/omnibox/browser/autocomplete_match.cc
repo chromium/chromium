@@ -270,9 +270,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       suggest_type(match.suggest_type),
       subtypes(match.subtypes),
       has_tab_match(match.has_tab_match),
-      associated_keyword(match.associated_keyword
-                             ? new AutocompleteMatch(*match.associated_keyword)
-                             : nullptr),
+      associated_keyword(match.associated_keyword),
       keyword(match.keyword),
       from_keyword(match.from_keyword),
       actions(match.actions),
@@ -428,10 +426,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   suggest_type = match.suggest_type;
   subtypes = match.subtypes;
   has_tab_match = match.has_tab_match;
-  associated_keyword.reset(
-      match.associated_keyword
-          ? new AutocompleteMatch(*match.associated_keyword)
-          : nullptr);
+  associated_keyword = match.associated_keyword;
   keyword = match.keyword;
   from_keyword = match.from_keyword;
   actions = match.actions;
@@ -1267,10 +1262,11 @@ bool AutocompleteMatch::IsActionCompatible() const {
 
 bool AutocompleteMatch::HasInstantKeyword(
     TemplateURLService* template_url_service) const {
-  if (!associated_keyword) {
+  if (associated_keyword.empty()) {
     return false;
   }
-  TemplateURL* turl = associated_keyword->GetTemplateURL(template_url_service);
+  TemplateURL* turl =
+      GetTemplateURLWithKeyword(template_url_service, associated_keyword, "");
   return turl && (turl->starter_pack_id() != 0 || turl->featured_by_policy());
 }
 
@@ -1280,10 +1276,10 @@ void AutocompleteMatch::GetKeywordUIState(
     std::u16string* keyword_out,
     std::u16string* keyword_placeholder_out,
     bool* is_keyword_hint) const {
-  *is_keyword_hint = associated_keyword != nullptr;
+  *is_keyword_hint = !associated_keyword.empty();
   keyword_out->assign(
       *is_keyword_hint
-          ? associated_keyword->keyword
+          ? associated_keyword
           : GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
   *keyword_placeholder_out = GetKeywordPlaceholder(
       GetTemplateURL(template_url_service), is_history_embeddings_enabled);

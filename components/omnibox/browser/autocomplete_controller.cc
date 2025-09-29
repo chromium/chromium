@@ -386,9 +386,8 @@ AutocompleteController::OldResult::OldResult(UpdateType update_type,
                                              AutocompleteResult* result) {
   if (result->default_match()) {
     last_default_match = *result->default_match();
-    if (last_default_match->associated_keyword) {
-      last_default_associated_keyword =
-          last_default_match->associated_keyword->keyword;
+    if (!last_default_match->associated_keyword.empty()) {
+      last_default_associated_keyword = last_default_match->associated_keyword;
     }
   }
 
@@ -1676,9 +1675,9 @@ bool AutocompleteController::CheckWhetherDefaultMatchChanged(
   const bool default_is_valid = internal_result_.default_match();
   std::u16string default_associated_keyword;
   if (default_is_valid &&
-      internal_result_.default_match()->associated_keyword) {
+      !internal_result_.default_match()->associated_keyword.empty()) {
     default_associated_keyword =
-        internal_result_.default_match()->associated_keyword->keyword;
+        internal_result_.default_match()->associated_keyword;
   }
   // We've gotten async results. Send notification that the default match
   // updated if:
@@ -1695,15 +1694,15 @@ bool AutocompleteController::CheckWhetherDefaultMatchChanged(
   // default match even if fill_into_edit remains the same (see SearchProvider
   // for an example).
   const bool notify_default_match =
-      (last_default_match.has_value() != default_is_valid) ||
+      last_default_match.has_value() != default_is_valid ||
       (last_default_match &&
-       ((internal_result_.default_match()->fill_into_edit !=
-         last_default_match->fill_into_edit) ||
-        (internal_result_.default_match()->icon_url !=
-         last_default_match->icon_url) ||
-        (default_associated_keyword != last_default_associated_keyword) ||
-        (internal_result_.default_match()->keyword !=
-         last_default_match->keyword)));
+       (internal_result_.default_match()->fill_into_edit !=
+            last_default_match->fill_into_edit ||
+        internal_result_.default_match()->icon_url !=
+            last_default_match->icon_url ||
+        default_associated_keyword != last_default_associated_keyword ||
+        internal_result_.default_match()->keyword !=
+            last_default_match->keyword));
   if (notify_default_match) {
     last_time_default_match_changed_ = base::TimeTicks::Now();
   }
@@ -1823,8 +1822,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
       CHECK(!added_keywords.count(keyword)) << debug_string;
     }
     added_keywords.insert(keyword);
-    match.associated_keyword = std::make_unique<AutocompleteMatch>(
-        keyword_provider_->CreateVerbatimMatch(keyword_text, keyword, input_));
+    match.associated_keyword = keyword;
   };
 
   for (AutocompleteMatch& match : *result) {
@@ -1836,7 +1834,7 @@ void AutocompleteController::UpdateAssociatedKeywords(
     }
 
     // Clear any keyword the match may have from previous passes.
-    match.associated_keyword.reset();
+    match.associated_keyword = u"";
 
     // If this match is in keyword mode (e.g. the user tabbed into a keyword
     // then continued typing), don't attach a keyword chip to it.
@@ -1892,7 +1890,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
   // The Lens searchbox does not require the search engine name description
   // label since all suggestions will be from a single source.
   // TODO(crbug.com/338094774): Remove this Lens-specific change and implement a
-  // general solution.
+  //   general solution.
   if (omnibox::IsLensSearchbox(input_.current_page_classification())) {
     return;
   }
@@ -2798,7 +2796,7 @@ void AutocompleteController::MaybeCleanSuggestionsForKeywordMode(
     result->EraseMatchesWhere([](const AutocompleteMatch& match) {
       // When the input is '@' exactly, keep only the trivial search, starter
       // pack, and featured enterprise suggestions.
-      return match.contents != u"@" && !match.associated_keyword &&
+      return match.contents != u"@" && match.associated_keyword.empty() &&
              !match.IsToolbelt();
     });
     // Sort is needed to restore verbatim '@' search as top/default match

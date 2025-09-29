@@ -51,9 +51,7 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
       {nullptr, 900, false, AutocompleteMatchType::STARTER_PACK},
       {nullptr, 800, false, AutocompleteMatchType::HISTORY_EMBEDDINGS},
   });
-  result.match_at(1u)->associated_keyword = std::make_unique<AutocompleteMatch>(
-      nullptr, 1000, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
-  result.match_at(1u)->associated_keyword->keyword = test_keyword;
+  result.match_at(1u)->associated_keyword = test_keyword;
 
   OmniboxPopupSelection next = OmniboxPopupSelection(0u).GetNextSelection(
       input, result, client.GetTemplateURLService(), aim_button_visible,

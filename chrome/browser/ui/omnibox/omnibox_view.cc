@@ -161,11 +161,11 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
   // For starter pack suggestions, use template url to generate proper vector
   // icon.
   const TemplateURL* turl =
-      match.associated_keyword
-          ? controller_->client()
+      match.associated_keyword.empty()
+          ? nullptr
+          : controller_->client()
                 ->GetTemplateURLService()
-                ->GetTemplateURLForKeyword(match.associated_keyword->keyword)
-          : nullptr;
+                ->GetTemplateURLForKeyword(match.associated_keyword);
   OmniboxAction* action = nullptr;
   if (match.IsToolbelt() && omnibox_feature_configs::Toolbelt::Get()
                                 .use_action_icons_in_location_bar) {

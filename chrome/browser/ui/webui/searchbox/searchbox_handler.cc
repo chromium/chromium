@@ -596,10 +596,10 @@ SearchboxHandler::CreateAutocompleteMatches(
         bookmark_model->IsBookmarked(match.destination_url);
     // For starter pack suggestions, use template url to generate proper vector
     // icon.
-    const TemplateURL* turl = match.associated_keyword
-                                  ? turl_service->GetTemplateURLForKeyword(
-                                        match.associated_keyword->keyword)
-                                  : nullptr;
+    const TemplateURL* turl =
+        match.associated_keyword.empty()
+            ? nullptr
+            : turl_service->GetTemplateURLForKeyword(match.associated_keyword);
     mojom_match->icon_path = AutocompleteIconToResourceName(
         match.GetVectorIcon(is_bookmarked, turl));
     // For enterprise search aggregator people suggestions, use branded icon if

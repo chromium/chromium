@@ -2895,8 +2895,7 @@ TEST_F(AutocompleteControllerTest, UpdateAssociatedKeywords) {
 
     std::vector<std::u16string> attached_keywords;
     for (const auto& match : result) {
-      attached_keywords.push_back(
-          match.associated_keyword ? match.associated_keyword->keyword : u"");
+      attached_keywords.push_back(match.associated_keyword);
     }
     return attached_keywords;
   };
@@ -2980,10 +2979,7 @@ AutocompleteMatch CreateDefaultMatch(std::u16string fill_into_edit,
   AutocompleteMatch match;
   match.fill_into_edit = fill_into_edit;
   match.icon_url = icon_url;
-  if (!associated_keyword.empty()) {
-    match.associated_keyword = std::make_unique<AutocompleteMatch>();
-    match.associated_keyword->keyword = associated_keyword;
-  }
+  match.associated_keyword = associated_keyword;
   match.keyword = keyword;
 
   // Set other fields to make it a plausible default match

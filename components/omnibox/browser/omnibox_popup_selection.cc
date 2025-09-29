@@ -44,7 +44,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       // `NULL_RESULT_MESSAGE` cannot be focused.
       return match.type != AutocompleteMatchType::NULL_RESULT_MESSAGE;
     case KEYWORD_MODE:
-      return match.associated_keyword != nullptr;
+      return !match.associated_keyword.empty();
     case FOCUSED_BUTTON_ACTION: {
       // Actions buttons should not be shown in keyword mode.
       return !match.from_keyword && action_index < match.actions.size();
@@ -207,7 +207,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
             result.match_at(1).HasInstantKeyword(template_url_service);
         if (aim_button_visible && line_number == 0 &&
             !result.match_at(0).from_keyword &&
-            !result.match_at(0).associated_keyword &&
+            result.match_at(0).associated_keyword.empty() &&
             !second_match_has_instant_keyword && !input.IsZeroSuggest()) {
           available_selections.emplace_back(line_number, line_state);
         }

@@ -217,8 +217,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
                            bool supports_replacement_only,
                            TemplateURLVector* turls);
 
-  // Looks up |keyword| and returns the best TemplateURL for it.  Returns
-  // nullptr if the keyword was not found. The caller should not try to delete
+  // Looks up `keyword` and returns the best `TemplateURL` for it. Returns
+  // `nullptr` if the keyword was not found. The caller should not try to delete
   // the returned pointer; the data store retains ownership of it.
   TemplateURL* GetTemplateURLForKeyword(const std::u16string& keyword);
   const TemplateURL* GetTemplateURLForKeyword(

@@ -1568,11 +1568,7 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
     } else if (PopupIsOpen() &&
                GetPopupSelection().line != OmniboxPopupSelection::kNoMatch) {
       const OmniboxPopupSelection selection = GetPopupSelection();
-      const AutocompleteMatch& selected_match =
-          autocomplete_controller()->result().match_at(selection.line);
-      *match = (selection.state == OmniboxPopupSelection::KEYWORD_MODE)
-                   ? *selected_match.associated_keyword
-                   : selected_match;
+      *match = autocomplete_controller()->result().match_at(selection.line);
       found_match_for_text = true;
     }
     if (found_match_for_text && alternate_nav_url &&
@@ -1647,11 +1643,11 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
   }
 
   const TemplateURL* turl =
-      match.associated_keyword
-          ? controller_->client()
+      match.associated_keyword.empty()
+          ? nullptr
+          : controller_->client()
                 ->GetTemplateURLService()
-                ->GetTemplateURLForKeyword(match.associated_keyword->keyword)
-          : nullptr;
+                ->GetTemplateURLForKeyword(match.associated_keyword);
 
   // Get the favicon for navigational suggestions.
   //
@@ -1828,8 +1824,8 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
           ? AutocompleteMatch()
           : autocomplete_controller()->result().match_at(popup_selection_.line);
 
-  DCHECK((popup_selection_.state != OmniboxPopupSelection::KEYWORD_MODE) ||
-         match.associated_keyword.get());
+  DCHECK(popup_selection_.state != OmniboxPopupSelection::KEYWORD_MODE ||
+         !match.associated_keyword.empty());
   if (popup_selection_.IsButtonFocused()) {
     old_focused_url_ = match.destination_url;
     SetAccessibilityLabel(match);
@@ -2014,12 +2010,10 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       break;
     }
     case OmniboxPopupSelection::KEYWORD_MODE: {
-      // In keyword mode, the match we're interested in is actually the
-      // associated_keyword of the match we're on. Populate the a11y string
-      // with information from the keyword match, rather than the current match.
-      CHECK(match.associated_keyword) << match.keyword;
-      const TemplateURL* turl = match.associated_keyword->GetTemplateURL(
-          controller_->client()->GetTemplateURLService());
+      CHECK(!match.associated_keyword.empty());
+      const TemplateURL* turl = AutocompleteMatch::GetTemplateURLWithKeyword(
+          controller_->client()->GetTemplateURLService(),
+          match.associated_keyword, "");
       std::u16string replacement_string =
           turl ? turl->short_name() : match.contents;
       bool ask_keyword = turl && turl->is_ask_starter_pack();
@@ -2179,9 +2173,7 @@ const SkBitmap* OmniboxEditModel::GetPopupRichSuggestionBitmap(
 
   auto it = std::ranges::find_if(autocomplete_controller()->result(),
                                  [&keyword](const AutocompleteMatch& match) {
-                                   return match.associated_keyword &&
-                                          match.associated_keyword->keyword ==
-                                              keyword;
+                                   return match.associated_keyword == keyword;
                                  });
   return it == autocomplete_controller()->result().end()
              ? nullptr

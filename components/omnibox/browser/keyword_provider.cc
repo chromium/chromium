@@ -112,7 +112,7 @@ std::u16string KeywordProvider::GetKeywordForText(
   }
 
   // Don't provide a keyword for inactive/disabled extension keywords.
-  if ((template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION) &&
+  if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION &&
       extensions_delegate_ &&
       !extensions_delegate_->IsEnabledExtension(
           template_url->GetExtensionId())) {

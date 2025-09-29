@@ -617,10 +617,8 @@ void AutocompleteProviderTest::RunKeywordTest(
   result.AppendMatches(matches);
   controller_->UpdateAssociatedKeywords(&result);
   for (size_t j = 0; j < result.size(); ++j) {
-    EXPECT_EQ(match_data[j].expected_associated_keyword,
-              result.match_at(j)->associated_keyword
-                  ? result.match_at(j)->associated_keyword->keyword
-                  : std::u16string());
+    EXPECT_EQ(result.match_at(j)->associated_keyword,
+              match_data[j].expected_associated_keyword);
   }
 }
 
