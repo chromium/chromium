@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/geo/country_data.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_prefs.h"

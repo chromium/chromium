@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/browser/geo/mock_alternative_state_name_map_updater.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"

@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/browser/proto/states.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
-namespace test {
+namespace autofill::test {
 
 // Tests that map is not empty when an entry has been added to it.
 TEST(AlternativeStateNameMapTest, IsEntryAddedToMap) {
@@ -97,5 +98,4 @@ TEST(AlternativeStateNameMapTest, GetEntry) {
               testing::UnorderedElementsAreArray({"Bayern"}));
 }
 
-}  // namespace test
-}  // namespace autofill
+}  // namespace autofill::test
