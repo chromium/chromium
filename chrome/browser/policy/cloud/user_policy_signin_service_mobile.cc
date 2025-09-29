@@ -195,16 +195,17 @@ base::TimeDelta UserPolicySigninService::GetTryRegistrationDelay() {
   if (last_check_time_internal == 0) {
     return base::TimeDelta();
   }
-  if (base::FeatureList::IsEnabled(
-          policy::features::kCustomPolicyRegistrationDelay)) {
-    return policy::features::kPolicyRegistrationDelay.Get();
-  }
   net::NetworkChangeNotifier::ConnectionType connection_type =
       net::NetworkChangeNotifier::GetConnectionType();
   base::TimeDelta retry_delay = base::Days(3);
   if (connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET ||
       connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI) {
     retry_delay = base::Days(1);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          policy::features::kCustomPolicyRegistrationDelay)) {
+    retry_delay = policy::features::kPolicyRegistrationDelay.Get();
   }
 
   base::Time last_check_time =
