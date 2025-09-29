@@ -295,9 +295,4 @@ void TabCollection::OnReparented(TabCollection* new_parent) {
   }
 }
 
-const ChildrenVector& TabCollection::GetChildren(
-    base::PassKey<DirectChildWalker> pass_key) const {
-  return GetChildren();
-}
-
 }  // namespace tabs
