@@ -517,7 +517,6 @@ test("gpu_unittests") {
     "ipc/client/image_decode_accelerator_proxy_unittest.cc",
     "ipc/common/mojom_traits_unittest.cc",
     "ipc/host/gpu_disk_cache_unittest.cc",
-    "ipc/host/persistent_cache_sandboxed_file_factory_unittest.cc",
     "ipc/service/gpu_channel_test_common.cc",
     "ipc/service/gpu_channel_test_common.h",
     "ipc/service/gpu_watchdog_thread_unittest.cc",

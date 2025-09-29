@@ -4,6 +4,7 @@ include_rules = [
   "+components/discardable_memory/public/mojom",
   "+components/input/render_input_router.mojom.h",
   "+components/input/utils.h",
+  "+components/persistent_cache",
   "+gpu/command_buffer/client",
   "+gpu/command_buffer/common",
   "+gpu/config",

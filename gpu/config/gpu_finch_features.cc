@@ -344,6 +344,13 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
 const base::FeatureParam<bool> kSkiaGraphiteDawnBackendDebugLabels{
     &kSkiaGraphite, "dawn_backend_debug_labels", DCHECK_IS_ON()};
 
+// Whether to use PersistentCache for Dawn's pipeline cache.
+BASE_FEATURE_PARAM(bool,
+                   kSkiaGraphiteDawnUsePersistentCache,
+                   &kSkiaGraphite,
+                   "dawn_use_persistent_cache",
+                   false);
+
 const base::FeatureParam<int> kSkiaGraphiteMaxPendingRecordings{
     &kSkiaGraphite, "max_pending_recordings", 100};
 

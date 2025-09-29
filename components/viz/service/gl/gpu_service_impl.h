@@ -171,6 +171,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void SetChannelDiskCacheHandle(
       int32_t client_id,
       const gpu::GpuDiskCacheHandle& handle) override;
+  void SetChannelPersistentCacheFile(
+      int32_t client_id,
+      const gpu::GpuDiskCacheHandle& handle,
+      base::File db_file,
+      base::File journal_file,
+      base::UnsafeSharedMemoryRegion shared_lock) override;
   void OnDiskCacheHandleDestoyed(
       const gpu::GpuDiskCacheHandle& handle) override;
   void CloseChannel(int32_t client_id) override;

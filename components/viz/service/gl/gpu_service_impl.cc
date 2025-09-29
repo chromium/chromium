@@ -114,6 +114,7 @@
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "gpu/command_buffer/service/dawn_context_provider.h"
+#include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
@@ -240,15 +241,21 @@ GpuServiceImpl::GpuServiceImpl(
     if (dawn_context_provider_) {
       // GpuServiceImpl holds the instance of DawnContextProvider, so it
       // outlives the DawnContextProvider.
-      auto cache_blob_callback = base::BindRepeating(
-          [](GpuServiceImpl* self, const std::string& key,
-             const std::string& blob) {
-            self->StoreBlobToDisk(gpu::kGraphiteDawnGpuDiskCacheHandle, key,
-                                  blob);
-          },
-          base::Unretained(this));
-      auto caching_interface = dawn_caching_interface_factory_->CreateInstance(
-          gpu::kGraphiteDawnGpuDiskCacheHandle, std::move(cache_blob_callback));
+      std::unique_ptr<dawn::platform::CachingInterface> caching_interface;
+      if (features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
+        caching_interface = std::make_unique<gpu::GpuPersistentCache>();
+      } else {
+        auto cache_blob_callback = base::BindRepeating(
+            [](GpuServiceImpl* self, const std::string& key,
+               const std::string& blob) {
+              self->StoreBlobToDisk(gpu::kGraphiteDawnGpuDiskCacheHandle, key,
+                                    blob);
+            },
+            base::Unretained(this));
+        caching_interface = dawn_caching_interface_factory_->CreateInstance(
+            gpu::kGraphiteDawnGpuDiskCacheHandle,
+            std::move(cache_blob_callback));
+      }
       dawn_context_provider_->SetCachingInterface(std::move(caching_interface));
     }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
@@ -921,6 +928,30 @@ void GpuServiceImpl::SetChannelClientPid(int32_t client_id,
   // this condition is reasonable.
   DCHECK_NE(client_pid, base::kNullProcessId);
   gpu_channel_manager_->SetChannelClientPid(client_id, client_pid);
+}
+
+void GpuServiceImpl::SetChannelPersistentCacheFile(
+    int32_t client_id,
+    const gpu::GpuDiskCacheHandle& handle,
+    base::File db_file,
+    base::File journal_file,
+    base::UnsafeSharedMemoryRegion shared_lock) {
+  TRACE_EVENT2("gpu", "GpuServiceImpl::SetChannelPersistentCacheFile",
+               "client_id", client_id, "handle_type", GetHandleType(handle));
+#if BUILDFLAG(SKIA_USE_DAWN)
+  // TODO(399642827): Support other cache types.
+  CHECK_EQ(client_id, gpu::kGraphiteDawnClientId);
+  CHECK_EQ(GetHandleType(handle), gpu::GpuDiskCacheType::kDawnGraphite);
+  if (!dawn_context_provider_) {
+    return;
+  }
+
+  auto* persistent_cache = static_cast<gpu::GpuPersistentCache*>(
+      dawn_context_provider_->GetCachingInterface());
+  CHECK(persistent_cache);
+  persistent_cache->InitializeCache(std::move(db_file), std::move(journal_file),
+                                    std::move(shared_lock));
+#endif
 }
 
 void GpuServiceImpl::SetChannelDiskCacheHandle(
