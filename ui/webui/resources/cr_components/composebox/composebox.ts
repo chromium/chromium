@@ -313,7 +313,10 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (this.showTypedSuggest_ && this.input_.trim()) {
-      return true;
+      // Do not show dropdown for multiline input.
+      if (this.$.input.scrollHeight <= 48) {
+        return true;
+      }
     }
 
     // lastQueriedInput_ is used here since the input_ changes based on
@@ -468,10 +471,8 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     if (this.shadowRoot.activeElement === this.$.input) {
-      // TODO(crbug.com/445671495): Allow arrowing up and down to typed
-      //  suggestions.
       if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') &&
-          this.lastQueriedInput_) {
+          !this.showDropdown_) {
         return;
       }
 

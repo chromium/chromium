@@ -817,6 +817,48 @@ suite('NewTabPageComposeboxTest', () => {
     assertFalse(composeboxDropdown.hidden);
   });
 
+  test('dropdown does not show for multiline input', async () => {
+    loadTimeData.overrideValues(
+        {composeboxShowZps: true, composeboxShowTypedSuggest: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Add typed input.
+    composeboxElement.$.input.value = 'Test';
+    composeboxElement.$.input.style.height = '64px';
+    composeboxElement.$.input.dispatchEvent(new Event('input'));
+    await microtasksFinished();
+
+    const composeboxDropdown =
+        composeboxElement.shadowRoot.querySelector<HTMLElement>('#matches');
+    assertTrue(!!composeboxDropdown);
+
+    const matches = [
+      createSearchMatch(),
+      createSearchMatch({fillIntoEdit: stringToMojoString16('hello world 2')}),
+    ];
+    searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResult({
+          matches: matches,
+        }));
+    await microtasksFinished();
+
+    // Dropdown should show for when matches are not available.
+    assertTrue(composeboxDropdown.hidden);
+
+    // Arrow down should do default action.
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+
+    composeboxElement.$.input.dispatchEvent(arrowDownEvent);
+    await microtasksFinished();
+    assertFalse(arrowDownEvent.defaultPrevented);
+  });
+
   test('dropdown does not show when no typed suggestions enabled', async () => {
     loadTimeData.overrideValues(
         {composeboxShowZps: true, composeboxShowTypedSuggest: false});
