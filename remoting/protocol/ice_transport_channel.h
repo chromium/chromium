@@ -93,8 +93,6 @@ class IceTransportChannel : public sigslot::has_slots<> {
   // Signal handlers for webrtc::IceTransportInternal.
   void OnCandidateGathered(webrtc::IceTransportInternal* ice_transport,
                            const webrtc::Candidate& candidate);
-  void OnRouteChange(webrtc::IceTransportInternal* ice_transport,
-                     const webrtc::Candidate& candidate);
   void OnWritableState(webrtc::PacketTransportInternal* transport);
 
   // Callback for TransportChannelSocketAdapter to notify when the socket is

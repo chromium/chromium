@@ -111,11 +111,16 @@ void IceTransportChannel::Connect(const std::string& name,
              const webrtc::Candidate& candidate) {
         OnCandidateGathered(transport, candidate);
       });
-  // TODO: bugs.webrtc.org/4222260 - Change to SignalNetworkRouteChanged.
-  channel_->SignalRouteChange.connect(this,
-                                      &IceTransportChannel::OnRouteChange);
-  channel_->SignalWritableState.connect(this,
-                                        &IceTransportChannel::OnWritableState);
+  channel_->SubscribeNetworkRouteChanged(
+      this, [this](std::optional<webrtc::NetworkRoute>) {
+        if (channel_->writable()) {
+          NotifyRouteChanged();
+        }
+      });
+  channel_->SubscribeWritableState(
+      this, [this](webrtc::PacketTransportInternal* channel) {
+        OnWritableState(channel);
+      });
   channel_->set_incoming_only(
       !(network_settings_.flags & NetworkSettings::NAT_TRAVERSAL_OUTGOING));
 
@@ -200,15 +205,6 @@ void IceTransportChannel::OnCandidateGathered(
     const webrtc::Candidate& candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnChannelCandidate(this, candidate);
-}
-
-void IceTransportChannel::OnRouteChange(
-    webrtc::IceTransportInternal* ice_transport,
-    const webrtc::Candidate& candidate) {
-  // Ignore notifications if the channel is not writable.
-  if (channel_->writable()) {
-    NotifyRouteChanged();
-  }
 }
 
 void IceTransportChannel::OnWritableState(
