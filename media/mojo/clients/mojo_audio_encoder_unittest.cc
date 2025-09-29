@@ -88,9 +88,8 @@ class MojoAudioEncoderTest : public ::testing::Test {
         << "Some AudioBuffer <-> AudioBus conversions involve clipping to the "
            "range [-1.0, 1.0], so test results will be unreliable";
     auto result = AudioBus::Create(channels, frames);
-    for (int channel = 0; channel < channels; channel++) {
-      for (int i = 0; i < frames; i++)
-        UNSAFE_TODO(result->channel(channel)[i]) = seed;
+    for (auto channel : result->AllChannels()) {
+      std::ranges::fill(channel, seed);
     }
     return result;
   }
@@ -263,11 +262,10 @@ TEST_F(MojoAudioEncoderTest, Encode) {
                                {CHANNEL_LAYOUT_DISCRETE, audio_bus->channels()},
                                options.sample_rate, audio_bus->frames());
 
-        const auto channel_data = UNSAFE_TODO(
-            base::span(reinterpret_cast<const uint8_t*>(audio_bus->channel(0)),
-                       AudioBus::CalculateMemorySize(
-                           /*channels=*/1, audio_bus->frames())));
-        auto encoded_data = base::HeapArray<uint8_t>::CopiedFrom(channel_data);
+        const auto channel_bytes = base::as_bytes(base::allow_nonunique_obj,
+                                                  audio_bus->channel_span(0));
+
+        auto encoded_data = base::HeapArray<uint8_t>::CopiedFrom(channel_bytes);
 
         EncodedAudioBuffer output(params, std::move(encoded_data),
                                   capture_time);

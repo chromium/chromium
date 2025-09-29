@@ -1153,8 +1153,9 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForEarlyStartTime) {
   for (int i = 0; i < std::floor(kBuffers); ++i) {
     EXPECT_TRUE(sink_->Render(bus.get(), base::TimeDelta(), &frames_read));
     EXPECT_EQ(frames_read, bus->frames());
-    for (int j = 0; j < bus->frames(); ++j)
-      ASSERT_FLOAT_EQ(0.0f, bus->channel(0)[j]);
+    for (auto sample : bus->channel_span(0)) {
+      ASSERT_FLOAT_EQ(0.0f, sample);
+    }
 
     // Buffer may have been previously over-filled. Only expect new reads when
     // we drop below "full".
@@ -1167,13 +1168,15 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForEarlyStartTime) {
   // Verify the last buffer is half silence and half real data.
   EXPECT_TRUE(sink_->Render(bus.get(), base::TimeDelta(), &frames_read));
   EXPECT_EQ(frames_read, bus->frames());
-  const int zero_frames =
+  const size_t zero_frames =
       bus->frames() * (kBuffers - static_cast<int>(kBuffers));
 
-  for (int i = 0; i < zero_frames; ++i)
-    ASSERT_FLOAT_EQ(0.0f, bus->channel(0)[i]);
-  for (int i = zero_frames; i < bus->frames(); ++i)
-    ASSERT_NE(0.0f, bus->channel(0)[i]);
+  for (float zeroed_sample : bus->channel_span(0).first(zero_frames)) {
+    ASSERT_FLOAT_EQ(0.0f, zeroed_sample);
+  }
+  for (float non_zero_sample : bus->channel_span(0).subspan(zero_frames)) {
+    ASSERT_NE(0.0f, non_zero_sample);
+  }
 }
 
 TEST_F(AudioRendererImplTest, RenderingDelayedForSuspend) {
@@ -1186,8 +1189,9 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForSuspend) {
   std::unique_ptr<AudioBus> bus = AudioBus::Create(hardware_params_);
   EXPECT_TRUE(sink_->Render(bus.get(), base::TimeDelta(), &frames_read));
   EXPECT_NE(0, frames_read);
-  for (int i = 0; i < bus->frames(); ++i)
-    ASSERT_NE(0.0f, bus->channel(0)[i]);
+  for (auto sample : bus->channel_span(0)) {
+    ASSERT_NE(0.0f, sample);
+  }
 
   // Verify after suspend we get silence.
   renderer_->OnSuspend();
@@ -1199,8 +1203,9 @@ TEST_F(AudioRendererImplTest, RenderingDelayedForSuspend) {
   renderer_->OnResume();
   EXPECT_TRUE(sink_->Render(bus.get(), base::TimeDelta(), &frames_read));
   EXPECT_NE(0, frames_read);
-  for (int i = 0; i < bus->frames(); ++i)
-    ASSERT_NE(0.0f, bus->channel(0)[i]);
+  for (auto sample : bus->channel_span(0)) {
+    ASSERT_NE(0.0f, sample);
+  }
 }
 
 TEST_F(AudioRendererImplTest, AbsurdRenderingDelayLog) {

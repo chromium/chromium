@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <numeric>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -350,9 +351,8 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
   std::unique_ptr<media::AudioBus> data_bus =
       media::AudioBus::Create(params_.channels(), params_.frames_per_buffer());
   data_bus->Zero();
-  for (int i = 0; i < data_bus->frames(); ++i) {
-    data_bus->channel(0)[i] = (i % 11) * 0.1f - 0.5f;
-  }
+  std::ranges::generate(data_bus->channel_span(0),
+                        [i = 0]() mutable { return (i++ % 11) * 0.1f - 0.5f; });
 
   // Test without and with audio processing enabled.
   constexpr bool kUseApmValues[] =
@@ -408,14 +408,16 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
             if (!use_apm) {
               EXPECT_FALSE(new_volume.has_value());
             }
-            float left_channel_energy = 0.0f;
-            float right_channel_energy = 0.0f;
-            for (int i = 0; i < processed_audio.frames(); ++i) {
-              left_channel_energy +=
-                  processed_audio.channel(0)[i] * processed_audio.channel(0)[i];
-              right_channel_energy +=
-                  processed_audio.channel(1)[i] * processed_audio.channel(1)[i];
-            }
+
+            auto left_channel = processed_audio.channel_span(0);
+            auto right_channel = processed_audio.channel_span(1);
+
+            const float left_channel_energy =
+                std::inner_product(left_channel.begin(), left_channel.end(),
+                                   left_channel.begin(), 0.0f);
+            const float right_channel_energy =
+                std::inner_product(right_channel.begin(), right_channel.end(),
+                                   right_channel.begin(), 0.0f);
             if (use_apm && num_preferred_channels <= 1) {
               // Mono output. Output channels are averaged.
               EXPECT_NE(left_channel_energy, 0);

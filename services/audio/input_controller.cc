@@ -10,6 +10,7 @@
 #include <cstdarg>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -120,12 +121,9 @@ float AveragePower(const media::AudioBus& buffer) {
 
   // Scan all channels and accumulate the sum of squares for all samples.
   float sum_power = 0.0f;
-  for (int ch = 0; ch < channels; ++ch) {
-    const float* channel_data = buffer.channel(ch);
-    for (int i = 0; i < frames; i++) {
-      const float sample = UNSAFE_TODO(channel_data[i]);
-      sum_power += sample * sample;
-    }
+  for (auto channel : buffer.AllChannels()) {
+    sum_power += std::inner_product(channel.begin(), channel.end(),
+                                    channel.begin(), 0.0f);
   }
 
   // Update accumulated average results, with clamping for sanity.

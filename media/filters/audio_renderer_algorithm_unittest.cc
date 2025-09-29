@@ -387,14 +387,20 @@ class AudioRendererAlgorithmTest : public testing::Test {
                                   kSampleRateHz,
                                   kPulseWidthSamples);
 
-    const std::vector<uint8_t*>& channel_data = input->channel_data();
+    const std::vector<uint8_t*>& channel_pointers = input->channel_data();
+    std::vector<base::span<float>> input_data(channels_);
+    for (int i = 0; i < channels_; ++i) {
+      // TODO(crbug.com/373960632): spanify AudioBuffer.
+      UNSAFE_TODO(input_data[i] =
+                      base::span(reinterpret_cast<float*>(channel_pointers[i]),
+                                 static_cast<size_t>(input->frame_count())));
+    }
 
     // Fill |input| channels.
     FillWithSquarePulseTrain(kHalfPulseWidthSamples, 0, kPulseWidthSamples,
-                             reinterpret_cast<float*>(channel_data[0]));
+                             input_data[0].data());
     FillWithSquarePulseTrain(kHalfPulseWidthSamples, kHalfPulseWidthSamples,
-                             kPulseWidthSamples,
-                             reinterpret_cast<float*>(channel_data[1]));
+                             kPulseWidthSamples, input_data[1].data());
 
     // A buffer for the output until a complete pulse is created. Then
     // reference pulse is compared with this buffer.
@@ -423,15 +429,14 @@ class AudioRendererAlgorithmTest : public testing::Test {
       // perfectly. Do not check them.
       if (n > 3) {
          for (int m = 0; m < channels_; ++m) {
-          const float* pulse_ch = pulse_buffer->channel(m);
+           auto pulse_ch = pulse_buffer->channel_span(m);
+           auto input_ch = input_data[m];
 
-          // Because of overlap-and-add we might have round off error.
-          for (int k = 0; k < kPulseWidthSamples; ++k) {
-            UNSAFE_TODO(
-                ASSERT_NEAR(reinterpret_cast<float*>(channel_data[m])[k],
-                            pulse_ch[k], kTolerance))
-                << " loop " << n << " channel/sample " << m << "/" << k;
-          }
+           // Because of overlap-and-add we might have round off error.
+           for (int k = 0; k < kPulseWidthSamples; ++k) {
+             ASSERT_NEAR(input_ch[k], pulse_ch[k], kTolerance)
+                 << " loop " << n << " channel/sample " << m << "/" << k;
+           }
         }
       }
 
