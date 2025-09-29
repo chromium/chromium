@@ -23140,7 +23140,12 @@
                         "AvoidUnnecessaryBeforeUnloadCheckSync",
                         "PrewarmServiceWorkerRegistrationForDSE",
                         "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
-                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys"
+                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
+                        "ServiceWorkerMergeFindRegistrationForClientUrl"
+                    ],
+                    "disable_features": [
+                        "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
+                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
                     ]
                 },
                 {
@@ -23153,10 +23158,11 @@
                         "PrewarmServiceWorkerRegistrationForDSE",
                         "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
                         "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
-                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
+                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache",
+                        "ServiceWorkerMergeFindRegistrationForClientUrl"
                     ],
                     "disable_features": [
-                        "ServiceWorkerMergeFindRegistrationForClientUrl"
+                        "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl"
                     ]
                 },
                 {
