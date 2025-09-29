@@ -7,6 +7,13 @@ import("//build/config/sysroot.gni")
 
 assert(is_android)
 
+source_set("ashmem") {
+  sources = [
+    "ashmem-dev.c",
+    "ashmem.h",
+  ]
+}
+
 shared_library("chromium_android_linker") {
   sources = [
     "linker_jni.cc",
@@ -19,6 +26,8 @@ shared_library("chromium_android_linker") {
     "//build:buildflag_header_h",
     "//third_party/jni_zero",
   ]
+
+  public_deps = [ ":ashmem" ]
 
   # Export JNI symbols.
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]

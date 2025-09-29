@@ -184,7 +184,7 @@ ipcz_source_set("reference_drivers") {
   }
 
   if (is_android) {
-    deps += [ "//third_party/ashmem" ]
+    deps += [ "//base/android/linker:ashmem" ]
   }
 }
 

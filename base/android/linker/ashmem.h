@@ -1,4 +1,4 @@
-/* third_party/ashmem/ashmem.h
+/* base/android/linker/ashmem.h
  **
  ** Copyright 2008 The Android Open Source Project
  **
@@ -7,8 +7,8 @@
  ** General Public License.
  */
 
-#ifndef _THIRD_PARTY_ASHMEM_H
-#define _THIRD_PARTY_ASHMEM_H
+#ifndef BASE_ANDROID_LINKER_ASHMEM_H_
+#define BASE_ANDROID_LINKER_ASHMEM_H_
 
 #include <stddef.h>
 
@@ -51,4 +51,4 @@ int ashmem_get_size_region(int fd);
 
 #endif	/* ! __ASHMEMIOC */
 
-#endif	/* _THIRD_PARTY_ASHMEM_H */
+#endif	/* BASE_ANDROID_LINKER_ASHMEM_H_ */

@@ -6,6 +6,7 @@
 
 #include <sys/mman.h>
 
+#include "base/android/linker/ashmem.h"
 #include "base/bits.h"
 #include "base/check_op.h"
 #include "base/logging.h"
@@ -14,7 +15,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/types/expected.h"
-#include "third_party/ashmem/ashmem.h"
 
 namespace base {
 namespace subtle {

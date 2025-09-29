@@ -30,7 +30,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "third_party/ashmem/ashmem.h"
+#include "base/android/linker/ashmem.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

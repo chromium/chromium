@@ -69,7 +69,6 @@ origin_files = glob([
     # See https://chromium-review.googlesource.com/c/chromium/src/+/4885470
     # Note: Only used for tests.
     "third_party/anonymous_tokens/**",
-    "third_party/ashmem/**",
     # Note: Only used for tests.
     "third_party/apache-portable-runtime/**",
     "third_party/brotli/**",

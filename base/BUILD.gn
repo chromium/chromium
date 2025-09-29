@@ -1283,8 +1283,8 @@ component("base") {
       ":sys_utils_jni",
       ":tasks_jni",
       ":virtual_document_path_jni",
+      "//base/android/linker:ashmem",
       "//base/version_info/android:version_constants_bridge_jni",
-      "//third_party/ashmem",
       "//third_party/cpu_features:ndk_compat",
     ]
 
@@ -4035,6 +4035,7 @@ test("base_unittests") {
       "test/launcher/test_results_tracker_unittest.cc",
     ]
     deps += [
+      "//base/android/linker:ashmem",
       ":base_unittest_support_java",
       ":base_unittest_support_jni",
       "//base/test:test_support_java",
