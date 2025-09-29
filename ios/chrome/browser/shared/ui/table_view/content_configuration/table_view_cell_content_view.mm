@@ -72,8 +72,12 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
   // The leading content view.
   UIView<UIContentView>* _leadingContentView;
+  // The trailing content view.
+  UIView<UIContentView>* _trailingContentView;
   // The container for the leading content view.
   UIView* _leadingContentViewContainer;
+  // The container for the trailing content view.
+  UIView* _trailingContentViewContainer;
 
   // The labels.
   UILabel* _title;
@@ -83,6 +87,9 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   // The container for the text.
   UIView* _titleSubtitleContainer;
   UIStackView* _allTextStack;
+
+  // The main container.
+  UIStackView* _mainStack;
 }
 
 - (instancetype)initWithConfiguration:
@@ -139,38 +146,51 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
 // Updates the elements based on a new configuration.
 - (void)applyConfiguration {
+  id<UIContentConfiguration> leadingConfiguration =
+      _configuration.leadingConfiguration;
   BOOL isLeadingImageContentViewCompatible =
       [_leadingContentView
           respondsToSelector:@selector(supportsConfiguration:)] &&
-      [_leadingContentView
-          supportsConfiguration:_configuration.leadingConfiguration];
+      [_leadingContentView supportsConfiguration:leadingConfiguration];
   if (!isLeadingImageContentViewCompatible) {
     [_leadingContentView removeFromSuperview];
     _leadingContentView = nil;
   }
   _leadingContentViewContainer.hidden = YES;
 
-  if (_configuration.leadingConfiguration) {
+  if (leadingConfiguration) {
     _leadingContentViewContainer.hidden = NO;
     if (_leadingContentView) {
-      _leadingContentView.configuration = _configuration.leadingConfiguration;
+      _leadingContentView.configuration = leadingConfiguration;
     } else {
-      _leadingContentView =
-          [_configuration.leadingConfiguration makeContentView];
+      _leadingContentView = [leadingConfiguration makeContentView];
       _leadingContentView.translatesAutoresizingMaskIntoConstraints = NO;
       [_leadingContentViewContainer addSubview:_leadingContentView];
-      [NSLayoutConstraint activateConstraints:@[
-        [_leadingContentView.leadingAnchor
-            constraintEqualToAnchor:_leadingContentViewContainer.leadingAnchor],
-        [_leadingContentView.trailingAnchor
-            constraintEqualToAnchor:_leadingContentViewContainer
-                                        .trailingAnchor],
-        [_leadingContentView.centerYAnchor
-            constraintEqualToAnchor:_leadingContentViewContainer.centerYAnchor],
-        [_leadingContentViewContainer.heightAnchor
-            constraintGreaterThanOrEqualToAnchor:_leadingContentView
-                                                     .heightAnchor],
-      ]];
+      AddSameConstraints(_leadingContentView, _leadingContentViewContainer);
+    }
+  }
+
+  id<UIContentConfiguration> trailingConfiguration =
+      _configuration.trailingConfiguration;
+  BOOL isTrailingImageContentViewCompatible =
+      [_trailingContentView
+          respondsToSelector:@selector(supportsConfiguration:)] &&
+      [_trailingContentView supportsConfiguration:trailingConfiguration];
+  if (!isTrailingImageContentViewCompatible) {
+    [_trailingContentView removeFromSuperview];
+    _trailingContentView = nil;
+  }
+  _trailingContentViewContainer.hidden = YES;
+
+  if (trailingConfiguration) {
+    _trailingContentViewContainer.hidden = NO;
+    if (_trailingContentView) {
+      _trailingContentView.configuration = trailingConfiguration;
+    } else {
+      _trailingContentView = [trailingConfiguration makeContentView];
+      _trailingContentView.translatesAutoresizingMaskIntoConstraints = NO;
+      [_trailingContentViewContainer addSubview:_trailingContentView];
+      AddSameConstraints(_trailingContentView, _trailingContentViewContainer);
     }
   }
 
@@ -222,11 +242,16 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   _leadingContentViewContainer = [[UIView alloc] init];
   _leadingContentViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
+  _trailingContentViewContainer = [[UIView alloc] init];
+  _trailingContentViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
+
   _title = [self createTitleLabel];
   _subtitle = [self createSubtitleLabel];
   _trailingLabel = [self createTrailingLabel];
 
-  _allTextStack = [self createMainTextStack];
+  _allTextStack = [self createAllTextStack];
+
+  _mainStack = [self createMainStack];
 
   _titleSubtitleContainer = [[TableViewCellContentViewLabelContainer alloc]
       initWithTopLabel:_title
@@ -235,14 +260,17 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
   // The stack view forces the view to have their leading/trailing anchor equal
   // with a priority of required.
-  [_allTextStack addArrangedSubview:_leadingContentViewContainer];
   [_allTextStack addArrangedSubview:_titleSubtitleContainer];
   [_allTextStack addArrangedSubview:_trailingLabel];
 
-  [_allTextStack setCustomSpacing:kTableViewImagePadding
-                        afterView:_leadingContentViewContainer];
+  [_mainStack addArrangedSubview:_leadingContentViewContainer];
+  [_mainStack addArrangedSubview:_allTextStack];
+  [_mainStack addArrangedSubview:_trailingContentViewContainer];
 
-  [self addSubview:_allTextStack];
+  [_mainStack setCustomSpacing:kTableViewImagePadding
+                     afterView:_leadingContentViewContainer];
+
+  [self addSubview:_mainStack];
 
   // The constraint ensuring the 75/25 ratio. It is higher priority than the
   // compression resistance but lower than the content hugging.
@@ -269,13 +297,13 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
   height.priority = UILayoutPriorityDefaultLow;
 
   [NSLayoutConstraint activateConstraints:@[
-    [self.centerYAnchor constraintEqualToAnchor:_allTextStack.centerYAnchor],
-    [self.leadingAnchor constraintEqualToAnchor:_allTextStack.leadingAnchor
+    [self.centerYAnchor constraintEqualToAnchor:_mainStack.centerYAnchor],
+    [self.leadingAnchor constraintEqualToAnchor:_mainStack.leadingAnchor
                                        constant:-kTableViewHorizontalSpacing],
-    [self.trailingAnchor constraintEqualToAnchor:_allTextStack.trailingAnchor
+    [self.trailingAnchor constraintEqualToAnchor:_mainStack.trailingAnchor
                                         constant:kTableViewHorizontalSpacing],
     [self.heightAnchor
-        constraintGreaterThanOrEqualToAnchor:_allTextStack.heightAnchor
+        constraintGreaterThanOrEqualToAnchor:_mainStack.heightAnchor
                                     constant:
                                         2 *
                                         kTableViewTwoLabelsCellVerticalSpacing],
@@ -319,9 +347,18 @@ constexpr CGFloat kTitleSubtitleToTrailingWidthRatio = 3;
 
 // Returns a new stack view to contain the title/subtitle stack and the trailing
 // label.
-- (UIStackView*)createMainTextStack {
+- (UIStackView*)createAllTextStack {
   UIStackView* stack = [[UIStackView alloc] init];
   stack.alignment = UIStackViewAlignmentCenter;
+  stack.translatesAutoresizingMaskIntoConstraints = NO;
+  return stack;
+}
+
+// Returns a new stack view to contain all the elements.
+- (UIStackView*)createMainStack {
+  UIStackView* stack = [[UIStackView alloc] init];
+  stack.alignment = UIStackViewAlignmentCenter;
+  stack.spacing = kTableViewHorizontalSpacing;
   stack.translatesAutoresizingMaskIntoConstraints = NO;
   return stack;
 }

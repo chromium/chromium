@@ -26,6 +26,8 @@
 
 // The leading content configuration for the cell.
 @property(nonatomic, copy) id<UIContentConfiguration> leadingConfiguration;
+// The trailing content configuration for the cell.
+@property(nonatomic, copy) id<UIContentConfiguration> trailingConfiguration;
 
 // Whether the labels should be disabled (change text color). Default NO.
 @property(nonatomic, assign, getter=isTextDisabled) BOOL textDisabled;

@@ -64,6 +64,7 @@
   // The updates to properties must be reflected in the copy method.
   // LINT.IfChange(Copy)
   copy.leadingConfiguration = [self.leadingConfiguration copyWithZone:zone];
+  copy.trailingConfiguration = [self.trailingConfiguration copyWithZone:zone];
   copy.textDisabled = self.textDisabled;
   copy.title = self.title;
   copy.titleColor = self.titleColor;

@@ -9,6 +9,17 @@
   NSArray<NSString*>* _accessibilityUserInputLabels;
 }
 
+#pragma mark - UITableViewCell
+
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  self.accessoryType = UITableViewCellAccessoryNone;
+  self.accessibilityLabel = nil;
+  self.accessibilityUserInputLabels = nil;
+}
+
+#pragma mark - Accessibility
+
 - (void)setAccessibilityLabel:(NSString*)accessibilityLabel {
   _accessibilityLabel = accessibilityLabel;
 }
