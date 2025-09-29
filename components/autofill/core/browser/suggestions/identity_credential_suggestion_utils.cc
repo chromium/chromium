@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/suggestions/identity_credential_suggestion_utils.h"
 
+#include "components/autofill/core/common/form_data.h"
+
 namespace autofill {
 
 std::vector<Suggestion> GetIdentityCredentialSuggestionsForType(

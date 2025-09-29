@@ -7,52 +7,52 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
-#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
-#include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
-#include "components/autofill/core/browser/integrators/password_form_classification.h"
-#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
-#include "components/autofill/core/browser/suggestions/suggestion.h"
-#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/core/common/form_interactions_flow.h"
-#include "components/autofill/core/common/plus_address_survey_type.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/device_reauth/device_authenticator.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
-#include "components/translate/core/browser/language_state.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 class GoogleGroupsManager;
+class GURL;
 class PrefService;
+
+namespace device_reauth {
+class DeviceAuthenticator;
+}
 
 namespace network {
 class SharedURLLoaderFactory;
+}
+
+namespace one_time_tokens {
+class SmsOtpBackend;
+}
+
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+class OptimizationGuideModelExecutor;
+}  // namespace optimization_guide
+
+namespace optimization_guide::proto {
+class AnnotatedPageContent;
+}
+
+namespace plus_addresses::hats {
+enum class SurveyType;
 }
 
 namespace signin {
@@ -67,21 +67,17 @@ namespace syncer {
 class SyncService;
 }
 
-namespace one_time_tokens {
-class SmsOtpBackend;
-}
-
-namespace optimization_guide {
-class ModelQualityLogsUploaderService;
-class OptimizationGuideModelExecutor;
-}
-
-namespace optimization_guide::proto {
-class AnnotatedPageContent;
-}
+namespace translate {
+class LanguageState;
+class TranslateDriver;
+}  // namespace translate
 
 namespace ukm {
 class UkmRecorder;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace version_info {
@@ -90,34 +86,44 @@ enum class Channel;
 
 namespace autofill {
 
+class AutofillManager;
 class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
-class AutofillComposeDelegate;
-class AutofillCrowdsourcingManager;
-class AutofillDriverFactory;
-class AutofillOptimizationGuideDecider;
-#if BUILDFLAG(IS_ANDROID)
-class AutofillSnackbarControllerImpl;
-#endif  // BUILDFLAG(IS_ANDROID)
-class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillAiManager;
 class AutofillAiModelCache;
 class AutofillAiModelExecutor;
+class AutofillComposeDelegate;
+class AutofillCrowdsourcingManager;
+class AutofillDriverFactory;
+class AutofillOptimizationGuideDecider;
 class AutofillProfile;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillSnackbarControllerImpl;
+#endif  // BUILDFLAG(IS_ANDROID)
+class AutofillSuggestionDelegate;
+enum class AutofillTriggerSource;
+class IdentityCredentialDelegate;
 class EntityDataManager;
+class FastCheckoutClient;
 class FieldClassificationModelHandler;
+enum class FillingProduct;
 class FormDataImporter;
+class FormFieldData;
+struct FormInteractionsFlowId;
 class LogManager;
 class OtpFieldDetector;
+struct PasswordFormClassification;
+class PasswordManagerDelegate;
 class PersonalDataManager;
+struct SelectOption;
+struct Suggestion;
+enum class SuggestionHidingReason;
+enum class SuggestionType;
 class SingleFieldFillRouter;
-class StrikeDatabase;
 class ValuablesDataManager;
 class VotesUploader;
-struct Suggestion;
-enum class WebauthnDialogState;
 
 namespace autofill_metrics {
 class FormInteractionsUkmLogger;

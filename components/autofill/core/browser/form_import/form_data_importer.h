@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace history {
 class HistoryService;

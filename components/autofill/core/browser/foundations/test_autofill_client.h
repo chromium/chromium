@@ -79,6 +79,8 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
@@ -284,7 +286,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   url::Origin GetLastCommittedPrimaryMainFrameOrigin() const override {
-    return url::Origin::Create(last_committed_primary_main_frame_url_);
+    return last_committed_primary_main_frame_origin_;
   }
 
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override {
@@ -557,6 +559,7 @@ class TestAutofillClientTemplate : public T {
 
   void set_last_committed_primary_main_frame_url(const GURL& url) {
     last_committed_primary_main_frame_url_ = url;
+    last_committed_primary_main_frame_origin_ = url::Origin::Create(url);
   }
 
   void SetVariationConfigCountryCode(
@@ -732,6 +735,8 @@ class TestAutofillClientTemplate : public T {
   // The last URL submitted in the primary main frame by the user. Set in the
   // constructor.
   GURL last_committed_primary_main_frame_url_{"https://example.test"};
+  url::Origin last_committed_primary_main_frame_origin_ =
+      url::Origin::Create(last_committed_primary_main_frame_url_);
 
   std::optional<AutofillClient::SuggestionUiSessionId>
       suggestion_ui_session_id_;

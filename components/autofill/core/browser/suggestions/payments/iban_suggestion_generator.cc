@@ -8,6 +8,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/function_ref.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
