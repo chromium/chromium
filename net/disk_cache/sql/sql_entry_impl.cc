@@ -74,12 +74,10 @@ SqlEntryImpl::~SqlEntryImpl() {
       const int64_t header_size_delta = static_cast<int64_t>(head_->size()) -
                                         *previous_header_size_in_storage_;
       backend_->UpdateEntryHeaderAndLastUsed(key_, res_id_or_error_, last_used_,
-                                             head_, header_size_delta,
-                                             base::DoNothing());
+                                             head_, header_size_delta);
     } else if (last_used_modified_) {
       // Otherwise, if only last_used was modified, update just last_used.
-      backend_->UpdateEntryLastUsed(key_, res_id_or_error_, last_used_,
-                                    base::DoNothing());
+      backend_->UpdateEntryLastUsed(key_, res_id_or_error_, last_used_);
     }
     backend_->ReleaseActiveEntry(*this);
   }
@@ -89,7 +87,7 @@ void SqlEntryImpl::Doom() {
   if (doomed_ || !backend_) {
     return;
   }
-  backend_->DoomActiveEntry(*this, base::DoNothing());
+  backend_->DoomActiveEntry(*this);
 }
 
 void SqlEntryImpl::Close() {

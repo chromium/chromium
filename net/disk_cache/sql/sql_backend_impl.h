@@ -128,15 +128,13 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   void ReleaseDoomedEntry(SqlEntryImpl& entry);
 
   // Marks an active entry as doomed and initiates its removal from the store.
-  // If `callback` is provided, it will be run upon completion.
-  void DoomActiveEntry(SqlEntryImpl& entry, CompletionOnceCallback callback);
+  void DoomActiveEntry(SqlEntryImpl& entry);
 
   // Updates the `last_used` timestamp for an entry.
   void UpdateEntryLastUsed(
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
-      base::Time last_used,
-      SqlPersistentStore::ErrorCallback callback);
+      base::Time last_used);
 
   // Updates the header data and `last_used` timestamp for an entry.
   void UpdateEntryHeaderAndLastUsed(
@@ -144,8 +142,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       base::Time last_used,
       scoped_refptr<net::GrowableIOBuffer> buffer,
-      int64_t header_size_delta,
-      SqlPersistentStore::ErrorCallback callback);
+      int64_t header_size_delta);
 
   // Writes data to an entry's body (stream 1). This can be used to write new
   // data, overwrite existing data, or append to the entry. The operation is
@@ -293,7 +290,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // as a normal operation via the `ExclusiveOperationCoordinator`.
   void HandleDoomActiveEntryOperation(
       scoped_refptr<SqlEntryImpl> entry,
-      CompletionOnceCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Dooms an active entry. This method must be called while holding an
@@ -341,7 +337,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       base::Time last_used,
-      SqlPersistentStore::ErrorCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `UpdateEntryHeaderAndLastUsed()`. This method
@@ -352,7 +347,6 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       base::Time last_used,
       scoped_refptr<net::GrowableIOBuffer> buffer,
       int64_t header_size_delta,
-      SqlPersistentStore::ErrorCallback callback,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `WriteEntryData()`. This method is scheduled
