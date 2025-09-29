@@ -31,6 +31,7 @@
 <translation id="1138458427267715730">Отримуйте сповіщення про зниження ціни на будь-якому вебсайті</translation>
 <translation id="1140317858355046628">Якщо видалити групу вкладок "<ph name="GROUP_NAME" />", усі користувачі відразу втратять доступ до неї, і її буде видалено з усіх пристроїв.</translation>
 <translation id="1142732900304639782">Не пропонувати перекладати ці сайти</translation>
+<translation id="1143193470214071120">Закрийте деякі з них або керуйте вікнами</translation>
 <translation id="1150263420752757504">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У вас немає збережених паролів у цьому сервісі.</translation>
 <translation id="115483310321669804">Використати пароль <ph name="PASSWORD" /></translation>
@@ -273,11 +274,11 @@
 <translation id="2318045970523081853">Натисніть, щоб зателефонувати</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
 <translation id="2328474416100889417">Усі користувачі відразу втратять доступ до групи вкладок "<ph name="GROUP_NAME" />", і всі посилання для запрошення буде вимкнено</translation>
+<translation id="2330186936255788117">Більше закладок</translation>
 <translation id="2332515770639153015">Безпечний перегляд із розширеним захистом увімкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
 <translation id="2341410551640223969">Не вдалося встановити додаток <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Усі дані, які використовує Chrome, зокрема облікові записи, закладки та збережені налаштування</translation>
-<translation id="2349954856814571872">Значок кнопки панелі закладок</translation>
 <translation id="235789365079050412">Політика конфіденційності Google</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2362083820973145409">Ви ввійшли як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ця опція відкриває налаштування.</translation>
@@ -359,7 +360,7 @@
 <translation id="2687009626279857299">Більше не працює на цьому пристрої</translation>
 <translation id="2702516483241149200">Новинка! Діліться посиланням, яке прокручує сторінку до цього тексту</translation>
 <translation id="2708226184420201102">Відкрити у вебпереглядачі <ph name="PRODUCT_NAME" /></translation>
-<translation id="271033894570825754">Новий</translation>
+<translation id="271033894570825754">Нова колекція</translation>
 <translation id="2718352093833049315">Лише у Wi-Fi</translation>
 <translation id="2718846868787000099">Сайти, які ви відвідуєте, можуть переглядати ваші налаштування, щоб показувати контент вибраними мовами</translation>
 <translation id="2723001399770238859">аудіо</translation>
@@ -408,6 +409,7 @@
 <translation id="2908243544703713905">Є непрочитані історії</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912345083818861431">Використовувати метод розблокування екрана, щоб переглядати відкриті анонімні вкладки</translation>
+<translation id="2918484639460781603">Перейти в налаштування</translation>
 <translation id="2923908459366352541">Недійсна назва</translation>
 <translation id="2932150158123903946">Дані додатка Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Розкладка клавіатури не зміниться</translation>
@@ -598,6 +600,7 @@
 <translation id="3845098929839618392">Відкрити в анонімній вкладці</translation>
 <translation id="3847319713229060696">Допоможіть підвищити безпеку в Інтернеті для кожного</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851464569313827017">Сайт <ph name="SITE_ETLD_PLUS_ONE" /> містить вставлений контент з елемента <ph name="IFRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="3858860766373142691">Назва</translation>
 <translation id="3863527519275151528">Сповіщення про обробку</translation>
@@ -631,6 +634,7 @@
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 пароль у вашому обліковому записі Google зламано}one{# пароль у вашому обліковому записі Google зламано}few{# паролі у вашому обліковому записі Google зламано}many{# паролів у вашому обліковому записі Google зламано}other{# пароля у вашому обліковому записі Google зламано}}</translation>
 <translation id="4016425174436051808">Не вдалося підписатися. Сталася помилка.</translation>
 <translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
+<translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# год}one{# год}few{# год}many{# год}other{# год}}</translation>
 <translation id="4042941173059740150">Продовжте використовувати обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Нижня панель</translation>
@@ -724,7 +728,6 @@
 <translation id="4425173294238317796">Екран підтвердження ключа доступу</translation>
 <translation id="442518031075347249">Ви більше не зможете використовувати цю віртуальну картку в Google Pay. <ph name="BEGIN_LINK1" />Докладніше про віртуальні картки<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_ONE" /> вкладку буде закрито}one{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладку буде закрито}few{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}many{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладок буде закрито}other{"<ph name="TAB_TITLE" />" і ще <ph name="TAB_COUNT_MANY" /> вкладки буде закрито}}</translation>
-<translation id="4426508677408162512">Усі закладки</translation>
 <translation id="4430277756566635951">Зараз вибрано: <ph name="EMAIL" />. Виберіть обліковий запис.</translation>
 <translation id="4452411734226507615">Закрити вкладку <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Закладку збережено в папці "<ph name="FOLDER_NAME" />"</translation>
@@ -900,6 +903,7 @@
 <translation id="5171045022955879922">Введіть запит або URL-адресу</translation>
 <translation id="5174700554036517242">Вкладку згорнуто до початкової висоти</translation>
 <translation id="5180063720319462041">Сторінку перекладено такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5191251636205085390">Дізнайтеся про нові технології, що приходять на зміну стороннім файлам cookie, і як ними керувати</translation>
 <translation id="5197649123261764478">Легко відкривайте свої закладки</translation>
 <translation id="5204967432542742771">Введіть пароль</translation>
@@ -985,6 +989,7 @@
 <translation id="5626134646977739690">Ім'я:</translation>
 <translation id="5628604359369369630">Непрочитано: доступно в режимі офлайн</translation>
 <translation id="5631483240431073854">Керувати відкритими вкладками</translation>
+<translation id="5632485077360054581">Докладніше</translation>
 <translation id="564121214411935612">Ви ввійшли як <ph name="USER_NAME" />. Помилка облікового запису Google. Ця опція відкриває налаштування.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Історія пошуку<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />дані про інші дії<ph name="END_LINK2" /> можуть зберігатися в обліковому записі Google</translation>
 <translation id="5648166631817621825">Останні 7 днів</translation>
@@ -1127,6 +1132,7 @@
 
 Наприклад, деякі веб-сайти можуть реагувати на такий запит, показуючи вам рекламу, не пов’язану з іншими веб-сайтами, які ви відвідали. Багато веб-сайтів і надалі збиратимуть та використовуватимуть ваші дані веб-перегляду, наприклад, щоб покращувати систему безпеки, пропонувати вміст, рекламу й рекомендації, а також генерувати статистику для звітів.</translation>
 <translation id="6247557882553405851">Google Менеджер паролів</translation>
+<translation id="6248988683584659830">Пошук налаштувань</translation>
 <translation id="6251449557817521191">Тут можна переглянути історію Chrome</translation>
 <translation id="6254139308321626268">Ви переглядаєте PDF-файл</translation>
 <translation id="6255809143828972562">Безпечно переглядайте вебсторінки й керуйте налаштуваннями завдяки інструментам від Chrome</translation>
@@ -1255,6 +1261,7 @@
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{Анонімні вкладки (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_ONE" /> іншу вкладку буде закрито}one{Анонімні вкладки (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> іншу вкладку буде закрито}few{Анонімні вкладки (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> інші вкладки буде закрито}many{Анонімні вкладки (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> інших вкладок буде закрито}other{Анонімні вкладки (<ph name="INCOGNITO_TAB_COUNT" />) і ще <ph name="TAB_COUNT_MANY" /> іншої вкладки буде закрито}}</translation>
 <translation id="6785476624617658922">Додаткові умови використання Google Chrome і ОС Chrome</translation>
 <translation id="6786747875388722282">Розширення</translation>
+<translation id="6787600234697426339">Ви відкрили максимальну кількість вікон – <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="6795633245022906657">Швидко відкривайте нову вкладку. Щоб змінити функцію цієї кнопки, перейдіть у налаштування.</translation>
 <translation id="679588508577699489">Зробіть Chrome вебпереглядачем за умовчанням</translation>
 <translation id="679956319013005046">Щоб вибрати потрібний сервіс автозаповнення, спершу додайте його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
@@ -1276,7 +1283,6 @@
 <translation id="6850830437481525139">Закрито вкладок: <ph name="TAB_COUNT" /></translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудіофайли (1 аудіофайл у списку)}one{Аудіофайли (# аудіофайл у списку)}few{Аудіофайли (# аудіофайли в списку)}many{Аудіофайли (# аудіофайлів у списку)}other{Аудіофайли (# аудіофайлу в списку)}}</translation>
 <translation id="685850645784703949">Рекомендації від Google вимкнено</translation>
-<translation id="6861722405755529743">Кнопка додаткових опцій на панелі закладок</translation>
 <translation id="6864459304226931083">Завантажити зображення</translation>
 <translation id="686490460830618322">Панель фільтра додатків</translation>
 <translation id="6865313869410766144">Дані автозаповнення форм</translation>
@@ -1438,6 +1444,7 @@
 <translation id="749294055653435199">Google Об’єктив недоступний на цьому пристрої</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (оновлено: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Зачекайте…</translation>
+<translation id="7501135638693251872">Усі закладки</translation>
 <translation id="750228856503700085">Оновлення недоступні</translation>
 <translation id="7507207699631365376">Переглянути <ph name="BEGIN_LINK" />політику конфіденційності<ph name="END_LINK" /> цього постачальника</translation>
 <translation id="750886945254958667">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна</translation>
@@ -1699,6 +1706,7 @@
 <translation id="8611922158252451755">Редагувати можуть усі, хто має посилання, тому надавайте доступ відповідально. Посилання діє 48 годин.</translation>
 <translation id="8616006591992756292">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Перейти за URL-адресою, указаною в завантаженому вмісті?</translation>
+<translation id="8634050254805484913">На вузьких екранах її буде приховано</translation>
 <translation id="8635399646025169806">Зберегти групу вкладок?</translation>
 <translation id="8636825310635137004">Щоб мати доступ до вкладок з інших пристроїв, увімкніть синхронізацію.</translation>
 <translation id="8662474268934425487">Увійти на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>

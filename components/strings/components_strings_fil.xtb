@@ -466,6 +466,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Paano namin ginagamit ang data na ito:<ph name="END_BOLD" /> Nagtatala ang Chrome ng mga paksa kung saan ka interesado habang nagba-browse ka. Naka-predefine ang mga label ng paksa at kasama sa mga ito ang mga bagay tulad ng Sining at Entertainment, Shopping, at Sports. Sa ibang pagkakataon, puwedeng humingi sa Chrome ang site na binibisita mo ng ilan sa iyong mga paksa (pero hindi ang history ng pag-browse mo) para ma-personalize ang mga ad na nakikita mo.</translation>
 <translation id="1746113442205726301">Pag-shift ng larawan Y</translation>
 <translation id="1746531169546376413">0 degrees</translation>
+<translation id="1747777564644667857">Flight</translation>
 <translation id="1748225549612934682">Paikliin ang iyong text para makatanggap ng tulong sa pagsusulat</translation>
 <translation id="1751544761369730824">I-delete ang site na <ph name="SITE_NAME" /></translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
@@ -1231,6 +1232,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3037605927509011580">Ay, Naku!</translation>
 <translation id="3039406992698062762">Biyaheng Pampamilya</translation>
 <translation id="3041176923638368519">Tingnan ang mga tuntunin sa benepisyo sa card</translation>
+<translation id="3041584414879052436">Nakasara ang Listahan ng mga Buy-Now-Pay-Later na issuer.</translation>
 <translation id="3041612393474885105">Impormasyon sa Certificate</translation>
 <translation id="3045769629416806687">Mga Extreme Sport</translation>
 <translation id="305162504811187366">History ng Remote na Desktop ng Chrome, kabilang ang mga timestamp, host, at client session id</translation>
@@ -2694,6 +2696,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
           <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="5447235695608032700">Payagan ang <ph name="SITE" /> na gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
+<translation id="5447973833955560753">Password sa pag-recover</translation>
 <translation id="5451331376824595378">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL ng mga page na binibisita mo sa Chrome, URL ng mga page kung saan ka kumopya ng data, pangalan ng file o metadata, IP address, pag-crash ng browser o tab, at ang username na ginagamit mo para mag-sign in sa mga web-based na application, sa iyong device, at sa Chrome.</translation>
 <translation id="5452270690849572955">Hindi makita ang <ph name="HOST_NAME" /> page na ito</translation>
 <translation id="5452923259299906094">Magbayad gamit ang eWallet at Pix</translation>
@@ -3080,6 +3083,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Gumawa ng site</translation>
 <translation id="6105511947520166941">Magbayad gamit ang Pix nang direkta sa Chrome sa susunod</translation>
+<translation id="6105745639559695088">I-toggle ang sidebar</translation>
 <translation id="6106989379647458772">Maaaring pansamantalang hindi gumagana ang webpage sa <ph name="PAGE" />, o kaya, maaaring permanente na itong lumipat sa isang bagong address sa web.</translation>
 <translation id="6107012941649240045">Ibinigay Kay</translation>
 <translation id="6107864469867367783">Binago ni <ph name="USER_DISPLAY_NAME" /> ang pangalan ng grupo</translation>
@@ -3477,6 +3481,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6740851646645036700">Naabot mo na ang iyong limitasyon sa tulong sa pagsusulat sa ngayon. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="674375294223700098">Hindi alam na error sa certificate ng server</translation>
 <translation id="6743841972744298686">Mga setting ng pag-sync</translation>
+<translation id="6745212570062463886">I-autofill ang iyong pangalan at email address mula sa Google Account mo</translation>
 <translation id="6745592621698551453">Mag-update ngayon</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Teleconferencing</translation>
@@ -4226,6 +4231,7 @@ Mga karagdagang detalye:
 <translation id="79682505114836835">Invalid na hex color ang value na "<ph name="VALUE" />."</translation>
 <translation id="7968982339740310781">Tingnan ang mga detalye</translation>
 <translation id="7975858430722947486">Idinagdag sa Paghahambing</translation>
+<translation id="7976053965094442846">Ang mga available na Buy-Now-Pay-Later na issuer para magbayad sa paglipas ng panahon. Naka-hide ang keyboard.</translation>
 <translation id="7976214039405368314">Masyadong maraming kahilingan</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> minuto ang nakalipas}=1{<ph name="TIME_COUNT" /> oras ang nakalipas}one{<ph name="TIME_COUNT" /> araw ang nakalipas}other{<ph name="TIME_COUNT" /> na araw ang nakalipas}}</translation>
@@ -4234,6 +4240,7 @@ Mga karagdagang detalye:
 <translation id="7983008347525536475">Mga SUV</translation>
 <translation id="7984945080620862648">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil nagpadala ang website ng mga gulu-gulong kredensyal na hindi maproseso ng Chrome. Kadalasang pansamantala lang ang mga error at atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
+<translation id="7987087088851949178">Binuksan nang buo ang bottom sheet ng mga available na Buy-Now-Pay-Later na issuer para magbayad sa paglipas ng panahon.</translation>
 <translation id="799149739215780103">Bind</translation>
 <translation id="7992044431894087211">Ipinagpatuloy ang pagbabahagi ng screen sa <ph name="APPLICATION_TITLE" /></translation>
 <translation id="7995512525968007366">Hindi Tinukoy</translation>
@@ -4276,6 +4283,7 @@ Mga karagdagang detalye:
 <translation id="8058603697124206642">Hindi kinakailangan</translation>
 <translation id="8061691770921837575">Make-up at Cosmetics</translation>
 <translation id="8063875539456488183">I-save at subaybayan ang presyo</translation>
+<translation id="8065767681506419412">Tumutukoy ang patakarang ito ng mga uri ng data na hindi sinusuportahan sa iyong kasalukuyang platform: <ph name="TYPE_LIST" />.</translation>
 <translation id="8066225060526005217">Pinapamahalaan ang mga setting ng cookie</translation>
 <translation id="8067872629359326442">Kakalagay mo lang ng iyong password sa isang mapanlinang na site. Makakatulong ang Chromium. Para palitan ang iyong password at abisuhan ang Google na posibleng nasa panganib ang iyong account, i-click ang Protektahan ang Account.</translation>
 <translation id="8070439594494267500">Icon ng app</translation>
@@ -4693,6 +4701,7 @@ Mga karagdagang detalye:
 <translation id="8772387130037509473">Yoga at Pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Ilipat ang kumpidensyal na file?}one{Ilipat ang mga kumpidensyal na file?}other{Ilipat ang mga kumpidensyal na file?}}</translation>
 <translation id="8775347646940100151">Papel (Letterhead)</translation>
+<translation id="8775863327608679820">Binuksan nang kalahati ang bottom sheet ng mga available na Buy-Now-Pay-Later na issuer para magbayad sa paglipas ng panahon.</translation>
 <translation id="8776941011841875705">I-save ang Known Traveler Number?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Button na Isalin ang page, i-activate para maisalin ang page na ito gamit ang Google Translate</translation>

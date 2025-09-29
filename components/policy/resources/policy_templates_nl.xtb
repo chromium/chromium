@@ -379,6 +379,7 @@ Patronen voor overeenkomende herkomst voor dit beleid mogen geen '/path' or '@qu
 
       Als je het beleid niet instelt of als de waarde na vervanging geen geldige hostnaam is, wordt er geen hostnaam ingesteld in het DHCP-verzoek.</translation>
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
+<translation id="1258255231440297460">Nalevingsbeleid voor cryptografie</translation>
 <translation id="1262993197422487260">De knop Wachtwoord bekijken niet tonen op het inlog- en vergrendelscherm</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
 <translation id="1265076559723566171">Bepaalt instellingen voor EDU-gebruikers</translation>
@@ -914,6 +915,7 @@ De gebruiker blijft ingelogd op hun Google-account wanneer cookies worden verwij
 
 Als je <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" /> en <ph name="CLEAR_SITE_SETTINGS_ACTION" /> instelt, wordt synchronisatie voor de betreffende gegevenstypen uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.</translation>
 <translation id="1583248206450240930"><ph name="PRODUCT_FRAME_NAME" /> standaard gebruiken</translation>
+<translation id="1585643501600142852">Integratie met het Google Developer Program niet aanzetten in <ph name="CHROME_DEVTOOLS_NAME" />.</translation>
 <translation id="1587585749332985896">Gebruik van de stand zonder interface niet toestaan</translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
 <translation id="1590802206069983683">De functie ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes is beschikbaar</translation>
@@ -1129,6 +1131,7 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
       Opmerking: Geef de beleidswaarden op in procenten, minimaal 0 en maximaal 100.</translation>
 <translation id="1733092875104864334">Verzamelen van WebRTC-tekstlogboeken van Google-services niet toestaan</translation>
 <translation id="1733768596873041559">Standaard omleiden naar SAML IdP (voorafgaand aan <ph name="PRODUCT_NAME" /> 99 is gebruikersbevestiging vereist)</translation>
+<translation id="1736032188431871940">Toegang blokkeren tot een lijst met URL's in de incognitomodus.</translation>
 <translation id="1736269219679256369">Doorgaan vanaf de SSL-waarschuwingspagina toestaan</translation>
 <translation id="1736990730683753958">Een Chrome-geschiedenispagina die is ingedeeld in groepen, is niet zichtbaar op chrome://history/grouped.</translation>
 <translation id="1740724790865999129">Als je dit beleid instelt op een lijst met apparaattypen, kunnen foutopsporingsgegevens op laag niveau van de genoemde apparaattypen worden opgenomen in gebruikersfeedback.
@@ -1819,6 +1822,9 @@ Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toege
       Dit beleid overschrijft <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME" />, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" />, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME" /> en de voorkeuren van de gebruiker.
 
       Dit beleid heeft alleen effect op USB-apparaten via de Web Serial API. Zie het beleid <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME" /> als je USB-apparaten toegang wilt geven via de WebUSB API.</translation>
+<translation id="2246450159673309951">Als je het beleid <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen in de incognitomodus. Beheerders kunnen de lijst met URL-patronen opgeven die moeten worden geblokkeerd. Als je dit beleid niet instelt, worden er geen URL's geblokkeerd in de incognitomodus. Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="INCOGNITO_MODE_ALLOWLIST_POLICY_NAME" />. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+Dit beleid is alleen van toepassing op de incognitomodus. Als je URL's wilt blokkeren voor alle gebruikersprofielen, gebruik je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" />.</translation>
 <translation id="2246565294817797392">Afgekapte cookies blokkeren</translation>
 <translation id="2246621891161157804">Toestaan dat Chrome navigatie naar externe protocollen in iframes in sandboxes blokkeert</translation>
 <translation id="224750967938323855">Geen synchronisatietoestemming weergeven tijdens het inloggen</translation>
@@ -2407,6 +2413,13 @@ Het systeem vraagt AAAA-records alleen op indien bereikbaar voor een algemene IP
 <translation id="2673363037046384711">De eindgebruiker kan de modus voor hoge efficiëntie aan- of uitzetten.</translation>
 <translation id="2673968385134502798">Games</translation>
 <translation id="2678503605767349615">Vereiste clientcertificaten voor het hele apparaat</translation>
+<translation id="268025561734472010">Dit beleid beheert de integratie van het Google Developer Program met <ph name="CHROME_DEVTOOLS_NAME" />. Het Google Developer Program-profiel van de gebruiker wordt getoond in <ph name="CHROME_DEVTOOLS_NAME" /> en gebruikers krijgen badges voor specifieke acties in <ph name="CHROME_DEVTOOLS_NAME" />.
+
+Als je het beleid instelt op 0 (Aangezet) of geen beleidswaarde instelt, wordt de integratie van het Google Developer Program met <ph name="CHROME_DEVTOOLS_NAME" /> toegestaan en wordt het delen van het gebruik van de <ph name="CHROME_DEVTOOLS_NAME" />-tool toegestaan om badges te kunnen toekennen.
+
+Als je het beleid instelt op 1 (Aangezet zonder badges), kun je het Google Developer Program integreren met <ph name="CHROME_DEVTOOLS_NAME" />, maar kun je het gebruik van de <ph name="CHROME_DEVTOOLS_NAME" />-tool niet delen met het Google-ontwikkelaarsprogramma. Er worden geen badges toegekend.
+
+Als je het beleid instelt op 2 (Uitgezet), staat het de integratie van het Google Developer Program met <ph name="CHROME_DEVTOOLS_NAME" /> niet toe.</translation>
 <translation id="268134026533587276">Screensaver voor het vergrendelscherm aangezet.</translation>
 <translation id="268577405881275241">Proxyfunctie voor comprimeren van gegevens aanzetten</translation>
 <translation id="268695908564263739">Met dit beleid kun je de modus voor hoge efficiëntie aan- of uitzetten. Door deze instelling worden tabbladen na een bepaalde tijd op de achtergrond verwijderd om geheugen vrij te maken.
@@ -2613,6 +2626,7 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2872189563975139803">Instellingen voor scheiding van bedrijfsprofielen</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2872968825059227580">Zet Gif-ondersteuning uit.</translation>
+<translation id="2873976725097049554">Integratie met het Google Developer Program aanzetten in <ph name="CHROME_DEVTOOLS_NAME" />.</translation>
 <translation id="2874209944580848064">Opmerking voor <ph name="PRODUCT_OS_NAME" />-apparaten die Android-apps ondersteunen:</translation>
 <translation id="287474029350993681">Content casten naar het apparaat uitzetten</translation>
 <translation id="2875192972412983412">Specificeert de subset van printerservers die worden aangeroepen voor serverprinters.
@@ -3051,6 +3065,7 @@ Als je dit beleid toepast, wordt het zwevende toegankelijkheidsmenu altijd getoo
 Als je dit beleid niet toepast, of niet instelt, wordt het zwevende toegankelijkheidsmenu nooit getoond.</translation>
 <translation id="312646755999968569">TLS 1.3 Early Data uitzetten</translation>
 <translation id="3126748868885248792">Rechterknop is primair</translation>
+<translation id="3127816006382989270">Toegang geven tot een lijst met URL's in de incognitomodus.</translation>
 <translation id="3128072319047570212">Instellingen voor sleutelgenerator</translation>
 <translation id="3131703464330936425">Geen mobiele dataroaming toestaan</translation>
 <translation id="3135820765957090754">Als je deze instelling aanzet, mogen gebruikers wifi-netwerkconfiguraties synchroniseren tussen hun <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon. Voordat wifi-netwerkconfiguraties kunnen worden gesynchroniseerd, moeten gebruikers deze functie expliciet toestaan door een instelprocedure te doorlopen.
@@ -3448,6 +3463,7 @@ Als je het beleid niet instelt, wordt browsernavigatie voorkomen als het Always-
       De experimentele instelling wordt in de toekomst verwijderd als het inline inlogproces alle SSO-inlogprocessen volledig ondersteunt.</translation>
 <translation id="3435796032110614169">Verwijderen van afdrukgeschiedenis toestaan</translation>
 <translation id="3436217793443508863">De tijdsduur zonder gebruikersinvoer waarna het scherm wordt vergrendeld als er op de batterij wordt gewerkt (in milliseconden)</translation>
+<translation id="3437391374720747482">Voorkeur geven aan sleuteluitwisselingsmethoden die voldoen aan de vereisten van CNSA 2.0</translation>
 <translation id="3437924696598384725">De gebruiker toestaan VPN-verbindingen te beheren</translation>
 <translation id="3441664787678256816">Verbindingen voor externe zakelijke support met deze machine toestaan</translation>
 <translation id="3442269905344976871">Als je dit beleid toepast en <ph name="WILCO_NAME" /> DTC (controller voor diagnostische gegevens en telemetrie) beschikbaar is op het apparaat, staat de verzameling, verwerking en rapportage van diagnostische en telemetriegegevens aan.
@@ -4370,6 +4386,7 @@ Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name=
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
 <translation id="4101826711886952606">De instellingen voor Home/End gebruiken de sneltoets met de functietoets Zoeken</translation>
 <translation id="4102347680024644994">Rapporteren over XDR-gebeurtenissen (Extended Detection and Response)</translation>
+<translation id="4103790291347614186">Google Developer Program-profielen aanzetten in <ph name="CHROME_DEVTOOLS_NAME" /></translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitzetten</translation>
 <translation id="410740968939768919">Bepaal of Manifest v2-extensies kunnen worden gebruikt op het <ph name="PRODUCT_OS_NAME" />-inlogscherm.
 
@@ -4477,13 +4494,6 @@ Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph nam
           Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
 
           Als dit beleid niet is ingesteld, staat de markering van het caret-teken in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
-<translation id="4182333458177354245">Stel in hoe <ph name="PRODUCT_NAME" /> het basismodel voor GenAI downloadt en lokaal gebruikt voor inferentie.
-
-Als je het beleid toepast (0) of niet instelt, wordt het model automatisch gedownload en gebruikt voor inferentie.
-
-Als je het beleid niet toepast (1), wordt het model niet gedownload.
-
-Het downloaden van het model kan ook worden uitgezet door <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="4182348537826882258">Als je het beleid <ph name="URL_BLOCKLIST_POLICY_NAME" /> instelt, worden webpagina's met verboden URL's niet geladen. Beheerders kunnen de lijst met URL-patronen opgeven die moeten worden geblokkeerd. Als je dit beleid niet instelt, worden er geen URL's geblokkeerd in de browser. Er kunnen maximaal 1000 uitzonderingen worden gedefinieerd in <ph name="URL_ALLOWLIST_POLICY_NAME" />. Bekijk hoe je een URL-patroon opmaakt (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
 
 Opmerking: Dit beleid is niet van toepassing op in-page JavaScript-URL's met dynamisch geladen gegevens. Als je example.com/abc hebt geblokkeerd, kan example.com de pagina nog steeds laden met XMLHTTPRequest. Dit beleid voorkomt ook niet dat webpagina's de URL die in de omnibox wordt getoond, updaten naar een geblokkeerde site via de JavaScript History API.
@@ -4711,6 +4721,7 @@ Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> be�
 <translation id="4347908978527632940">Als beleid 'True' is en de gebruiker een gebruiker met beperkte rechten is, kunnen andere Android-apps de internetbeperkingen van de gebruiker opvragen via de contentprovider.
 
           Als het beleid 'False' of niet ingesteld is, retourneert de contentprovider geen informatie.</translation>
+<translation id="4349863629157433459">Integratie van het Google Developer Program aanzetten in <ph name="CHROME_DEVTOOLS_NAME" />, maar zonder toolgebruik te delen (voor het toekennen van badges).</translation>
 <translation id="435395045087992163">Het apparaat niet vergrendelen als het in de slaapstand wordt gezet of als de klep wordt gesloten</translation>
 <translation id="4354792057099570728">Zet de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting uit voor je gebruikers.</translation>
 <translation id="4357587374229381015">Hiermee wordt een naam voor de URL-parameter opgegeven die wordt gebruikt op de SAML IdP-inlogpagina om het gebruikersnaamveld automatisch in te vullen.
@@ -4754,6 +4765,7 @@ Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> be�
 <translation id="4389073105055031853">Gebruikers toestaan alle certificaten te beheren</translation>
 <translation id="4389091865841123886">De externe bevestiging configureren met een TPM-mechanisme.</translation>
 <translation id="4389113579547582722">Toestaan dat de promotie voor appstore-beoordelingen wordt getoond</translation>
+<translation id="439152798535870249">Specifieke sleuteluitwisselingsalgoritmen voor TLS gebruiken</translation>
 <translation id="4395619678972620537">Als je het beleid toepast, kunnen WebRTC-peerverbindingen worden gedowngraded naar verouderde versies van de TLS/DTLS-protocollen (DTLS 1.0, TLS 1.0 en TLS 1.1).
       Als je dit beleid niet toepast of niet instelt, worden deze TLS/DTLS-versies uitgezet.
 
@@ -8182,6 +8194,11 @@ Wijzigingen in het beleid zijn alleen van toepassing als ARC niet actief is, bij
 
       - Als je dit beleid niet toepast, moeten beheerders dit laten weten aan eindgebruikers van het apparaat.</translation>
 <translation id="6605778633186421420">Support voor compressiefunctie voor woordenboekoverdracht aanzetten</translation>
+<translation id="6605903339716787410">Als je het beleid instelt, wordt toegang geboden tot de vermelde URL's in de incognitomodus, als uitzonderingen op <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" />. Als je <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" /> bijvoorbeeld instelt op *, worden alle verzoeken in de incognitomodus geblokkeerd. Je kunt dit beleid gebruiken om toegang tot een beperkte lijst met URL's toe te staan. Gebruik dit beleid om uitzonderingen op te geven voor bepaalde schema's, subdomeinen van andere domeinen, poorten of specifieke paden met de indeling die wordt gespecificeerd op (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Het beleid <ph name="INCOGNITO_MODE_ALLOWLIST_POLICY_NAME" /> heeft voorrang op <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" />. Dit beleid is beperkt tot 1000 items.
+
+Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph name="INCOGNITO_MODE_BLOCKLIST_POLICY_NAME" />.
+
+Dit beleid is alleen van invloed op de incognitomodus. Als je URL's wilt toestaan voor alle gebruikersprofielen, gebruik je het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="6607983779935460461">Ondersteuning voor gegevens-URL's voor SVGUseElement.</translation>
 <translation id="660893824005096050">Docenten toestaan transcripties naar leerlingen te sturen</translation>
 <translation id="6609867253856597039">Gebruikerservaring voor uitgezette functies instellen</translation>
@@ -9144,6 +9161,7 @@ Ondersteuning voor deze beleidsinstelling wordt beëindigd in <ph name="PRODUCT_
 
 * Als je het beleid instelt op Replace (Vervangen), wordt het gebruikersbeleid in gebruikers-GPO's vervangen door het gebruikersbeleid van computer-GPO's. Gebruikers-GPO's worden genegeerd.</translation>
 <translation id="7258823566580374486">Afscherming van hosts voor externe toegang aanzetten</translation>
+<translation id="725978547392822291">Stelt gebruikers- en apparaatbeleid in voor specifieke cryptografische complianceregimes</translation>
 <translation id="7260204423892780600">Hiermee bepaal je de instellingen voor de Google Assistent.</translation>
 <translation id="7261140115553020049">Floating Workspace-service aanzetten</translation>
 <translation id="7261252191178797385">Achtergrondafbeelding voor apparaat</translation>

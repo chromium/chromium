@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
-<translation id="1004806631856047384">Gerenciar nas <ph name="BEGIN_LINK1" />configurações do Android<ph name="END_LINK1" />
-
-A Proteção avançada controla estas configurações do Chrome:
-• A opção "Sempre usar conexões seguras" está ativada.
-• O otimizador de JavaScript está desativado. <ph name="BEGIN_LINK2" />Gerenciar exceções dos sites<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Abrir on-line</translation>
 <translation id="1036348656032585052">Desativar</translation>
 <translation id="1070329623210597193">Arquivos que este site pode ver ou editar</translation>
@@ -74,6 +69,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="1816835383954230954">Quando a opção está ativada, o Chrome fica mais rápido, e os recursos que usam JavaScript funcionam conforme o esperado. Quando desativada, isso reduz o desempenho, mas torna o V8 mais resistente a ataques.</translation>
 <translation id="1818308510395330587">Para permitir que o app <ph name="APP_NAME" /> use RA, também é necessário ativar a câmera nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="1848033246551405023">Fonte Sans Serif</translation>
+<translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1881806992065048905">Página inferior de aparência da página "Nova guia"</translation>
 <translation id="1887786770086287077">O acesso ao local está desativado neste dispositivo. Ative nas <ph name="BEGIN_LINK" />Configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Os sites geralmente acessam arquivos e pastas no dispositivo para recursos como salvamento automático</translation>
@@ -308,6 +304,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Não permitir que os sites enviem notificações</translation>
 <translation id="4402755511846832236">Impedir que sites saibam quando você está usando este dispositivo</translation>
+<translation id="4412683424767388419">O painel de cores do Chrome está aberto na metade da altura</translation>
 <translation id="4412992751769744546">Permitir cookies de terceiros</translation>
 <translation id="4419929467120297501">O Chrome impede que os sites usem cookies de terceiros para rastrear você durante a navegação. Acesse as configurações para <ph name="BEGIN_LINK" />gerenciar o acesso a cookies de terceiros<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Fonte Serif</translation>
@@ -371,6 +368,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5116239826668864748">Você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps</translation>
 <translation id="5123685120097942451">Guia anônima</translation>
 <translation id="512938610812707830">A página inferior de coleções de temas para a página "Nova guia" está aberta no tamanho máximo</translation>
+<translation id="5137460097045297858">A página inferior do feed do Discover está aberta na metade da altura</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Redução no preço nas guias abertas}one{Redução no preço nas guias abertas}other{Reduções nos preços nas guias abertas}}</translation>
 <translation id="5186036860380548585">Opção disponível perto da parte superior da tela</translation>
 <translation id="5197729504361054390">Os contatos selecionados serão compartilhados com <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -389,7 +387,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5335288049665977812">Permitir que sites executem o JavaScript (recomendado)</translation>
 <translation id="534295439873310000">Dispositivos NFC</translation>
 <translation id="5344522958567249764">Gerenciar a privacidade de anúncios</translation>
-<translation id="5371407439562620893">Otimização e segurança de JavaScript</translation>
 <translation id="5373874281522292782">Seus grupos de guias foram salvos</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(mais 1)}one{(mais #)}other{(mais #)}}</translation>
 <translation id="5403592356182871684">Nomes</translation>
@@ -422,7 +419,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5749158352074143502">Continuar com esta guia</translation>
 <translation id="5750869797196646528">Rastreamento de mãos</translation>
 <translation id="5753570386948603678">Excluir do histórico</translation>
-<translation id="5771720122942595109"><ph name="PERMISSION_1" /> bloqueada</translation>
+<translation id="5771720122942595109">Bloqueada: <ph name="PERMISSION_1" /></translation>
 <translation id="5801457289562671820">Recomendado pela sua organização</translation>
 <translation id="5804241973901381774">Permissões</translation>
 <translation id="5822675474983796325">A página inferior "Personalizar 'Nova guia'" está aberta no tamanho máximo</translation>
@@ -448,6 +445,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="5968921426641056619">Digite o endereço da Web</translation>
 <translation id="5975083100439434680">Diminuir zoom</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Ativar o feed do Discover</translation>
 <translation id="6012967556075291653">Atalho fixado</translation>
 <translation id="6015775454662021376">Controle o acesso deste site ao seu dispositivo</translation>
 <translation id="6040143037577758943">Fechar</translation>
@@ -470,6 +468,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="6207207788774442484">Excluir dados e redefinir permissões</translation>
 <translation id="6231752747840485235">Desinstalar <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Toque em App de navegação &gt; Chrome.</translation>
+<translation id="6260830281887654268">A página inferior de coleções de temas para a página "Nova guia" está aberta na metade da altura</translation>
 <translation id="6262191102408817757">Com base na sua última guia</translation>
 <translation id="6262279340360821358">Bloqueadas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações</translation>
@@ -503,6 +502,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="662080504995468778">Ficar</translation>
 <translation id="6635327442719709864">Quando ativada, os sites podem pedir para usar portas seriais. Quando desativada, os sites não podem usar portas seriais.</translation>
 <translation id="6678072580827808850">Analisar Confirmação de segurança</translation>
+<translation id="6682057173375416470">Receba sugestões de artigos na página Nova guia</translation>
 <translation id="6683865262523156564">Este site está em um grupo que pode ver sua atividade. O grupo é definido por <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>
@@ -517,7 +517,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="6838525730752203626">Usar o Chrome por padrão</translation>
 <translation id="6840760312327750441">Para agrupar guias, toque em uma delas e a mantenha pressionada. Depois disso, arraste-a para outra guia.</translation>
 <translation id="6842868554183332230">Geralmente, os sites detectam quando você está usando o dispositivo ativamente para definir sua disponibilidade nos apps de chat</translation>
-<translation id="6864395892908308021">O dispositivo não consegue ler a NFC</translation>
+<translation id="6864395892908308021">Este dispositivo não consegue ler NFC</translation>
 <translation id="6870169401250095575">Ocultar o card da Confirmação de segurança</translation>
 <translation id="6900883974539674431">Crie grupos de guias que são salvos e atualizados automaticamente em todos os seus dispositivos</translation>
 <translation id="6912998170423641340">Impedir que sites leiam textos e imagens da área de transferência</translation>
@@ -552,13 +552,15 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="728412880473384942">Os sites ficam mais rápidos, mas menos seguros</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7368695150573390554">Todos os dados off-line serão excluídos</translation>
+<translation id="7369678931043226462">A página inferior "Personalizar 'Nova guia'" está aberta na metade da altura</translation>
 <translation id="7383715096023715447">Configurações de <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Confirmação de segurança</translation>
 <translation id="7406113532070524618">Essa configuração funciona sem identificar você ou permitir que sites acessem o histórico de navegação. Apesar disso, os sites podem compartilhar uma pequena quantidade de informações como parte da verificação.</translation>
-<translation id="7409735910987429903">Os sites podem exibir pop-ups para mostrar anúncios ou usar redirecionamentos para levar você até sites que talvez não queira acessar</translation>
+<translation id="7409735910987429903">Os sites podem exibir pop-ups para mostrar anúncios ou usar redirecionamentos para levar até sites que talvez você não queira acessar</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
 <translation id="7423538860840206698">Leitura da área de transferência bloqueada</translation>
 <translation id="7425915948813553151">Tema escuro para sites</translation>
+<translation id="746412105358554870">Otimização e segurança de JavaScript</translation>
 <translation id="7478658909253570368">Não permitir que os sites se conectem a portas seriais</translation>
 <translation id="7488573225650545859">Ocultar a opção "Ver guias na lista de apps"</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="7804248752222191302">Um site está usando sua câmera</translation>
 <translation id="7805832099057502789">A página inferior de aparência da página "Nova guia" está aberta no tamanho máximo</translation>
 <translation id="7807060072011926525">Fornecido pelo Google</translation>
+<translation id="7809029041571842593">A página inferior de cards da página "Nova guia" está aberta na metade da altura</translation>
 <translation id="7815680994978050279">Download perigoso bloqueado</translation>
 <translation id="7835852323729233924">Tocando mídia</translation>
 <translation id="783819812427904514">Ativar som do vídeo</translation>
@@ -645,6 +648,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="8441146129660941386">Voltar</translation>
 <translation id="8444433999583714703">Para permitir que o app <ph name="APP_NAME" /> acesse seu local, ative-o também nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revogar permissão do dispositivo</translation>
+<translation id="8467359479529706065">A página inferior de aparência da página "Nova guia" está aberta na metade da altura</translation>
 <translation id="8471525937465764768">Os sites geralmente se conectam a dispositivos USB para recursos como imprimir um documento ou salvar em um dispositivo de armazenamento</translation>
 <translation id="8473055640493819707">O app <ph name="APP_NAME" /> está desatualizado e precisa ser reinstalado.</translation>
 <translation id="847433688444405067">Navegue em vários dispositivos</translation>
@@ -660,7 +664,6 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="8549127125482561383">Como mostrar solicitações</translation>
 <translation id="8558480467877843976">Agora você pode usar o Chrome sempre que navegar ou tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="857943718398505171">Permitido (recomendado)</translation>
-<translation id="8580511488901768832">A página inferior "Meus atalhos" está aberta no tamanho máximo</translation>
 <translation id="8593422116412089302">Quando essa configuração está ativada, os sites podem pedir para usar informações que salvaram sobre você. Quando está desativada, os sites não podem pedir para usar as informações que salvaram sobre você.</translation>
 <translation id="8609465669617005112">Mover para cima</translation>
 <translation id="8617611086246832542">Quando essa configuração está ativada, a versão para computadores dos sites aparece. Quando está desativada, a versão para dispositivos móveis aparece.</translation>
@@ -678,6 +681,7 @@ A Proteção avançada controla estas configurações do Chrome:
 <translation id="8730621377337864115">Concluir</translation>
 <translation id="8737426583868847403">Os sites que você salvar com um nível de zoom personalizado vão aparecer aqui</translation>
 <translation id="8751914237388039244">Selecione uma imagem</translation>
+<translation id="8775741625735357092">Você pode ativar a barra de favoritos em Configurações &gt; Aparência</translation>
 <translation id="8800034312320686233">Site indisponível?</translation>
 <translation id="8801436777607969138">Bloquear JavaScript para um site específico.</translation>
 <translation id="8801657293260363985">V8 é o mecanismo JavaScript e WebAssembly do Chrome usado para melhorar o desempenho de sites</translation>

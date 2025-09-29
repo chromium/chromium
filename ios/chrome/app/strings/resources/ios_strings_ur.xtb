@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1041322626941363065">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو وارننگ حاصل کریں</translation>
 <translation id="104491362976654916">آف لائن صفحہ</translation>
+<translation id="1046742265332833834">نیلی تھیم</translation>
 <translation id="1049743911850919806">پوشیدگی</translation>
 <translation id="1053651653201045802">سائن آؤٹ ہو گئے۔ اپنے اکاؤنٹ میں بُک مارکس، پاس ورڈز اور مزید استعمال کرنے کے لیے دوبارہ سائن ان کریں۔</translation>
 <translation id="1054745118061919935">جاری رکھ کر آپ <ph name="BEGIN_LINK" />سروس کی شرائط<ph name="END_LINK" /> سے اتفاق کرتے ہیں۔</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">آپ کی اسٹوریج بھری ہوئی ہے</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
 <translation id="1190609913194133056">اطلاعاتی مرکز</translation>
+<translation id="1199963004393929848">سبز تھیم</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1204075260022434100">{count,plural, =1{بُک مارک کو آپ کے اکاؤنٹ {email} میں "{title}" میں محفوظ کیا گیا}other{‫{count} بُک مارکس کو آپ کے اکاؤنٹ، {email} میں "{title}" میں محفوظ کیا گیا}}</translation>
 <translation id="120431140543679678">پیروی کریں</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">قیمت کی ٹریکنگ سے متعلق اطلاعات کی اجازت دیں…</translation>
 <translation id="1809929083618343438">‏اس سے Chrome سے منتخب کردہ معلومات ہٹ جاتی ہیں، لیکن اس سے آپ کے Google اکاؤنٹ سے یہ معلومات حذف نہیں ہوتی ہے۔</translation>
 <translation id="1810976980198522421">منسوخ کریں</translation>
-<translation id="1812514023095547458">رنگ منتخب کریں</translation>
 <translation id="1815941218935345331">پاس کوڈ</translation>
 <translation id="1818687879307252150">{count,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{‫{count} متاثرہ پاس ورڈ}other{‫{count} متاثرہ پاس ورڈز}}</translation>
 <translation id="1819374301217551116">قیمت کی ٹریکنگ اور بصیرتیں</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">"سیفٹی چیک" چھپائیں</translation>
 <translation id="2551153019974022505">اکاؤنٹ کی خرابی</translation>
 <translation id="2559843230610279254">ٹیب گروپ، <ph name="GROUP_TITLE" />، <ph name="TABS_NUMBER" /> ٹیبز</translation>
+<translation id="257088987046510401">تھیمز</translation>
 <translation id="2573117291489209663">ہو گیا</translation>
 <translation id="2577522251608256362">نواحی علاقہ</translation>
 <translation id="2579713773888829241">مشترکہ ڈرائیوز</translation>
@@ -478,6 +480,7 @@
 <translation id="2793703503584038325">پاسورڈ منتخب کریں اور "اشتراک کریں" کے آئیکن پر تھپتھپائیں</translation>
 <translation id="2797029671965852011">سرگزشت دکھائیں</translation>
 <translation id="2797302972324086597">ملک کا کوڈ</translation>
+<translation id="2798263827270599246">ڈیفالٹ تھیم</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{‫{COUNT} فائل}other{‫{COUNT} فائلز}}</translation>
 <translation id="2816149645002567541">ڈاؤن لوڈ موقوف ہو گیا</translation>
 <translation id="2816489851009559785">مینو ← ترتیبات ← ڈیفالٹ براؤزر</translation>
@@ -693,6 +696,7 @@
 <translation id="3750225824417196283">پوشیدگی ٹیب کا نیا صفحہ</translation>
 <translation id="3751873026576444885">‏‫Google لینز کے ساتھ اپنی اسکرین کو تلاش کرنا بند کریں</translation>
 <translation id="3753408171347588045">قیمتیں ٹریک کی جا رہی ہیں</translation>
+<translation id="3753618528540214374">فیروزی تھیم</translation>
 <translation id="3762232513783804601">‏آپ کے iPad کے لیے بنایا گیا</translation>
 <translation id="3768725474733206671">آخری بند کردہ ٹیب دوبارہ کھولیں</translation>
 <translation id="3779810277399252432">کوئی انٹرنیٹ کنکشن نہیں ہے۔</translation>
@@ -772,7 +776,6 @@
 <translation id="4026496154402824012">آف کرنے کے لیے، <ph name="BEGIN_LINK" />پاس ورڈ کے اختیارات<ph name="END_LINK" /> پر جائیں</translation>
 <translation id="4028871427853484857">اکاؤنٹ میں محفوظ کریں…</translation>
 <translation id="4038354071007134711">اس آلہ پر کوئی ایپلیکیشن اس فائل کو نہیں کھول سکتی ہے۔</translation>
-<translation id="4039829422386964954">گیلری براؤز کریں</translation>
 <translation id="4042870976416480368">صفحہ میں تلاش کریں</translation>
 <translation id="4045441967987592849">دوبارہ کھولیں</translation>
 <translation id="4047337302138771011">اپنے پاس ورڈز کا اشتراک کریں</translation>
@@ -989,6 +992,7 @@
 <translation id="4869146460927742717">ایڈریس بار پوزیشن</translation>
 <translation id="4870911314065352661">سبھی ٹیبز بند کریں؟</translation>
 <translation id="4872664437015695612">ڈاؤن لوڈز میں کھولیں</translation>
+<translation id="4875260838563541343">کارروائی کا بٹن</translation>
 <translation id="4876305945144899064">کوئی صارف نام نہیں ہے</translation>
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" /> کو کھولا گیا</translation>
 <translation id="4877597489778380935">مجھے بعد میں یاد دلائیں</translation>
@@ -1347,6 +1351,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6198252989419008588">‏PIN تبدیل کریں</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> دن یا اس سے زیادہ استعمال نہ ہونے والے ٹیبز کو یہاں منتقل کر دیا جاتا ہے۔ آپ اسے <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="6213281885682386884">کوئی پتہ نہیں ملا</translation>
+<translation id="6218508144653756827">گل آویز تھیم</translation>
 <translation id="6218758465102657583">ایڈریس بار کو اوپر منتقل کریں</translation>
 <translation id="6223816392543092032">اپنے سبھی آلات پر اپنے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات حاصل کریں۔</translation>
 <translation id="6225572914528673855">ایڈریس بار</translation>
@@ -1439,6 +1444,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6523575793810663688">مجھے طریقہ دکھائیں</translation>
 <translation id="6524082013156754186">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="6524918542306337007">پوشیدگی وضع دستیاب نہیں ہے</translation>
+<translation id="6527208859483186860">‏‫{total} میں سے {position} پس منظر</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6532106788206463496">تبدیلیاں محفوظ کریں</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> گروپ کھولیں، جس میں <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /> ہیں</translation>
@@ -1464,6 +1470,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>
 <translation id="6612912757320004438">ٹیبز کی اطلاعات کی اجازت دیں…</translation>
 <translation id="6617761071025228250">ٹیکسٹ صاف کریں</translation>
+<translation id="6619015782482868078">فیروزی تھیم</translation>
 <translation id="6620279676667515405">منسوخ کریں</translation>
 <translation id="6625830436658400045">آپ کی مطابقت پذیری کی ترتیبات آپ کے آخری بیک اپ کی بنیاد پر بحال کی جائیں گی۔ آپ کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="6627583120233659107">فولڈر میں ترمیم کریں</translation>
@@ -1499,6 +1506,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6713676799463473249"><ph name="LAST_MODIFICATION_DATE" /> کو ترمیم کیا گیا</translation>
 <translation id="6722623263381062480">موصول شدہ ٹیبز</translation>
 <translation id="6723740634201835758">‏آپ کے Google اکاؤنٹ میں</translation>
+<translation id="6724024423419410528">رنگ</translation>
 <translation id="672735642903863329">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کریں۔</translation>
 <translation id="6729493062119577923">اشتراک کردہ ٹیب گروپ کی سرگرمی</translation>
 <translation id="6732087373923685049">کیمرا</translation>
@@ -1562,6 +1570,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="69739764870135975">‏اگر Google بھی آپ کا ڈیفالٹ سرچ انجن ہے تو آپ کو بہتر، سیاق و سباق کے لحاظ سے متعلقہ تجاویز دکھائی دیں گی</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">ہر وقت</translation>
+<translation id="6980507581230208647">گلاب تھیم</translation>
 <translation id="6983306615164277634">آپ پوزیشن تبدیل کرنے کے لیے ایڈریس بار کو چھو سکتے ہیں اور دبا کر رکھ سکتے ہیں۔</translation>
 <translation id="6987201788018524855">مفید خصوصیات کو دریافت کریں جن سے آپ محروم ہو چکے ہیں</translation>
 <translation id="6989636517316575338">کسی بھی صفحے کے بارے میں پوچھیں</translation>
@@ -1607,6 +1616,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7176183551031110427">زوم آؤٹ کریں</translation>
 <translation id="7186568385131859684">‏کنٹرول کریں کہ براؤزنگ کی سرگزشت آپ کے دوسرے ڈیٹا کے ساتھ Google سروسز پر کیسے استعمال کی جائے</translation>
 <translation id="719133302483559673">اپنی دلچسپیوں اور ترجیحات کا نظم کریں۔</translation>
+<translation id="7191382490098297347">کیمرا رول کی تصویر</translation>
 <translation id="7203496777391039568">آپ کی تنظیم کا ڈیٹا نجی اور محفوظ ہے</translation>
 <translation id="720399613139435155">ترجمہ نہیں ہو سکا</translation>
 <translation id="7204922488054642675">ذاتی نوعیت کی خبریں</translation>
@@ -1628,6 +1638,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="728025568708172005">مجھے آس پاس دکھائیں</translation>
 <translation id="7280980607183752256">اس فائل کو درآمد نہیں کیا جا سکتا</translation>
 <translation id="7281202269687163394">‏آپ کی رازداری اور Gemini۔</translation>
+<translation id="7282197670900591579">چکوترہ تھیم</translation>
 <translation id="7293429513719260019">زبان منتخب کریں</translation>
 <translation id="7300448350764260141">آن لائن خطرات سے تحفظ کی ایک اضافی پرت شامل کریں۔</translation>
 <translation id="7311244614769792472">کوئی نتیجہ نہیں ملا</translation>
@@ -1751,6 +1762,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7749790401023484470">آپ نے کوئی ٹیکسٹ منتخب نہیں کیا۔</translation>
 <translation id="7757015014239760147">کوئی صارف نام نہیں ہے ••••••</translation>
 <translation id="775755486779745798">میعاد کے اختتام کا ماہ <ph name="MONTH" /> آٹو فل کریں</translation>
+<translation id="7758789811447313947">بیگنی تھیم</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7765158879357617694">منتقل کریں</translation>
 <translation id="7772032839648071052">پاس فریز کی توثیق کریں</translation>
@@ -1815,6 +1827,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="797824194429476746">اس آلے پر ٹیبز کھلے رہیں گے، لیکن گروپ مستقل طور پر حذف ہو جائے گا۔</translation>
 <translation id="797874245254030665">کسی بھی ایپ سے اپنے پاس ورڈز اور پاس کیز تک رسائی حاصل کریں</translation>
 <translation id="7982789257301363584">نیٹ ورک</translation>
+<translation id="798299424881500862">نارنجی تھیم</translation>
 <translation id="7987685713885608670">‏اضافی حفاظت کے لیے، پاس ورڈز کو Google پاس ورڈ مینیجر میں محفوظ کرنے سے پہلے اپنے آلے پر مرموز کریں۔</translation>
 <translation id="798991908416757345">ٹیب گروپس دستیاب نہیں ہیں</translation>
 <translation id="7993170188789685695">اس اطلاع کو بند کرنے کے لیے دو بار تھپتھپائیں۔</translation>

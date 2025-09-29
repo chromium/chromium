@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Voit tehdä muutoksia mainosyksityisyysasetuksista</translation>
 <translation id="1780659583673667574">Jos esimerkiksi käyt sivustolla etsimässä illallisreseptejä, sivusto voi päätellä, että olet kiinnostunut ruoanlaitosta. Myöhemmin toinen sivusto voi näyttää sinulle ensimmäisen sivuston ehdottaman aiheeseen liittyvän mainoksen ruokakaupan toimituspalvelusta.</translation>
 <translation id="1887631853265748225">Mainosten yksityisyysominaisuudet auttavat rajoittamaan tietoja, joita sivustot ja niiden mainontakumppanit voivat saada sinusta näyttäessään personoituja mainoksia.</translation>
+<translation id="19426210786412737">Nykyiset Chrome-asetuksesi on päivitetty sallimaan verkkosivustoille pääsy kolmannen osapuolen evästeisiin. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="1954777269544683286">Google edellyttää, että yritykset ilmoittavat julkisesti, etteivät ne käytä tätä dataa seuratakseen sinua eri sivustoilla. Yritykset ovat vastuussa siitä, että ne kertovat sinulle, miten ne käyttävät dataasi. <ph name="BEGIN_LINK" />Lue lisää tietosuojakäytännöstä<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Joidenkin sivustojen ominaisuudet eivät välttämättä toimi</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Miten voit ylläpitää tätä dataa?<ph name="END_BOLD" /> Chrome poistaa automaattisesti yli 30 päivää vanhat sivustot. Jos käyt taas sivustolla, se voi näkyä listalla uudelleen. Voit myös estää sivustoa ehdottamasta mainoksia puolestasi ja laittaa sivustojen ehdottamat mainokset milloin tahansa pois päältä Chromen asetuksista.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Sivustot voivat käyttää kolmannen osapuolen evästeitä saadakseen tietoa toiminnoistasi muilla sivustoilla</translation>
 <translation id="6388287739339671750">Estä seurantaskriptit</translation>
 <translation id="6398358690696005758">Lue <ph name="BEGIN_LINK1" />tietosuojakäytännöstä<ph name="LINK_END1" />, miten Google suojaa dataasi.</translation>
+<translation id="6494210367693221285">Nykyiset Chromium-asetuksesi on päivitetty sallimaan sivustoille pääsy kolmannen osapuolen evästeisiin. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="6702015235374976491">Mainosaiheiden avulla sivustot voivat näyttää sinulle osuvia mainoksia ja samalla suojata selaushistoriaasi ja henkilöllisyyttäsi. Chrome voi merkitä viimeaikaiseen selaushistoriaasi perustuvia kiinnostuksen kohteita. Avaamasi sivustot voivat myöhemmin pyytää Chromelta oleellisia aiheita personoidakseen näkemiäsi mainoksia.</translation>
 <translation id="6710025070089118043">Sivustot eivät voi käyttää kolmannen osapuolen evästeitä personoidakseen sisältöä ja mainoksia tai saadakseen tietoa muilla sivustoilla tekemistäsi toimista, ellet anna aiheeseen liittyvien sivustojen käyttää niitä</translation>
 <translation id="6737378617247709185">Chromium estää kolmannen osapuolen evästeet incognito-tilassa, mutta järjestelmänvalvoja on sallinut kolmannen osapuolen evästeet tällä sivustolla. Incognito-tila voi myös tarjota lisäsuojaa seurantaa vastaan. Hallinnoi incognito-tilan seurannan estoja <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Avautuu tavalliseen Chromium-ikkunaan</translation>
 <translation id="8578320000709741352">Avaamasi sivustot voivat upottaa muiden sivustojen sisältöä ja palveluita (esim. kuvia, mainoksia ja tekstiä), joiden avulla sinusta voidaan saada tietoa. Lue lisää <ph name="START_LINK" />incognito-tilan seurannan estojen<ph name="END_LINK" /> muuttamisesta.</translation>
 <translation id="859369389161884405">Avaa tietosuojakäytännön uudelle välilehdelle</translation>
+<translation id="8712637175834984815">Selvä</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Miten voit ylläpitää tätä dataa?<ph name="END_BOLD" /> Chrome poistaa automaattisesti yli neljä viikkoa vanhat aiheet. Kun jatkat selaamista, aihe voi näkyä listalla uudelleen. Voit myös estää aiheet, joita et halua Chromen jakavan sivustoille, ja laittaa mainosten aiheet milloin tahansa pois päältä Chromen asetuksista.</translation>
 <translation id="8803526663383843427">Asetuksen ollessa päällä</translation>
 <translation id="8825639607990802302">Yksityisyys ja sivustodata: vaihtoehdot</translation>

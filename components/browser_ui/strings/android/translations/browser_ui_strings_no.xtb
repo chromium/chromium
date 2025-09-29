@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
-<translation id="1004806631856047384">Administrer i <ph name="BEGIN_LINK1" />Android-innstillingene<ph name="END_LINK1" />
-
-Avansert beskyttelse styrer disse Chrome-innstillingene:
-• «Bruk alltid sikre tilkoblinger» er på.
-• «JavaScript-optimalisering» er av. <ph name="BEGIN_LINK2" />Administrer nettstedsunntak<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Åpne på nettet</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1070329623210597193">Filer dette nettstedet kan se eller redigere</translation>
@@ -74,6 +69,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="1816835383954230954">Når bryteren er på, kjører Chrome raskere, og funksjoner som bruker JavaScript, skal fungere som tilsiktet. Når bryteren er av, reduseres ytelsen, men V8 blir mer motstandsdyktig mot angrep.</translation>
 <translation id="1818308510395330587">For å la <ph name="APP_NAME" /> bruke AR, slå på kameraet i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" /> også.</translation>
 <translation id="1848033246551405023">Skrifttype: Sans Serif</translation>
+<translation id="1861262398884155592">Denne mappen er tom</translation>
 <translation id="1881806992065048905">Feltet nederst for utseende på Ny fane-side</translation>
 <translation id="1887786770086287077">Posisjonstilgang er slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Nettsteder bruker vanligvis filer og mapper på enheten din for å kunne tilby funksjoner som å lagre arbeidet ditt automatisk</translation>
@@ -308,6 +304,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="4338831206024587507">Alle nettsteder under <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ikke la nettsteder sende varsler</translation>
 <translation id="4402755511846832236">Blokkér nettsteder fra å vite når du bruker denne enheten aktivt</translation>
+<translation id="4412683424767388419">Feltet nederst for Chrome-farger er åpnet i halv høyde</translation>
 <translation id="4412992751769744546">Tillat informasjonskapsler fra tredjeparter</translation>
 <translation id="4419929467120297501">Chrome blokkerer nettsteder fra å bruke informasjonskapsler fra tredjeparter til å spore deg når du surfer. Gå til innstillingene for å <ph name="BEGIN_LINK" />administrere tilgang til informasjonskapsler fra tredjeparter<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Skrifttype: Serif</translation>
@@ -371,6 +368,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5116239826668864748">Du kan bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
 <translation id="512938610812707830">Feltet nederst for temasamlinger for utseende på Ny fane-side er åpnet i full høyde</translation>
+<translation id="5137460097045297858">Feltet nederst for Discover-feeden er åpnet i halv høyde</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Avslag på de åpne fanene dine}other{Avslag på de åpne fanene dine}}</translation>
 <translation id="5186036860380548585">Alternativet finner du nesten øverst på skjermen</translation>
 <translation id="5197729504361054390">Kontaktene du velger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -389,7 +387,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5335288049665977812">Tillat nettsteder å kjøre JavaScript (anbefales)</translation>
 <translation id="534295439873310000">NFC-enheter</translation>
 <translation id="5344522958567249764">Administrer annonsepersonvern</translation>
-<translation id="5371407439562620893">JavaScript-optimalisering og -sikkerhet</translation>
 <translation id="5373874281522292782">Fanegruppene dine er lagret</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 til)}other{(+ # til)}}</translation>
 <translation id="5403592356182871684">Navn</translation>
@@ -448,6 +445,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="5968921426641056619">Skriv inn en nettadresse</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Slå på Discover-feeden</translation>
 <translation id="6012967556075291653">Festet snarvei</translation>
 <translation id="6015775454662021376">Kontroller dette nettstedets tilgang til enheten din</translation>
 <translation id="6040143037577758943">Lukk</translation>
@@ -470,6 +468,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="6207207788774442484">Slett data og tilbakestill tillatelser</translation>
 <translation id="6231752747840485235">Vil du avinstallere «<ph name="APP_NAME" />»?</translation>
 <translation id="6234351944623978659">Trykk på Nettleserapp &gt; Chrome</translation>
+<translation id="6260830281887654268">Feltet nederst for temasamlinger for utseende på Ny fane-side er åpnet i halv høyde</translation>
 <translation id="6262191102408817757">Basert på den siste fanen din</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> er blokkert</translation>
 <translation id="6270391203985052864">Nettsteder kan be om å få sende deg varsler</translation>
@@ -503,6 +502,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="662080504995468778">Bli her</translation>
 <translation id="6635327442719709864">Når dette er på, kan nettsteder be om å få bruke serielle porter. Når dette er av, kan ikke nettsteder bruke serieporter.</translation>
 <translation id="6678072580827808850">Gjennomgå sikkerhetssjekken</translation>
+<translation id="6682057173375416470">Få foreslåtte artikler på Ny fane-siden</translation>
 <translation id="6683865262523156564">Dette nettstedet er med i en gruppe som kan se aktiviteten din. Gruppen er definert av <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilbilder</translation>
 <translation id="6697925417670533197">Aktive nedlastinger</translation>
@@ -552,6 +552,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="728412880473384942">Nettsteder er raskere, men mindre sikre</translation>
 <translation id="7366415735885268578">Legg til et nettsted</translation>
 <translation id="7368695150573390554">Alle data som er lagret for bruk uten nett, blir slettet</translation>
+<translation id="7369678931043226462">Feltet nederst for tilpasning av Ny fane-siden er åpnet i halv høyde</translation>
 <translation id="7383715096023715447">Innstillinger for <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
 <translation id="7406113532070524618">Denne innstillingen fungerer uten at du blir identifisert, og uten at nettsteder kan se nettleserloggen din, men nettsteder kan dele noe informasjon som en del av bekreftelsesprosessen</translation>
@@ -559,6 +560,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7423098979219808738">Spør først</translation>
 <translation id="7423538860840206698">Blokkert fra å lese utklippstavlen</translation>
 <translation id="7425915948813553151">Mørkt tema for nettsteder</translation>
+<translation id="746412105358554870">JavaScript-optimalisering og -sikkerhet</translation>
 <translation id="7478658909253570368">Ikke la nettsteder koble til serielle porter</translation>
 <translation id="7488573225650545859">Skjul Vis faner på applisten</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="7804248752222191302">Et nettsted bruker kameraet ditt</translation>
 <translation id="7805832099057502789">Nytt faneområde som er åpnet i bunnarket vises med full høyde</translation>
 <translation id="7807060072011926525">Levert av Google</translation>
+<translation id="7809029041571842593">Feltet nederst for kort på Ny fane-siden er åpnet i halv høyde</translation>
 <translation id="7815680994978050279">En farlig nedlasting er blokkert</translation>
 <translation id="7835852323729233924">Spiller av medier</translation>
 <translation id="783819812427904514">Slå på lyden i videoen</translation>
@@ -645,6 +648,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8441146129660941386">Spol bakover</translation>
 <translation id="8444433999583714703">For å gi <ph name="APP_NAME" /> tilgang til posisjonen din må du også slå på posisjon i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opphev tillatelsen til enhetstilgang</translation>
+<translation id="8467359479529706065">Nytt faneområde som er åpnet i bunnarket vises i halv høyde</translation>
 <translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>
 <translation id="8473055640493819707">«<ph name="APP_NAME" />» er utdatert. Installer appen på nytt.</translation>
 <translation id="847433688444405067">Bla gjennom enheter</translation>
@@ -660,7 +664,6 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8549127125482561383">Hvordan forespørsler skal vises</translation>
 <translation id="8558480467877843976">Nå kan du bruke Chrome når du blar gjennom eller trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="857943718398505171">Tillatt (anbefales)</translation>
-<translation id="8580511488901768832">feltet nederst for snarveiene mine er åpnet i full høyde</translation>
 <translation id="8593422116412089302">Når dette er på, kan nettsteder be om å få bruke informasjon de har lagret om deg. Når dette er av, kan ikke nettsteder be om å få bruke informasjon de har lagret om deg.</translation>
 <translation id="8609465669617005112">Flytt opp</translation>
 <translation id="8617611086246832542">Når dette er på, vises datamaskinvisningen av nettsteder. Når dette er av, vises mobilvisningen av nettsteder.</translation>
@@ -678,6 +681,7 @@ Avansert beskyttelse styrer disse Chrome-innstillingene:
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8737426583868847403">Nettsteder du lagrer et egendefinert zoomnivå for, vises her</translation>
 <translation id="8751914237388039244">Velg et bilde</translation>
+<translation id="8775741625735357092">Du kan slå på bokmerkelinjen i Innstillinger &gt; Utseende</translation>
 <translation id="8800034312320686233">Virker ikke nettstedet?</translation>
 <translation id="8801436777607969138">Blokkér JavaScript for et bestemt nettsted.</translation>
 <translation id="8801657293260363985">V8 er JavaScript- og WebAssembly-motoren som Chrome bruker til å forbedre nettstedsytelsen</translation>

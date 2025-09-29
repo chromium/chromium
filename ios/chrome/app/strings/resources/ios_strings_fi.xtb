@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1041322626941363065">Varoitus, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>
 <translation id="104491362976654916">Offline-sivu</translation>
+<translation id="1046742265332833834">Sininen teema</translation>
 <translation id="1049743911850919806">Incognito</translation>
 <translation id="1053651653201045802">Kirjautunut ulos. Kirjaudu takaisin, niin voit käyttää tilisi kirjanmerkkejä, salasanoja ja muita tietoja.</translation>
 <translation id="1054745118061919935">Jatkamalla hyväksyt <ph name="BEGIN_LINK" />käyttöehdot<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Tallennustila on täynnä</translation>
 <translation id="1181037720776840403">Poista</translation>
 <translation id="1190609913194133056">Ilmoituskeskus</translation>
+<translation id="1199963004393929848">Vihreä teema</translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1204075260022434100">{count,plural, =1{Kirjanmerkki tallennettu tilin {email} kansioon "{title}"}other{{count} kirjanmerkkiä tallennettu tilin {email} kansioon "{title}"}}</translation>
 <translation id="120431140543679678">Seuraa</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Salli hintaseurantailmoitukset…</translation>
 <translation id="1809929083618343438">Tämä poistaa valitut tiedot Chromesta, mutta ei poista niitä Google-tililtäsi.</translation>
 <translation id="1810976980198522421">Peru</translation>
-<translation id="1812514023095547458">Valitse väri</translation>
 <translation id="1815941218935345331">Tunnuskoodi</translation>
 <translation id="1818687879307252150">{count,plural, =0{Ei vaarantuneita salasanoja}=1{{count} vaarantunut salasana}other{{count} vaarantunutta salasanaa}}</translation>
 <translation id="1819374301217551116">Hintaseuranta ja vinkit</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Piilota "Turvatarkistus"</translation>
 <translation id="2551153019974022505">Tilivirhe</translation>
 <translation id="2559843230610279254">Välilehtiryhmä, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> välilehteä.</translation>
+<translation id="257088987046510401">Teemat</translation>
 <translation id="2573117291489209663">Valmis</translation>
 <translation id="2577522251608256362">Naapurusto</translation>
 <translation id="2579713773888829241">Jaetut Drivet</translation>
@@ -455,7 +457,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="2704606927547763573">Kopioitu</translation>
 <translation id="2708051474374549906">Googlelle lähetettävään selausdataan perustuva reaaliaikainen, proaktiivinen suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan</translation>
 <translation id="2709516037105925701">Automaattinen täyttö</translation>
-<translation id="271033894570825754">Uusi</translation>
+<translation id="271033894570825754">Uusi kokoelma</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
 <translation id="2718352093833049315">Vain Wi-Fillä</translation>
 <translation id="2721190673959776287">Esimerkki tuotekohtaisista ohjeista asiayhteyden mukaan, joiden pitäisi näkyä useita kertoja päivässä.</translation>
@@ -478,6 +480,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="2793703503584038325">Valitse salasana ja napauta jakamiskuvaketta</translation>
 <translation id="2797029671965852011">Näytä historia</translation>
 <translation id="2797302972324086597">Maatunnus</translation>
+<translation id="2798263827270599246">Oletusteema</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} tiedosto}other{{COUNT} tiedostoa}}</translation>
 <translation id="2816149645002567541">Lataus keskeytetty</translation>
 <translation id="2816489851009559785">Valikko → Asetukset → Oletusselain</translation>
@@ -693,6 +696,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3750225824417196283">Uusi sivu incognito-välilehdellä</translation>
 <translation id="3751873026576444885">Lopeta näytön hakeminen Google Lensillä</translation>
 <translation id="3753408171347588045">Hintoja seurataan</translation>
+<translation id="3753618528540214374">Kromivihreä teema</translation>
 <translation id="3762232513783804601">Suunniteltu iPadille</translation>
 <translation id="3768725474733206671">Avaa viimeksi suljettu välilehti uudelleen</translation>
 <translation id="3779810277399252432">Ei internetyhteyttä</translation>
@@ -772,7 +776,6 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4026496154402824012">Jos haluat laittaa asetuksen pois päältä, siirry kohtaan <ph name="BEGIN_LINK" />Salasanavalinnat<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Tallenna tilille…</translation>
 <translation id="4038354071007134711">Mikään laitteen sovellus ei voi avata tiedostoa.</translation>
-<translation id="4039829422386964954">Selaa Galleriaa</translation>
 <translation id="4042870976416480368">Hae sivulta</translation>
 <translation id="4045441967987592849">Avaa uudelleen</translation>
 <translation id="4047337302138771011">Jaa salasanasi</translation>
@@ -989,6 +992,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="4869146460927742717">Osoitepalkin sijainti</translation>
 <translation id="4870911314065352661">Suljetaanko kaikki välilehdet?</translation>
 <translation id="4872664437015695612">Avaa Lataukset-kansiossa</translation>
+<translation id="4875260838563541343">Toimintopainike</translation>
 <translation id="4876305945144899064">Ei käyttäjänimeä</translation>
 <translation id="4876665338492917862">Avattu <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Muistuta myöhemmin</translation>
@@ -1347,6 +1351,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6198252989419008588">Vaihda PIN-koodi</translation>
 <translation id="6210079381482819663">Välilehdet, joita ei ole käytetty vähintään <ph name="THRESHOLD" /> päivään, siirretään tänne. Voit muuttaa tätä milloin tahansa <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Osoitteita ei löytynyt</translation>
+<translation id="6218508144653756827">Fuksia teema</translation>
 <translation id="6218758465102657583">Siirrä osoitepalkki yläreunaan</translation>
 <translation id="6223816392543092032">Käytä kirjanmerkkejäsi, historiaasi, salasanojasi ja muita asetuksiasi kaikilla laitteillasi</translation>
 <translation id="6225572914528673855">Osoitepalkki</translation>
@@ -1439,6 +1444,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6523575793810663688">Näytä miten</translation>
 <translation id="6524082013156754186">Tallenna tilille</translation>
 <translation id="6524918542306337007">Incognito-tila ei ole käytettävissä</translation>
+<translation id="6527208859483186860">tausta {position}/{total}</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6532106788206463496">Tallenna muutokset</translation>
 <translation id="6536759809440150308">Avaa <ph name="GROUP_TITLE" />, ryhmä jossa on <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6612912757320004438">Salli välilehtien ilmoitukset…</translation>
 <translation id="6617761071025228250">Tyhjennä teksti</translation>
+<translation id="6619015782482868078">Sinivihreä teema</translation>
 <translation id="6620279676667515405">Peru</translation>
 <translation id="6625830436658400045">Synkronointiasetukset palautetaan viimeisen varmuuskopion perusteella. Voit valita synkronoitavan sisällön <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Muokkaa kansiota</translation>
@@ -1499,6 +1506,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6713676799463473249">Muokattu <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Vastaanotetut välilehdet</translation>
 <translation id="6723740634201835758">Google-tililläsi</translation>
+<translation id="6724024423419410528">Värit</translation>
 <translation id="672735642903863329">Kirjanmerkkien, salasanojen ja muiden tietojen käyttäminen kaikilla laitteilla</translation>
 <translation id="6729493062119577923">Jaettujen välilehtiryhmien toiminta</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1562,6 +1570,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="69739764870135975">Jos Google on lisäksi oletushakukone, näet parempia ja asiayhteyteen sopivampia ehdotuksia</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Kaikki</translation>
+<translation id="6980507581230208647">Ruusunpunainen teema</translation>
 <translation id="6983306615164277634">Voit muuttaa osoitepalkin sijaintia myös koskettamalla sitä pitkään.</translation>
 <translation id="6987201788018524855">Tutustu hyödyllisiin ominaisuuksiin, jotka ovat jääneet huomaamatta</translation>
 <translation id="6989636517316575338">Kysy mistä tahansa sivusta</translation>
@@ -1628,6 +1637,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="728025568708172005">Esittele paikkaa</translation>
 <translation id="7280980607183752256">Tiedostoa ei voi tuoda</translation>
 <translation id="7281202269687163394">Yksityisyys ja Gemini.</translation>
+<translation id="7282197670900591579">Sitruunankeltainen teema</translation>
 <translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="7300448350764260141">Lisäsuojaus verkkouhkia vastaan.</translation>
 <translation id="7311244614769792472">Ei tuloksia</translation>
@@ -1751,6 +1761,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7749790401023484470">Et valinnut tekstiä.</translation>
 <translation id="7757015014239760147">Ei käyttäjätunnusta ••••••••</translation>
 <translation id="775755486779745798">Täytä vanhenemiskuukausi automaattisesti: <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Violetti teema</translation>
 <translation id="7759809451544302770">Valinnainen</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
@@ -1815,6 +1826,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="797824194429476746">Välilehdet pysyvät auki tällä laitteella, mutta ryhmä poistetaan pysyvästi.</translation>
 <translation id="797874245254030665">Käytä salasanoja ja avainkoodeja mistä tahansa sovelluksesta</translation>
 <translation id="7982789257301363584">Verkko</translation>
+<translation id="798299424881500862">Oranssi teema</translation>
 <translation id="7987685713885608670">Salasanat kannattaa salata turvallisuussyistä laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>
 <translation id="798991908416757345">Välilehtiryhmät eivät ole käytettävissä</translation>
 <translation id="7993170188789685695">Sulje ilmoitus kaksoisnapauttamalla.</translation>

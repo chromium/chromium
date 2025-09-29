@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">你可前往「廣告私隱權設定」作出變更</translation>
 <translation id="1780659583673667574">例如，如果你瀏覽某網站為晚餐尋找食譜，該網站可能會判斷你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨送貨服務的相關廣告。</translation>
 <translation id="1887631853265748225">廣告私隱功能有助限制網站和廣告合作夥伴向你放送個人化廣告時可以取得的資料。</translation>
+<translation id="19426210786412737">已更新目前的 Chrome 設定，允許網站存取第三方 Cookie。你可隨時變更此設定。</translation>
 <translation id="1954777269544683286">Google 會要求公司公開聲明，不會跨網站使用此資料追蹤你。公司有責任向使用者告知資料的使用方式。<ph name="BEGIN_LINK" />參閱《私隱權政策》瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="2004697686368036666">部分網站的功能可能無法正常運作</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />有關資料如何管理？<ph name="END_BOLD" />Chrome 會自動刪除超過 30 日的網站。再次瀏覽的網站可能會再度出現在清單中。你可隨時在 Chrome 設定中禁止根據特定網站建議廣告，亦可關閉網站建議廣告設定。</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">網站可以使用第三方 Cookie 瞭解你在其他網站執行的操作</translation>
 <translation id="6388287739339671750">封鎖追蹤指令碼</translation>
 <translation id="6398358690696005758">請查看《<ph name="BEGIN_LINK1" />私隱權政策<ph name="LINK_END1" />》，進一步瞭解 Google 如何保護你的資料。</translation>
+<translation id="6494210367693221285">已更新目前的 Chromium 設定，允許網站存取第三方 Cookie。你可隨時變更此設定。</translation>
 <translation id="6702015235374976491">廣告主題可協助網站向你顯示相關廣告，同時保護你的瀏覽記錄和身分。Chrome 可根據你最近的瀏覽記錄，記下你感興趣的主題。你日後瀏覽的網站可向 Chrome 索取相關主題資料，以便向你顯示個人化廣告。</translation>
 <translation id="6710025070089118043">網站無法使用第三方 Cookie 提供個人化內容和廣告以及瞭解你在其他網站執行的操作，除非你允許相關網站存取這類 Cookie</translation>
 <translation id="6737378617247709185">在無痕模式下，�Chromium 會封鎖第三方 Cookie，但管理員允許此網站使用第三方 Cookie。無痕模式也能提供額外的追蹤保護。如要管理無痕模式追蹤保護功能，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">喺一般嘅 Chromium 視窗度打開</translation>
 <translation id="8578320000709741352">你瀏覽的網站可能會嵌入其他網站的內容和服務 (例如圖片、廣告和文字)，這些內容可用來取得個人資料。進一步瞭解如何管理<ph name="START_LINK" />無痕模式追蹤保護功能<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">喺新分頁入面打開《私隱權政策》</translation>
+<translation id="8712637175834984815">知道了</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />有關資料如何管理？<ph name="END_BOLD" />Chrome 會自動刪除超過 4 星期的主題。隨著你持續瀏覽，清單中可能會再次出現特定主題。你亦可隨時在 Chrome 設定封鎖不希望 Chrome 與網站分享的主題，以及關閉廣告主題。</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8825639607990802302">私隱和網站資料選項</translation>

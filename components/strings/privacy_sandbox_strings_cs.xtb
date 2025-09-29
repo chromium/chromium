@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Změny můžete provádět v nastavení ochrany soukromí v reklamách.</translation>
 <translation id="1780659583673667574">Pokud například navštívíte web s recepty na večeři, může tento web usoudit, že vás zajímá vaření. Později vám jiný web může zobrazit související reklamu na službu rozvozu potravin, kterou navrhl první web.</translation>
 <translation id="1887631853265748225">Funkce ochrany soukromí v reklamách omezují, co se o vás weby a jejich inzertní partneři mohou dozvědět, když vám zobrazují personalizované reklamy.</translation>
+<translation id="19426210786412737">Nastavení Chromu bylo aktualizováno a povoluje teď webům přístup k souborům cookie třetích stran. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="1954777269544683286">Google vyžaduje, aby společnosti veřejně prohlásily, že vás pomocí těchto dat nebudou na webech sledovat. Společnosti mají odpovědnost informovat vás o tom, jak vaše data používají. Další informace najdete v našich <ph name="BEGIN_LINK" />zásadách ochrany soukromí<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Některé weby můžou přestat fungovat</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Jak tato data můžete spravovat?<ph name="END_BOLD" /> Weby, které jsou starší než 30 dní, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam pro vás můžete webu také kdykoliv zablokovat a reklamy navrhované weby můžete v nastavení Chromu kdykoliv vypnout.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Weby můžou pomocí souborů cookie třetích stran sledovat, co provádíte na jiných webech</translation>
 <translation id="6388287739339671750">Blokovat měřicí skripty</translation>
 <translation id="6398358690696005758">Další informace o tom, jak Google chrání vaše data, najdete v našich zásadách <ph name="BEGIN_LINK1" />ochrany soukromí<ph name="LINK_END1" />.</translation>
+<translation id="6494210367693221285">Nastavení prohlížeče Chromium bylo aktualizováno a povoluje teď webům přístup k souborům cookie třetích stran. Toto nastavení můžete kdykoli změnit.</translation>
 <translation id="6702015235374976491">Témata reklam pomáhají webům zobrazovat relevantní reklamy a zároveň chrání vaši historii prohlížení a identitu. Chrome může zaznamenávat témata, která vás na základě vaší nedávné historie prohlížení zajímají. Později může navštívený web požádat Chrome o sdělení relevantních témat, aby vám mohl přizpůsobit zobrazované reklamy.</translation>
 <translation id="6710025070089118043">Weby nemůžou používat soubory cookie třetích stran k personalizaci obsahu a reklam ani ke sledování vaší činnosti na jiných webech, pokud k nim souvisejícím webům nedáte přístup</translation>
 <translation id="6737378617247709185">Soubory cookie třetích stran Chromium v anonymním režimu blokuje, ale pro tento web je váš administrátor povolil. Anonymní režim může poskytovat také další ochranu před sledováním. Ochranu před sledováním v anonymním režimu můžete spravovat v <ph name="BEGIN_LINK" />Nastavení<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Otevře se v běžném okně prohlížeče Chromium</translation>
 <translation id="8578320000709741352">Na navštívených webech mohou být vložené služby a obsah z jiných webů (například obrázky, reklamy a text), které lze použít k získání informací o vás. <ph name="START_LINK" />Další informace o správě ochran před sledováním v anonymním režimu<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otevře na nové kartě zásady ochrany soukromí</translation>
+<translation id="8712637175834984815">Rozumím</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Jak tato data můžete spravovat?<ph name="END_BOLD" /> Témata, která jsou starší než 4 týdny, Chrome automaticky maže. S dalším procházením se téma v seznamu může opět objevit. Můžete také zablokovat témata, která Chrome s weby nemá sdílet, a témata reklam můžete v nastavení Chromu také kdykoliv vypnout.</translation>
 <translation id="8803526663383843427">Když je toto nastavení zapnuté</translation>
 <translation id="8825639607990802302">Možnosti ochrany soukromí a dat webů</translation>

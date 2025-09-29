@@ -35,6 +35,7 @@
 <translation id="2074527029802029717">ટૅબ અનપિન કરો</translation>
 <translation id="2118649612461486615">સ્ટોરની માહિતી</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}one{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારું # છૂપું ટૅબ ઉપલબ્ધ રહેશે નહીં.}other{તમારા બંધ થયેલા ટૅબ અને ગ્રૂપ તાજેતરના ટૅબ વિભાગ અને ટૅબના ગ્રૂપ વિભાગમાંથી ફરીથી ખોલી શકાય છે. તમારા # છૂપા ટૅબ ઉપલબ્ધ રહેશે નહીં.}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{સાઇટને અનમ્યૂટ કરો}one{સાઇટને અનમ્યૂટ કરો}other{સાઇટને અનમ્યૂટ કરો}}</translation>
 <translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ટૅબ અનગ્રૂપ કરો}one{ટૅબ અનગ્રૂપ કરો}other{ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="2271452184061378400">તમારા ટૅબના ગ્રૂપ અહીં સાચવવામાં આવે છે</translation>
@@ -92,6 +93,7 @@
 <translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{આઇટમને રિસ્ટોર કરો}one{આઇટમને રિસ્ટોર કરો}other{આઇટમને રિસ્ટોર કરો}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> દિવસ પહેલાં અપડેટ કરવામાં આવ્યું}one{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં અપડેટ કરવામાં આવ્યું}other{<ph name="NUM_DAYS_MANY" /> દિવસ પહેલાં અપડેટ કરવામાં આવ્યું}}</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{સાઇટને મ્યૂટ કરો}one{સાઇટને મ્યૂટ કરો}other{સાઇટને મ્યૂટ કરો}}</translation>
 <translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
 <translation id="4783638485675352219">ઑપરેટિંગ સિસ્ટમ સાથે આ ડિવાઇસમાંથી ખુલ્લા ટૅબના શીર્ષકો અને URLs શેર કરો</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ)}one{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}}</translation>

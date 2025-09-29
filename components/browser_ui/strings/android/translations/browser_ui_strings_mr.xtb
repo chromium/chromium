@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
-<translation id="1004806631856047384"><ph name="BEGIN_LINK1" />Android सेटिंग्ज<ph name="END_LINK1" /> मध्ये व्यवस्थापित करा
-
-प्रगत संरक्षण या Chrome सेटिंग्ज नियंत्रित करते:
-• "नेहमी सुरक्षित कनेक्शन वापरा" हे सुरू आहे.
-• "JavaScript ऑप्टिमायझर" हे बंद आहे. <ph name="BEGIN_LINK2" />साइट एक्सेप्शन व्यवस्थापित करणे<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">ऑनलाइन उघडा</translation>
 <translation id="1036348656032585052">बंद करा</translation>
 <translation id="1070329623210597193">या साइटवरील फाइल पाहता येऊ शकतात किंवा संपादित केल्या जाऊ शकतात</translation>
@@ -74,6 +69,7 @@
 <translation id="1816835383954230954">सुरू असताना, Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात. बंद असताना, हे परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 ला अधिक रोधक बनवते.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> ला AR वापरू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" />मध्ये कॅमेरादेखील सुरू करा.</translation>
 <translation id="1848033246551405023">फाँट साँ सेरिफ</translation>
+<translation id="1861262398884155592">हे फोल्डर रिक्त आहे</translation>
 <translation id="1881806992065048905">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट</translation>
 <translation id="1887786770086287077">या डिव्हाइसाठी स्थान अ‍ॅक्सेस बंद आहे, <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="1906181697255754968">तुमचे काम आपोआप सेव्ह करणे यासारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे तुमच्या डिव्हाइसवरील फाइल आणि फोल्डर अ‍ॅक्सेस करतात</translation>
@@ -308,6 +304,7 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> अंतर्गत सर्व साइट</translation>
 <translation id="4340799661701629185">साइटना सूचना पाठवण्याची अनुमती देऊ नका</translation>
 <translation id="4402755511846832236">तुम्ही हे डिव्हाइस ॲक्टिव्हपणे कधी वापरता हे साइटना जाणून घेण्यापासून ब्लॉक करा</translation>
+<translation id="4412683424767388419">Chrome च्या रंगांची तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="4412992751769744546">तृतीय-पक्ष कुकीजना अनुमती द्या</translation>
 <translation id="4419929467120297501">तुम्ही ब्राउझ करत असताना तुम्हाला ट्रॅक करण्यासाठी Chrome साइटला तृतीय पक्ष कुकी वापरण्यापासून ब्लॉक करते. <ph name="BEGIN_LINK" />तृतीय पक्ष कुकीना असलेला अ‍ॅक्सेस व्यवस्थापित करणे<ph name="END_LINK" /> हे करण्यासाठी सेटिंग्जला भेट द्या.</translation>
 <translation id="4425416282877905577">फाँट सेरिफ</translation>
@@ -371,6 +368,7 @@
 <translation id="5116239826668864748">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर टॅप केल्यावर कधीही Chrome वापरू शकता</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
 <translation id="512938610812707830">नवीन टॅब पेज स्वरूपाच्या थीम संग्रहांच्या तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
+<translation id="5137460097045297858">Discover फीडच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{तुमच्या उघड्या असलेल्या टॅबवरील कमी झालेली किंमत}other{तुमच्या उघड्या असलेल्या टॅबवरील कमी झालेल्या किमती}}</translation>
 <translation id="5186036860380548585">स्क्रीनच्या सर्वात वरती पर्याय उपलब्ध आहे</translation>
 <translation id="5197729504361054390">तुम्ही निवडलेले संपर्क <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />सोबत शेअर केले जातील.</translation>
@@ -389,7 +387,6 @@
 <translation id="5335288049665977812">साइटना JavaScript रन करण्याची अनुमती द्या (शिफारस केलेले)</translation>
 <translation id="534295439873310000">NFC डिव्हाइस</translation>
 <translation id="5344522958567249764">जाहिरातींशी संबंधित गोपनीयता व्यवस्थापित करा</translation>
-<translation id="5371407439562620893">JavaScript ऑप्टिमायझेशन आणि सुरक्षा</translation>
 <translation id="5373874281522292782">तुमचे टॅब गट सेव्ह केले आहेत</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ आणखी एक)}other{(+ आणखी #)}}</translation>
 <translation id="5403592356182871684">नावे</translation>
@@ -448,6 +445,7 @@
 <translation id="5968921426641056619">वेब अ‍ॅड्रेस एंटर करा</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover फीड सुरू करा</translation>
 <translation id="6012967556075291653">पिन केलेला शॉर्टकट</translation>
 <translation id="6015775454662021376">या साइटला तुमच्‍या डिव्हाइसचा असलेला अ‍ॅक्सेस नियंत्रित करा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
@@ -470,6 +468,7 @@
 <translation id="6207207788774442484">डेटा हटवा आणि परवानग्या रीसेट करा</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइंस्टॉल करायचे आहे का?</translation>
 <translation id="6234351944623978659">ब्राउझर अ‍ॅप &gt; Chrome वर टॅप करा</translation>
+<translation id="6260830281887654268">नवीन टॅब पेज स्वरूपाच्या थीम संग्रहांच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="6262191102408817757">तुमच्या शेवटच्या टॅबवर आधारित</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>
@@ -503,6 +502,7 @@
 <translation id="662080504995468778">यावर रहा</translation>
 <translation id="6635327442719709864">सुरू असताना, साइट सिरीअल पोर्ट वापरण्यास सांगू शकतात. बंद असताना, साइट सिरीअल पोर्ट वापरू शकत नाहीत.</translation>
 <translation id="6678072580827808850">सुरक्षितता तपासणीचे पुनरावलोकन करा</translation>
+<translation id="6682057173375416470">सुचवलेले लेख नवीन टॅब पेजवर मिळवा</translation>
 <translation id="6683865262523156564">ही साइट तुमच्या अ‍ॅक्टिव्हिटी पाहू शकते अशा गटामध्ये आहे. हा गट <ph name="RWS_OWNER" /> द्वारे परिभाषित केला आहे</translation>
 <translation id="6689172468748959065">प्रोफाइल फोटो</translation>
 <translation id="6697925417670533197">सुरू असलेली डाउनलोड</translation>
@@ -552,6 +552,7 @@
 <translation id="728412880473384942">साइट अधिक जलद, पण कमी सुरक्षित आहेत</translation>
 <translation id="7366415735885268578">एक साइट जोडा</translation>
 <translation id="7368695150573390554">कोणताही ऑफलाइन डेटा हटवला जाईल</translation>
+<translation id="7369678931043226462">तुमचा नवीन टॅब कस्टमाइझ करा पेजच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> साठी सेटिंग्ज</translation>
 <translation id="7399802613464275309">सुरक्षितता तपासणी</translation>
 <translation id="7406113532070524618">हे सेटिंग तुम्हाला ओळखल्याशिवाय किंवा साइटना तुमचा ब्राउझिंग इतिहास पाहण्याची परवानगी न देता काम करते, जरी साइट पडताळणीचा भाग म्हणून थोड्या प्रमाणात माहिती शेअर करू शकतात</translation>
@@ -559,6 +560,7 @@
 <translation id="7423098979219808738">प्रथम विचारा</translation>
 <translation id="7423538860840206698">क्लिपबोर्ड वाचणे ब्लॉक केले</translation>
 <translation id="7425915948813553151">साइटसाठी गडद थीम</translation>
+<translation id="746412105358554870">JavaScript ऑप्टिमायझेशन आणि सुरक्षा</translation>
 <translation id="7478658909253570368">साइटना सिरीअल पोर्टशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="7488573225650545859">तुमच्या अ‍ॅप सूचीमध्ये टॅब पहा हे लपवा</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@
 <translation id="7804248752222191302">साइट तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="7805832099057502789">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="7807060072011926525">Google द्वारे पुरवलेली</translation>
+<translation id="7809029041571842593">नवीन टॅब पेज कार्डच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="7815680994978050279">धोकादायक डाउनलोड ब्लॉक केले</translation>
 <translation id="7835852323729233924">मीडिया प्ले करत आहे</translation>
 <translation id="783819812427904514">व्हिडिओ अनम्यूट करा</translation>
@@ -645,6 +648,7 @@
 <translation id="8441146129660941386">मागे शोधा</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> ला तुमचे स्थान अ‍ॅक्सेस करू देण्यासाठी, <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्येदेखील स्थान सुरू करा.</translation>
 <translation id="8447861592752582886">डिव्हाइस परवानगी रद्द करा</translation>
+<translation id="8467359479529706065">नवीन टॅब पेज स्वरूपाच्या तळाशी असलेली शीट अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="8471525937465764768">दस्तऐवज प्रिंट करणे किंवा स्टोरेज डिव्हाइसमध्ये सेव्ह करणे यांसारख्या वैशिष्ट्यांसाठी साइट सामान्यपणे USB डिव्हाइसशी कनेक्ट करतात</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' ची मुदत संपली आहे. कृपया अ‍ॅप पुन्हा इंस्टॉल करा.</translation>
 <translation id="847433688444405067">सर्व डिव्हाइसवर ब्राउझ करा</translation>
@@ -660,7 +664,6 @@
 <translation id="8549127125482561383">विनंत्या कशा दाखवायच्या</translation>
 <translation id="8558480467877843976">तुम्ही आता मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंक ब्राउझ करता किंवा त्यावर टॅप करता, तेव्हा Chrome कधीही वापरू शकता.</translation>
 <translation id="857943718398505171">अनुमती दिली (शिफारस केलेले)</translation>
-<translation id="8580511488901768832">माझे शॉर्टकट पेजच्या तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="8593422116412089302">सुरू असताना, साइट त्यांनी तुमच्याविषयी सेव्ह केलेली माहिती वापरण्याची विनंती करू शकतात. बंद असताना, साइट तुमच्याविषयी सेव्ह केलेली माहिती वापरण्याची विनंती करू शकत नाहीत.</translation>
 <translation id="8609465669617005112">वर हलवा</translation>
 <translation id="8617611086246832542">सुरू असताना, वेबसाइटचे डेस्कटॉप दृश्य दिसते. बंद असताना, वेबसाइटचे मोबाइल दृश्य दिसते.</translation>
@@ -678,6 +681,7 @@
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8737426583868847403">तुम्ही कस्टम झूम पातळी सेव्ह केलेल्या साइट इथे दिसतील</translation>
 <translation id="8751914237388039244">इमेज निवडा</translation>
+<translation id="8775741625735357092">तुम्ही सेटिंग्ज &gt; स्वरूप यामध्ये बुकमार्क बार सुरू करू शकता</translation>
 <translation id="8800034312320686233">साइट काम करत नाही का?</translation>
 <translation id="8801436777607969138">विशिष्ट साइटसाठी JavaScript ब्लॉक करा.</translation>
 <translation id="8801657293260363985">V8 हे Chrome चे JavaScript आणि WebAssembly इंजिन आहे, जे साइट परफॉर्मन्समध्ये सुधारणा करण्यासाठी वापरले जाते</translation>

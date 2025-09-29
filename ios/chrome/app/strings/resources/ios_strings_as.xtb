@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1041322626941363065">ডেটা উলংঘনৰ ফলত পাছৱৰ্ড ফাদিল হ’লে আপোনাক সকীয়নি দিয়ে</translation>
 <translation id="104491362976654916">অফলাইন পৃষ্ঠা</translation>
+<translation id="1046742265332833834">নীলা থীম</translation>
 <translation id="1049743911850919806">ইনক’গনিট’</translation>
 <translation id="1053651653201045802">ছাইন আউট কৰা আছে। আপোনাৰ একাউণ্টত বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক ব্যৱহাৰ কৰিবলৈ পুনৰ ছাইন ইন কৰক।</translation>
 <translation id="1054745118061919935">অব্যাহত ৰাখি, আপুনি <ph name="BEGIN_LINK" />সেৱাৰ চৰ্তাৱলী<ph name="END_LINK" />ত সন্মতি দিছে।</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">আপোনাৰ ষ্ট’ৰেজ ভৰি পৰিছে</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1190609913194133056">জাননী কেন্দ্ৰ</translation>
+<translation id="1199963004393929848">সেউজীয়া থীম</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
 <translation id="1204075260022434100">{count,plural, =1{আপোনাৰ একাউণ্ট, {email}ৰ "{title}"ত বুকমাৰ্ক ছেভ কৰা হৈছে}one{আপোনাৰ একাউণ্ট, {email}ৰ "{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}other{আপোনাৰ একাউণ্ট, {email}ৰ "{title}"ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}}</translation>
 <translation id="120431140543679678">ফ’ল’ কৰক</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">মূল্য ট্ৰেকিং সম্পৰ্কীয় জাননীৰ অনুমতি দিয়ক…</translation>
 <translation id="1809929083618343438">এইটোৱে Chromeৰ পৰা বাছনিকৃত তথ্যখিনি মচে, কিন্তু এই তথ্যখিনি আপোনাৰ Google একাউণ্টৰ পৰা নমচে।</translation>
 <translation id="1810976980198522421">বাতিল কৰক</translation>
-<translation id="1812514023095547458">ৰং বাছনি কৰক</translation>
 <translation id="1815941218935345331">পাছক’ড</translation>
 <translation id="1818687879307252150">{count,plural, =0{কোনো পাছৱৰ্ড হেক হোৱা নাই}=1{{count} টা হেক কৰা পাছৱৰ্ড}one{{count} টা হেক হোৱা পাছৱৰ্ড}other{{count} টা হেক হোৱা পাছৱৰ্ড}}</translation>
 <translation id="1819374301217551116">মূল্য ট্ৰেকিং আৰু অন্তৰ্দৃষ্টি</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">"সুৰক্ষা পৰীক্ষা" লুকুৱাওক</translation>
 <translation id="2551153019974022505">একাউণ্টৰ আসোঁৱাহ</translation>
 <translation id="2559843230610279254">টেবৰ গোট, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> টা টেব।</translation>
+<translation id="257088987046510401">থীম</translation>
 <translation id="2573117291489209663">হ’ল</translation>
 <translation id="2577522251608256362">চুবুৰীয়া অঞ্চল</translation>
 <translation id="2579713773888829241">শ্বেয়াৰ কৰা ড্ৰাইভ</translation>
@@ -478,6 +480,7 @@
 <translation id="2793703503584038325">এটা পাছৱৰ্ড বাছনি কৰক আৰু “শ্বেয়াৰ কৰক” আইকনটোত টিপক</translation>
 <translation id="2797029671965852011">ইতিহাস দেখুৱাওক</translation>
 <translation id="2797302972324086597">দেশৰ ক’ড</translation>
+<translation id="2798263827270599246">ডিফ’ল্ট থীম</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} টা ফাইল}one{{COUNT} টা ফাইল}other{{COUNT} টা ফাইল}}</translation>
 <translation id="2816149645002567541">ডাউনল’ড পজ হৈছে</translation>
 <translation id="2816489851009559785">মেনু → ছেটিং → ডিফ’ল্ট ব্ৰাউজাৰ</translation>
@@ -693,6 +696,7 @@
 <translation id="3750225824417196283">নতুন ইনক’গনিট’ টেবৰ পৃষ্ঠা</translation>
 <translation id="3751873026576444885">Google Lens ব্যৱহাৰ কৰি আপোনাৰ স্ক্ৰীনত থকা সমলৰ সন্ধান বন্ধ কৰক</translation>
 <translation id="3753408171347588045">মূল্য ট্ৰেক কৰি থকা হৈছে</translation>
+<translation id="3753618528540214374">ভাৰিডিয়ান থীম</translation>
 <translation id="3762232513783804601">আপোনাৰ iPadৰ বাবে প্ৰস্তুত কৰা</translation>
 <translation id="3768725474733206671">অন্তিমবাৰ বন্ধ কৰা টেবটো পুনৰ খোলক</translation>
 <translation id="3779810277399252432">ইণ্টাৰনেট সংযোগ নাই।</translation>
@@ -772,7 +776,6 @@
 <translation id="4026496154402824012">অফ কৰিবলৈ, <ph name="BEGIN_LINK" />পাছৱৰ্ডৰ বিকল্পসমূহ<ph name="END_LINK" />লৈ যাওক</translation>
 <translation id="4028871427853484857">একাউণ্টত ছেভ কৰক…</translation>
 <translation id="4038354071007134711">এই ডিভাইচটোত থকা কোনো এপ্লিকেশ্বনে ফাইলটো খুলিব নোৱাৰে।</translation>
-<translation id="4039829422386964954">গেলেৰী ব্ৰাউজ কৰক</translation>
 <translation id="4042870976416480368">পৃষ্ঠাত বিচাৰক</translation>
 <translation id="4045441967987592849">পুনৰ খোলক</translation>
 <translation id="4047337302138771011">আপোনাৰ পাছৱৰ্ড শ্বেয়াৰ কৰক</translation>
@@ -989,6 +992,7 @@
 <translation id="4869146460927742717">ঠিকনাৰ বাৰৰ স্থান</translation>
 <translation id="4870911314065352661">আটাইবোৰ টেব বন্ধ কৰিবনে?</translation>
 <translation id="4872664437015695612">ডাউনল’ডসমূহত খোলক</translation>
+<translation id="4875260838563541343">ক্ৰিয়া সম্পৰ্কীয় বুটাম</translation>
 <translation id="4876305945144899064">কোনো ব্যৱহাৰকাৰীৰ নাম নাই</translation>
 <translation id="4876665338492917862"><ph name="LAST_OPENING_DATE" />ত খুলিছিল</translation>
 <translation id="4877597489778380935">মোক পাছত মনত পেলাই দিব</translation>
@@ -1347,6 +1351,7 @@
 <translation id="6198252989419008588">পিন সলনি কৰক</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> অথবা ততোধিক দিন ব্যৱহাৰ নকৰা টেবসমূহ ইয়ালৈ স্থানান্তৰ কৰা হয়। আপুনি যিকোনো সময়তে <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />ত এইটো সলনি কৰিব পাৰে।</translation>
 <translation id="6213281885682386884">কোনো ঠিকনা পোৱা নগ’ল</translation>
+<translation id="6218508144653756827">ফিউশ্বা থীম</translation>
 <translation id="6218758465102657583">ঠিকনাৰ বাৰ একেবাৰে ওপৰলৈ লৈ যাওক</translation>
 <translation id="6223816392543092032">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱৰ্ড আৰু আন ছেটিংসমূহ পাওক।</translation>
 <translation id="6225572914528673855">ঠিকনাৰ বাৰ</translation>
@@ -1439,6 +1444,7 @@
 <translation id="6523575793810663688">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
 <translation id="6524082013156754186">একাউণ্টত ছেভ কৰক</translation>
 <translation id="6524918542306337007">ইনক’গনিট’ ম’ডটো উপলব্ধ নহয়</translation>
+<translation id="6527208859483186860">{total} টা পৃষ্ঠভূমিৰ ভিতৰত {position} নম্বৰটো</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="6532106788206463496">সালসলনিবোৰ ছেভ কৰক</translation>
 <translation id="6536759809440150308"><ph name="NUMBER_OF_TABS" /> টা টেবৰ গোট, <ph name="GROUP_TITLE" /> খোলক, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@
 <translation id="661266467055912436">আপোনাৰ লগতে ৱেবত থকা প্ৰত্যেকজনৰ বাবে সুৰক্ষা উন্নত কৰে।</translation>
 <translation id="6612912757320004438">টেবৰ জাননীৰ অনুমতি দিয়ক…</translation>
 <translation id="6617761071025228250">পাঠ মচক</translation>
+<translation id="6619015782482868078">সেউজ নীলা থীম</translation>
 <translation id="6620279676667515405">বাতিল কৰক</translation>
 <translation id="6625830436658400045">আপোনাৰ অন্তিম বেকআপৰ ভিত্তিত আপোনাৰ ছিংকৰ ছেটিং পুনঃস্থাপন কৰা হ’ব। আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে।</translation>
 <translation id="6627583120233659107">ফ’ল্ডাৰ সম্পাদনা কৰক</translation>
@@ -1499,6 +1506,7 @@
 <translation id="6713676799463473249">সংশোধন কৰাৰ সময় <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">লাভ কৰা টেব</translation>
 <translation id="6723740634201835758">আপোনাৰ Google একাউণ্টত</translation>
+<translation id="6724024423419410528">ৰং</translation>
 <translation id="672735642903863329">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক, পাছৱৰ্ড আৰু বহুতো লাভ কৰক।</translation>
 <translation id="6729493062119577923">শ্বেয়াৰ কৰা টেবৰ গোটৰ কাৰ্যকলাপ</translation>
 <translation id="6732087373923685049">কেমেৰা</translation>
@@ -1562,6 +1570,7 @@
 <translation id="69739764870135975">লগতে যদি Google আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিন, তেন্তে আপুনি উন্নত, প্ৰাসংগিক পৰামৰ্শসমূহ দেখা পাব</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">সকলো সময়তে</translation>
+<translation id="6980507581230208647">গোলাপৰ থীম</translation>
 <translation id="6983306615164277634">আপুনি অৱস্থান সলনি কৰিবলৈ ঠিকনা বাৰ স্পৰ্শ কৰি ধৰি ৰাখিব পাৰে।</translation>
 <translation id="6987201788018524855">আপুনি পূৰ্বে নোপোৱা সহায়ক সুবিধাসমূহ অন্বেষণ কৰক</translation>
 <translation id="6989636517316575338">যিকোনো পৃষ্ঠাখনৰ বিষয়ে সোধক</translation>
@@ -1628,6 +1637,7 @@
 <translation id="728025568708172005">মোক আমোদকজনক সুবিধাসমূহ দেখুৱাওক</translation>
 <translation id="7280980607183752256">এই ফাইলটো আমদানি কৰিব নোৱাৰি</translation>
 <translation id="7281202269687163394">আপোনাৰ গোপনীয়তা আৰু Gemini।</translation>
+<translation id="7282197670900591579">চিট্ৰন থীম</translation>
 <translation id="7293429513719260019">ভাষা বাছনি কৰক</translation>
 <translation id="7300448350764260141">অনলাইন ভাবুকিসমূহৰ বিৰুদ্ধে এটা অতিৰিক্ত সুৰক্ষাৰ স্তৰ যোগ দিয়ক।</translation>
 <translation id="7311244614769792472">কোনো ফলাফল পোৱা নগ’ল</translation>
@@ -1751,6 +1761,7 @@
 <translation id="7749790401023484470">আপুনি কোনো পাঠ বাছনি কৰা নাই।</translation>
 <translation id="7757015014239760147">কোনো ব্যৱহাৰকাৰীৰ নাম নাই ••••••••</translation>
 <translation id="775755486779745798">ম্যাদ উকলাৰ মাহ <ph name="MONTH" /> স্বয়ংক্ৰিয়ভাৱে পূৰ কৰক</translation>
+<translation id="7758789811447313947">বেঙুনীয়া থীম</translation>
 <translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7765158879357617694">আঁতৰাওক</translation>
 <translation id="7772032839648071052">পাছফ্ৰেজ নিশ্চিত কৰক</translation>
@@ -1815,6 +1826,7 @@
 <translation id="797824194429476746">টেবসমূহ এইটো ডিভাইচত খোলা থাকিব কিন্তু গোটটো স্থায়ীভাৱে মচি পেলোৱা হ’ব।</translation>
 <translation id="797874245254030665">যিকোনো এপৰ পৰা আপোনাৰ পাছৱৰ্ড আৰু পাছকীসমূহ এক্সেছ কৰক</translation>
 <translation id="7982789257301363584">নেটৱৰ্ক</translation>
+<translation id="798299424881500862">কমলা ৰঙৰ থীম</translation>
 <translation id="7987685713885608670">অতিৰিক্ত সুৰক্ষাৰ বাবে, Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত পাছৱৰ্ড এনক্ৰিপ্ট কৰক।</translation>
 <translation id="798991908416757345">টেবৰ গোটসমূহ উপলব্ধ নহয়</translation>
 <translation id="7993170188789685695">এই জাননীটো বন্ধ কৰিবলৈ দুবাৰ টিপক।</translation>

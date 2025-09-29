@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Você pode mudar as configurações de privacidade de anúncios</translation>
 <translation id="1780659583673667574">Por exemplo, se você acessar um site para encontrar receitas para o jantar, ele pode concluir que você tem interesse em culinária. Depois, outro site pode mostrar um anúncio relacionado a um serviço de entrega de supermercado sugerido pelo primeiro site.</translation>
 <translation id="1887631853265748225">Os recursos de privacidade de anúncios ajudam a limitar o que os sites e os parceiros de publicidade podem saber sobre você ao mostrar anúncios personalizados.</translation>
+<translation id="19426210786412737">As configurações atuais do Chrome foram atualizadas para permitir que os sites acessem cookies de terceiros. Você pode mudar essa opção a qualquer momento.</translation>
 <translation id="1954777269544683286">O Google exige que as empresas declarem publicamente que não vão usar esses dados para rastrear você em outros sites. As empresas são responsáveis por informar como usam seus dados. <ph name="BEGIN_LINK" />Saiba mais na nossa Política de Privacidade<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">É possível que os recursos de alguns sites não funcionem</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Como gerenciar esses dados?<ph name="END_BOLD" /> O Chrome exclui automaticamente sites que estão na lista há mais de 30 dias. Um site que você visitar novamente pode reaparecer na lista. Você também pode bloquear um site para que ele não sugira anúncios e desativar as sugestões quando quiser nas configurações do Chrome.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Os sites podem usar cookies de terceiros para saber o que você faz em outros sites</translation>
 <translation id="6388287739339671750">Bloquear scripts de rastreamento</translation>
 <translation id="6398358690696005758">Confira nossa <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="LINK_END1" /> para saber como o Google protege seus dados.</translation>
+<translation id="6494210367693221285">As configurações atuais do Chromium foram atualizadas para permitir que os sites acessem cookies de terceiros. Você pode mudar essa opção a qualquer momento.</translation>
 <translation id="6702015235374976491">Os temas ajudam os sites a mostrar anúncios que são relevantes, enquanto protegem seu histórico de navegação e sua identidade. O Chrome pode anotar temas de interesse com base no seu histórico de navegação recente. Os sites que você visitar poderão pedir temas relevantes ao Chrome para personalizar os anúncios mostrados a você.</translation>
 <translation id="6710025070089118043">Os sites não podem usar cookies de terceiros para personalizar conteúdos e anúncios nem saber o que você faz em outros sites, a menos que você dê acesso a esses dados a sites relacionados</translation>
 <translation id="6737378617247709185">O Chromium bloqueia cookies de terceiros na navegação anônima, mas seu administrador criou uma exceção para este site. A navegação anônima também pode oferecer mais proteções antirrastreamento. Gerencie essas proteções nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Abre em uma janela normal do Chromium</translation>
 <translation id="8578320000709741352">Os sites que você visita podem incorporar conteúdo e serviços de outros sites (como imagens, anúncios e texto) que podem ser usados para saber mais sobre você. Saiba mais sobre como gerenciar as <ph name="START_LINK" />proteções antirrastreamento na navegação anônima<ph name="END_LINK" />.</translation>
 <translation id="859369389161884405">Abre a Política de Privacidade em uma nova guia</translation>
+<translation id="8712637175834984815">Entendi</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Como gerenciar esses dados?<ph name="END_BOLD" /> O Chrome exclui automaticamente os temas que estão na lista há mais de quatro semanas. Enquanto você navega, um tema pode reaparecer na lista. Você também pode bloquear temas que não quer que o Chrome compartilhe com sites e os desativar quando quiser nas configurações do Chrome.</translation>
 <translation id="8803526663383843427">Quando ativada</translation>
 <translation id="8825639607990802302">Opções de privacidade e dados do site</translation>

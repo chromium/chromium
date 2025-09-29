@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1041322626941363065">Сообщать, если пароли были раскрыты в результате утечки данных</translation>
 <translation id="104491362976654916">Офлайн-версия страницы</translation>
+<translation id="1046742265332833834">Синяя тема</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1053651653201045802">Вы вышли из аккаунта. Чтобы получить доступ к закладкам, паролям и другим данным в аккаунте, снова войдите в него.</translation>
 <translation id="1054745118061919935">Продолжая, вы принимаете <ph name="BEGIN_LINK" />Условия использования<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Хранилище заполнено</translation>
 <translation id="1181037720776840403">Удалить</translation>
 <translation id="1190609913194133056">Центр уведомлений</translation>
+<translation id="1199963004393929848">Зеленая тема</translation>
 <translation id="1201402288615127009">Далее</translation>
 <translation id="1204075260022434100">{count,plural, =1{Закладка сохранена в папке "{title}" в вашем аккаунте {email}.}one{{count} закладка сохранена в папке "{title}" в вашем аккаунте {email}.}few{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}many{{count} закладок сохранено в папке "{title}" в вашем аккаунте {email}.}other{{count} закладки сохранено в папке "{title}" в вашем аккаунте {email}.}}</translation>
 <translation id="120431140543679678">Подписаться</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Включить уведомления об изменении цены</translation>
 <translation id="1809929083618343438">Выбранные данные будут удалены из Chrome, но не из аккаунта Google</translation>
 <translation id="1810976980198522421">Отмена</translation>
-<translation id="1812514023095547458">Выберите цвет</translation>
 <translation id="1815941218935345331">Код доступа</translation>
 <translation id="1818687879307252150">{count,plural, =0{Нет раскрытых паролей}=1{{count} раскрытый пароль}one{{count} раскрытый пароль}few{{count} раскрытых пароля}many{{count} раскрытых паролей}other{{count} раскрытого пароля}}</translation>
 <translation id="1819374301217551116">Отслеживание цен и рекомендации</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Скрыть проверку безопасности</translation>
 <translation id="2551153019974022505">Ошибка в аккаунте</translation>
 <translation id="2559843230610279254">Группа вкладок "<ph name="GROUP_TITLE" />" (вкладок: <ph name="TABS_NUMBER" />).</translation>
+<translation id="257088987046510401">Темы</translation>
 <translation id="2573117291489209663">Готово</translation>
 <translation id="2577522251608256362">Район</translation>
 <translation id="2579713773888829241">Общие диски</translation>
@@ -478,6 +480,7 @@
 <translation id="2793703503584038325">Выберите пароль и нажмите на значок "Поделиться".</translation>
 <translation id="2797029671965852011">Показать историю</translation>
 <translation id="2797302972324086597">Код страны</translation>
+<translation id="2798263827270599246">Тема по умолчанию</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файла}many{{COUNT} файлов}other{{COUNT} файла}}</translation>
 <translation id="2816149645002567541">Скачивание приостановлено</translation>
 <translation id="2816489851009559785">Меню → Настройки → Браузер по умолчанию</translation>
@@ -693,6 +696,7 @@
 <translation id="3750225824417196283">Страница "Новая вкладка инкогнито"</translation>
 <translation id="3751873026576444885">Остановить поиск по экрану через Google Объектив</translation>
 <translation id="3753408171347588045">Отслеживание цен</translation>
+<translation id="3753618528540214374">Голубовато-зеленая тема</translation>
 <translation id="3762232513783804601">Создан специально для iPad</translation>
 <translation id="3768725474733206671">Открыть последнюю закрытую вкладку</translation>
 <translation id="3779810277399252432">Нет доступа к Интернету</translation>
@@ -772,7 +776,6 @@
 <translation id="4026496154402824012">Чтобы отключить эту функцию, перейдите в раздел <ph name="BEGIN_LINK" />Параметры паролей<ph name="END_LINK" />.</translation>
 <translation id="4028871427853484857">Сохранить в аккаунте</translation>
 <translation id="4038354071007134711">Нет приложения, чтобы открыть этот файл.</translation>
-<translation id="4039829422386964954">Просмотр галереи</translation>
 <translation id="4042870976416480368">Найти на странице</translation>
 <translation id="4045441967987592849">Открыть</translation>
 <translation id="4047337302138771011">Предоставляйте доступ к паролям</translation>
@@ -989,6 +992,7 @@
 <translation id="4869146460927742717">Расположение адресной строки</translation>
 <translation id="4870911314065352661">Закрыть все вкладки?</translation>
 <translation id="4872664437015695612">Открыть папку "Загрузки"</translation>
+<translation id="4875260838563541343">Кнопка</translation>
 <translation id="4876305945144899064">Имя пользователя не указано</translation>
 <translation id="4876665338492917862">Открыто <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Напомнить позже</translation>
@@ -1347,6 +1351,7 @@
 <translation id="6198252989419008588">Изменить PIN-код</translation>
 <translation id="6210079381482819663">Вкладки, которые не использовались в течение нескольких дней (<ph name="THRESHOLD" />), перемещаются сюда. Это поведение можно в любой момент изменить в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Нет адресов.</translation>
+<translation id="6218508144653756827">Тема цвета фуксия</translation>
 <translation id="6218758465102657583">Разместить адресную строку вверху</translation>
 <translation id="6223816392543092032">Синхронизировать закладки, историю, пароли и другие настройки на всех ваших устройствах</translation>
 <translation id="6225572914528673855">Адресная строка</translation>
@@ -1439,6 +1444,7 @@
 <translation id="6523575793810663688">Показать</translation>
 <translation id="6524082013156754186">Сохранить в аккаунте</translation>
 <translation id="6524918542306337007">Режим инкогнито недоступен</translation>
+<translation id="6527208859483186860">фон номер {position} из общего числа {total}</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="6532106788206463496">Сохранить</translation>
 <translation id="6536759809440150308">Открыть группу "<ph name="GROUP_TITLE" />", <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@
 <translation id="661266467055912436">Делает интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6612912757320004438">Разрешить уведомления с вкладок</translation>
 <translation id="6617761071025228250">Очистить</translation>
+<translation id="6619015782482868078">Аквамариновая тема</translation>
 <translation id="6620279676667515405">Отмена</translation>
 <translation id="6625830436658400045">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Изменить папку</translation>
@@ -1499,6 +1506,7 @@
 <translation id="6713676799463473249">Изменено <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Полученные вкладки</translation>
 <translation id="6723740634201835758">В аккаунте Google</translation>
+<translation id="6724024423419410528">Цвета</translation>
 <translation id="672735642903863329">Синхронизируйте закладки, пароли и другую информацию на всех своих устройствах.</translation>
 <translation id="6729493062119577923">Действия в общей группе вкладок</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1562,6 +1570,7 @@
 <translation id="69739764870135975">Если установить Google как поисковую систему по умолчанию, подсказки будут более подходящими по контексту.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979737339423435258">Все время</translation>
+<translation id="6980507581230208647">Розовая тема</translation>
 <translation id="6983306615164277634">Чтобы изменить расположение адресной строки, также можно нажать и удерживать ее.</translation>
 <translation id="6987201788018524855">Узнайте о новых полезных функциях</translation>
 <translation id="6989636517316575338">Задавайте вопросы о веб-страницах</translation>
@@ -1607,6 +1616,7 @@
 <translation id="7176183551031110427">Уменьшить</translation>
 <translation id="7186568385131859684">Выберите, как история браузера будет использоваться с другими вашими данными в сервисах Google</translation>
 <translation id="719133302483559673">Вы сможете настраивать рекомендации и указывать, что вам интересно.</translation>
+<translation id="7191382490098297347">Изображение из галереи камеры</translation>
 <translation id="7203496777391039568">Не беспокойтесь о защите и конфиденциальности корпоративных данных</translation>
 <translation id="720399613139435155">Не удалось перевести</translation>
 <translation id="7204922488054642675">Персональные новости</translation>
@@ -1628,6 +1638,7 @@
 <translation id="728025568708172005">Смотреть всё</translation>
 <translation id="7280980607183752256">Невозможно импортировать файл.</translation>
 <translation id="7281202269687163394">Ваша конфиденциальность в Gemini</translation>
+<translation id="7282197670900591579">Лимонная тема</translation>
 <translation id="7293429513719260019">Выбрать язык</translation>
 <translation id="7300448350764260141">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
@@ -1751,6 +1762,7 @@
 <translation id="7749790401023484470">Выберите текст.</translation>
 <translation id="7757015014239760147">Имя пользователя не указано ••••••••</translation>
 <translation id="775755486779745798">Автозаполнить поле месяцем окончания срока действия: <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Фиолетовая тема</translation>
 <translation id="7759809451544302770">Необязательно</translation>
 <translation id="7765158879357617694">Перенести</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
@@ -1815,6 +1827,7 @@
 <translation id="797824194429476746">Вкладки на устройстве останутся открытыми, но группа будет навсегда удалена.</translation>
 <translation id="797874245254030665">Используйте сохраненные пароли и ключи доступа во всех приложениях</translation>
 <translation id="7982789257301363584">Сеть</translation>
+<translation id="798299424881500862">Оранжевая тема</translation>
 <translation id="7987685713885608670">Чтобы надежнее защитить пароли, включите их шифрование на устройстве перед сохранением в Google Менеджере паролей.</translation>
 <translation id="798991908416757345">Группы вкладок недоступны</translation>
 <translation id="7993170188789685695">Чтобы закрыть уведомление, нажмите дважды.</translation>

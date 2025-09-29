@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1041322626941363065">Добијте предупредување ако лозинките се откриени при упад во податоци</translation>
 <translation id="104491362976654916">Офлајн страница</translation>
+<translation id="1046742265332833834">Тема во сина боја</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1053651653201045802">Одјавени сте. Најавете се повторно за да ги користите обележувачите, лозинките и друго во вашата сметка.</translation>
 <translation id="1054745118061919935">Ако продолжите, се согласувате со <ph name="BEGIN_LINK" />Условите за користење<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Просторот е полн</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1190609913194133056">Центар за известување</translation>
+<translation id="1199963004393929848">Тема во зелена боја</translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1204075260022434100">{count,plural, =1{Обележувачот е зачуван во „{title}“ во вашата сметка {email}}one{{count} обележувач се зачувани во „{title}“ во вашата сметка {email}}other{{count} обележувачи се зачувани во „{title}“ во вашата сметка {email}}}</translation>
 <translation id="120431140543679678">Следете</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Дозволете известувања за „Следење цена“</translation>
 <translation id="1809929083618343438">Ова ги отстранува избраните податоци од Chrome, но не ги брише овие податоци од вашата сметка на Google.</translation>
 <translation id="1810976980198522421">Откажи</translation>
-<translation id="1812514023095547458">Избери боја</translation>
 <translation id="1815941218935345331">Лозинка</translation>
 <translation id="1818687879307252150">{count,plural, =0{Нема компромитирани лозинки}=1{{count} компромитирана лозинка}one{{count} компромитирана лозинка}other{{count} компромитирани лозинки}}</translation>
 <translation id="1819374301217551116">Следење цени и увиди</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Скриј „Безбедносна проверка“</translation>
 <translation id="2551153019974022505">Грешка на сметката</translation>
 <translation id="2559843230610279254">Група картички, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> картички.</translation>
+<translation id="257088987046510401">Теми</translation>
 <translation id="2573117291489209663">Готово</translation>
 <translation id="2577522251608256362">Соседство</translation>
 <translation id="2579713773888829241">Споделени простори</translation>
@@ -478,6 +480,7 @@
 <translation id="2793703503584038325">Изберете лозинка и допрете ја иконата „Сподели“</translation>
 <translation id="2797029671965852011">Прикажи ја историјата</translation>
 <translation id="2797302972324086597">Код на земја</translation>
+<translation id="2798263827270599246">Стандардна тема</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} датотека}one{{COUNT} датотека}other{{COUNT} датотеки}}</translation>
 <translation id="2816149645002567541">Преземањето е паузирано</translation>
 <translation id="2816489851009559785">Мени → Поставки → Стандарден прелистувач</translation>
@@ -693,6 +696,7 @@
 <translation id="3750225824417196283">Нова страница во картичка „Инкогнито“</translation>
 <translation id="3751873026576444885">Сопри го пребарувањето на екранот со Google Lens</translation>
 <translation id="3753408171347588045">Цените се следат</translation>
+<translation id="3753618528540214374">Тема во синозеленкаста боја</translation>
 <translation id="3762232513783804601">Создаден за вашиот iPad</translation>
 <translation id="3768725474733206671">Повторно отвори ја последната затворена картичка</translation>
 <translation id="3779810277399252432">Нема интернет-врска.</translation>
@@ -772,7 +776,6 @@
 <translation id="4026496154402824012">За да исклучите, одете во <ph name="BEGIN_LINK" />Опции за лозинки<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Зачувај во сметката…</translation>
 <translation id="4038354071007134711">Ниедна апликација на уредот не може да ја отвори датотеката.</translation>
-<translation id="4039829422386964954">Прелистајте ја галеријата</translation>
 <translation id="4042870976416480368">Пронајдете на страницата</translation>
 <translation id="4045441967987592849">Отвори повторно</translation>
 <translation id="4047337302138771011">Споделете ги вашите лозинки</translation>
@@ -989,6 +992,7 @@
 <translation id="4869146460927742717">Положба на лентата за адреси</translation>
 <translation id="4870911314065352661">Да се затворат сите картички?</translation>
 <translation id="4872664437015695612">Отвори во „Преземања“</translation>
+<translation id="4875260838563541343">Копче за дејство</translation>
 <translation id="4876305945144899064">Нема корисничко име</translation>
 <translation id="4876665338492917862">Последно отворено: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Потсети ме подоцна</translation>
@@ -1347,6 +1351,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6198252989419008588">Промена на PIN</translation>
 <translation id="6210079381482819663">Картичките што не се користат <ph name="THRESHOLD" /> или повеќе дена се преместуваат тука. Ова може да го промените во секое време во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Не се најдени начини адреси</translation>
+<translation id="6218508144653756827">Тема во боја на фуксија</translation>
 <translation id="6218758465102657583">Преместете ја лентата за адреси најгоре</translation>
 <translation id="6223816392543092032">Добијте ги обележувачите, историјата, лозинките и другите поставки на сите ваши уреди.</translation>
 <translation id="6225572914528673855">Лента за адреси</translation>
@@ -1439,6 +1444,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6523575793810663688">Покажи ми како</translation>
 <translation id="6524082013156754186">Зачувај во сметката</translation>
 <translation id="6524918542306337007">Режимот „Инкогнито“ е недостапен</translation>
+<translation id="6527208859483186860">заднина {position} од {total}</translation>
 <translation id="6527303717912515753">Сподели</translation>
 <translation id="6532106788206463496">Зачувај ги промените</translation>
 <translation id="6536759809440150308">Отворено: <ph name="GROUP_TITLE" />, група од <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="661266467055912436">Ја подобрува безбедноста за вас и сите останати на интернет.</translation>
 <translation id="6612912757320004438">Дозволете известувања во картичките…</translation>
 <translation id="6617761071025228250">Избриши го текстот</translation>
+<translation id="6619015782482868078">Тема во боја на аквамарин</translation>
 <translation id="6620279676667515405">Откажи</translation>
 <translation id="6625830436658400045">Поставките за синхронизација ќе се вратат според последниот бекап. Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Уредувај папка</translation>
@@ -1499,6 +1506,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6713676799463473249">Последно изменето: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Примени картички</translation>
 <translation id="6723740634201835758">Во вашата сметка на Google</translation>
+<translation id="6724024423419410528">Бои</translation>
 <translation id="672735642903863329">Добијте ги обележувачите, лозинките и друго на сите ваши уреди.</translation>
 <translation id="6729493062119577923">Активност на споделената групи картички</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1562,6 +1570,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="69739764870135975">Ако Google го користите и како стандарден пребарувач, тогаш ќе добивате подобри и контекстуално релевантни предлози</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979737339423435258">Целосната историја</translation>
+<translation id="6980507581230208647">Тема во боја на ружа</translation>
 <translation id="6983306615164277634">Може и да ја допрете и задржите лентата за адреси за да ја промените позицијата.</translation>
 <translation id="6987201788018524855">Истражете ги корисните функции што сте ги пропуштиле</translation>
 <translation id="6989636517316575338">Поставувајте прашања за која било страница</translation>
@@ -1628,6 +1637,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="728025568708172005">Покажи ми наоколу</translation>
 <translation id="7280980607183752256">Датотекава не може да се увезе</translation>
 <translation id="7281202269687163394">Вашата приватност и Gemini.</translation>
+<translation id="7282197670900591579">Тема во боја на цитрон</translation>
 <translation id="7293429513719260019">Избери јазик</translation>
 <translation id="7300448350764260141">Додајте дополнителен слој заштита од онлајн закани.</translation>
 <translation id="7311244614769792472">Не се најдени резултати</translation>
@@ -1751,6 +1761,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7749790401023484470">Не избравте текст.</translation>
 <translation id="7757015014239760147">Нема корисничко име ••••••••</translation>
 <translation id="775755486779745798">Пополни го автоматски месецот на истекување <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Тема во виолетова боја</translation>
 <translation id="7759809451544302770">Изборно</translation>
 <translation id="7765158879357617694">Премести</translation>
 <translation id="7772032839648071052">Потврди лозинка</translation>
@@ -1815,6 +1826,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="797824194429476746">Картичките ќе останат отворени на овој уред, но групата ќе се избрише трајно.</translation>
 <translation id="797874245254030665">Пристапувајте до лозинките и криптографските клучеви од која било апликација</translation>
 <translation id="7982789257301363584">Мрежа</translation>
+<translation id="798299424881500862">Тема во портокалова боја</translation>
 <translation id="7987685713885608670">За дополнителна безбедност, шифрирајте ги лозинките на уредот пред да се зачуваат во „Управникот со лозинки на Google“.</translation>
 <translation id="798991908416757345">Групите картички се недостапни</translation>
 <translation id="7993170188789685695">Допрете двапати за да го затворите известувањево.</translation>

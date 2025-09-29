@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
-<translation id="1004806631856047384">Gérer dans les <ph name="BEGIN_LINK1" />paramètres Android<ph name="END_LINK1" />
-
-La Protection Avancée contrôle les paramètres Chrome suivants :
-• L'option "Toujours utiliser une connexion sécurisée" est activée.
-• L'option "Optimiseur JavaScript" est désactivée. <ph name="BEGIN_LINK2" />Gérer les exceptions de site<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Ouvrir la version en ligne</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1070329623210597193">Fichiers que ce site peut afficher ou modifier</translation>
@@ -74,6 +69,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="1816835383954230954">Lorsque cette option est activée, Chrome s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu. Lorsque cette option est désactivée, les performances sont réduites, mais V8 est plus résistant aux attaques.</translation>
 <translation id="1818308510395330587">Pour autoriser <ph name="APP_NAME" /> à utiliser la RA, activez également l'appareil photo dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1848033246551405023">Police Sans Serif</translation>
+<translation id="1861262398884155592">Ce dossier est vide</translation>
 <translation id="1881806992065048905">Bottom sheet de l'apparence de la page "Nouvel onglet"</translation>
 <translation id="1887786770086287077">L'accès à la position est désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Les sites accèdent généralement aux fichiers et aux dossiers sur votre appareil pour proposer des fonctionnalités comme la sauvegarde automatique de votre travail</translation>
@@ -308,6 +304,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="4338831206024587507">Tous les sites du domaine <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ne pas autoriser les sites à envoyer des notifications</translation>
 <translation id="4402755511846832236">Empêcher les sites de savoir si vous utilisez activement cet appareil</translation>
+<translation id="4412683424767388419">Bottom sheet des couleurs Chrome ouverte à mi-hauteur</translation>
 <translation id="4412992751769744546">Autoriser les cookies tiers</translation>
 <translation id="4419929467120297501">Chrome empêche les sites d'utiliser des cookies tiers pour suivre votre activité lorsque vous naviguez. Accédez aux paramètres pour <ph name="BEGIN_LINK" />gérer l'accès aux cookies tiers<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Police Serif</translation>
@@ -371,6 +368,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5116239826668864748">Vous pouvez utiliser Chrome chaque fois que vous appuyez sur des liens dans des messages, des documents et d'autres applis</translation>
 <translation id="5123685120097942451">Onglet de navigation privée</translation>
 <translation id="512938610812707830">Bottom sheet des collections de thèmes de l'apparence de la page "Nouvel onglet" ouverte à pleine hauteur</translation>
+<translation id="5137460097045297858">Bottom sheet du flux Discover ouverte à mi-hauteur</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Baisse de prix dans les onglets ouverts}one{Baisse de prix dans les onglets ouverts}other{Baisses de prix dans les onglets ouverts}}</translation>
 <translation id="5186036860380548585">Cette option est disponible en haut de l'écran</translation>
 <translation id="5197729504361054390">Les contacts que vous sélectionnez seront partagés avec <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -389,7 +387,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5335288049665977812">Autoriser les sites à exécuter JavaScript (recommandé)</translation>
 <translation id="534295439873310000">Appareils NFC</translation>
 <translation id="5344522958567249764">Gérer la confidentialité des annonces</translation>
-<translation id="5371407439562620893">Optimisation et sécurité JavaScript</translation>
 <translation id="5373874281522292782">Vos groupes d'onglets sont enregistrés</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 autre)}one{(+ # autre)}other{(+ # autres)}}</translation>
 <translation id="5403592356182871684">Noms</translation>
@@ -448,6 +445,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="5968921426641056619">Saisissez une adresse Web</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Activer le flux Discover</translation>
 <translation id="6012967556075291653">Raccourci épinglé</translation>
 <translation id="6015775454662021376">Contrôler l'accès de ce site à votre appareil</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -470,6 +468,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="6207207788774442484">Supprimer les données et réinitialiser les autorisations</translation>
 <translation id="6231752747840485235">Désinstaller <ph name="APP_NAME" /> ?</translation>
 <translation id="6234351944623978659">Appuyez sur Appli de navigateur &gt; Chrome</translation>
+<translation id="6260830281887654268">Bottom sheet des collections de thèmes de l'apparence de la page Nouvel onglet ouverte à mi-hauteur</translation>
 <translation id="6262191102408817757">D'après votre dernier onglet</translation>
 <translation id="6262279340360821358">Autorisations refusées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
@@ -503,6 +502,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="662080504995468778">Rester</translation>
 <translation id="6635327442719709864">Les sites peuvent demander à utiliser des ports série quand cette option est activée et ne peuvent pas quand elle est désactivée.</translation>
 <translation id="6678072580827808850">Examiner le contrôle de sécurité</translation>
+<translation id="6682057173375416470">Recevoir des articles suggérés sur la page "Nouvel onglet"</translation>
 <translation id="6683865262523156564">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Photos de profil</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
@@ -552,6 +552,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="728412880473384942">Les sites sont plus rapides, mais moins sécurisés</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7368695150573390554">Toutes les données hors ligne seront supprimées</translation>
+<translation id="7369678931043226462">Bottom sheet de personnalisation de la page Nouvel onglet ouverte à mi-hauteur</translation>
 <translation id="7383715096023715447">Paramètres pour <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Contrôle de sécurité</translation>
 <translation id="7406113532070524618">Ce paramètre ne permet pas de vous identifier ni d'autoriser les sites à consulter votre historique de navigation. Toutefois, les sites peuvent partager quelques informations lors de la validation.</translation>
@@ -559,6 +560,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7423098979219808738">Demander d'abord</translation>
 <translation id="7423538860840206698">Accès en lecture au presse-papiers bloqué</translation>
 <translation id="7425915948813553151">Thème sombre pour les sites</translation>
+<translation id="746412105358554870">Optimisation et sécurité JavaScript</translation>
 <translation id="7478658909253570368">Ne pas autoriser les sites à se connecter aux ports série</translation>
 <translation id="7488573225650545859">Masquer "Afficher les onglets dans votre liste d'applications"</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="7804248752222191302">Un site utilise actuellement votre appareil photo</translation>
 <translation id="7805832099057502789">Bottom sheet de l'apparence de la page "Nouvel onglet" ouverte à pleine hauteur</translation>
 <translation id="7807060072011926525">Fourni par Google</translation>
+<translation id="7809029041571842593">Bottom sheet des cartes de la page Nouvel onglet ouverte à mi-hauteur</translation>
 <translation id="7815680994978050279">Téléchargement dangereux bloqué</translation>
 <translation id="7835852323729233924">Contenu en cours de lecture</translation>
 <translation id="783819812427904514">Réactiver le son de la vidéo</translation>
@@ -645,6 +648,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8441146129660941386">Retour rapide</translation>
 <translation id="8444433999583714703">Pour autoriser <ph name="APP_NAME" /> à accéder à votre position, activez également la localisation dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Révoquer l'autorisation d'accès à l'appareil</translation>
+<translation id="8467359479529706065">Bottom sheet de l'apparence de la page Nouvel onglet ouverte à mi-hauteur</translation>
 <translation id="8471525937465764768">Les sites se connectent généralement aux appareils USB pour proposer des fonctionnalités comme l'impression de documents ou l'enregistrement sur un périphérique de stockage</translation>
 <translation id="8473055640493819707">L'appli <ph name="APP_NAME" /> est obsolète. Veuillez la réinstaller.</translation>
 <translation id="847433688444405067">Naviguez sur tous vos appareils</translation>
@@ -660,7 +664,6 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8549127125482561383">Comment afficher les demandes</translation>
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous parcourez ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="857943718398505171">Autorisé (recommandé)</translation>
-<translation id="8580511488901768832">Bottom sheet Mes raccourcis ouverte à pleine hauteur</translation>
 <translation id="8593422116412089302">Lorsque cette option est activée, les sites peuvent demander à utiliser les informations qu'ils ont enregistrées vous concernant, ce qu'ils ne peuvent pas faire si elle est désactivée.</translation>
 <translation id="8609465669617005112">Monter</translation>
 <translation id="8617611086246832542">Lorsque cette option est activée, les sites Web sont affichés comme sur ordinateur. Lorsqu'elle est désactivée, les sites Web sont affichés comme sur mobile.</translation>
@@ -678,6 +681,7 @@ La Protection Avancée contrôle les paramètres Chrome suivants :
 <translation id="8730621377337864115">OK</translation>
 <translation id="8737426583868847403">Les sites pour lesquels vous avez enregistré un niveau de zoom personnalisé s'afficheront ici</translation>
 <translation id="8751914237388039244">Sélectionner une image</translation>
+<translation id="8775741625735357092">Vous pouvez activer la barre de favoris dans Paramètres &gt; Apparence</translation>
 <translation id="8800034312320686233">Impossible d'accéder au site ?</translation>
 <translation id="8801436777607969138">Bloquez JavaScript sur un site spécifique.</translation>
 <translation id="8801657293260363985">V8 est le moteur JavaScript et WebAssembly de Chrome qui permet d'améliorer les performances des sites</translation>

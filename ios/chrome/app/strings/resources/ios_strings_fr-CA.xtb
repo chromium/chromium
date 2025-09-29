@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1041322626941363065">Vous envoyer un avertissement si des mots de passe sont exposés à la suite d'une violation de données</translation>
 <translation id="104491362976654916">Page hors ligne</translation>
+<translation id="1046742265332833834">Thème bleu</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
 <translation id="1053651653201045802">Déconnecté. Reconnectez-vous pour utiliser les favoris, les mots de passe et plus dans votre compte.</translation>
 <translation id="1054745118061919935">En continuant, vous acceptez les <ph name="BEGIN_LINK" />conditions d'utilisation<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Votre espace de stockage est plein</translation>
 <translation id="1181037720776840403">Supprimer</translation>
 <translation id="1190609913194133056">Centre de notification</translation>
+<translation id="1199963004393929848">Thème vert</translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1204075260022434100">{count,plural, =1{Favori enregistré dans « {title} » dans votre compte, {email}}one{{count} favori enregistré dans « {title} » dans votre compte, {email}.}other{{count} favoris enregistrés dans « {title} » dans votre compte, {email}.}}</translation>
 <translation id="120431140543679678">Suivre</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Autoriser les notifications de Suivi des prix…</translation>
 <translation id="1809929083618343438">Cette action retire les renseignements sélectionnés de Chrome, mais ne les supprime pas de votre compte Google.</translation>
 <translation id="1810976980198522421">Annuler</translation>
-<translation id="1812514023095547458">Sélectionner une couleur</translation>
 <translation id="1815941218935345331">Mot de passe</translation>
 <translation id="1818687879307252150">{count,plural, =0{Aucun mot de passe compromis}=1{{count} mot de passe compromis}one{{count} mot de passe compromis}other{{count} mots de passe compromis}}</translation>
 <translation id="1819374301217551116">Suivi des prix et statistiques</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Masquer la « Vérification de sécurité »</translation>
 <translation id="2551153019974022505">Erreur relative au compte</translation>
 <translation id="2559843230610279254">Groupe d'onglets, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> onglets.</translation>
+<translation id="257088987046510401">Thèmes</translation>
 <translation id="2573117291489209663">Terminé</translation>
 <translation id="2577522251608256362">Quartier</translation>
 <translation id="2579713773888829241">Disques partagés</translation>
@@ -478,6 +480,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2793703503584038325">Sélectionnez un mot de passe et touchez l'icône « Partager »</translation>
 <translation id="2797029671965852011">Afficher l'historique</translation>
 <translation id="2797302972324086597">Code de pays</translation>
+<translation id="2798263827270599246">Thème par défaut</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fichier}one{{COUNT} fichier}other{{COUNT} fichiers}}</translation>
 <translation id="2816149645002567541">Téléchargement interrompu</translation>
 <translation id="2816489851009559785">Menu → Paramètres → Navigateur par défaut</translation>
@@ -693,6 +696,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3750225824417196283">Page du nouvel onglet de navigation privée</translation>
 <translation id="3751873026576444885">Arrêter de rechercher sur votre écran avec Lentille Google</translation>
 <translation id="3753408171347588045">Suivi des prix</translation>
+<translation id="3753618528540214374">Thème viridien</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3768725474733206671">Rouvrir le dernier onglet fermé</translation>
 <translation id="3779810277399252432">Pas de connexion Internet.</translation>
@@ -772,7 +776,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4026496154402824012">Pour le désactiver, accédez à <ph name="BEGIN_LINK" />Options de mot de passe<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Enregistrer dans le compte…</translation>
 <translation id="4038354071007134711">Auc. app. sur cet appareil ne peut ouv. le fichier</translation>
-<translation id="4039829422386964954">Parcourir la galerie</translation>
 <translation id="4042870976416480368">Rechercher dans la page</translation>
 <translation id="4045441967987592849">Rouvrir</translation>
 <translation id="4047337302138771011">Partager vos mots de passe</translation>
@@ -989,6 +992,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4869146460927742717">Position de la barre d'adresse</translation>
 <translation id="4870911314065352661">Fermer tous les onglets?</translation>
 <translation id="4872664437015695612">Ouvrir dans le dossier des téléchargements</translation>
+<translation id="4875260838563541343">Bouton d'action</translation>
 <translation id="4876305945144899064">Aucun nom d'utilisateur</translation>
 <translation id="4876665338492917862">Dernière ouverture : <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Me le rappeler plus tard</translation>
@@ -1347,6 +1351,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6198252989419008588">Modifier le NIP</translation>
 <translation id="6210079381482819663">Les onglets non utilisés pendant <ph name="THRESHOLD" /> jours ou plus sont déplacés ici. Vous pouvez changer cette option en tout temps dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Adresse introuvable</translation>
+<translation id="6218508144653756827">Thème fuchsia</translation>
 <translation id="6218758465102657583">Déplacer la barre d'adresse vers le haut</translation>
 <translation id="6223816392543092032">Synchronisez vos favoris, votre historique, vos mots de passe et autres paramètres sur tous vos appareils.</translation>
 <translation id="6225572914528673855">Barre d'adresse</translation>
@@ -1439,6 +1444,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6523575793810663688">Afficher la marche à suivre</translation>
 <translation id="6524082013156754186">Enregistrer dans le compte</translation>
 <translation id="6524918542306337007">Le mode de navigation privée n'est pas offert</translation>
+<translation id="6527208859483186860">Arrière-plan {position} sur {total}</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6532106788206463496">Enregistrer les modifications</translation>
 <translation id="6536759809440150308">Ouvrir <ph name="GROUP_TITLE" />, groupe de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6612912757320004438">Autoriser les notifications des onglets…</translation>
 <translation id="6617761071025228250">Effacer le texte</translation>
+<translation id="6619015782482868078">Thème aqua</translation>
 <translation id="6620279676667515405">Annuler</translation>
 <translation id="6625830436658400045">Vos paramètres de synchronisation seront restaurés en fonction de votre dernière sauvegarde. Vous pouvez toujours choisir les éléments à synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Modifier le dossier</translation>
@@ -1499,6 +1506,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6713676799463473249">Dernière modification : <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Onglets reçus</translation>
 <translation id="6723740634201835758">Dans votre compte Google</translation>
+<translation id="6724024423419410528">Couleurs</translation>
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et à plus encore sur tous vos appareils.</translation>
 <translation id="6729493062119577923">Activité du groupe d'onglets partagé</translation>
 <translation id="6732087373923685049">Appareil photo</translation>
@@ -1562,6 +1570,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="69739764870135975">Si Google est également votre moteur de recherche par défaut, vous verrez de meilleures suggestions pertinentes selon le contexte</translation>
 <translation id="6979158407327259162">Google Disque</translation>
 <translation id="6979737339423435258">Toutes les périodes</translation>
+<translation id="6980507581230208647">Thème rose</translation>
 <translation id="6983306615164277634">Vous pouvez également maintenir votre doigt sur la barre d'adresse pour modifier la position.</translation>
 <translation id="6987201788018524855">Découvrez des fonctionnalités utiles que vous avez manquées</translation>
 <translation id="6989636517316575338">Posez une question à propos de n'importe quelle page</translation>
@@ -1628,6 +1637,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="728025568708172005">Commencer la visite guidée</translation>
 <translation id="7280980607183752256">Impossible d'importer ce fichier</translation>
 <translation id="7281202269687163394">Gemini et votre confidentialité</translation>
+<translation id="7282197670900591579">Thème citron</translation>
 <translation id="7293429513719260019">Sélectionner la langue</translation>
 <translation id="7300448350764260141">Ajoutez une couche de protection supplémentaire contre les menaces en ligne.</translation>
 <translation id="7311244614769792472">Aucun résultat trouvé</translation>
@@ -1751,6 +1761,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="7749790401023484470">Vous n'avez pas sélectionné de texte.</translation>
 <translation id="7757015014239760147">Aucun nom d'utilisateur ••••••••</translation>
 <translation id="775755486779745798">Remplir automatiquement le mois d'expiration <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Thème violet</translation>
 <translation id="7759809451544302770">Facultatif</translation>
 <translation id="7765158879357617694">Déplacer</translation>
 <translation id="7772032839648071052">Confirmer la phrase de passe</translation>
@@ -1815,6 +1826,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="797824194429476746">Les onglets resteront ouverts sur cet appareil, mais le groupe sera définitivement supprimé.</translation>
 <translation id="797874245254030665">Accéder à vos mots de passe et clés d'accès à partir de n'importe quelle appli</translation>
 <translation id="7982789257301363584">Réseau</translation>
+<translation id="798299424881500862">Thème orange</translation>
 <translation id="7987685713885608670">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google.</translation>
 <translation id="798991908416757345">Les groupes d'onglets ne sont pas accessibles</translation>
 <translation id="7993170188789685695">Toucher deux fois pour fermer cette notification.</translation>

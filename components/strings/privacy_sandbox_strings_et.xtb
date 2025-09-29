@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Muudatusi saate teha reklaamide privaatsusseadetes</translation>
 <translation id="1780659583673667574">Näiteks kui otsite veebisaidilt toiduretsepte, võivad nad oletada, et huvitute kokakunstist. Hiljem võidakse teile esimeselt saidilt kogutud andmete põhjal teisel saidil näidata toidukaupade kohaletoimetamise teenuse reklaami.</translation>
 <translation id="1887631853265748225">Reklaamide privaatsusfunktsioonid aitavad piirata veebisaitide ja nende reklaamipartnerite isikupärastatud reklaamidel põhinevat andmekogumist.</translation>
+<translation id="19426210786412737">Teie praeguseid Chrome'i seadeid on värskendatud, et lubada veebisaitidel juurdepääs kolmandate osapoolte küpsisefailidele. Seda seadet saab igal ajal muuta.</translation>
 <translation id="1954777269544683286">Google nõuab, et ettevõtted teataksid avalikult, et ei kasuta neid andmeid teie saitidevaheliseks jälgimiseks. Ettevõtted on kohustatud teid teavitama sellest, kuidas nad teie andmeid kasutavad. <ph name="BEGIN_LINK" />Lisateavet leiate meie privaatsuseeskirjadest<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Kuidas neid andmeid hallata saab?<ph name="END_BOLD" /> Chrome kustutab automaatselt saidid, mis on vanemad kui 30 päeva. Sait, mida uuesti külastate, võidakse uuesti loendis kuvada. Samuti võite Chrome’i seadetes reklaamide soovitamise saitide kaupa blokeerida ning saitide soovitatavad reklaamid välja lülitada.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Saidid võivad kasutada kolmanda osapoole küpsisefaile, et saada teavet teie toimingute kohta teistel saitidel</translation>
 <translation id="6388287739339671750">Blokeeri jälgimisskriptid</translation>
 <translation id="6398358690696005758">Lisateave selle kohta, kuidas Google teie andmeid kaitseb, on leitav meie <ph name="BEGIN_LINK1" />privaatsuseeskirjadest<ph name="LINK_END1" /></translation>
+<translation id="6494210367693221285">Teie praegused Chromiumi seadeid on värskendatud, et lubada veebisaitidel juurdepääs kolmandate osapoolte küpsisesfailidele. Seda seadet saab igal ajal muuta.</translation>
 <translation id="6702015235374976491">Reklaamiteemad aitavad veebisaitidel esitada teile asjakohaseid reklaame, kaitstes samas teie sirvimisajalugu ja identiteeti. Chrome võib talletada huvipakkuvad teemad teie hiljutise sirvimisajaloo alusel. Hiljem saab teie külastatav sait küsida Chrome'ilt teile huvipakkuvaid teemasid, et teile näidatavaid reklaame isikupärastada.</translation>
 <translation id="6710025070089118043">Saidid ei saa kasutada kolmanda osapoole küpsisefaile sisu ja reklaamide isikupärastamiseks ega teistel saitidel tehtavate toimingute kohta teabe saamiseks, välja arvatud juhul, kui annate seotud saitidele neile juurdepääsu</translation>
 <translation id="6737378617247709185">Chromium blokeerib inkognito režiimis kolmanda osapoole küpsisefailid, kuid teie administraator lubas selle saidi jaoks kolmanda osapoole küpsisefailid. Inkognito režiim võib pakkuda ka täiendavat jälgimiskaitset. Hallake inkognito režiimi jälgimiskaitset <ph name="BEGIN_LINK" />seadetes<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Avaneb tavalises Chromiumi aknas</translation>
 <translation id="8578320000709741352">Teie külastatavatele saitidele võib olla manustatud muude saitide sisu ja teenuseid (nt pilte, reklaami ja teksti), mille abil saab teie kohta teavet koguda. Lisateave <ph name="START_LINK" />inkognito režiimi jälgimiskaitse<ph name="END_LINK" /> haldamise kohta</translation>
 <translation id="859369389161884405">Avab privaatsuseeskirjad uuel vahekaardil</translation>
+<translation id="8712637175834984815">Selge</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Kuidas neid andmeid hallata saab?<ph name="END_BOLD" /> Chrome kustutab automaatselt teemad, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib mõni neist teemadest uuesti loendis ilmuda. Võite ka blokeerida teemad, mida te ei soovi lasta Chrome'il saitidega jagada, samuti võite reklaamiteemad igal ajal Chrome'i seadetes välja lülitada.</translation>
 <translation id="8803526663383843427">Kui on sisse lülitatud</translation>
 <translation id="8825639607990802302">Privaatsuse ja saidiandmete valikud</translation>

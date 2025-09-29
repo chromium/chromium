@@ -35,6 +35,7 @@
 <translation id="2074527029802029717">Odpni zavihek</translation>
 <translation id="2118649612461486615">Podatki o trgovini</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. Anonimni zavihek ne bo na voljo.}one{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihek ne bo na voljo.}two{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimna zavihka ne bosta na voljo.}few{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimni zavihki ne bodo na voljo.}other{Zaprte zavihke in skupine je mogoče znova odpreti v razdelku Nedavni zavihki in razdelku Skupine zavihkov. # anonimnih zavihkov ne bo na voljo.}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{Vklop zvoka spletnega mesta}one{Vklop zvoka spletnih mest}two{Vklop zvoka spletnih mest}few{Vklop zvoka spletnih mest}other{Vklop zvoka spletnih mest}}</translation>
 <translation id="2162620598375156287">Zdaj <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Razdruži zavihek}one{Razdruži zavihke}two{Razdruži zavihke}few{Razdruži zavihke}other{Razdruži zavihke}}</translation>
 <translation id="2271452184061378400">Skupine zavihkov so shranjene tukaj</translation>
@@ -92,6 +93,7 @@
 <translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{Obnovi element}one{Obnovi elemente}two{Obnovi elemente}few{Obnovi elemente}other{Obnovi elemente}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Posodobljeno pred <ph name="NUM_DAYS_ONE" /> dnevom}one{Posodobljeno pred <ph name="NUM_DAYS_MANY" /> dnevom}two{Posodobljeno pred <ph name="NUM_DAYS_MANY" /> dnevoma}few{Posodobljeno pred <ph name="NUM_DAYS_MANY" /> dnevi}other{Posodobljeno pred <ph name="NUM_DAYS_MANY" /> dnevi}}</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{Izklop zvoka spletnega mesta}one{Izklop zvoka spletnih mest}two{Izklop zvoka spletnih mest}few{Izklop zvoka spletnih mest}other{Izklop zvoka spletnih mest}}</translation>
 <translation id="4686942373615810936">Ustvarjeno pravkar</translation>
 <translation id="4783638485675352219">Deljenje naslovov in URL-jev odprtih zavihkov iz te naprave z operacijskim sistemom</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>

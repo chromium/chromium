@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
-<translation id="1004806631856047384"><ph name="BEGIN_LINK1" />Android の設定<ph name="END_LINK1" />で管理
-
-高度な保護機能では、次の Chrome の設定を制御します。
-• [常に安全な接続を使用する] がオンになります。
-• [JavaScript オプティマイザー] がオフになります。<ph name="BEGIN_LINK2" />サイトの例外を管理する<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">オンライン版を開く</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1070329623210597193">このサイトが表示または編集できるファイル</translation>
@@ -74,6 +69,7 @@
 <translation id="1816835383954230954">オンにすると、Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します。オフにすると、パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます。</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" /> に AR の使用を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
 <translation id="1848033246551405023">フォント Sans Serif</translation>
+<translation id="1861262398884155592">このフォルダは空です</translation>
 <translation id="1881806992065048905">新しいタブページの外観のボトムシート</translation>
 <translation id="1887786770086287077">位置情報へのアクセスがデバイスでオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="1906181697255754968">通常、作業内容を自動的に保存したりするため、サイトがデバイスのファイルやフォルダにアクセスする場合があります</translation>
@@ -308,6 +304,7 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4340799661701629185">サイトに通知の送信を許可しない</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
+<translation id="4412683424767388419">Chrome の色のボトムシートが画面の下半分に表示されています</translation>
 <translation id="4412992751769744546">サードパーティの Cookie を許可する</translation>
 <translation id="4419929467120297501">Chrome では、サードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="BEGIN_LINK" />サードパーティ Cookie へのアクセスを管理<ph name="END_LINK" />するには、設定に移動してください。</translation>
 <translation id="4425416282877905577">フォント Serif</translation>
@@ -371,6 +368,7 @@
 <translation id="5116239826668864748">メッセージ、ドキュメント、他のアプリでタップしたリンクを常に Chrome で開くよう設定できます</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
 <translation id="512938610812707830">新しいタブページの外観テーマ コレクションのボトムシートが画面全体に表示されています</translation>
+<translation id="5137460097045297858">Discover フィードのボトムシートが画面の下半分に表示されています</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開いているタブの値下げ情報}other{開いているタブの値下げ情報}}</translation>
 <translation id="5186036860380548585">設定は画面上部にあります</translation>
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
@@ -389,7 +387,6 @@
 <translation id="5335288049665977812">サイトに JavaScript の実行を許可する（推奨）</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
 <translation id="5344522958567249764">広告プライバシーを管理</translation>
-<translation id="5371407439562620893">JavaScript の最適化とセキュリティ</translation>
 <translation id="5373874281522292782">タブグループを保存しました</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>
@@ -448,6 +445,7 @@
 <translation id="5968921426641056619">ウェブアドレスを入力</translation>
 <translation id="5975083100439434680">縮小する</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" />～<ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover フィードをオンにする</translation>
 <translation id="6012967556075291653">固定されたショートカット</translation>
 <translation id="6015775454662021376">このサイトによるデバイスへのアクセスを管理します</translation>
 <translation id="6040143037577758943">閉じる</translation>
@@ -470,6 +468,7 @@
 <translation id="6207207788774442484">データを削除して権限をリセット</translation>
 <translation id="6231752747840485235">「<ph name="APP_NAME" />」をアンインストールしますか？</translation>
 <translation id="6234351944623978659">[ブラウザアプリ] &gt; [Chrome] をタップします</translation>
+<translation id="6260830281887654268">新しいタブページの外観テーマ コレクションのボトムシートが画面の下半分に表示されています</translation>
 <translation id="6262191102408817757">最後のタブに基づく</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロック</translation>
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
@@ -503,6 +502,7 @@
 <translation id="662080504995468778">とどまる</translation>
 <translation id="6635327442719709864">オンにすると、サイトはシリアルポートの使用を要求できます。オフにすると、サイトはシリアルポートを使用できません。</translation>
 <translation id="6678072580827808850">安全確認を表示</translation>
+<translation id="6682057173375416470">新しいタブページでおすすめの記事を表示</translation>
 <translation id="6683865262523156564">このサイトは、あなたのアクティビティを確認できるグループに属しています。グループは <ph name="RWS_OWNER" /> によって定義されます</translation>
 <translation id="6689172468748959065">プロフィール写真</translation>
 <translation id="6697925417670533197">アクティブなダウンロード</translation>
@@ -552,6 +552,7 @@
 <translation id="728412880473384942">サイトは速くなりますが、安全性は低下します</translation>
 <translation id="7366415735885268578">サイトの追加</translation>
 <translation id="7368695150573390554">オフライン データがすべて削除されます</translation>
+<translation id="7369678931043226462">[新しいタブページをカスタマイズ] のボトムシートが画面の下半分に表示されています</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> の設定</translation>
 <translation id="7399802613464275309">安全チェック</translation>
 <translation id="7406113532070524618">この設定では、ユーザーを特定したり、ユーザーの閲覧履歴の参照をサイトに許可したりすることはありませんが、確認に必要な少量の情報を共有することがあります</translation>
@@ -559,6 +560,7 @@
 <translation id="7423098979219808738">最初に確認する</translation>
 <translation id="7423538860840206698">クリップボードの読み取りがブロックされています</translation>
 <translation id="7425915948813553151">サイトのダークモード</translation>
+<translation id="746412105358554870">JavaScript の最適化とセキュリティ</translation>
 <translation id="7478658909253570368">サイトにシリアルポートへの接続を許可しない</translation>
 <translation id="7488573225650545859">[アプリリストにタブを表示] を非表示にする</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
 <translation id="7805832099057502789">新しいタブページの外観のボトムシートが画面全体に表示されています</translation>
 <translation id="7807060072011926525">Google から提供</translation>
+<translation id="7809029041571842593">新しいタブページのカードのボトムシートが画面の下半分に表示されています</translation>
 <translation id="7815680994978050279">危険なダウンロードがブロックされました</translation>
 <translation id="7835852323729233924">再生中のメディア</translation>
 <translation id="783819812427904514">動画のミュートを解除</translation>
@@ -645,6 +648,7 @@
 <translation id="8441146129660941386">後方にシーク再生</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> に現在地へのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも位置情報をオンにしてください。</translation>
 <translation id="8447861592752582886">デバイスの許可を取り消します</translation>
+<translation id="8467359479529706065">新しいタブページの外観のボトムシートが画面の下半分に表示されています</translation>
 <translation id="8471525937465764768">ドキュメントの印刷やストレージ デバイスへの保存のため、サイトが USB デバイスに接続する場合があります。</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」は最新ではありません。アプリを再インストールしてください。</translation>
 <translation id="847433688444405067">複数のデバイスでブラウジング</translation>
@@ -660,7 +664,6 @@
 <translation id="8549127125482561383">リクエストの表示方法</translation>
 <translation id="8558480467877843976">ブラウジングするときや、メッセージ、ドキュメント、他のアプリのリンクをタップしたときに、常に Chrome が使えるようになります。</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
-<translation id="8580511488901768832">カスタム ショートカットのボトムシートが画面全体に表示されています</translation>
 <translation id="8593422116412089302">オンにすると、サイトはあなたに関する保存済みの情報の使用を要求できます。オフにすると、サイトはあなたに関する保存済みの情報の使用を要求できません。</translation>
 <translation id="8609465669617005112">上に移動</translation>
 <translation id="8617611086246832542">オンにすると、ウェブサイトのデスクトップ ビューが表示されます。オフにすると、ウェブサイトのモバイルビューが表示されます。</translation>
@@ -678,6 +681,7 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8737426583868847403">カスタムのズームレベルを保存したサイトがここに表示されます</translation>
 <translation id="8751914237388039244">画像を選択</translation>
+<translation id="8775741625735357092">[設定] &gt; [デザイン] でブックマーク バーをオンにできます</translation>
 <translation id="8800034312320686233">サイトが動作していない場合</translation>
 <translation id="8801436777607969138">特定のサイトで JavaScript をブロックします。</translation>
 <translation id="8801657293260363985">V8 は、サイトのパフォーマンスを向上させるために使用される Chrome の JavaScript エンジンおよび WebAssembly エンジンです</translation>

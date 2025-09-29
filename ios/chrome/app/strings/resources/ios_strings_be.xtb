@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1041322626941363065">Папярэджваць мяне ў выпадку, калі пры ўцечцы даных былі раскрыты паролі</translation>
 <translation id="104491362976654916">Пазасеткавая старонка</translation>
+<translation id="1046742265332833834">Сіняя тэма</translation>
 <translation id="1049743911850919806">Інкогніта</translation>
 <translation id="1053651653201045802">Выкананы выхад. Каб атрымаць доступ да закладак, пароляў і іншых даных, увайдзіце ва ўліковы запіс зноў.</translation>
 <translation id="1054745118061919935">Працягваючы, вы прымаеце <ph name="BEGIN_LINK" />Умовы выкарыстання<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Сховішча запоўнена</translation>
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="1190609913194133056">Цэнтр апавяшчэнняў</translation>
+<translation id="1199963004393929848">Зялёная тэма</translation>
 <translation id="1201402288615127009">Далей</translation>
 <translation id="1204075260022434100">{count,plural, =1{Закладка захавана ў папцы "{title}" ва ўліковым запісе {email}}one{{count} закладка захавана ў папцы "{title}" ва ўліковым запісе {email}}few{{count} закладкі захаваны ў папцы "{title}" ва ўліковым запісе {email}}many{{count} закладак захавана ў папцы "{title}" ва ўліковым запісе {email}}other{{count} закладкі захавана ў папцы "{title}" ва ўліковым запісе {email}}}</translation>
 <translation id="120431140543679678">Падпісацца</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Дазволіць апавяшчэнні аб змяненні цаны…</translation>
 <translation id="1809929083618343438">Выбраная інфармацыя будзе выдалена з Chrome, але не з вашага Уліковага запісу Google.</translation>
 <translation id="1810976980198522421">Скасаваць</translation>
-<translation id="1812514023095547458">Выбраць колер</translation>
 <translation id="1815941218935345331">Код доступу</translation>
 <translation id="1818687879307252150">{count,plural, =0{Раскрытых пароляў няма}=1{{count} раскрыты пароль}one{{count} раскрыты пароль}few{{count} раскрытыя паролі}many{{count} раскрытых пароляў}other{{count} раскрытага пароля}}</translation>
 <translation id="1819374301217551116">Адсочвайце цэны і праглядайце іх статыстыку</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Схаваць картку "Праверка бяспекі"</translation>
 <translation id="2551153019974022505">Памылка ва ўліковым запісе</translation>
 <translation id="2559843230610279254">Група ўкладак, <ph name="GROUP_TITLE" />, колькасць укладак: <ph name="TABS_NUMBER" />.</translation>
+<translation id="257088987046510401">Тэмы</translation>
 <translation id="2573117291489209663">Гатова</translation>
 <translation id="2577522251608256362">Раён</translation>
 <translation id="2579713773888829241">Абагуленыя дыскі</translation>
@@ -478,6 +480,7 @@
 <translation id="2793703503584038325">Выберыце пароль і націсніце значок абагульвання.</translation>
 <translation id="2797029671965852011">Паказаць гісторыю</translation>
 <translation id="2797302972324086597">Код краіны</translation>
+<translation id="2798263827270599246">Стандартная тэма</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} файл}one{{COUNT} файл}few{{COUNT} файлы}many{{COUNT} файлаў}other{{COUNT} файла}}</translation>
 <translation id="2816149645002567541">Спампоўванне прыпынена</translation>
 <translation id="2816489851009559785">Меню → Налады → Стандартны браўзер</translation>
@@ -693,6 +696,7 @@
 <translation id="3750225824417196283">Старонка "Новая ўкладка ў рэжыме інкогніта"</translation>
 <translation id="3751873026576444885">Спыніць пошук змесціва на экране з дапамогай Google Аб’ектыва</translation>
 <translation id="3753408171347588045">Адсочванне цэн</translation>
+<translation id="3753618528540214374">Тэма колеру вірыдыян</translation>
 <translation id="3762232513783804601">Распрацавана для iPad</translation>
 <translation id="3768725474733206671">Паўторна адкрыць апошнюю закрытую ўкладку</translation>
 <translation id="3779810277399252432">Няма падключэння да інтэрнэту.</translation>
@@ -772,7 +776,6 @@
 <translation id="4026496154402824012">Каб выключыць гэту функцыю, перайдзіце ў раздзел <ph name="BEGIN_LINK" />Параметры пароляў<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Захаваць ва ўліковым запісе…</translation>
 <translation id="4038354071007134711">На прыладзе няма праграм, у якіх можна адкрыць гэты файл.</translation>
-<translation id="4039829422386964954">Праглядзець галерэю</translation>
 <translation id="4042870976416480368">Знайсці на старонцы</translation>
 <translation id="4045441967987592849">Зноў адкрыць</translation>
 <translation id="4047337302138771011">Абагульванне пароляў</translation>
@@ -989,6 +992,7 @@
 <translation id="4869146460927742717">Размяшчэнне адраснага радка</translation>
 <translation id="4870911314065352661">Закрыць усе ўкладкі?</translation>
 <translation id="4872664437015695612">Адкрыць у спампоўках</translation>
+<translation id="4875260838563541343">Кнопка дзеяння</translation>
 <translation id="4876305945144899064">Адсутнічае імя карыстальніка</translation>
 <translation id="4876665338492917862">Адкрывалі <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Нагадаць пазней</translation>
@@ -1347,6 +1351,7 @@
 <translation id="6198252989419008588">Змяніць PIN-код</translation>
 <translation id="6210079381482819663">Укладкі, якія не выкарыстоўваліся на працягу <ph name="THRESHOLD" /> сут, перамяшчаюцца сюды. Гэты параметр можна змяніць у любы час у <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Адрасы не знойдзены</translation>
+<translation id="6218508144653756827">Тэма колеру фуксія</translation>
 <translation id="6218758465102657583">Перамясціць адрасны радок у верхнюю частку экрана</translation>
 <translation id="6223816392543092032">Закладкі, гісторыя, паролі і іншыя налады будуць даступнымі на ўсіх вашых прыладах.</translation>
 <translation id="6225572914528673855">Адрасны радок</translation>
@@ -1439,6 +1444,7 @@
 <translation id="6523575793810663688">Паказаць</translation>
 <translation id="6524082013156754186">Захаваць ва ўліковым запісе</translation>
 <translation id="6524918542306337007">Рэжым інкогніта недаступны</translation>
+<translation id="6527208859483186860">фон {position} з {total}</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
 <translation id="6532106788206463496">Захаваць змены</translation>
 <translation id="6536759809440150308">Адкрыць групу "<ph name="GROUP_TITLE" />", групу з колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@
 <translation id="661266467055912436">Павышае бяспеку для вас і іншых карыстальнікаў у інтэрнэце.</translation>
 <translation id="6612912757320004438">Дазволіць апавяшчэнні пра ўкладкі…</translation>
 <translation id="6617761071025228250">Выдаліць тэкст</translation>
+<translation id="6619015782482868078">Аквамарынавая тэма</translation>
 <translation id="6620279676667515405">Скасаваць</translation>
 <translation id="6625830436658400045">Налады сінхранізацыі будуць адноўлены з апошняй рэзервовай копіі. Вы заўсёды можаце выбраць, якія даныя трэба сінхранізаваць, у <ph name="BEGIN_LINK" />наладах<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Рэдагаваць папку</translation>
@@ -1499,6 +1506,7 @@
 <translation id="6713676799463473249">Зменена <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Атрыманыя ўкладкі</translation>
 <translation id="6723740634201835758">У вашым Уліковым запісе Google</translation>
+<translation id="6724024423419410528">Колеры</translation>
 <translation id="672735642903863329">Выкарыстоўвайце свае закладкі, паролі і іншае на ўсіх сваіх прыладах.</translation>
 <translation id="6729493062119577923">Дзеянні ў абагуленай групе ўкладак</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1562,6 +1570,7 @@
 <translation id="69739764870135975">Калі Google з’яўляецца вашай стандартнай пошукавай сістэмай, вам будуць паказвацца больш адпаведныя кантэксту прапановы</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6979737339423435258">За ўвесь час</translation>
+<translation id="6980507581230208647">Ружовая тэма</translation>
 <translation id="6983306615164277634">Каб змяніць палажэнне адраснага радка, націсніце яго і ўтрымлівайце.</translation>
 <translation id="6987201788018524855">Азнаёмцеся з карыснымі функцыямі, якія вы маглі прапусціць</translation>
 <translation id="6989636517316575338">Задавайце пытанні на любых старонках</translation>
@@ -1607,6 +1616,7 @@
 <translation id="7176183551031110427">Паменшыць маштаб</translation>
 <translation id="7186568385131859684">Кантралюйце, як гісторыя прагляду сайтаў і іншыя вашы даныя выкарыстоўваюцца ў сэрвісах Google</translation>
 <translation id="719133302483559673">Кіруйце сваімі інтарэсамі і параметрамі</translation>
+<translation id="7191382490098297347">Відарыс з галерэі камеры</translation>
 <translation id="7203496777391039568">Забяспечваецца прыватнасць і абарона даных вашай арганізацыі</translation>
 <translation id="720399613139435155">Збой перакладу</translation>
 <translation id="7204922488054642675">Персаналізаваныя навіны</translation>
@@ -1628,6 +1638,7 @@
 <translation id="728025568708172005">Паказаць усё</translation>
 <translation id="7280980607183752256">Не ўдаецца імпартаваць гэты файл</translation>
 <translation id="7281202269687163394">Ваша прыватнасць і Gemini.</translation>
+<translation id="7282197670900591579">Тэма колеру лімоннай цэдры</translation>
 <translation id="7293429513719260019">Выбраць мову</translation>
 <translation id="7300448350764260141">Задайце дадатковы ўзровень абароны ад пагроз у інтэрнэце.</translation>
 <translation id="7311244614769792472">Вынікі не знойдзены</translation>
@@ -1751,6 +1762,7 @@
 <translation id="7749790401023484470">Вы не выбралі тэкст</translation>
 <translation id="7757015014239760147">Няма імені карыстальніка ••••••••</translation>
 <translation id="775755486779745798">Аўтаматычна запоўніць месяц заканчэння тэрміну дзеяння <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Фіялетавая тэма</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7765158879357617694">Перамясціць</translation>
 <translation id="7772032839648071052">Пацвердзіце фразу-пароль</translation>
@@ -1815,6 +1827,7 @@
 <translation id="797824194429476746">Укладкі застануцца адкрытымі на гэтай прыладзе, але група будзе выдалена назаўсёды.</translation>
 <translation id="797874245254030665">Доступ да пароляў і ключоў доступу з усіх праграм</translation>
 <translation id="7982789257301363584">Сетка</translation>
+<translation id="798299424881500862">Аранжавая тэма</translation>
 <translation id="7987685713885608670">Дзеля дадатковай бяспекі зашыфроўвайце паролі на прыладзе, перш чым захоўваць іх у Менеджары пароляў Google.</translation>
 <translation id="798991908416757345">Групы ўкладак недаступныя</translation>
 <translation id="7993170188789685695">Двойчы націсніце, каб закрыць гэта апавяшчэнне.</translation>

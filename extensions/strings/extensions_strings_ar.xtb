@@ -5,7 +5,7 @@
 <translation id="1140871961407805696">الكاميرا الخلفية المواجهة للبيئة</translation>
 <translation id="1196338895211115272">تعذّر تصدير المفتاح الخاص.</translation>
 <translation id="132960226125594336">تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى لأنّه سيتجاوز الحد الأقصى لحجم النص البرمجي أو الحد الأقصى لحجم النص البرمجي لإجمالي المحتوى الخاص بالإضافة.</translation>
-<translation id="1445572445564823378">تتسبب هذه الإضافة في إبطاء <ph name="PRODUCT_NAME" />. وبالتالي، يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1445572445564823378">تتسبب هذه الإضافة في بطء <ph name="PRODUCT_NAME" />. يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL غير متوافق.</translation>
 <translation id="1610570795592207282">‏تعذَّر تحميل ملف css (صفحات الأنماط المتتالية) '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
 <translation id="1803557475693955505">تعذر تحميل صفحة الخلفية '<ph name="BACKGROUND_PAGE" />'.</translation>
@@ -16,7 +16,7 @@
 <translation id="2903070246402204397">تم حظر <ph name="EXTENSION_NAME" /> (معرف الإضافة "<ph name="EXTENSION_ID" />") من قِبل المشرف. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">تعذر تثبيت الحزمة: "<ph name="ERROR_CODE" />"</translation>
 <translation id="3115238746683532089">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3144135466825225871">‏تعذّر استبدال ملف crx. يُرجى التأكّد مما إذا كان الملف قيد الاستخدام.</translation>
+<translation id="3144135466825225871">‏تعذّر استبدال ملف crx. تحقق ما إذا كان قيد الاستخدام.</translation>
 <translation id="3163201441334626963">المنتج غير معروف <ph name="PRODUCT_ID" /> من المورّد‬ <ph name="VENDOR_ID" /></translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> من المورّد <ph name="VENDOR_ID" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
@@ -25,13 +25,13 @@
 <translation id="3984413272403535372">حدث خطأ أثناء التوقيع على الإضافة.</translation>
 <translation id="4233778200880751280">تعذر تحميل حول الصفحة "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">تعذّر إخراج المفتاح الخاص.</translation>
-<translation id="4811956658694082538">‏تعذر تثبيت الحزمة بسبب تعطل عملية معالجة. يُرجى إعادة تشغيل Chrome والمحاولة مرة أخرى.</translation>
+<translation id="4811956658694082538">‏تعذر تثبيت الحزمة بسبب تعطل معالجة الأداة المساعدة. جرّب إعادة تشغيل Chrome وحاول مرة أخرى.</translation>
 <translation id="4988792151665380515">تعذّر تصدير المفتاح العام.</translation>
 <translation id="5026754133087629784">عرض الويب: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">لا يمكن العثور على المسار المطلق للدليل للحزمة.</translation>
 <translation id="5160071981665899014">‏تعذَّر تحميل ملف JavaScript '<ph name="RELATIVE_PATH" />' للنص البرمجي.</translation>
 <translation id="5356315618422219272">عرض التطبيق: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5456409301717116725">تتضمن هذه الإضافة ملف المفتاح ‘<ph name="KEY_PATH" />‘. يُرجى التأكّد من أنّ هذا هو الإجراء المطلوب.</translation>
+<translation id="5456409301717116725">تتضمن هذه الإضافة ملف المفتاح '<ph name="KEY_PATH" />'. ربما لا تريد إجراء ذلك.</translation>
 <translation id="5486326529110362464">يجب أن تكون قيمة الإدخال للمفتاح الخاص موجودة.</translation>
 <translation id="5972529113578162692">يتطلب مشرف هذا الجهاز تثبيت <ph name="EXTENSION_NAME" />. لا يمكن إلغاء تثبيته.</translation>
 <translation id="6027032947578871493">المنتج غير معروف <ph name="PRODUCT_ID" /> من <ph name="VENDOR_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>
@@ -57,8 +57,8 @@
 <translation id="8517576857589387417">ملف البيان مفقود أو غير قابل للقراءة</translation>
 <translation id="8621383749470166852">‏تعذّر تحميل الملف "<ph name="RELATIVE_PATH" />" للنص البرمجي الخاص بالمحتوى، ولا يمكن تحميل النصوص البرمجية للمحتوى إلا من ملفات JavaScript المتوافقة، مثل "ملفات js.".</translation>
 <translation id="8636666366616799973">الحزمة غير صالحة. التفاصيل: "<ph name="ERROR_MESSAGE" />".</translation>
-<translation id="8761756413268424715">يطلب تطبيق "<ph name="APP_NAME" />" إذن الوصول إلى أحد أجهزتك:</translation>
-<translation id="8885905466771744233">يوجد مفتاح خاص للإضافة المحددة. يرجى إعادة استخدام هذا المفتاح أو حذفه أولاً.</translation>
+<translation id="8761756413268424715">يطلب تطبيق "<ph name="APP_NAME" />" الدخول إلى جهاز من أجهزتك:</translation>
+<translation id="8885905466771744233">يوجد مفتاح خاص للإضافة المحددة. أعد استخدام هذا المفتاح أو احذفه أولاً.</translation>
 <translation id="9039223174332979184">يطلب مشرف هذا الجهاز أن تتضمّن الإضافة "<ph name="EXTENSION_NAME" />" الإصدار 3 من ملف البيان على الأقل.</translation>
 <translation id="907841381057066561">تعذّر إنشاء ملف مضغوط مؤقت أثناء إنشاء الحزمة.</translation>
 <translation id="941543339607623937">المفتاح الخاص غير صالح.</translation>

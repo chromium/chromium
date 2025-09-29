@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
-<translation id="1004806631856047384"><ph name="BEGIN_LINK1" />Android ছেটিঙ<ph name="END_LINK1" />ত পৰিচালনা কৰক
-
-সুৰক্ষা সম্পৰ্কীয় উন্নত সুবিধাই এইসমূহ Chrome ছেটিং নিয়ন্ত্ৰণ কৰে:
-• "সদায় সুৰক্ষিত সংযোগ ব্যৱহাৰ কৰক" অন কৰা আছে।
-• "JavaScript অপ্টিমাইজাৰ" অফ কৰা আছে। <ph name="BEGIN_LINK2" />ছাইটৰ ব্যতিক্ৰমসমূহ পৰিচালনা কৰক<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">অনলাইনত খোলক</translation>
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1070329623210597193">এই ছাইটটোৱে চাব বা সম্পাদনা কৰিব পৰা ফাইল</translation>
@@ -74,6 +69,7 @@
 <translation id="1816835383954230954">অন থাকিলে, Chrome অধিক দ্ৰুততাৰে চলে আৰু JavaScript ব্যৱহাৰ কৰা সুবিধাসমূহে ডিজাইন কৰা অনুসৰি কাম কৰিব লাগে। অফ থাকিলে, ই কাৰ্যদক্ষতা কম কৰে কিন্তু V8ক আক্ৰমণৰ বাবে অধিক প্ৰতিৰোধী কৰে।</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ক AR ব্যৱহাৰ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো কেমেৰা অন কৰক।</translation>
 <translation id="1848033246551405023">ফণ্ট চেনচ চেৰিফ</translation>
+<translation id="1861262398884155592">এই ফল্ডাৰটো খালী</translation>
 <translation id="1881806992065048905">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীট</translation>
 <translation id="1887786770086287077">এই ডিভাইচটোত অৱস্থান এক্সেছ বন্ধ কৰা আছে। ইয়াক <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />লৈ গৈ অন কৰক।</translation>
 <translation id="1906181697255754968">ছাইটসমূহে সচৰাচৰ আপোনাৰ কাম স্বয়ংক্ৰিয়ভাৱে ছেভ কৰাৰ দৰে সুবিধাসমূহৰ বাবে আপোনাৰ ডিভাইচৰ ফাইল আৰু ফ'ল্ডাৰসমূহ এক্সেছ কৰে</translation>
@@ -308,6 +304,7 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" />ৰ অধীনত থকা আটাইবোৰ ছাইট</translation>
 <translation id="4340799661701629185">ছাইটক জাননী পঠিওৱাৰ অনুমতি নিদিব</translation>
 <translation id="4402755511846832236">আপুনি এই ডিভাইচটো সক্ৰিয়ভাৱে ব্যৱহাৰ কৰি থকাৰ বিষয়ে ছাইটসমূহে জনাটো অৱৰোধ কৰক</translation>
+<translation id="4412683424767388419">Chrome Colorsৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="4412992751769744546">তৃতীয় পক্ষৰ কুকিৰ অনুমতি দিয়ক</translation>
 <translation id="4419929467120297501">আপুনি ব্ৰাউজ কৰি থাকোঁতে Chromeএ ছাইটসমূহে আপোনাক ট্ৰেক কৰিবলৈ কৰা তৃতীয় পক্ষৰ কুকিৰ ব্যৱহাৰ অৱৰোধ কৰে। <ph name="BEGIN_LINK" />তৃতীয় পক্ষৰ কুকিসমূহলৈ এক্সেছ পৰিচালনা কৰিবলৈ<ph name="END_LINK" /> ছেটিঙলৈ যাওক।</translation>
 <translation id="4425416282877905577">ফণ্ট চেৰিফ</translation>
@@ -371,6 +368,7 @@
 <translation id="5116239826668864748">আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="5123685120097942451">ইনক’গনিট’ টেব</translation>
 <translation id="512938610812707830">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা থীমৰ সংগ্ৰহৰ তলৰ শ্বীটখন সম্পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
+<translation id="5137460097045297858">ডিস্ক’ভাৰ ফীডৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}one{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}other{আপোনাৰ খুলি ৰখা টেবসমূহত মূল্য কমাৰ তথ্য}}</translation>
 <translation id="5186036860380548585">স্ক্ৰীনৰ ওপৰৰ অংশৰ ওচৰত বিকল্পটো উপলব্ধ</translation>
 <translation id="5197729504361054390">আপুনি বাছনি কৰা সম্পৰ্কবোৰ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />ৰ সৈতে শ্বেয়াৰ কৰা হ’ব।</translation>
@@ -389,7 +387,6 @@
 <translation id="5335288049665977812">JavaScript চলাবলৈ ছাইটক অনুমতি দিয়ক (চুপাৰিছ কৰা)</translation>
 <translation id="534295439873310000">NFC ডিভাইচসমূহ</translation>
 <translation id="5344522958567249764">বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰক</translation>
-<translation id="5371407439562620893">JavaScript অপ্টিমাইজেশ্বন আৰু সুৰক্ষা</translation>
 <translation id="5373874281522292782">আপোনাৰ টেবৰ গোট ছেভ কৰা হৈছে</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(আৰু ১টা)}one{(আৰু #টা)}other{(আৰু #টা)}}</translation>
 <translation id="5403592356182871684">নামসমূহ</translation>
@@ -448,6 +445,7 @@
 <translation id="5968921426641056619">ৱেবৰ ঠিকনা দিয়ক</translation>
 <translation id="5975083100439434680">জুম আউট কৰক</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">ডিস্ক’ভাৰ ফীড অন কৰক</translation>
 <translation id="6012967556075291653">পিন কৰা শ্বৰ্টকাট</translation>
 <translation id="6015775454662021376">আপোনাৰ ডিভাইচটোলৈ এই ছাইটটোৰ থকা এক্সেছ নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
@@ -470,6 +468,7 @@
 <translation id="6207207788774442484">ডেটা মচক আৰু অনুমতি ৰিছেট কৰক</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' আনইনষ্টল কৰিবনে?</translation>
 <translation id="6234351944623978659">ব্ৰাউজাৰ এপ্ &gt; Chromeত টিপক</translation>
+<translation id="6260830281887654268">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা থীমৰ সংগ্ৰহৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="6262191102408817757">আপোনাৰ অন্তিম টেবটোৰ ভিত্তিত</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> আৰু <ph name="PERMISSION_2" />ক অৱৰোধ কৰা আছে</translation>
 <translation id="6270391203985052864">ছাইটসমূহে জাননী পঠিয়াবলৈ ক’ব পাৰে</translation>
@@ -503,6 +502,7 @@
 <translation id="662080504995468778">ইয়াতে থাকক</translation>
 <translation id="6635327442719709864">অন কৰা থাকিলে ছাইটসমূহে ক্ৰমিক প’ৰ্টবোৰ ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটসমূহে ক্ৰমিক প’ৰ্টবোৰ ব্যৱহাৰ কৰিব নোৱাৰে।</translation>
 <translation id="6678072580827808850">সুৰক্ষা পৰীক্ষা পৰ্যালোচনা কৰক</translation>
+<translation id="6682057173375416470">নতুন টেবৰ পৃষ্ঠাখনত পৰামৰ্শিত প্ৰবন্ধসমূহ লাভ কৰক</translation>
 <translation id="6683865262523156564">এই ছাইটটো এনে এটা গোটত আছে যিটোৱে আপোনাৰ কাৰ্যকলাপ চাব পাৰে। গোটটো <ph name="RWS_OWNER" />এ সংজ্ঞায়িত কৰে</translation>
 <translation id="6689172468748959065">প্র’ফাইল ফট’সমূহ</translation>
 <translation id="6697925417670533197">সক্রিয় ডাউনল’ডসমূহ</translation>
@@ -552,6 +552,7 @@
 <translation id="728412880473384942">ছাইটবোৰ অধিক দ্ৰুত কিন্তু কম সুৰক্ষিত হয়</translation>
 <translation id="7366415735885268578">এটা ছাইট যোগ দিয়ক</translation>
 <translation id="7368695150573390554">যিকোনো অফলাইন ডেটা মচা হ'ব</translation>
+<translation id="7369678931043226462">আপোনাৰ নতুন টেবৰ পৃষ্ঠাৰ তলৰ শ্বীটখন কাষ্টমাইজ কৰাটো অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" />ৰ ছেটিং</translation>
 <translation id="7399802613464275309">সুৰক্ষা পৰীক্ষা</translation>
 <translation id="7406113532070524618">এই ছেটিংটোৱে আপোনাক চিনাক্ত নকৰাকৈ অথবা ছাইটসমূহক আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস চোৱাৰ অনুমতি নিদিয়াকৈ কাম কৰে, যদিও ছাইটসমূহে সত্যাপন প্ৰক্ৰিয়াৰ অংশ হিচাপে সামান্য পৰিমাণৰ তথ্য শ্বেয়াৰ কৰিব পাৰে</translation>
@@ -559,6 +560,7 @@
 <translation id="7423098979219808738">প্ৰথমে সোধক</translation>
 <translation id="7423538860840206698">ক্লিপব’ৰ্ড পঢ়াৰ সুবিধা অৱৰোধ কৰা হৈছে</translation>
 <translation id="7425915948813553151">ছাইটৰ বাবে গাঢ় ৰঙৰ থীম</translation>
+<translation id="746412105358554870">JavaScript অপ্টিমাইজেশ্বন আৰু সুৰক্ষা</translation>
 <translation id="7478658909253570368">ছাইটক ছিৰিয়েল প’ৰ্টৰ সৈতে সংযোগ কৰাৰ অনুমতি নিদিব</translation>
 <translation id="7488573225650545859">আপোনাৰ এপৰ সূচীখনত টেব চোৱাটো লুকুৱাওক</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@
 <translation id="7804248752222191302">এটা ছাইটে আপোনাৰ কেমেৰা ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7805832099057502789">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="7807060072011926525">Googleএ প্ৰদান কৰিছে</translation>
+<translation id="7809029041571842593">নতুন টেবৰ পৃষ্ঠাখনৰ কাৰ্ডসমূহৰ তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="7815680994978050279">ক্ষতিকাৰক সমলৰ ডাউনল’ড অৱৰোধ কৰা হৈছে</translation>
 <translation id="7835852323729233924">মিডিয়া প্লে’ হৈ আছে</translation>
 <translation id="783819812427904514">ভিডিঅ' আনমিউট কৰক</translation>
@@ -645,6 +648,7 @@
 <translation id="8441146129660941386">পিছলৈ ছীক কৰক</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" />ক আপোনাৰ অৱস্থান এক্সেছ কৰিবলৈ দিবলৈ <ph name="BEGIN_LINK" />Android ছেটিংসমূহ<ph name="END_LINK" />তো অৱস্থান অন কৰক।</translation>
 <translation id="8447861592752582886">ডিভাইচৰ অনুমতি প্ৰত্যাহাৰ কৰক</translation>
+<translation id="8467359479529706065">নতুন টেবৰ পৃষ্ঠাখন প্ৰদৰ্শিত হোৱা তলৰ শ্বীটখন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="8471525937465764768">ছাইটসমূহে সচৰাচৰ নথি প্ৰিণ্ট কৰা অথবা এটা ষ্ট'ৰেজ ডিভাইচত ছেভ কৰাৰ দৰে সুবিধাসমূহৰ বাবে ইউএছবি ডিভাইচসমূহৰ সৈতে সংযোগ কৰে</translation>
 <translation id="8473055640493819707">’<ph name="APP_NAME" />’ৰ ম্যাদ উকলিছে। অনুগ্ৰহ কৰি এপ্‌টো পুনৰ ইনষ্টল কৰক।</translation>
 <translation id="847433688444405067">বিভিন্ন ডিভাইচত ব্ৰাউজ কৰক</translation>
@@ -660,7 +664,6 @@
 <translation id="8549127125482561383">অনুৰোধ কিদৰে দেখুৱাব পাৰি</translation>
 <translation id="8558480467877843976">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংক ব্ৰাউজ কৰিলে অথবা টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="857943718398505171">অনুমোদিত (চুপাৰিছ কৰা)</translation>
-<translation id="8580511488901768832">মোৰ শ্বৰ্টকাটৰ তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="8593422116412089302">অন কৰা থাকিলে, ছাইটে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ বিচাৰিব পাৰে। অফ কৰা থাকিলে, ছাইটে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিবলৈ বিচাৰিব নোৱাৰে।</translation>
 <translation id="8609465669617005112">ওপৰলৈ নিয়ক</translation>
 <translation id="8617611086246832542">অন কৰা থাকিলে, ৱেবছাইটটোৰ ডেস্কটপ ভিউ দেখুওৱা হয়। অফ কৰা থাকিলে, ৱেবছাইটটোৰ ম’বাইল ভিউ দেখুওৱা হয়।</translation>
@@ -678,6 +681,7 @@
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8737426583868847403">আপুনি কাষ্টম জুমৰ স্তৰ ছেভ কৰা ছাইটসমূহ ইয়াত প্ৰদৰ্শিত হ’ব</translation>
 <translation id="8751914237388039244">কোনো প্ৰতিচ্ছবি বাছনি কৰক</translation>
+<translation id="8775741625735357092">আপুনি ছেটিং &gt; ৰূপত বুকমাৰ্কৰ বাৰ অন কৰিব পাৰে</translation>
 <translation id="8800034312320686233">ছাইটটোৱে কাম কৰা নাই নেকি?</translation>
 <translation id="8801436777607969138">কোনো নির্দিষ্ট ছাইটৰ বাবে JavaScript অৱৰোধ কৰক।</translation>
 <translation id="8801657293260363985">V8 হৈছে Chromeৰ JavaScript আৰু ছাইটৰ কাৰ্যদক্ষতা উন্নত কৰিবলৈ WebAssembly ইঞ্জিন ব্যৱহাৰ কৰা হয়</translation>

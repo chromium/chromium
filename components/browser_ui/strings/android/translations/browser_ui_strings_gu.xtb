@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="1004806631856047384"><ph name="BEGIN_LINK1" />Android સેટિંગ<ph name="END_LINK1" />માં મેનેજ કરો
-
-અદ્યતન સુરક્ષા આ Chrome સેટિંગને નિયંત્રિત કરે છે:
-• "હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો" ચાલુ છે.
-• "JavaScript ઑપ્ટિમાઇઝર" બંધ છે. <ph name="BEGIN_LINK2" />સાઇટના અપવાદોને મેનેજ કરો<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">ઑનલાઇન ખોલો</translation>
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1070329623210597193">આ સાઇટ ફાઇલો જોઈ શકે છે અથવા તેમાં ફેરફાર કરી શકે છે</translation>
@@ -74,6 +69,7 @@
 <translation id="1816835383954230954">ચાલુ હોય, ત્યારે Chrome વધુ ઝડપથી કામ કરે છે અને JavaScriptનો ઉપયોગ કરતી સુવિધાઓ ડિઝાઇન પ્રમાણે કામ કરવી જોઈએ. બંધ હોય, ત્યારે આ પર્ફોર્મન્સ ઘટાડે છે પરંતુ V8ને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે.</translation>
 <translation id="1818308510395330587"><ph name="APP_NAME" />ને ARનો વપરાશ કરવા દેવા માટે, <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માંથી પણ કૅમેરા ચાલુ કરો.</translation>
 <translation id="1848033246551405023">ફૉન્ટ Sans Serif</translation>
+<translation id="1861262398884155592">આ ફોલ્ડર ખાલી છે</translation>
 <translation id="1881806992065048905">નવા ટૅબ પેજ દેખાવની બોટમ શીટ</translation>
 <translation id="1887786770086287077">આ ઉપકરણ માટે સ્થાન ઍક્સેસ બંધ છે. તેને <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં ચાલુ કરો.</translation>
 <translation id="1906181697255754968">તમારું કાર્ય ઑટોમૅટિક રીતે સાચવવા જેવી સુવિધાઓ માટે, સાઇટ તમારા ડિવાઇસ પર ફાઇલોને અને ફોલ્ડરોને ઍક્સેસ કરી શકે છે</translation>
@@ -308,6 +304,7 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> હેઠળની બધી સાઇટ</translation>
 <translation id="4340799661701629185">સાઇટને નોટિફિકેશન મોકલવાની મંજૂરી આપશો નહીં</translation>
 <translation id="4402755511846832236">તમે સક્રિય રીતે આ ડિવાઇસનો ઉપયોગ ક્યારે કરો છો, તેની જાણ ન થાય એ માટે સાઇટ બ્લૉક કરો</translation>
+<translation id="4412683424767388419">Chromeની રંગોવાળી બોટમ શીટ અડધી ઊંચાઈએ ખૂલી ગઈ છે</translation>
 <translation id="4412992751769744546">તૃતીય-પક્ષ કૂકીઝને મંજૂરી આપો</translation>
 <translation id="4419929467120297501">Chrome સાઇટને તમે બ્રાઉઝ કરો ત્યારે તમને ટ્રૅક કરવા માટે ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાથી બ્લૉક કરે છે. <ph name="BEGIN_LINK" />ત્રીજા પક્ષની કુકીના ઍક્સેસને મેનેજ<ph name="END_LINK" /> કરવા સેટિંગની મુલાકાત લો.</translation>
 <translation id="4425416282877905577">ફૉન્ટ Serif</translation>
@@ -371,6 +368,7 @@
 <translation id="5116239826668864748">તમે મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર કોઈપણ સમયે ટૅપ કરીને Chromeનો ઉપયોગ કરી શકશો</translation>
 <translation id="5123685120097942451">છૂપા મોડમાંની ટૅબ</translation>
 <translation id="512938610812707830">નવા ટૅબ પેજના દેખાવની થીમના સંગ્રહોની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
+<translation id="5137460097045297858">Discover ફીડની બોટમ શીટ અડધી ઊંચાઈએ ખૂલી ગઈ છે</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો}one{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો}other{તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડા}}</translation>
 <translation id="5186036860380548585">સ્ક્રીનની ટોચની નજીક વિકલ્પ ઉપલબ્ધ છે</translation>
 <translation id="5197729504361054390">તમે પસંદ કરશો તે સંપર્કોને <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> સાથે શેર કરવામાં આવશે.</translation>
@@ -389,7 +387,6 @@
 <translation id="5335288049665977812">સાઇટને JavaScript ચલાવાની મંજૂરી આપો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="534295439873310000">NFC ડિવાઇસ</translation>
 <translation id="5344522958567249764">જાહેરાત સંબંધી પ્રાઇવસી મેનેજ કરો</translation>
-<translation id="5371407439562620893">JavaScript ઑપ્ટિમાઇઝેશન અને સુરક્ષા</translation>
 <translation id="5373874281522292782">તમારા ટૅબના ગ્રૂપ સાચવવામાં આવ્યા છે</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ વધુ 1)}one{(+ વધુ #)}other{(+ વધુ #)}}</translation>
 <translation id="5403592356182871684">નામ</translation>
@@ -448,6 +445,7 @@
 <translation id="5968921426641056619">વેબ ઍડ્રેસ દાખલ કરો</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Discover ફીડ ચાલુ કરો</translation>
 <translation id="6012967556075291653">પિન કરેલો શૉર્ટકટ</translation>
 <translation id="6015775454662021376">આ સાઇટના તમારા ડિવાઇસના ઍક્સેસનું નિયંત્રણ કરો</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -470,6 +468,7 @@
 <translation id="6207207788774442484">ડેટા ડિલીટ કરો અને પરવાનગીઓ રીસેટ કરો</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' અનઇન્સ્ટૉલ કરીએ?</translation>
 <translation id="6234351944623978659">ઍપ બ્રાઉઝ કરો &gt; Chrome પર ટૅપ કરો</translation>
+<translation id="6260830281887654268">નવા ટૅબ પેજના દેખાવની થીમના સંગ્રહોની બોટમ શીટ અડધી ઊંચાઈએ ખૂલી ગઈ છે</translation>
 <translation id="6262191102408817757">તમારા છેલ્લા ટૅબના આધારે</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ને બ્લૉક કર્યા</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
@@ -503,6 +502,7 @@
 <translation id="662080504995468778">અહીં જ રહો</translation>
 <translation id="6635327442719709864">જ્યારે વિકલ્પ ચાલુ હોય, ત્યારે સાઇટ, સીરિયલ પોર્ટનો ઉપયોગ કરવા માટે પૂછી શકે છે. જ્યારે વિકલ્પ બંધ હોય, ત્યારે સાઇટ, સીરિયલ પોર્ટનો ઉપયોગ કરી શકતી નથી.</translation>
 <translation id="6678072580827808850">સલામતી માટે તપાસનો રિવ્યૂ કરો</translation>
+<translation id="6682057173375416470">નવા ટૅબ પેજ પર સૂચવેલા લેખ મેળવો</translation>
 <translation id="6683865262523156564">આ સાઇટ એવા ગ્રૂપમાં શામેલ છે, જે તમારી ઍક્ટિવિટી જોઈ શકે છે. ગ્રૂપ <ph name="RWS_OWNER" /> દ્વારા નિર્ધારિત છે</translation>
 <translation id="6689172468748959065">પ્રોફાઇલ ફોટો</translation>
 <translation id="6697925417670533197">ડાઉનલોડ કરવાનું સક્રિય કરો</translation>
@@ -552,6 +552,7 @@
 <translation id="728412880473384942">સાઇટ વધુ ઝડપી પણ ઓછી સુરક્ષિત છે</translation>
 <translation id="7366415735885268578">એક સાઇટ ઉમેરો</translation>
 <translation id="7368695150573390554">ઑફલાઇન હોય એવો બધો ડેટા ડિલીટ કરવામાં આવશે</translation>
+<translation id="7369678931043226462">'તમારું નવું ટૅબ પેજ કસ્ટમાઇઝ કરો'ની બોટમ શીટ અડધી ઊંચાઈએ ખૂલી ગઈ છે</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> માટેના સેટિંગ</translation>
 <translation id="7399802613464275309">સલામતી માટે તપાસ</translation>
 <translation id="7406113532070524618">આ સેટિંગ તમારી ઓળખ કર્યા વિના અથવા સાઇટને તમારો બ્રાઉઝિંગ ઇતિહાસ જોવાની મંજૂરી આપ્યા વિના કામ કરે છે, તેમ છતાં ચકાસણીના ભાગ તરીકે થોડીક માહિતી શેર કરી શકે છે</translation>
@@ -559,6 +560,7 @@
 <translation id="7423098979219808738">પ્રથમ પૂછો</translation>
 <translation id="7423538860840206698">ક્લિપબોર્ડ વાંચવાનું બ્લૉક કરેલ છે</translation>
 <translation id="7425915948813553151">સાઇટ માટે ઘેરી થીમ</translation>
+<translation id="746412105358554870">JavaScript ઑપ્ટિમાઇઝેશન અને સુરક્ષા</translation>
 <translation id="7478658909253570368">સાઇટને સીરિયલ પોર્ટ સાથે કનેક્ટ થવાની મંજૂરી આપશો નહીં</translation>
 <translation id="7488573225650545859">તમારી ઍપની સૂચિમાં ટૅબ છુપાવો કે જુઓ</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@
 <translation id="7804248752222191302">કોઈ સાઇટ તમારા કૅમેરાનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7805832099057502789">નવા ટૅબ પેજ દેખાવની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="7807060072011926525">Google દ્વારા પ્રદાન કરાયેલું</translation>
+<translation id="7809029041571842593">નવા ટૅબ પેજ કાર્ડની બોટમ શીટ અડધી ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="7815680994978050279">જોખમી ડાઉનલોડને અવરોધ્યું</translation>
 <translation id="7835852323729233924">મીડિયા ચલાવી રહ્યાં છીએ</translation>
 <translation id="783819812427904514">વીડિયોને અનમ્યૂટ કરો</translation>
@@ -645,6 +648,7 @@
 <translation id="8441146129660941386">પાછળ કરો</translation>
 <translation id="8444433999583714703"><ph name="APP_NAME" /> તમારું સ્થાન ઍક્સેસ કરી શકે તે માટે, <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ સ્થાન ચાલુ કરો.</translation>
 <translation id="8447861592752582886">ઉપકરણની પરવાનગી રદબાતલ કરો</translation>
+<translation id="8467359479529706065">નવા ટૅબ પેજ દેખાવની બોટમ શીટ અડધી ઊંચાઈએ ખોલવામાં આવી</translation>
 <translation id="8471525937465764768">દસ્તાવેજ પ્રિન્ટ કરવા જેવી અથવા સ્ટોરેજ ડિવાઇસમાં સાચવવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે USB ડિવાઇસ સાથે કનેક્ટ કરે છે</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' જૂનું થઈ ગયું છે. કૃપા કરીને ઍપ ફરીથી ઇન્સ્ટૉલ કરો.</translation>
 <translation id="847433688444405067">સમગ્ર ડિવાઇસ પર બ્રાઉઝ કરો</translation>
@@ -660,7 +664,6 @@
 <translation id="8549127125482561383">વિનંતીઓ બતાવવાની રીત</translation>
 <translation id="8558480467877843976">હવે તમે કોઈપણ સમયે બ્રાઉઝ કરીને અથવા મેસેજ, દસ્તાવેજો અને અન્ય ઍપમાં લિંક પર ટૅપ કરીને Chromeનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="857943718398505171">મંજૂર (ભલામણ કરેલ)</translation>
-<translation id="8580511488901768832">મારા શૉર્ટકટની બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખૂલી ગઈ છે</translation>
 <translation id="8593422116412089302">ચાલુ હોય ત્યારે, સાઇટ તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવા માટે પૂછી શકે છે. બંધ હોય ત્યારે, સાઇટ તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવા માટે પૂછી શકતી નથી.</translation>
 <translation id="8609465669617005112">ઉપર ખસેડો</translation>
 <translation id="8617611086246832542">ચાલુ હોય ત્યારે, વેબસાઇટનો ડેસ્કટૉપ વ્યૂ બતાવવામાં આવે છે. બંધ હોય ત્યારે, વેબસાઇટનો મોબાઇલ વ્યૂ બતાવવામાં આવે છે.</translation>
@@ -678,6 +681,7 @@
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8737426583868847403">તમે જે સાઇટ માટે કસ્ટમ ઝૂમ લેવલ સાચવો છો તે અહીં દેખાશે</translation>
 <translation id="8751914237388039244">છબી પસંદ કરો</translation>
+<translation id="8775741625735357092">તમે સેટિંગ &gt; દેખાવમાં બુકમાર્ક બાર ચાલુ કરી શકો છો</translation>
 <translation id="8800034312320686233">સાઇટ કામ નથી કરતી?</translation>
 <translation id="8801436777607969138">કોઈ ચોક્કસ સાઇટ માટે JavaScriptને બ્લૉક કરો.</translation>
 <translation id="8801657293260363985">V8 એ Chromeનું JavaScript અને WebAssembly એન્જિન છે જેનો ઉપયોગ સાઇટનું પર્ફોર્મન્સ બહેતર બનાવવા માટે થાય છે</translation>

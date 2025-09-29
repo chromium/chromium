@@ -23,7 +23,7 @@
 <translation id="1821985195704844674">רשת של עץ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1823704031293214298">הכותרת התחתונה של הדף</translation>
-<translation id="1832974991323546415">הפעלה במכשיר שמחובר לרשת אחרת</translation>
+<translation id="1832974991323546415">הפעלה במכשיר מרוחק</translation>
 <translation id="1838681052457320736">תיבת דו-שיח של התראה</translation>
 <translation id="1842960171412779397">בחירה</translation>
 <translation id="190587075670221089">מחיקה</translation>
@@ -42,7 +42,7 @@
 <translation id="248395913932153421">יום</translation>
 <translation id="2508569020611168319">רשימת כרטיסיות</translation>
 <translation id="2530182415807757784">ניתן לבחור יותר מאפשרות אחת, לא נבחרה אף אפשרות.</translation>
-<translation id="2561842179657104141">הצגת עוד ממשקי שליטה במדיה</translation>
+<translation id="2561842179657104141">הצגת עוד פקדי מדיה</translation>
 <translation id="2572483411312390101">הפעלה</translation>
 <translation id="2634240155926812724">הערוץ הירוק</translation>
 <translation id="2657045182931379222">אובייקט גרפי</translation>
@@ -64,7 +64,7 @@
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3557673793733683882">כותרת <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">בורר השבועות</translation>
-<translation id="3706100364254443312">מתג</translation>
+<translation id="3706100364254443312">מעבר</translation>
 <translation id="3808586225841795776">מונח</translation>
 <translation id="3920932319529768807">סיכום</translation>
 <translation id="3924558731517983934">אפליקציה</translation>
@@ -76,7 +76,7 @@
 <translation id="4160057747563657758">טלפון</translation>
 <translation id="4193965531860883258">מבוא</translation>
 <translation id="4201051445878709314">הצגת חודש קודם</translation>
-<translation id="4202807286478387388">דילוג</translation>
+<translation id="4202807286478387388">קפיצה</translation>
 <translation id="421884353938374759">color picker</translation>
 <translation id="4248100235867064564">שורת תפריטים</translation>
 <translation id="4293574643247337246">הכותרת העליונה של הדף</translation>
@@ -110,7 +110,7 @@
 <translation id="5143125788380636750">אפילוג</translation>
 <translation id="5199514351668672591">חזרה לאפשרויות</translation>
 <translation id="5272594226096532950">לא מסומן. בקבוצה, אפשרות <ph name="INDEX" /> מתוך <ph name="COUNT" /></translation>
-<translation id="536313653113267135">כבר ביקרת כאן</translation>
+<translation id="536313653113267135">visited</translation>
 <translation id="5378437566635403538">הורחב, תיבת הדו-שיח נפתחה.</translation>
 <translation id="5406322316791861025">ספרה</translation>
 <translation id="5425179576310518467">התאריך הנוכחי</translation>

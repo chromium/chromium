@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">你可以前往廣告隱私權設定進行變更</translation>
 <translation id="1780659583673667574">舉例來說，如果你造訪某個網站尋找晚餐食譜，該網站可能會判定你對烹飪感興趣。之後，另一個網站可能會根據第一個網站的建議，向你顯示雜貨外送服務相關的廣告。</translation>
 <translation id="1887631853265748225">廣告隱私權功能可限制網站及其廣告合作夥伴能取得哪些個人資訊，用於顯示個人化廣告。</translation>
+<translation id="19426210786412737">系統已更新目前的 Chrome 設定，允許網站存取第三方 Cookie。你隨時可以變更這項設定。</translation>
 <translation id="1954777269544683286">Google 會要求公司公開聲明，不跨網站使用這類資料追蹤你的活動。公司必須負責向使用者告知資料用途。<ph name="BEGIN_LINK" />詳情請參閱《隱私權政策》<ph name="END_LINK" />。</translation>
 <translation id="2004697686368036666">某些網站的功能可能無法運作</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />如何管理這類資料？<ph name="END_BOLD" />Chrome 會自動刪除 30 天前的網站，但你再次造訪的網站可能會重新列入清單。你隨時可以在 Chrome 設定中禁止特定網站提供廣告建議，也可以關閉網站建議廣告設定。</translation>
@@ -46,7 +47,7 @@
 <translation id="3187472288455401631">廣告評估</translation>
 <translation id="3425311689852411591">依賴第三方 Cookie 的網站應該都能正常運作</translation>
 <translation id="3442071090395342573">Chromium 會在 30 天後刪除你提供給網站的所有活動資料。如果你再次造訪某個網站，該網站可能會重新列入清單。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chromium 中管理廣告隱私權<ph name="END_LINK" />。</translation>
-<translation id="3467081767799433066">藉由廣告評估機制，網站間可分享某些特定資料，以評估廣告成效，例如使用者是否在造訪網站後購物。</translation>
+<translation id="3467081767799433066">藉由廣告評估機制，不同網站間可分享某些特定資料，以評估廣告成效，例如使用者是否在造訪網站後購物。</translation>
 <translation id="3624583033347146597">選擇第三方 Cookie 偏好設定</translation>
 <translation id="364348650177270461">Chromium 會盡可能限制嵌入的網站存取裝置和瀏覽器資料 (例如時區或安裝的字型)，避免這些網站取得你的個人資訊</translation>
 <translation id="3645682729607284687">Chrome 會根據你最近瀏覽的網站，記錄感興趣的主題，例如運動、服飾等等</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">網站可以透過第三方 Cookie，瞭解你在其他網站的操作</translation>
 <translation id="6388287739339671750">封鎖追蹤指令碼</translation>
 <translation id="6398358690696005758">想進一步瞭解 Google 如何保護你的資料，請參閱《<ph name="BEGIN_LINK1" />隱私權政策<ph name="LINK_END1" />》。</translation>
+<translation id="6494210367693221285">系統已更新目前的 Chromium 設定，允許網站存取第三方 Cookie。你隨時可以變更這項設定。</translation>
 <translation id="6702015235374976491">廣告主題可協助網站向你顯示相關廣告，同時保護你的瀏覽記錄和身分資料。Chrome 可以根據你近期的瀏覽記錄，記下感興趣的主題。此後，你造訪的網站就可以要求 Chrome 提供相關主題，據此向你放送個人化廣告。</translation>
 <translation id="6710025070089118043">網站無法運用第三方 Cookie 提供個人化內容和廣告，也無法瞭解你在其他網站的操作，除非你允許相關網站存取這些 Cookie</translation>
 <translation id="6737378617247709185">在無痕模式下，Chromium 會封鎖第三方 Cookie，但管理員允許這個網站使用第三方 Cookie。無痕模式也能提供額外的追蹤保護功能。如要管理無痕模式追蹤保護功能，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">在一般的 Chromium 視窗中開啟</translation>
 <translation id="8578320000709741352">你造訪的網站可能會嵌入其他網站的內容和服務 (例如圖片、廣告和文字)，這可能被利用來取得個人資訊。進一步瞭解如何管理<ph name="START_LINK" />無痕模式追蹤保護功能<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">在新分頁中開啟《隱私權政策》</translation>
+<translation id="8712637175834984815">我知道了</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />如何管理這類資料？<ph name="END_BOLD" />Chrome 會自動刪除 4 週前的主題，但隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你隨時可以在 Chrome 設定中封鎖不想讓 Chrome 與網站分享的主題，也可以關閉廣告主題設定。</translation>
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8825639607990802302">隱私權和網站資料選項</translation>

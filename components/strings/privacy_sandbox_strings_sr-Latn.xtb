@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Možete da promenite podešavanja privatnosti sa oglasima</translation>
 <translation id="1780659583673667574">Na primer, ako posetite sajt da biste pronašli recepte za večeru, taj sajt može da odluči da vas zanima kuvanje. Kasnije drugi sajt može da vam prikaže povezan oglas za uslugu dostave namirnica koju je predložio prvi sajt.</translation>
 <translation id="1887631853265748225">Funkcije za privatnost sa oglasima pomažu u ograničavanju informacija koje veb-sajtovi i njihovi partneri za oglašavanje mogu da saznaju o vama kada vam prikazuju personalizovane oglase.</translation>
+<translation id="19426210786412737">Aktuelna Chrome podešavanja su ažurirana tako da omogućavaju veb-sajtovima da pristupaju kolačićima treće strane. Ovo podešavanje možete da promenite u bilo kom trenutku.</translation>
 <translation id="1954777269544683286">Google zahteva od preduzeća da javno navedu da neće koristiti ove podatke za praćenje na sajtovima. Preduzeća su odgovorna za to da vas obaveste kako koriste vaše podatke. <ph name="BEGIN_LINK" />Saznajte više u politici privatnosti<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funkcije na nekim sajtovima mogu da ne rade</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Kako možete da upravljate ovim podacima?<ph name="END_BOLD" /> Chrome automatski briše sajtove starije od 30 dana. Sajt koji ponovo posetite može opet da se pojavi na listi. U svakom trenutku u podešavanjima Chrome-a možete i da blokirate sajt da vam ne bi predlagao oglase, kao i da isključite oglase koje predlažu sajtovi.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Sajtovi mogu da koriste kolačiće trećih strana da bi saznali nešto o radnjama koje preduzimate na drugim sajtovima</translation>
 <translation id="6388287739339671750">Blokiraj skripte za praćenje</translation>
 <translation id="6398358690696005758">U <ph name="BEGIN_LINK1" />Politici privatnosti<ph name="LINK_END1" /> saznajte više o tome kako Google štiti podatke.</translation>
+<translation id="6494210367693221285">Aktuelna Chromium podešavanja su ažurirana tako da dozvoljavaju veb-sajtovima da pristupaju kolačićima treće strane. Ovo podešavanje možete da promenite u bilo kom trenutku.</translation>
 <translation id="6702015235374976491">Teme oglasa pomažu veb-sajtovima da vam prikazuju relevantne oglase dok štite vašu istoriju pregledanja i identitet. Chrome može da beleži teme koje vas interesuju na osnovu nedavne istorije pregledanja. Sajt koji kasnije posetite može da zatraži od Chrome-a relevantne teme da bi personalizovao oglase koji vam se prikazuju.</translation>
 <translation id="6710025070089118043">Sajtovi ne mogu da koriste kolačiće trećih strana za personalizaciju sadržaja i oglasa i da bi saznali više o radnjama koje obavljate na drugim sajtovima ako ne dozvolite srodnim sajtovima da im pristupaju</translation>
 <translation id="6737378617247709185">Chromium blokira kolačiće trećih strana u režimu bez arhiviranja, ali je administrator dozvolio kolačiće treće strane za ovaj sajt. Režim bez arhiviranja može da pruži i dodatnu zaštitu od praćenja. Upravljajte zaštitom od praćenja u režimu bez arhiviranja u <ph name="BEGIN_LINK" />Podešavanjima<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Otvara se u običnom Chromium prozoru</translation>
 <translation id="8578320000709741352">Sajtovi koje posećujete mogu da ugrade sadržaj i usluge sa drugih sajtova (poput slika, oglasa i teksta) koji može da se koristi da bi se saznalo više o vama. Saznajte više o upravljanju <ph name="START_LINK" />zaštitama od praćenja u režimu bez arhiviranja<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otvara politiku privatnosti na novoj kartici</translation>
+<translation id="8712637175834984815">Važi</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Kako možete da upravljate ovim podacima?<ph name="END_BOLD" /> Chrome automatski briše teme starije od 4 nedelje. Kada nastavite da pregledate, tema će se možda ponovo pojaviti na listi. Možete i da blokirate teme koje ne želite da Chrome deli sa sajtovima i da u svakom trenutku isključite teme oglasa u podešavanjima Chrome-a.</translation>
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8825639607990802302">Opcije za privatnost i podatke o sajtovima</translation>

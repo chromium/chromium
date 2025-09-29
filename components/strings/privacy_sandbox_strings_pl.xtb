@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Możesz wprowadzić zmiany w ustawieniach dotyczących prywatności w reklamach</translation>
 <translation id="1780659583673667574">Na przykład jeśli odwiedzasz stronę z przepisami kulinarnymi, witryna może uznać, że interesuje Cię gotowanie. Inna witryna może później wyświetlić powiązaną reklamę usługi dostawy artykułów spożywczych zaproponowaną przez pierwszą witrynę.</translation>
 <translation id="1887631853265748225">Funkcje ochrony prywatności w reklamach pomagają ograniczać informacje na Twój temat, które witryny i ich partnerzy reklamowi mogą poznać, gdy wyświetlają reklamy spersonalizowane.</translation>
+<translation id="19426210786412737">Ustawienia Chrome zostały zaktualizowane i zezwalają witrynom na dostęp do plików cookie innych firm. W każdej chwili możesz zmienić to ustawienie.</translation>
 <translation id="1954777269544683286">Google wymaga od firm, aby publicznie oświadczyły, że nie będą używać tych danych do śledzenia Cię w różnych witrynach. Firmy są odpowiedzialne za informowanie Cię o tym, jak używają Twoich danych. <ph name="BEGIN_LINK" />Więcej informacji znajdziesz w naszej Polityce prywatności<ph name="END_LINK" /></translation>
 <translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Jak możesz zarządzać tymi danymi?<ph name="END_BOLD" /> Chrome automatycznie usuwa witryny odwiedzone ponad 30 dni wcześniej. Witryna, którą odwiedzisz ponownie, może pojawić się znów na liście. W ustawieniach Chrome możesz też w każdej chwili zablokować witrynie możliwość sugerowania reklam i wyłączyć reklamy sugerowane przez witryny.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Witryny mogą używać plików cookie innych firm, aby śledzić Twoje działania w innych witrynach</translation>
 <translation id="6388287739339671750">Blokuj skrypty śledzące</translation>
 <translation id="6398358690696005758">Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej <ph name="BEGIN_LINK1" />Polityce prywatności<ph name="LINK_END1" />.</translation>
+<translation id="6494210367693221285">Ustawienia Chromium zostały zaktualizowane i zezwalają witrynom na dostęp do plików cookie innych firm. W każdej chwili możesz zmienić to ustawienie.</translation>
 <translation id="6702015235374976491">Tematy reklam pomagają witrynom wyświetlać trafne reklamy, chroniąc przy tym Twoją historię przeglądania i tożsamość. Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania. Witryna, którą później odwiedzisz, może zapytać Chrome o odpowiednie tematy, żeby spersonalizować wyświetlane Ci reklamy.</translation>
 <translation id="6710025070089118043">Witryny nie mogą używać plików cookie innych firm do personalizowania treści i reklam ani do śledzenia Twoich działań w innych witrynach, chyba że zezwolisz na to powiązanym witrynom</translation>
 <translation id="6737378617247709185">Chromium w trybie incognito blokuje pliki cookie innych firm, ale administrator zezwolił na nie w tej witrynie. Tryb incognito może też zapewniać dodatkową ochronę przed śledzeniem. Możesz nią zarządzać w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Otwiera się w zwykłym oknie Chromium</translation>
 <translation id="8578320000709741352">Odwiedzane przez Ciebie witryny mogą umieszczać treści i usługi z innych witryn (np. obrazy, reklamy i tekst), które mogą być wykorzystywane do zbierania informacji o Tobie. Więcej informacji o zarządzaniu <ph name="START_LINK" />ochroną przed śledzeniem w trybie incognito<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otwiera Politykę prywatności w nowej karcie</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Jak możesz zarządzać tymi danymi?<ph name="END_BOLD" /> Chrome automatycznie usuwa tematy starsze niż 4 tygodnie. Podczas dalszego przeglądania temat może się pojawić ponownie na liście. W ustawieniach Chrome możesz też w dowolnym momencie zablokować tematy reklam, których Chrome ma nie udostępniać witrynom, lub w ogóle je wyłączyć.</translation>
 <translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
 <translation id="8825639607990802302">Opcje prywatności i danych witryn</translation>

@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Promjene možete unijeti u postavkama zaštite privatnosti u online oglašavanju</translation>
 <translation id="1780659583673667574">Na primjer, ako posjetite web-lokaciju da biste pronašli recepte za večeru, ta web-lokacija može zaključiti da vas zanima kuhanje. Poslije vam druga web-lokacija može prikazati povezani oglas za uslugu dostave namirnica koju je predložila prva web-lokacija.</translation>
 <translation id="1887631853265748225">Značajke zaštite privatnosti u online oglašavanju pomažu ograničiti što web-lokacije i njihovi partneri za oglašavanje mogu saznati o vama kad vam prikazuju personalizirane oglase.</translation>
+<translation id="19426210786412737">Vaše trenutačne postavke Chromea ažurirane su tako da web-lokacijama omogućuju pristup kolačićima trećih strana. Tu postavku uvijek možete izmijeniti.</translation>
 <translation id="1954777269544683286">Google od tvrtki zahtijeva da javno navedu da te podatke neće upotrebljavati da bi vas pratile na web-lokacijama. Tvrtke su odgovorne za to da vas obavijeste o tome kako upotrebljavaju vaše podatke. <ph name="BEGIN_LINK" />Saznajte više u našim pravilima o privatnosti<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Značajke na nekim web-lokacijama možda neće funkcionirati</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Kako možete upravljati tim podacima?<ph name="END_BOLD" /> Chrome automatski briše web-lokacije starije od 30 dana. Web-lokacija koju posjetite ponovno se može opet pojaviti na popisu. U postavkama Chromea također uvijek možete blokirati web-lokaciju kako vam ne bi mogla predlagati oglase i isključiti oglase koje predlažu web-lokacije.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Web-lokacije mogu upotrebljavati kolačiće trećih strana kako bi saznale više o radnjama koje poduzimate na drugim web-lokacijama</translation>
 <translation id="6388287739339671750">Blokiraj skripte za praćenje</translation>
 <translation id="6398358690696005758">Saznajte više o tome kako Google štiti vaše podatke u našim <ph name="BEGIN_LINK1" />pravilima o privatnosti<ph name="LINK_END1" />.</translation>
+<translation id="6494210367693221285">Vaše trenutačne postavke Chromiuma ažurirane su tako da web-lokacijama omogućuju pristup kolačićima trećih strana. Tu postavku uvijek možete izmijeniti.</translation>
 <translation id="6702015235374976491">Teme oglasa pomažu web-lokacijama da vam prikažu relevantne oglase, a istovremeno štite vašu povijest pregledavanja i identitet. Chrome može bilježiti teme koje vas zanimaju na temelju vaše nedavne povijesti pregledavanja. Web-lokacija koju poslije posjetite od Chromea može tražiti relevantne teme kako bi personalizirala oglase koji će vam se prikazivati.</translation>
 <translation id="6710025070089118043">Web-lokacije ne mogu upotrebljavati kolačiće trećih strana za personalizaciju sadržaja i oglasa te da bi saznale više o vašim radnjama na drugim web-lokacijama, osim ako povezanim web-lokacijama omogućite pristup njima</translation>
 <translation id="6737378617247709185">Chromium blokira kolačiće trećih strana u anonimnom načinu, no vaš je administrator dopustio kolačiće trećih strana za ovu web-lokaciju. Anonimni način može pružiti i dodatne mjere zaštite od praćenja. Mjerama zaštite od praćenja pri anonimnom pregledavanju možete upravljati u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Otvara se u običnom prozoru Chromiuma</translation>
 <translation id="8578320000709741352">Web-lokacije koje posjećujete mogu ugraditi sadržaj i usluge s drugih web-lokacija (kao što su slike, oglasi i tekst) koji se može upotrijebiti za prikupljanje informacija o vama. Saznajte više o upravljanju <ph name="START_LINK" />mjerama zaštite od praćenja pri anonimnom pregledavanju<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otvara pravila o privatnosti na novoj kartici</translation>
+<translation id="8712637175834984815">Shvaćam</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Kako možete upravljati tim podacima?<ph name="END_BOLD" /> Chrome automatski briše teme starije od četiri tjedna. Kako nastavljate s pregledavanjem, tema se može ponovo pojaviti na popisu. U postavkama Chromea uvijek možete blokirati i teme koje ne želite da Chrome dijeli s web-lokacijama, a možete i isključiti teme oglasa.</translation>
 <translation id="8803526663383843427">Kad je značajka uključena</translation>
 <translation id="8825639607990802302">Opcije za privatnost i podatke web-lokacije</translation>

@@ -31,6 +31,7 @@
 <translation id="1138458427267715730">ទទួលបានការជូនដំណឹង នៅពេលដែលតម្លៃធ្លាក់ចុះនៅលើគេហទំព័រណាមួយលើបណ្ដាញ</translation>
 <translation id="1140317858355046628">ប្រសិនបើ​អ្នកលុបវា អ្នកគ្រប់គ្នា​នឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង "<ph name="GROUP_NAME" />" ភ្លាមៗ ហើយ​វានឹង​ត្រូវបានលុប​ចេញពី​ឧបករណ៍​ទាំងអស់។</translation>
 <translation id="1142732900304639782">មិនផ្ដល់ការបកប្រែគេហទំព័រទាំងនេះទេ</translation>
+<translation id="1143193470214071120">បិទ​វិនដូ ឬ​គ្រប់គ្រង​វិនដូ</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថា​អ្នកយល់ព្រម​តាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌ​ប្រើប្រាស់​បន្ថែមរបស់ Google Chrome និង ChromeOS<ph name="END_LINK2" />។</translation>
 <translation id="1154555449933432029">អ្នក​មិនមាន​ពាក្យ​សម្ងាត់​ដែលបាន​រក្សាទុក​នៅក្នុង​កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់​ទេ។</translation>
 <translation id="115483310321669804">ប្រើ​ពាក្យសម្ងាត់ <ph name="PASSWORD" /></translation>
@@ -273,11 +274,11 @@
 <translation id="2318045970523081853">ចុច​ដើម្បី​ហៅទូរសព្ទ</translation>
 <translation id="2323763861024343754">ទំហំផ្ទុកទិន្នន័យ</translation>
 <translation id="2328474416100889417">អ្នកគ្រប់គ្នា​នឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង “<ph name="GROUP_NAME" />” ភ្លាមៗ ហើយ​តំណអញ្ជើញ​ទាំងអស់​នឹងត្រូវបាន​បិទ</translation>
+<translation id="2330186936255788117">ចំណាំ​ច្រើនទៀត</translation>
 <translation id="2332515770639153015">ការរុករក​ដោយសុវត្ថិភាពបន្ថែម​ត្រូវបានបើក</translation>
 <translation id="233375395665273385">លុប និង​ចេញពី​គណនី</translation>
 <translation id="2341410551640223969">មិនអាចដំឡើង <ph name="WEBAPK_NAME" /> បានទេ។</translation>
 <translation id="2349710944427398404">ទិន្នន័យសរុបដែលបានប្រើដោយ Chrome ដោយរាប់បញ្ចូលទាំងគណនី ចំណាំ និងការកំណត់ដែលបានរក្សាទុក</translation>
-<translation id="2349954856814571872">រូបប៊ូតុង "របារចំណាំ"</translation>
 <translation id="235789365079050412">គោលការណ៍ឯកជនភាព Google</translation>
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2362083820973145409">បានចូលគណនី​ជា <ph name="USER_NAME" />។ <ph name="USER_EMAIL" />។ បើកការកំណត់។</translation>
@@ -408,6 +409,7 @@
 <translation id="2908243544703713905">អត្ថបទដែលមិនទាន់អានត្រៀមរួចរាល់ហើយ</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912345083818861431">ប្រើ​ការចាក់សោអេក្រង់ ដើម្បីមើលឃើញ​ផ្ទាំងឯកជនដែលបើក</translation>
+<translation id="2918484639460781603">ចូលទៅកាន់​ការកំណត់</translation>
 <translation id="2923908459366352541">ឈ្មោះ​មិន​ត្រឹមត្រូវ​ទេ</translation>
 <translation id="2932150158123903946">ទំហំផ្ទុក Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">ក្ដារចុច​របស់អ្នក​នឹងមិន​ផ្លាស់ប្ដូរ​ទេ</translation>
@@ -598,6 +600,7 @@
 <translation id="3845098929839618392">បើកនៅក្នុង​ផ្ទាំងឯកជន</translation>
 <translation id="3847319713229060696">ជួយ​ពង្រឹង​សុវត្ថិភាព​នៅលើ​អ៊ីនធឺណិត​សម្រាប់​អ្នករាល់គ្នា</translation>
 <translation id="385051799172605136">ថយក្រោយ</translation>
+<translation id="3851464569313827017"><ph name="SITE_ETLD_PLUS_ONE" /> បង្កប់​ខ្លឹមសារពី <ph name="IFRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="3856096718352044181">សូមផ្ទៀងផ្ទាត់ថា នេះគឺជាក្រុមហ៊ុនផ្ដល់សេវាត្រឹមត្រូវ ឬព្យាយាមម្ដងទៀតនៅពេលក្រោយ</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
 <translation id="3863527519275151528">កំពុង​ដំណើរការ​ការជូនដំណឹង</translation>
@@ -631,6 +634,7 @@
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{មាន​ពាក្យសម្ងាត់​ដែល​រងការលុកលុយ 1 នៅក្នុង​គណនី Google របស់អ្នក}other{មាន​ពាក្យសម្ងាត់​ដែល​រងការលុកលុយ # នៅក្នុង​គណនី Google របស់អ្នក}}</translation>
 <translation id="4016425174436051808">មិនអាច​តាមដានបានទេ។ មានអ្វីមួយខុសប្រក្រតី។</translation>
 <translation id="4024768890073681126">កម្មវិធីរុករក​តាមអ៊ីនធឺណិត​របស់អ្នក​ត្រូវបានគ្រប់គ្រង​ដោយ​មាតាបិតារបស់អ្នក</translation>
+<translation id="4027569221211770437">ថត <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ម៉ោង​}other{# ម៉ោង}}</translation>
 <translation id="4042941173059740150">បន្ត​ទៅកាន់ <ph name="SITE_ETLD_PLUS_ONE" /> ដោយ​ប្រើ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">សន្លឹក​ខាងក្រោម</translation>
@@ -724,7 +728,6 @@
 <translation id="4425173294238317796">សន្លឹក​បញ្ជាក់​កូដសម្ងាត់</translation>
 <translation id="442518031075347249">អ្នកនឹងមិនអាចប្រើកាតនិម្មិតរបស់អ្នកជាមួយ Google Pay បានទៀតទេ។ <ph name="BEGIN_LINK1" />ស្វែងយល់បន្ថែមអំពីកាតនិម្មិត<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> និង <ph name="TAB_COUNT_ONE" /> ផ្ទាំង​ផ្សេងទៀត​នឹងត្រូវ​បានបិទ}other{<ph name="TAB_TITLE" /> និង <ph name="TAB_COUNT_MANY" /> ផ្ទាំង​ផ្សេងទៀត​នឹងត្រូវ​បានបិទ}}</translation>
-<translation id="4426508677408162512">ចំណាំទាំងអស់</translation>
 <translation id="4430277756566635951">បច្ចុប្បន្ន បានជ្រើសរើស <ph name="EMAIL" />។ ជ្រើសរើស​គណនី។</translation>
 <translation id="4452411734226507615">បិទ​ផ្ទាំង <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">បានបន្ថែមចំណាំទៅ <ph name="FOLDER_NAME" /></translation>
@@ -900,6 +903,7 @@
 <translation id="5171045022955879922">ស្វែងរក ឬវាយបញ្ចូល URL</translation>
 <translation id="5174700554036517242">ផ្ទាំង​ត្រូវ​បានបង្រួម​ទៅកម្ពស់​ដំបូង​វិញ</translation>
 <translation id="5180063720319462041">បាន​បកប្រែ​ទំព័រ​ទៅ​ជា​ភាសា<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="5190835502935405962">របាចំណាំ</translation>
 <translation id="5191251636205085390">ស្វែងយល់អំពី និងគ្រប់គ្រងបច្ចេកវិទ្យាថ្មីៗ ដែលមានគោលបំណងជំនួសខូគីរបស់ភាគីទីបី</translation>
 <translation id="5197649123261764478">ងាយស្រួល​ចូលប្រើ​ចំណាំ​របស់អ្នក</translation>
 <translation id="5204967432542742771">បញ្ចូលពាក្យសម្ងាត់</translation>
@@ -985,6 +989,7 @@
 <translation id="5626134646977739690">ឈ្មោះ៖</translation>
 <translation id="5628604359369369630">មិនទាន់អាន - អាចប្រើបាន​ពេលគ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="5631483240431073854">គ្រប់គ្រង​ផ្ទាំង​ដែលបើក</translation>
+<translation id="5632485077360054581">បង្ហាញខ្ញុំ​អំពី​របៀប</translation>
 <translation id="564121214411935612">បានចូលគណនី​ជា <ph name="USER_NAME" />។ បញ្ហាគណនី Google។ បើកការកំណត់។</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ប្រវត្តិ​ស្វែងរក<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />ទម្រង់សកម្មភាព​ផ្សេងទៀត<ph name="END_LINK2" />អាចត្រូវបានរក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
 <translation id="5648166631817621825">7 ថ្ងៃមុន</translation>
@@ -1127,6 +1132,7 @@
 
 ឧទាហរណ៍៖ គេហទំព័រមួយចំនួនអាចឆ្លើយតបទៅនឹងការស្នើសុំនេះដោយការបង្ហាញពាណិជ្ជកម្មដល់អ្នកដោយមិនផ្អែកលើគេហទំព័រផ្សេងទៀតដែលអ្នកបានចូលទៅកាន់។ គេហទំព័រជាច្រើននឹងនៅតែប្រមូល និងប្រើទិន្នន័យការរុករករបស់អ្នកដដែល។ ឧទាហរណ៍ដើម្បីពង្រឹងសុវត្ថិភាព ដើម្បីផ្តល់មាតិកា ពាណិជ្ជកម្ម និងការណែនាំនៅលើគេហទំព័ររបស់ពួកគេ និងដើម្បីបង្កើតស្ថិតិរបាយការណ៍។</translation>
 <translation id="6247557882553405851">កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google</translation>
+<translation id="6248988683584659830">ការកំណត់ការស្វែងរក</translation>
 <translation id="6251449557817521191">មើល​ប្រវត្តិ Chrome របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6254139308321626268">អ្នក​កំពុងមើល​ឯកសារ PDF</translation>
 <translation id="6255809143828972562">តាមរយៈ​ឧបករណ៍​ពី Chrome អ្នកអាច​រុករក​ដោយ​សុវត្ថិភាព និង​រក្សា​ការគ្រប់គ្រងបាន</translation>
@@ -1255,6 +1261,7 @@
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ផ្ទាំង​ឯកជន និង <ph name="TAB_COUNT_ONE" /> ផ្ទាំង​ផ្សេងទៀត​នឹងត្រូវ​បានបិទ}other{<ph name="INCOGNITO_TAB_COUNT" /> ផ្ទាំង​ឯកជន និង <ph name="TAB_COUNT_MANY" /> ផ្ទាំង​ផ្សេងទៀត​នឹងត្រូវ​បានបិទ}}</translation>
 <translation id="6785476624617658922">លក្ខខណ្ឌ​ប្រើប្រាស់​បន្ថែមរបស់ Chrome និង ChromeOS</translation>
 <translation id="6786747875388722282">កម្មវិធីបន្ថែម</translation>
+<translation id="6787600234697426339">បាន​ឈានដល់​ចំនួន​វិនដូ​អតិបរមា <ph name="MAX_INSTANCE_COUNT" /> ហើយ</translation>
 <translation id="6795633245022906657">បើកផ្ទាំងថ្មីបានយ៉ាងរហ័ស។ ដើម្បីកែ​ផ្លូវកាត់​នេះ សូមចូល​ទៅកាន់​ការកំណត់​។</translation>
 <translation id="679588508577699489">កំណត់ Chrome ជាលំនាំដើម​របស់អ្នក</translation>
 <translation id="679956319013005046">ដើម្បីកំណត់សេវាកម្មដែលអ្នកចង់បានសម្រាប់ការបំពេញស្វ័យប្រវត្តិ សូមបញ្ចូលសេវាកម្មនៅក្នុង <ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ជាមុនសិន។</translation>
@@ -1276,7 +1283,6 @@
 <translation id="6850830437481525139">បានបិទផ្ទាំង <ph name="TAB_COUNT" /></translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{ឯកសារ​សំឡេង, ឯកសារ​សំឡេង 1 នៅក្នុង​បញ្ជី}other{ឯកសារ​សំឡេង, ឯកសារ​សំឡេង # នៅក្នុង​បញ្ជី}}</translation>
 <translation id="685850645784703949">Discover by Google - បិទ</translation>
-<translation id="6861722405755529743">ប៊ូតុងបន្ថែម​នៃរបារចំណាំ</translation>
 <translation id="6864459304226931083">ទាញយករូបភាព</translation>
 <translation id="686490460830618322">សន្លឹក​តម្រង​កម្មវិធី</translation>
 <translation id="6865313869410766144">បំពេញទិន្នន័យបែបបទស្វ័យប្រវត្តិ</translation>
@@ -1438,6 +1444,7 @@
 <translation id="749294055653435199">មិនអាចប្រើ Google Lens នៅលើឧបករណ៍នេះបានទេ</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (បានធ្វើបច្ចុប្បន្នភាព <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">សូមរង់ចាំ...</translation>
+<translation id="7501135638693251872">ចំណាំទាំងអស់</translation>
 <translation id="750228856503700085">មិនមានបច្ចុប្បន្នភាពទេ</translation>
 <translation id="7507207699631365376">មើល<ph name="BEGIN_LINK" />គោលការណ៍ឯកជនភាព<ph name="END_LINK" />របស់ក្រុមហ៊ុនផ្ដល់សេវានេះ</translation>
 <translation id="750886945254958667">រក្សា​ក្រុមនេះ ដើម្បី​បញ្ចូលផ្ទាំង​នៅពេលក្រោយ ឬ​ចាកចេញ​ពីក្រុមនេះ ប្រសិនបើ​អ្នកលែងចង់​ចូលប្រើវា​ទៀតហើយ</translation>
@@ -1699,6 +1706,7 @@
 <translation id="8611922158252451755">អ្នក​ដែលមាន​តំណនេះ​អាចកែផ្ទាំង​ទាំងអស់បាន ដូច្នេះ​សូមចែករំលែក​ប្រកបដោយ​ភាពឆ្លាតវៃ។ តំណ​ផុតកំណត់​ក្នុង​រយៈពេល 48 ម៉ោង។</translation>
 <translation id="8616006591992756292">គណនី Google របស់អ្នកអាចនឹងមានទម្រង់ប្រវត្តិរុករកផ្សេងទៀតនៅ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ។</translation>
 <translation id="8617240290563765734">បើក URL ដែលបានស្នើដែលបានបញ្ជាក់នៅក្នុងមាតិកាដែលបានទាញយកដែរឬទេ?</translation>
+<translation id="8634050254805484913">លាក់​នៅលើ​អេក្រង់តូច</translation>
 <translation id="8635399646025169806">រក្សា​ក្រុមផ្ទាំងឬ?</translation>
 <translation id="8636825310635137004">ដើម្បីទទួលបានផ្ទាំងរបស់អ្នកពីឧបករណ៍ផ្សេងទៀតរបស់អ្នក សូមបើកការធ្វើសមកាលកម្ម</translation>
 <translation id="8662474268934425487">ចូលគណនី <ph name="SITE_ETLD_PLUS_ONE" /></translation>

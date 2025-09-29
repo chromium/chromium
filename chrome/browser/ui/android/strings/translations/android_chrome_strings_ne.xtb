@@ -31,6 +31,7 @@
 <translation id="1138458427267715730">इन्टरनेटमा भएको कुनै पनि साइटमा उत्पादनको मूल्य घटेका खण्डमा अलर्ट प्राप्त गर्नुहोस्</translation>
 <translation id="1140317858355046628">तपाईंले यो ट्याब समूह हटाउनुभयो भने सबै जना तत्कालै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र यसलाई सबै डिभाइसहरूबाट मेटाइने छ।</translation>
 <translation id="1142732900304639782">यी साइटहरू अनुवाद गर्ने प्रस्ताव नगर्नुहोस्</translation>
+<translation id="1143193470214071120">विन्डो बन्द गर्नुहोस् वा विन्डोहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
 <translation id="1154555449933432029">तपाईंले Google पासवर्ड म्यानेजरमा कुनै पनि पासवर्ड सेभ गर्नुभएको छैन।</translation>
 <translation id="115483310321669804">पासवर्ड <ph name="PASSWORD" /> प्रयोग गर्नुहोस्</translation>
@@ -273,11 +274,11 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2318045970523081853">कल गर्न ट्याप गर्नुहोस्</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
 <translation id="2328474416100889417">सबै जना तत्कालै "<ph name="GROUP_NAME" />" ट्याब समूहको एक्सेस गुमाउने छन् र निम्तोका सबै लिंकहरू रद्द गरिने छन्</translation>
+<translation id="2330186936255788117">थप बुकमार्कहरू</translation>
 <translation id="2332515770639153015">परिष्कृत Safe Browsing अन छ</translation>
 <translation id="233375395665273385">मेटाउनुहोस् र साइन आउट गर्नुहोस्</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
-<translation id="2349954856814571872">बुकमार्क बार बटन जनाउने आइकन</translation>
 <translation id="235789365079050412">Google को गोपनीयता नीति</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। सेटिङ खोल्छ।</translation>
@@ -408,6 +409,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2908243544703713905">नपढिएका स्टोरिज तयार छन्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
 <translation id="2912345083818861431">तपाईं हाल खोलिएका इन्कोग्निटो ट्याब हेर्न चाहनुहुन्छ भने स्क्रिन लक प्रयोग गर्नुहोस्</translation>
+<translation id="2918484639460781603">सेटिङमा जानुहोस्</translation>
 <translation id="2923908459366352541">नाम मान्य छैन</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> को भण्डारण</translation>
 <translation id="2932222164150889403">तपाईंको किबोर्ड परिवर्तन हुने छैन</translation>
@@ -598,6 +600,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3845098929839618392">इन्कोग्निटो ट्याबमा खोलियोस्</translation>
 <translation id="3847319713229060696">वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित रहन मद्दत गर्नुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
+<translation id="3851464569313827017"><ph name="SITE_ETLD_PLUS_ONE" /> ले <ph name="IFRAME_ETLD_PLUS_ONE" /> बाट प्राप्त सामग्री इम्बेड गर्छ</translation>
 <translation id="3856096718352044181">कृपया यो एउटा मान्य प्रदायक हो भनी पुष्टि गर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
 <translation id="3863527519275151528">नोटिफिकेसन प्रोसेस गरिँदै छ</translation>
@@ -631,6 +634,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{तपाईंको Google खातामा सेभ गरिएको एउटा पासवर्ड ह्याक वा चोरी भएको छ}other{तपाईंको Google खातामा सेभ गरिएका # वटा पासवर्ड ह्याक वा चोरी भएका छन्}}</translation>
 <translation id="4016425174436051808">फलो गर्न सकिएन। कुनै समस्या आयो।</translation>
 <translation id="4024768890073681126">तपाईंका अभिभावक तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ</translation>
+<translation id="4027569221211770437"><ph name="FOLDER_TITLE" /> फोल्डर</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घन्टा}other{# घन्टा}}</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> प्रयोग गरी <ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>
 <translation id="4044708993631234325">पुछारको पाना</translation>
@@ -710,6 +714,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4380055775103003110">यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
 <translation id="4387647248986092471">कार प्रोफाइल लक बनाउनुहोस्</translation>
+<translation id="4387817230000841154">"डाउनलोड" पेज खोल्नुहोस्</translation>
 <translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{१ दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरिएका ट्याब तथा समूहहरू}other{# दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरिएका ट्याब तथा समूहहरू}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड गरिँदै छ…</translation>
 <translation id="4404568932422911380">कुनै पनि पुस्तक चिन्ह छैन</translation>
@@ -723,7 +728,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4425173294238317796">पासकी पुष्टि गर्ने पाना</translation>
 <translation id="442518031075347249">तपाईं अबदेखि Google Pay मा आफ्नो भर्चुअल कार्ड प्रयोग गर्न सक्नु हुने छैन। <ph name="BEGIN_LINK1" />भर्चुअल कार्डका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{<ph name="TAB_TITLE" /> र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="TAB_TITLE" /> र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
-<translation id="4426508677408162512">सबै पुस्तक चिन्हहरू</translation>
 <translation id="4430277756566635951">अहिले <ph name="EMAIL" /> चयन गरिएको छ। एउटा खाता चयन गर्नुहोस्।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ट्याब बन्द गर्नुहोस्‌</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> मा पुस्तक चिन्ह लगाइयो</translation>
@@ -898,6 +902,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
 <translation id="5174700554036517242">ट्याबको उचाइ पहिले जत्तिकै बनाइयो</translation>
 <translation id="5180063720319462041">यो पेज <ph name="TARGET_LANGUAGE" /> भाषामा अनुवाद गरिएको छ</translation>
+<translation id="5190835502935405962">पृष्ठमञ्जूषा पट्टी</translation>
 <translation id="5191251636205085390">तेस्रो पक्षीय कुकीहरूलाई प्रतिस्थापन गर्ने प्रविधिका बारेमा जानकारी प्राप्त गर्नुहोस् र तिनलाई नियन्त्रण गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="5197649123261764478">आफ्ना बुकमार्कहरू सजिलै एक्सेस गर्नुहोस्</translation>
 <translation id="5204967432542742771">पासवर्ड प्रविष्टि गर्नुहोस्</translation>
@@ -983,6 +988,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5628604359369369630">नपढिएको - अफलाइन उपलब्ध छ</translation>
 <translation id="5631483240431073854">खोलिएका ट्याबहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5632485077360054581">यसो गर्ने तरिका देखाउनुहोस्</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। Google खातासम्बन्धी त्रुटि भयो। यसले सेटिङ खोल्छ।</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />सर्च हिस्ट्री<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK2" /> तपाईंको Google खातामा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
@@ -1125,6 +1131,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 
 उदाहरणका लागि, केही वेबसाइटहरूले तपाईंले भ्रमण गर्नुभएका अन्य वेबसाइटहरूमा आधारित नरहेका विज्ञापन देखाएर यो अनुरोधको प्रतिक्रिया दिन सक्छन्। धेरै वेबसाइटहरूले अझै पनि तपाईँको ब्राउजिङ डेटा संकलन र प्रयोग गर्नेछन् - उदाहरणका लागि, सुरक्षा सुधार गर्न, सामग्री, विज्ञापनहरू र सुझावहरू प्रदान गर्न, र रिपोर्टिङ तथ्याङ्कहरू उत्पन गर्न।</translation>
 <translation id="6247557882553405851">Google पासवर्ड म्यानेजर</translation>
+<translation id="6248988683584659830">खोज सेटिङहरू</translation>
 <translation id="6251449557817521191">यहाँ गई Chrome को ब्राउजिङ हिस्ट्री हेर्नुहोस्</translation>
 <translation id="6254139308321626268">तपाईं PDF फाइल हेर्दै हेर्नुहुन्छ</translation>
 <translation id="6255809143828972562">तपाईं Chrome का टुलहरू प्रयोग गरी सुरक्षित तरिकाले ब्राउज गर्न र आफ्नो जानकारी आफ्नै नियन्त्रणमा राख्न सक्नुहुन्छ</translation>
@@ -1253,6 +1260,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="6785476624617658922">Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू</translation>
 <translation id="6786747875388722282">विस्तारहरू</translation>
+<translation id="6787600234697426339"><ph name="MAX_INSTANCE_COUNT" /> वटा विन्डो बनाइसकिएको छ र योभन्दा बढी विन्डो बनाउन मिल्दैन</translation>
 <translation id="6795633245022906657">तुरुन्तै नयाँ ट्याब खोल्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="679588508577699489">Chrome लाई डिफल्ट ब्राउजर बनाउनुहोस्</translation>
 <translation id="679956319013005046">अटोफिल सेवा प्रदान गर्ने रोजाइको सेवा प्रदायक छनौट गर्न पहिले <ph name="BEGIN_LINK" />Android का सेटिङ<ph name="END_LINK" /> मा गई उक्त सेवा प्रदायक हाल्नुहोस्।</translation>
@@ -1274,7 +1282,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ट्याबहरू बन्द भए</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{अडियो फाइलहरू, सूचीमा एउटा अडियो फाइल छ}other{अडियो फाइलहरू, सूचीमा # वटा अडियो फाइल छन्}}</translation>
 <translation id="685850645784703949">Google को Discover - अफ छ</translation>
-<translation id="6861722405755529743">बुकमार्क बार ओभरफ्लो बटन</translation>
 <translation id="6864459304226931083">फोटो डाउनलोड गर्नुहोस्</translation>
 <translation id="686490460830618322">एप फिल्टर सिट</translation>
 <translation id="6865313869410766144">स्वत: भर्ने फारम लगत</translation>
@@ -1436,6 +1443,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="749294055653435199">यो डिभाइसमा Google लेन्स उपलब्ध छैन</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (अद्यावधिक गरियो <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">प्रतीक्षा गर्नुहोस्...</translation>
+<translation id="7501135638693251872">सबै पुस्तक चिन्हहरू</translation>
 <translation id="750228856503700085">अपडेट उपलब्ध छैनन्</translation>
 <translation id="7507207699631365376">यो प्रदायकको <ph name="BEGIN_LINK" />गोपनीयता नीति<ph name="END_LINK" /> हेर्नुहोस्</translation>
 <translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>
@@ -1697,6 +1705,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8611922158252451755">यो लिंक हुने जोकोहीले सबै ट्याब सम्पादन गर्न सक्ने भएकाले लिंक सेयर गर्दा ख्याल गर्नुहोस्। यो लिंकको म्याद ४८ घण्टामा सकिन्छ।</translation>
 <translation id="8616006591992756292">तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य प्रकारका ब्राउजिङ इतिहास रहेका हुन सक्छन्।</translation>
 <translation id="8617240290563765734">डाउनलोड गरिएको सामग्रीमा सुझाव गरिएको निर्दिष्ट URL खोल्ने हो?</translation>
+<translation id="8634050254805484913">साँघुरा स्क्रिनहरूमा लुकाइएको हुन्छ</translation>
 <translation id="8635399646025169806">ट्याब समूह राखिराख्न चाहनुहुन्छ?</translation>
 <translation id="8636825310635137004">आफ्ना अन्य यन्त्रहरूबाट आफ्ना ट्याबहरू प्राप्त गर्न सिंकलाई अन गर्नुहोस्।</translation>
 <translation id="8662474268934425487"><ph name="SITE_ETLD_PLUS_ONE" /> मा साइन इन गर्नुहोस्</translation>

@@ -41,7 +41,7 @@
 <translation id="1145018782460575098">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਅੱਪਡੇਟ ਫ਼ਰਮਵੇਅਰ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ। <ph name="NUM_UPDATES" /> ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="1145516343487477149">ਮਦਦ ਲੇਖ ਅਤੇ Chromebook ਸੰਬੰਧੀ ਆਮ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਲੱਭੋ</translation>
 <translation id="1154390310959620237">ਤੁਸੀਂ ਸਿਰਫ਼ 5 ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦੇ ਹੋ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਕਿਸੇ ਇੱਕ ਨੂੰ ਮਿਟਾਓ।</translation>
-<translation id="1155154308031262006">ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="1155154308031262006">ਪ੍ਰੋਂਪਟ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="115705039208660697">ਅਨਾਨਾਸ</translation>
 <translation id="1164939766849482256">ਸਵੇਰ ਤੋਂ ਰਾਤ ਤੱਕ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
 <translation id="1167755866710282443">ਕੁੰਜੀਆਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਮੀਨੂ ਖੋਲ੍ਹੋ। ਲਿਜਾਉਣ ਲਈ ਮੀਨੂ ਨੂੰ ਘਸੀਟੋ।</translation>
@@ -142,7 +142,7 @@
           ਹੋਰ ਵਿਲੱਖਣ ਅਤੇ ਵੱਖ-ਵੱਖ AI ਚਿੱਤਰਾਂ ਦੇ ਵਿਕਲਪ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ "ਮੈਨੂੰ ਪ੍ਰੇਰਿਤ ਕਰੋ" ਚੁਣੋ।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          ਜਦੋਂ ਤੁਸੀਂ AI ਨਾਲ ਚਿੱਤਰ ਬਣਾਉਂਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ਦੀ ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ਦੇ ਅਧੀਨ, ਚਿੱਤਰ ਤਿਆਰ ਕਰਨ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਉਤਪ੍ਰੇਰਕ Google AI ਸਰਵਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।
+          ਜਦੋਂ ਤੁਸੀਂ AI ਨਾਲ ਚਿੱਤਰ ਬਣਾਉਂਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ਦੀ ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ਦੇ ਅਧੀਨ, ਚਿੱਤਰ ਤਿਆਰ ਕਰਨ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਪ੍ਰੋਂਪਟ Google AI ਸਰਵਰਾਂ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           ਜਨਰੇਟਿਵ AI ਪ੍ਰਯੋਗਮਈ ਹੈ, ਸ਼ੁਰੂਆਤੀ ਵਿਕਾਸ ਵਿੱਚ ਹੈ ਅਤੇ ਫ਼ਿਲਹਾਲ ਇਸਦੀ ਉਪਲਬਧਤਾ ਸੀਮਤ ਹੈ।</translation>
@@ -218,7 +218,7 @@
 <translation id="1801418420130173017">ਗੂੜ੍ਹਾ ਥੀਮ ਬੰਦ ਕਰੋ</translation>
 <translation id="1807246157184219062">ਹਲਕਾ</translation>
 <translation id="1808803439260407870">ਕਲਾਸਿਕ ਆਰਟ</translation>
-<translation id="181434555916624618">ਫ਼ਿਲਹਾਲ, ਅਜਿਹੇ ਨਤੀਜੇ ਨਹੀਂ ਦਿਖਾਏ ਜਾਣਗੇ, ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਲੋਕ ਸ਼ਾਮਲ ਹੋਣ। ਕੋਈ ਹੋਰ ਉਤਪ੍ਰੇਰਕ ਅਜ਼ਮਾਓ।</translation>
+<translation id="181434555916624618">ਫ਼ਿਲਹਾਲ, ਅਜਿਹੇ ਨਤੀਜੇ ਨਹੀਂ ਦਿਖਾਏ ਜਾਣਗੇ, ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਲੋਕ ਸ਼ਾਮਲ ਹੋਣ। ਕੋਈ ਹੋਰ ਪ੍ਰੋਂਪਟ ਅਜ਼ਮਾਓ।</translation>
 <translation id="1815850098929213707">ਚੁਣੀ ਹੋਈ ਕੁੰਜੀ <ph name="KEYS" /> ਹੈ। ਕੰਟਰੋਲ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="1818174214124933000">ਜਦੋਂ ਤੁਸੀਂ "ਭੇਜੋ" ਚੁਣਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡੇ ਵਿਚਾਰ ਅਤੇ ਸਮੱਗਰੀ (ਹੇਠਾਂ ਦਿਖਾਈ ਗਈ ਹੈ) ਨੂੰ Google ਕੋਲ ਭੇਜਿਆ ਜਾਵੇਗਾ, ਮਨੁੱਖਾਂ ਵੱਲੋਂ ਉਨ੍ਹਾਂ ਦੀ ਸਮੀਖਿਆ ਕੀਤੀ ਜਾਵੇਗੀ ਅਤੇ ਜਿਸਦੀ ਵਰਤੋਂ ਸਾਡੀ <ph name="LINK_POLICY_BEGIN" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="LINK_POLICY_END" /> ਅਤੇ <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ<ph name="LINK_TERMS_OF_SERVICE_END" /> ਹੇਠ ਸਾਡੇ ਉਤਪਾਦਾਂ ਅਤੇ ਸੇਵਾਵਾਂ ਨੂੰ ਸਿਖਲਾਈ ਦੇਣ ਜਾਂ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਕੀਤੀ ਜਾਵੇਗੀ।</translation>
 <translation id="1823120442877418684">ਅੱਖਰ-ਚਿੰਨ੍ਹ</translation>
@@ -365,7 +365,7 @@
 <translation id="2446553403094072641">ਫ਼ਲੋਟਿੰਗ ਪੁਆਇੰਟ ਸਟੀਕਤਾ</translation>
 <translation id="2448312741937722512">ਟਾਈਪ ਕਰੋ</translation>
 <translation id="2448857983905133469">ਕਲਾਸ ਟੂਲ</translation>
-<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ਉਤਪ੍ਰੇਰਕ ਗਾਈਡ<ph name="END_LINK_PROMPTING_GUIDE" /> ਬਣਾਉਣ ਜਾਂ ਦੇਖਣ ਲਈ ਉਤਪ੍ਰੇਰਕ ਚੁਣੋ</translation>
+<translation id="2468124392950503650"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />ਪ੍ਰੋਂਪਟ ਗਾਈਡ<ph name="END_LINK_PROMPTING_GUIDE" /> ਬਣਾਉਣ ਜਾਂ ਦੇਖਣ ਲਈ ਪ੍ਰੋਂਪਟ ਚੁਣੋ</translation>
 <translation id="2472215337771558851">ਡਰਾਫਟ ਬਣਾਉਣ ਜਾਂ ਮੌਜੂਦਾ ਕੰਮ ਨੂੰ ਸੋਧਣ ਲਈ 'ਲਿਖਣ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਵਰਤੋ, Google AI ਵੱਲੋਂ ਸੰਚਾਲਿਤ</translation>
 <translation id="2475982808118771221">ਇੱਕ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="2480572840229215612">ਕੇਕੜੇ</translation>
@@ -446,8 +446,8 @@
 <translation id="2878126681324394319">ਸਾਰਾਂਸ਼ ਅਤੇ ਸਿਰਲੇਖ ਬਣਾਉਣ ਦਾ ਮਾਡਲ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> ਸਕਿੰਟਾਂ ਵਿੱਚ <ph name="RATE" /> ਖਤਮ ਹੋਈ।</translation>
 <translation id="2880569433548999039">ਬੱਦਲ ਪ੍ਰਵਾਹ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
-<translation id="2882230315487799269">AI ਉਤਪ੍ਰੇਰਕ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
-<translation id="2888298276507578975">"ਧੰਨਵਾਦ ਨੋਟ ਲਿਖੋ" ਵਰਗਾ ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="2882230315487799269">AI ਪ੍ਰੋਂਪਟ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
+<translation id="2888298276507578975">"ਧੰਨਵਾਦ ਨੋਟ ਲਿਖੋ" ਵਰਗਾ ਪ੍ਰੋਂਪਟ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2890557891229184386">ਤਪਤ ਖੰਡੀ ਟਾਪੂ</translation>
 <translation id="2895772081848316509">ਡਾਰਕ</translation>
 <translation id="2915996080311180594">ਬਾਅਦ ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
@@ -497,7 +497,7 @@
 <translation id="3170673040743561620">ਆਪਣੇ ਦਸਤਾਵੇਜ਼ ਨੂੰ ਸਕੈਨਰ 'ਤੇ ਰੱਖੋ</translation>
 <translation id="3174321110679064523">ਸਵੇਰ ਤੋਂ ਰਾਤ ਤੱਕ ਦਾ ਵਾਲਪੇਪਰ</translation>
 <translation id="3178532070248519384">ਐਵਾਂ ਗਾਰਦ</translation>
-<translation id="3182676044300231689">"ਇਸਨੂੰ ਹੋਰ ਵਿਸ਼ਵਾਸਯੋਗ ਬਣਾਓ" ਵਰਗਾ ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="3182676044300231689">"ਇਸਨੂੰ ਹੋਰ ਵਿਸ਼ਵਾਸਯੋਗ ਬਣਾਓ" ਵਰਗਾ ਪ੍ਰੋਂਪਟ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="3188257591659621405">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="319101249942218879">ਅਵਤਾਰ ਚਿੱਤਰ ਬਦਲਿਆ ਗਿਆ</translation>
 <translation id="3192947282887913208">ਆਡੀਓ ਫਾਈਲ</translation>
@@ -600,7 +600,7 @@
 <translation id="3651050199673793219">ਕੋਈ ਤਾਪਮਾਨ ਇਕਾਈ ਚੁਣੋ</translation>
 <translation id="3661106764436337772">ਜ਼ਿਆਦਾ ਤੇਜ਼ ਅਤੇ ਹੋਰ ਵਿਸ਼ਵਾਸ ਨਾਲ ਲਿਖੋ</translation>
 <translation id="3662461537616691585">ਬਰਗੰਡੀ ਅਤੇ ਉਨਾਬੀ</translation>
-<translation id="3664755900672940272">ਸੈਂਪਲ ਉਤਪ੍ਰੇਰਕ ਬੇਤਰਤੀਬ ਕੀਤੇ ਗਏ</translation>
+<translation id="3664755900672940272">ਸੈਂਪਲ ਪ੍ਰੋਂਪਟ ਬੇਤਰਤੀਬ ਕੀਤੇ ਗਏ</translation>
 <translation id="3668449597372804501">ਬੱਦਲ ਪ੍ਰਵਾਹ ਦਾ ਵਾਲਪੇਪਰ</translation>
 <translation id="3668570675727296296">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="3675132884790542448">ਸੂਰ</translation>
@@ -698,7 +698,7 @@
 <translation id="4113067922640381334">ਤੁਹਾਡੇ ਕੋਲ ਹੁਣ ਨਵੇਂ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ਵਾਲਪੇਪਰਾਂ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ਤੱਕ ਪਹੁੰਚ ਹੈ</translation>
 <translation id="4117637339509843559">ਗੂੜ੍ਹਾ ਮੋਡ</translation>
 <translation id="4126551873361000548">10 ਸਕਿੰਟ ਪਿੱਛੇ ਕਰੋ</translation>
-<translation id="4128271910628504223">"ਧੁੰਦ ਵਾਲਾ ਜੰਗਲ ਬਣਾਓ" ਵਰਗਾ ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="4128271910628504223">"ਧੁੰਦ ਵਾਲਾ ਜੰਗਲ ਬਣਾਓ" ਵਰਗਾ ਪ੍ਰੋਂਪਟ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="4130035430755296270">ਖਾਕੇ ਸੰਬੰਧੀ ਹੋਰ ਵਿਕਲਪਾਂ ਲਈ ਕਰਸਰ ਘੁਮਾਉਂਦੇ ਰਹੋ</translation>
 <translation id="4130750466177569591">ਮੈਂ ਸਹਿਮਤ ਹਾਂ</translation>
 <translation id="4131410914670010031">ਕਾਲਾ ਅਤੇ ਚਿੱਟਾ</translation>
@@ -732,13 +732,13 @@
 <translation id="4249717042534905822">ਐਤਵਾਰ ਨੂੰ</translation>
 <translation id="4250229828105606438">ਸਕ੍ਰੀਨਸ਼ਾਟ</translation>
 <translation id="4251839292699800785">ਸਟਾਈਲਿਸ਼ ਦਫ਼ਤਰ</translation>
-<translation id="4252261480746798874">ਜਦੋਂ ਤੁਸੀਂ "ਖੁਦ ਲਈ ਬਣਾਓ" ਨੂੰ ਚੁਣਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਵਿਉਂਤਿਆ ਉਤਪ੍ਰੇਰਕ ਲਿਖ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ "ਕੋਈ ਥੀਮ ਚੁਣੋ" ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ ਅਤੇ ਫਿਰ ਆਪਣੇ AI ਵਾਲਪੇਪਰ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਰੇਖਾਂਕਿਤ ਸ਼ਬਦਾਂ ਨੂੰ ਚੁਣ ਸਕਦੇ ਹੋ।
+<translation id="4252261480746798874">ਜਦੋਂ ਤੁਸੀਂ "ਖੁਦ ਲਈ ਬਣਾਓ" ਨੂੰ ਚੁਣਦੇ ਹੋ, ਤਾਂ ਤੁਸੀਂ ਵਿਉਂਤਿਆ ਪ੍ਰੋਂਪਟ ਲਿਖ ਸਕਦੇ ਹੋ। ਤੁਸੀਂ "ਕੋਈ ਥੀਮ ਚੁਣੋ" ਵੀ ਚੁਣ ਸਕਦੇ ਹੋ ਅਤੇ ਫਿਰ ਆਪਣੇ AI ਵਾਲਪੇਪਰ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ ਰੇਖਾਂਕਿਤ ਸ਼ਬਦਾਂ ਨੂੰ ਚੁਣ ਸਕਦੇ ਹੋ।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           ਹੋਰ ਵਿਲੱਖਣ ਅਤੇ ਵੱਖ-ਵੱਖ AI ਚਿੱਤਰਾਂ ਦੇ ਵਿਕਲਪ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ "ਮੈਨੂੰ ਪ੍ਰੇਰਿਤ ਕਰੋ" ਚੁਣੋ।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਲਈ ਵਾਲਪੇਪਰ ਬਣਾਉਂਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਅਤੇ ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ਦੇ ਅਧੀਨ, ਚਿੱਤਰ ਤਿਆਰ ਕਰਨ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ Google ਸਰਵਰਾਂ ਨੂੰ ਉਤਪ੍ਰੇਰਕ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਕੋਈ ਵੀ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।
+          ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਲਈ ਵਾਲਪੇਪਰ ਬਣਾਉਂਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਅਤੇ ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ਦੇ ਅਧੀਨ, ਚਿੱਤਰ ਤਿਆਰ ਕਰਨ ਅਤੇ ਉਤਪਾਦ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ Google ਸਰਵਰਾਂ ਨੂੰ ਪ੍ਰੋਂਪਟ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਕੋਈ ਵੀ ਨਿੱਜੀ, ਸੰਵੇਦਨਸ਼ੀਲ ਜਾਂ ਗੁਪਤ ਜਾਣਕਾਰੀ ਸ਼ਾਮਲ ਨਾ ਕਰੋ।
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           ਜਨਰੇਟਿਵ AI ਗਲਤੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਲੋਕਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਵੀ ਸ਼ਾਮਲ ਹੈ, ਇਸ ਲਈ ਇਸ ਦੀ ਦੋਹਰੀ-ਜਾਂਚ ਕਰੋ। <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
@@ -760,7 +760,7 @@
 <translation id="4320904097188876154">ਨਿਓਨ ਗੁਲਾਬੀ</translation>
 <translation id="432961742358282111">ਪਰਿਭਾਸ਼ਾਵਾਂ, ਅਨੁਵਾਦ ਜਾਂ ਇਕਾਈ ਰੂਪਾਂਤਰਨ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਦਬਾਈ ਰੱਖੋ। ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਖੱਬੀ ਜਾਂ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀ ਵਰਤੋ।</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ਕੁੰਜੀ ਦਬਾਈ ਗਈ</translation>
-<translation id="4334293042716981313">ਤੁਸੀਂ <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />ਆਪਣਾ ਖੁਦ ਦਾ ਉਤਪ੍ਰੇਰਕ<ph name="END_LINK_FREEFORM_SUBPAGE" /> ਵੀ ਲਿਖ ਸਕਦੇ ਹੋ</translation>
+<translation id="4334293042716981313">ਤੁਸੀਂ <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />ਆਪਣਾ ਖੁਦ ਦਾ ਪ੍ਰੋਂਪਟ<ph name="END_LINK_FREEFORM_SUBPAGE" /> ਵੀ ਲਿਖ ਸਕਦੇ ਹੋ</translation>
 <translation id="4354430579665871434">ਕੁੰਜੀ</translation>
 <translation id="4356100841225547054">ਅਵਾਜ਼ ਬੰਦ ਕਰੋ</translation>
 <translation id="4361257691546579041">APN ਦੀ ਕਿਸਮ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
@@ -1234,7 +1234,7 @@
 <translation id="6447630859861661624">ਖਾਤਾ ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="6462978824459367242">'APN ਸ਼ਾਮਲ ਕਰੋ' ਬਟਨ ਹੁਣ ਚਾਲੂ ਹੈ</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{ਕੀ ਪੰਨਾ ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}=1{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}other{ਕੀ ਪੰਨਾ {PAGE_NUMBER} ਮੁੜ-ਸਕੈਨ ਕਰਨਾ ਹੈ?}}</translation>
-<translation id="6468146470109254228">ਤੁਹਾਡੇ 3 ਸਭ ਤੋਂ ਹਾਲੀਆ ਉਤਪ੍ਰੇਰਕ ਅਤੇ ਆਊਟਪੁੱਟ। ਤੁਸੀਂ ਸਿਰਫ਼ ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਹੀ ਇਨ੍ਹਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ।</translation>
+<translation id="6468146470109254228">ਤੁਹਾਡੇ 3 ਸਭ ਤੋਂ ਹਾਲੀਆ ਪ੍ਰੋਂਪਟ ਅਤੇ ਆਊਟਪੁੱਟ। ਤੁਸੀਂ ਸਿਰਫ਼ ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਦੀ ਵਰਤੋਂ ਕਰਨ ਵੇਲੇ ਹੀ ਇਨ੍ਹਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ਕਿਸ਼ਤੀਆਂ</translation>
 <translation id="64778964625672495">ਗੂੜ੍ਹਾ ਲਾਲ</translation>
@@ -1740,7 +1740,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ ਖੱਬੀ ਜਾਂ ਸੱਜੀ ਤੀਰ ਕੁੰਜੀ ਵਰਤੋ।</translation>
 <translation id="8712637175834984815">ਸਮਝ ਲਿਆ</translation>
 <translation id="871560550817059752">ਅਸਫਲ ਰਹੀ - ਸਿਆਹੀ ਖਤਮ ਹੋ ਗਈ ਹੈ</translation>
-<translation id="8721554916373590179">ਨਮੂਨਾ ਉਤਪ੍ਰੇਰਕ</translation>
+<translation id="8721554916373590179">ਨਮੂਨਾ ਪ੍ਰੋਂਪਟ</translation>
 <translation id="8723108084122415655">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਵਿਲੰਬਤਾ ਨਿਊਨਤਮ ਸੀਮਾ ਤੋਂ ਉੱਤੇ ਹੈ</translation>
 <translation id="8725066075913043281">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="8726019395068607495">ਬੰਦ ਹੋ ਗਿਆ - ਢੱਕਣ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
@@ -1749,7 +1749,7 @@
 <translation id="8747900814994928677">ਤਬਦੀਲੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="8749478549112817787">ਕੈਮਰਾ ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="8755946156089753497">ਬੁਰਜ</translation>
-<translation id="8760616037557661287">ਪਿਛਲੇ ਉਤਪ੍ਰੇਰਕ</translation>
+<translation id="8760616037557661287">ਪਿਛਲੇ ਪ੍ਰੋਂਪਟ</translation>
 <translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਮਾਡਲ ਚੁਣੋ ਅਤੇ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ਐਲਬਮ</translation>

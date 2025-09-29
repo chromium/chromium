@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1041322626941363065">Ricevi un avviso se le password vengono esposte a causa di una violazione dei dati</translation>
 <translation id="104491362976654916">Pagina offline</translation>
+<translation id="1046742265332833834">Tema blu</translation>
 <translation id="1049743911850919806">In incognito</translation>
 <translation id="1053651653201045802">Account disconnesso. Accedi di nuovo per usare i preferiti, le password e altri dati nel tuo account.</translation>
 <translation id="1054745118061919935">Se continui, accetti i <ph name="BEGIN_LINK" />Termini di servizio<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Lo spazio di archiviazione è esaurito</translation>
 <translation id="1181037720776840403">Rimuovi</translation>
 <translation id="1190609913194133056">Centro notifiche</translation>
+<translation id="1199963004393929848">Tema verde</translation>
 <translation id="1201402288615127009">Avanti</translation>
 <translation id="1204075260022434100">{count,plural, =1{Preferito salvato in "{title}" nel tuo account, {email}}other{{count} preferiti salvati in "{title}" nel tuo account, {email}}}</translation>
 <translation id="120431140543679678">Segui</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Consenti notifiche per il monitoraggio del prezzo…</translation>
 <translation id="1809929083618343438">In questo modo le informazioni selezionate vengono rimosse da Chrome, ma non eliminate dal tuo Account Google.</translation>
 <translation id="1810976980198522421">Annulla</translation>
-<translation id="1812514023095547458">Seleziona colore</translation>
 <translation id="1815941218935345331">Passcode</translation>
 <translation id="1818687879307252150">{count,plural, =0{Nessuna password compromessa}=1{{count} password compromessa}other{{count} password compromesse}}</translation>
 <translation id="1819374301217551116">Monitoraggio dei prezzi e approfondimenti</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Nascondi "Controllo di sicurezza"</translation>
 <translation id="2551153019974022505">Errore dell'account</translation>
 <translation id="2559843230610279254">Gruppo di schede, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> schede.</translation>
+<translation id="257088987046510401">Temi</translation>
 <translation id="2573117291489209663">Fine</translation>
 <translation id="2577522251608256362">Quartiere</translation>
 <translation id="2579713773888829241">Drive condivisi</translation>
@@ -455,7 +457,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2704606927547763573">Copiata</translation>
 <translation id="2708051474374549906">Protezione proattiva in tempo reale da estensioni, siti e download pericolosi in base ai tuoi dati di navigazione inviati a Google.</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
-<translation id="271033894570825754">Nuovo</translation>
+<translation id="271033894570825754">Nuova raccolta</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
 <translation id="2718352093833049315">Solo su Wi-Fi</translation>
 <translation id="2721190673959776287">Esempio di guida nel prodotto dettagliata per il riquadro contestuale, che dovrebbe essere visualizzato più volte al giorno.</translation>
@@ -478,6 +480,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2793703503584038325">Seleziona una password e tocca l'icona "Condividi"</translation>
 <translation id="2797029671965852011">Mostra la cronologia</translation>
 <translation id="2797302972324086597">Codice paese</translation>
+<translation id="2798263827270599246">Tema predefinito</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} file}other{{COUNT} file}}</translation>
 <translation id="2816149645002567541">Download in pausa</translation>
 <translation id="2816489851009559785">Menu → Impostazioni → Browser predefinito</translation>
@@ -693,6 +696,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3750225824417196283">Pagina Nuova scheda di navigazione in incognito</translation>
 <translation id="3751873026576444885">Interrompi la ricerca sullo schermo con Google Lens</translation>
 <translation id="3753408171347588045">Stai monitorando i prezzi</translation>
+<translation id="3753618528540214374">Tema verde veronese</translation>
 <translation id="3762232513783804601">Realizzato per il tuo iPad</translation>
 <translation id="3768725474733206671">Riapri l'ultima scheda chiusa</translation>
 <translation id="3779810277399252432">Nessuna connessione a Internet.</translation>
@@ -772,7 +776,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4026496154402824012">Per disattivare la funzionalità, vai a <ph name="BEGIN_LINK" />Opzioni password<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Salva nell'account…</translation>
 <translation id="4038354071007134711">Impossibile aprire il file con le app sul dispositivo.</translation>
-<translation id="4039829422386964954">Sfoglia la galleria</translation>
 <translation id="4042870976416480368">Trova nella pagina</translation>
 <translation id="4045441967987592849">Riapri</translation>
 <translation id="4047337302138771011">Condividi le tue password</translation>
@@ -989,6 +992,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4869146460927742717">Posizione barra degli indirizzi</translation>
 <translation id="4870911314065352661">Vuoi chiudere tutte le schede?</translation>
 <translation id="4872664437015695612">Apri in Download</translation>
+<translation id="4875260838563541343">Pulsante Azione</translation>
 <translation id="4876305945144899064">Nessun nome utente</translation>
 <translation id="4876665338492917862">Ultima apertura: <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Ricordamelo più tardi</translation>
@@ -1347,6 +1351,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6198252989419008588">Modifica PIN</translation>
 <translation id="6210079381482819663">Le schede che non vengono utilizzate per almeno <ph name="THRESHOLD" /> giorni vengono spostate qui. Puoi modificare questa preferenza in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Nessun indirizzo trovato</translation>
+<translation id="6218508144653756827">Tema fucsia</translation>
 <translation id="6218758465102657583">Sposta la barra degli indirizzi in cima</translation>
 <translation id="6223816392543092032">Trova i tuoi preferiti, la cronologia, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="6225572914528673855">Barra degli indirizzi</translation>
@@ -1439,6 +1444,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6523575793810663688">Mostrami come fare</translation>
 <translation id="6524082013156754186">Salva nell'account</translation>
 <translation id="6524918542306337007">Modalità di navigazione in incognito non disponibile</translation>
+<translation id="6527208859483186860">sfondo {position} di {total}</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6532106788206463496">Salva modifiche</translation>
 <translation id="6536759809440150308">Apri <ph name="GROUP_TITLE" />, gruppo di <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul web.</translation>
 <translation id="6612912757320004438">Consenti notifiche delle schede…</translation>
 <translation id="6617761071025228250">Cancella testo</translation>
+<translation id="6619015782482868078">Tema acquamarina</translation>
 <translation id="6620279676667515405">Annulla</translation>
 <translation id="6625830436658400045">Le impostazioni di sincronizzazione verranno ripristinate in base all'ultimo backup. Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Modifica cartella</translation>
@@ -1499,6 +1506,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6713676799463473249">Ultima modifica: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Schede ricevute</translation>
 <translation id="6723740634201835758">Nel tuo Account Google</translation>
+<translation id="6724024423419410528">Colori</translation>
 <translation id="672735642903863329">Trova i preferiti, le password e altri dati su tutti i dispositivi.</translation>
 <translation id="6729493062119577923">Attività del gruppo di schede condiviso</translation>
 <translation id="6732087373923685049">fotocamera</translation>
@@ -1562,6 +1570,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="69739764870135975">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Dall'inizio</translation>
+<translation id="6980507581230208647">Tema rosa</translation>
 <translation id="6983306615164277634">Per cambiare la posizione, puoi anche toccare e tenere premuta la barra degli indirizzi.</translation>
 <translation id="6987201788018524855">Esplora le funzionalità utili che potresti aver perso</translation>
 <translation id="6989636517316575338">Chiedi informazioni su una pagina</translation>
@@ -1628,6 +1637,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="728025568708172005">Avvia il tour</translation>
 <translation id="7280980607183752256">Impossibile importare questo file</translation>
 <translation id="7281202269687163394">La tua privacy e Gemini.</translation>
+<translation id="7282197670900591579">Tema cedro</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="7300448350764260141">Aggiungi un ulteriore livello di protezione dalle minacce online.</translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
@@ -1751,6 +1761,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7749790401023484470">Non hai selezionato alcun testo.</translation>
 <translation id="7757015014239760147">Nessun nome utente ••••••••</translation>
 <translation id="775755486779745798">Compila automaticamente il mese di scadenza <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Tema viola</translation>
 <translation id="7759809451544302770">Facoltativo</translation>
 <translation id="7765158879357617694">Sposta</translation>
 <translation id="7772032839648071052">Conferma passphrase</translation>
@@ -1815,6 +1826,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="797824194429476746">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato definitivamente.</translation>
 <translation id="797874245254030665">Accedi alle tue password e passkey da qualsiasi app</translation>
 <translation id="7982789257301363584">Rete</translation>
+<translation id="798299424881500862">Tema arancione</translation>
 <translation id="7987685713885608670">Per maggiore sicurezza, cripta le password sul dispositivo prima che vengano salvate in Gestore delle password di Google.</translation>
 <translation id="798991908416757345">I gruppi di schede non sono disponibili</translation>
 <translation id="7993170188789685695">Tocca due volte per chiudere questa notifica.</translation>

@@ -31,6 +31,7 @@
 <translation id="1138458427267715730">Λάβετε ειδοποιήσεις σε περίπτωση πτώσης τιμής σε οποιονδήποτε ιστότοπο σε ολόκληρο τον ιστό</translation>
 <translation id="1140317858355046628">Εάν τη διαγράψετε, όλοι οι χρήστες θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" />, ενώ θα διαγραφεί και από όλες τις συσκευές.</translation>
 <translation id="1142732900304639782">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των ιστοτόπων</translation>
+<translation id="1143193470214071120">Κλείσιμο παραθύρου ή διαχείριση παραθύρων</translation>
 <translation id="1150263420752757504">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">Δεν έχετε αποθηκεύσει κωδικούς πρόσβασης στη Διαχείριση κωδικών πρόσβασης Google.</translation>
 <translation id="115483310321669804">Χρήση κωδικού πρόσβασης <ph name="PASSWORD" /></translation>
@@ -273,11 +274,11 @@
 <translation id="2318045970523081853">Πατήστε για πραγματοποίηση κλήσης</translation>
 <translation id="2323763861024343754">Αποθηκ. χώρος ιστοσελίδας</translation>
 <translation id="2328474416100889417">Όλοι θα χάσουν αμέσως την πρόσβαση στην ομάδα καρτελών <ph name="GROUP_NAME" /> και όλοι οι σύνδεσμοι πρόσκλησης θα απενεργοποιηθούν</translation>
+<translation id="2330186936255788117">Περισσότεροι σελιδοδείκτες</translation>
 <translation id="2332515770639153015">Η Βελτιωμένη Ασφαλής περιήγηση είναι ενεργή</translation>
 <translation id="233375395665273385">Διαγραφή και αποσύνδεση</translation>
 <translation id="2341410551640223969">Δεν ήταν δυνατή η εγκατάσταση της εφαρμογής <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Σύνολο δεδομένων που χρησιμοποιούνται από το Chrome, συμπεριλαμβανομένων των λογαριασμών, των σελιδοδεικτών και των αποθηκευμένων ρυθμίσεων</translation>
-<translation id="2349954856814571872">Εικονίδιο κουμπιού γραμμής σελιδοδεικτών</translation>
 <translation id="235789365079050412">Πολιτική απορρήτου της Google</translation>
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2362083820973145409">Συνδεθήκατε ως <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ανοίγει τις ρυθμίσεις.</translation>
@@ -359,7 +360,7 @@
 <translation id="2687009626279857299">Σταμάτησε να λειτουργεί σε αυτή τη συσκευή</translation>
 <translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
 <translation id="2708226184420201102">Άνοιγμα στο πρόγραμμα περιήγησης <ph name="PRODUCT_NAME" /></translation>
-<translation id="271033894570825754">Νέο</translation>
+<translation id="271033894570825754">Νέα συλλογή</translation>
 <translation id="2718352093833049315">Μόνο σε Wi-Fi</translation>
 <translation id="2718846868787000099">Για να είναι δυνατή η εμφάνιση του περιεχομένου στις προτιμώμενες γλώσσες σας, οι ιστότοποι που επισκέπτεστε μπορούν να δουν τις προτιμήσεις σας.</translation>
 <translation id="2723001399770238859">ήχος</translation>
@@ -408,6 +409,7 @@
 <translation id="2908243544703713905">Οι μη αναγνωσμένες ειδήσεις είναι έτοιμες</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912345083818861431">Χρήση του κλειδώματος οθόνης για εμφάνιση των ανοιχτών καρτελών ανώνυμης περιήγησης</translation>
+<translation id="2918484639460781603">Μετάβαση στις ρυθμίσεις</translation>
 <translation id="2923908459366352541">Το όνομα δεν είναι έγκυρο</translation>
 <translation id="2932150158123903946">Αποθηκευτικός χώρος Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Το πληκτρολόγιό σας δεν θα αλλάξει</translation>
@@ -598,6 +600,7 @@
 <translation id="3845098929839618392">Άνοιγμα σε ανών. περιήγ.</translation>
 <translation id="3847319713229060696">Συμβάλλετε στη βελτίωση της ασφάλειας στον ιστό για όλους</translation>
 <translation id="385051799172605136">Πίσω</translation>
+<translation id="3851464569313827017">Ο ιστότοπος <ph name="SITE_ETLD_PLUS_ONE" /> ενσωματώνει περιεχόμενο από το <ph name="IFRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="3856096718352044181">Βεβαιωθείτε ότι πρόκειται για έγκυρο πάροχο ή δοκιμάστε ξανά αργότερα</translation>
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3863527519275151528">Επεξεργασία ειδοποίησης</translation>
@@ -631,6 +634,7 @@
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{1 παραβιασμένος κωδικός πρόσβασης στον Λογαριασμό σας Google}other{# παραβιασμένοι κωδικοί πρόσβασης στον Λογαριασμό σας Google}}</translation>
 <translation id="4016425174436051808">Δεν είναι δυνατή η παρακολούθηση. Παρουσιάστηκε κάποιο πρόβλημα.</translation>
 <translation id="4024768890073681126">Η διαχείριση του προγράμματος περιήγησης γίνεται από τον γονέα σου</translation>
+<translation id="4027569221211770437">Φάκελος <ph name="FOLDER_TITLE" /></translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ω.}other{# ω.}}</translation>
 <translation id="4042941173059740150">Συνέχεια σε <ph name="SITE_ETLD_PLUS_ONE" /> με <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Φύλλο κάτω μέρους</translation>
@@ -724,7 +728,6 @@
 <translation id="4425173294238317796">Φύλλο επιβεβαίωσης κλειδιού πρόσβασης</translation>
 <translation id="442518031075347249">Δεν θα μπορείτε πλέον να χρησιμοποιήσετε την εικονική σας κάρτα με το Google Pay. <ph name="BEGIN_LINK1" />Μάθετε περισσότερα σχετικά με τις εικονικές κάρτες<ph name="END_LINK1" /></translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{Η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα θα κλείσουν}other{Η καρτέλα <ph name="TAB_TITLE" /> και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες θα κλείσουν}}</translation>
-<translation id="4426508677408162512">Όλοι οι σελιδοδείκτες</translation>
 <translation id="4430277756566635951">Τρέχουσα επιλογή: <ph name="EMAIL" />. Επιλέξτε λογαριασμό.</translation>
 <translation id="4452411734226507615">Κλείσιμο καρτέλας <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Ο σελιδοδείκτης είναι στο "<ph name="FOLDER_NAME" />"</translation>
@@ -900,6 +903,7 @@
 <translation id="5171045022955879922">Αναζήτηση ή πληκτρολόγηση διεύθυνσης URL</translation>
 <translation id="5174700554036517242">Η καρτέλα επέστρεψε στο αρχικό ύψος</translation>
 <translation id="5180063720319462041">Η σελίδα μεταφράστηκε στα <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="5190835502935405962">Γραμμή σελιδοδεικτών</translation>
 <translation id="5191251636205085390">Μάθετε περισσότερα και δείτε πώς μπορείτε να ελέγχετε τις νέες τεχνολογίες που προορίζονται για την αντικατάσταση των cookie τρίτου μέρους</translation>
 <translation id="5197649123261764478">Αποκτήστε εύκολα πρόσβαση στους σελιδοδείκτες σας</translation>
 <translation id="5204967432542742771">Εισαγωγή κωδικού πρόσβασης</translation>
@@ -985,6 +989,7 @@
 <translation id="5626134646977739690">Όνομα:</translation>
 <translation id="5628604359369369630">Μη αναγνωσμένα - Διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="5631483240431073854">Διαχείριση ανοικτών καρτελών</translation>
+<translation id="5632485077360054581">Οδηγίες</translation>
 <translation id="564121214411935612">Συνδεθήκατε ως <ph name="USER_NAME" />. Σφάλμα Λογαριασμού Google. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="5641456720590409793">Το <ph name="BEGIN_LINK1" />Ιστορικό αναζήτησης<ph name="END_LINK1" /> και <ph name="BEGIN_LINK2" />άλλες μορφές δραστηριότητας<ph name="END_LINK2" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google.</translation>
 <translation id="5648166631817621825">Τελευταίες 7 ημέρες</translation>
@@ -1127,6 +1132,7 @@
 
 Για παράδειγμα, ορισμένοι ιστότοποι ενδέχεται να ανταποκρίνονται σε αυτό το αίτημα εμφανίζοντας διαφημίσεις που δεν βασίζονται σε άλλους ιστότοπους που έχετε επισκεφτεί. Πολλοί ιστότοποι θα εξακολουθούν να συλλέγουν και να χρησιμοποιούν τα δεδομένα περιήγησής σας. Για παράδειγμα, για να βελτιώσουν την ασφάλεια, να παρέχουν περιεχόμενο, διαφημίσεις και προτάσεις, καθώς και για να δημιουργούν στατιστικά στοιχεία αναφοράς.</translation>
 <translation id="6247557882553405851">Διαχείριση κωδικών πρόσβασης Google</translation>
+<translation id="6248988683584659830">Αναζήτηση ρυθμίσεων</translation>
 <translation id="6251449557817521191">Δείτε το Ιστορικό Chrome εδώ</translation>
 <translation id="6254139308321626268">Βλέπετε ένα αρχείο PDF</translation>
 <translation id="6255809143828972562">Με τα εργαλεία του Chrome, μπορείτε να περιηγείστε με ασφάλεια και να διατηρείτε τον έλεγχο</translation>
@@ -1255,6 +1261,7 @@
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> καρτέλα ανώνυμης περιήγησης και <ph name="TAB_COUNT_ONE" /> ακόμη καρτέλα θα κλείσουν}other{<ph name="INCOGNITO_TAB_COUNT" /> καρτέλες ανώνυμης περιήγησης και <ph name="TAB_COUNT_MANY" /> ακόμη καρτέλες θα κλείσουν}}</translation>
 <translation id="6785476624617658922">Πρόσθετοι Όροι Παροχής Υπηρεσιών Chrome και Chrome OS</translation>
 <translation id="6786747875388722282">Επεκτάσεις</translation>
+<translation id="6787600234697426339">Συμπληρώθηκε το όριο των <ph name="MAX_INSTANCE_COUNT" /> παραθύρων</translation>
 <translation id="6795633245022906657">Ανοίξτε γρήγορα μια νέα καρτέλα. Για να επεξεργαστείτε αυτήν τη συντόμευση, μεταβείτε στις Ρυθμίσεις.</translation>
 <translation id="679588508577699489">Ορισμός του Chrome ως προεπιλεγμένου προγράμματος περιήγησης</translation>
 <translation id="679956319013005046">Για να ορίσετε την προτιμώμενη υπηρεσία για την αυτόματη συμπλήρωση, προσθέστε πρώτα την υπηρεσία στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" /> .</translation>
@@ -1276,7 +1283,6 @@
 <translation id="6850830437481525139">Έκλεισαν <ph name="TAB_COUNT" /> καρτέλες</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Αρχεία ήχου, 1 αρχείο ήχου στη λίστα}other{Αρχεία ήχου, # αρχεία ήχου στη λίστα}}</translation>
 <translation id="685850645784703949">Discover από την Google - ανενεργό</translation>
-<translation id="6861722405755529743">Κουμπί υπερχείλισης γραμμής σελιδοδεικτών</translation>
 <translation id="6864459304226931083">Λήψη εικόνας</translation>
 <translation id="686490460830618322">Φύλλο φίλτρου εφαρμογών</translation>
 <translation id="6865313869410766144">Δεδομένα φόρμας αυτόματης συμπλήρωσης</translation>
@@ -1438,6 +1444,7 @@
 <translation id="749294055653435199">Το Google Lens δεν είναι διαθέσιμο σε αυτήν τη συσκευή</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Ενημέρωση στις <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Περιμένετε…</translation>
+<translation id="7501135638693251872">Όλοι οι σελιδοδείκτες</translation>
 <translation id="750228856503700085">Οι ενημερώσεις δεν είναι διαθέσιμες</translation>
 <translation id="7507207699631365376">Δείτε την <ph name="BEGIN_LINK" />πολιτική απορρήτου<ph name="END_LINK" /> του παρόχου</translation>
 <translation id="750886945254958667">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή αποχωρήστε, αν δεν θέλετε πλέον να έχετε πρόσβαση σε αυτή</translation>
@@ -1699,6 +1706,7 @@
 <translation id="8611922158252451755">Οποιοσδήποτε διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες, συνεπώς, μοιραστείτε με σύνεση. Ο σύνδεσμος λήγει σε 48 ώρες.</translation>
 <translation id="8616006591992756292">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Άνοιγμα της προτεινόμενης διεύθυνσης URL που καθορίζεται στο ληφθέν περιεχόμενο;</translation>
+<translation id="8634050254805484913">Δεν εμφανίζεται σε στενές οθόνες</translation>
 <translation id="8635399646025169806">Να διατηρηθεί η ομάδα καρτελών;</translation>
 <translation id="8636825310635137004">Για να εμφανίζονται οι καρτέλες από τις άλλες συσκευές σας, ενεργοποιήστε τον συγχρονισμό.</translation>
 <translation id="8662474268934425487">Σύνδεση στο <ph name="SITE_ETLD_PLUS_ONE" /></translation>

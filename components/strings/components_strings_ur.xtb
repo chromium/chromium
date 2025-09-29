@@ -466,6 +466,7 @@
 <translation id="1745399796851657441">‏<ph name="BEGIN_BOLD" />ہمارا اس ڈیٹا کو استعمال کرنے کا طریقہ:<ph name="END_BOLD" /> Chrome آپ کے براؤز کرتے ہی دلچسپی کے موضوعات کو نوٹ کرتا ہے۔ موضوع کے لیبلز پہلے سے متعینہ ہیں اور ان میں آرٹس اور تفریح، خریداری اور اسپورٹس جیسی چیزیں شامل ہیں۔ بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے کے لیے Chrome سے آپ کے کچھ موضوعات (لیکن آپ کی براؤزنگ کی سرگزشت نہیں) کا مطالبہ کر سکتی ہے۔</translation>
 <translation id="1746113442205726301">‏تصویر Y شفٹ</translation>
 <translation id="1746531169546376413">0 ڈگریز</translation>
+<translation id="1747777564644667857">فلائیٹ</translation>
 <translation id="1748225549612934682">تحریری مدد حاصل کرنے کے لیے اپنے ٹیکسٹ کو مختصر کریں</translation>
 <translation id="1751544761369730824"><ph name="SITE_NAME" /> سائٹ حذف کریں</translation>
 <translation id="1752021286346845558">میل باکس 8</translation>
@@ -1231,6 +1232,7 @@
 <translation id="3037605927509011580">ارے، رکیں!</translation>
 <translation id="3039406992698062762">فیملی کے ساتھ سفر</translation>
 <translation id="3041176923638368519">کارڈ کے فوائد کی شرائط دیکھیں</translation>
+<translation id="3041584414879052436">ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان کی فہرست بند ہے۔</translation>
 <translation id="3041612393474885105">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3045769629416806687">خطرناک کھیل</translation>
 <translation id="305162504811187366">‏بشمول ٹائم سٹیمپس، میزبانوں اور کلائنٹ سیشن IDs کے Chrome ریموٹ ڈیسک ٹاپ کی سرگزشت</translation>
@@ -1287,6 +1289,7 @@
 <translation id="3137507986424712703">{COUNT,plural, =0{کوئی نہیں}=1{1 اکاؤنٹ کا سائن ان ڈیٹا}other{# اکاؤنٹس کا سائن ان ڈیٹا}}</translation>
 <translation id="3140646734028448730">کاروباری سروسز</translation>
 <translation id="3141093262818886744">بہر صورت کھولیں</translation>
+<translation id="3141337053413339205">اس ٹیب پر سوئچ کریں۔</translation>
 <translation id="3141641372357166056">منظوری کا کوئی فیصلہ نہیں</translation>
 <translation id="3144458715650412431">‏ٹیسٹ سے متعلق پالیسیاں لاگو کر دی گئی ہیں۔ chrome://policy/test پر ان کا جائزہ لیں ساتھ ہی انہیں ری سیٹ بھی کریں۔ منتظم کی پالیسیاں لاگو نہیں کی جائیں گی۔</translation>
 <translation id="3145945101586104090">جواب کو ڈیکوڈ کرنے میں ناکام</translation>
@@ -2695,6 +2698,7 @@
         <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">اُلٹ ترتیب میں، صفحات کا رُخ اوپر کی جانب</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> کو ان معلومات کو استعمال کرنے کی اجازت دیں جو انہوں نے آپ کے بارے میں محفوظ کی ہیں</translation>
+<translation id="5447973833955560753">بازیابی پاس ورڈ</translation>
 <translation id="5451331376824595378">‏جب سیکیورٹی ایونٹس پر Chrome پرچم لگاتا ہے تو ان ایونٹس سے متعلقہ ڈیٹا آپ کے منتظم کو بھیجا جاتا ہے۔ اس میں Chrome میں آپ کے ذریعے ملاحظہ کیے جانے والے صفحات کے URLs، ان صفحات کے URLs جن سے آپ نے ڈیٹا کاپی کیا ہے، فائل کے نام یا میٹا ڈیٹا، IP پتے، براؤز یا ٹیب کی ناکامیاں اور وہ صارف نام جس کا استعمال آپ ویب پر مبنی ایپلیکیشنز اپنے آلے اور Chrome میں سائن ان کرنے کے لیے کرتے ہیں، شامل ہو سکتے ہیں۔</translation>
 <translation id="5452270690849572955">یہ <ph name="HOST_NAME" /> صفحہ تلاش نہیں کیا جا سکتا ہے</translation>
 <translation id="5452923259299906094">‏‫eWallet اور Pix سے ادائیگی کریں</translation>
@@ -3081,6 +3085,7 @@
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">سائٹ تخلیق کریں</translation>
 <translation id="6105511947520166941">‏اگلی بار براہ راست Chrome میں Pix کے ساتھ ادائیگی کریں</translation>
+<translation id="6105745639559695088">سائیڈ بار ٹوگل کریں</translation>
 <translation id="6106989379647458772">ممکن ہے <ph name="PAGE" /> پر موجود ویب صفحہ عارضی طور پر ڈاؤن ہو یا ممکن ہے یہ مستقل طور پر ایک نئے ویب پتہ پر منتقل ہوگیا ہو۔</translation>
 <translation id="6107012941649240045">جاری کردہ بنام</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> نے گروپ کا نام تبدیل کر دیا</translation>
@@ -3431,6 +3436,7 @@
 <translation id="6671697161687535275">‏Chromium سے فارم کی تجویز ہٹائیں؟</translation>
 <translation id="6675846980676550611">‏‫AR کی اجازت نہیں دی گئی</translation>
 <translation id="6677351035258626477">فاسٹ فوڈ</translation>
+<translation id="6677738644213083042">اس ٹیب پر سوئچ کریں</translation>
 <translation id="6679354743514146922">‏‫Chrome براؤزر <ph name="APP_NAME" /> پر آپ کا پاس ورڈ پر کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="6681790815630918386">‏CVC محفوظ ہو گیا</translation>
 <translation id="6683022854667115063">ہیڈ فونز</translation>
@@ -3479,6 +3485,7 @@
 <translation id="6740851646645036700">آپ ابھی کے لیے اپنی تحریری مدد کی حد کو پہنچ گئے ہیں۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="674375294223700098">سرور سرٹیفکیٹ میں نامعلوم خرابی۔</translation>
 <translation id="6743841972744298686">مطابقت پذیری کی ترتیبات</translation>
+<translation id="6745212570062463886">‏اپنے Google اکاؤنٹ سے اپنا نام اور ای میل پتہ آٹو فل کریں</translation>
 <translation id="6745592621698551453">ابھی اپ ڈیٹ کریں</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">ٹیلی کانفرنسنگ</translation>
@@ -4227,6 +4234,7 @@
 <translation id="79682505114836835">قدر "<ph name="VALUE" />" ایک غلط ہیکس رنگ ہے۔</translation>
 <translation id="7968982339740310781">تفصیلات دیکھیں</translation>
 <translation id="7975858430722947486">موازنہ میں شامل کر دیا گیا</translation>
+<translation id="7976053965094442846">ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان وقت کے ساتھ ادائیگی کے لیے دستیاب ہیں۔ کی بورڈ پوشیدہ ہے۔</translation>
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{‫<ph name="TIME_COUNT" /> منٹ قبل}=1{‫<ph name="TIME_COUNT" /> گھنٹہ قبل}other{‫<ph name="TIME_COUNT" /> دن قبل}}</translation>
@@ -4235,6 +4243,7 @@
 <translation id="7983008347525536475">SUVs</translation>
 <translation id="7984945080620862648">‏آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ نے جلد بازی والی اسنادات بھیجی ہیں جس پر Chrome کارروائی نہیں کر سکتا ہے۔ نیٹ ورک کی خرابیاں اور حملے عموماً عارضی ہوتے ہیں لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
+<translation id="7987087088851949178">'ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان وقت کے ساتھ ادائیگی کے لیے دستیاب ہیں' پوری اسکرین پر کھلی ہے۔</translation>
 <translation id="799149739215780103">باندھیں</translation>
 <translation id="7992044431894087211"><ph name="APPLICATION_TITLE" /> کے ساتھ اسکرین کے اشتراک کو دوبارہ شروع کر دیا گیا</translation>
 <translation id="7995512525968007366">متعین نہیں ہے</translation>
@@ -4277,6 +4286,7 @@
 <translation id="8058603697124206642">غیر مطلوب</translation>
 <translation id="8061691770921837575">میک اپ اور کاسمیٹکس</translation>
 <translation id="8063875539456488183">قیمت محفوظ کریں اور ٹریک کریں</translation>
+<translation id="8065767681506419412">یہ پالیسی ڈیٹا کی وہ قسمیں بتاتی ہے جو آپ کے موجودہ پلیٹ فارم پر تعاون یافتہ نہیں ہیں: <ph name="TYPE_LIST" />۔</translation>
 <translation id="8066225060526005217">کوکیز کی ترتیبات کے زیر انتظآم</translation>
 <translation id="8067872629359326442">‏آپ نے ابھی ایک پُرفریب سائٹ پر اپنا پاس ورڈ درج کیا ہے۔ Chromium مدد کر سکتا ہے۔ اپنا پاس ورڈ تبدیل کرنے اور Google کو یہ مطلع کرنے کے لیے کہ آپ کا اکاؤنٹ خطرے میں ہو سکتا ہے، 'اکاؤنٹ کا تحفظ کریں' پر کلک کریں۔</translation>
 <translation id="8070439594494267500">ایپ آئیکن</translation>
@@ -4694,6 +4704,7 @@
 <translation id="8772387130037509473">یوگا اور پیلاٹیز</translation>
 <translation id="877348612833018844">{0,plural, =1{رازدارانہ فائل کو منتقل کریں؟}other{رازدارانہ فائلز کو منتقل کریں؟}}</translation>
 <translation id="8775347646940100151">کاغذ (لیٹر ہیڈ)</translation>
+<translation id="8775863327608679820">'ابھی خریدیں، ادائیگی بعد میں کریں جاری کنندگان وقت کے ساتھ ادائیگی کے لیے دستیاب ہیں' نصف اسکرین پر کھلی ہے۔</translation>
 <translation id="8776941011841875705">معلوم مسافر نمبر محفوظ کریں؟</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">‏صفحہ کا ترجمہ کریں بٹن، Google ترجمہ کے ساتھ اس صفحہ کا ترجمہ کرنے کے لیے فعال کریں</translation>

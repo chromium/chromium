@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Deaktiver</translation>
 <translation id="1041322626941363065">Få en underretning, hvis adgangskoder afsløres i forbindelse med et brud på datasikkerheden</translation>
 <translation id="104491362976654916">Offlineside</translation>
+<translation id="1046742265332833834">Blåt tema</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget ud. Log ind igen for at bruge bogmærkerne, adgangskoderne m.m. på din konto.</translation>
 <translation id="1054745118061919935">Ved at fortsætte accepterer du <ph name="BEGIN_LINK" />servicevilkårene<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Der er ikke mere lagerplads</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Underretningcenter</translation>
+<translation id="1199963004393929848">Grønt tema</translation>
 <translation id="1201402288615127009">Næste</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bogmærket er gemt i "{title}" på din konto {email}}one{{count} bogmærke er gemt i "{title}" på din konto {email}}other{{count} bogmærker er gemt i "{title}" på din konto {email}}}</translation>
 <translation id="120431140543679678">Følg</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Tillad notifikationer om prissporing…</translation>
 <translation id="1809929083618343438">Denne handling fjerner de valgte oplysninger fra Chrome, men sletter ikke oplysningerne fra din Google-konto.</translation>
 <translation id="1810976980198522421">Annuller</translation>
-<translation id="1812514023095547458">Vælg farve</translation>
 <translation id="1815941218935345331">Adgangskode</translation>
 <translation id="1818687879307252150">{count,plural, =0{Ingen kompromitterede adgangskoder}=1{{count} kompromitteret adgangskode}one{{count} kompromitteret adgangskode}other{{count} kompromitterede adgangskoder}}</translation>
 <translation id="1819374301217551116">Prissporing og -info</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Skjul "Sikkerhedstjek"</translation>
 <translation id="2551153019974022505">Kontofejl</translation>
 <translation id="2559843230610279254">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner.</translation>
+<translation id="257088987046510401">Temaer</translation>
 <translation id="2573117291489209663">Udfør</translation>
 <translation id="2577522251608256362">Kvarter</translation>
 <translation id="2579713773888829241">Fællesdrev</translation>
@@ -455,7 +457,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2708051474374549906">Proaktiv beskyttelse i realtid mod skadelige websites, downloads og udvidelser i realtid, der er baseret på dine browserdata, som sendes til Google</translation>
 <translation id="2709516037105925701">Autofyld</translation>
-<translation id="271033894570825754">Nyt</translation>
+<translation id="271033894570825754">Ny samling</translation>
 <translation id="2712929214961145009">Sans Serif</translation>
 <translation id="2718352093833049315">Kun på Wi-Fi</translation>
 <translation id="2721190673959776287">Eksempel på udførlig hjælp til kontekstpanelet i produktet, som bør vises flere gange om dagen.</translation>
@@ -478,6 +480,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2793703503584038325">Vælg en adgangskode, og tryk på delingsikonet</translation>
 <translation id="2797029671965852011">Vis historik</translation>
 <translation id="2797302972324086597">Landekode</translation>
+<translation id="2798263827270599246">Standardtema</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fil}one{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="2816149645002567541">Downloaden er sat på pause</translation>
 <translation id="2816489851009559785">Menu → Indstillinger → Standardbrowser</translation>
@@ -693,6 +696,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3750225824417196283">Ny side med inkognitofane</translation>
 <translation id="3751873026576444885">Stop med at søge på din skærm med Google Lens</translation>
 <translation id="3753408171347588045">Overvågning af priser</translation>
+<translation id="3753618528540214374">Grågrønt tema</translation>
 <translation id="3762232513783804601">Udviklet til din iPad</translation>
 <translation id="3768725474733206671">Åbn seneste fane</translation>
 <translation id="3779810277399252432">Ingen internetforbindelse.</translation>
@@ -772,7 +776,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4026496154402824012">Du kan deaktivere funktionen ved at gå til <ph name="BEGIN_LINK" />Indstillinger til adgangskode<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Gem på kontoen…</translation>
 <translation id="4038354071007134711">Ingen apps på denne enhed, der kan åbne filen.</translation>
-<translation id="4039829422386964954">Gennemse galleri</translation>
 <translation id="4042870976416480368">Find på siden</translation>
 <translation id="4045441967987592849">Genåbn</translation>
 <translation id="4047337302138771011">Del dine adgangskoder</translation>
@@ -989,6 +992,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4869146460927742717">Adresselinjens placering</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
 <translation id="4872664437015695612">Åbn i Downloads</translation>
+<translation id="4875260838563541343">Handlingsknap</translation>
 <translation id="4876305945144899064">Intet brugernavn</translation>
 <translation id="4876665338492917862">Åbnet <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Påmind mig senere</translation>
@@ -1347,6 +1351,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6198252989419008588">Skift pinkode</translation>
 <translation id="6210079381482819663">Faner, der ikke bruges i <ph name="THRESHOLD" /> dage eller mere, flyttes hertil. Du kan til enhver tid ændre dette i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Der blev ikke fundet nogen adresser</translation>
+<translation id="6218508144653756827">Pink tema</translation>
 <translation id="6218758465102657583">Flyt adresselinjen til toppen</translation>
 <translation id="6223816392543092032">Få dine bogmærker, din historik, dine adgangskoder og andre indstillinger på alle dine enheder.</translation>
 <translation id="6225572914528673855">Adresselinje</translation>
@@ -1439,6 +1444,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6523575793810663688">Vis mig hvordan</translation>
 <translation id="6524082013156754186">Gem på konto</translation>
 <translation id="6524918542306337007">Inkognitotilstand er ikke tilgængelig</translation>
+<translation id="6527208859483186860">baggrund {position} af {total}</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6532106788206463496">Gem ændringer</translation>
 <translation id="6536759809440150308">Åbn <ph name="GROUP_TITLE" />, gruppe med <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6612912757320004438">Tillad notifikationer om faner…</translation>
 <translation id="6617761071025228250">Ryd tekst</translation>
+<translation id="6619015782482868078">Turkis tema</translation>
 <translation id="6620279676667515405">Annuller</translation>
 <translation id="6625830436658400045">Dine indstillinger for synkronisering gendannes på baggrund af din seneste sikkerhedskopi. Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
@@ -1499,6 +1506,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6713676799463473249">Ændret <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Modtagne faner</translation>
 <translation id="6723740634201835758">På din Google-konto</translation>
+<translation id="6724024423419410528">Farver</translation>
 <translation id="672735642903863329">Få dine bogmærker, adgangskoder og meget mere på alle dine enheder.</translation>
 <translation id="6729493062119577923">Aktivitet i delt fanegruppe</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1562,6 +1570,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="69739764870135975">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6979737339423435258">Al tid</translation>
+<translation id="6980507581230208647">Rosa tema</translation>
 <translation id="6983306615164277634">Du kan også holde fingeren nede på adresselinjen for at ændre placeringen.</translation>
 <translation id="6987201788018524855">Se nyttige funktioner, du er gået glip af</translation>
 <translation id="6989636517316575338">Stil spørgsmål om en hvilken som helst side</translation>
@@ -1628,6 +1637,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="728025568708172005">Vis mig rundt</translation>
 <translation id="7280980607183752256">Denne fil kan ikke importeres</translation>
 <translation id="7281202269687163394">Dit privatliv og Gemini.</translation>
+<translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="7293429513719260019">Vælg sprog</translation>
 <translation id="7300448350764260141">Tilføj ekstra beskyttelse mod onlinetrusler.</translation>
 <translation id="7311244614769792472">Der blev ikke fundet nogen resultater</translation>
@@ -1751,6 +1761,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7749790401023484470">Du har ikke valgt en tekst.</translation>
 <translation id="7757015014239760147">Der er intet brugernavn ••••••••</translation>
 <translation id="775755486779745798">Udfyld automatisk udløbsmåneden <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759809451544302770">Valgfrit</translation>
 <translation id="7765158879357617694">Flyt</translation>
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
@@ -1815,6 +1826,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="797824194429476746">Fanerne forbliver åbne på denne enhed, men gruppen slettes permanent.</translation>
 <translation id="797874245254030665">Tilgå dine adgangskoder og adgangsnøgler fra en hvilken som helst app</translation>
 <translation id="7982789257301363584">Netværk</translation>
+<translation id="798299424881500862">Orange tema</translation>
 <translation id="7987685713885608670">For at beskytte adgangskoderne yderligere krypteres de på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator.</translation>
 <translation id="798991908416757345">Fanegrupper er ikke tilgængelige</translation>
 <translation id="7993170188789685695">Tryk to gange for at lukke denne notifikation.</translation>

@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Pakeitimus galite atlikti su skelbimais susijusio privatumo nustatymuose</translation>
 <translation id="1780659583673667574">Pavyzdžiui, jei lankotės svetainėje, kurioje ieškote vakarienės receptų, ji gali nuspręsti, kad jus domina maisto gaminimas. Vėliau kitoje svetainėje gali būti rodomas pirmosios svetainės siūlomas susijęs maisto prekių pristatymo paslaugos skelbimas.</translation>
 <translation id="1887631853265748225">Su skelbimais susijusio privatumo funkcijos padeda apriboti, kokią informaciją apie jus gali sužinoti svetainės ir jų reklamavimo partneriai, rodydami jums suasmenintus skelbimus.</translation>
+<translation id="19426210786412737">Dabartiniai „Chrome“ nustatymai atnaujinti, kad svetainės galėtų pasiekti trečiųjų šalių slapukus. Šį nustatymą galite bet kada pakeisti.</translation>
 <translation id="1954777269544683286">„Google“ reikalauja, kad įmonės viešai pareikštų, jog nenaudos šių duomenų jums stebėti svetainėse. Įmonės yra atsakingos už tai, kad praneštų jums, kaip naudoja jūsų duomenis. <ph name="BEGIN_LINK" />Sužinokite daugiau privatumo politikoje<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funkcijos gali neveikti kai kuriose svetainėse</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti šiuos duomenis?<ph name="END_BOLD" /> „Chrome“ automatiškai ištrina senesnes nei trisdešimt dienų svetaines. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Taip pat galite bet kuriuo metu užblokuoti svetainę, kad ji negalėtų siūlyti skelbimų, ir išjungti svetainių siūlomus skelbimus „Chrome“ nustatymuose.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Svetainės gali naudoti trečiųjų šalių slapukus, kad sužinotų apie veiksmus, kuriuos atliekate kitose svetainėse</translation>
 <translation id="6388287739339671750">Blokuoti stebėjimo scenarijus</translation>
 <translation id="6398358690696005758">Sužinokite daugiau, kaip „Google“ apsaugo jūsų duomenis, peržiūrėję <ph name="BEGIN_LINK1" />privatumo politiką<ph name="LINK_END1" />.</translation>
+<translation id="6494210367693221285">Dabartiniai „Chromium“ nustatymai atnaujinti, kad svetainės galėtų pasiekti trečiųjų šalių slapukus. Šį nustatymą galite bet kada pakeisti.</translation>
 <translation id="6702015235374976491">Skelbimų temos suteikia svetainėms galimybę rodyti jums aktualius skelbimus, apsaugant jūsų naršymo istoriją ir tapatybę. „Chrome“ gali nustatyti dominančias temas pagal jūsų naujausią naršymo istoriją. Vėliau svetainė, kurioje lankotės, gali prašyti „Chrome“ informacijos apie aktualias temas, kad galėtų suasmeninti jums rodomus skelbimus.</translation>
 <translation id="6710025070089118043">Svetainės negali naudoti trečiųjų šalių slapukų, kad suasmenintų turinį ir skelbimus bei sužinotų apie veiksmus, kuriuos atliekate kitose svetainėse, nebent suteiksite susijusioms svetainėms prieigą prie jų</translation>
 <translation id="6737378617247709185">„Chromium“ blokuoja trečiųjų šalių slapukus inkognito režimu, bet administratorius leido trečiųjų šalių slapukus šioje svetainėje. Inkognito režimas taip pat gali suteikti papildomą stebėjimo apsaugą. Tvarkykite inkognito režimo stebėjimo apsaugos priemones skiltyje <ph name="BEGIN_LINK" />„Nustatymai“<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Atidaroma įprastame „Chromium“ lange</translation>
 <translation id="8578320000709741352">Svetainėse, kuriose lankotės, gali būti įterpta turinio ir paslaugų iš kitų svetainių (pvz., vaizdų, skelbimų ir teksto), kurie gali būti naudojami siekiant sužinoti apie jus. Sužinokite daugiau apie <ph name="START_LINK" />inkognito režimo stebėjimo apsaugos priemonių<ph name="END_LINK" /> tvarkymą</translation>
 <translation id="859369389161884405">Atidaroma privatumo politika naujame skirtuke</translation>
+<translation id="8712637175834984815">Supratau</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti šiuos duomenis?<ph name="END_BOLD" /> „Chrome“ automatiškai ištrina senesnes nei keturių savaičių temas. Jums naršant toliau, tema gali būti vėl rodoma sąraše. Taip pat galite blokuoti temas, kurių „Chrome“ neturėtų bendrinti su svetainėmis, ir bet kuriuo metu išjungti skelbimų temas „Chrome“ nustatymuose.</translation>
 <translation id="8803526663383843427">Kada įjungta</translation>
 <translation id="8825639607990802302">Privatumo ir svetainės duomenų parinktys</translation>

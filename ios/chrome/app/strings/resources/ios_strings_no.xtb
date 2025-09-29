@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1041322626941363065">Få en advarsel hvis passord blir avdekket i databrudd</translation>
 <translation id="104491362976654916">Side uten nett</translation>
+<translation id="1046742265332833834">Blått tema</translation>
 <translation id="1049743911850919806">Inkognito</translation>
 <translation id="1053651653201045802">Logget av. Logg på igjen for å bruke blant annet bokmerkene og passordene i kontoen din.</translation>
 <translation id="1054745118061919935">Ved å fortsette godtar du <ph name="BEGIN_LINK" />vilkårene for bruk<ph name="END_LINK" />.</translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">Lagringsplassen din er full</translation>
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1190609913194133056">Varselsenter</translation>
+<translation id="1199963004393929848">Grønt tema</translation>
 <translation id="1201402288615127009">Neste</translation>
 <translation id="1204075260022434100">{count,plural, =1{Bokmerket er lagret i «{title}» i kontoen din ({email})}other{{count} bokmerker er lagret i «{title}» i kontoen din ({email})}}</translation>
 <translation id="120431140543679678">Følg</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">Tillat varsler om prissporing…</translation>
 <translation id="1809929083618343438">Dette fjerner den valgte informasjonen fra Chrome, men den slettes ikke fra Google-kontoen din.</translation>
 <translation id="1810976980198522421">Avbryt</translation>
-<translation id="1812514023095547458">Velg farge</translation>
 <translation id="1815941218935345331">Sikkerhetskode</translation>
 <translation id="1818687879307252150">{count,plural, =0{Ingen passord er utsatt for sikkerhetsbrudd}=1{{count} passord er utsatt for sikkerhetsbrudd}other{{count} passord er utsatt for sikkerhetsbrudd}}</translation>
 <translation id="1819374301217551116">Avslag og statistikk</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">Skjul «Sikkerhetssjekk»</translation>
 <translation id="2551153019974022505">Kontofeil</translation>
 <translation id="2559843230610279254">Fanegruppe, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> faner.</translation>
+<translation id="257088987046510401">Temaer</translation>
 <translation id="2573117291489209663">Ferdig</translation>
 <translation id="2577522251608256362">Nabolag</translation>
 <translation id="2579713773888829241">Delte disker</translation>
@@ -455,7 +457,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2708051474374549906">Proaktiv sanntidsbeskyttelse mot farlige nettsteder, nedlastinger og utvidelser, som fungerer ved at nettlesingsdataene dine sendes til Google</translation>
 <translation id="2709516037105925701">Autofyll</translation>
-<translation id="271033894570825754">Ny</translation>
+<translation id="271033894570825754">Ny samling</translation>
 <translation id="2712929214961145009">Sans-Serif</translation>
 <translation id="2718352093833049315">Bare når Wifi er på</translation>
 <translation id="2721190673959776287">Prøv utsøkt, produktintegrert hjelp for det kontekstuelle panelet, som skal vises flere ganger om dagen.</translation>
@@ -478,6 +480,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="2793703503584038325">Velg et passord, og trykk på «del»-ikonet</translation>
 <translation id="2797029671965852011">Vis loggen</translation>
 <translation id="2797302972324086597">Landskode</translation>
+<translation id="2798263827270599246">Standardtema</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} fil}other{{COUNT} filer}}</translation>
 <translation id="2816149645002567541">Nedlastingen er satt på pause</translation>
 <translation id="2816489851009559785">Meny → Innstillinger → Standardnettleser</translation>
@@ -693,6 +696,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3750225824417196283">Ny side på inkognitofane</translation>
 <translation id="3751873026576444885">Slutt å søke på skjermen med Google Lens</translation>
 <translation id="3753408171347588045">Sporer priser</translation>
+<translation id="3753618528540214374">Viridian tema</translation>
 <translation id="3762232513783804601">Laget for iPaden din</translation>
 <translation id="3768725474733206671">Åpne sist lukkede fane på nytt</translation>
 <translation id="3779810277399252432">Ingen internettilkobling.</translation>
@@ -772,7 +776,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4026496154402824012">For å slå av funksjonen, gå til <ph name="BEGIN_LINK" />Passordvalg<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">Lagre i kontoen…</translation>
 <translation id="4038354071007134711">Ingen apper på denne enheten kan åpne filen.</translation>
-<translation id="4039829422386964954">Bla gjennom galleriet</translation>
 <translation id="4042870976416480368">Finn på siden</translation>
 <translation id="4045441967987592849">Gjenåpne</translation>
 <translation id="4047337302138771011">Del passordene dine</translation>
@@ -989,6 +992,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4869146460927742717">Posisjon for adressefeltet</translation>
 <translation id="4870911314065352661">Vil du lukke alle faner?</translation>
 <translation id="4872664437015695612">Åpne i nedlastinger</translation>
+<translation id="4875260838563541343">Handlingsknapp</translation>
 <translation id="4876305945144899064">Uten brukernavn</translation>
 <translation id="4876665338492917862">Åpnet <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">Påminn meg senere</translation>
@@ -1347,6 +1351,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6198252989419008588">Endre personlig kode</translation>
 <translation id="6210079381482819663">Faner som ikke brukes i <ph name="THRESHOLD" /> dager eller mer, flyttes hit. Du kan når som helst endre dette i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6213281885682386884">Fant ingen adresser</translation>
+<translation id="6218508144653756827">Fuksia tema</translation>
 <translation id="6218758465102657583">Flytt adressefeltet til toppen</translation>
 <translation id="6223816392543092032">Få bokmerkene, loggen, passordene og de andre innstillingene dine på alle enhetene du bruker.</translation>
 <translation id="6225572914528673855">Adressefelt</translation>
@@ -1439,6 +1444,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6523575793810663688">Vis meg hvordan</translation>
 <translation id="6524082013156754186">Lagre i kontoen</translation>
 <translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
+<translation id="6527208859483186860">bakgrunn {position} av {total}</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6532106788206463496">Lagre endringene</translation>
 <translation id="6536759809440150308">Åpne <ph name="GROUP_TITLE" />, gruppe på <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6612912757320004438">Tillat varsler om faner …</translation>
 <translation id="6617761071025228250">Slett teksten</translation>
+<translation id="6619015782482868078">Aqua tema</translation>
 <translation id="6620279676667515405">Avbryt</translation>
 <translation id="6625830436658400045">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />.</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
@@ -1499,6 +1506,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6713676799463473249">Endret <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Mottatte faner</translation>
 <translation id="6723740634201835758">I Google-kontoen din</translation>
+<translation id="6724024423419410528">Farger</translation>
 <translation id="672735642903863329">Få bokmerker, passord med mer på alle enhetene dine.</translation>
 <translation id="6729493062119577923">Aktivitet i delt fanegruppe</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1562,6 +1570,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="69739764870135975">Hvis Google også er standardsøkemotoren din, ser du bedre og mer kontekstuelt relevante forslag</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6979737339423435258">Alle datoer</translation>
+<translation id="6980507581230208647">Rose tema</translation>
 <translation id="6983306615164277634">Du kan også trykke og holde på adressefeltet for å endre posisjonen.</translation>
 <translation id="6987201788018524855">Utforsk nyttige funksjoner du har gått glipp av</translation>
 <translation id="6989636517316575338">Spør om hvilken som helst side</translation>
@@ -1628,6 +1637,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="728025568708172005">Vis meg rundt</translation>
 <translation id="7280980607183752256">Denne filen kan ikke importeres</translation>
 <translation id="7281202269687163394">Personvernet ditt og Gemini.</translation>
+<translation id="7282197670900591579">Sitron tema</translation>
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="7300448350764260141">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
 <translation id="7311244614769792472">Fant ingen resultater</translation>
@@ -1751,6 +1761,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7749790401023484470">Du har ikke merket noe tekst.</translation>
 <translation id="7757015014239760147">Uten brukernavn ••••••••</translation>
 <translation id="775755486779745798">Autofyll utløpsmåneden <ph name="MONTH" /></translation>
+<translation id="7758789811447313947">Fiolett tema</translation>
 <translation id="7759809451544302770">Valgfritt</translation>
 <translation id="7765158879357617694">Flytt</translation>
 <translation id="7772032839648071052">Bekreft passord</translation>
@@ -1815,6 +1826,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="797824194429476746">Fanene fortsetter å være åpne på denne enheten, men gruppen slettes permanent.</translation>
 <translation id="797874245254030665">Få tilgang til passordene og passnøklene dine fra alle apper</translation>
 <translation id="7982789257301363584">Nettverk</translation>
+<translation id="798299424881500862">Oransje tema</translation>
 <translation id="7987685713885608670">For ekstra trygghet kan du kryptere passord på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="798991908416757345">Fanegrupper er ikke tilgjengelige</translation>
 <translation id="7993170188789685695">Dobbelttrykk for å lukke dette varselet.</translation>

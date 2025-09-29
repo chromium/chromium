@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Þú getur gert breytingar í aðgengisstillingum auglýsinga.</translation>
 <translation id="1780659583673667574">Ef þú heimsækir til dæmis vefsvæði til að finna uppskriftir að kvöldmat, gæti vefsvæðið áætlað að þú hafir áhuga á eldamennsku. Annað vefsvæði gæti þá birt þér tengda auglýsingu á heimsendingarþjónustu á matvörum byggt á tillögu fyrra vefsvæðisins.</translation>
 <translation id="1887631853265748225">Persónuverndareiginleikar auglýsinga hjálpa til við að takmarka það sem vefsvæði og auglýsingasamstarfsaðilar þeirra geta lært um þig þegar þau birta þér sérsniðnar auglýsingar.</translation>
+<translation id="19426210786412737">Núverandi Chrome-stillingar þínar hafa verið uppfærðar til að veita vefsvæðum aðgang að fótsporum þriðju aðila. Þú getur breytt þessari stillingu hvenær sem er.</translation>
 <translation id="1954777269544683286">Google krefst þess að fyrirtæki lýsi því opinberlega yfir að þau muni ekki nota þessi gögn til að rekja virkni þína á vefsvæðum. Fyrirtæki bera ábyrgð á því að láta þig vita hvernig þau nota gögnin þín. <ph name="BEGIN_LINK" />Þú getur nálgast frekari upplýsingar í persónuverndarstefnunni okkar<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Eiginleikar á sumum vefsvæðum virka hugsanlega ekki</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Hvernig get ég stjórnað þessum gögnum?<ph name="END_BOLD" /> Chrome eyðir vefsvæðum sem eru eldri en 30 daga sjálfkrafa. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig lokað á að vefsvæði komi með tillögur að auglýsingum fyrir þig og slökkt á auglýsingatillögum vefsvæða hvenær sem er í stillingum Chrome.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Vefsvæði geta notað fótspor þriðja aðila til að sjá hvaða aðgerðir þú framkvæmir á öðrum vefsvæðum</translation>
 <translation id="6388287739339671750">Loka á rakningarskriftur</translation>
 <translation id="6398358690696005758">Farðu yfir <ph name="BEGIN_LINK1" />persónuverndarstefnuna<ph name="LINK_END1" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
+<translation id="6494210367693221285">Núverandi Chromium-stillingar þínar hafa verið uppfærðar til að veita vefsvæðum aðgang að fótsporum þriðju aðila. Þú getur breytt þessari stillingu hvenær sem er.</translation>
 <translation id="6702015235374976491">Umfjöllunarefni auglýsinga gera vefsvæðum kleift að birta þér viðeigandi auglýsingar á sama tíma og þau vernda vafraferil þinn og auðkenni. Chrome getur skráð umfjöllunarefni sem þú virðist hafa áhuga á byggt á nýlegum vafraferli þínum. Vefsvæði sem þú skoðar seinna getur þá beðið Chrome um viðeigandi umfjöllunarefni til að sérsníða auglýsingarnar sem þú sérð.</translation>
 <translation id="6710025070089118043">Vefsvæði geta ekki notað fótspor þriðja aðila til að sérsníða efni og auglýsingar og sjá hvaða aðgerðir þú framkvæmir á öðrum vefsvæðum, nema þú veitir tengdum vefsvæðum aðgang að þeim</translation>
 <translation id="6737378617247709185">Chromium lokar á fótspor þriðju aðila í huliðsstillingu, en kerfisstjórinn þinn heimilaði fótspor þriðju aðila fyrir þetta vefsvæði. Huliðsstilling getur einnig veitt auknar rakningarvarnir. Stjórnaðu rakningarvörnum huliðsstillingar í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Opnast í venjulegum Chromium-glugga</translation>
 <translation id="8578320000709741352">Vefsvæði sem þú heimsækir gætu fellt inn efni og þjónustur frá öðrum vefsvæðum (t.d. myndir, auglýsingar og texta) sem hægt er að nota til að fræðast um þig. Nánar um umsjón með <ph name="START_LINK" />rakningarvörnum í huliðsstillingu<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Opnar persónuverndarstefnu í nýjum flipa</translation>
+<translation id="8712637175834984815">Ég skil</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Hvernig get ég stjórnað þessum gögnum?<ph name="END_BOLD" /> Chrome eyðir umfjöllunarefnum sem eru eldri en fjögurra vikna sjálfkrafa. Þegar þú heldur áfram að skoða vefinn gæti umfjöllunarefni birst aftur á listanum. Þú getur einnig sett umfjöllunarefni á bannlista sem þú vilt ekki að Chrome deili með vefsvæðum og slökkt á umfjöllunarefnum auglýsinga hvenær sem er í stillingum Chrome.</translation>
 <translation id="8803526663383843427">Þegar kveikt er á eiginleikanum</translation>
 <translation id="8825639607990802302">Valkostir vegna persónuverndar og vefsvæðagagna</translation>

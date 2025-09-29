@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
-<translation id="1004806631856047384">Muuta valintaa <ph name="BEGIN_LINK1" />Android-asetuksista<ph name="END_LINK1" />
-
-Lisäsuojaus ohjaa näitä Chromen asetuksia:
-• "Käytä aina suojattuja yhteyksiä" on päällä.
-• JavaScript-optimoija on pois päältä. <ph name="BEGIN_LINK2" />Muokkaa sivustoja koskevia poikkeuksia<ph name="END_LINK2" />.</translation>
 <translation id="1006017844123154345">Avaa verkkoversio</translation>
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1070329623210597193">Tiedostot, jotka sivusto voi katsella tai muokata</translation>
@@ -74,6 +69,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="1816835383954230954">Kun tämä on päällä, Chrome toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti. Kun tämä on poissa päältä, suorituskyky on rajoitettu, mutta V8 on suojatumpi hyökkäyksiä vastaan.</translation>
 <translation id="1818308510395330587">Laita kamera päälle myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> voi käyttää AR:ää.</translation>
 <translation id="1848033246551405023">Sans Serif ‑fontti</translation>
+<translation id="1861262398884155592">Tämä kansio on tyhjä</translation>
 <translation id="1881806992065048905">Uusi välilehti ‐sivun ulkoasun alapaneeli</translation>
 <translation id="1887786770086287077">Sijainti on pois päältä tällä laitteella. Voit laittaa sen päälle <ph name="BEGIN_LINK" />Android-asetuksista<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sivustot käyttävät yleensä laitteesi tiedostoja ja kansioita tallentaakseen muutoksia automaattisesti ja tehdäkseen muuta vastaavaa</translation>
@@ -308,6 +304,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4338831206024587507">Kaikki sivustot, jotka kuuluvat verkkotunnukseen <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Älä salli sivustojen lähettää ilmoituksia</translation>
 <translation id="4402755511846832236">Estä sivustoja tietämästä, kun käytät tätä laitetta aktiivisesti</translation>
+<translation id="4412683424767388419">Chromen värien alapaneeli avattu puoliksi</translation>
 <translation id="4412992751769744546">Salli kolmannen osapuolen evästeet</translation>
 <translation id="4419929467120297501">Chrome estää sivustoja seuraamasta sinua kolmansien osapuolten evästeiden avulla selaamisen aikana. Siirry asetuksiin, niin voit <ph name="BEGIN_LINK" />hallinnoida pääsyä kolmannen osapuolen evästeisiin<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Serif-fontti</translation>
@@ -371,6 +368,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5116239826668864748">Voit käyttää Chromea aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa</translation>
 <translation id="5123685120097942451">Incognito-välilehti</translation>
 <translation id="512938610812707830">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli avattu kokonaan</translation>
+<translation id="5137460097045297858">Discover-fiidin alapaneeli avattu puoliksi</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Hinnanalennus avoimilla välilehdillä}other{Hinnanalennukset avoimilla välilehdillä}}</translation>
 <translation id="5186036860380548585">Toiminto on käytettävissä näytön yläosassa</translation>
 <translation id="5197729504361054390"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> saa valitsemasi yhteystiedot.</translation>
@@ -389,7 +387,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5335288049665977812">Anna kaikkien sivustojen käyttää JavaScriptiä (suositus).</translation>
 <translation id="534295439873310000">NFC-laitteet</translation>
 <translation id="5344522958567249764">Muuta mainosyksityisyysasetuksia</translation>
-<translation id="5371407439562620893">JavaScript-optimointi ja ‑suojaus</translation>
 <translation id="5373874281522292782">Välilehtiryhmät on tallennettu</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 muu)}other{(+ # muuta)}}</translation>
 <translation id="5403592356182871684">Nimet</translation>
@@ -448,6 +445,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="5968921426641056619">Lisää verkko-osoite</translation>
 <translation id="5975083100439434680">Loitonna</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Laita Discover-fiidi päälle</translation>
 <translation id="6012967556075291653">Kiinnitetty pikakuvake</translation>
 <translation id="6015775454662021376">Valitse, mitä tämä sivusto saa tehdä laitteellasi</translation>
 <translation id="6040143037577758943">Sulje</translation>
@@ -470,6 +468,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6207207788774442484">Poista data ja nollaa luvat</translation>
 <translation id="6231752747840485235">Poistetaanko <ph name="APP_NAME" />?</translation>
 <translation id="6234351944623978659">Valitse Selainsovellus &gt; Chrome</translation>
+<translation id="6260830281887654268">Uusi välilehti ‐sivun ulkoasun teemakokoelmien alapaneeli avattu puoliksi</translation>
 <translation id="6262191102408817757">Perustuu viimeisimpään välilehteen</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> estetty</translation>
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
@@ -503,6 +502,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="662080504995468778">Jää</translation>
 <translation id="6635327442719709864">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää sarjaportteja. Kun tämä on pois päältä, sivustot eivät voi käyttää sarjaportteja.</translation>
 <translation id="6678072580827808850">Tarkista turvatarkistus</translation>
+<translation id="6682057173375416470">Saa ehdotettuja artikkeleita Uusi välilehti ‑sivulla</translation>
 <translation id="6683865262523156564">Tämä sivusto kuuluu ryhmään, joka voi nähdä toimintasi. <ph name="RWS_OWNER" /> on määrittänyt ryhmän</translation>
 <translation id="6689172468748959065">Profiilikuvat</translation>
 <translation id="6697925417670533197">Aktiiviset lataukset</translation>
@@ -552,6 +552,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="728412880473384942">Sivustot ovat nopeampia mutta vähemmän turvallisia</translation>
 <translation id="7366415735885268578">Lisää sivusto</translation>
 <translation id="7368695150573390554">Kaikki offline-data poistetaan</translation>
+<translation id="7369678931043226462">"Muuta Uusi välilehti ‑sivua" -alapaneeli avattu puoliksi</translation>
 <translation id="7383715096023715447">Asetukset: <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Turvatarkistus</translation>
 <translation id="7406113532070524618">Tämä asetus toimii niin, että sinua ei tunnisteta eivätkä sivustot näe selaushistoriaasi, mutta sivustot voivat jakaa pienen määrän tietoja osana todennusta</translation>
@@ -559,6 +560,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7423098979219808738">Kysy ensin</translation>
 <translation id="7423538860840206698">Leikepöydältä lukeminen estetty</translation>
 <translation id="7425915948813553151">Sivustojen tumma teema</translation>
+<translation id="746412105358554870">JavaScript-optimointi ja ‑suojaus</translation>
 <translation id="7478658909253570368">Älä salli sivustojen yhdistää sarjaportteihin</translation>
 <translation id="7488573225650545859">Piilota View-välilehdet sovelluslistassa</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="7804248752222191302">Sivusto käyttää kameraasi</translation>
 <translation id="7805832099057502789">Uusi välilehti ‐sivun ulkoasun alapaneeli avattu koko näytölle</translation>
 <translation id="7807060072011926525">Googlen tarjoama</translation>
+<translation id="7809029041571842593">Uusi välilehti ‐sivun korttien alapaneeli avattu puoliksi</translation>
 <translation id="7815680994978050279">Vaarallinen lataus estettiin</translation>
 <translation id="7835852323729233924">Toistetaan mediaa</translation>
 <translation id="783819812427904514">Poista videon mykistys</translation>
@@ -645,6 +648,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8441146129660941386">Kelaa taaksepäin</translation>
 <translation id="8444433999583714703">Ota sijaintitiedot käyttöön myös <ph name="BEGIN_LINK" />Androidin asetuksista<ph name="END_LINK" />, jotta <ph name="APP_NAME" /> saa pääsyn sijaintiisi.</translation>
 <translation id="8447861592752582886">Peru laitteen käyttöoikeus</translation>
+<translation id="8467359479529706065">Uusi välilehti ‐sivun ulkoasun alapaneeli avattu puoliksi</translation>
 <translation id="8471525937465764768">Sivustot yhdistävät yleensä USB-laitteisiin tulostaakseen dokumentteja tai lisätäkseen niitä tallennustilaan</translation>
 <translation id="8473055640493819707"><ph name="APP_NAME" /> on vanhentunut. Asenna sovellus uudelleen.</translation>
 <translation id="847433688444405067">Selaa eri laitteilla</translation>
@@ -660,7 +664,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8549127125482561383">Miten pyyntöjä näytetään</translation>
 <translation id="8558480467877843976">Voit nyt käyttää Chromea aina selatessasi ja kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="857943718398505171">Sallittu (suositus)</translation>
-<translation id="8580511488901768832">Omat pikakuvakkeet ‑alapaneeli avattu kokonaan</translation>
 <translation id="8593422116412089302">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää tietoja, jotka ne ovat tallentaneet sinusta. Kun tämä on pois päältä, sivustot eivät voi pyytää sinua käyttämään tietoja, jotka ne ovat tallentaneet sinusta.</translation>
 <translation id="8609465669617005112">Siirrä ylös</translation>
 <translation id="8617611086246832542">Kun tämä on päällä, näet verkkosivustojen tietokonenäkymän. Kun tämä on pois päältä, näet sivustojen mobiilinäkymän.</translation>
@@ -678,6 +681,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8737426583868847403">Tässä näkyvät sivustot, joille olet tallentanut oman zoomaustason</translation>
 <translation id="8751914237388039244">Valitse kuva</translation>
+<translation id="8775741625735357092">Voit laittaa kirjanmerkkipalkin päälle kohdasta Asetukset &gt; Ulkoasu</translation>
 <translation id="8800034312320686233">Eikö sivusto toimi?</translation>
 <translation id="8801436777607969138">Estä JavaScript tietyllä sivustolla.</translation>
 <translation id="8801657293260363985">V8 on Chromen JavaScript- ja WebAssembly-moottori, jota käytetään sivuston suorituskyvyn parantamiseen</translation>

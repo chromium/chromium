@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Pode fazer alterações nas definições de privacidade dos anúncios</translation>
 <translation id="1780659583673667574">Por exemplo, se visitar um site para encontrar receitas para o jantar, o site pode decidir que tem interesse em culinária. Mais tarde, outro site pode mostrar-lhe um anúncio relacionado com um serviço de entrega de mercearias sugerido pelo primeiro site.</translation>
 <translation id="1887631853265748225">As funcionalidades de privacidade dos anúncios ajudam a limitar o que os Websites e os respetivos parceiros publicitários podem saber sobre si quando lhe mostram anúncios personalizados.</translation>
+<translation id="19426210786412737">As suas definições atuais do Chrome foram atualizadas para permitir que os Websites acedam a cookies de terceiros. Pode alterar esta definição em qualquer altura.</translation>
 <translation id="1954777269544683286">A Google exige que as empresas declarem publicamente que não vão usar estes dados para monitorizar a sua navegação em sites. As empresas são responsáveis por lhe indicar como usam os seus dados. <ph name="BEGIN_LINK" />Saiba mais na nossa Política de Privacidade<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">As funcionalidades em alguns sites podem não funcionar</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Como pode gerir estes dados?<ph name="END_BOLD" /> O Chrome elimina automaticamente os sites com mais de 30 dias. Um site que visita novamente pode voltar a aparecer na lista. Também pode impedir que um site lhe sugira anúncios e desativar os anúncios sugeridos por sites em qualquer altura nas definições do Chrome.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Os sites podem usar cookies de terceiros para saber mais sobre as ações que realiza noutros sites</translation>
 <translation id="6388287739339671750">Bloquear scripts de acompanhamento</translation>
 <translation id="6398358690696005758">Saiba como a Google protege os seus dados na nossa <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="LINK_END1" /></translation>
+<translation id="6494210367693221285">As suas definições atuais do Chromium foram atualizadas para permitir que os Websites acedam a cookies de terceiros. Pode alterar esta definição em qualquer altura.</translation>
 <translation id="6702015235374976491">Os tópicos de anúncios ajudam os Websites a mostrar-lhe anúncios relevantes enquanto protegem o seu histórico de navegação e identidade. O Chrome pode registar tópicos de interesse com base no seu histórico de navegação recente. Posteriormente, um site que visitar pode pedir ao Chrome tópicos relevantes para personalizar os anúncios que vê.</translation>
 <translation id="6710025070089118043">Os sites não podem usar cookies de terceiros para personalizar conteúdo e anúncios, nem saber mais sobre as ações que realiza noutros sites, a menos que dê aos sites relacionados acesso aos cookies de terceiros</translation>
 <translation id="6737378617247709185">O Chromium bloqueia cookies de terceiros na Navegação anónima, mas o seu administrador permitiu cookies de terceiros para este site. A Navegação anónima também pode oferecer proteções antirrastreio adicionais. Faça a gestão das proteções antirrastreio da Navegação anónima nas <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Abre numa janela normal do Chromium</translation>
 <translation id="8578320000709741352">Os sites que visita podem incorporar conteúdo e serviços de outros sites (como imagens, anúncios e texto), que podem ser usados para saber mais sobre si. Saiba como gerir as <ph name="START_LINK" />proteções antirrastreio da Navegação anónima<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Abre a Política de Privacidade num novo separador</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Como pode gerir estes dados?<ph name="END_BOLD" /> O Chrome elimina automaticamente os tópicos com mais de 4 semanas. Enquanto navega, um tópico pode voltar a ser apresentado na lista. Também pode bloquear tópicos que não quer que o Chrome partilhe com sites e desativar os tópicos de anúncios em qualquer altura nas definições do Chrome.</translation>
 <translation id="8803526663383843427">Quando está ativada</translation>
 <translation id="8825639607990802302">Opções de privacidade e dados de sites</translation>

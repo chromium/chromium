@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Anda dapat mengubahnya di setelan privasi iklan</translation>
 <translation id="1780659583673667574">Misalnya, jika Anda membuka situs untuk mencari resep makan malam, situs tersebut mungkin menyimpulkan bahwa Anda tertarik dengan kegiatan memasak. Kemudian, situs lain mungkin menampilkan iklan terkait untuk layanan pengiriman bahan makanan yang disarankan oleh situs pertama.</translation>
 <translation id="1887631853265748225">Fitur privasi iklan membantu membatasi informasi yang dapat dipelajari situs dan partner iklannya tentang Anda saat menampilkan iklan yang dipersonalisasi kepada Anda.</translation>
+<translation id="19426210786412737">Setelan Chrome Anda saat ini telah diperbarui untuk mengizinkan situs mengakses cookie pihak ketiga. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="1954777269544683286">Google mewajibkan perusahaan menyatakan secara publik bahwa mereka tidak akan menggunakan data ini untuk melacak Anda lintas situs. Perusahaan bertanggung jawab memberi tahu Anda terkait penggunaan data Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut di Kebijakan Privasi kami<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Bagaimana cara mengelola data ini?<ph name="END_BOLD" /> Chrome menghapus otomatis situs yang tersimpan lebih dari 30 hari. Situs yang Anda buka lagi mungkin kembali muncul di daftar. Anda juga dapat memblokir situs agar tidak menyarankan iklan untuk Anda dan menonaktifkan iklan yang disarankan situs kapan saja di setelan Chrome.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Situs dapat menggunakan cookie pihak ketiga untuk mempelajari tindakan yang Anda lakukan di situs lain</translation>
 <translation id="6388287739339671750">Blokir skrip pelacakan</translation>
 <translation id="6398358690696005758">Pelajari lebih lanjut cara Google melindungi data Anda dalam <ph name="BEGIN_LINK1" />Kebijakan Privasi<ph name="LINK_END1" /> kami.</translation>
+<translation id="6494210367693221285">Setelan Chromium Anda saat ini telah diperbarui untuk mengizinkan situs mengakses cookie pihak ketiga. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="6702015235374976491">Topik iklan membantu situs menampilkan iklan yang relevan kepada Anda sekaligus melindungi histori penjelajahan dan identitas Anda. Chrome dapat mencatat topik minat berdasarkan histori penjelajahan terbaru Anda. Kemudian, situs yang Anda buka dapat meminta topik yang relevan ke Chrome untuk mempersonalisasi iklan yang Anda lihat.</translation>
 <translation id="6710025070089118043">Situs tidak dapat menggunakan cookie pihak ketiga untuk mempersonalisasi konten dan iklan, serta mempelajari tindakan yang Anda lakukan di situs lain, kecuali jika Anda memberi situs terkait akses ke cookie tersebut</translation>
 <translation id="6737378617247709185">Chromium memblokir cookie pihak ketiga dalam mode Samaran, tetapi administrator Anda mengizinkan cookie pihak ketiga untuk situs ini. Mode Samaran juga dapat memberikan fitur anti-pelacakan tambahan. Kelola fitur anti-pelacakan mode Samaran di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Dibuka di jendela Chromium biasa</translation>
 <translation id="8578320000709741352">Situs yang Anda buka mungkin menyematkan konten dan layanan dari situs lain (seperti gambar, iklan, dan teks) yang dapat digunakan untuk mempelajari informasi tentang Anda. Pelajari lebih lanjut cara mengelola <ph name="START_LINK" />fitur anti-pelacakan mode Samaran<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Membuka Kebijakan Privasi di tab baru</translation>
+<translation id="8712637175834984815">Oke</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Bagaimana cara mengelola data ini?<ph name="END_BOLD" /> Chrome akan menghapus otomatis topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, topik mungkin muncul kembali di daftar. Anda juga dapat memblokir topik yang tidak ingin Anda bagikan ke situs dari Chrome dan menonaktifkan topik iklan kapan saja di setelan Chrome.</translation>
 <translation id="8803526663383843427">Saat aktif</translation>
 <translation id="8825639607990802302">Opsi untuk privasi dan data situs</translation>

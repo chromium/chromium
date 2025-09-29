@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="1004806631856047384">Manage in <ph name="BEGIN_LINK1" />Android settings<ph name="END_LINK1" />
-
-Advanced Protection controls these Chrome settings:
-• 'Always use secure connections' is on.
-• 'JavaScript optimiser' is off. <ph name="BEGIN_LINK2" />Manage site exceptions<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Open Online</translation>
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1070329623210597193">Files this site can view or edit</translation>
@@ -74,6 +69,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="1816835383954230954">When on, Chrome runs faster and features that use JavaScript should work as designed. When off, this reduces performance but makes V8 more resistant to attacks.</translation>
 <translation id="1818308510395330587">To let <ph name="APP_NAME" /> use AR, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
+<translation id="1861262398884155592">This folder is empty</translation>
 <translation id="1881806992065048905">New tab page appearance bottom sheet</translation>
 <translation id="1887786770086287077">Location access is off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sites usually access files and folders on your device for features like automatically saving your work</translation>
@@ -308,6 +304,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="4338831206024587507">All sites under <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Don't allow sites to send notifications</translation>
 <translation id="4402755511846832236">Block sites from knowing when you're actively using this device</translation>
+<translation id="4412683424767388419">Chrome colours bottom sheet opened at half height</translation>
 <translation id="4412992751769744546">Allow third-party cookies</translation>
 <translation id="4419929467120297501">Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK" />manage access to third-party cookies<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Font Serif</translation>
@@ -371,6 +368,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="512938610812707830">New tab page appearance theme collections bottom sheet opened at full height</translation>
+<translation id="5137460097045297858">Discover feed bottom sheet opened at half height</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Price drop on your open tabs}other{Price drops on your open tabs}}</translation>
 <translation id="5186036860380548585">Option available near top of the screen</translation>
 <translation id="5197729504361054390">The contacts that you select will be shared with <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -389,7 +387,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="5335288049665977812">Allow sites to run JavaScript (recommended)</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344522958567249764">Manage ads privacy</translation>
-<translation id="5371407439562620893">JavaScript optimisation and security</translation>
 <translation id="5373874281522292782">Your tab groups are saved</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 more)}other{(+ # more)}}</translation>
 <translation id="5403592356182871684">Names</translation>
@@ -448,6 +445,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="5968921426641056619">Enter web address</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Turn on Discover feed</translation>
 <translation id="6012967556075291653">Pinned shortcut</translation>
 <translation id="6015775454662021376">Control this site's access to your device</translation>
 <translation id="6040143037577758943">Close</translation>
@@ -470,6 +468,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="6207207788774442484">Delete data and reset permissions</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
 <translation id="6234351944623978659">Tap Browser app &gt; Chrome</translation>
+<translation id="6260830281887654268">New tab page appearance theme collections bottom sheet opened at half height</translation>
 <translation id="6262191102408817757">Based on your last tab</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
@@ -503,6 +502,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="662080504995468778">Stay</translation>
 <translation id="6635327442719709864">When on, sites can ask to use serial ports. When off, sites can't use serial ports.</translation>
 <translation id="6678072580827808850">Review Safety Check</translation>
+<translation id="6682057173375416470">Get suggested articles on the New tab page</translation>
 <translation id="6683865262523156564">This site is in a group that can see your activity. The group is defined by <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profile photos</translation>
 <translation id="6697925417670533197">Active downloads</translation>
@@ -552,6 +552,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="728412880473384942">Sites are faster but less secure</translation>
 <translation id="7366415735885268578">Add a site</translation>
 <translation id="7368695150573390554">Any offline data will be deleted</translation>
+<translation id="7369678931043226462">Customise your new tab page bottom sheet opened at half height</translation>
 <translation id="7383715096023715447">Settings for <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Safety check</translation>
 <translation id="7406113532070524618">This setting works without identifying you or allowing sites to see your browsing history, though sites can share a small amount of info as part of the verification</translation>
@@ -559,6 +560,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7423098979219808738">Ask first</translation>
 <translation id="7423538860840206698">Blocked from reading clipboard</translation>
 <translation id="7425915948813553151">Dark theme for sites</translation>
+<translation id="746412105358554870">JavaScript optimisation and security</translation>
 <translation id="7478658909253570368">Don't allow sites to connect to serial ports</translation>
 <translation id="7488573225650545859">Hide View tabs in your app list</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="7804248752222191302">A site is using your camera</translation>
 <translation id="7805832099057502789">New tab page appearance bottom sheet opened at full height</translation>
 <translation id="7807060072011926525">Provided by Google</translation>
+<translation id="7809029041571842593">New tab page cards bottom sheet opened at half height</translation>
 <translation id="7815680994978050279">Dangerous download blocked</translation>
 <translation id="7835852323729233924">Playing media</translation>
 <translation id="783819812427904514">Unmute video</translation>
@@ -645,6 +648,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8441146129660941386">Seek backward</translation>
 <translation id="8444433999583714703">To let <ph name="APP_NAME" /> access your location, also turn on location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoke device permission</translation>
+<translation id="8467359479529706065">New tab page appearance bottom sheet opened at half height</translation>
 <translation id="8471525937465764768">Sites usually connect to USB devices for features such as printing a document or saving to a storage device</translation>
 <translation id="8473055640493819707">'<ph name="APP_NAME" />' is out of date. Please re-install the app.</translation>
 <translation id="847433688444405067">Browse across devices</translation>
@@ -660,7 +664,6 @@ Advanced Protection controls these Chrome settings:
 <translation id="8549127125482561383">How to show requests</translation>
 <translation id="8558480467877843976">You can now use Chrome any time that you browse or tap links in messages, documents and other apps.</translation>
 <translation id="857943718398505171">Allowed (recommended)</translation>
-<translation id="8580511488901768832">my shortcuts bottom sheet opened at full height</translation>
 <translation id="8593422116412089302">When on, sites can ask to use information that they've saved about you. When off, sites can't ask to use info that they've saved about you.</translation>
 <translation id="8609465669617005112">Move up</translation>
 <translation id="8617611086246832542">When on, the desktop view of websites is shown. When off, the mobile view of websites is shown.</translation>
@@ -678,6 +681,7 @@ Advanced Protection controls these Chrome settings:
 <translation id="8730621377337864115">Done</translation>
 <translation id="8737426583868847403">Sites that you save a custom zoom level for will appear here</translation>
 <translation id="8751914237388039244">Select an image</translation>
+<translation id="8775741625735357092">You can turn on the bookmarks bar in Settings &gt; Appearance</translation>
 <translation id="8800034312320686233">Site not working?</translation>
 <translation id="8801436777607969138">Block JavaScript for a specific site.</translation>
 <translation id="8801657293260363985">V8 is Chrome’s JavaScript and WebAssembly engine used to improve site performance</translation>

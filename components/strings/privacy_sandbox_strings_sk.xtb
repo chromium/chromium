@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Zmeny môžete vykonať v nastaveniach ochrany súkromia pri reklamách.</translation>
 <translation id="1780659583673667574">Ak napríklad navštívite nejaký web, aby ste našli recepty na večeru, môže usúdiť, že máte záujem o varenie. Neskôr vám iný web môže zobraziť súvisiacu reklamu na donáškovú službu potravín navrhnutú prvým webom.</translation>
 <translation id="1887631853265748225">Funkcie ochrany súkromia pri reklamách pomáhajú obmedzovať, ktoré weby a ich reklamní partneri môžu o vás zisťovať informácie, keď vám zobrazujú prispôsobené reklamy.</translation>
+<translation id="19426210786412737">Vaše aktuálne nastavenia Chromu boli aktualizované tak, aby webom umožňovali prístup k súborom cookie tretích strán. Toto nastavenie môžete kedykoľvek zmeniť</translation>
 <translation id="1954777269544683286">Google vyžaduje, aby firmy verejne vyhlásili, že vás pomocou týchto údajov nebudú sledovať na weboch. Firmy sú povinné informovať vás o tom, ako používajú vaše údaje. <ph name="BEGIN_LINK" />Viac sa dozviete v našich pravidlách ochrany súkromia<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Funkcie na niektorých weboch nemusia fungovať</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Ako môžete spravovať tieto údaje?<ph name="END_BOLD" /> Chrome automaticky odstraňuje weby, ktoré sú staršie ako 30 dní. Web, ktorý znova navštívite, sa môže v zozname opäť zobraziť. V nastaveniach Chromu môžete tiež kedykoľvek zablokovať navrhovanie reklám určitým webom a vypnúť reklamy navrhované webmi.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Weby môžu pomocou súborov cookie tretích strán získavať informácie o vašich akciách na iných weboch</translation>
 <translation id="6388287739339671750">Blokovanie sledovacích skriptov</translation>
 <translation id="6398358690696005758">Viac o tom, ako Google chráni vaše údaje, sa dozviete v našich <ph name="BEGIN_LINK1" />pravidlách ochrany súkromia<ph name="LINK_END1" />.</translation>
+<translation id="6494210367693221285">Vaše aktuálne nastavenia prehliadača Chromium boli aktualizované tak, aby webom umožňovali prístup k súborom cookie tretích strán. Toto nastavenie môžete kedykoľvek zmeniť</translation>
 <translation id="6702015235374976491">Témy reklám pomáhajú webom zobrazovať relevantné reklamy a zároveň chrániť históriu prehliadania aj identitu. Chrome môže zaznamenávať témy, ktoré vás zaujímajú, na základe vašej nedávnej histórie prehliadania. Neskôr môže web, ktorý navštívite, požiadať Chrome o relevantné témy na prispôsobenie reklám, ktoré sa vám zobrazujú.</translation>
 <translation id="6710025070089118043">Weby nemôžu pomocou súborov cookie tretích strán prispôsobovať obsah a reklamy ani získavať informácie o vašich akciách na iných weboch, pokiaľ prístup k nim nepovolíte súvisiacim webom</translation>
 <translation id="6737378617247709185">Chromium blokuje súbory cookie tretích strán v režime inkognito, ale váš správca povolil súbory cookie tretích strán pre tento web. Režim inkognito môže poskytovať aj ďalšie ochrany pred sledovaním. Ochrany pred sledovaním v režime inkognito môžete spravovať v <ph name="BEGIN_LINK" />Nastaveniach<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Otvorí sa v bežnom okne prehliadača Chromium</translation>
 <translation id="8578320000709741352">Weby, ktoré navštívite, môžu vkladať obsah a služby z iných webov (napríklad obrázky, reklamy a text), pomocou ktorých sa o vás môžu dozvedieť viac. Prečítajte si viac o správe <ph name="START_LINK" />ochrán pred sledovaním v režime inkognito<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Otvoria sa pravidlá ochrany súkromia na novej karte</translation>
+<translation id="8712637175834984815">Dobre</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Ako môžete spravovať tieto údaje?<ph name="END_BOLD" /> Chrome automaticky odstraňuje témy, ktoré sú staršie ako štyri týždne. Počas ďalšieho prehliadania sa určitá téma môže v zozname znova zobraziť. V nastaveniach Chromu môžete navyše kedykoľvek zablokovať témy, ktoré Chrome nemá zdieľať s webmi, a vypnúť témy reklám.</translation>
 <translation id="8803526663383843427">Keď je funkcia zapnutá</translation>
 <translation id="8825639607990802302">Možnosti ochrany súkromia a dát webov</translation>

@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Poți face modificări în setările de confidențialitate a anunțurilor</translation>
 <translation id="1780659583673667574">De exemplu, dacă accesezi un site pentru a găsi rețete pentru cină, site-ul poate deduce că te interesează gătitul. Mai târziu, alt site îți poate afișa un anunț similar pentru un serviciu de livrare a alimentelor, pe baza sugestiei de pe primul site.</translation>
 <translation id="1887631853265748225">Funcțiile pentru confidențialitatea anunțurilor te ajută să restricționezi datele despre tine pe care le pot primi site-urile și partenerii lor publicitari atunci când îți afișează anunțuri personalizate.</translation>
+<translation id="19426210786412737">Setările Chrome actuale au fost actualizate pentru a permite site-urilor să acceseze cookie-uri terță parte. Poți modifica oricând această setare.</translation>
 <translation id="1954777269544683286">Google le solicită companiilor să declare public că nu vor folosi aceste date pentru a te urmări pe site-uri. Companiile au responsabilitatea de a te informa cu privire la modul în care îți folosesc datele. <ph name="BEGIN_LINK" />Află mai multe din Politica de confidențialitate<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Este posibil ca funcțiile de pe anumite site-uri să nu ruleze</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Cum poți gestiona aceste date?<ph name="END_BOLD" /> Chrome șterge automat site-urile mai vechi de 30 de zile. Un site pe care îl accesezi din nou poate să reapară în listă. Poți să nu permiți unui site să îți sugereze anunțuri și să dezactivezi oricând anunțurile sugerate de site-uri din setările Chrome.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Site-urile pot folosi cookie-uri terță parte pentru a afla despre acțiunile pe care le faci pe alte site-uri</translation>
 <translation id="6388287739339671750">Blochează scripturile de urmărire</translation>
 <translation id="6398358690696005758">Află mai multe despre modul în care Google îți protejează datele, în <ph name="BEGIN_LINK1" />Politica de confidențialitate<ph name="LINK_END1" />.</translation>
+<translation id="6494210367693221285">Setările Chromium actuale au fost actualizate pentru a permite site-urilor să acceseze cookie-uri terță parte. Poți modifica oricând această setare.</translation>
 <translation id="6702015235374976491">Pe baza subiectelor anunțurilor, site-urile îți afișează anunțuri relevante, protejându-ți totodată istoricul de navigare și identitatea. Chrome poate reține subiectele de interes pe baza istoricului tău de navigare recent. Ulterior, un site pe care îl accesezi poate solicita browserului Chrome subiecte relevante, pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="6710025070089118043">Site-urile nu pot folosi cookie-uri terță parte pentru a personaliza conținutul și anunțurile și pentru a afla despre acțiunile pe care le faci pe alte site-uri, cu excepția cazului în care le permiți accesul site-urilor conexe la acestea</translation>
 <translation id="6737378617247709185">Chromium blochează cookie-urile terță parte în modul incognito, dar administratorul a permis cookie-urile terță parte pentru acest site. Modul incognito poate oferi și protecții suplimentare împotriva urmăririi. Gestionează protecțiile împotriva urmăririi incognito din <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Se deschide într-o fereastră Chromium obișnuită</translation>
 <translation id="8578320000709741352">Site-urile pe care le accesezi pot încorpora conținut și servicii de pe alte site-uri (cum ar fi imagini, anunțuri și text), care pot fi folosite pentru a afla informații despre tine. Află mai multe despre gestionarea <ph name="START_LINK" />protecțiilor împotriva urmăririi incognito<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Deschide Politica de confidențialitate într-o filă nouă</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Cum poți gestiona aceste date?<ph name="END_BOLD" /> Chrome șterge automat subiectele mai vechi de patru săptămâni. Pe măsură ce navighezi, un subiect poate să reapară în listă. În plus, poți să blochezi subiectele pe care nu vrei să le trimită Chrome la site-uri și să dezactivezi oricând subiectele anunțurilor din setările Chrome.</translation>
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8825639607990802302">Opțiuni pentru confidențialitate și datele privind site-urile</translation>

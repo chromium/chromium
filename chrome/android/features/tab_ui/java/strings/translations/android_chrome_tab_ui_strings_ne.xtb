@@ -35,6 +35,7 @@
 <translation id="2074527029802029717">ट्याब अनपिन गर्नुहोस्</translation>
 <translation id="2118649612461486615">स्टोरसम्बन्धी जानकारी</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंको इन्कोग्निटो ट्याब उपलब्ध हुने छैन।}other{तपाईंका बन्द गरिएका ट्याब र समूहहरू "हालसालैका ट्याबहरू" खण्ड र "ट्याब समूहहरू" खण्डमा गई फेरि खोल्न सकिन्छ। तपाईंका # वटा इन्कोग्निटो ट्याब उपलब्ध हुने छैनन्।}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{साइट अनम्युट गर्नुहोस्}other{साइटहरू अनम्युट गर्नुहोस्}}</translation>
 <translation id="2162620598375156287">अहिले <ph name="SOURCE_WEBSITE" /> मा <ph name="CURRENT_PRICE" /> मा उपलब्ध छ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{समूहबाट ट्याब हटाउनुहोस्}other{समूहबाट ट्याबहरू हटाउनुहोस्}}</translation>
 <translation id="2271452184061378400">तपाईंका ट्याब समूहहरू यहाँ सेभ गरिएका छन्</translation>
@@ -92,6 +93,7 @@
 <translation id="4371591986692297148">निष्क्रिय</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{आइटम रिस्टोर गर्नुहोस्}other{आइटमहरू रिस्टोर गर्नुहोस्}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> दिनअघि अपडेट गरिएको}other{<ph name="NUM_DAYS_MANY" /> दिनअघि अपडेट गरिएको}}</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{साइट म्युट गर्नुहोस्}other{साइटहरू म्युट गर्नुहोस्}}</translation>
 <translation id="4686942373615810936">भर्खरै बनाइएको</translation>
 <translation id="4783638485675352219">यो डिभाइसमा खोलिएका ट्याबका शीर्षक तथा URL हरू अपरेटिङ सिस्टमसँग सेयर गर्नुहोस्</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा)}}</translation>

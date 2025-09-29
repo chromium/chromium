@@ -11,7 +11,7 @@
 <translation id="1432306053064625042">Opens in a regular Chrome window</translation>
 <translation id="1472807065399636739">Sites you visit may embed content and services from other sites (like images, ads and text) which can be used to learn about you. Learn more about managing <ph name="BEGIN_LINK" />Incognito tracking protections<ph name="END_LINK" /></translation>
 <translation id="1472928714075596993"><ph name="BEGIN_BOLD" />What data is used?<ph name="END_BOLD" /> Your ad topics are based on your recent browsing history, a list of sites that you've visited using Chrome on this device.</translation>
-<translation id="1529201733207295376">Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site that you visit. You can manage Incognito Tracking Protections in <ph name="START_LINK" />Settings<ph name="END_LINK" />.</translation>
+<translation id="1529201733207295376">Third-party cookies are blocked. Incognito also provides features that can limit the information available to companies whose content is embedded on a site that you visit. You can manage Incognito tracking protections in <ph name="START_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="1559726735555610004">Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalise your experience for more than just ads. They may also combine it with other information that they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
 <translation id="1569440020357229235">When you're in Incognito mode, sites can't use third-party cookies. If a site that relies on these cookies isn't working, you can <ph name="BEGIN_LINK" />try giving that site temporary access to third-party cookies<ph name="END_LINK" />.</translation>
 <translation id="1617293350324746198">Third-party cookies are blocked. Incognito can also provide additional tracking protections.</translation>
@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">You can make changes in ads privacy settings</translation>
 <translation id="1780659583673667574">For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.</translation>
 <translation id="1887631853265748225">Ads privacy features help limit what websites and their advertising partners can learn about you when they show you personalised ads.</translation>
+<translation id="19426210786412737">Your current Chrome settings have been updated to allow websites to access third-party cookies. You can change this setting any time.</translation>
 <translation id="1954777269544683286">Google requires companies to state publicly that they won't use this data to track you across sites. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK" />Learn more in our privacy policy<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />How can you manage this data?<ph name="END_BOLD" /> Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. You can also block a site from suggesting ads for you and turn site-suggested ads off at any time in Chrome settings.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Sites can use third-party cookies to learn about actions that you take on other sites</translation>
 <translation id="6388287739339671750">Block tracking scripts</translation>
 <translation id="6398358690696005758">Learn more about how Google protects your data in our <ph name="BEGIN_LINK1" />Privacy Policy<ph name="LINK_END1" />.</translation>
+<translation id="6494210367693221285">Your current Chromium settings have been updated to allow websites to access third-party cookies. You can change this setting any time.</translation>
 <translation id="6702015235374976491">Ad topics help websites show you relevant ads while protecting your browsing history and identity. Chrome can note topics of interest based on your recent browsing history. Later, a site that you visit can ask Chrome for relevant topics to personalise the ads that you see.</translation>
 <translation id="6710025070089118043">Sites can't use third-party cookies to personalise content and ads and learn about actions that you take on other sites unless you give related sites access to them</translation>
 <translation id="6737378617247709185">Chromium blocks third-party cookies in Incognito, but your administrator allowed third-party cookies for this site. Incognito can also provide additional tracking protections. Manage Incognito tracking protections in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Opens in a regular Chromium window</translation>
 <translation id="8578320000709741352">Sites you visit may embed content and services from other sites (like images, ads and text) which can be used to learn about you. Learn more about managing <ph name="START_LINK" />Incognito tracking protections<ph name="END_LINK" /></translation>
 <translation id="859369389161884405">Opens privacy policy in a new tab</translation>
+<translation id="8712637175834984815">Got it</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />How can you manage this data?<ph name="END_BOLD" /> Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. You can also block topics that you don't want Chrome to share with sites and turn ad topics off at any time in Chrome settings.</translation>
 <translation id="8803526663383843427">When on</translation>
 <translation id="8825639607990802302">Options for privacy and site data</translation>

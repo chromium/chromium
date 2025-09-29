@@ -466,6 +466,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome registreert interessante onderwerpen terwijl je browst. Onderwerplabels zijn vooraf gedefinieerd en omvatten bijvoorbeeld Kunst en entertainment, Shopping en Sport. Later kan een site die je bezoekt Chrome om een aantal van je onderwerpen vragen (maar niet je browsegeschiedenis) om de advertenties te personaliseren die je te zien krijgt.</translation>
 <translation id="1746113442205726301">Beeldverschuiving Y</translation>
 <translation id="1746531169546376413">0 graden</translation>
+<translation id="1747777564644667857">Vlucht</translation>
 <translation id="1748225549612934682">Kort je tekst in om schrijfhulp te krijgen</translation>
 <translation id="1751544761369730824">Site <ph name="SITE_NAME" /> verwijderen</translation>
 <translation id="1752021286346845558">Mailbox 8</translation>
@@ -1231,6 +1232,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3037605927509011580">Asjemenou!</translation>
 <translation id="3039406992698062762">Gezinsreizen</translation>
 <translation id="3041176923638368519">Voorwaarden voor kaartvoordelen bekijken</translation>
+<translation id="3041584414879052436">Lijst met aanbieders van Koop nu, betaal later is gesloten.</translation>
 <translation id="3041612393474885105">Certificaatgegevens</translation>
 <translation id="3045769629416806687">Extreme sporten</translation>
 <translation id="305162504811187366">Chrome Remote Desktop-geschiedenis, waaronder tijdstempels, hosts en clientsessie-ID's</translation>
@@ -2476,7 +2478,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5089810972385038852">Staat</translation>
 <translation id="5090647584136241764">Voeg tabbladen met vergelijkbare producten toe om de details die voor jou belangrijk zijn makkelijk te vergelijken</translation>
 <translation id="5093232627742069661">Zigzagvouw</translation>
-<translation id="5093417502834168387">Problemen met inloggen? Probeer het op een andere manier</translation>
+<translation id="5093417502834168387">Je kunt niet inloggen? Probeer iets anders</translation>
 <translation id="5094747076828555589">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server wordt niet vertrouwd door Chromium. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="5097099694988056070">Apparaatstatistieken zoals CPU-/RAM-gebruik rapporteren</translation>
 <translation id="5097468150760963273">27 x 39 inch</translation>
@@ -2688,6 +2690,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <ph name="END_LIST" /></translation>
 <translation id="5443468954631487277">Omgekeerde volgorde met de bedrukte zijde omhoog</translation>
 <translation id="5447235695608032700">Toestaan dat <ph name="SITE" /> informatie gebruikt die over jou is opgeslagen</translation>
+<translation id="5447973833955560753">Herstelwachtwoord</translation>
 <translation id="5451331376824595378">Als Chrome beveiligingsgebeurtenissen markeert, worden relevante gegevens over de gebeurtenissen naar je beheerder gestuurd. Dit kunnen URL's zijn van pagina's die je bezoekt in Chrome, URL's van pagina's waarvan je gegevens hebt gekopieerd, bestandsnamen of metadata, IP-adressen, browser- of tabbladcrashes en de gebruikersnaam die je gebruikt om in te loggen bij webgebaseerde apps, je apparaat en Chrome.</translation>
 <translation id="5452270690849572955">Deze pagina op <ph name="HOST_NAME" /> kan niet worden gevonden</translation>
 <translation id="5452923259299906094">Betalen met eWallet en Pix</translation>
@@ -3074,6 +3077,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Site maken</translation>
 <translation id="6105511947520166941">Betaal de volgende keer rechtstreeks met Pix in Chrome</translation>
+<translation id="6105745639559695088">Zijbalk uitvouwen/samenvouwen</translation>
 <translation id="6106989379647458772">De webpagina op <ph name="PAGE" /> is mogelijk tijdelijk niet beschikbaar of is permanent verplaatst naar een nieuw webadres.</translation>
 <translation id="6107012941649240045">Verleend aan</translation>
 <translation id="6107864469867367783"><ph name="USER_DISPLAY_NAME" /> heeft de groepsnaam gewijzigd</translation>
@@ -3470,6 +3474,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6740851646645036700">Je hebt voor nu je limiet voor schrijfhulp bereikt. Probeer het later opnieuw.</translation>
 <translation id="674375294223700098">Onbekende fout met servercertificaat.</translation>
 <translation id="6743841972744298686">Synchronisatie-instellingen</translation>
+<translation id="6745212570062463886">Vul je naam en e-mailadres automatisch in vanuit je Google-account</translation>
 <translation id="6745592621698551453">Nu updaten</translation>
 <translation id="6751487147225428522">ROC 8K</translation>
 <translation id="6752086006821653994">Telefonisch vergaderen</translation>
@@ -4219,6 +4224,7 @@ Aanvullende informatie:
 <translation id="79682505114836835">De waarde <ph name="VALUE" /> is een ongeldige hexadecimale kleur.</translation>
 <translation id="7968982339740310781">Details bekijken</translation>
 <translation id="7975858430722947486">Toegevoegd aan vergelijking</translation>
+<translation id="7976053965094442846">Uitgevers van Koop nu, betaal later die beschikbaar zijn voor betalen in termijnen. Toetsenbord verborgen.</translation>
 <translation id="7976214039405368314">Te veel verzoeken</translation>
 <translation id="7977538094055660992">Uitvoerapparaat</translation>
 <translation id="7979463492896063081">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> min geleden}=1{<ph name="TIME_COUNT" /> u geleden}other{<ph name="TIME_COUNT" /> d geleden}}</translation>
@@ -4227,6 +4233,7 @@ Aanvullende informatie:
 <translation id="7983008347525536475">SUV's</translation>
 <translation id="7984945080620862648">Je kunt <ph name="SITE" /> op dit moment niet bezoeken, omdat de website gecodeerde verificatiegegevens heeft verzonden die niet door Chrome kunnen worden verwerkt. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
+<translation id="7987087088851949178">Uitgevers van Koop nu, betaal later die beschikbaar zijn voor betalen in termijnen, zijn op volledige hoogte geopend.</translation>
 <translation id="799149739215780103">Inbinden</translation>
 <translation id="7992044431894087211">Scherm delen met <ph name="APPLICATION_TITLE" /> is hervat</translation>
 <translation id="7995512525968007366">Niet opgegeven</translation>
@@ -4269,6 +4276,7 @@ Aanvullende informatie:
 <translation id="8058603697124206642">Niet vereist</translation>
 <translation id="8061691770921837575">Make-up en cosmetica</translation>
 <translation id="8063875539456488183">Opslaan en prijs volgen</translation>
+<translation id="8065767681506419412">Dit beleid specificeert gegevenstypen die niet worden ondersteund op je huidige platform: <ph name="TYPE_LIST" />.</translation>
 <translation id="8066225060526005217">Beheerd door cookie-instellingen</translation>
 <translation id="8067872629359326442">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium kan je laten zien wat je nu kunt doen. Klik op 'Account beschermen' om je wachtwoord te wijzigen en Google te laten weten dat je account mogelijk gevaar loopt.</translation>
 <translation id="8070439594494267500">App-icoon</translation>
@@ -4686,6 +4694,7 @@ Aanvullende informatie:
 <translation id="8772387130037509473">Yoga en pilates</translation>
 <translation id="877348612833018844">{0,plural, =1{Vertrouwelijk bestand verplaatsen?}other{Vertrouwelijke bestanden verplaatsen?}}</translation>
 <translation id="8775347646940100151">Papier (briefhoofd)</translation>
+<translation id="8775863327608679820">Uitgevers van Koop nu, betaal later die beschikbaar zijn voor betalen in termijnen, zijn op halve hoogte geopend.</translation>
 <translation id="8776941011841875705">Known Traveler Number opslaan?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Knop Pagina vertalen. Activeer deze om deze pagina te vertalen met Google Translate.</translation>

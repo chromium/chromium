@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1004806631856047384">前往 <ph name="BEGIN_LINK1" />Android 設定<ph name="END_LINK1" />管理
-
-「進階保護功能」可控制以下 Chrome 設定：
-• 開啟「一律使用安全連線」。
-• 關閉「JavaScript 優化工具」。<ph name="BEGIN_LINK2" />管理網站例外情況<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">在線上開啟</translation>
 <translation id="1036348656032585052">停用</translation>
 <translation id="1070329623210597193">此網站可以查看或編輯的檔案</translation>
@@ -74,6 +69,7 @@
 <translation id="1816835383954230954">啟用之後可以提高 Chrome 執行速度，用 JavaScript 嘅功能應該會正常運作。閂咗之後效能會降低，不過 V8 防範攻擊嘅能力會提高。</translation>
 <translation id="1818308510395330587">如要讓 <ph name="APP_NAME" /> 使用 AR，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟相機。</translation>
 <translation id="1848033246551405023">字型 Sans Serif</translation>
+<translation id="1861262398884155592">此資料夾中沒有內容</translation>
 <translation id="1881806992065048905">新分頁外觀頁底面板</translation>
 <translation id="1887786770086287077">此裝置的位置資訊存取權已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="1906181697255754968">網站通常會存取裝置上的檔案和資料夾，以提供自動儲存作業等功能</translation>
@@ -308,6 +304,7 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有網站</translation>
 <translation id="4340799661701629185">不允許網站傳送通知</translation>
 <translation id="4402755511846832236">禁止網站取得此裝置的使用狀態</translation>
+<translation id="4412683424767388419">Chrome 顏色頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="4412992751769744546">允許第三方 Cookie</translation>
 <translation id="4419929467120297501">Chrome 會禁止網站使用第三方 Cookie 追蹤你的瀏覽活動。你可前往設定<ph name="BEGIN_LINK" />管理第三方 Cookie 存取權<ph name="END_LINK" />。</translation>
 <translation id="4425416282877905577">字型 Serif</translation>
@@ -371,6 +368,7 @@
 <translation id="5116239826668864748">你現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
 <translation id="512938610812707830">新分頁外觀主題集頁底面板宜家顯示喺成個畫面</translation>
+<translation id="5137460097045297858">「探索」動態消息頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{已開啟的分頁上有商品降價}other{已開啟的分頁上有商品降價}}</translation>
 <translation id="5186036860380548585">選項喺螢幕頂部附近</translation>
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
@@ -389,7 +387,6 @@
 <translation id="5335288049665977812">允許網站執行 JavaScript (建議)</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344522958567249764">管理廣告私隱權</translation>
-<translation id="5371407439562620893">JavaScript 優化和保安</translation>
 <translation id="5373874281522292782">已儲存分頁群組</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(還有 1 個)}other{(還有 # 個)}}</translation>
 <translation id="5403592356182871684">名稱</translation>
@@ -448,6 +445,7 @@
 <translation id="5968921426641056619">輸入網址</translation>
 <translation id="5975083100439434680">縮小</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">打開「探索」動態消息</translation>
 <translation id="6012967556075291653">置頂的捷徑</translation>
 <translation id="6015775454662021376">控制此網站對裝置的存取權</translation>
 <translation id="6040143037577758943">關閉</translation>
@@ -470,6 +468,7 @@
 <translation id="6207207788774442484">刪除資料並重設權限</translation>
 <translation id="6231752747840485235">要解除安裝「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="6234351944623978659">輕按 [瀏覽器應用程式] &gt; [Chrome]</translation>
+<translation id="6260830281887654268">新分頁外觀主題集頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="6262191102408817757">根據您最近的分頁</translation>
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
@@ -503,6 +502,7 @@
 <translation id="662080504995468778">不離開</translation>
 <translation id="6635327442719709864">開咗之後，網站可以要求用序列連接埠。閂咗之後，網站就用唔到序列連接埠。</translation>
 <translation id="6678072580827808850">查看安全檢查結果</translation>
+<translation id="6682057173375416470">在「新分頁」查看建議文章</translation>
 <translation id="6683865262523156564">此網站所屬的群組可查看你的活動。這是 <ph name="RWS_OWNER" /> 定義的群組</translation>
 <translation id="6689172468748959065">個人檔案相片</translation>
 <translation id="6697925417670533197">正在下載的項目</translation>
@@ -552,6 +552,7 @@
 <translation id="728412880473384942">網站更快，但安全性較低</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7368695150573390554">系統將刪除所有離線資料</translation>
+<translation id="7369678931043226462">自訂新分頁頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="7383715096023715447"><ph name="DOMAIN" /> 的設定</translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7406113532070524618">此設定運作時不需識別您的身份或允許網站查看您的瀏覽記錄，不過網站可在驗證過程中分享少量資料</translation>
@@ -559,6 +560,7 @@
 <translation id="7423098979219808738">事先詢問</translation>
 <translation id="7423538860840206698">禁止讀取剪貼簿</translation>
 <translation id="7425915948813553151">網站深色主題背景</translation>
+<translation id="746412105358554870">JavaScript 優化和保安</translation>
 <translation id="7478658909253570368">不允許網站連接至序列連接埠</translation>
 <translation id="7488573225650545859">不要在應用程式清單中查看分頁</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@
 <translation id="7804248752222191302">有網站正在使用您的相機</translation>
 <translation id="7805832099057502789">新分頁外觀頁底面板宜家顯示喺成個畫面</translation>
 <translation id="7807060072011926525">由 Google 提供</translation>
+<translation id="7809029041571842593">新分頁資訊卡頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="7815680994978050279">已封鎖危險的下載項目</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>
 <translation id="783819812427904514">將影片取消靜音</translation>
@@ -645,6 +648,7 @@
 <translation id="8441146129660941386">向後回轉</translation>
 <translation id="8444433999583714703">如要讓 <ph name="APP_NAME" /> 存取您的位置，請一併在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中開啟「位置資訊」功能。</translation>
 <translation id="8447861592752582886">撤消裝置權限</translation>
+<translation id="8467359479529706065">新分頁外觀頁底面板宜家顯示喺畫面下半部</translation>
 <translation id="8471525937465764768">網站通常會連接 USB 裝置，以提供列印文件或儲存至儲存裝置等功能</translation>
 <translation id="8473055640493819707">「<ph name="APP_NAME" />」版本已過期。請重新安裝應用程式。</translation>
 <translation id="847433688444405067">在不同裝置上瀏覽</translation>
@@ -660,7 +664,6 @@
 <translation id="8549127125482561383">如何顯示要求</translation>
 <translation id="8558480467877843976">您現在隨時可使用 Chrome 瀏覽或開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="857943718398505171">允許 (建議)</translation>
-<translation id="8580511488901768832">我嘅捷徑頁底面板宜家顯示喺成個畫面</translation>
 <translation id="8593422116412089302">開咗之後，網站可以要求使用同你相關嘅既有資料。閂咗之後，網站唔可以要求使用同你相關嘅既有資料。</translation>
 <translation id="8609465669617005112">向上移</translation>
 <translation id="8617611086246832542">開咗之後，系統會用桌面電腦檢視模式顯示網站。閂咗之後，系統會用流動裝置檢視模式顯示網站。</translation>
@@ -678,6 +681,7 @@
 <translation id="8730621377337864115">完成</translation>
 <translation id="8737426583868847403">已儲存自訂縮放等級的網站會在這裡顯示</translation>
 <translation id="8751914237388039244">選取圖片</translation>
+<translation id="8775741625735357092">你可以在 [設定] &gt; [外觀] 中開啟書籤列</translation>
 <translation id="8800034312320686233">網站無法正常運作嗎？</translation>
 <translation id="8801436777607969138">封鎖特定網站執行 JavaScript。</translation>
 <translation id="8801657293260363985">V8 是 Chrome 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>

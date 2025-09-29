@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
-<translation id="1004806631856047384">Upravljanje v <ph name="BEGIN_LINK1" />nastavitvah za Android<ph name="END_LINK1" />
-
-Dodatna zaščita upravlja te nastavitve za Chrome:
-• Možnost »Vedno dovoli varne povezave« je vklopljena.
-• Možnost »Optimiziranje Javascripta« je izklopljena. <ph name="BEGIN_LINK2" />Upravljanje izjem za spletna mesta<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Odpri v spletu</translation>
 <translation id="1036348656032585052">Izklop</translation>
 <translation id="1070329623210597193">Datoteke, ki si jih to spletno mesto lahko ogleda ali jih uredi</translation>
@@ -74,6 +69,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="1816835383954230954">Če je vklopljeno, Chrome deluje hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno. Če je izklopljeno, se zmanjša učinkovitost delovanja, vendar je mehanizem V8 odpornejši proti napadom.</translation>
 <translation id="1818308510395330587">Če želite aplikaciji <ph name="APP_NAME" /> dovoliti uporabo razširjene resničnosti, prav tako vklopite fotoaparat v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1848033246551405023">Pisava Sans Serif</translation>
+<translation id="1861262398884155592">Ta mapa je prazna</translation>
 <translation id="1881806992065048905">Razdelek na dnu zaslona za videz strani »Nov zavihek«</translation>
 <translation id="1887786770086287077">Dostop do lokacije je izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Spletna mesta običajno dostopajo do datotek in map v vaši napravi zaradi funkcij, kot je samodejno shranjevanje vašega dela.</translation>
@@ -308,6 +304,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="4338831206024587507">Vsa spletna mesta v domeni <ph name="DOMAIN" />.</translation>
 <translation id="4340799661701629185">Spletnim mestom ni dovoljeno pošiljati obvestil.</translation>
 <translation id="4402755511846832236">Preprečevanje, da bi spletna mesta vedela, kdaj aktivno uporabljate to napravo.</translation>
+<translation id="4412683424767388419">Razdelek na dnu zaslona z barvami Chroma je odprt pri polovični višini</translation>
 <translation id="4412992751769744546">Omogočanje piškotkov tretjih oseb</translation>
 <translation id="4419929467120297501">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb, da bi vam sledila med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Pisava Serif</translation>
@@ -371,6 +368,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5116239826668864748">Chrome lahko uporabljate, kadar koli se dotaknete povezav v sporočilih, dokumentih in drugih aplikacijah</translation>
 <translation id="5123685120097942451">Anonimni zavihek</translation>
 <translation id="512938610812707830">Razdelek na dnu zaslona z zbirkami tem za videz strani »Nov zavihek« odprt pri polni višini</translation>
+<translation id="5137460097045297858">Razdelek na dnu zaslona za vir Odkrivanje je odprt pri polovični višini</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Znižanje cene na odprtih zavihkih}one{Znižanja cen na odprtih zavihkih}two{Znižanja cen na odprtih zavihkih}few{Znižanja cen na odprtih zavihkih}other{Znižanja cen na odprtih zavihkih}}</translation>
 <translation id="5186036860380548585">Možnosti so na voljo blizu vrha zaslona</translation>
 <translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -389,7 +387,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5335288049665977812">Spletnim mestom dovoli izvajanje JavaScripta (priporočeno)</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
 <translation id="5344522958567249764">Upravljanje zasebnosti pri oglaševanju</translation>
-<translation id="5371407439562620893">Optimizacija in varnost za JavaScript</translation>
 <translation id="5373874281522292782">Skupine zavihkov so shranjene</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
@@ -448,6 +445,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="5968921426641056619">Vnesite spletni naslov</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Vklop vira Odkrivanje</translation>
 <translation id="6012967556075291653">Pripeta bližnjica</translation>
 <translation id="6015775454662021376">Nadziranje dostopa spletnega mesta do naprave</translation>
 <translation id="6040143037577758943">Zapri</translation>
@@ -470,6 +468,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="6207207788774442484">Izbriši podatke in ponastavi dovoljenja</translation>
 <translation id="6231752747840485235">Želite odmestiti aplikacijo »<ph name="APP_NAME" />«?</translation>
 <translation id="6234351944623978659">Dotaknite se Brskalnik &gt; Chrome</translation>
+<translation id="6260830281887654268">Razdelek na dnu zaslona z zbirkami tem za videz strani »Nov zavihek« odprt pri polovični višini</translation>
 <translation id="6262191102408817757">Na podlagi vašega zadnjega zavihka</translation>
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Spletna mesta vas lahko vprašajo, ali želite, da vam pošiljajo obvestila</translation>
@@ -503,6 +502,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6635327442719709864">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo uporabo serijskih vrat. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati serijskih vrat.</translation>
 <translation id="6678072580827808850">Pregled varnostnega preverjanja</translation>
+<translation id="6682057173375416470">Prejemanje predlaganih člankov na strani »Nov zavihek«</translation>
 <translation id="6683865262523156564">To spletno mesto je v skupini, ki si lahko ogleda vašo dejavnost. To skupino je definiralo spletno mesto <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6697925417670533197">Aktivni prenosi</translation>
@@ -552,6 +552,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="728412880473384942">Spletna mesta delujejo hitreje, vendar manj varno</translation>
 <translation id="7366415735885268578">Dodajanje spletnega mesta</translation>
 <translation id="7368695150573390554">Vsi podatki brez povezave bodo izbrisani</translation>
+<translation id="7369678931043226462">Razdelek na dnu zaslona za prilagajanje strani »Nov zavihek« je odprt pri polovični višini</translation>
 <translation id="7383715096023715447">Nastavitve za domeno <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Varnostno preverjanje</translation>
 <translation id="7406113532070524618">Ta nastavitev deluje, ne da bi prišlo do vaše osebne prepoznave ali da bi bil spletnim mestom omogočen ogled vaše zgodovine brskanja. vendar lahko spletna mesta v okviru preverjanja delijo majhno količino podatkov.</translation>
@@ -559,6 +560,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7423098979219808738">Najprej vprašaj</translation>
 <translation id="7423538860840206698">Blokirano branje vsebine odložišča</translation>
 <translation id="7425915948813553151">Temna tema za spletna mesta</translation>
+<translation id="746412105358554870">Optimizacija in varnost za JavaScript</translation>
 <translation id="7478658909253570368">Spletnim mestom ni dovoljeno povezovanje s serijskimi vrati.</translation>
 <translation id="7488573225650545859">Skrij Ogled zavihkov na seznamu aplikacij</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="7804248752222191302">Spletno mesto uporablja kamero</translation>
 <translation id="7805832099057502789">Razdelek na dnu zaslona za videz strani »Nov zavihek« je odprt pri polni višini</translation>
 <translation id="7807060072011926525">Zagotavlja Google</translation>
+<translation id="7809029041571842593">Razdelek na dnu zaslona za kartice strani »Nov zavihek« je odprt pri polovični višini</translation>
 <translation id="7815680994978050279">Nevaren prenos je bil blokiran</translation>
 <translation id="7835852323729233924">Predvajanje predstavnosti</translation>
 <translation id="783819812427904514">Vklop videa</translation>
@@ -645,6 +648,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8441146129660941386">Išči nazaj</translation>
 <translation id="8444433999583714703">Če želite aplikaciji <ph name="APP_NAME" /> omogočiti dostop do lokacije, lokacijo vklopite tudi v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Umik dovoljenja za dostop do naprave</translation>
+<translation id="8467359479529706065">Razdelek na dnu zaslona za videz strani »Nov zavihek« je odprt pri polovični višini</translation>
 <translation id="8471525937465764768">Spletna mesta običajno vzpostavijo povezavo z napravami USB zaradi funkcij, kot sta tiskanje dokumenta ali shranjevanje podatkov v napravo za shranjevanje.</translation>
 <translation id="8473055640493819707">Aplikacija »<ph name="APP_NAME" />« je zastarela. Znova jo namestite.</translation>
 <translation id="847433688444405067">Brskanje po vseh napravah</translation>
@@ -660,7 +664,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8549127125482561383">Kako prikazati zahteve</translation>
 <translation id="8558480467877843976">Zdaj lahko uporabljate Chrome, kadar koli brskate po povezavah ali se jih dotaknete v sporočilih, dokumentih in drugih aplikacijah.</translation>
 <translation id="857943718398505171">Dovoljeno (priporočeno)</translation>
-<translation id="8580511488901768832">razdelek na dnu zaslona »Moje bližnjice« je odprt pri polni višini</translation>
 <translation id="8593422116412089302">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite uporabo podatkov, ki so jih shranila o vas. Če je ta možnost izklopljena, spletna mesta ne smejo zahtevati, da dovolite uporabo podatkov, ki so jih shranila o vas.</translation>
 <translation id="8609465669617005112">Premakni navzgor</translation>
 <translation id="8617611086246832542">Če je ta možnost vklopljena, je prikazan pogled spletnih mest za namizni računalnik. Če je ta možnost izklopljena, je prikazan pogled spletnih mest za mobilno napravo.</translation>
@@ -678,6 +681,7 @@ Dodatna zaščita upravlja te nastavitve za Chrome:
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8737426583868847403">Spletna mesta, za katera shranite prilagojeno stopnjo povečave, bodo prikazana tukaj</translation>
 <translation id="8751914237388039244">Izberite sliko</translation>
+<translation id="8775741625735357092">V meniju Nastavitve &gt; Videz lahko vklopite vrstico z zaznamki</translation>
 <translation id="8800034312320686233">Ali spletno mesto ne deluje?</translation>
 <translation id="8801436777607969138">Preprečevanje JavaScripta za določeno spletno mesto.</translation>
 <translation id="8801657293260363985">V8 je mehanizem za JavaScript in WebAssembly za Chrome, ki se uporablja za izboljšanje učinkovitosti delovanja spletnih mest</translation>

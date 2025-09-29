@@ -31,6 +31,7 @@
 <translation id="1138458427267715730">Получайте оповещения о скидках, когда они появляются на каком-либо сайте.</translation>
 <translation id="1140317858355046628">Тогда группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям и будет удалена с каждого устройства.</translation>
 <translation id="1142732900304639782">Не предлагать перевести эти сайты</translation>
+<translation id="1143193470214071120">Закройте одно из окон или измените настройки.</translation>
 <translation id="1150263420752757504">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="1154555449933432029">У вас нет сохраненных паролей.</translation>
 <translation id="115483310321669804">Использовать пароль <ph name="PASSWORD" /></translation>
@@ -273,11 +274,11 @@
 <translation id="2318045970523081853">Нажмите, чтобы позвонить.</translation>
 <translation id="2323763861024343754">Данные сайтов</translation>
 <translation id="2328474416100889417">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна всем пользователям, а ссылки для приглашения больше не будут работать.</translation>
+<translation id="2330186936255788117">Ещё закладки</translation>
 <translation id="2332515770639153015">Включен улучшенный Безопасный просмотр</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
 <translation id="2341410551640223969">Не удалось установить приложение "<ph name="WEBAPK_NAME" />"</translation>
 <translation id="2349710944427398404">Общее количество данных Chrome, включая аккаунты, закладки и сохраненные настройки</translation>
-<translation id="2349954856814571872">Значок кнопки "Панель закладок"</translation>
 <translation id="235789365079050412">Политика конфиденциальности Google</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2362083820973145409">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Открывает настройки.</translation>
@@ -408,6 +409,7 @@
 <translation id="2908243544703713905">Есть непрочитанные истории</translation>
 <translation id="2909615210195135082">Платформа уведомлений Google</translation>
 <translation id="2912345083818861431">Чтобы посмотреть открытые вкладки инкогнито, нужно будет разблокировать экран</translation>
+<translation id="2918484639460781603">Перейти к настройкам</translation>
 <translation id="2923908459366352541">Имя недействительно</translation>
 <translation id="2932150158123903946">Хранилище Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Это не повлияет на вашу клавиатуру.</translation>
@@ -423,7 +425,7 @@
 <translation id="297771753501244313">По дате использования</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
-<translation id="2983398917942897288">Неактивны (<ph name="ITEM_COUNT" />)</translation>
+<translation id="2983398917942897288">Неактивные (<ph name="ITEM_COUNT" />)</translation>
 <translation id="2983835398644161987">Выйти из режима "Картинка в картинке"</translation>
 <translation id="2984978667043170458">Учитывать контекст в поиске Google</translation>
 <translation id="2988638966064514052">Повысьте надежность паролей</translation>
@@ -598,6 +600,7 @@
 <translation id="3845098929839618392">Открыть в режиме инкогнито</translation>
 <translation id="3847319713229060696">Помочь сделать интернет безопасным для всех</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851464569313827017">На сайте <ph name="SITE_ETLD_PLUS_ONE" /> встроен контент с ресурса <ph name="IFRAME_ETLD_PLUS_ONE" />.</translation>
 <translation id="3856096718352044181">Убедитесь, что это действительный поставщик услуг, или повторите попытку позже.</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3863527519275151528">Обработка уведомления…</translation>
@@ -631,6 +634,7 @@
 <translation id="4015643064997321279">{NUM_PASSWORDS,plural, =1{В аккаунте Google один раскрытый пароль}one{В аккаунте Google # раскрытый пароль}few{В аккаунте Google # раскрытых пароля}many{В аккаунте Google # раскрытых паролей}other{В аккаунте Google # раскрытого пароля}}</translation>
 <translation id="4016425174436051808">Не удалось подписаться. Что-то пошло не так.</translation>
 <translation id="4024768890073681126">Этим браузером управляет родитель</translation>
+<translation id="4027569221211770437">Папка "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Нижний экран</translation>
@@ -724,7 +728,6 @@
 <translation id="4425173294238317796">Экран с просьбой подтвердить создание ключа доступа</translation>
 <translation id="442518031075347249">Вы больше не сможете использовать виртуальную карту для оплаты через Google Pay. Подробнее <ph name="BEGIN_LINK1" />о виртуальных картах<ph name="END_LINK1" />…</translation>
 <translation id="442577985493096785">{TAB_COUNT,plural, =1{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{Вкладка "<ph name="TAB_TITLE" />" и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
-<translation id="4426508677408162512">Все закладки</translation>
 <translation id="4430277756566635951">Выбор аккаунта. Сейчас выбран <ph name="EMAIL" />.</translation>
 <translation id="4452411734226507615">Закрыть вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="4452548195519783679">Закладка добавлена в папку "<ph name="FOLDER_NAME" />"</translation>
@@ -781,7 +784,7 @@
 <translation id="469286762610133730">Более интересный контент</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}one{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способ доставки}few{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}many{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способов доставки}other{<ph name="SHIPPING_OPTION_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> способа доставки}}</translation>
 <translation id="4698061626562952596">Просмотр неактивных вкладок</translation>
-<translation id="4698757800236023795">Активны (<ph name="ITEM_COUNT" />)</translation>
+<translation id="4698757800236023795">Активные (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">Изображения и другие файлы, сохраненные в кеше</translation>
 <translation id="4710167854527459075">Сначала новые</translation>
 <translation id="4718044610319080485">Вызывает ИИ-помощника</translation>
@@ -900,6 +903,7 @@
 <translation id="5171045022955879922">Введите запрос или URL</translation>
 <translation id="5174700554036517242">Возвращена исходная высота вкладки</translation>
 <translation id="5180063720319462041">Страница переведена на <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5191251636205085390">Узнайте больше о новых технологиях, которые придут на смену сторонним файлам cookie.</translation>
 <translation id="5197649123261764478">Удобный доступ к закладкам.</translation>
 <translation id="5204967432542742771">Введите пароль</translation>
@@ -985,6 +989,7 @@
 <translation id="5626134646977739690">Имя:</translation>
 <translation id="5628604359369369630">Не прочитано – доступно офлайн</translation>
 <translation id="5631483240431073854">Управлять открытыми вкладками</translation>
+<translation id="5632485077360054581">Показать</translation>
 <translation id="564121214411935612">Вы вошли как <ph name="USER_NAME" />. Ошибка в аккаунте Google. Открыть настройки.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />сведения о других действиях<ph name="END_LINK2" /> могут сохраняться в аккаунте Google.</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
@@ -1127,6 +1132,7 @@
 
 Например, некоторые сайты перестанут показывать рекламу, подобранную на основе посещенных вами страниц. Другие сайты продолжат собирать и использовать данные о работе в браузере (например, для повышения уровня безопасности, предоставления контента, демонстрации рекламы и рекомендаций или формирования статистических отчетов).</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
+<translation id="6248988683584659830">Поиск настроек</translation>
 <translation id="6251449557817521191">Посмотреть историю Chrome</translation>
 <translation id="6254139308321626268">Вы просматриваете PDF-файл.</translation>
 <translation id="6255809143828972562">Инструменты Chrome защищают вас в интернете и помогают управлять конфиденциальностью</translation>
@@ -1255,6 +1261,7 @@
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_ONE" /> вкладка будут закрыты.}one{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладка будут закрыты.}few{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}many{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладок будут закрыты.}other{<ph name="INCOGNITO_TAB_COUNT" /> вкладка инкогнито и ещё <ph name="TAB_COUNT_MANY" /> вкладки будут закрыты.}}</translation>
 <translation id="6785476624617658922">Дополнительные условия использования Chrome и Chrome OS</translation>
 <translation id="6786747875388722282">Расширения</translation>
+<translation id="6787600234697426339">Достигнут лимит окон (<ph name="MAX_INSTANCE_COUNT" />)</translation>
 <translation id="6795633245022906657">Открыть новую вкладку. Чтобы изменить функцию кнопки, перейдите в настройки.</translation>
 <translation id="679588508577699489">Сделайте Chrome браузером по умолчанию</translation>
 <translation id="679956319013005046">Чтобы выбрать другой сервис автозаполнения, сначала добавьте этот сервис в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
@@ -1276,7 +1283,6 @@
 <translation id="6850830437481525139">Закрыто вкладок: <ph name="TAB_COUNT" />.</translation>
 <translation id="685340923442249391">{FILE_COUNT,plural, =1{Аудиофайлы, 1 аудиофайл в списке}one{Аудиофайлы, # аудиофайл в списке}few{Аудиофайлы, # аудиофайла в списке}many{Аудиофайлы, # аудиофайлов в списке}other{Аудиофайлы, # аудиофайла в списке}}</translation>
 <translation id="685850645784703949">Рекомендации от Google отключены</translation>
-<translation id="6861722405755529743">Кнопка "Ещё" панели закладок</translation>
 <translation id="6864459304226931083">Скачать изображение</translation>
 <translation id="686490460830618322">Окно фильтрации по приложению</translation>
 <translation id="6865313869410766144">Данные для автозаполнения</translation>
@@ -1438,6 +1444,7 @@
 <translation id="749294055653435199">Google Объектив недоступен на этом устройстве.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (последнее обновление: <ph name="TIME_SINCE_UPDATE" />)</translation>
 <translation id="7498271377022651285">Подождите…</translation>
+<translation id="7501135638693251872">Все закладки</translation>
 <translation id="750228856503700085">Обновления недоступны</translation>
 <translation id="7507207699631365376">Посмотреть <ph name="BEGIN_LINK" />политику конфиденциальности<ph name="END_LINK" /> этого поставщика услуг</translation>
 <translation id="750886945254958667">Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.</translation>
@@ -1699,6 +1706,7 @@
 <translation id="8611922158252451755">Отправляйте ссылку только тем пользователям, которым вы доверяете. Они смогут изменять все вкладки. Ссылка перестанет работать через 48 часов.</translation>
 <translation id="8616006591992756292">Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Открыть предложенный URL из скачанного контента?</translation>
+<translation id="8634050254805484913">Не показывается на устройствах с узким экраном</translation>
 <translation id="8635399646025169806">Оставить группу вкладок?</translation>
 <translation id="8636825310635137004">Чтобы получить доступ к вкладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="8662474268934425487">Вход в <ph name="SITE_ETLD_PLUS_ONE" /></translation>

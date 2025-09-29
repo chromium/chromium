@@ -21,6 +21,7 @@
 <translation id="1732764153129912782">Reklam gizlilik ayarlarında değişiklik yapabilirsiniz</translation>
 <translation id="1780659583673667574">Örneğin, yemek tarifi bulmak için ziyaret ettiğiniz bir site, yemek pişirmeyle ilgilendiğinize karar verebilir. Daha sonra başka bir site, ilk sitenin önerdiği market siparişi hizmetiyle ilgili reklam gösterebilir.</translation>
 <translation id="1887631853265748225">Reklam gizliliği özellikleri, web sitelerinin ve reklamcılık iş ortaklarının kişiselleştirilmiş reklamlar gösterdikleri esnada hakkınızda edinebilecekleri bilgileri sınırlandırmanıza yardımcı olur.</translation>
+<translation id="19426210786412737">Mevcut Chrome ayarlarınız, web sitelerinin üçüncü taraf çerezlerine erişmesine izin verecek şekilde güncellendi. Bu ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="1954777269544683286">Google, şirketlerin bu verileri farklı sitelerde sizi izlemek için kullanmayacağını herkese açık olarak belirtmesini zorunlu kılar. Şirketler, verilerinizi nasıl kullandıklarını size bildirmekle yükümlüdür. <ph name="BEGIN_LINK" />Gizlilik Politikamızda daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="2004697686368036666">Bazı sitelerdeki özellikler çalışmayabilir</translation>
 <translation id="2089807121381188462"><ph name="BEGIN_BOLD" />Bu verileri nasıl yönetebilirsiniz?<ph name="END_BOLD" /> Chrome, 30 günden daha uzun süre önce ziyaret edilmiş siteleri otomatik olarak siler. Tekrar ziyaret ettiğiniz siteler yine listede görünebilir. Ayrıca, dilediğiniz zaman Chrome ayarlarından bir sitenin size reklam önermesini engelleyebilir ve site tarafından önerilen reklamları devre dışı bırakabilirsiniz.</translation>
@@ -109,6 +110,7 @@
 <translation id="6308169245546905162">Siteler, diğer sitelerde yaptığınız işlemleri öğrenmek için üçüncü taraf çerezlerini kullanabilir</translation>
 <translation id="6388287739339671750">İzleme amaçlı komut dosyalarını engelle</translation>
 <translation id="6398358690696005758">Google'ın verilerinizi nasıl koruduğu hakkında daha fazla bilgiyi <ph name="BEGIN_LINK1" />Gizlilik Politikamızda<ph name="LINK_END1" /> bulabilirsiniz.</translation>
+<translation id="6494210367693221285">Mevcut Chromium ayarlarınız, web sitelerinin üçüncü taraf çerezlerine erişmesine izin verecek şekilde güncellendi. Bu ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="6702015235374976491">Reklam konuları, web sitelerinin size alakalı reklamlar göstermesine yardımcı olurken tarama geçmişinizi ve kimliğinizi korur. Chrome, son tarama geçmişinize göre ilgi alanlarınızı not edebilir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan alakalı konuları göstermesini isteyebilir.</translation>
 <translation id="6710025070089118043">Siteler, erişim izni vermediğiniz sürece içerikler ile reklamları kişiselleştirmek ve diğer sitelerde yaptığınız işlemleri öğrenmek için üçüncü taraf çerezlerini kullanamaz</translation>
 <translation id="6737378617247709185">Chromium, Gizli modda üçüncü taraf çerezlerini engeller ancak yöneticiniz bu site için üçüncü taraf çerezlerine izin vermiş. Gizli mod ayrıca izlemeye karşı ek korumalar da sağlayabilir. Gizli izleme korumalarını <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" />'dan yönetebilirsiniz.</translation>
@@ -154,6 +156,7 @@
 <translation id="8442977418416307640">Normal Chromium penceresinde açılır</translation>
 <translation id="8578320000709741352">Ziyaret ettiğiniz siteler, diğer sitelerden görsel, reklam ve metin gibi içerikler yerleştirebilir. Bu içerikler, sizin hakkınızda bilgi edinmek için kullanılabilir. <ph name="START_LINK" />Gizli izleme korumalarını<ph name="END_LINK" /> yönetme hakkında daha fazla bilgi edinin.</translation>
 <translation id="859369389161884405">Gizlilik Politikası'nı yeni sekmede açar</translation>
+<translation id="8712637175834984815">Anladım</translation>
 <translation id="877699835489047794"><ph name="BEGIN_BOLD" />Bu verileri nasıl yönetebilirsiniz?<ph name="END_BOLD" /> Chrome, 4 haftadan daha eski konuları otomatik olarak siler. Siz internette gezindikçe bir konu tekrar listede görünmeye başlayabilir. Ayrıca, dilediğiniz zaman Chrome ayarlarından Chrome'un sitelerle paylaşmasını istemediğiniz konuları engelleyebilir ve reklam konularını kapatabilirsiniz.</translation>
 <translation id="8803526663383843427">Açık olduğunda</translation>
 <translation id="8825639607990802302">Gizlilik ve site verileriyle ilgili seçenekler</translation>

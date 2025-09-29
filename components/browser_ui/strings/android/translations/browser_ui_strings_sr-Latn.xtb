@@ -1,11 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
-<translation id="1004806631856047384">Upravljajte u <ph name="BEGIN_LINK1" />podešavanjima Android-a<ph name="END_LINK1" />
-
-Napredna zaštita kontroliše ova Chrome podešavanja:
-• Uključeno je „Uvek koristi bezbedne veze“.
-• „JavaScript optimizator“ je isključen. <ph name="BEGIN_LINK2" />Upravljajte izuzecima za sajtove<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Otvori onlajn</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1070329623210597193">Fajlovi koje ovaj sajt može da pregleda ili menja</translation>
@@ -74,6 +69,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="1816835383954230954">Kada je optimizator uključen, Chrome radi brže i funkcije koje koriste JavaScript bi trebalo da rade kako je predviđeno. Kada je optimizator isključen, to smanjuje performanse, ali čini V8 otpornijim na napade.</translation>
 <translation id="1818308510395330587">Da biste dozvolili da <ph name="APP_NAME" /> koristi PR, uključite i kameru u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1848033246551405023">Font Sans Serif</translation>
+<translation id="1861262398884155592">Ovaj folder je prazan</translation>
 <translation id="1881806992065048905">Donja tabela za izgled stranice nove kartice</translation>
 <translation id="1887786770086287077">Pristup lokaciji je isključen za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Sajtovi obično pristupaju fajlovima i folderima na uređaju da bi vam bile dostupne funkcije poput automatskog čuvanja stavki na kojima radite</translation>
@@ -308,6 +304,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="4338831206024587507">Svi sajtovi u okviru domena <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ne dozvoljavaj sajtovima da šalju obaveštenja</translation>
 <translation id="4402755511846832236">Ne dozvolite sajtovima da znaju kada aktivno koristite ovaj uređaj</translation>
+<translation id="4412683424767388419">Donja tabela Chrome boja je otvorena do polovine ekrana</translation>
 <translation id="4412992751769744546">Dozvoli kolačiće treće strane</translation>
 <translation id="4419929467120297501">Chrome onemogućava sajtovima da vas prate pomoću kolačića treće strane dok pregledate. Posetite podešavanja da biste <ph name="BEGIN_LINK" />upravljali pristupom kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="4425416282877905577">Font Serif</translation>
@@ -371,6 +368,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5116239826668864748">Možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="5123685120097942451">Kartica bez arhiviranja</translation>
 <translation id="512938610812707830">Donja tabela sa kolekcijama tema za izgled stranice nove kartice je otvorena na celom ekranu</translation>
+<translation id="5137460097045297858">Donja tabela Discover fida je otvorena do polovine ekrana</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Sniženje na otvorenim karticama}one{Sniženja na otvorenim karticama}few{Sniženja na otvorenim karticama}other{Sniženja na otvorenim karticama}}</translation>
 <translation id="5186036860380548585">Opcija je dostupna u vrhu ekrana</translation>
 <translation id="5197729504361054390">Kontakti koje izaberete će se deliti sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -389,7 +387,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5335288049665977812">Dozvoli sajtovima da pokreću JavaScript (preporučeno)</translation>
 <translation id="534295439873310000">NFC uređaji</translation>
 <translation id="5344522958567249764">Upravljajte privatnošću sa oglasima</translation>
-<translation id="5371407439562620893">Optimizacija i bezbednost JavaScript-a</translation>
 <translation id="5373874281522292782">Grupe kartica su sačuvane</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i još 1)}one{(i još #)}few{(i još #)}other{(i još #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>
@@ -448,6 +445,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="5968921426641056619">Unesite veb-adresu</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
+<translation id="5998071268779572583">Uključite Discover fid</translation>
 <translation id="6012967556075291653">Zakačena prečica</translation>
 <translation id="6015775454662021376">Kontrolišite pristup ovog sajta uređaju</translation>
 <translation id="6040143037577758943">Zatvori</translation>
@@ -470,6 +468,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="6207207788774442484">Izbriši podatke i resetuj dozvole</translation>
 <translation id="6231752747840485235">Želite da deinstalatirate „<ph name="APP_NAME" />“?</translation>
 <translation id="6234351944623978659">Dodirnite aplikaciju Pregledač &gt; Chrome</translation>
+<translation id="6260830281887654268">Donja tabela sa kolekcijama tema za izgled stranice nove kartice je otvorena do polovine ekrana</translation>
 <translation id="6262191102408817757">Na osnovu poslednje kartice</translation>
 <translation id="6262279340360821358">Dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /> su blokirane</translation>
 <translation id="6270391203985052864">Sajtovi mogu da traže da šalju obaveštenja</translation>
@@ -503,6 +502,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="662080504995468778">Ne zatvaraj</translation>
 <translation id="6635327442719709864">Kada je uključeno, sajtovi mogu da zatraže da koriste serijske portove. Kada je isključeno, sajtovi ne mogu da koriste serijske portove.</translation>
 <translation id="6678072580827808850">Pregledajte Proveru bezbednosti</translation>
+<translation id="6682057173375416470">Dobijajte predložene članke na stranici Nova kartica</translation>
 <translation id="6683865262523156564">Ovaj sajt je u grupi koja može da vidi vaše aktivnosti. Grupu definiše <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Slike profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
@@ -552,6 +552,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="728412880473384942">Sajtovi su brži, ali manje bezbedni</translation>
 <translation id="7366415735885268578">Dodajte sajt</translation>
 <translation id="7368695150573390554">Svi oflajn podaci će biti izbrisani</translation>
+<translation id="7369678931043226462">Prilagodite donju tabelu stranice nove kartice otvorenu do polovine ekrana</translation>
 <translation id="7383715096023715447">Podešavanja za <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Bezbednosna provera</translation>
 <translation id="7406113532070524618">Ovo podešavanje radi, a da ne mora da vas identifikuje ili da dozvoli sajtovima da vide istoriju pregledanja, iako sajtovi mogu da dele malu količinu podataka u okviru verifikacije</translation>
@@ -559,6 +560,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7423098979219808738">Prvo pitaj</translation>
 <translation id="7423538860840206698">Čitanje privremene memorije je blokirano</translation>
 <translation id="7425915948813553151">Tamna tema za sajtove</translation>
+<translation id="746412105358554870">Optimizacija i bezbednost JavaScript-a</translation>
 <translation id="7478658909253570368">Ne dozvoljavaj sajtovima da se povezuju sa serijskim portovima</translation>
 <translation id="7488573225650545859">Sakrij kartice prikaza na listi aplikacija</translation>
 <translation id="7521387064766892559">JavaScript</translation>
@@ -588,6 +590,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="7804248752222191302">Sajt koristi kameru</translation>
 <translation id="7805832099057502789">Donja tabela za izgled stranice nove kartice je otvorena na celom ekranu</translation>
 <translation id="7807060072011926525">Pruža Google</translation>
+<translation id="7809029041571842593">Donja tabela kartica na stranici nove kartice je otvorena do polovine ekrana</translation>
 <translation id="7815680994978050279">Opasno preuzimanje je blokirano</translation>
 <translation id="7835852323729233924">Reprodukcija medija</translation>
 <translation id="783819812427904514">Uključite zvuk videa</translation>
@@ -645,6 +648,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8441146129660941386">Premotaj unazad</translation>
 <translation id="8444433999583714703">Da biste dozvolili da <ph name="APP_NAME" /> pristupa lokaciji, uključite lokaciju i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Opozovi dozvolu za uređaj</translation>
+<translation id="8467359479529706065">Donja tabela za izgled stranice nove kartice je otvorena do polovine ekrana</translation>
 <translation id="8471525937465764768">Sajtovi se obično povezuju sa USB uređajima za potrebe funkcija poput štampanja dokumenata ili čuvanja sadržaja na memorijskim uređajima</translation>
 <translation id="8473055640493819707">Aplikacija <ph name="APP_NAME" /> je zastarela. Ponovo instalirajte aplikaciju.</translation>
 <translation id="847433688444405067">Pregledajte na više uređaja</translation>
@@ -660,7 +664,6 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8549127125482561383">Kako da pregledate zahteve</translation>
 <translation id="8558480467877843976">Sada možete da koristite Chrome svaki put kada pregledate ili dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="857943718398505171">Dozvoljeno (preporučeno)</translation>
-<translation id="8580511488901768832">Donja tabela Moje prečice je otvorena na celom ekranu</translation>
 <translation id="8593422116412089302">Kada je uključeno, sajtovi mogu da traže da koriste informacije koje su sačuvali o vama. Kada je isključeno, sajtovi ne mogu da traže da koriste informacije koje su sačuvali o vama.</translation>
 <translation id="8609465669617005112">Premesti nagore</translation>
 <translation id="8617611086246832542">Kada je uključeno, vidi se prikaz veb-sajtova za računare. Kada je isključeno, vidi se prikaz veb-sajtova za mobilne uređaje.</translation>
@@ -678,6 +681,7 @@ Napredna zaštita kontroliše ova Chrome podešavanja:
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8737426583868847403">Ovde će se prikazivati sajtovi za koje čuvate prilagođeni nivo zumiranja</translation>
 <translation id="8751914237388039244">Izaberite sliku</translation>
+<translation id="8775741625735357092">Možete da uključite traku sa obeleživačima u Podešavanjima &gt; Izgled</translation>
 <translation id="8800034312320686233">Da li sajt ne radi?</translation>
 <translation id="8801436777607969138">Blokirajte JavaScript za određeni sajt.</translation>
 <translation id="8801657293260363985">V8 je Chrome alatka za JavaScript i WebAssembly koja se koristi za poboljšanje performansi sajta</translation>

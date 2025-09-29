@@ -12,6 +12,7 @@
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1041322626941363065">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="104491362976654916">หน้าเว็บแบบออฟไลน์</translation>
+<translation id="1046742265332833834">ธีมสีน้ำเงิน</translation>
 <translation id="1049743911850919806">โหมดไม่ระบุตัวตน</translation>
 <translation id="1053651653201045802">ตอนนี้ได้ออกจากระบบแล้ว โปรดลงชื่อเข้าใช้อีกครั้งหากต้องการใช้บุ๊กมาร์ก รหัสผ่าน และข้อมูลอื่นๆ ในบัญชี</translation>
 <translation id="1054745118061919935">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" /></translation>
@@ -51,6 +52,7 @@
 <translation id="1179890706672152411">พื้นที่เก็บข้อมูลเต็ม</translation>
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1190609913194133056">ศูนย์การแจ้งเตือน</translation>
+<translation id="1199963004393929848">ธีมสีเขียว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
 <translation id="1204075260022434100">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" ในบัญชี {email} ของคุณแล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" ในบัญชี {email} ของคุณแล้ว}}</translation>
 <translation id="120431140543679678">ติดตาม</translation>
@@ -210,7 +212,6 @@
 <translation id="1807893857950749072">อนุญาตการแจ้งเตือนการติดตามราคา…</translation>
 <translation id="1809929083618343438">การดำเนินการนี้จะนำข้อมูลที่เลือกออกจาก Chrome แต่จะไม่ลบข้อมูลนี้ออกจากบัญชี Google</translation>
 <translation id="1810976980198522421">ยกเลิก</translation>
-<translation id="1812514023095547458">เลือกสี</translation>
 <translation id="1815941218935345331">รหัสผ่าน</translation>
 <translation id="1818687879307252150">{count,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {count} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {count} รายการ}}</translation>
 <translation id="1819374301217551116">การติดตามราคาและข้อมูลเชิงลึก</translation>
@@ -416,6 +417,7 @@
 <translation id="2542268842667970959">ซ่อน "การตรวจสอบความปลอดภัย"</translation>
 <translation id="2551153019974022505">ข้อผิดพลาดของบัญชี</translation>
 <translation id="2559843230610279254">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> แท็บ</translation>
+<translation id="257088987046510401">ธีม</translation>
 <translation id="2573117291489209663">เสร็จสิ้น</translation>
 <translation id="2577522251608256362">ย่านใกล้เคียง</translation>
 <translation id="2579713773888829241">ไดรฟ์ที่แชร์</translation>
@@ -478,6 +480,7 @@
 <translation id="2793703503584038325">เลือกรหัสผ่านแล้วแตะไอคอน "แชร์"</translation>
 <translation id="2797029671965852011">แสดงประวัติ</translation>
 <translation id="2797302972324086597">รหัสประเทศ</translation>
+<translation id="2798263827270599246">ธีมเริ่มต้น</translation>
 <translation id="2810376924814601526">{COUNT,plural, =1{{COUNT} ไฟล์}other{{COUNT} ไฟล์}}</translation>
 <translation id="2816149645002567541">หยุดดาวน์โหลดชั่วคราว</translation>
 <translation id="2816489851009559785">เมนู → การตั้งค่า → เบราว์เซอร์เริ่มต้น</translation>
@@ -693,6 +696,7 @@
 <translation id="3750225824417196283">หน้าแท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3751873026576444885">หยุดค้นหาบนหน้าจอด้วย Google Lens</translation>
 <translation id="3753408171347588045">กำลังติดตามราคา</translation>
+<translation id="3753618528540214374">ธีมสีวอรีเดียน</translation>
 <translation id="3762232513783804601">สร้างมาเพื่อ iPad ของคุณ</translation>
 <translation id="3768725474733206671">เปิดแท็บที่ปิดไปล่าสุดอีกครั้ง</translation>
 <translation id="3779810277399252432">ไม่มีการเชื่อมต่ออินเทอร์เน็ต</translation>
@@ -772,7 +776,6 @@
 <translation id="4026496154402824012">หากต้องการปิด ให้ไปที่<ph name="BEGIN_LINK" />ตัวเลือกรหัสผ่าน<ph name="END_LINK" /></translation>
 <translation id="4028871427853484857">บันทึกในบัญชี…</translation>
 <translation id="4038354071007134711">ไม่มีแอปพลิเคชันใดบนอุปกรณ์นี้ที่สามารถเปิดไฟล์ได้</translation>
-<translation id="4039829422386964954">เรียกดูแกลเลอรี</translation>
 <translation id="4042870976416480368">ค้นหาในหน้าเว็บ</translation>
 <translation id="4045441967987592849">เปิดอีกครั้ง</translation>
 <translation id="4047337302138771011">แชร์รหัสผ่าน</translation>
@@ -989,6 +992,7 @@
 <translation id="4869146460927742717">ตำแหน่งของแถบที่อยู่</translation>
 <translation id="4870911314065352661">ปิดแท็บทั้งหมดใช่ไหม</translation>
 <translation id="4872664437015695612">เปิดใน "ดาวน์โหลด"</translation>
+<translation id="4875260838563541343">ปุ่มดำเนินการ</translation>
 <translation id="4876305945144899064">ไม่มีชื่อผู้ใช้</translation>
 <translation id="4876665338492917862">เปิดเมื่อ <ph name="LAST_OPENING_DATE" /></translation>
 <translation id="4877597489778380935">เตือนฉันในภายหลัง</translation>
@@ -1347,6 +1351,7 @@
 <translation id="6198252989419008588">เปลี่ยน PIN</translation>
 <translation id="6210079381482819663">แท็บที่ไม่ได้ใช้งานเป็นระยะเวลาอย่างน้อย <ph name="THRESHOLD" /> วันจะย้ายมาที่นี่ คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="6213281885682386884">ไม่พบที่อยู่</translation>
+<translation id="6218508144653756827">ธีมสีบานเย็น</translation>
 <translation id="6218758465102657583">ย้ายแถบที่อยู่ไปยังด้านบน</translation>
 <translation id="6223816392543092032">ดูบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ ในอุปกรณ์ทั้งหมด</translation>
 <translation id="6225572914528673855">แถบที่อยู่</translation>
@@ -1439,6 +1444,7 @@
 <translation id="6523575793810663688">แสดงวิธีการ</translation>
 <translation id="6524082013156754186">บันทึกในบัญชี</translation>
 <translation id="6524918542306337007">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
+<translation id="6527208859483186860">พื้นหลัง {position} จาก {total}</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6532106788206463496">บันทึกการเปลี่ยนแปลง</translation>
 <translation id="6536759809440150308">เปิด <ph name="GROUP_TITLE" />, กลุ่มของ <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
@@ -1464,6 +1470,7 @@
 <translation id="661266467055912436">ปรับปรุงความปลอดภัยให้คุณและทุกคนที่ใช้อินเทอร์เน็ต</translation>
 <translation id="6612912757320004438">อนุญาตการแจ้งเตือนเกี่ยวกับแท็บ</translation>
 <translation id="6617761071025228250">ล้างข้อความ</translation>
+<translation id="6619015782482868078">ธีมสีเขียวอควา</translation>
 <translation id="6620279676667515405">ยกเลิก</translation>
 <translation id="6625830436658400045">ระบบจะกู้คืนการตั้งค่าการซิงค์ตามการสำรองข้อมูลครั้งล่าสุด คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอใน<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" /></translation>
 <translation id="6627583120233659107">แก้ไขโฟลเดอร์</translation>
@@ -1499,6 +1506,7 @@
 <translation id="6713676799463473249">แก้ไขเมื่อ <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">แท็บที่ได้รับ</translation>
 <translation id="6723740634201835758">ในบัญชี Google</translation>
+<translation id="6724024423419410528">สี</translation>
 <translation id="672735642903863329">รับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6729493062119577923">กิจกรรมในกลุ่มแท็บที่แชร์</translation>
 <translation id="6732087373923685049">กล้อง</translation>
@@ -1562,6 +1570,7 @@
 <translation id="69739764870135975">หาก Google เป็นเครื่องมือค้นหาเริ่มต้นของคุณด้วย คุณจะเห็นคำแนะนำที่มีประสิทธิภาพและเกี่ยวข้องกับบริบทมากยิ่งขึ้น</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
 <translation id="6979737339423435258">ตั้งแต่ต้น</translation>
+<translation id="6980507581230208647">ธีมสีชมพูโรส</translation>
 <translation id="6983306615164277634">คุณยังสามารถแตะแถบที่อยู่ค้างไว้เพื่อเปลี่ยนตำแหน่งได้อีกด้วย</translation>
 <translation id="6987201788018524855">สำรวจฟีเจอร์ที่มีประโยชน์ที่คุณพลาดไป</translation>
 <translation id="6989636517316575338">ถามเกี่ยวกับหน้าใดก็ได้</translation>
@@ -1607,6 +1616,7 @@
 <translation id="7176183551031110427">ซูมออก</translation>
 <translation id="7186568385131859684">ควบคุมการใช้ประวัติการท่องเว็บกับข้อมูลอื่นๆ ของคุณในบริการต่างๆ ของ Google</translation>
 <translation id="719133302483559673">จัดการความสนใจและความต้องการของคุณ</translation>
+<translation id="7191382490098297347">รูปภาพจากกล้อง</translation>
 <translation id="7203496777391039568">ข้อมูลขององค์กรคุณจะปลอดภัยและเป็นส่วนตัว</translation>
 <translation id="720399613139435155">แปลไม่สำเร็จ</translation>
 <translation id="7204922488054642675">ข่าวที่คัดสรรมาให้ผู้ใช้โดยเฉพาะ</translation>
@@ -1628,6 +1638,7 @@
 <translation id="728025568708172005">แสดงเส้นทาง</translation>
 <translation id="7280980607183752256">นำเข้าไฟล์นี้ไม่ได้</translation>
 <translation id="7281202269687163394">ความเป็นส่วนตัวของคุณกับ Gemini</translation>
+<translation id="7282197670900591579">ธีมสีเหลืองมะนาว</translation>
 <translation id="7293429513719260019">เลือกภาษา</translation>
 <translation id="7300448350764260141">เพิ่มการป้องกันภัยคุกคามทางออนไลน์ขึ้นอีกชั้น</translation>
 <translation id="7311244614769792472">ไม่พบผลการค้นหา</translation>
@@ -1751,6 +1762,7 @@
 <translation id="7749790401023484470">คุณไม่ได้เลือกข้อความใดๆ</translation>
 <translation id="7757015014239760147">ไม่มีชื่อผู้ใช้ ••••••••</translation>
 <translation id="775755486779745798">ป้อนเดือนที่หมดอายุเป็น <ph name="MONTH" /> โดยอัตโนมัติ</translation>
+<translation id="7758789811447313947">ธีมสีม่วง</translation>
 <translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7772032839648071052">ยืนยันข้อความรหัสผ่าน</translation>
@@ -1815,6 +1827,7 @@
 <translation id="797824194429476746">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มอย่างถาวร</translation>
 <translation id="797874245254030665">เข้าถึงรหัสผ่านและพาสคีย์จากแอปใดก็ได้</translation>
 <translation id="7982789257301363584">เครือข่าย</translation>
+<translation id="798299424881500862">ธีมสีส้ม</translation>
 <translation id="7987685713885608670">เข้ารหัสให้แก่รหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านบน Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="798991908416757345">กลุ่มแท็บไม่พร้อมใช้งาน</translation>
 <translation id="7993170188789685695">แตะสองครั้งเพื่อปิดการแจ้งเตือนนี้</translation>
