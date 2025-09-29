@@ -224,6 +224,7 @@ if (is_android) {
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/bottomsheet/android:manager_java",
       "//components/browser_ui/bottomsheet/android/test:java",
+      "//components/policy/android:policy_java_test_support",
       "//components/signin/public/android:java",
       "//components/signin/public/android:signin_java_test_support",
       "//content/public/android:content_java",

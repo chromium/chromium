@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
@@ -26,7 +30,9 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 /** Verifies incognito tab related journeys for various types of supervised profiles. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -69,6 +75,34 @@ public class IncognitoInteractionTest {
     @Test
     @LargeTest
     @EnableFeatures({ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER})
+    // This policy explicitly allows incognito mode, and has higher priority over local parental
+    // controls.
+    @Policies.Add({@Policies.Item(key = "IncognitoModeAvailability", string = "0")})
+    public void incognitoTabsNotClosedWhenPolicyAllowsIncognito() throws Exception {
+        Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserServiceTestBridge.init(profile);
+                });
+
+        // Create a new incognito tab. This succeeds, as the device is not
+        // supervised.
+        Tab tab = mActivityTestRule.newIncognitoTabFromMenu();
+        // Enable browser content filtering for the current profile.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserServiceTestBridge.enableBrowserContentFilters(profile);
+                    // Successfully load a URL in the incognito tab. That proves that the tab is not
+                    // closed. If the tab was closed, the load would fail due to assertion error.
+                    assertNotNull(tab.getWebContents());
+                    Tab.LoadUrlResult result = tab.loadUrl(new LoadUrlParams("about:blank"));
+                    assertTrue(result.tabLoadStatus == Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
+                });
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER})
     public void incognitoTabsClosedWhenBrowserContentFilteringIsEnabledWithoutAccount()
             throws Exception {
         Profile profile = mActivityTestRule.getProfile(/* incognito= */ false);
@@ -87,6 +121,7 @@ public class IncognitoInteractionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserServiceTestBridge.enableBrowserContentFilters(profile);
+                    assertNull(tab.getWebContents());
                 });
 
         // Check that the incognito tab is no longer open.
@@ -115,6 +150,7 @@ public class IncognitoInteractionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserServiceTestBridge.enableBrowserContentFilters(profile);
+                    assertNull(tab.getWebContents());
                 });
 
         // Check that the incognito tab is no longer open.
@@ -143,6 +179,7 @@ public class IncognitoInteractionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SupervisedUserServiceTestBridge.enableSearchContentFilters(profile);
+                    assertNull(tab.getWebContents());
                 });
 
         // Check that the incognito tab is no longer open.
