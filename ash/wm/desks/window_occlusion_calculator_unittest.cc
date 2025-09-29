@@ -76,6 +76,7 @@ class WindowOcclusionCalculatorTest : public aura::test::AuraTestBase {
     return aura::test::TestWindowBuilder(
                {.delegate = delegate,
                 .parent = parent,
+                .bounds = {100, 100},
                 .window_type = aura::client::WINDOW_TYPE_UNKNOWN,
                 .window_id = id_assigner_})
         .AllowAllWindowStates()

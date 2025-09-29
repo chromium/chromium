@@ -115,13 +115,12 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   // delegate and app type set, but use the child window in tests. Arc:
   aura::Window* arc_toplevel =
       aura::test::CreateTestWindow(
-          {.delegate = &delegate_, .parent = &container_window, .bounds = {}})
+          {.delegate = &delegate_, .parent = &container_window})
           .release();
   arc_toplevel->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   ASSERT_TRUE(IsArcWindow(arc_toplevel));
   aura::Window* arc_window =
-      aura::test::CreateTestWindow({.parent = arc_toplevel, .bounds = {}})
-          .release();
+      aura::test::CreateTestWindow({.parent = arc_toplevel}).release();
   ASSERT_TRUE(IsArcWindow(arc_window->GetToplevelWindow()));
 
   // Crostini:

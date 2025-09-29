@@ -65,9 +65,9 @@ class ArcPipWindowThrottleObserverTest : public testing::Test {
                                             pip_container_.get());
     // Set up PIP windows
     arc_window_ = aura::test::CreateTestWindow(
-        {.delegate = &dummy_delegate_, .bounds = {}, .window_id = 1});
+        {.delegate = &dummy_delegate_, .window_id = 1});
     chrome_window_ = aura::test::CreateTestWindow(
-        {.delegate = &dummy_delegate_, .bounds = {}, .window_id = 2});
+        {.delegate = &dummy_delegate_, .window_id = 2});
     arc_window_->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
     chrome_window_->SetProperty(chromeos::kAppTypeKey,
                                 chromeos::AppType::BROWSER);

@@ -19,7 +19,7 @@ namespace aura::test {
 struct WindowBuilderParams {
   raw_ptr<WindowDelegate> delegate = nullptr;
   raw_ptr<Window> parent = nullptr;
-  gfx::Rect bounds{100, 100};
+  gfx::Rect bounds;
   client::WindowType window_type = client::WINDOW_TYPE_NORMAL;
   ui::LayerType layer_type = ui::LAYER_TEXTURED;
   int window_id = Window::kInitialId;

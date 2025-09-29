@@ -255,7 +255,7 @@ TEST_F(WindowModalityControllerTest, GetModalTransient) {
   std::unique_ptr<aura::Window> w1(
       CreateTestWindowInShellWithDelegate(&d, -1, gfx::Rect()));
   std::unique_ptr<aura::Window> w11(aura::test::CreateTestWindow(
-      {.delegate = &d, .parent = w1.get(), .bounds = {}, .window_id = -11}));
+      {.delegate = &d, .parent = w1.get(), .window_id = -11}));
   std::unique_ptr<aura::Window> w2(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
   w2->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
@@ -340,7 +340,7 @@ TEST_F(WindowModalityControllerTest, ReleaseCapture) {
   std::unique_ptr<aura::Window> w1(
       CreateTestWindowInShellWithDelegate(&d, -1, gfx::Rect()));
   std::unique_ptr<aura::Window> w11(aura::test::CreateTestWindow(
-      {.delegate = &d, .parent = w1.get(), .bounds = {}, .window_id = -11}));
+      {.delegate = &d, .parent = w1.get(), .window_id = -11}));
   std::unique_ptr<aura::Window> w2(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
   std::unique_ptr<aura::Window> w3(
@@ -683,9 +683,9 @@ TEST_F(WindowModalityControllerTest, WindowModalAncestor) {
   std::unique_ptr<aura::Window> w1(
       CreateTestWindowInShellWithDelegate(&d, -1, gfx::Rect()));
   std::unique_ptr<aura::Window> w2 = aura::test::CreateTestWindow(
-      {.delegate = &d, .parent = w1.get(), .bounds = {}, .window_id = -11});
+      {.delegate = &d, .parent = w1.get(), .window_id = -11});
   std::unique_ptr<aura::Window> w3 = aura::test::CreateTestWindow(
-      {.delegate = &d, .parent = w2.get(), .bounds = {}, .window_id = -11});
+      {.delegate = &d, .parent = w2.get(), .window_id = -11});
   std::unique_ptr<aura::Window> w4(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
   w4->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kWindow);
@@ -711,9 +711,9 @@ TEST_F(WindowModalityControllerTest, ChildModalAncestor) {
   std::unique_ptr<aura::Window> w1(
       CreateTestWindowInShellWithDelegate(&d, -1, gfx::Rect()));
   std::unique_ptr<aura::Window> w2(aura::test::CreateTestWindow(
-      {.delegate = &d, .parent = w1.get(), .bounds = {}, .window_id = -11}));
+      {.delegate = &d, .parent = w1.get(), .window_id = -11}));
   std::unique_ptr<aura::Window> w3(aura::test::CreateTestWindow(
-      {.delegate = &d, .parent = w2.get(), .bounds = {}, .window_id = -11}));
+      {.delegate = &d, .parent = w2.get(), .window_id = -11}));
   std::unique_ptr<aura::Window> w4(
       CreateTestWindowInShellWithDelegate(&d, -2, gfx::Rect()));
   w4->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kChild);

@@ -881,11 +881,9 @@ TEST_F(WindowTest, DestroyTest) {
     std::unique_ptr<Window> parent =
         CreateTestWindow({.delegate = &parent_delegate,
                           .parent = root_window(),
-                          .bounds = {},
                           .window_id = 0});
     CreateTestWindow({.delegate = &child_delegate,
                       .parent = parent.get(),
-                      .bounds = {},
                       .window_id = 0})
         .release();
   }

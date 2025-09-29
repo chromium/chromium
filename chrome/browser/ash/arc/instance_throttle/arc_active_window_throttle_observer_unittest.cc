@@ -40,9 +40,9 @@ TEST_F(ArcActiveWindowThrottleObserverTest, TestConstructDestruct) {}
 TEST_F(ArcActiveWindowThrottleObserverTest, TestOnWindowActivated) {
   aura::test::TestWindowDelegate dummy_delegate;
   std::unique_ptr<aura::Window> arc_window = aura::test::CreateTestWindow(
-      {.delegate = &dummy_delegate, .bounds = {}, .window_id = 1});
+      {.delegate = &dummy_delegate, .window_id = 1});
   std::unique_ptr<aura::Window> chrome_window = aura::test::CreateTestWindow(
-      {.delegate = &dummy_delegate, .bounds = {}, .window_id = 2});
+      {.delegate = &dummy_delegate, .window_id = 2});
   arc_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   chrome_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
 
