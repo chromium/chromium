@@ -286,6 +286,7 @@ Actions MakeSelect(RenderFrameHost& rfh,
       ->set_serialized_token(*DocumentIdentifierUserData::GetDocumentIdentifier(
           rfh.GetGlobalFrameToken()));
   select_action->set_value(value);
+  select_action->set_tab_id(GetTabHandleForFrame(rfh).raw_value());
   return actions;
 }
 

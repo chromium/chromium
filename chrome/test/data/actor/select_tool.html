@@ -7,7 +7,7 @@
   <body>
     <p>
       <label for="plainSelect">Plain Select:</label>
-      <select id="plainSelect">
+      <select id="plainSelect" aria-label="plain-select">
         <option>alpha</option>
         <option>beta</option>
         <option>gamma</option>
@@ -24,7 +24,7 @@
 
     <p>
     <label for="groupedSelect">Grouped Select:</label>
-    <select id="groupedSelect">
+    <select id="groupedSelect" aria-label="grouped-select">
       <optgroup label="Greek">
         <option>alpha</option>
         <option>beta</option>
@@ -43,7 +43,7 @@
 
     <p>
       <label for="disabledSelect">Disabled Select:</label>
-      <select id="disabledSelect" disabled>
+      <select id="disabledSelect" disabled aria-label="disabled-select">
         <option>alpha</option>
         <option>beta</option>
         <option>gamma</option>
@@ -52,7 +52,7 @@
 
     <p>
       <label for="nonOptionsSelect">Select With non-&lt;option&gt; Children:</label>
-      <select id="nonOptionsSelect">
+      <select id="nonOptionsSelect" aria-label="non-options-select">
         <option>alpha</option>
         <hr />
         <span value="beta">beta</span>
@@ -65,7 +65,7 @@
 
     <p>
       <label for="listboxSelect">Listbox Select:</label>
-      <select id="listboxSelect" size="5" multiple>
+      <select id="listboxSelect" size="5" multiple aria-label="listbox-select">
         <option>alpha</option>
         <option>beta</option>
         <option>gamma</option>
@@ -76,7 +76,7 @@
 
     <p>
       <label for="eventListenerSelect">Select with event listeners:</label>
-      <select id="eventListenerSelect">
+      <select id="eventListenerSelect" aria-label="event-listener-select">
         <option>alpha</option>
         <option>beta</option>
         <option>gamma</option>
@@ -85,7 +85,7 @@
 
     <p style="position:absolute; top: 150vh;">
       <label for="offscreenSelect">Offscreen Select:</label>
-      <select id="offscreenSelect">
+      <select id="offscreenSelect" aria-label="offscreen-select">
         <option>alpha</option>
         <option>beta</option>
     </p>
