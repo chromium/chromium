@@ -5,6 +5,11 @@
 package org.chromium.chrome.browser.native_page;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getBookmarksPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getHistoryPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getIncognitoBookmarksPageOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getIncognitoNtpOverrideEnabled;
+import static org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry.getNtpOverrideEnabled;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +18,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.DestroyableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -24,6 +30,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsMarginSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryPage;
@@ -54,11 +61,13 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.url.GURL;
 
 import java.util.function.Supplier;
 
@@ -371,14 +380,22 @@ public class NativePageFactory {
 
     @VisibleForTesting
     @Nullable NativePage createNativePageForURL(
-            String url,
+            @Nullable String url,
             @Nullable NativePage candidatePage,
             Tab tab,
             boolean isIncognito,
             @Nullable PdfInfo pdfInfo) {
+        if (url == null) return null;
+
+        GURL gurl = new GURL(url);
+        if (isChromePageUrlOverriddenByExtension(gurl, isIncognito)) {
+            RecordUserAction.record("ChromeSchemePage.OverrideTriggered");
+            return null;
+        }
+
         NativePage page;
 
-        switch (NativePage.nativePageType(url, candidatePage, isIncognito, pdfInfo != null)) {
+        switch (NativePage.nativePageType(gurl, candidatePage, isIncognito, pdfInfo != null)) {
             case NativePageType.NONE:
                 return null;
             case NativePageType.CANDIDATE:
@@ -412,6 +429,34 @@ public class NativePageFactory {
         }
         if (page != null) page.updateForUrl(url);
         return page;
+    }
+
+    /**
+     * Returns whether the given url is for a chrome:// scheme page that is being overridden by an
+     * extension.
+     *
+     * <p>chrome-native:// scheme pages are not affected by this.
+     *
+     * @param url The url to be checked.
+     * @param isIncognito Whether the page is to be displayed in incognito mode.
+     */
+    private static boolean isChromePageUrlOverriddenByExtension(GURL url, boolean isIncognito) {
+        if (!ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()
+                || !UrlConstants.CHROME_SCHEME.equals(url.getScheme())) {
+            return false;
+        }
+
+        String host = url.getHost();
+        if (UrlConstants.NTP_HOST.equals(host)) {
+            return isIncognito ? getIncognitoNtpOverrideEnabled() : getNtpOverrideEnabled();
+        } else if (UrlConstants.BOOKMARKS_HOST.equals(host)) {
+            return isIncognito
+                    ? getIncognitoBookmarksPageOverrideEnabled()
+                    : getBookmarksPageOverrideEnabled();
+        } else if (UrlConstants.HISTORY_HOST.equals(host)) {
+            return !isIncognito && getHistoryPageOverrideEnabled();
+        }
+        return false;
     }
 
     void setNativePageBuilderForTesting(NativePageBuilder builder) {
