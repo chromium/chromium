@@ -1147,7 +1147,13 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Incognito) {
 
 // Tests that Sync is enabled if the ENABLE_SYNC response is received after the
 // refresh token.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
+// TODO(crbug.com/448083446) Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_EnableSyncAfterToken DISABLED_EnableSyncAfterToken
+#else
+#define MAYBE_EnableSyncAfterToken EnableSyncAfterToken
+#endif
+IN_PROC_BROWSER_TEST_F(DiceBrowserTest, MAYBE_EnableSyncAfterToken) {
   base::HistogramTester histogram_tester;
   EXPECT_EQ(0, reconcilor_started_count_);
 
