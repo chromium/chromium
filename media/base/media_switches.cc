@@ -965,11 +965,6 @@ BASE_FEATURE(kAVDColorSpaceChanges, base::FEATURE_ENABLED_BY_DEFAULT);
 // the sourceRectHint PictureInPictureParam.
 BASE_FEATURE(kAllowEnhancedPipTransition, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Should we allow video playback to use an overlay if it's not needed for
-// security?  Normally, we'd always want to allow this, except as part of the
-// power testing A/B experiment.  https://crbug.com/1081346 .
-BASE_FEATURE(kAllowNonSecureOverlays, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables automatic Picture-in-Picture on Android for supported websites.
 // This triggers for active video playback or camera/microphone usage on sites
 // that have registered an auto picture-in-picture action.

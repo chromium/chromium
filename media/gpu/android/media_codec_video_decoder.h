@@ -347,11 +347,6 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // Optional crypto object from the Cdm.
   base::android::ScopedJavaGlobalRef<jobject> media_crypto_;
 
-  // For A/B power testing, this causes all non-L1 content to avoid overlays.
-  // This is only for A/B power testing, and can be removed after that.
-  // See https://crbug.com/1081346 .
-  bool allow_nonsecure_overlays_ = true;
-
   // If set, then the next call to `CodecConfig()` will be allowed to retry if
   // it fails to get a codec.  This is to work around b/191966399.
   bool should_retry_codec_allocation_ = false;
