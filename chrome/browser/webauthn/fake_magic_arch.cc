@@ -9,6 +9,8 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
 #include "components/trusted_vault/proto/recovery_key_store.pb.h"
@@ -34,9 +36,8 @@ const trusted_vault_pb::AsymmetricKeyPair* GetKeyPairWithPublicKey(
 }
 
 std::string AsLEBytes(int32_t v) {
-  char bytes[4];
-  UNSAFE_TODO(memcpy(bytes, &v, sizeof(bytes)));
-  return std::string(bytes, 4);
+  auto bytes = base::I32ToNativeEndian(v);
+  return std::string(base::as_string_view(base::span(bytes)));
 }
 
 std::array<uint8_t, 32> HashPIN(std::string_view pin,
