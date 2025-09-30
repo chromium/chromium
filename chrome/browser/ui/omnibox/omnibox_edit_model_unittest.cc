@@ -345,32 +345,7 @@ TEST_F(OmniboxEditModelTest, UnelideDoesNothingWhenFullURLAlreadyShown) {
   EXPECT_TRUE(model()->ShouldShowCurrentPageIcon());
 }
 
-// The tab-switching system sometimes focuses the Omnibox even if it was not
-// previously focused. In those cases, ignore the saved focus state.
-TEST_F(OmniboxEditModelTest, IgnoreInvalidSavedFocusStates) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {omnibox::kOmniboxRestoreInvisibleFocusOnly});
-
-  // The Omnibox starts out unfocused. Save that state.
-  ASSERT_FALSE(model()->has_focus());
-  OmniboxEditModel::State state = model()->GetStateForTabSwitch();
-  ASSERT_EQ(OMNIBOX_FOCUS_NONE, state.focus_state);
-
-  // Simulate the tab-switching system focusing the Omnibox.
-  model()->OnSetFocus(false);
-
-  // Restoring the old saved state should not clobber the model's focus state.
-  model()->RestoreState(&state);
-  EXPECT_TRUE(model()->has_focus());
-  EXPECT_TRUE(model()->is_caret_visible());
-}
-
 TEST_F(OmniboxEditModelTest, RestoreInvisibleFocusOnlyForVisibleState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {omnibox::kOmniboxRestoreInvisibleFocusOnly}, {});
-
   // The Omnibox starts out focused. Save that state.
   model()->OnSetFocus(false);
   ASSERT_TRUE(model()->has_focus());
@@ -387,10 +362,6 @@ TEST_F(OmniboxEditModelTest, RestoreInvisibleFocusOnlyForVisibleState) {
 }
 
 TEST_F(OmniboxEditModelTest, RestoreInvisibleFocusOnlyForInvisibleState) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {omnibox::kOmniboxRestoreInvisibleFocusOnly}, {});
-
   // The Omnibox starts out invisibly focused. Save that state.
   model()->OnSetFocus(false);
   model()->SetCaretVisibility(false);

@@ -338,10 +338,6 @@ BASE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy, ENABLED);
 // Enables preconnecting to omnibox suggestions that are not only Search types.
 BASE_FEATURE(kPreconnectNonSearchOmniboxSuggestions, DISABLED);
 
-// Enables restricting omnibox focus restoration to only situations that involve
-// "invisible focus".
-BASE_FEATURE(kOmniboxRestoreInvisibleFocusOnly, ENABLED);
-
 // Enabls adding an aim shortcut in the typed state.
 BASE_FEATURE(kOmniboxAimShortcutTypedState, DISABLED);
 

@@ -309,24 +309,11 @@ void OmniboxEditModel::RestoreState(const State* state) {
   //
   // The only reason we need to separately save and restore our focus state is
   // to preserve our special "invisible focus" state used for the fakebox.
-  //
-  // However, in some circumstances (if the last-focused control was destroyed),
-  // the Omnibox will be focused by default, and the edit model's saved state
-  // may be invalid. We make a check to guard against that.
-  //
-  // The experiment with `features::kOmniboxRestoreInvisibleFocusOnly` explores
-  // only restoring focus when needed due to one of the states being the
-  // "invisible focus" state.
-  const bool saved_focus_state_invalid =
-      focus_state_ == OMNIBOX_FOCUS_VISIBLE &&
-      state->focus_state == OMNIBOX_FOCUS_NONE;
   const bool invisible_focus_changed =
       focus_state_ == OMNIBOX_FOCUS_INVISIBLE ||
       state->focus_state == OMNIBOX_FOCUS_INVISIBLE;
 
-  if (base::FeatureList::IsEnabled(omnibox::kOmniboxRestoreInvisibleFocusOnly)
-          ? invisible_focus_changed
-          : !saved_focus_state_invalid) {
+  if (invisible_focus_changed) {
     SetFocusState(state->focus_state, OMNIBOX_FOCUS_CHANGE_TAB_SWITCH);
   }
 

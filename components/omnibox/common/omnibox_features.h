@@ -140,9 +140,6 @@ BASE_DECLARE_FEATURE(kEnableSiteSearchAllowUserOverridePolicy);
 // Preconnect/prerender behavior for suggestions
 BASE_DECLARE_FEATURE(kPreconnectNonSearchOmniboxSuggestions);
 
-// Only restore focus when invisible.
-BASE_DECLARE_FEATURE(kOmniboxRestoreInvisibleFocusOnly);
-
 // Adds an aim shortcut shortcut in the typed state.
 BASE_DECLARE_FEATURE(kOmniboxAimShortcutTypedState);
 
