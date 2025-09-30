@@ -186,13 +186,7 @@ IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, AllMessagesReceived) {
       0, memcmp(mapping.memory(), kLastMessage.data(), kLastMessage.size())));
 }
 
-// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-#define MAYBE_ObserveCrash DISABLED_ObserveCrash
-#else
-#define MAYBE_ObserveCrash ObserveCrash
-#endif
-IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, MAYBE_ObserveCrash) {
+IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, ObserveCrash) {
   EchoServiceProcessObserver observer;
   auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>(
       ServiceProcessHost::Options().WithSite(GURL(kTestUrl)).Pass());
