@@ -124,6 +124,10 @@ class MockAutofillClient : public TestAutofillClient {
        std::optional<EntityInstance> old_entity,
        EntitySaveOrUpdatePromptResultCallback prompt_acceptance_callback),
       (override));
+  MOCK_METHOD(void,
+              TriggerAutofillAiSavePromptSurvey,
+              (bool prompt_accepted),
+              (override));
 };
 
 class AutofillAiManagerTest : public testing::Test {
@@ -688,6 +692,9 @@ TEST_F(AutofillAiManagerImportFormTest,
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
       .WillOnce(DoAll(SaveArg<0>(&new_entity), SaveArg<1>(&old_entity),
                       MoveArg<2>(&save_callback)));
+  // Save prompts lead to a hats survey being triggered.
+  EXPECT_CALL(autofill_client(),
+              TriggerAutofillAiSavePromptSurvey(/*prompt_accepted=*/true));
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
   // This is a save bubble, `old_entity` should not exist.
   EXPECT_FALSE(old_entity.has_value());
@@ -722,6 +729,9 @@ TEST_F(AutofillAiManagerImportFormTest,
   AutofillClient::EntitySaveOrUpdatePromptResultCallback save_callback;
   EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
       .WillOnce(MoveArg<2>(&save_callback));
+  // Save prompts lead to a hats survey being triggered.
+  EXPECT_CALL(autofill_client(),
+              TriggerAutofillAiSavePromptSurvey(/*prompt_accepted=*/false));
   EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 
   // Decline the bubble.

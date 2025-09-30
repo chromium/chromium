@@ -260,6 +260,8 @@ void AutofillAiManager::HandleSavePromptResult(
   logger_.OnSaveOrUpdatePromptResult(
       AutofillClient::AutofillAiPromptTypes::kSave, entity.type(),
       entity.record_type(), form_session_id, domain, result, ukm_source_id);
+  client_->TriggerAutofillAiSavePromptSurvey(
+      /*prompt_accepted=*/result.entity.has_value());
   if (!result.entity) {
     if (result.did_user_decline) {
       AddStrikeForSaveAttempt(form_url, entity);
