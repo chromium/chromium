@@ -2923,6 +2923,120 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
   manager.reset();
 }
 
+TEST_F(BrowserAccessibilityWinTest, TestCustomHighlightsInSimpleTextFields) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.AddState(ax::mojom::State::kFocusable);
+
+  // The text field will contain the text "Helo world..", with "Helo" marked
+  // misspelled, "world" highlighted, and ".." marked as a grammar error.
+  const std::string text = "Helo world..";
+  AXNodeData text_field_container;
+  text_field_container.id = 2;
+  text_field_container.role = ax::mojom::Role::kGenericContainer;
+  text_field_container.AddState(ax::mojom::State::kEditable);
+  text_field_container.AddState(ax::mojom::State::kFocusable);
+  text_field_container.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                          "input");
+  text_field_container.AddStringAttribute(
+      ax::mojom::StringAttribute::kInputType, "text");
+  text_field_container.SetValue(text);
+
+  AXNodeData text_field;
+  text_field.id = 3;
+  text_field.role = ax::mojom::Role::kStaticText;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.SetName(text);
+
+  std::vector<int32_t> marker_types{
+      static_cast<int32_t>(ax::mojom::MarkerType::kHighlight),
+      static_cast<int32_t>(ax::mojom::MarkerType::kHighlight),
+      static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)};
+  std::vector<int32_t> highlight_types{
+      static_cast<int32_t>(ax::mojom::HighlightType::kSpellingError),
+      static_cast<int32_t>(ax::mojom::HighlightType::kHighlight),
+      static_cast<int32_t>(ax::mojom::HighlightType::kGrammarError)};
+  std::vector<int32_t> marker_starts{0, 5, 10};
+  std::vector<int32_t> marker_ends{4, 10, 12};
+  text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
+                                 marker_types);
+  text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
+                                 highlight_types);
+  text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                                 marker_starts);
+  text_field.AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                 marker_ends);
+
+  root.child_ids.push_back(2);
+  text_field_container.child_ids.push_back(3);
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManager::Create(
+          MakeAXTreeUpdateForTesting(root, text_field_container, text_field),
+          node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  ASSERT_NE(nullptr, manager->GetBrowserAccessibilityRoot());
+  BrowserAccessibilityWin* ax_root =
+      ToBrowserAccessibilityWin(manager->GetBrowserAccessibilityRoot());
+  ASSERT_NE(nullptr, ax_root);
+  ASSERT_EQ(1U, ax_root->PlatformChildCount());
+
+  BrowserAccessibilityWin* ax_text_field =
+      ToBrowserAccessibilityWin(ax_root->PlatformGetChild(0));
+  ASSERT_NE(nullptr, ax_text_field);
+
+  HRESULT hr;
+  LONG start_offset, end_offset;
+  base::win::ScopedBstr text_attributes;
+
+  // Ensure that "Helo" is marked misspelled.
+  for (LONG offset = 0; offset < 4; ++offset) {
+    hr = ax_text_field->GetCOM()->get_attributes(
+        offset, &start_offset, &end_offset, text_attributes.Receive());
+    EXPECT_EQ(S_OK, hr);
+    EXPECT_EQ(0, start_offset);
+    EXPECT_EQ(4, end_offset);
+    EXPECT_NE(std::wstring::npos,
+              std::wstring(text_attributes.Get()).find(L"invalid:spelling"));
+    text_attributes.Reset();
+  }
+
+  // Ensure that the next character " " is not marked.
+  hr = ax_text_field->GetCOM()->get_attributes(4, &start_offset, &end_offset,
+                                               text_attributes.Receive());
+  EXPECT_TRUE(std::wstring(text_attributes.Get()).empty());
+  EXPECT_EQ(4, start_offset);
+  EXPECT_EQ(5, end_offset);
+  text_attributes.Reset();
+
+  // Ensure that "world" is a highlight.
+  for (LONG offset = 5; offset < 10; ++offset) {
+    hr = ax_text_field->GetCOM()->get_attributes(
+        offset, &start_offset, &end_offset, text_attributes.Receive());
+    EXPECT_EQ(S_OK, hr);
+    EXPECT_EQ(5, start_offset);
+    EXPECT_EQ(10, end_offset);
+    EXPECT_NE(std::wstring::npos,
+              std::wstring(text_attributes.Get()).find(L"mark:true"));
+    text_attributes.Reset();
+  }
+
+  // Ensure that ".." is marked as a grammar error.
+  for (LONG offset = 10; offset < 12; ++offset) {
+    hr = ax_text_field->GetCOM()->get_attributes(
+        offset, &start_offset, &end_offset, text_attributes.Receive());
+    EXPECT_EQ(S_OK, hr);
+    EXPECT_EQ(10, start_offset);
+    EXPECT_EQ(12, end_offset);
+    EXPECT_NE(std::wstring::npos,
+              std::wstring(text_attributes.Get()).find(L"invalid:grammar"));
+    text_attributes.Reset();
+  }
+
+  manager.reset();
+}
+
 TEST_F(BrowserAccessibilityWinTest, TestDeepestFirstLastChild) {
   AXNodeData root;
   root.id = 1;
