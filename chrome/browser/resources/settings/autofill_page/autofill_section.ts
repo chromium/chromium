@@ -350,7 +350,9 @@ export class SettingsAutofillSectionElement extends
         address.metadata?.recordType ===
             chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME ||
         address.metadata?.recordType ===
-            chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK) {
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK ||
+        address.metadata?.recordType ===
+            chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL) {
       return false;
     }
 

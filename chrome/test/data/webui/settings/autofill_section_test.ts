@@ -572,6 +572,33 @@ suite('AutofillSectionAddressTests', function() {
     document.body.removeChild(section);
   });
 
+  test('verifyNoAddressLocalIndicationForAccountNameEmail', async () => {
+    const nameEmailAddress = createAddressEntry();
+    nameEmailAddress.metadata!.recordType =
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
+
+    const autofillManager = new TestAutofillManager();
+    autofillManager.data.addresses = [nameEmailAddress];
+    autofillManager.data.accountInfo = {
+      ...STUB_USER_ACCOUNT_INFO,
+    };
+    AutofillManagerImpl.setInstance(autofillManager);
+
+    const section = document.createElement('settings-autofill-section');
+    document.body.appendChild(section);
+    await autofillManager.whenCalled('getAddressList');
+    await flushTasks();
+
+    const addressList = section.$.addressList;
+    const getIcon = () => addressList.children[0]!.querySelector<HTMLElement>(
+        '#address-row-icon');
+    const iconName = getIcon()!.getAttribute('icon');
+    assertFalse(
+        !!iconName && iconName.includes('cloud-off'),
+        'Local indicator should not be shown on account name email profile');
+    document.body.removeChild(section);
+  });
+
   test('verifyAddressRowButtonTriggersDropdown', async function() {
     const address = createAddressEntry();
     const section = await createAutofillSection([address], {});
