@@ -804,16 +804,8 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
                               int_dirty.height());
         frame_dispatcher_->DispatchFrame(std::move(canvas_resource),
                                          damage_rect, IsOpaque());
-      }
-      // WebGL clears `dirty_rect_` every frame for low-latency, but for
-      // Canvas2D it occurs only if we actually attempted to paint the
-      // resource.
-      if (IsRenderingContext2D()) {
         dirty_rect_ = gfx::Rect();
       }
-    }
-    if (IsWebGL()) {
-      dirty_rect_ = gfx::Rect();
     }
   }
 
