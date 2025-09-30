@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/tool_request_variant.h"
@@ -229,6 +230,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
 
   void ResetAndComplete(ActionResultPtr result) {
+    TRACE_EVENT_END("actor");
     weak_ptr_factory_.InvalidateWeakPtrs();
     std::visit([]<typename T>(EventSequence<T>& e) { return e.clear(); },
                events_);
@@ -262,6 +264,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   template <absl::Overload V, typename EventT, typename ConvertedInputT>
   void GenerateAndSend(const ConvertedInputT& converted,
                        UiCompleteCallback callback) {
+    TRACE_EVENT_BEGIN("actor", "UiEventDispatch");
     CHECK(std::visit([]<typename T>(EventSequence<T>& e) { return e.empty(); },
                      events_))
         << "Unexpected: unprocessed UiEvents remaining";
@@ -292,14 +295,17 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   // by ActorUiStateManager.
   template <absl::Overload V>
   void MaybeSendNextEvent(ActionResultPtr result) {
+    TRACE_EVENT_BEGIN("actor", "MaybeSendNextEvent");
     if (result->code != ActionResultCode::kOk) {
       VLOG(4) << VisitorTraits<V>::phase_name
               << " UI actuation failed: " << ToDebugString(*result);
+      TRACE_EVENT_END("actor");
       ResetAndComplete(std::move(result));
       return;
     }
     auto& events = std::get<EventSequence<AsyncUiEvent>>(events_);
     if (events.empty()) {
+      TRACE_EVENT_END("actor");
       ResetAndComplete(MakeOkResult());
       return;
     }
@@ -308,6 +314,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     events.pop_front();
     VLOG(4) << VisitorTraits<V>::phase_name
             << "(AsyncUiEvent): " << DebugString(event);
+    TRACE_EVENT_END("actor");
     ui_state_manager_->OnUiEvent(
         std::move(event),
         base::BindOnce(&UiEventDispatcherImpl::MaybeSendNextEvent<V>,
@@ -317,6 +324,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   // Synchronously send events.
   template <absl::Overload V>
   void SendAllEvents() {
+    TRACE_EVENT("actor", "SendAllEvents");
     auto& events = std::get<EventSequence<SyncUiEvent>>(events_);
     while (!events.empty()) {
       const SyncUiEvent event = std::move(events.front());

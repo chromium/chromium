@@ -6,11 +6,13 @@
 
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
+#include "chrome/browser/actor/ui/ui_event_debugstring.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -118,6 +120,8 @@ ActorUiStateManager::~ActorUiStateManager() = default;
 void ActorUiStateManager::OnActorTaskStateChange(
     TaskId task_id,
     ActorTask::State new_task_state) {
+  TRACE_EVENT("actor", "UiStateManager::OnActorTaskStateChange", "new_state",
+              new_task_state);
   // TODO(crbug.com/424495020): Look into converting this switch into a
   // map/catalog.
   // Notify tab-scoped UI components.
@@ -177,6 +181,8 @@ std::vector<tabs::TabInterface*> ActorUiStateManager::GetTabs(TaskId id) {
 // scoped ui components, we can look into using BarrierClosure.
 void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
+  TRACE_EVENT("actor", "UiStateManager::OnUiEvent_Async", "event",
+              DebugString(event));
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     const TabUiUpdate update = std::visit(GetNewUiStateFn(), event);
     if (auto* tab_controller =
@@ -201,6 +207,8 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
 }
 
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
+  TRACE_EVENT("actor", "UiStateManager::OnUiEvent_Sync", "event",
+              DebugString(event));
   if (!base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     return;
   }

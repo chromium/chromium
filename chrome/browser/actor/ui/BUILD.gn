@@ -46,6 +46,7 @@ source_set("ui") {
     ":ui_event_types",
     "//base",
     "//chrome/app/vector_icons",
+    "//chrome/browser/actor/ui:ui_event_utils",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/actor_overlay:resources",
     "//chrome/browser/ui/browser_window",

@@ -7,6 +7,7 @@
 #include <absl/container/flat_hash_map.h>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
@@ -55,6 +56,7 @@ NodeGeomMap BuildNodeMap(const DocumentIdentifier& doc_id,
 std::optional<gfx::Point> GetDomNodePointFromApc(
     const optimization_guide::proto::AnnotatedPageContent& apc,
     const DomNode& node) {
+  TRACE_EVENT("actor", "GetDomNodePointFromApc");
   if (!features::kGlicActorUiOverlayMagicCursor.Get()) {
     // Disabled unless Magic Cursor is on to improve latency.
     return std::nullopt;
