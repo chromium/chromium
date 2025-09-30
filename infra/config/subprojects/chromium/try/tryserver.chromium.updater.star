@@ -56,7 +56,7 @@ updater_linux_builder(
             "ci/linux-updater-builder-dbg",
         ],
     ),
-    contact_team_email = "omaha@google.com",
+    contact_team_email = "omaha-core@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = _LOCATION_FILTER,
@@ -76,7 +76,7 @@ updater_linux_builder(
             "release_try_builder",
         ],
     ),
-    contact_team_email = "omaha@google.com",
+    contact_team_email = "omaha-core@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = _LOCATION_FILTER,
@@ -97,7 +97,7 @@ updater_mac_builder(
     ),
     cores = None,
     cpu = cpu.ARM64,
-    contact_team_email = "omaha@google.com",
+    contact_team_email = "omaha-core@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = _LOCATION_FILTER,
@@ -118,7 +118,7 @@ updater_mac_builder(
         ],
     ),
     cpu = cpu.ARM64,
-    contact_team_email = "omaha@google.com",
+    contact_team_email = "omaha-core@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = _LOCATION_FILTER,
@@ -138,7 +138,7 @@ updater_windows_builder(
             "release_try_builder",
         ],
     ),
-    contact_team_email = "omaha@google.com",
+    contact_team_email = "omaha-core@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = _LOCATION_FILTER,
@@ -157,7 +157,7 @@ updater_windows_builder(
             "ci/win-updater-builder-dbg",
         ],
     ),
-    contact_team_email = "omaha@google.com",
+    contact_team_email = "omaha-core@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = _LOCATION_FILTER,
@@ -177,7 +177,7 @@ updater_windows_builder(
             "release_try_builder",
         ],
     ),
-    contact_team_email = "omaha@google.com",
+    contact_team_email = "omaha-core@google.com",
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = _LOCATION_FILTER,
