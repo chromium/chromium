@@ -61,7 +61,8 @@ DOMPlugin* DOMMimeType::enabledPlugin() const {
   // FIXME: allowPlugins is just a client call. We should not need
   // to bounce through the loader to get there.
   // Something like: frame()->page()->client()->allowPlugins().
-  if (!window_ || !window_->GetFrame()->Loader().AllowPlugins()) {
+  if (!window_ || !window_->GetFrame() ||
+      !window_->GetFrame()->Loader().AllowPlugins()) {
     return nullptr;
   }
 
