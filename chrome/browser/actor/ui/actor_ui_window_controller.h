@@ -40,6 +40,8 @@ class ActorUiContentsContainerController : public content::WebContentsObserver {
       const ActorUiContentsContainerController&) = delete;
   ~ActorUiContentsContainerController() override;
 
+  views::WebView* contents_container_view() { return contents_container_view_; }
+
   // Called whenever web contents are attached to a `web_view`.
   void OnWebContentsAttached(views::WebView* web_view);
 
@@ -50,6 +52,9 @@ class ActorUiContentsContainerController : public content::WebContentsObserver {
   void UpdateOverlayState(bool is_visible, ActorOverlayState state);
 
  private:
+  // Notifies the respective tab controller that a new web contents has been
+  // attached.
+  void NotifyTabControllerOnWebContentsAttached();
   // Notified whenever the overlay background status changes.
   void OnActorOverlayBackgroundChange(bool is_visible);
 

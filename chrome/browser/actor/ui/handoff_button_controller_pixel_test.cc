@@ -63,7 +63,6 @@ class ActorUiHandoffButtonControllerPixelTest : public DialogBrowserTest {
     base::test::TestFuture<bool> tab_state_change_future;
     tab_controller->OnUiTabStateChange(ui_tab_state,
                                        tab_state_change_future.GetCallback());
-    tab_controller->OnOverlayHoverStatusChanged(true);
     EXPECT_TRUE(tab_state_change_future.Get());
   }
 

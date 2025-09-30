@@ -26,7 +26,6 @@ DEFINE_USER_DATA(actor::ui::ActorUiTabController);
 
 namespace actor::ui {
 using ::tabs::TabInterface;
-using enum actor::ui::HandoffButtonState::ControlOwnership;
 
 void LogAndIgnoreCallbackError(const std::string_view source_name,
                                bool result) {
@@ -263,17 +262,9 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
     return false;
   }
 
-  bool is_button_active = current_ui_tab_state_.handoff_button.is_active;
-  bool is_client_control =
-      current_ui_tab_state_.handoff_button.controller == kClient;
-
   // Only visible when:
-  // 1. Its state and the associated tab is selected and the mouse is hovering
-  //    over the overlay or the button.
-  // 2. Its state and the associated tab is selected and the client is in
-  //    control.
-  return tab_->IsSelected() && is_button_active &&
-         (should_show_scrim_background_ || is_client_control);
+  // 1. Its state is active and the associated tab is selected.
+  return tab_->IsSelected() && current_ui_tab_state_.handoff_button.is_active;
 }
 
 void ActorUiTabController::SetActorTaskPaused() {
@@ -300,6 +291,9 @@ void ActorUiTabController::SetActorTaskResume() {
   }
 }
 
+// TODO(crbug.com/447624564): After migrating the Handoff button off the TDM and
+// onto contents container, investigate removing debouncing on the tab
+// controller side and handle it on the ui component side.
 void ActorUiTabController::UpdateScrimBackground() {
   bool should_show_scrim_background =
       is_overlay_hovered_ || handoff_button_controller_->IsHovering();
@@ -307,11 +301,12 @@ void ActorUiTabController::UpdateScrimBackground() {
     return;
   }
   should_show_scrim_background_ = should_show_scrim_background;
+  // TODO(chrstne): Move this notify to UpdateUI + consolidate visibility &
+  // background into 1 struct.
   if (features::kGlicActorUiOverlay.Get()) {
     actor_overlay_background_changed_callbacks_.Notify(
         should_show_scrim_background_);
   }
-  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError, "UpdateScrimBackground"));
 }
 
 void ActorUiTabController::OnOverlayHoverStatusChanged(bool is_hovering) {

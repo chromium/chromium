@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -43,9 +44,14 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
  public:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kGlicActor, {}},
-         {features::kGlicActorUi,
-          {{features::kGlicActorUiHandoffButtonName, "true"}}}},
+        {
+            {features::kGlicActor, {}},
+            {features::kGlicActorUi,
+             {{features::kGlicActorUiHandoffButtonName, "true"}}},
+#if BUILDFLAG(IS_MAC)
+            {features::kImmersiveFullscreen, {}},
+#endif  // BUILDFLAG(IS_MAC)
+        },
         /*disabled_features=*/{});
     InteractiveBrowserTest::SetUp();
   }
@@ -68,13 +74,6 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
     ExpectOkResult(result_future);
   }
 
-  auto HoverOverlay(bool is_hovering) {
-    return Do([=, this]() {
-      ActorUiTabController::From(browser()->tab_strip_model()->GetActiveTab())
-          ->OnOverlayHoverStatusChanged(is_hovering);
-    });
-  }
-
   auto ClearOmniboxFocus() {
     return Do([this]() {
       auto* const omnibox_view =
@@ -85,19 +84,19 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
     });
   }
 
-  auto HoverOverlayOnTab(::ui::ElementIdentifier tab_id, bool is_hovering) {
-    return WithElement(
-               tab_id,
-               [=](::ui::TrackedElement* tracked_element) {
-                 auto* const web_contents =
-                     AsInstrumentedWebContents(tracked_element)->web_contents();
-                 auto* const tab =
-                     tabs::TabInterface::GetFromContents(web_contents);
-                 ActorUiTabController::From(tab)->OnOverlayHoverStatusChanged(
-                     is_hovering);
-               })
-        .SetMustBeVisibleAtStart(false);
+#if BUILDFLAG(IS_MAC)
+  auto EnterImmersiveFullscreen() {
+    return [&]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); };
   }
+
+  auto IsInImmersiveFullscreen() {
+    return [&]() {
+      auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+      return browser_view->GetWidget()->IsFullscreen() &&
+             browser_view->immersive_mode_controller()->IsEnabled();
+    };
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
  protected:
   TaskId task_id_;
@@ -108,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                        WidgetIsCreatedAndDestroyed) {
   StartActingOnTab();
   RunTestSequence(
-      ClearOmniboxFocus(), HoverOverlay(true),
+      ClearOmniboxFocus(),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
       // Trigger the event to destroy the button.
@@ -120,15 +119,14 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
-                       ButtonClickToPauseTaskKeepsButtonVisibleWithNoHover) {
+                       ButtonClickToPauseTaskKeepsButtonVisible) {
   StartActingOnTab();
   RunTestSequence(
-      ClearOmniboxFocus(), HoverOverlay(true),
+      ClearOmniboxFocus(),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
       InAnyContext(
           PressButton(HandoffButtonController::kHandoffButtonElementId)),
-      HoverOverlay(false),
       // Button stays visible since the client is in control.
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
@@ -138,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                        ButtonTextChangesOnClick) {
   StartActingOnTab();
   RunTestSequence(
-      ClearOmniboxFocus(), HoverOverlay(true),
+      ClearOmniboxFocus(),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
       InAnyContext(
@@ -160,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
   StartActingOnTab();
   RunTestSequence(
-      ClearOmniboxFocus(), HoverOverlay(true),
+      ClearOmniboxFocus(),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
       // Switch to the second tab.
@@ -168,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
       InAnyContext(
           WaitForHide(HandoffButtonController::kHandoffButtonElementId)),
       // Switch back to the first tab.
-      SelectTab(kTabStripElementId, 0), ClearOmniboxFocus(), HoverOverlay(true),
+      SelectTab(kTabStripElementId, 0), ClearOmniboxFocus(),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }
@@ -179,13 +177,8 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
   StartActingOnTab();
   RunTestSequence(
       ClearOmniboxFocus(),
-      // Show the button in the original window.
-      HoverOverlay(true),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
-      HoverOverlay(false),
-      InAnyContext(
-          WaitForHide(HandoffButtonController::kHandoffButtonElementId)),
       // Label the new tab with the previously defined local identifier.
       InstrumentNextTab(kMovedTabId, AnyBrowser()),
       // Move the first tab (at index 0) to a new window.
@@ -213,43 +206,34 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
               }
             }
           })),
-      // Verify the button shows up in the new window.
-      InAnyContext(HoverOverlayOnTab(kMovedTabId, true)),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }
 
+// This test is only for Mac where we have immersive fullscreen.
+#if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                        ButtonHidesInImmersiveFullscreen) {
   StartActingOnTab();
-  RunTestSequence(ClearOmniboxFocus(),
-                  // Enter immersive fullscreen.
-                  Do([&]() {
-                    ui_test_utils::ToggleFullscreenModeAndWait(browser());
-                    ASSERT_TRUE(base::test::RunUntil(
-                        [&]() { return browser()->window()->IsFullscreen(); }));
-                  }),
-                  // Trigger the event to show the button.
-                  HoverOverlay(true),
+  RunTestSequence(ClearOmniboxFocus(), Do(EnterImmersiveFullscreen()),
+                  Check(IsInImmersiveFullscreen()),
                   // Verify the button does not show.
-                  InAnyContext(WaitForHide(
+                  InAnyContext(EnsureNotPresent(
                       HandoffButtonController::kHandoffButtonElementId)));
 }
+#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
                        ButtonHidesWhenOmniboxIsFocused) {
   StartActingOnTab();
   RunTestSequence(
-      ClearOmniboxFocus(), HoverOverlay(true),
+      ClearOmniboxFocus(),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
-      // Focus the omnibox and verify the button immediately hides on hover.
-      FocusElement(kOmniboxElementId), HoverOverlay(true),
+      FocusElement(kOmniboxElementId),
       InAnyContext(
           WaitForHide(HandoffButtonController::kHandoffButtonElementId)),
       ClearOmniboxFocus(),
-      // Verify the button shows again when hovered.
-      HoverOverlay(true),
       InAnyContext(
           WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }

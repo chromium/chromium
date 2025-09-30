@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -60,9 +61,35 @@ void ActorUiContentsContainerController::OnWebContentsAttached(
               base::BindRepeating(&ActorUiContentsContainerController::
                                       OnActorOverlayBackgroundChange,
                                   weak_ptr_factory_.GetWeakPtr())));
-      tab_controller->OnWebContentsAttached();
+
+      // Asynchronous post needed for the window to completely open and
+      // activate before trying to show the UI components.
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ActorUiContentsContainerController::
+                             NotifyTabControllerOnWebContentsAttached,
+                         weak_ptr_factory_.GetWeakPtr()));
     }
   }
+}
+
+void ActorUiContentsContainerController::
+    NotifyTabControllerOnWebContentsAttached() {
+  if (!web_contents()) {
+    return;
+  }
+
+  auto* tab = tabs::TabInterface::GetFromContents(web_contents());
+  if (!tab) {
+    return;
+  }
+
+  auto* tab_controller = ActorUiTabControllerInterface::From(tab);
+  if (!tab_controller) {
+    return;
+  }
+
+  tab_controller->OnWebContentsAttached();
 }
 
 void ActorUiContentsContainerController::OnWebContentsDetached(

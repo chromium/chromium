@@ -10,6 +10,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -289,7 +290,18 @@ gfx::Rect HandoffButtonController::GetHandoffButtonBounds(
   gfx::Size preferred_size = widget->GetContentsView()->GetPreferredSize();
   preferred_size.set_height(kHandoffButtonPreferredHeight);
 
+  // TODO(crbug.com/447624564): After migrating the Handoff button off the TDM,
+  // explore parenting the bounds of the widget on the contents webview bounds
+  // instead.
   auto* anchor_view = tab_interface_->GetBrowserWindowInterface()->GetWebView();
+  if (auto* window_controller = ActorUiWindowController::From(
+          tab_interface_->GetBrowserWindowInterface())) {
+    if (auto* contents_controller =
+            window_controller->GetControllerForWebContents(
+                tab_interface_->GetContents())) {
+      anchor_view = contents_controller->contents_container_view();
+    }
+  }
   if (!anchor_view) {
     return gfx::Rect(preferred_size);
   }
