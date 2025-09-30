@@ -363,7 +363,7 @@ CGFloat const kSheetCornerRadius = 30;
           _backgroundConfigurationMediator.backgroundSelectionOutcome);
       break;
     case HomeCustomizationBackgroundStyle::kDefault:
-      NOTREACHED();
+      return;
   }
 }
 
