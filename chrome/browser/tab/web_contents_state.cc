@@ -261,31 +261,36 @@ WebContentsState::DeleteNavigationEntriesFromByteBuffer(
     return ScopedJavaLocalRef<jobject>();
   }
 
-  std::vector<sessions::SerializedNavigationEntry> new_navigations;
-  // This reservation assumes that the number of deleted navigations is low
-  // compared to the number of navigations. This may not always be true, but
-  // it should never use more memory than the input buffer.
-  new_navigations.reserve(navigations.size());
+  size_t original_size = navigations.size();
   int deleted_navigations = 0;
-  for (auto& navigation : navigations) {
+  size_t write_index = 0;
+  for (size_t read_index = 0; read_index < original_size; ++read_index) {
+    sessions::SerializedNavigationEntry& navigation = navigations[read_index];
     if (current_entry_index != navigation.index() &&
-        predicate.Run(navigation)) {
+        predicate.Run(navigations[read_index])) {
       deleted_navigations++;
     } else {
       // Adjust indices according to number of deleted navigations.
       if (current_entry_index == navigation.index()) {
         current_entry_index -= deleted_navigations;
       }
-      navigation.set_index(navigation.index() - deleted_navigations);
-      new_navigations.push_back(std::move(navigation));
+      navigation.set_index(navigation.index() -
+                                         deleted_navigations);
+      if (write_index != read_index) {
+        navigations[write_index] = std::move(navigation);
+      }
+      write_index++;
     }
   }
-  if (deleted_navigations == 0) {
+
+  if (write_index == original_size) {
     return ScopedJavaLocalRef<jobject>();
   }
 
+  navigations.resize(write_index);
+
   return WriteSerializedNavigationsAsByteBuffer(
-      env, is_off_the_record, new_navigations, current_entry_index);
+      env, is_off_the_record, navigations, current_entry_index);
 }
 
 std::optional<std::u16string> WebContentsState::GetDisplayTitleFromByteBuffer(
@@ -518,24 +523,17 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
         initiator_origin);
   }
 
-  std::vector<sessions::SerializedNavigationEntry> new_navigations;
-  // Reserve space for up to the current entry index (which is 0 indexed so a +1
-  // is needed) + an additional entry for the pending navigation.
-  new_navigations.reserve(current_entry_index + 2);
-  for (int i = 0; i <= current_entry_index; i++) {
-    new_navigations.push_back(std::move(navigations[i]));
-  }
-
   int new_entry_index = current_entry_index + 1;
+  navigations.erase(std::next(navigations.begin(), new_entry_index), navigations.end());
   std::unique_ptr<content::NavigationEntry> new_entry =
       CreatePendingNavigationEntry(browser_context, title, url, referrer_url,
                                    referrer_policy, initiator_origin);
-  new_navigations.push_back(
+  navigations.push_back(
       sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
           new_entry_index, new_entry.get()));
 
   return WriteSerializedNavigationsAsByteBuffer(
-      env, is_off_the_record, new_navigations, new_entry_index);
+      env, is_off_the_record, navigations, new_entry_index);
 }
 
 // Static JNI methods.
