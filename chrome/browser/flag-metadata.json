@@ -393,7 +393,7 @@
     "owners": [
       "wenyufu@chromium.org"
     ],
-    "expiry_milestone": 142
+    "expiry_milestone": 145
   },
   {
     "name": "android-theme-resource-provider",
