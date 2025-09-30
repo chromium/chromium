@@ -76,6 +76,9 @@ class ProtoChecker(object):
       dependee_dir = os.path.dirname(dependee_path)
       import_path = os.path.join(dependee_dir, import_path)
       import_path = os.path.relpath(import_path, self._root_dir)
+      # Normalize to use forward slashes, since all rules are specified
+      # in terms of forward slashes.
+      import_path = import_path.replace(os.path.sep, '/')
 
     if not self.IsFullPath(import_path):
       return True, None

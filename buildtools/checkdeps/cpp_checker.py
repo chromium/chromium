@@ -73,6 +73,9 @@ class CppChecker(object):
       dependee_dir = os.path.dirname(dependee_path)
       include_path = os.path.join(dependee_dir, include_path)
       include_path = os.path.relpath(include_path, self._root_dir)
+      # Normalize to use forward slashes, since all rules are specified
+      # in terms of forward slashes.
+      include_path = include_path.replace(os.path.sep, '/')
 
     rule = rules.RuleApplyingTo(include_path, dependee_path)
     if (rule.allow == Rule.DISALLOW or
