@@ -38,5 +38,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/translate/model",
     "//ios/web/public",
+    "//ios/web/public/permissions",
   ]
 }
