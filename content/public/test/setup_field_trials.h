@@ -20,7 +20,6 @@ namespace content {
 // call this function, because they should have their more idiomatic way of
 // setting up their field trials.
 //
-// TODO(https://crbug.com/40105939): Use it in `content_unittests`.
 // TODO(https://crbug.com/40105939): Use it in `blink_unittests`.
 void SetupFieldTrials();
 }  // namespace content

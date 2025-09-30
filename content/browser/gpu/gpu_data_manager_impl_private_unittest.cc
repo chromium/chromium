@@ -470,6 +470,11 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
 // On Mac-ARM graphite should fallback to Swiftshader immediately. On other
 // platforms graphite should fallback to Ganesh/GL.
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
+#if BUILDFLAG(ENABLE_SWIFTSHADER)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAllowSwiftShaderFallback);
+#endif
+
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableSkiaGraphite);
 
