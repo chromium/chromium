@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/ffmpeg_glue.h"
 
 #include <stdint.h>
@@ -276,14 +271,15 @@ TEST_F(FFmpegGlueDestructionTest, WithOpenWithStreams) {
 TEST_F(FFmpegGlueDestructionTest, WithOpenWithOpenStreams) {
   Initialize("bear-320x240.webm");
   ASSERT_TRUE(glue_->OpenContext());
-  ASSERT_GT(glue_->format_context()->nb_streams, 0u);
+  const auto streams = AVFormatContextToSpan(glue_->format_context());
+  ASSERT_GT(streams.size(), 0u);
 
   // Use ScopedPtrAVFreeContext to ensure |context| is closed, and use scoping
   // and ordering to ensure |context| is destructed before |glue_|.
   // Pick the audio stream (1) so this works when the ffmpeg video decoders are
   // disabled.
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> context(
-      AVStreamToAVCodecContext(glue_->format_context()->streams[1]));
+      AVStreamToAVCodecContext(streams[1]));
   ASSERT_NE(nullptr, context.get());
   ASSERT_EQ(0, avcodec_open2(context.get(),
                              avcodec_find_decoder(context->codec_id), nullptr));

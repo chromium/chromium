@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/mac/audio_toolbox_audio_decoder.h"
 
 #include <algorithm>
@@ -169,11 +164,30 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   // Must be filled in each time in case AudioConverterFillComplexBuffer()
   // modified it during a previous call.
   output_buffer_list_->mNumberBuffers = output_bus_->channels();
+
+  // SAFETY: In `CreateDecoder` , we allocate memory for `output_buffer_list_`
+  // of `sizeof(AudioBufferList) + output_bus_->channels() *
+  // sizeof(AudioBuffer)`.
+  //
+  // From
+  // https://developer.apple.com/documentation/coreaudiotypes/audiobufferlist we
+  // learn that the structure of `AudioBufferList` is:
+  //
+  // ```
+  // struct AudioBufferList {
+  //   UInt32 mNumberBuffers;
+  //   AudioBuffer mBuffers[1];  // this is a variable length array of
+  //                             // mNumberBuffers elements
+  // };
+  // ```
+  //
+  // So the size of `output_buffer_list_` is sufficient.
+  auto buffer_span = UNSAFE_BUFFERS(base::span(
+      output_buffer_list_->mBuffers, output_buffer_list_->mNumberBuffers));
   for (int i = 0; i < output_bus_->channels(); ++i) {
-    output_buffer_list_->mBuffers[i].mNumberChannels = 1;
-    output_buffer_list_->mBuffers[i].mDataByteSize =
-        output_bus_->frames() * sizeof(float);
-    output_buffer_list_->mBuffers[i].mData = output_bus_->channel(i);
+    buffer_span[i].mNumberChannels = 1;
+    buffer_span[i].mDataByteSize = output_bus_->frames() * sizeof(float);
+    buffer_span[i].mData = output_bus_->channel_span(i).data();
   }
 
   // Decodes |num_frames| of encoded data into |output_bus_| by calling the

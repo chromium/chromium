@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/win/media_foundation_audio_decoder.h"
 
 #include <mfapi.h>
@@ -15,6 +10,7 @@
 #include <wmcodecdsp.h>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
@@ -366,8 +362,13 @@ HRESULT MediaFoundationAudioDecoder::CreateDecoder() {
   // Create the decoder from the factory. Activate the first MFT object. We need
   // to release acts regardless of success/failure hre.
   HRESULT hr = acts[0]->ActivateObject(IID_PPV_ARGS(&decoder_));
-  for (UINT32 curr_act = 0; curr_act < acts_num; ++curr_act) {
-    acts[curr_act]->Release();
+
+  // SAFETY:
+  // https://learn.microsoft.com/en-us/windows/win32/api/mfapi/nf-mfapi-mftenumex
+  // The documentation states that `acts` points to a pointer array and
+  // `acts_num` returns the number of elements in the array.
+  for (auto* curr_act : UNSAFE_BUFFERS(base::span(acts.get(), acts_num))) {
+    curr_act->Release();
   }
   RETURN_IF_FAILED(hr);
 

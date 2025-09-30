@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/ffmpeg_aac_bitstream_converter.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 
+#include "base/containers/span.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/scoped_av_packet.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,10 +33,12 @@ class FFmpegAACBitstreamConverterTest : public testing::Test {
  protected:
   FFmpegAACBitstreamConverterTest() {
     // Minimal extra data header
-    memset(extradata_header_, 0, sizeof(extradata_header_));
+    std::ranges::fill(extradata_header_, 0);
 
     // Set up reasonable aac parameters
-    memset(&test_parameters_, 0, sizeof(AVCodecParameters));
+    std::ranges::fill(
+        base::byte_span_from_ref(base::allow_nonunique_obj, test_parameters_),
+        0);
     test_parameters_.codec_id = AV_CODEC_ID_AAC;
     test_parameters_.profile = AV_PROFILE_AAC_MAIN;
     test_parameters_.ch_layout.nb_channels = 2;
@@ -47,10 +46,10 @@ class FFmpegAACBitstreamConverterTest : public testing::Test {
     test_parameters_.extradata_size = sizeof(extradata_header_);
   }
 
-  void CreatePacket(AVPacket* packet, const uint8_t* data, uint32_t data_size) {
+  void CreatePacket(AVPacket* packet, base::span<const uint8_t> data) {
     // Create new packet sized of |data_size| from |data|.
-    EXPECT_EQ(av_new_packet(packet, data_size), 0);
-    memcpy(packet->data, data, data_size);
+    EXPECT_EQ(av_new_packet(packet, data.size()), 0);
+    AVPacketData(*packet).copy_from_nonoverlapping(data);
   }
 
   // Variable to hold valid dummy parameters for testing.
@@ -73,9 +72,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_Success) {
   }
 
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(
-      test_packet.get(), dummy_packet.data(),
-      (dummy_packet.size() * sizeof(decltype(dummy_packet)::value_type)));
+  CreatePacket(test_packet.get(), dummy_packet);
 
   // Try out the actual conversion (should be successful and allocate new
   // packet and destroy the old one).
@@ -86,13 +83,10 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_Success) {
             static_cast<long>((dummy_packet.size() *
                                sizeof(decltype(dummy_packet)::value_type)) +
                               FFmpegAACBitstreamConverter::kAdtsHeaderSize));
-  EXPECT_EQ(
-      memcmp(
-          reinterpret_cast<void*>(test_packet->data +
-                                  FFmpegAACBitstreamConverter::kAdtsHeaderSize),
-          reinterpret_cast<void*>(dummy_packet.data()),
-          (dummy_packet.size() * sizeof(decltype(dummy_packet)::value_type))),
-      0);
+  EXPECT_EQ(AVPacketData(*test_packet)
+                .subspan(static_cast<size_t>(
+                    FFmpegAACBitstreamConverter::kAdtsHeaderSize)),
+            base::span(dummy_packet));
 }
 
 TEST_F(FFmpegAACBitstreamConverterTest, Conversion_FailureNullParams) {
@@ -109,7 +103,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_FailureNullParams) {
 
   // Create new packet to test actual conversion.
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet);
 
   // Try out the actual conversion. This should not fail - conversion is
   // necessary only when we have `extradata`.
@@ -122,12 +116,13 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   uint8_t dummy_packet[1000] = {};
 
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet);
 
   EXPECT_TRUE(converter.ConvertPacket(test_packet.get()));
 
   // Check that the ADTS header profile matches the parameters
-  int profile = ((test_packet->data[2] & 0xC0) >> 6);
+  auto test_packet_span = AVPacketData(*test_packet);
+  int profile = ((test_packet_span[2] & 0xC0) >> 6);
 
   EXPECT_EQ(profile, kAacMainProfile);
 
@@ -135,11 +130,12 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   FFmpegAACBitstreamConverter converter_he(&test_parameters_);
 
   test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet);
 
   EXPECT_TRUE(converter_he.ConvertPacket(test_packet.get()));
 
-  profile = ((test_packet->data[2] & 0xC0) >> 6);
+  test_packet_span = AVPacketData(*test_packet);
+  profile = ((test_packet_span[2] & 0xC0) >> 6);
 
   EXPECT_EQ(profile, kAacLowComplexityProfile);
 
@@ -147,7 +143,7 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
   FFmpegAACBitstreamConverter converter_eld(&test_parameters_);
 
   test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet);
 
   EXPECT_FALSE(converter_eld.ConvertPacket(test_packet.get()));
 }
@@ -155,35 +151,37 @@ TEST_F(FFmpegAACBitstreamConverterTest, Conversion_AudioProfileType) {
 TEST_F(FFmpegAACBitstreamConverterTest, Conversion_MultipleLength) {
   FFmpegAACBitstreamConverter converter(&test_parameters_);
 
-  uint8_t dummy_packet[1000];
+  std::array<uint8_t, 1000> dummy_packet;
 
   auto test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(test_packet.get(), dummy_packet, sizeof(dummy_packet));
+  CreatePacket(test_packet.get(), dummy_packet);
 
   // Try out the actual conversion (should be successful and allocate new
   // packet and destroy the old one).
   EXPECT_TRUE(converter.ConvertPacket(test_packet.get()));
 
   // Check that the ADTS header frame length matches the packet size
-  int frame_length = ((test_packet->data[3] & 0x03) << 11) |
-                     ((test_packet->data[4] & 0xFF) << 3) |
-                     ((test_packet->data[5] & 0xE0) >> 5);
+  auto test_packet_span = AVPacketData(*test_packet);
+  int frame_length = ((test_packet_span[3] & 0x03) << 11) |
+                     ((test_packet_span[4] & 0xFF) << 3) |
+                     ((test_packet_span[5] & 0xE0) >> 5);
 
   EXPECT_EQ(frame_length, test_packet->size);
 
   // Create a second packet that is 1 byte smaller than the first one
   auto second_test_packet = ScopedAVPacket::Allocate();
-  CreatePacket(second_test_packet.get(), dummy_packet,
-               sizeof(dummy_packet) - 1);
+  CreatePacket(second_test_packet.get(),
+               base::span(dummy_packet).first<dummy_packet.size() - 1>());
 
   // Try out the actual conversion (should be successful and allocate new
   // packet and destroy the old one).
   EXPECT_TRUE(converter.ConvertPacket(second_test_packet.get()));
 
   // Check that the ADTS header frame length matches the packet size
-  frame_length = ((second_test_packet->data[3] & 0x03) << 11) |
-                 ((second_test_packet->data[4] & 0xFF) << 3) |
-                 ((second_test_packet->data[5] & 0xE0) >> 5);
+  auto second_test_packet_span = AVPacketData(*second_test_packet);
+  frame_length = ((second_test_packet_span[3] & 0x03) << 11) |
+                 ((second_test_packet_span[4] & 0xFF) << 3) |
+                 ((second_test_packet_span[5] & 0xE0) >> 5);
 
   EXPECT_EQ(frame_length, second_test_packet->size);
 }
