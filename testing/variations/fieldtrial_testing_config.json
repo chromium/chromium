@@ -26151,6 +26151,26 @@
             ]
         }
     ],
+    "V8MemoryReducerFavorsMemoryAblation": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "V8Flag_memory_reducer_favors_memory"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ParserAblation": [
         {
             "platforms": [
