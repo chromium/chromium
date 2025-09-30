@@ -1,4 +1,5 @@
-<style include="cr-shared-style settings-shared settings-columned-section
+<style include="cr-shared-style settings-shared cr-icons
+    settings-columned-section
     passwords-shared">
   .flex {
     flex: 1;
@@ -102,11 +103,30 @@
           [[item.entityInstanceSubLabel]]
         </div>
       </div>
-      <cr-icon-button id="moreButton" class="icon-more-vert"
-          on-click="onMoreButtonClick_"
-          title="[[i18n('autofillAiMoreActionsForEntityInstance',
-              item.entityInstanceLabel, item.entityInstanceSubLabel)]]">
-      </cr-icon-button>
+      <div id="walletIndicator" hidden$="[[!item.storedInWallet]]">
+<if expr="_google_chrome">
+        <cr-icon aria-hidden="true"
+            icon="settings-internal:google-wallet">
+        </cr-icon>
+</if>
+<if expr="not _google_chrome">
+        <span class="sub-label">$i18n{googleWallet}</span>
+</if>
+      </div>
+      <template is="dom-if" if="[[item.storedInWallet]]" restamp>
+        <cr-icon-button class="icon-external" id="remoteWalletPassesLink"
+            title="$i18n{remoteWalletPassesLinkLabel}" role="link"
+            on-click="onGoToWalletClick_"
+            aria-description="$i18n{opensInNewTab}">
+        </cr-icon-button>
+      </template>
+      <template is="dom-if" if="[[!item.storedInWallet]]" restamp>
+        <cr-icon-button id="moreButton" class="icon-more-vert"
+            on-click="onMoreButtonClick_"
+            title="[[i18n('autofillAiMoreActionsForEntityInstance',
+                item.entityInstanceLabel, item.entityInstanceSubLabel)]]">
+        </cr-icon-button>
+      </template>
     </li>
   </template>
   <li id="entriesNone" class="list-item" hidden="[[entityInstances_.length]]">
