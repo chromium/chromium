@@ -415,7 +415,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                        client_metadata));
   }
 
-  void SendAccountsRequest(const url::Origin& idp_origin,
+  bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
@@ -434,6 +434,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         FROM_HERE, base::BindOnce(std::move(callback), info.accounts_response,
                                   accounts_list_.empty() ? info.accounts
                                                          : accounts_list_));
+    return true;
   }
 
   void SendTokenRequest(
@@ -546,14 +547,14 @@ class IdpNetworkRequestManagerParamChecker
         rp_brand_icon_minimum_size, std::move(callback));
   }
 
-  void SendAccountsRequest(const url::Origin& idp_origin,
+  bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     if (expected_client_id_) {
       EXPECT_EQ(expected_client_id_, client_id);
     }
-    TestIdpNetworkRequestManager::SendAccountsRequest(
+    return TestIdpNetworkRequestManager::SendAccountsRequest(
         idp_origin, accounts_url, client_id, std::move(callback));
   }
 
@@ -4214,7 +4215,7 @@ class ParseStatusOverrideIdpNetworkRequestManager
         idp_brand_icon_minimum_size, std::move(callback));
   }
 
-  void SendAccountsRequest(const url::Origin& idp_origin,
+  bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
@@ -4225,10 +4226,10 @@ class ParseStatusOverrideIdpNetworkRequestManager
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), fetch_status,
                                     std::vector<IdentityRequestAccountPtr>()));
-      return;
+      return true;
     }
 
-    TestIdpNetworkRequestManager::SendAccountsRequest(
+    return TestIdpNetworkRequestManager::SendAccountsRequest(
         idp_origin, accounts_url, client_id, std::move(callback));
   }
 };

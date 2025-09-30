@@ -303,12 +303,13 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                    FetchClientMetadataCallback);
 
   // Fetch accounts list for this user from the IDP. idp_origin is required
-  // because accounts_url may be empty when lightweight fedcm is enabled. When
-  // lightweight fedcm is enabled, no actual network request will be sent if
-  // there are unexpired stored accounts for idp_origin. If there are no
-  // unexpired stored accounts and accounts_url is empty, the callback will be
-  // invoked with an empty accounts list.
-  virtual void SendAccountsRequest(const url::Origin& idp_origin,
+  // because `accounts_url` may be empty when lightweight fedcm is enabled or
+  // when the IDP is registered. When lightweight fedcm is enabled, no actual
+  // network request will be sent if there are unexpired stored accounts for
+  // idp_origin. If there are no unexpired stored accounts and accounts_url is
+  // empty, the callback will be invoked with an empty accounts list. Returns
+  // whether a network request is sent to fetch accounts.
+  virtual bool SendAccountsRequest(const url::Origin& idp_origin,
                                    const GURL& accounts_url,
                                    const std::string& client_id,
                                    AccountsRequestCallback callback);

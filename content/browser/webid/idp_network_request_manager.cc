@@ -1178,7 +1178,7 @@ void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
       maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::SendAccountsRequest(
+bool IdpNetworkRequestManager::SendAccountsRequest(
     const url::Origin& idp_origin,
     const GURL& accounts_url,
     const std::string& client_id,
@@ -1196,7 +1196,7 @@ void IdpNetworkRequestManager::SendAccountsRequest(
           client_id, std::move(callback), success_status,
           data_decoder::DataDecoder::ValueOrError(
               base::Value::Dict().Set(kAccountsKey, std::move(accounts))));
-      return;
+      return false;
     }
 
     // If there were no stored accounts and the supplied accounts URL is empty,
@@ -1206,7 +1206,7 @@ void IdpNetworkRequestManager::SendAccountsRequest(
           client_id, std::move(callback), success_status,
           data_decoder::DataDecoder::ValueOrError(
               base::Value::Dict().Set(kAccountsKey, base::Value::List())));
-      return;
+      return false;
     }
   }
 
@@ -1218,6 +1218,7 @@ void IdpNetworkRequestManager::SendAccountsRequest(
       /*url_encoded_post_data=*/std::nullopt,
       base::BindOnce(&OnAccountsRequestParsed, client_id, std::move(callback)),
       maxResponseSizeInKiB * 1024);
+  return true;
 }
 
 void IdpNetworkRequestManager::SendTokenRequest(

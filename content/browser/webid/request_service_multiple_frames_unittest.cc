@@ -115,13 +115,14 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                                   endpoints, idp_metadata));
   }
 
-  void SendAccountsRequest(const url::Origin& idp_origin,
+  bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), kFetchStatusSuccess, kAccounts));
+    return true;
   }
 
   void SendTokenRequest(

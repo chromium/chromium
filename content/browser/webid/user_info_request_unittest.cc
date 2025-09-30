@@ -165,7 +165,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                        endpoints, idp_metadata));
   }
 
-  void SendAccountsRequest(const url::Origin& idp_origin,
+  bool SendAccountsRequest(const url::Origin& idp_origin,
                            const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
@@ -187,6 +187,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         FROM_HERE,
         base::BindOnce(std::move(callback), config_.accounts_fetch_status,
                        std::move(accounts)));
+    return true;
   }
 
   bool DidFetchAnyEndpoint() {
