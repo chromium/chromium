@@ -15,8 +15,6 @@ from collections.abc import Collection
 from typing import Any
 
 DEFAULT_TIMEOUT_SECONDS = 600
-DEFAULT_COMMAND = ['gemini', '-y']
-
 DEFAULT_EXTENSIONS = [
     'build_information',
     'depot_tools',
@@ -108,7 +106,8 @@ def call_api(prompt: str, options: dict[str, Any],
         format='%(message)s',
     )
 
-    command = provider_config.get('command', DEFAULT_COMMAND)
+    gemini_cli_bin = provider_vars.get('gemini_cli_bin', 'gemini')
+    command = [gemini_cli_bin, '-y']
     if not isinstance(command, list):
         return {
             'error': f"'command' must be a list of strings, but got: {command}"

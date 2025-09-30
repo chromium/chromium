@@ -137,6 +137,34 @@ class FromSourcePromptfooInstallation(PromptfooInstallation):
                               stderr=subprocess.STDOUT)
 
 
+class PreinstalledPromptfooInstallation(PromptfooInstallation):
+    """A promptfoo installation that is preinstalled."""
+
+    def __init__(self, executable: pathlib.Path):
+        super().__init__(executable.parent)
+        self._executable = executable
+
+    def setup(self) -> None:
+        pass
+
+    @property
+    def installed(self) -> bool:
+        return self._executable.is_file()
+
+    def cleanup(self) -> None:
+        pass
+
+    def run(self,
+            cmd: list[str],
+            cwd: os.PathLike | None = None) -> subprocess.CompletedProcess:
+        return subprocess.run([str(self._executable), *cmd],
+                              cwd=cwd,
+                              check=False,
+                              text=True,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT)
+
+
 def setup_promptfoo(promptfoo_dir: pathlib.Path,
                     promptfoo_revision: str | None,
                     promptfoo_version: str | None) -> PromptfooInstallation:

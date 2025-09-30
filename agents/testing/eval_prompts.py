@@ -178,8 +178,11 @@ def _perform_chromium_setup(force: bool, build: bool) -> None:
         _build_chromium(src_path)
 
 
-def _fetch_sandbox_image() -> bool:
+def _fetch_sandbox_image(gemini_cli_bin: pathlib.Path | None = None) -> bool:
     """Pre-fetches the sandbox image.
+
+    Args:
+        gemini_cli_bin: An optional path to the gemini-cli binary to use.
 
     Returns:
         True on success, False on failure.
@@ -189,8 +192,9 @@ def _fetch_sandbox_image() -> bool:
     # sandbox image download.
     with tempfile.TemporaryDirectory() as tmpdir:
         try:
+            command = [gemini_cli_bin or 'gemini', '--sandbox', 'no-op']
             subprocess.run(
-                ['gemini', '--sandbox', 'no-op'],
+                command,
                 text=True,
                 check=True,
                 stdout=subprocess.PIPE,
@@ -226,18 +230,22 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
 
     _perform_chromium_setup(force=args.force, build=not args.no_build)
 
-    promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
-    promptfoo = promptfoo_installation.setup_promptfoo(promptfoo_dir,
-                                                       args.promptfoo_revision,
-                                                       args.promptfoo_version)
+    if args.promptfoo_bin:
+        promptfoo = promptfoo_installation.PreinstalledPromptfooInstallation(
+            args.promptfoo_bin)
+    else:
+        promptfoo_dir = pathlib.Path(tempfile.gettempdir()) / 'promptfoo'
+        promptfoo = promptfoo_installation.setup_promptfoo(
+            promptfoo_dir, args.promptfoo_revision, args.promptfoo_version)
 
-    if args.sandbox and not _fetch_sandbox_image():
+    if args.sandbox and not _fetch_sandbox_image(args.gemini_cli_bin):
         return 1
 
     worker_options = workers.WorkerOptions(clean=not args.no_clean,
                                            verbose=args.verbose,
                                            force=args.force,
-                                           sandbox=args.sandbox)
+                                           sandbox=args.sandbox,
+                                           gemini_cli_bin=args.gemini_cli_bin)
 
     worker_pool = workers.WorkerPool(args.parallel_workers, promptfoo,
                                      worker_options,
@@ -351,6 +359,12 @@ def _parse_args() -> argparse.Namespace:
         const='main',
         help=('Build promptfoo from the given source revision. If no revision '
               'is specified, ToT will be used.'))
+    parser.add_argument('--gemini-cli-bin',
+                        type=pathlib.Path,
+                        help='Path to a custom gemini-cli binary to use.')
+    parser.add_argument('--promptfoo-bin',
+                        type=pathlib.Path,
+                        help='Path to a custom promptfoo binary to use.')
     return parser.parse_args()
 
 

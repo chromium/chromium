@@ -151,6 +151,56 @@ class FromSourcePromptfooInstallationUnittest(fake_filesystem_unittest.TestCase
         self.assertFalse(pathlib.Path('/tmp/promptfoo').exists())
 
 
+class PreinstalledPromptfooInstallationUnittest(
+        fake_filesystem_unittest.TestCase):
+    """Unit tests for PreinstalledPromptfooInstallation."""
+
+    def setUp(self):
+        self.setUpPyfakefs()
+        run_patcher = mock.patch('subprocess.run')
+        self.mock_run = run_patcher.start()
+        self.addCleanup(run_patcher.stop)
+
+    def test_installed_true(self):
+        """Tests that installed is true when the executable exists."""
+        self.fs.create_file('/tmp/promptfoo')
+        installation = (
+            promptfoo_installation.PreinstalledPromptfooInstallation(
+                pathlib.Path('/tmp/promptfoo')))
+        self.assertTrue(installation.installed)
+
+    def test_installed_false(self):
+        """Tests that installed is false when the executable does not exist."""
+        installation = (
+            promptfoo_installation.PreinstalledPromptfooInstallation(
+                pathlib.Path('/tmp/promptfoo')))
+        self.assertFalse(installation.installed)
+
+    def test_run(self):
+        """Tests that run calls the promptfoo executable."""
+        self.fs.create_file('/tmp/promptfoo')
+        installation = (
+            promptfoo_installation.PreinstalledPromptfooInstallation(
+                pathlib.Path('/tmp/promptfoo')))
+        installation.run(['eval', '-c', 'config.yaml'], cwd='/tmp/test')
+        self.mock_run.assert_called_once_with(
+            [str(pathlib.Path('/tmp/promptfoo')), 'eval', '-c', 'config.yaml'],
+            cwd='/tmp/test',
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+
+    def test_cleanup(self):
+        """Tests that cleanup is a no-op."""
+        self.fs.create_file('/tmp/promptfoo')
+        installation = (
+            promptfoo_installation.PreinstalledPromptfooInstallation(
+                pathlib.Path('/tmp/promptfoo')))
+        installation.cleanup()
+        self.assertTrue(pathlib.Path('/tmp/promptfoo').exists())
+
+
 class SetupPromptfooUnittest(fake_filesystem_unittest.TestCase):
     """Unit tests for setup_promptfoo."""
 

@@ -108,6 +108,8 @@ class WorkerOptions:
     force: bool
     # Whether to run tests in a sandbox.
     sandbox: bool
+    # An optional path to a gemini-cli binary to use.
+    gemini_cli_bin: pathlib.Path | None = None
 
 
 class WorkerPool:
@@ -274,6 +276,11 @@ class WorkerThread(threading.Thread):
                 command.extend(['--var', 'sandbox=True'])
             if self._worker_options.verbose:
                 command.extend(['--var', 'verbose=True'])
+            if self._worker_options.gemini_cli_bin:
+                command.extend([
+                    '--var',
+                    f'gemini_cli_bin={self._worker_options.gemini_cli_bin}'
+                ])
 
             start_time = time.time()
             proc = self._promptfoo.run(command, cwd=workdir.path / 'src')

@@ -434,6 +434,8 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.print_output_on_success = False
         self.args.retries = 0
         self.args.parallel_workers = 1
+        self.args.gemini_cli_bin = None
+        self.args.promptfoo_bin = None
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
@@ -648,6 +650,25 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertEqual(
             self.mock_worker_pool.return_value.queue_tests.call_count, 1)
         self.assertEqual(returncode, 0)
+
+    def test_run_prompt_eval_tests_with_custom_bins(self):
+        """Tests that custom binaries are used when provided."""
+        self.args.promptfoo_bin = pathlib.Path('/custom/promptfoo')
+        self.args.gemini_cli_bin = pathlib.Path('/custom/gemini')
+        self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
+            return_value = []
+
+        with mock.patch(
+                'promptfoo_installation.PreinstalledPromptfooInstallation'
+        ) as mock_preinstalled:
+            eval_prompts._run_prompt_eval_tests(self.args)
+            mock_preinstalled.assert_called_once_with(
+                pathlib.Path('/custom/promptfoo'))
+
+        self.mock_setup_promptfoo.assert_not_called()
+        self.mock_worker_pool.assert_called_once()
+        self.assertEqual(self.mock_worker_pool.call_args[0][2].gemini_cli_bin,
+                         pathlib.Path('/custom/gemini'))
 
 
 if __name__ == '__main__':

@@ -199,6 +199,7 @@ class WorkerThreadUnittest(unittest.TestCase):
             verbose=False,
             force=False,
             sandbox=False,
+            gemini_cli_bin=None,
         )
         self.test_input_queue = queue.Queue()
         self.test_result_queue = queue.Queue()
@@ -311,6 +312,17 @@ class WorkerThreadUnittest(unittest.TestCase):
         self.assertIn('--var', command)
         self.assertIn('sandbox=True', command)
         self.assertIn('verbose=True', command)
+
+    def test_gemini_cli_bin(self):
+        """Tests that gemini_cli_bin is passed to promptfoo."""
+        gemini_cli_bin = pathlib.Path('/', 'custom', 'gemini')
+        self.worker_options.gemini_cli_bin = gemini_cli_bin
+        self._create_and_run_worker([pathlib.Path('/test/a.yaml')])
+
+        self.mock_promptfoo.run.assert_called_once()
+        command = self.mock_promptfoo.run.call_args[0][0]
+        self.assertIn('--var', command)
+        self.assertIn(f'gemini_cli_bin={gemini_cli_bin}', command)
 
 
 class WorkerPoolUnittest(unittest.TestCase):
