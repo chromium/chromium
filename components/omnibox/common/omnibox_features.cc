@@ -186,8 +186,9 @@ BASE_FEATURE(kOmniboxAssistantVoiceSearch, DISABLED);
 // When enabled, the multimodal input button is shown in the Omnibox.
 BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 
-// Whether the AI Mode entrypoint is shown in the Omnibox as a RHS button.
-BASE_FEATURE(kAiModeOmniboxEntryPoint, DISABLED);
+// Whether the AI Mode entrypoint is shown in the Omnibox as a RHS button. Only
+// used on desktop platforms.
+BASE_FEATURE(kAiModeOmniboxEntryPoint, ENABLED);
 
 // When enabled, removes the Search Ready Omnibox feature.
 BASE_FEATURE(kRemoveSearchReadyOmnibox, DISABLED);

@@ -16661,27 +16661,6 @@
             ]
         }
     ],
-    "OmniboxAiRhsEchoLensToolbeltDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "HideAimHintTextOnNtpOpen": "true"
-                    },
-                    "enable_features": [
-                        "AiModeOmniboxEntryPoint"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxAsyncViewInflation": [
         {
             "platforms": [
