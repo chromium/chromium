@@ -515,7 +515,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
     field.placeholder_attribute = 'x-max-data-length-exceeded';
   }
 
-  field.aria_label = gCrWebLegacy.fill.getAriaLabel(element);
+  field.aria_label = fillUtil.getAriaLabel(element);
   field.aria_description = gCrWebLegacy.fill.getAriaDescription(element);
 
   if (!gCrWebLegacy.fill.isAutofillableElement(element)) {

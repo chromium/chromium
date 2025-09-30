@@ -622,13 +622,13 @@ function coalesceTextByIdList(
  * or the value of the aria-label attribute, with priority given to the
  * aria-labelledby text.
  */
-gCrWebLegacy.fill.getAriaLabel = function(element: Element): string {
+function getAriaLabel(element: Element): string {
   let label = coalesceTextByIdList(element, 'aria-labelledby');
   if (!label) {
     label = element.getAttribute('aria-label') || '';
   }
   return label.trim();
-};
+}
 
 /**
  * Returns the coalesced text referenced by the aria-describedby attribute.
@@ -775,4 +775,5 @@ export {
   isVisibleNode,
   getUniqueID,
   shouldAutocomplete,
+  getAriaLabel,
 };

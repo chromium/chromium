@@ -171,7 +171,8 @@ TEST_F(FillJsTest, GetAriaLabel) {
   LoadHtml(@"<input id='input' type='text' aria-label='the label'/>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"the label";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -198,7 +199,8 @@ TEST_F(FillJsTest, GetAriaLabelledBySingle) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"Name";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -214,7 +216,8 @@ TEST_F(FillJsTest, GetAriaLabelledByMulti) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"Billing Name";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -231,7 +234,8 @@ TEST_F(FillJsTest, GetAriaLabelledByTakesPrecedence) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"Name";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -248,7 +252,8 @@ TEST_F(FillJsTest, GetAriaLabelledByInvalid) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -265,7 +270,8 @@ TEST_F(FillJsTest, GetAriaLabelledByFallback) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaLabel(document.getElementById('input'));");
+      @"__gCrWeb.getRegisteredApi('fill_test_api')."
+      @"getFunction('getAriaLabel')(document.getElementById('input'));");
   NSString* expected_result = @"valid";
   EXPECT_NSEQ(result, expected_result);
 }

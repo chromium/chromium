@@ -5,6 +5,7 @@
 import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import type {InferredLabel} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {ancestorTagNames, buildInferredLabelIfValid, findChildText, findChildTextWithIgnoreList, isTraversableContainerElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
@@ -168,7 +169,7 @@ function inferLabelFromAriaLabel(
     return null;
   }
 
-  return buildInferredLabelIfValid(gCrWebLegacy.fill.getAriaLabel(element));
+  return buildInferredLabelIfValid(fillUtil.getAriaLabel(element));
 }
 
 /**
