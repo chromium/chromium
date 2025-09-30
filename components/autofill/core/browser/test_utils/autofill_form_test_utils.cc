@@ -95,23 +95,13 @@ FormFieldData CreateFieldByRole(FieldType role) {
       field.set_label(u"Email or Frequent Flyer Number");
       field.set_name(u"email_or_frequentflyer");
       break;
-    case FieldType::FLIGHT_RESERVATION_FLIGHT_NUMBER:
-      field.set_label(u"Flight Number");
-      field.set_name(u"flightNumber");
-      break;
-    case FieldType::FLIGHT_RESERVATION_TICKET_NUMBER:
-      field.set_label(u"Ticket Number");
-      field.set_name(u"ticketNumber");
-      break;
-    case FieldType::FLIGHT_RESERVATION_CONFIRMATION_CODE:
-      field.set_label(u"Confirmation Code");
-      field.set_name(u"confirmationCode");
-      break;
     case FieldType::EMPTY_TYPE:
       break;
     default:
-      LOG(ERROR) << __func__ << "() does not know the role "
-                 << FieldTypeToStringView(role) << "!";
+      LOG(WARNING) << "The field created by " << __func__ << "("
+                   << FieldTypeToStringView(role)
+                   << ") will probably not be assigned the the expected "
+                      "FieldType by the local heuristics!";
       break;
   }
   return field;
