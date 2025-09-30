@@ -27,13 +27,62 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace glic {
+
+// Web Contents Observer for the tab associated with its respective glic
+// embedder.
+class GlicTabContentsObserver : public content::WebContentsObserver {
+ public:
+  GlicTabContentsObserver(content::WebContents* web_contents,
+                          GlicInstanceImpl* instance)
+      : content::WebContentsObserver(web_contents), instance_(instance) {}
+
+  // content::WebContentsObserver:
+  // This is called whenever a navigation happens from clicking a link within
+  // the observed web contents.
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override {
+    tabs::TabInterface* tab_to_bind =
+        tabs::TabInterface::GetFromContents(new_contents);
+    if (!tab_to_bind) {
+      return;
+    }
+
+    tabs::TabInterface* source_tab = tabs::TabInterface::GetFromContents(
+        content::WebContents::FromRenderFrameHost(source_render_frame_host));
+    auto* glic_embedder = instance_->GetEmbedderForTab(source_tab);
+
+    // Ensure the previous side panel was active. If so, then deactivate it and
+    // open it in the new tab.
+    if (glic_embedder && glic_embedder->IsShowing()) {
+      SidePanelRegistry* registry =
+          tab_to_bind->GetTabFeatures()->side_panel_registry();
+
+      SidePanelEntry* glic_entry = registry->GetEntryForKey(
+          SidePanelEntry::Key(SidePanelEntry::Id::kGlic));
+      registry->SetActiveEntry(glic_entry);
+
+      instance_->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab_to_bind);
+    }
+  }
+
+ private:
+  raw_ptr<GlicInstanceImpl> instance_ = nullptr;
+};
 
 void GlicInstanceImpl::NotifyStateChange() {
   state_change_callback_list_.Notify(IsShowing(),
@@ -395,6 +444,9 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderFor(
             new_entry.tab_activation_subscription = tab->RegisterDidActivate(
                 base::BindRepeating(&GlicInstanceImpl::OnAssociatedTabActivated,
                                     weak_ptr_factory_.GetWeakPtr()));
+            new_entry.tab_web_contents_observer =
+                std::make_unique<GlicTabContentsObserver>(tab->GetContents(),
+                                                          this);
             // Auto-pin on bind.
             if (!embedders_.contains(key)) {
               sharing_manager().PinTabs({tab->GetHandle()});

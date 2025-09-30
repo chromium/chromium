@@ -33,6 +33,7 @@ namespace glic {
 
 class GlicUiEmbedder;
 class EmptyEmbedderDelegate;
+class GlicTabContentsObserver;
 
 // A GlicInstance owns a single host keeping any state that must exist for the
 // lifetime of the host. When a host is showing, the GlicInstance creates a
@@ -92,6 +93,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Manages the association of this instance with a tab.
   void DisassociateFromTab(tabs::TabInterface* tab);
   bool IsOrphaned() const;
+  GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
 
   // GlicInstance:
   Host& host() override;
@@ -163,6 +165,7 @@ class GlicInstanceImpl : public GlicInstance,
     std::unique_ptr<GlicUiEmbedder> embedder;
     base::CallbackListSubscription destruction_subscription;
     base::CallbackListSubscription tab_activation_subscription;
+    std::unique_ptr<GlicTabContentsObserver> tab_web_contents_observer;
   };
 
   struct ConversationInfo {
@@ -174,7 +177,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   EmbedderKey GetEmbedderKey(EmbedderType type, tabs::TabInterface* tab);
   GlicUiEmbedder* GetActiveEmbedder();
-  GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   void DeactivateCurrentEmbedder();
   GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
