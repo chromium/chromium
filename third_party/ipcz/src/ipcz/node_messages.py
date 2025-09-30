@@ -37,7 +37,7 @@ class Field(object):
     def is_offset(self):
         """
         Returns True if the wire representation of the field uses an offset to
-        point to futher data (e.g. Arrays). False if the field is inline.
+        point to further data (e.g. Arrays). False if the field is inline.
         """
         return False
 
@@ -416,7 +416,7 @@ def process_messages_file(lines):
         if 'IPCZ_MSG_END_INTERFACE' in line:
             continue
 
-        # Explode for everything thing else.
+        # Explode for everything else.
         raise Exception(f'Unexpected Line {lineno}: {line}')
     return messages, interface
 

@@ -40,7 +40,7 @@ class RemoteRouterLink;
 class Router;
 
 // A NodeLink instance encapsulates all communication from its owning node to
-// exactly one other remote node in the sytem. Each NodeLink manages a
+// exactly one other remote node in the system. Each NodeLink manages a
 // DriverTransport for general-purpose I/O to and from the remote node.
 //
 // NodeLinks may also allocate an arbitrary number of sublinks which are used
@@ -187,7 +187,7 @@ class NodeLink : public msg::NodeMessageListener {
 
   // Sends a request to allocate a new shared memory region and invokes
   // `callback` once the request succeeds or fails. On failure, `callback` is
-  // invoke with an invalid DriverMemory object.
+  // invoked with an invalid DriverMemory object.
   using RequestMemoryCallback = std::function<void(DriverMemory)>;
   void RequestMemory(size_t size, RequestMemoryCallback callback);
 

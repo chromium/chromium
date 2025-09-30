@@ -39,7 +39,7 @@ class DriverMemoryMapping {
   // invalid.
   void* address() const { return address_; }
 
-  // Returns the address at `offset` bytes from this mapping's base address. iT
+  // Returns the address at `offset` bytes from this mapping's base address. It
   // is an error to call this with an `offset` greater than or equal to the
   // mapped region's size.
   void* address_at(size_t offset) const {

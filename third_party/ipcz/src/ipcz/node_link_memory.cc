@@ -190,7 +190,7 @@ void NodeLinkMemory::SetNodeLink(Ref<NodeLink> link) {
       return;
     }
 
-    // Any capcity requests accumulated before NodeLink activation can be
+    // Any capacity requests accumulated before NodeLink activation can be
     // carried out now.
     for (auto& [size, callbacks] : capacity_callbacks_) {
       block_sizes_needed.push_back(size);

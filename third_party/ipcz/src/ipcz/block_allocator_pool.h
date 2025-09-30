@@ -26,7 +26,7 @@ namespace ipcz {
 // failing only once a complete pass over all allocators fails to yield a
 // successful allocation.
 //
-// BlockAllocatorPool is is thread-safe.
+// BlockAllocatorPool is thread-safe.
 class BlockAllocatorPool {
  public:
   BlockAllocatorPool();
