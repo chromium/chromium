@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "crypto/hash.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -36,22 +37,27 @@ namespace enterprise {
 BlobGenerationResult GenerateAttestationBlob(std::string_view request,
                                              std::string_view timestamp,
                                              std::string_view nonce) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> generation_result =
-      Java_AttestationBlobGenerator_generate(
-          env,
-          base::android::ConvertUTF8ToJavaString(
-              env, GetHashString(base::StringPrintf(
-                       kReportRequestHashKey, request, timestamp, nonce))),
-          base::android::ConvertUTF8ToJavaString(env, GetHashString(timestamp)),
-          base::android::ConvertUTF8ToJavaString(env, GetHashString(nonce)));
+  {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    JNIEnv* env = base::android::AttachCurrentThread();
+    ScopedJavaLocalRef<jobject> generation_result =
+        Java_AttestationBlobGenerator_generate(
+            env,
+            base::android::ConvertUTF8ToJavaString(
+                env, GetHashString(base::StringPrintf(
+                         kReportRequestHashKey, request, timestamp, nonce))),
+            base::android::ConvertUTF8ToJavaString(env,
+                                                   GetHashString(timestamp)),
+            base::android::ConvertUTF8ToJavaString(env, GetHashString(nonce)));
 
-  return {base::android::ConvertJavaStringToUTF8(
-              env, Java_BlobGenerationResult_getAttestationBlob(
-                       env, generation_result)),
-          base::android::ConvertJavaStringToUTF8(
-              env, Java_BlobGenerationResult_getErrorMessage(
-                       env, generation_result))};
+    return {base::android::ConvertJavaStringToUTF8(
+                env, Java_BlobGenerationResult_getAttestationBlob(
+                         env, generation_result)),
+            base::android::ConvertJavaStringToUTF8(
+                env, Java_BlobGenerationResult_getErrorMessage(
+                         env, generation_result))};
+  }
 }
 
 }  // namespace enterprise

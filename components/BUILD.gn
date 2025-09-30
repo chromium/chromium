@@ -674,6 +674,7 @@ test("components_unittests") {
       "//components/embedder_support/android:native_java_unittests_java",
       "//components/enterprise/client_certificates/android:browser_binding_java",
       "//components/enterprise/client_certificates/android:unit_device_javatests",
+      "//components/enterprise/device_attestation/android:device_attestation_java",
       "//components/facilitated_payments/android:unit_tests",
       "//components/facilitated_payments/android/java",
       "//components/facilitated_payments/content/browser:unit_tests",

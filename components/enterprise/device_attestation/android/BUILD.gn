@@ -49,6 +49,7 @@ static_library("android") {
   deps = [
     ":jni_headers",
     "//base",
+    "//components/enterprise/device_attestation:common",
     "//crypto",
   ]
 }

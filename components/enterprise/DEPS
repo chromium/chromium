@@ -2,6 +2,7 @@ include_rules = [
   "+components/download/public/common",
   "+components/device_signals/core/browser",
   "+components/device_signals/core/common",
+  "+components/enterprise/device_attestation/android",
   "+components/policy",
   "+components/prefs",
   "+components/reporting/client",

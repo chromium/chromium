@@ -2551,6 +2551,8 @@ message AttestationPayload {
   optional string nonce = 2;
   // Blob generated for attestation.
   optional string attestation_blob = 3;
+  // Error from blob generation if there is one.
+  optional string attestation_error = 4;
 }
 
 // Report user level status on all platforms. It includes the information of the

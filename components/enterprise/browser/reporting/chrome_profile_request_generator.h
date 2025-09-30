@@ -17,6 +17,8 @@
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/device_attestation/common/device_attestation_types.h"
+#include "components/enterprise/device_attestation/device_attestation_service.h"
 
 namespace device_signals {
 class SignalsAggregator;
@@ -64,6 +66,13 @@ class ChromeProfileRequestGenerator {
           profile_report,
       device_signals::SignalsAggregationResponse response);
 
+  void OnAttestationResultReady(
+      std::string_view timestamp,
+      std::string_view nonce,
+      ReportCallback callback,
+      std::unique_ptr<ReportRequest> request,
+      const enterprise::BlobGenerationResult& attestation_result);
+
   void OnRequestReady(std::unique_ptr<ReportRequest> request,
                       ReportCallback callback);
 
@@ -73,6 +82,8 @@ class ChromeProfileRequestGenerator {
   ProfileReportGenerator profile_report_generator_;
 
   raw_ptr<device_signals::SignalsAggregator> signals_aggregator_;
+  std::unique_ptr<enterprise::DeviceAttestationService>
+      device_attestation_service_ = nullptr;
 
   base::WeakPtrFactory<ChromeProfileRequestGenerator> weak_ptr_factory_{this};
 };

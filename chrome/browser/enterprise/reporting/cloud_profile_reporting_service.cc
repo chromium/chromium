@@ -104,7 +104,6 @@ void CloudProfileReportingService::CreateReportScheduler() {
   ReportScheduler::CreateParams params;
   params.client = cloud_policy_client_.get();
   params.delegate = delegate_factory.GetReportSchedulerDelegate(profile_);
-
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(
           profile_->GetPath(), &delegate_factory,

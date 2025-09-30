@@ -8,13 +8,9 @@
 #include <string>
 
 #include "base/values.h"
+#include "components/enterprise/device_attestation/common/device_attestation_types.h"
 
 namespace enterprise {
-
-struct BlobGenerationResult {
-  std::string attestation_blob;
-  std::string error_message;
-};
 
 // Generates the blob with content binding
 BlobGenerationResult GenerateAttestationBlob(std::string_view report_request,
