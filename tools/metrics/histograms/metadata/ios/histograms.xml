@@ -5015,7 +5015,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.PushNotification.ProminenceAlert.Result"
     enum="IOSNotificationsProminenceAlertActionResult"
-    expires_after="2025-11-10">
+    expires_after="2026-11-10">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-gsu-pod@google.com</owner>
   <summary>
