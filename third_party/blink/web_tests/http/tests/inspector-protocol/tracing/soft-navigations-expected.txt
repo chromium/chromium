@@ -63,6 +63,7 @@ Object: {
 			isOutermostMainFrame: boolean
 			navigationId: string
 			nodeId: number
+			nodeName: string
 			performanceTimelineNavigationId: number
 			size: number
 			type: string
