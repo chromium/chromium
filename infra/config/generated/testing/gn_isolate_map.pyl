@@ -1190,12 +1190,12 @@
     "skip_usage_check": True,
   },
   "ios_web_view_inttests": {
-    "label": "//ios/web_view:ios_web_view_inttests",
+    "label": "//ios/web_view/test:ios_web_view_inttests",
     "type": "generated_script",
     "skip_usage_check": True,
   },
   "ios_web_view_unittests": {
-    "label": "//ios/web_view:ios_web_view_unittests",
+    "label": "//ios/web_view/test:ios_web_view_unittests",
     "type": "generated_script",
     "skip_usage_check": True,
   },

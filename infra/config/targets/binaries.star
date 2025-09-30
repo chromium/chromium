@@ -1501,7 +1501,7 @@ targets.binaries.generated_script(
 
 targets.binaries.generated_script(
     name = "ios_web_view_inttests",
-    label = "//ios/web_view:ios_web_view_inttests",
+    label = "//ios/web_view/test:ios_web_view_inttests",
     # All references have been moved to starlark
     skip_usage_check = True,
     module_scheme = "gtest",
@@ -1509,7 +1509,7 @@ targets.binaries.generated_script(
 
 targets.binaries.generated_script(
     name = "ios_web_view_unittests",
-    label = "//ios/web_view:ios_web_view_unittests",
+    label = "//ios/web_view/test:ios_web_view_unittests",
     # All references have been moved to starlark
     skip_usage_check = True,
     module_scheme = "gtest",

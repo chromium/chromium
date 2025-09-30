@@ -2729,7 +2729,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_inttests",
+        "module_name": "//ios/web_view/test:ios_web_view_inttests",
         "module_scheme": "gtest",
         "name": "ios_web_view_inttests iPad Air (6th generation) 18.5",
         "resultdb": {
@@ -2761,7 +2761,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_inttests/",
         "variant_id": "iPad Air (6th generation) 18.5"
       },
       {
@@ -2779,7 +2779,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_inttests",
+        "module_name": "//ios/web_view/test:ios_web_view_inttests",
         "module_scheme": "gtest",
         "name": "ios_web_view_inttests iPhone 15 18.5",
         "resultdb": {
@@ -2811,7 +2811,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_inttests/",
         "variant_id": "iPhone 15 18.5"
       },
       {
@@ -2829,7 +2829,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_inttests",
+        "module_name": "//ios/web_view/test:ios_web_view_inttests",
         "module_scheme": "gtest",
         "name": "ios_web_view_inttests iPhone 15 Pro Max 18.5",
         "resultdb": {
@@ -2861,7 +2861,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_inttests/",
         "variant_id": "iPhone 15 Pro Max 18.5"
       },
       {
@@ -2879,7 +2879,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_unittests",
+        "module_name": "//ios/web_view/test:ios_web_view_unittests",
         "module_scheme": "gtest",
         "name": "ios_web_view_unittests iPad Air (6th generation) 18.5",
         "resultdb": {
@@ -2911,7 +2911,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_unittests/",
         "variant_id": "iPad Air (6th generation) 18.5"
       },
       {
@@ -2929,7 +2929,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_unittests",
+        "module_name": "//ios/web_view/test:ios_web_view_unittests",
         "module_scheme": "gtest",
         "name": "ios_web_view_unittests iPhone 15 18.5",
         "resultdb": {
@@ -2961,7 +2961,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_unittests/",
         "variant_id": "iPhone 15 18.5"
       },
       {
@@ -2979,7 +2979,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_unittests",
+        "module_name": "//ios/web_view/test:ios_web_view_unittests",
         "module_scheme": "gtest",
         "name": "ios_web_view_unittests iPhone 15 Pro Max 18.5",
         "resultdb": {
@@ -3011,7 +3011,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_unittests/",
         "variant_id": "iPhone 15 Pro Max 18.5"
       },
       {

@@ -104,7 +104,7 @@ _TEST_TARGET_ALLOWLIST = [
     '//gpu:gpu_benchmark',
     '//gpu/vulkan/android:vk_tests',
     '//ios/web:ios_web_inttests',
-    '//ios/web_view:ios_web_view_inttests',
+    '//ios/web_view/test:ios_web_view_inttests',
     '//media/cdm:aes_decryptor_fuzztests',
     '//media/formats:ac3_util_fuzzer',
     '//media/gpu/chromeos:image_processor_test',

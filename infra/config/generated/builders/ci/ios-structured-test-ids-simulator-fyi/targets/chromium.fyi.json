@@ -2184,7 +2184,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_inttests",
+        "module_name": "//ios/web_view/test:ios_web_view_inttests",
         "module_scheme": "gtest",
         "name": "ios_web_view_inttests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
@@ -2221,7 +2221,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_inttests/",
         "variant_id": "iPad Pro 13-inch (M4) 18.2"
       },
       {
@@ -2240,7 +2240,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_inttests",
+        "module_name": "//ios/web_view/test:ios_web_view_inttests",
         "module_scheme": "gtest",
         "name": "ios_web_view_inttests iPhone 15 18.2",
         "resultdb": {
@@ -2277,7 +2277,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_inttests/",
         "variant_id": "iPhone 15 18.2"
       },
       {
@@ -2296,7 +2296,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_inttests",
+        "module_name": "//ios/web_view/test:ios_web_view_inttests",
         "module_scheme": "gtest",
         "name": "ios_web_view_inttests iPhone 16 26.0",
         "resultdb": {
@@ -2328,7 +2328,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_inttests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_inttests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_inttests/",
         "variant_id": "iPhone 16 26.0"
       },
       {
@@ -2347,7 +2347,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_unittests",
+        "module_name": "//ios/web_view/test:ios_web_view_unittests",
         "module_scheme": "gtest",
         "name": "ios_web_view_unittests iPad Pro 13-inch (M4) 18.2",
         "resultdb": {
@@ -2384,7 +2384,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_unittests/",
         "variant_id": "iPad Pro 13-inch (M4) 18.2"
       },
       {
@@ -2403,7 +2403,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_unittests",
+        "module_name": "//ios/web_view/test:ios_web_view_unittests",
         "module_scheme": "gtest",
         "name": "ios_web_view_unittests iPhone 15 18.2",
         "resultdb": {
@@ -2440,7 +2440,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_unittests/",
         "variant_id": "iPhone 15 18.2"
       },
       {
@@ -2459,7 +2459,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "module_name": "//ios/web_view:ios_web_view_unittests",
+        "module_name": "//ios/web_view/test:ios_web_view_unittests",
         "module_scheme": "gtest",
         "name": "ios_web_view_unittests iPhone 16 26.0",
         "resultdb": {
@@ -2491,7 +2491,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ios_web_view_unittests",
-        "test_id_prefix": "ninja://ios/web_view:ios_web_view_unittests/",
+        "test_id_prefix": "ninja://ios/web_view/test:ios_web_view_unittests/",
         "variant_id": "iPhone 16 26.0"
       },
       {
