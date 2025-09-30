@@ -16,5 +16,14 @@ source_set("public") {
     "sync_entity_identifier.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [ ":features" ]
+}
+
+static_library("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
 }
