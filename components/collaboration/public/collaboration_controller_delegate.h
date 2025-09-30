@@ -117,7 +117,10 @@ class CollaborationControllerDelegate {
           error_header = l10n_util::GetStringUTF8(
               IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_HEADER);
           error_body = l10n_util::GetStringUTF8(
-              IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_BODY);
+              base::FeatureList::IsEnabled(
+                  syncer::kReplaceSyncPromosWithSignInPromos)
+                  ? IDS_COLLABORATION_ENTREPRISE_TABS_SYNC_DISABLED_BODY
+                  : IDS_COLLABORATION_ENTREPRISE_SYNC_DISABLED_BODY);
           break;
         case Type::kSigninDisabledByPolicy:
           error_header = l10n_util::GetStringUTF8(
