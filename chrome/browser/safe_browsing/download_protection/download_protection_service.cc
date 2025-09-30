@@ -4,11 +4,14 @@
 
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -39,6 +42,7 @@
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -62,6 +66,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #endif
 
@@ -73,15 +78,15 @@
 using content::BrowserThread;
 using ReportThreatDetailsResult =
     safe_browsing::PingManager::ReportThreatDetailsResult;
+
 namespace safe_browsing {
 
 namespace {
 
-inline constexpr int kDownloadAttributionUserGestureLimit = 2;
-inline constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting =
-    5;
+constexpr int kDownloadAttributionUserGestureLimit = 2;
+constexpr int kDownloadAttributionUserGestureLimitForExtendedReporting = 5;
 
-const int64_t kDownloadRequestTimeoutMs = 7000;
+constexpr base::TimeDelta kDownloadRequestTimeoutMs = base::Milliseconds(7000);
 
 bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
   using Result = safe_browsing::DownloadCheckResult;
@@ -137,10 +142,9 @@ DownloadProtectionService::DownloadProtectionService(
     std::unique_ptr<DownloadProtectionDelegate> delegate)
     : sb_service_(sb_service),
       delegate_(std::move(delegate)),
-      binary_feature_extractor_(new BinaryFeatureExtractor()),
-      download_request_timeout_ms_(kDownloadRequestTimeoutMs),
+      binary_feature_extractor_(base::MakeRefCounted<BinaryFeatureExtractor>()),
 #if !BUILDFLAG(IS_ANDROID)
-      feedback_service_(new DownloadFeedbackService(
+      feedback_service_(std::make_unique<DownloadFeedbackService>(
           this,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT})
@@ -309,8 +313,8 @@ void DownloadProtectionService::CheckDownloadUrl(
     }
   }
 
-  scoped_refptr<DownloadUrlSBClient> client(new DownloadUrlSBClient(
-      item, this, std::move(callback), ui_manager_, database_manager_));
+  auto client = base::MakeRefCounted<DownloadUrlSBClient>(
+      item, this, std::move(callback), ui_manager_, database_manager_);
   // The client will release itself once it is done.
   client->StartCheck();
 }
@@ -668,7 +672,7 @@ const GURL& DownloadProtectionService::GetDownloadRequestUrl() const {
 }
 
 base::TimeDelta DownloadProtectionService::GetDownloadRequestTimeout() const {
-  return base::Milliseconds(download_request_timeout_ms_);
+  return kDownloadRequestTimeoutMs;
 }
 
 bool DownloadProtectionService::MaybeBeginFeedbackForDownload(
@@ -701,11 +705,9 @@ void DownloadProtectionService::UploadForDeepScanning(
   auto request = std::make_unique<DeepScanningRequest>(
       std::move(metadata), trigger, download_check_result, callback, this,
       std::move(analysis_settings), password);
-  DeepScanningRequest* request_raw = request.get();
-  auto insertion_result = deep_scanning_requests_.insert(
-      std::make_pair(request_raw, std::move(request)));
+  auto insertion_result = deep_scanning_requests_.insert(std::move(request));
   DCHECK(insertion_result.second);
-  insertion_result.first->second->Start();
+  insertion_result.first->get()->Start();
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
   SafeBrowsingMetricsCollector* metrics_collector =
@@ -808,18 +810,16 @@ void DownloadProtectionService::UploadSavePackageForDeepScanning(
       std::make_unique<DownloadItemMetadata>(item),
       DownloadCheckResult::UNKNOWN, callback, this,
       std::move(analysis_settings), std::move(save_package_files));
-  DeepScanningRequest* request_raw = request.get();
-  auto insertion_result = deep_scanning_requests_.insert(
-      std::make_pair(request_raw, std::move(request)));
+  auto insertion_result = deep_scanning_requests_.insert(std::move(request));
   DCHECK(insertion_result.second);
-  insertion_result.first->second->Start();
+  insertion_result.first->get()->Start();
 }
 
 std::vector<DeepScanningRequest*>
 DownloadProtectionService::GetDeepScanningRequests() {
   std::vector<DeepScanningRequest*> requests;
-  for (const auto& pair : deep_scanning_requests_) {
-    requests.push_back(pair.first);
+  for (const auto& request : deep_scanning_requests_) {
+    requests.push_back(request.get());
   }
   return requests;
 }
@@ -862,7 +862,8 @@ int DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
 
 #if !BUILDFLAG(IS_ANDROID)
 void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
-  auto it = deep_scanning_requests_.find(request);
+  auto it = std::ranges::find_if(deep_scanning_requests_,
+                                 base::MatchesUniquePtr(request));
   CHECK(it != deep_scanning_requests_.end());
   deep_scanning_requests_.erase(it);
 }

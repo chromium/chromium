@@ -2667,7 +2667,7 @@ TEST_F(DownloadProtectionServiceMockTimeTest, TestDownloadRequestTimeout) {
                           base::Unretained(this), run_loop.QuitClosure()));
 
   task_environment()->FastForwardBy(
-      base::Milliseconds(download_service_->download_request_timeout_ms_));
+      download_service_->GetDownloadRequestTimeout());
 
   // The request should time out because the HTTP request hasn't returned
   // anything yet.

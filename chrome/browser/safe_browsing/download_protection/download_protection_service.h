@@ -16,6 +16,8 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -30,7 +32,6 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_observer.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -38,7 +39,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #endif
 
@@ -63,7 +63,9 @@ class CheckClientDownloadRequest;
 class CheckClientDownloadRequestBase;
 class CheckFileSystemAccessWriteRequest;
 class ClientDownloadRequest;
+class DeepScanningRequest;
 class DownloadRequestMaker;
+class SafeBrowsingUIManager;
 
 #if !BUILDFLAG(IS_ANDROID)
 class DownloadFeedbackService;
@@ -419,8 +421,7 @@ class DownloadProtectionService {
 
 #if !BUILDFLAG(IS_ANDROID)
   // Set of pending server requests for deep scanning.
-  base::flat_map<DeepScanningRequest*, std::unique_ptr<DeepScanningRequest>>
-      deep_scanning_requests_;
+  base::flat_set<std::unique_ptr<DeepScanningRequest>> deep_scanning_requests_;
 #endif
 
   // Keeps track of the state of the service.
@@ -428,8 +429,6 @@ class DownloadProtectionService {
 
   // BinaryFeatureExtractor object, may be overridden for testing.
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
-
-  int64_t download_request_timeout_ms_ = 0;
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DownloadFeedbackService> feedback_service_;
@@ -450,7 +449,7 @@ class DownloadProtectionService {
 
   // Rate of allowlisted downloads we sample to send out download ping.
   // Overrides the value provided by the delegate. Intended for testing only.
-  std::optional<double> allowlist_sample_rate_ = std::nullopt;
+  std::optional<double> allowlist_sample_rate_;
 
   // DownloadProtectionObserver to send real time reports for dangerous download
   // events and handle special user actions on the download.
@@ -458,6 +457,7 @@ class DownloadProtectionService {
 
   base::WeakPtrFactory<DownloadProtectionService> weak_ptr_factory_;
 };
+
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_SERVICE_H_
