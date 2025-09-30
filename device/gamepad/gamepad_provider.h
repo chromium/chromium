@@ -43,6 +43,8 @@ class DEVICE_GAMEPAD_EXPORT GamepadChangeClient {
   virtual void OnGamepadConnectionChange(bool connected,
                                          uint32_t index,
                                          const Gamepad& pad) = 0;
+
+  virtual void OnGamepadRawInputChanged(uint32_t index, const Gamepad& pad) = 0;
 };
 
 class DEVICE_GAMEPAD_EXPORT GamepadProvider
@@ -94,6 +96,8 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
   void RemoveSourceGamepadDataFetcher(GamepadSource source);
 
   void SetSanitizationEnabled(bool sanitize) { sanitize_ = sanitize; }
+
+  bool HasInputChangedForTesting() const { return has_input_changed_.load(); }
 
   // Adds a simulated gamepad identified by `token` and described by `params`.
   void AddSimulatedGamepad(base::UnguessableToken token,
@@ -169,6 +173,8 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
                                  uint32_t index,
                                  const Gamepad& pad);
 
+  void OnGamepadRawInputChanged(uint32_t index, const Gamepad& pad);
+
   // Checks the gamepad state to see if the user has interacted with it. Returns
   // true if any user gesture observers were notified.
   bool CheckForUserGesture();
@@ -223,6 +229,8 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
 
   bool ever_had_user_gesture_ = false;
   bool sanitize_ = true;
+
+  std::atomic<bool> has_input_changed_{false};
 
   // Internal state for a simulated gamepad.
   struct SimulatedGamepadState {

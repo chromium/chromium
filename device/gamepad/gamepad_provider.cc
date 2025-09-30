@@ -9,12 +9,16 @@
 #include <string.h>
 
 #include <cmath>
+#include <iterator>
 #include <memory>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/message_loop/message_pump_type.h"
@@ -33,6 +37,43 @@
 #include "third_party/abseil-cpp/absl/base/dynamic_annotations.h"
 
 namespace device {
+
+namespace {
+
+bool TouchEventEqual(const GamepadTouch& a, const GamepadTouch& b) {
+  return a.touch_id == b.touch_id && a.surface_id == b.surface_id &&
+         a.has_surface_dimensions == b.has_surface_dimensions && a.x == b.x &&
+         a.y == b.y && a.surface_width == b.surface_width &&
+         a.surface_height == b.surface_height;
+}
+
+bool AreTouchEventsEqual(
+    const std::array<GamepadTouch, Gamepad::kTouchEventsLengthCap>& old_touches,
+    const std::array<GamepadTouch, Gamepad::kTouchEventsLengthCap>&
+        new_touches) {
+  return std::ranges::equal(old_touches, new_touches, TouchEventEqual);
+}
+
+bool HasInputChanged(const Gamepad& old_pad, const Gamepad& new_pad) {
+  // If the timestamp hasn't changed, nothing could have changed.
+  if (old_pad.timestamp == new_pad.timestamp) {
+    return false;
+  }
+
+  // Note: We intentionally check touch_events_length for changes, but not
+  // buttons_length or axes_length. For buttons/axes, the length is expected
+  // to remain constant for a connected gamepad; a change likely means a
+  // disconnect/reconnect. For touch events, the length is expected to
+  // change as the user interacts with the touch surface. If we don't check
+  // the length, we could miss changes when the number of active touches
+  // changes, even if the values in unused slots match.
+  return (!std::ranges::equal(old_pad.axes, new_pad.axes) ||
+          !std::ranges::equal(old_pad.buttons, new_pad.buttons) ||
+          old_pad.touch_events_length != new_pad.touch_events_length ||
+          !AreTouchEventsEqual(old_pad.touch_events, new_pad.touch_events));
+}
+
+}  // namespace
 
 constexpr int64_t kPollingIntervalMilliseconds = 4;  // ~250 Hz
 
@@ -502,6 +543,15 @@ void GamepadProvider::DoPoll() {
         state.is_newly_active = false;
         OnGamepadConnectionChange(true, i, new_buffer.items[i]);
       }
+
+      // Raw input change detection.
+      if (base::FeatureList::IsEnabled(features::kGamepadRawInputChangeEvent)) {
+        if (new_buffer.items[i].connected && !state.is_newly_active &&
+            HasInputChanged(old_buffer.items[i], new_buffer.items[i])) {
+          has_input_changed_.store(true);
+          OnGamepadRawInputChanged(i, new_buffer.items[i]);
+        }
+      }
     }
   }
 
@@ -560,6 +610,16 @@ void GamepadProvider::OnGamepadConnectionChange(bool connected,
         base::BindOnce(&GamepadChangeClient::OnGamepadConnectionChange,
                        base::Unretained(gamepad_change_client_), connected,
                        index, pad));
+  }
+}
+
+void GamepadProvider::OnGamepadRawInputChanged(uint32_t index,
+                                               const Gamepad& pad) {
+  if (gamepad_change_client_) {
+    main_thread_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GamepadChangeClient::OnGamepadRawInputChanged,
+                       base::Unretained(gamepad_change_client_), index, pad));
   }
 }
 

@@ -150,6 +150,10 @@ class DEVICE_GAMEPAD_EXPORT GamepadService : public GamepadChangeClient {
   // Called on IO thread when a gamepad is disconnected.
   void OnGamepadDisconnected(uint32_t index, const Gamepad& pad);
 
+  // Called on IO thread when a gamepad raw input changes (such as axis, button,
+  // or touchpad). Notifies all active consumers about a raw input change.
+  void OnGamepadRawInputChanged(uint32_t index, const Gamepad& pad) override;
+
   // Request playback of a haptic effect on the specified gamepad. Once effect
   // playback is complete or is preempted by a different effect, the callback
   // will be called.

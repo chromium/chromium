@@ -40,6 +40,11 @@ void GamepadMonitor::OnGamepadDisconnected(uint32_t index,
     gamepad_observer_remote_->GamepadDisconnected(index, gamepad);
 }
 
+void GamepadMonitor::OnGamepadRawInputChanged(uint32_t index,
+                                              const Gamepad& gamepad) {
+  // TODO(crbug.com/40582297): Add events for gamepad button and axis inputs.
+}
+
 void GamepadMonitor::GamepadStartPolling(GamepadStartPollingCallback callback) {
   DCHECK(!is_started_);
   is_started_ = true;

@@ -253,6 +253,16 @@ void GamepadService::OnGamepadDisconnected(uint32_t index, const Gamepad& pad) {
   }
 }
 
+void GamepadService::OnGamepadRawInputChanged(uint32_t index,
+                                              const Gamepad& pad) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& consumer : consumers_) {
+    if (consumer.did_observe_user_gesture && consumer.is_active) {
+      consumer.consumer->OnGamepadRawInputChanged(index, pad);
+    }
+  }
+}
+
 void GamepadService::PlayVibrationEffectOnce(
     uint32_t pad_index,
     mojom::GamepadHapticEffectType type,
