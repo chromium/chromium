@@ -13,8 +13,10 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -254,7 +256,8 @@ std::string Elevator::PopFromStringFront(std::string& str) {
     return std::string();
   auto it = str.begin();
   // Obtain the size.
-  UNSAFE_TODO(memcpy(&size, str.c_str(), sizeof(size)));
+  size =
+      base::U32FromLittleEndian(base::as_byte_span(str).first<sizeof(size)>());
   // Skip over the size field.
   std::string value;
   if (size) {
