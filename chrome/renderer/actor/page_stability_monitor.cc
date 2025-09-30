@@ -84,23 +84,20 @@ PageStabilityMonitor::~PageStabilityMonitor() {
 
   // If we have a callback, ensure it replies now.
   journal_entry_->Log("PageStabilityMonitorDestructor", {});
-  MoveToState(State::kRenderFrameGoingAway);
+  OnRenderFrameGoingAway();
   Cleanup();
 }
 
 void PageStabilityMonitor::NotifyWhenStable(base::TimeDelta observation_delay,
                                             NotifyWhenStableCallback callback) {
+  CHECK_EQ(state_, State::kInitial);
   CHECK(!is_stable_callback_);
   is_stable_callback_ = std::move(callback);
 
-  // It's possible that a navigation has been committed before NotifyWhenStable
-  // has been called, requesting the callback be invoked. Do so now.
-  if (state_ == State::kInvokedBeforeNotify) {
-    MoveToState(State::kInvokeCallback);
+  if (render_frame_did_go_away_) {
+    MoveToState(State::kRenderFrameGoingAway);
     return;
   }
-
-  CHECK_EQ(state_, State::kInitial);
 
   // This will end the PageStabilityInitial entry and start a new one.
   journal_entry_.reset();
@@ -138,7 +135,7 @@ void PageStabilityMonitor::DidCommitProvisionalLoad(
       JournalDetailsBuilder()
           .Add("transition", PageTransitionGetCoreTransitionString(transition))
           .Build());
-  MoveToState(State::kRenderFrameGoingAway);
+  OnRenderFrameGoingAway();
 }
 
 void PageStabilityMonitor::DidFailProvisionalLoad() {
@@ -160,7 +157,7 @@ void PageStabilityMonitor::DidSetPageLifecycleState(
   }
 
   journal_entry_->Log("PageStabilityMonitor Page Frozen", {});
-  MoveToState(State::kRenderFrameGoingAway);
+  OnRenderFrameGoingAway();
 }
 
 void PageStabilityMonitor::OnDestruct() {
@@ -280,19 +277,9 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       }
       break;
     }
-    case State::kInvokedBeforeNotify: {
-      // Do nothing - this will be moved from NotifyWhenStable.
-      break;
-    }
     case State::kInvokeCallback: {
-      // If we don't yet have a callback it's because NotifyWhenStable hasn't
-      // been called yet (NavigationCommitted can occur before then). If this
-      // happens, just move to kDone; the callback will invoke when it is
-      // called.
-      if (!is_stable_callback_) {
-        MoveToState(State::kInvokedBeforeNotify);
-        break;
-      }
+      CHECK(is_stable_callback_);
+
       // Ensure we release the network and main thread idle callback slots.
       network_idle_callback_.Cancel();
       main_thread_idle_callback_.Cancel();
@@ -314,6 +301,7 @@ void PageStabilityMonitor::MoveToState(State new_state) {
       break;
     }
     case State::kRenderFrameGoingAway: {
+      CHECK(render_frame_did_go_away_);
       MoveToState(State::kInvokeCallback);
       break;
     }
@@ -377,9 +365,22 @@ void PageStabilityMonitor::SetTimeout(State timeout_type,
 }
 
 void PageStabilityMonitor::OnPaintStabilityReached() {
-  // Do this in a separate task since paint stability can be reached while
-  // transitioning to `State::kStartMonitoring`.
+  // Do this in a separate task since this callback can be called synchronously
+  // when registered.
+  // TODO(bokan): It'd be better for PaintStabilityMonitor to post the reply in
+  // this case.
   PostMoveToStateClosure(State::kPaintStabilityReached).Run();
+}
+
+void PageStabilityMonitor::OnRenderFrameGoingAway() {
+  render_frame_did_go_away_ = true;
+
+  // Don't enter the state machine until NotifyWhenStable is called.
+  if (state_ == State::kInitial) {
+    return;
+  }
+
+  MoveToState(State::kRenderFrameGoingAway);
 }
 
 void PageStabilityMonitor::DCheckStateTransition(State old_state,
@@ -423,15 +424,11 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
               State::kRenderFrameGoingAway}},
-          {State::kInvokedBeforeNotify, {
-              State::kInvokeCallback,
-              State::kRenderFrameGoingAway}},
           {State::kRenderFrameGoingAway, {
               State::kInvokeCallback}},
           {State::kPaintStabilityReached, {
               State::kInvokeCallback}},
           {State::kInvokeCallback, {
-              State::kInvokedBeforeNotify,
               State::kDone}}
 
           // kDone can be entered after various tasks are posted but before

@@ -90,10 +90,6 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // passed to NotifyWhenStable() will be delayed by said amount of time.
     kMaybeDelayCallback,
 
-    // The monitor wants to invoke the callback but the client hasn't yet
-    // requested to wait for the notification.
-    kInvokedBeforeNotify,
-
     // Invoke the callback passed to NotifyWhenStable and cleanup.
     kInvokeCallback,
 
@@ -133,7 +129,7 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   void DCheckStateTransition(State old_state, State new_state);
 
   void OnPaintStabilityReached();
-
+  void OnRenderFrameGoingAway();
   void OnMojoDisconnected();
 
   void Cleanup();
@@ -167,6 +163,8 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
   // monitoring an unsupported interaction. This must be destroyed before
   // `journal_entry_` to avoid a dangling pointer.
   std::unique_ptr<PaintStabilityMonitor> paint_stability_monitor_;
+
+  bool render_frame_did_go_away_ = false;
 
   TaskId task_id_;
 
