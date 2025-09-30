@@ -174,6 +174,10 @@ BASE_DECLARE_FEATURE(kRelatedWebsiteSetsUi);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kRollBackModeB);
 
+// Forces Mode B rollback without checking the 3pcd onboarding pref.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+extern const base::FeatureParam<bool> kRollBackModeBForced;
+
 // Privacy UX features end
 
 #if BUILDFLAG(IS_ANDROID)
