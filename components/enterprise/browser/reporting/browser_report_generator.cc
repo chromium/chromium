@@ -36,7 +36,7 @@ void BrowserReportGenerator::Generate(ReportType report_type,
 }
 
 void BrowserReportGenerator::GenerateProfileInfo(em::BrowserReport* report) {
-  for (auto entry : delegate_->GetReportedProfiles()) {
+  for (const auto& entry : delegate_->GetReportedProfiles()) {
     em::ChromeUserProfileInfo* profile =
         report->add_chrome_user_profile_infos();
     profile->set_id(entry.id);

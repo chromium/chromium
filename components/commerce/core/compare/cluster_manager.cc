@@ -528,7 +528,7 @@ void ClusterManager::OnProductInfoFetchedForSimilarUrls(
     GetEntryPointInfoCallback callback,
     const std::map<GURL, std::optional<ProductInfo>> product_infos) {
   std::map<GURL, uint64_t> map;
-  for (auto entry : product_infos) {
+  for (const auto& entry : product_infos) {
     if (entry.second.has_value() &&
         entry.second->product_cluster_id.has_value()) {
       map[entry.first] = entry.second->product_cluster_id.value();

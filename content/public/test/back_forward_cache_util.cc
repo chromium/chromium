@@ -63,7 +63,7 @@ std::vector<base::test::FeatureRefAndParams> Merge(
   // Go over the additional features/params - if they match a default feature,
   // make a new featureparam with the combined features, otherwise just add the
   // additional feature as is.
-  for (auto feature_and_params : additional_features_and_params) {
+  for (const auto& feature_and_params : additional_features_and_params) {
     auto default_feature_and_param = std::ranges::find(
         default_features_and_params, feature_and_params.feature->name,
         [](const base::test::FeatureRefAndParams default_feature) {
@@ -82,7 +82,7 @@ std::vector<base::test::FeatureRefAndParams> Merge(
     }
   }
   // Add any default features we didn't have additional params for.
-  for (auto feature_and_params : default_features_and_params) {
+  for (const auto& feature_and_params : default_features_and_params) {
     if (!base::Contains(
             final_features_and_params, feature_and_params.feature->name,
             [](const base::test::FeatureRefAndParams default_feature) {

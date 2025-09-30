@@ -123,7 +123,7 @@ shopping_service::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
 
   insights_info->has_multiple_catalogs = info->has_multiple_catalogs;
 
-  for (auto history_price : info->catalog_history_prices) {
+  for (const auto& history_price : info->catalog_history_prices) {
     auto point = shopping_service::mojom::PricePoint::New();
     point->date = std::get<0>(history_price);
 
@@ -241,7 +241,7 @@ void ConvertDescriptionTextToProto(
     ProductSpecifications::DescriptionText description_text,
     optimization_guide::proto::DescriptionText* description_proto) {
   description_proto->set_text(description_text.text);
-  for (auto url_info : description_text.urls) {
+  for (const auto& url_info : description_text.urls) {
     optimization_guide::proto::DescriptionText::ReferenceUrl* reference_url =
         description_proto->add_urls();
     reference_url->set_url(url_info.url.spec());
@@ -258,14 +258,14 @@ void ConvertDescriptionTextToProto(
 void ConvertProductSpecificationsToProto(
     ProductSpecifications specs,
     optimization_guide::proto::ProductSpecificationData* product_spec_data) {
-  for (auto pair : specs.product_dimension_map) {
+  for (const auto& pair : specs.product_dimension_map) {
     optimization_guide::proto::ProductSpecificationSection* section =
         product_spec_data->add_product_specification_sections();
     section->set_key(base::NumberToString(pair.first));
     section->set_title(pair.second);
   }
 
-  for (auto product : specs.products) {
+  for (const auto& product : specs.products) {
     optimization_guide::proto::ProductSpecification* product_spec =
         product_spec_data->add_product_specifications();
     product_spec->mutable_identifiers()->set_gpc_id(product.product_cluster_id);
@@ -279,7 +279,7 @@ void ConvertProductSpecificationsToProto(
               product_spec->add_product_specification_values();
       product_specification_value->set_key(base::NumberToString(pair.first));
 
-      for (auto description : pair.second.descriptions) {
+      for (const auto& description : pair.second.descriptions) {
         optimization_guide::proto::ProductSpecificationDescription*
             product_specification_description =
                 product_specification_value->add_specification_descriptions();

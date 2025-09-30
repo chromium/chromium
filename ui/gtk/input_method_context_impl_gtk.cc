@@ -161,7 +161,7 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
   gtk_simple_context_ = TakeGObject(gtk_im_context_simple_new());
 
   auto connect = [&](const char* detailed_signal, auto receiver) {
-    for (auto context : {gtk_context_, gtk_simple_context_}) {
+    for (const auto& context : {gtk_context_, gtk_simple_context_}) {
       // Unretained() is safe since InputMethodContextImplGtk will own the
       // ScopedGSignal.
       signals_.emplace_back(

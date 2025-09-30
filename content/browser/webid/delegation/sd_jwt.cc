@@ -468,7 +468,7 @@ std::optional<JSONString> Payload::ToJson() const {
 
   if (_sd.size() > 0) {
     base::Value::List list;
-    for (auto disclosure : _sd) {
+    for (const auto& disclosure : _sd) {
       list.Append(disclosure.value());
     }
     payload_dict.Set("_sd", std::move(list));

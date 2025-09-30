@@ -489,7 +489,7 @@ void EditorViewController::SaveButtonPressed(const ui::Event& event) {
 }
 
 void EditorViewController::ClearViewPointers() {
-  for (auto [textfield, _] : text_fields_) {
+  for (const auto& [textfield, _] : text_fields_) {
     textfield->set_controller(nullptr);
   }
   text_fields_.clear();

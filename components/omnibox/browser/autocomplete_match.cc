@@ -1792,7 +1792,7 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
     return ais != nullptr;
   });
 
-  for (auto pair : actions_in_suggest_to_reinsert) {
+  for (const auto& pair : actions_in_suggest_to_reinsert) {
     actions.emplace_back(std::move(pair.second));
   }
 }

@@ -661,7 +661,7 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
   ContentBrowserClient* browser_client = GetContentClient()->browser();
   BrowserContext* browser_context = wrapper_->browser_context();
   DCHECK(browser_context);
-  for (auto registration : registrations) {
+  for (const auto& registration : registrations) {
     if (browser_client->MayDeleteServiceWorkerRegistration(
             registration->scope(), browser_context)) {
       filtered_registrations.push_back(std::move(registration));

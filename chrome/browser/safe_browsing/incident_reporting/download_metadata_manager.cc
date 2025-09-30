@@ -304,7 +304,7 @@ DownloadMetadataManager::DownloadMetadataManager()
 
 DownloadMetadataManager::~DownloadMetadataManager() {
   // Destruction may have taken place before coordinators have gone down.
-  for (auto [coordinator, context] : contexts_) {
+  for (const auto& [coordinator, context] : contexts_) {
     coordinator->GetNotifier()->RemoveObserver(this);
     context->Detach();
   }
