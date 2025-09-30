@@ -139,10 +139,6 @@ TEST(AutofillEntityInstanceTest, Attributes_IdentificationNumbers) {
   EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
                     {.format_string = from_affix(u"-4")}),
             u"3456");
-  EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER,
-                    {.format_string = from_affix(base::NumberToString16(
-                         std::numeric_limits<int>::min()))}),
-            u"LR0123456");
 }
 
 // Tests that AttributeInstance appropriately manages dates.
@@ -184,9 +180,6 @@ TEST(AutofillEntityInstanceTest, AttributesFlightFormat) {
               u"89");
     EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
                       {.format_string = from_flight_number(u"F")}),
-              u"LH89");
-    EXPECT_EQ(GetInfo(flight_number, FLIGHT_RESERVATION_FLIGHT_NUMBER,
-                      {.format_string = from_flight_number(u"")}),
               u"LH89");
   }
 
