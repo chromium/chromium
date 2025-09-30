@@ -116,7 +116,7 @@ class HistoryDeleteDirectiveHandlerTest : public testing::Test {
 
   void AddPage(const GURL& url,
                base::Time t,
-               std::optional<std::string> app_id = kNoAppIdFilter) {
+               std::optional<std::string> app_id = std::nullopt) {
     history::HistoryAddPageArgs args;
     args.url = url;
     args.time = t;
