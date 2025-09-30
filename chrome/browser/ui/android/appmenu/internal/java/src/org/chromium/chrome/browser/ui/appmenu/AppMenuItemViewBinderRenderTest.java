@@ -105,9 +105,6 @@ public class AppMenuItemViewBinderRenderTest {
                 () -> {
                     sActivity = sActivityTestRule.getActivity();
                     sActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-                    sActivity
-                            .getTheme()
-                            .applyStyle(R.style.AppMenuTopRowIconButtonsStyleOverlay, true);
                     mMenuList = new MVCListAdapter.ModelList();
                     mModelListAdapter = new ModelListAdapter(mMenuList);
 

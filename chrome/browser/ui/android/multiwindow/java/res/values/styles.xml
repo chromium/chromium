@@ -7,7 +7,7 @@ found in the LICENSE file.
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- The dim amount should match the alpha of modal_dialog_scrim_color. -->
-    <style name="Theme.Chromium.Multiwindow.CloseConfirmDialog" parent="ThemeOverlay.Material3.Dialog">
+    <style name="Theme.Chromium.Multiwindow.CloseConfirmDialog" parent="ThemeOverlay.Material3Expressive.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimAmount">0.65</item>
         <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
@@ -27,7 +27,7 @@ found in the LICENSE file.
         <item name="android:textColor">@color/instance_switcher_item_secondary_text_color_list</item>
     </style>
 
-    <style name="Theme.Chromium.Multiwindow.RenameWindowDialog" parent="ThemeOverlay.Material3.Dialog">
+    <style name="Theme.Chromium.Multiwindow.RenameWindowDialog" parent="ThemeOverlay.Material3Expressive.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimAmount">0.65</item>
         <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
