@@ -82,6 +82,8 @@ chromium-metrics-reviews@google.com.
   <int value="901" label="LoginNotLoginPage"/>
   <int value="902" label="LoginCredentialsEnteredButAnotherActionNeeded"/>
   <int value="903" label="LoginNoFillableFields"/>
+  <int value="904" label="LoginFillingNotAllowed"/>
+  <int value="905" label="LoginPageChangedDuringSelection"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->

@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kLoginFillingNotAllowed);
 }
 
 IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, FailedAttemptLogin) {
@@ -498,7 +498,8 @@ IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url2));
 
   select_creds.Take().Run();
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kLoginPageChangedDuringSelection);
 }
 
 class ActorAttemptLoginToolTestWithFaviconService

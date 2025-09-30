@@ -372,6 +372,13 @@ enum ActionResultCode {
   // Neither the username, nor the password field could be filled.
   kLoginNoFillableFields = 903,
 
+  // The use of the password manager is not allowed on the page (e.g. blocked
+  // by enterprise policy).
+  kLoginFillingNotAllowed = 904,
+
+  // The page changed before the credential selected by the user was filled.
+  kLoginPageChangedDuringSelection = 905,
+
   // Please see the comment above about adding new values.
 };
 

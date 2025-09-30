@@ -58,8 +58,7 @@ mojom::ActionResultCode LoginResultToActorResult(
     case actor_login::LoginStatusResult::kErrorNoFillableFields:
       return mojom::ActionResultCode::kLoginNoFillableFields;
     case actor_login::LoginStatusResult::kErrorFillingNotAllowed:
-      // TODO(crbug.com/427817201): Replace with a specific error code.
-      return mojom::ActionResultCode::kError;
+      return mojom::ActionResultCode::kLoginFillingNotAllowed;
   }
 }
 
@@ -265,9 +264,9 @@ void AttemptLoginTool::OnCredentialSelected(
       tab->GetContents()->GetPrimaryMainFrame()->GetGlobalFrameToken()) {
     // Don't proceed with the login attempt, if the page changed while we were
     // waiting for credential selection.
-    // TODO(mcnee): Add a separate error code.
-    PostResponseTask(std::move(invoke_callback_),
-                     MakeResult(mojom::ActionResultCode::kError));
+    PostResponseTask(
+        std::move(invoke_callback_),
+        MakeResult(mojom::ActionResultCode::kLoginPageChangedDuringSelection));
     return;
   }
 
