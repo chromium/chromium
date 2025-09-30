@@ -53,8 +53,15 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, ExpectedThreadPriorities) {
       FROM_HERE,
       base::BindOnce(
           [](base::ThreadPriorityForTest expected_priority) {
-            EXPECT_EQ(base::PlatformThread::GetCurrentThreadPriorityForTest(),
-                      expected_priority);
+            // Under IOThreadInteractiveThreadType, the IO thread will have a
+            // higher priority on Windows.
+            // TODO(crbug.com/423313079): Update expectation once
+            // IOThreadInteractiveThreadType is enabled by default.
+            EXPECT_TRUE(
+                base::PlatformThread::GetCurrentThreadPriorityForTest() ==
+                    expected_priority ||
+                base::PlatformThread::GetCurrentThreadPriorityForTest() ==
+                    base::ThreadPriorityForTest::kInteractive);
           },
           expected_priority));
   BrowserThread::RunAllPendingTasksOnThreadForTesting(BrowserThread::IO);

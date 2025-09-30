@@ -4026,6 +4026,23 @@
             ]
         }
     ],
+    "BoostThreadsPriority": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "CompositorAndInputScenarioBoost",
+                    "enable_features": [
+                        "BoostCompositorThreadsPriorityWhenIdle",
+                        "BoostThreadsPriorityDuringInputScenario",
+                        "IOThreadInteractiveThreadType"
+                    ]
+                }
+            ]
+        }
+    ],
     "BorealisProvision": [
         {
             "platforms": [
