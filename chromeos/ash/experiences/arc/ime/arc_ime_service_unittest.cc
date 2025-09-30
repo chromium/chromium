@@ -181,13 +181,13 @@ class FakeArcWindowDelegate : public ArcImeService::ArcWindowDelegate {
     const int id = next_id_++;
     arc_window_id_.insert(id);
     return aura::test::CreateTestWindow(
-        {.delegate = &dummy_delegate_, .bounds = {}, .window_id = id});
+        {.delegate = &dummy_delegate_, .window_id = id});
   }
 
   std::unique_ptr<aura::Window> CreateFakeNonArcWindow() {
     const int id = next_id_++;
     return aura::test::CreateTestWindow(
-        {.delegate = &dummy_delegate_, .bounds = {}, .window_id = id});
+        {.delegate = &dummy_delegate_, .window_id = id});
   }
 
  private:

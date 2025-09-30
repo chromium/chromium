@@ -58,7 +58,6 @@ class ArcPipWindowThrottleObserverTest : public testing::Test {
     // Set up PipContainer
     pip_container_ = aura::test::CreateTestWindow(
         {.delegate = &dummy_delegate_,
-         .bounds = {},
          .window_id = ash::kShellWindowId_PipContainer});
     wm_helper_ = std::make_unique<FakeWMHelper>();
     wm_helper()->SetPrimaryDisplayContainer(ash::kShellWindowId_PipContainer,
