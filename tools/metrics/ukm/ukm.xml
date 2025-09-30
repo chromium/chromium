@@ -11434,6 +11434,49 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="EndActivateToSubmitUpdateDisplayTree">
+    <summary>
+      [TreesInViz only] The time from when an activation is complete to the next
+      SubmitUpdateDisplayTree, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="EndActivateToSubmitUpdateDisplayTree.DrawLayersToSubmitUpdateDisplayTree">
+    <summary>
+      [TreesInViz only] The time from when DrawLayers starts to when the
+      UpdateDisplayTree is sent to the display compositor, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EndActivateToSubmitUpdateDisplayTree.EndActivateToDrawLayers">
+    <summary>
+      [TreesInViz only] The time from when an activation is complete to the
+      start time of DrawLayers, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="EndCommitToActivation">
     <summary>
       The time from when a commit is complete to the beginning of the next
@@ -11792,6 +11835,219 @@ be describing additional metrics about the same event.
     <summary>
       The time from when a compositor frame starts swap to when it ends swap, in
       microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SubmitUpdateDisplayTreeToPresentationCompositorFrame">
+    <summary>
+      [TreesInViz only] The time from when an UpdateDisplayTree is submitted to
+      the display compositor to when it is presented, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.BufferAvailableToBufferReady">
+    <summary>
+      [TreesInViz] The time from when the target framebuffer is available to
+      when the GPU has finished drawing to it, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.BufferReadyToLatch">
+    <summary>
+      [TreesInViz] The time from when the target framebuffer is ready to be
+      displayed to when the buffer is latched on for presentation, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.LatchToSwapEnd">
+    <summary>
+      [TreesInViz] The time from when the target framebuffer is latched on to
+      when the swap ends, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw">
+    <summary>
+      [TreesInViz] The time from when a compositor frame is received to when it
+      starts to draw, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.RecieveUpdateDisplayTreeToStartPrepareToDraw">
+    <summary>
+      [TreesInViz only] The time from when the display compositor recieves an
+      UpdateDisplayTree to when it starts to prepare to draw the frame, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SendUpdateDisplayTreeToRecieveUpdateDisplayTree">
+    <summary>
+      [TreesInViz only] The time from when an UpdateDisplayTree is submitted to
+      the display compositor to when it is recieved by the display compositor,
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartDrawLayersToSubmitCompositorFrame">
+    <summary>
+      [TreesInViz only] The time from when the display compositor starts to draw
+      layers to when the compositor frame is submitted, in microseconds..
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartDrawToSwapStart">
+    <summary>
+      [TreesInViz] The time from when a compositor frame is started to draw to
+      when it starts swap, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartPrepareToDrawToStartDrawLayers">
+    <summary>
+      [TreesInViz only] The time from when the display compositor starts
+      preparing to draw the frame to when it starts to draw layers, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SubmitToReceiveCompositorFrame">
+    <summary>
+      [TreesInViz] The time from when a compositor frame is submitted to when it
+      is received, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame">
+    <summary>
+      [TreesInViz] The time from when a compositor frame ends swap to when it is
+      presented, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapStartToBufferAvailable">
+    <summary>
+      [TreesInViz] The time from when the compositor frame starts to swap to
+      when the target framebuffer becomes available, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapStartToSwapEnd">
+    <summary>
+      [TreesInViz] The time from when a compositor frame starts swap to when it
+      ends swap, in microseconds.
     </summary>
     <aggregation>
       <history>

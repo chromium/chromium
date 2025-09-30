@@ -1225,10 +1225,10 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
   }
 
   if (global_trackers_.latency_ukm_reporter) {
-    // TODO(crbug.com/443785891): Report TreesInViz UKMs.
     global_trackers_.latency_ukm_reporter->ReportCompositorLatencyUkm(
         report_types_, stage_history_, active_trackers_,
-        *processed_blink_breakdown_, *processed_viz_breakdown_);
+        *processed_blink_breakdown_, *processed_viz_breakdown_,
+        processed_trees_in_viz_breakdown_.get());
   }
 
   if (!should_report_histograms_)
