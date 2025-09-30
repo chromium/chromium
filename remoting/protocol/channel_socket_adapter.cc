@@ -24,8 +24,10 @@ TransportChannelSocketAdapter::TransportChannelSocketAdapter(
                 const webrtc::ReceivedIpPacket& packet) {
         OnNewPacket(transport, packet);
       });
-  channel_->SignalWritableState.connect(
-      this, &TransportChannelSocketAdapter::OnWritableState);
+  channel_->SubscribeWritableState(
+      this, [this](webrtc::PacketTransportInternal* transport) {
+        OnWritableState(transport);
+      });
   channel_->SignalDestroyed.connect(
       this, &TransportChannelSocketAdapter::OnChannelDestroyed);
 }
