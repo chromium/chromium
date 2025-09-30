@@ -1891,9 +1891,13 @@ TEST_F(UserMediaClientTest, DesktopCaptureChangeSourceWithoutAudio) {
 }
 
 // This test what happens if a display audio source fail to initialize due to no
-// system permissions. The default behavior is that this will cause the request
-// to fail.
+// system permissions. If kGetDisplayMediaIgnoreAudioPermissionFailures is
+// disabled, this will cause the request to fail.
 TEST_F(UserMediaClientTest, DesktopCaptureWithoutAudioSystemPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kGetDisplayMediaIgnoreAudioPermissionFailures);
+
   display_user_media_processor_->SetAudioSourceCreationStatus(
       SourceCreationStatus::kFailedSystemPermissionError);
 
@@ -1907,14 +1911,9 @@ TEST_F(UserMediaClientTest, DesktopCaptureWithoutAudioSystemPermission) {
 }
 
 // This test what happens if a display audio source fail to initialize due to no
-// system permissions. If kGetDisplayMediaIgnoreAudioPermissionFailures is
-// enabled, this should be ignored and result in an audio track with
-// readyState:ended.
+// system permissions. The default behavior is that this should be ignored and
+// result in an audio track with readyState:ended.
 TEST_F(UserMediaClientTest, DesktopCaptureIgnoreAudioSystemPermission) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kGetDisplayMediaIgnoreAudioPermissionFailures);
-
   display_user_media_processor_->SetAudioSourceCreationStatus(
       SourceCreationStatus::kFailedSystemPermissionError);
 
