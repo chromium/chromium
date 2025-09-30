@@ -37,7 +37,7 @@ EventTrigger::EventTrigger(String event_type, EventTarget& event_target)
 EventTrigger* EventTrigger::Create(ExecutionContext* execution_context,
                                    EventTriggerOptions* options,
                                    ExceptionState& exception_state) {
-  if (options->eventType().empty()) {
+  if (options->getEventTypeOr(String()).empty()) {
     exception_state.ThrowTypeError(
         "EventTrigger must have a non-empty eventType");
     return nullptr;
