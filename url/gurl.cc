@@ -394,7 +394,7 @@ bool GURL::SchemeIsLocal() const {
 
 int GURL::IntPort() const {
   if (parsed_.port.is_nonempty())
-    return url::ParsePort(spec_.data(), parsed_.port);
+    return url::ParsePort(spec_, parsed_.port);
   return url::PORT_UNSPECIFIED;
 }
 

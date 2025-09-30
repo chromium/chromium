@@ -214,6 +214,15 @@ class WTF_EXPORT AtomicString {
       Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
     return StringView(*this).Utf8(mode);
   }
+  // Returns a std::u16string_view pointing this AtomicString.
+  // This should be called only if !Is8Bit().
+  //
+  // This function should be removed after enabling C++23 because
+  // std::u16string_view(Span16()) will work with C++23.
+  std::u16string_view View16() const LIFETIME_BOUND {
+    auto chars = Span16();
+    return std::u16string_view(chars.begin(), chars.end());
+  }
 
   size_t CharactersSizeInBytes() const {
     return string_.CharactersSizeInBytes();

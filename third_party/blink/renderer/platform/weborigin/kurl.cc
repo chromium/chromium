@@ -354,9 +354,7 @@ StringView KURL::LastPathComponent() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), path, &file);
   } else {
-    base::span<const UChar> span = string_.Span16();
-    url::ExtractFileName(std::u16string_view(span.begin(), span.end()), path,
-                         &file);
+    url::ExtractFileName(string_.View16(), path, &file);
   }
 
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
@@ -380,10 +378,9 @@ uint16_t KURL::Port() const {
   if (!is_valid_ || parsed_.port.is_empty())
     return 0;
   DCHECK(!string_.IsNull());
-  int port =
-      string_.Is8Bit()
-          ? url::ParsePort(AsURLChar8Subtle(string_).data(), parsed_.port)
-          : url::ParsePort(UNSAFE_TODO(string_.Characters16()), parsed_.port);
+  int port = string_.Is8Bit()
+                 ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
+                 : url::ParsePort(string_.View16(), parsed_.port);
   DCHECK_NE(port, url::PORT_UNSPECIFIED);  // Checked port.len <= 0 already.
   DCHECK_NE(port, url::PORT_INVALID);      // Checked is_valid_ already.
 
@@ -883,9 +880,7 @@ unsigned KURL::PathAfterLastSlash() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), parsed_.path, &filename);
   } else {
-    base::span<const UChar> span = string_.Span16();
-    url::ExtractFileName(std::u16string_view(span.begin(), span.end()),
-                         parsed_.path, &filename);
+    url::ExtractFileName(string_.View16(), parsed_.path, &filename);
   }
   return filename.begin;
 }

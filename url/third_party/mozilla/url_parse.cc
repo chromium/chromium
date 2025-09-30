@@ -692,12 +692,12 @@ Parsed DoParseMailtoURL(std::basic_string_view<CharT> url) {
   return parsed;
 }
 
-// Converts a port number in a string to an integer. We'd like to just call
-// sscanf but our input is not NULL-terminated, which sscanf requires. Instead,
-// we copy the digits to a small stack buffer (since we know the maximum number
-// of digits in a valid port number) that we can NULL terminate.
+// Converts a port number in a string to an integer. C++ does not have a simple
+// way to convert strings to numbers that works for both `char` and `char16_t`.
+// We copy the digits to a small stack buffer (since we know the maximum number
+// of digits in a valid port number) that we can use atoi().
 template <typename CHAR>
-int DoParsePort(const CHAR* spec, const Component& component) {
+int DoParsePort(std::basic_string_view<CHAR> spec, const Component& component) {
   // Easy success case when there is no port.
   const int kMaxDigits = 5;
   if (component.is_empty())
@@ -1031,10 +1031,26 @@ void ParseAuthority(const char16_t* spec,
 }
 
 int ParsePort(const char* url, const Component& port) {
-  return DoParsePort(url, port);
+  return port.is_empty()
+             ? PORT_UNSPECIFIED
+             : DoParsePort(
+                   std::string_view(url, static_cast<size_t>(port.end())),
+                   port);
 }
 
 int ParsePort(const char16_t* url, const Component& port) {
+  return port.is_empty()
+             ? PORT_UNSPECIFIED
+             : DoParsePort(
+                   std::u16string_view(url, static_cast<size_t>(port.end())),
+                   port);
+}
+
+int ParsePort(std::string_view url, const Component& port) {
+  return DoParsePort(url, port);
+}
+
+int ParsePort(std::u16string_view url, const Component& port) {
   return DoParsePort(url, port);
 }
 

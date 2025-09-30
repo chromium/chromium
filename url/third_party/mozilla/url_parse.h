@@ -424,10 +424,17 @@ void ParseAuthority(const char16_t* spec,
 //
 // The return value will be a positive integer between 0 and 64K, or one of
 // the two special values below.
+//
+// Overloads for `const char*` and `const char16_t*` are deprecated. Use an
+// overload for `std::string_view` or `std::u16string_view` instead.
 enum SpecialPort { PORT_UNSPECIFIED = -1, PORT_INVALID = -2 };
 COMPONENT_EXPORT(URL) int ParsePort(const char* url, const Component& port);
 COMPONENT_EXPORT(URL)
 int ParsePort(const char16_t* url, const Component& port);
+COMPONENT_EXPORT(URL)
+int ParsePort(std::string_view url, const Component& port);
+COMPONENT_EXPORT(URL)
+int ParsePort(std::u16string_view url, const Component& port);
 
 // Extracts the range of the file name in the given url. The path must
 // already have been computed by the parse function, and the matching URL
