@@ -22,6 +22,14 @@ class DeviceExceptionCheckerTest(unittest.TestCase):
     self.assertRaises(exception_utils.DeviceSetupNotCompleteError,
                       self.exception_checker.throw_first)
 
+  def test_failed_to_install_embedded_profile_error_raised(self):
+    log_message = "Recovery Suggestion: Failed to install embedded profile for"
+
+    self.exception_checker.check_line(log_message)
+
+    self.assertRaises(exception_utils.FailedToInstallEmbeddedProfileError,
+                      self.exception_checker.throw_first)
+
 
 if __name__ == '__main__':
   logging.basicConfig(
