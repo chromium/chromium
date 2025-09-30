@@ -18,9 +18,15 @@ namespace win {
 
 COMPONENT_EXPORT(GFX) void SideLoadFontForTesting(base::FilePath path);
 
+// Returns whether DirectWrite font rendering should be used.
+COMPONENT_EXPORT(GFX)  bool ShouldUseDirectWrite();
+
 COMPONENT_EXPORT(GFX) void InitializeDirectWrite();
 
-// Creates a DirectWrite factory.
+// Returns true if we are using DirectWrite for font metrics and rendering.
+COMPONENT_EXPORT(GFX)  bool IsDirectWriteEnabled();
+
+// Creates a DirectWrite factory, if using DirectWrite.
 COMPONENT_EXPORT(GFX) void CreateDWriteFactory(IDWriteFactory** factory);
 
 // Returns the global DirectWrite factory.

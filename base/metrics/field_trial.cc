@@ -57,6 +57,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#include "base/win/windows_version.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -724,17 +725,7 @@ void FieldTrialList::CreateTrialsInChildProcess(const CommandLine& cmd_line) {
   CHECK(!global_->create_trials_in_child_process_called_);
   global_->create_trials_in_child_process_called_ = true;
 
-#if BUILDFLAG(USE_BLINK)
-  // TODO(crbug.com/41403903): Change to a CHECK.
-  if (cmd_line.HasSwitch(switches::kFieldTrialHandle)) {
-    std::string switch_value =
-        cmd_line.GetSwitchValueASCII(switches::kFieldTrialHandle);
-    SharedMemoryError result = CreateTrialsFromSwitchValue(switch_value);
-    SCOPED_CRASH_KEY_NUMBER("FieldTrialList", "SharedMemoryError",
-                            static_cast<int>(result));
-    CHECK_EQ(result, SharedMemoryError::kNoError);
-  }
-#endif  // BUILDFLAG(USE_BLINK)
+  return;
 }
 
 // static

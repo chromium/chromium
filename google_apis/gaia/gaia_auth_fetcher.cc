@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -250,7 +251,8 @@ void GaiaAuthFetcher::CreateAndStartGaiaFetcher(
     network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
-
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	  return;
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = gaia_gurl;
   original_url_ = gaia_gurl;

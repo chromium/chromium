@@ -936,6 +936,9 @@ bool AutofillCrowdsourcingManager::StartRequest(FormRequestData request_data) {
   DCHECK((request_data.request_type == RequestType::kRequestUpload) ==
          !request_data.isolation_info);
 #endif
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   // Get the URL and method to use for this request.
   auto [request_url, method] = GetRequestURLAndMethod(request_data);
 

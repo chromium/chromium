@@ -23,6 +23,7 @@
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/shlwapi.h"
+#include "base/win/windows_version.h"
 
 extern "C" NTSTATUS WINAPI NtDeleteKey(IN HANDLE KeyHandle);
 
@@ -87,8 +88,9 @@ bool RegKey::Watcher::StartWatching(HKEY key, ChangeCallback callback) {
   }
 
   DWORD filter = REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_ATTRIBUTES |
-                 REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY |
-                 REG_NOTIFY_THREAD_AGNOSTIC;
+                 REG_NOTIFY_CHANGE_LAST_SET | REG_NOTIFY_CHANGE_SECURITY;
+  if (base::win::GetVersion() >= base::win::Version::WIN8)
+    filter |= REG_NOTIFY_THREAD_AGNOSTIC;
   // Watch the registry key for a change of value.
   LONG result =
       RegNotifyChangeKeyValue(key, /*bWatchSubtree=*/TRUE, filter,

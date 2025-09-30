@@ -224,7 +224,7 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) {
   HANDLE duplicate_handle = INVALID_HANDLE_VALUE;
   BOOL result = ::DuplicateHandle(::GetCurrentProcess(), process,
                                   ::GetCurrentProcess(), &duplicate_handle,
-                                  PROCESS_QUERY_LIMITED_INFORMATION, FALSE, 0);
+                                  PROCESS_QUERY_INFORMATION, FALSE, 0);
   if (!result) {
     // Even with PROCESS_QUERY_LIMITED_INFORMATION, DuplicateHandle can fail
     // with ERROR_ACCESS_DENIED. And it's always possible to run out of handles.

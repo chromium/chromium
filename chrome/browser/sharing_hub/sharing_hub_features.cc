@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -36,6 +37,8 @@ bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
 }  // namespace
 
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-sharing-hub")) 
+	  return false;
 #if BUILDFLAG(IS_CHROMEOS)
   return false;
 #else
@@ -68,7 +71,7 @@ bool HasPageAction(content::BrowserContext* context, bool is_popup_mode) {
 
 BASE_FEATURE(kDesktopScreenshots,
              "DesktopScreenshots",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {

@@ -146,7 +146,19 @@ bool WebFontTypefaceFactory::CreateTypeface(
     const FontFormatCheck& format_check,
     const FontInstantiator& instantiator) {
   CHECK(!typeface);
-
+#if BUILDFLAG(IS_WIN)
+  if(format_check.IsVariableFont() && !FontCache::useDirectWrite()) {
+    typeface = instantiator.make_system(data);
+    if (typeface) {
+      ReportInstantiationResult(
+          InstantiationResult::kSuccessConventionalWebFont);
+      return true;
+    }
+    // Not UMA reporting general decoding errors as these are already recorded
+    // as kPackageFormatUnknown in FontResource.cpp.
+    return false;
+  }
+#endif
   if (!format_check.IsVariableFont() && !format_check.IsColorFont() &&
       !format_check.IsCff2OutlineFont()) {
     typeface = instantiator.make_system(data);

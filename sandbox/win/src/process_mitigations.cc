@@ -30,6 +30,7 @@
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/restricted_token_utils.h"
 #include "sandbox/win/src/win_utils.h"
+#include "ui/gfx/win/direct_write.h"
 
 // These are missing in 10.0.19551.0 but are in 10.0.19041.0 and 10.0.20226.0.
 #ifndef PROCESS_CREATION_MITIGATION_POLICY2_CET_USER_SHADOW_STACKS_STRICT_MODE
@@ -50,22 +51,39 @@ namespace sandbox {
 
 namespace {
 
+// API defined in libloaderapi.h >= Win8. Also available in Vista/7 starting with KB2533623.
+// Known to be buggy on Vista, but not known to affect Chromium.
+using SetDefaultDllDirectoriesFunction = decltype(&SetDefaultDllDirectories);
+
+// APIs defined in processthreadsapi.h >= Win8.
+using SetProcessMitigationPolicyFunction =
+    decltype(&SetProcessMitigationPolicy);
+using GetProcessMitigationPolicyFunction =
+    decltype(&GetProcessMitigationPolicy);
+using SetThreadInformationFunction = decltype(&SetThreadInformation);
+
 // Returns a two-element array of mitigation flags supported on this machine.
 const ULONG64* GetSupportedMitigations() {
   static ULONG64 mitigations[2] = {};
 
   // This static variable will only be initialized once.
   if (!mitigations[0] && !mitigations[1]) {
-    // NOTE: the two-element-sized input array is only supported on >= Win10
-    // RS2. If an earlier version, the second element will be left 0.
-    size_t mits_size =
-        (base::win::GetVersion() >= base::win::Version::WIN10_RS2)
-            ? (sizeof(mitigations[0]) * 2)
-            : sizeof(mitigations[0]);
-    if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
-                                      ProcessMitigationOptionsMask,
-                                      &mitigations, mits_size)) {
-      NOTREACHED();
+    GetProcessMitigationPolicyFunction get_process_mitigation_policy =
+        reinterpret_cast<GetProcessMitigationPolicyFunction>(::GetProcAddress(
+            ::GetModuleHandleA("kernel32.dll"), "GetProcessMitigationPolicy"));
+    if (get_process_mitigation_policy) {
+      // NOTE: the two-element-sized input array is only supported on >= Win10
+      // RS2.
+      //       If an earlier version, the second element will be left 0.
+      size_t mits_size =
+          (base::win::GetVersion() >= base::win::Version::WIN10_RS2)
+              ? (sizeof(mitigations[0]) * 2)
+              : sizeof(mitigations[0]);
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
+                                         ProcessMitigationOptionsMask,
+                                         &mitigations, mits_size)) {
+        NOTREACHED();
+      }
     }
   }
 
@@ -89,7 +107,14 @@ bool IsRunning32bitEmulatedOnArm64() {
 bool SetProcessMitigationPolicyInternal(PROCESS_MITIGATION_POLICY policy,
                                         PVOID lpBuffer,
                                         SIZE_T dwLength) {
-  PCHECK(::SetProcessMitigationPolicy(policy, lpBuffer, dwLength))
+  HMODULE module = ::GetModuleHandleA("kernel32.dll");
+  SetProcessMitigationPolicyFunction set_process_mitigation_policy_function =
+      reinterpret_cast<SetProcessMitigationPolicyFunction>(
+          ::GetProcAddress(module, "SetProcessMitigationPolicy"));
+  if (!set_process_mitigation_policy_function)
+    return false;
+
+  PCHECK(set_process_mitigation_policy_function(policy, lpBuffer, dwLength))
       << "SetProcessMitigationPolicy failed with Policy: " << policy;
 
   return true;
@@ -104,22 +129,36 @@ bool ApplyProcessMitigationsToCurrentProcess(MitigationFlags starting_flags,
     return true;
 
   base::win::Version version = base::win::GetVersion();
+  
+  #if !defined(NACL_WIN64)
+  // Don't block font loading with GDI.
+  if (!gfx::win::ShouldUseDirectWrite())
+    flags &= ~(MITIGATION_NONSYSTEM_FONT_DISABLE | MITIGATION_WIN32K_DISABLE | MITIGATION_HEAP_TERMINATE);
+  #endif
 
-  if (flags & MITIGATION_DLL_SEARCH_ORDER) {
+ if (flags & MITIGATION_DLL_SEARCH_ORDER) {
+    HMODULE module = ::GetModuleHandleA("kernel32.dll");
+    SetDefaultDllDirectoriesFunction set_default_dll_directories =
+        reinterpret_cast<SetDefaultDllDirectoriesFunction>(
+            ::GetProcAddress(module, "SetDefaultDllDirectories"));
+
+    // Check for SetDefaultDllDirectories since it requires KB2533623.
+    if (set_default_dll_directories) {
 #if defined(COMPONENT_BUILD)
-    const DWORD directory_flags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
+      const DWORD directory_flags = LOAD_LIBRARY_SEARCH_DEFAULT_DIRS;
 #else
-    // In a non-component build, all DLLs will be loaded manually, or via
-    // manifest definition, so these flags can be stronger. This prevents DLL
-    // planting in the application directory.
-    const DWORD directory_flags =
-        LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS;
+      // In a non-component build, all DLLs will be loaded manually, or via
+      // manifest definition, so these flags can be stronger. This prevents DLL
+      // planting in the application directory.
+      const DWORD directory_flags =
+          LOAD_LIBRARY_SEARCH_SYSTEM32 | LOAD_LIBRARY_SEARCH_USER_DIRS;
 #endif
-    if (!::SetDefaultDllDirectories(directory_flags)) {
-      return false;
-    }
+      if (!set_default_dll_directories(directory_flags)) {
+        return false;
+      }
 
-    applied_flags |= MITIGATION_DLL_SEARCH_ORDER;
+      applied_flags |= MITIGATION_DLL_SEARCH_ORDER;
+    }
   }
 
   // Set the heap to terminate on corruption
@@ -161,6 +200,10 @@ bool ApplyProcessMitigationsToCurrentProcess(MitigationFlags starting_flags,
         combined_flags & (MITIGATION_DEP | MITIGATION_DEP_NO_ATL_THUNK);
   }
 #endif
+
+  // This is all we can do in Win7 and below.
+  if (version < base::win::Version::WIN8)
+    return true;
 
   // Enable ASLR policies.
   if (flags & MITIGATION_RELOCATE_IMAGE) {
@@ -225,6 +268,9 @@ bool ApplyProcessMitigationsToCurrentProcess(MitigationFlags starting_flags,
     applied_flags |= MITIGATION_EXTENSION_POINT_DISABLE;
   }
 
+  if (version < base::win::Version::WIN8_1)
+    return true;
+
   // Enable dynamic code policies.
   if (!IsRunning32bitEmulatedOnArm64() &&
       (flags & MITIGATION_DYNAMIC_CODE_DISABLE)) {
@@ -240,6 +286,9 @@ bool ApplyProcessMitigationsToCurrentProcess(MitigationFlags starting_flags,
     }
     applied_flags |= MITIGATION_DYNAMIC_CODE_DISABLE;
   }
+
+  if (version < base::win::Version::WIN10)
+    return true;
 
   // Enable font policies.
   if (flags & MITIGATION_NONSYSTEM_FONT_DISABLE) {
@@ -362,9 +411,20 @@ bool ApplyMitigationsToCurrentThread(MitigationFlags flags) {
   if (flags & MITIGATION_DYNAMIC_CODE_OPT_OUT_THIS_THREAD) {
     DWORD thread_policy = THREAD_DYNAMIC_CODE_ALLOW;
 
+   // NOTE: SetThreadInformation API only exists on >= Win8.  Dynamically
+    //       get function handle.
+    base::ScopedNativeLibrary dll(base::FilePath(L"kernel32.dll"));
+    if (!dll.is_valid())
+      return false;
+    SetThreadInformationFunction set_thread_info_function =
+        reinterpret_cast<SetThreadInformationFunction>(
+            dll.GetFunctionPointer("SetThreadInformation"));
+    if (!set_thread_info_function)
+      return false;
+
     // NOTE: Must use the pseudo-handle here, a thread HANDLE won't work.
-    if (!::SetThreadInformation(::GetCurrentThread(), ThreadDynamicCodePolicy,
-                                &thread_policy, sizeof(thread_policy))) {
+    if (!set_thread_info_function(::GetCurrentThread(), ThreadDynamicCodePolicy,
+                                  &thread_policy, sizeof(thread_policy))) {
       return false;
     }
   }
@@ -385,8 +445,14 @@ void ConvertProcessMitigationsToPolicy(MitigationFlags flags,
   *policy_value_1 = 0;
   *policy_value_2 = 0;
 
-#if defined(_WIN64) || defined(_M_IX86)
+#if defined(_WIN64)
   *size = sizeof(*policy_flags);
+#elif defined(_M_IX86)
+  // A 64-bit flags attribute is illegal on 32-bit Win 7.
+  if (version < base::win::Version::WIN8)
+    *size = sizeof(DWORD);
+  else
+    *size = sizeof(*policy_flags);
 #else
 #error This platform is not supported.
 #endif
@@ -404,53 +470,79 @@ void ConvertProcessMitigationsToPolicy(MitigationFlags flags,
     *policy_value_1 |= PROCESS_CREATION_MITIGATION_POLICY_SEHOP_ENABLE;
 #endif
 
-  if (flags & MITIGATION_RELOCATE_IMAGE) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_ALWAYS_ON;
-    if (flags & MITIGATION_RELOCATE_IMAGE_REQUIRED) {
+  // Win 7
+  if (version < base::win::Version::WIN8)
+    return;
+
+  #if !defined(NACL_WIN64)
+    // Don't block font loading with GDI.
+    if (!gfx::win::ShouldUseDirectWrite())
+      *policy_value_1 &= ~(MITIGATION_NONSYSTEM_FONT_DISABLE | MITIGATION_NONSYSTEM_FONT_DISABLE | MITIGATION_HEAP_TERMINATE);
+  #endif
+
+  // Everything >= Win8, do not return before the end of the function where
+  // the final policy bitmap is sanity checked against what is supported on this
+  // machine.  The API required to do so is only available since Win8.
+
+  // Mitigations >= Win8:
+  //----------------------------------------------------------------------------
+  if (version >= base::win::Version::WIN8) {
+    if (flags & MITIGATION_RELOCATE_IMAGE) {
       *policy_value_1 |=
-          PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_ALWAYS_ON_REQ_RELOCS;
+          PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_ALWAYS_ON;
+      if (flags & MITIGATION_RELOCATE_IMAGE_REQUIRED) {
+        *policy_value_1 |=
+            PROCESS_CREATION_MITIGATION_POLICY_FORCE_RELOCATE_IMAGES_ALWAYS_ON_REQ_RELOCS;
+      }
+    }
+
+    if (flags & MITIGATION_HEAP_TERMINATE) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_HEAP_TERMINATE_ALWAYS_ON;
+    }
+
+    if (flags & MITIGATION_BOTTOM_UP_ASLR) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_BOTTOM_UP_ASLR_ALWAYS_ON;
+    }
+
+    if (flags & MITIGATION_HIGH_ENTROPY_ASLR) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_HIGH_ENTROPY_ASLR_ALWAYS_ON;
+    }
+
+    if (flags & MITIGATION_STRICT_HANDLE_CHECKS) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_STRICT_HANDLE_CHECKS_ALWAYS_ON;
+    }
+
+    if (flags & MITIGATION_WIN32K_DISABLE) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_WIN32K_SYSTEM_CALL_DISABLE_ALWAYS_ON;
+    }
+
+    if (flags & MITIGATION_EXTENSION_POINT_DISABLE) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_ALWAYS_ON;
     }
   }
 
-  if (flags & MITIGATION_HEAP_TERMINATE) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_HEAP_TERMINATE_ALWAYS_ON;
+  // Mitigations >= Win8.1:
+  //----------------------------------------------------------------------------
+  if (version >= base::win::Version::WIN8_1) {
+    if (flags & MITIGATION_DYNAMIC_CODE_DISABLE) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_PROHIBIT_DYNAMIC_CODE_ALWAYS_ON;
+    }
   }
 
-  if (flags & MITIGATION_BOTTOM_UP_ASLR) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_BOTTOM_UP_ASLR_ALWAYS_ON;
-  }
-
-  if (flags & MITIGATION_HIGH_ENTROPY_ASLR) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_HIGH_ENTROPY_ASLR_ALWAYS_ON;
-  }
-
-  if (flags & MITIGATION_STRICT_HANDLE_CHECKS) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_STRICT_HANDLE_CHECKS_ALWAYS_ON;
-  }
-
-  if (flags & MITIGATION_WIN32K_DISABLE) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_WIN32K_SYSTEM_CALL_DISABLE_ALWAYS_ON;
-  }
-
-  if (flags & MITIGATION_EXTENSION_POINT_DISABLE) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_EXTENSION_POINT_DISABLE_ALWAYS_ON;
-  }
-
-  if (flags & MITIGATION_DYNAMIC_CODE_DISABLE) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_PROHIBIT_DYNAMIC_CODE_ALWAYS_ON;
-  }
-
-  if (flags & MITIGATION_NONSYSTEM_FONT_DISABLE) {
-    *policy_value_1 |=
-        PROCESS_CREATION_MITIGATION_POLICY_FONT_DISABLE_ALWAYS_ON;
+  // Mitigations >= Win10:
+  //----------------------------------------------------------------------------
+  if (version >= base::win::Version::WIN10) {
+    if (flags & MITIGATION_NONSYSTEM_FONT_DISABLE) {
+      *policy_value_1 |=
+          PROCESS_CREATION_MITIGATION_POLICY_FONT_DISABLE_ALWAYS_ON;
+    }
   }
 
   // Mitigations >= Win10 TH2:
@@ -571,6 +663,15 @@ void ConvertProcessMitigationsToComponentFilter(MitigationFlags flags,
 }
 
 MitigationFlags FilterPostStartupProcessMitigations(MitigationFlags flags) {
+  base::win::Version version = base::win::GetVersion();
+
+  // Windows 7.
+  if (version < base::win::Version::WIN8) {
+    return flags & (MITIGATION_BOTTOM_UP_ASLR | MITIGATION_DLL_SEARCH_ORDER |
+                    MITIGATION_HEAP_TERMINATE);
+  }
+
+  // Windows 8 and above.
   return flags & (MITIGATION_BOTTOM_UP_ASLR | MITIGATION_DLL_SEARCH_ORDER);
 }
 

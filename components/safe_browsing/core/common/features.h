@@ -120,6 +120,9 @@ extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 // DLP endpoint based on ChromeDataRegionSetting policy.
 BASE_DECLARE_FEATURE(kDlpRegionalizedEndpoints);
 
+// Whether to use download bubble instead of download shelf.
+BASE_DECLARE_FEATURE(kDownloadBubble);
+
 // Show referrer URL on download item on chrome://downloads page. This will
 // replace the downloads url.
 BASE_DECLARE_FEATURE(kDownloadsPageReferrerUrl);

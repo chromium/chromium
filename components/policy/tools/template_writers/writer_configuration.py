@@ -34,14 +34,14 @@ def GetConfigurationForBuild(defines):
         'webview_name': 'Chromium WebView',
         'win_config': {
             'win': {
-                'reg_mandatory_key_name': 'Software\\Policies\\Chromium',
+                'reg_mandatory_key_name': 'Software\\Policies\\Supermium',
                 'reg_recommended_key_name':
-                'Software\\Policies\\Chromium\\Recommended',
+                'Software\\Policies\\Supermium\\Recommended',
                 'mandatory_category_path': ['chromium'],
                 'recommended_category_path': ['chromium_recommended'],
                 'category_path_strings': {
-                    'chromium': 'Chromium',
-                    'chromium_recommended': 'Chromium - {doc_recommended}',
+                    'chromium': 'Supermium',
+                    'chromium_recommended': 'Supermium - {doc_recommended}',
                 },
                 'namespace': 'Chromium.Policies.Chromium',
             },

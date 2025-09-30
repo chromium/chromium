@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 
+#include "base/command_line.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -21,11 +22,10 @@ namespace tabs {
 
 bool GetDefaultTabSearchRightAligned() {
   // These platforms are all left aligned, the others should be right.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-  return false;
-#else
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("tab-strip-control-button-left"))
+      return false;
+
   return true;
-#endif
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {

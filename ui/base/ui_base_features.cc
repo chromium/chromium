@@ -44,6 +44,11 @@ BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
              "AlwaysTrackNativeWindowOcclusionForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using TSF (over IMM32) for IME.
+BASE_FEATURE(kTSFImeSupport, 
+             "TSFImeSupport", 
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
     &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};

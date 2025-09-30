@@ -832,20 +832,19 @@ class NotificationPlatformBridgeWinImpl
     bool activator_registered = IsToastActivatorRegistered();
     bool shortcut_installed =
         InstallUtil::IsStartMenuShortcutWithActivatorGuidInstalled();
+		
+	bool enabled = activator_registered && shortcut_installed;
 
     int status = static_cast<int>(SetReadyCallbackStatus::kSuccess);
-    bool enabled = activator_registered && shortcut_installed;
 
-    if (!enabled) {
-      if (!shortcut_installed) {
+    if (!shortcut_installed) {
         status |=
             static_cast<int>(SetReadyCallbackStatus::kShortcutMisconfiguration);
-      }
-      if (!activator_registered) {
+    }
+    if (!activator_registered) {
         status |= static_cast<int>(
             SetReadyCallbackStatus::kComServerMisconfiguration);
       }
-    }
 
     LogSetReadyCallbackStatus(static_cast<SetReadyCallbackStatus>(status));
 

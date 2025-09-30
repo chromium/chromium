@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -407,7 +408,8 @@ void GCMClientImpl::OnLoadCompleted(
 
 void GCMClientImpl::StartGCM() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+    return;
   // Taking over the value of account_mappings before passing the ownership of
   // load result to InitializeMCSClient.
   std::vector<AccountMapping> account_mappings;
@@ -431,6 +433,8 @@ void GCMClientImpl::StartGCM() {
 
 void GCMClientImpl::InitializeMCSClient() {
   DCHECK(network_connection_tracker_);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+    return;
   std::vector<GURL> endpoints;
   endpoints.push_back(gservices_settings_.GetMCSMainEndpoint());
   GURL fallback_endpoint = gservices_settings_.GetMCSFallbackEndpoint();
@@ -610,7 +614,8 @@ void GCMClientImpl::RemoveHeartbeatInterval(const std::string& scope) {
 
 void GCMClientImpl::StartCheckin() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
-
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+    return;
   // Make sure no checkin is in progress.
   if (checkin_request_)
     return;
@@ -683,6 +688,9 @@ void GCMClientImpl::SetGServicesSettingsCallback(bool success) {
 
 void GCMClientImpl::SchedulePeriodicCheckin() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+    return;
 
   // Make sure no checkin is in progress.
   if (checkin_request_.get() || !device_checkin_info_.accounts_set)

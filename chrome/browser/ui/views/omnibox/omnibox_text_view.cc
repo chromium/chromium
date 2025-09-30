@@ -30,6 +30,10 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/direct_write.h"
+#endif
+
 namespace {
 
 // Use the primary style for everything. TextStyle sometimes controls color, but
@@ -129,6 +133,13 @@ void OmniboxTextView::OnPaint(gfx::Canvas* canvas) {
   if (!render_text_) {
     return;
   }
+
+  #if BUILDFLAG(IS_WIN)
+  if (!gfx::win::IsDirectWriteEnabled()) {
+      render_text_->SetVerticalAlignment(gfx::ALIGN_SPECIAL);	
+  }
+  #endif
+
   render_text_->SetDisplayRect(GetContentsBounds());
   render_text_->Draw(canvas);
 }

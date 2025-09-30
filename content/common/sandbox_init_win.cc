@@ -17,6 +17,7 @@
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/sandbox_types.h"
+#include "ui/gfx/win/direct_write.h"
 
 namespace content {
 

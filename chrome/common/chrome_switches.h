@@ -133,6 +133,8 @@ extern const char kKioskModePrinting[];
 extern const char kLaunchInProcessSimpleBrowserSwitch[];
 extern const char kLaunchSimpleBrowserSwitch[];
 extern const char kMakeDefaultBrowser[];
+extern const char kDisableDownloadUpload[];
+extern const char kUngoogledSupermium[];
 extern const char kMonitoringDestinationID[];
 extern const char kNativeMessagingConnectHost[];
 extern const char kNativeMessagingConnectExtension[];

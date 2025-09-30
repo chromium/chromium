@@ -179,6 +179,62 @@ enum LayoutConstant {
 
   // The size of page action icons in a web app title bar.
   WEB_APP_PAGE_ACTION_ICON_SIZE,
+
+  // The maxiumum length of a tab.
+  TAB_WIDTH,
+
+  // Horizontal padding for the tab label.
+  TAB_HORIZONTAL_PADDING,
+
+  // Vertical padding for the tab label.
+  TAB_VERTICAL_PADDING,
+
+  // Top corner radius of the tab.
+  TAB_TOP_CORNER_RADIUS,
+
+  // Bottom corner radius. Used to determine tab insets as well.
+  TAB_BOTTOM_CORNER_RADIUS,
+
+  // The padding to be subtracted from the tab strip when the window is maximized.
+  TAB_STRIP_MAXIMIZED_ANTI_PADDING,
+
+  // y-offset of the tab favicon. Useful for compact tabs.
+  TAB_FAVICON_Y_OFFSET,
+
+  // x-offset of the tab favicon. Useful for compact tabs.
+  TAB_FAVICON_X_OFFSET,
+
+  // x-offset of the tab close button. Adjust leftward to ensure that protruding tab shapes can scale properly.
+  TAB_CLOSE_BUTTON_X_OFFSET,
+
+  // A boolean value used to determine whether to apply padding to the tab strip when the window is maximized.
+  TAB_STRIP_PAD_WHEN_MAXIMIZED,
+
+  // This determines the overlap between tabs.
+  TAB_OVERLAP,
+
+  // This can be used to define an offset for the x-position of the tab separator.
+  TAB_SEPARATOR_OFFSET,
+
+  // A boolean value used to determine whether a solid black border should appear around tabs.
+  TAB_HARD_BORDER,
+
+  // A boolean value used to draw the left tab separator, which may not be desireable in cases
+  // where there are wide gaps between tabs.
+  DRAW_LEFT_TAB_SEPARATOR,
+
+  // A boolean value used to draw the right tab separator, which may not be desireable in cases 
+  // where there are wide gaps between tabs.
+  DRAW_RIGHT_TAB_SEPARATOR,
+
+  // y-offset of the tab close button.
+  TAB_CLOSE_BUTTON_Y_OFFSET,
+
+  // y-offset of the tab title.
+  TAB_TITLE_Y_OFFSET,
+
+  // Maximum value of the layout constants.
+  LAYOUT_CONSTANTS_MAX_VALUE,
 };
 
 enum LayoutInset {
@@ -226,8 +282,18 @@ enum LayoutInset {
   WEBUI_TAB_STRIP_TOOLBAR_INTERIOR_MARGIN,
 };
 
+void SetLayoutConstants();
+
 int GetLayoutConstant(LayoutConstant constant);
 
 gfx::Insets GetLayoutInsets(LayoutInset inset);
+
+// This is a way of ensuring that tabs are drawn to the top of the window
+// in fullscreen or maximized mode. Many parts of the code that access
+// TAB_STRIP_PADDING cannot tell if the tabs are maximized or not some
+// this is called by the code that is "aware" of the circumstance.
+void SetTabStripFullscreen();
+
+void SetTabStripWindowed();
 
 #endif  // CHROME_BROWSER_UI_LAYOUT_CONSTANTS_H_

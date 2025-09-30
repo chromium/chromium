@@ -330,6 +330,14 @@ bool DevicesInfoContainsDeviceId(const DevicesInfo& devices_info,
                         });
 }
 
+bool IsEnclosureLocationSupported() {
+  // If there's no UWP device enumeration API, which is the case before Windows 10,
+  // access to video and audio capture will break on certain sites, specifically those
+  // using webkit APIs to access those devices.
+  // Someday, progwrp will get the Ro* interfaces, but this will do for now.
+  return base::win::GetVersion() >= base::win::Version::WIN10;
+}
+
 // Returns a non DirectShow descriptor DevicesInfo with the provided name and
 // model.
 DevicesInfo::const_iterator FindNonDirectShowDeviceInfoByNameAndModel(
@@ -831,18 +839,22 @@ void VideoCaptureDeviceFactoryWin::GetDevicesInfo(
   } else {
     devices_info = GetDevicesInfoDirectShow(devices_info);
   }
-
-  com_thread_.init_com_with_mta(true);
-  com_thread_.Start();
-  com_thread_data_ =
-      base::MakeRefCounted<VideoCaptureDeviceFactoryWin::ComThreadData>(
-          weak_ptr_factory_.GetWeakPtr(), com_thread_.task_runner(),
-          base::SingleThreadTaskRunner::GetCurrentDefault());
-  com_thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP,
-          com_thread_data_, std::move(devices_info), std::move(callback)));
+  
+  if (IsEnclosureLocationSupported()) {
+   com_thread_.init_com_with_mta(true);
+   com_thread_.Start();
+   com_thread_data_ =
+       base::MakeRefCounted<VideoCaptureDeviceFactoryWin::ComThreadData>(
+           weak_ptr_factory_.GetWeakPtr(), com_thread_.task_runner(),
+           base::SingleThreadTaskRunner::GetCurrentDefault());
+   com_thread_.task_runner()->PostTask(
+       FROM_HERE,
+       base::BindOnce(
+           &VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP,
+           com_thread_data_, std::move(devices_info), std::move(callback)));
+  } else {
+    DeviceInfoReady(std::move(devices_info), std::move(callback));
+  }
 }
 
 void VideoCaptureDeviceFactoryWin::ComThreadData::EnumerateDevicesUWP(

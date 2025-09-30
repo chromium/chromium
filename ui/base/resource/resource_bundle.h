@@ -27,6 +27,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
+#undef LoadBitmap
 
 class SkBitmap;
 

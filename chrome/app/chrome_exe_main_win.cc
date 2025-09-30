@@ -196,12 +196,24 @@ __declspec(dllexport) __cdecl void GetPakFileHashes(
   *chrome_200_pak = kSha256_chrome_200_percent_pak.data();
 }
 
+void SwitchToLFHeap() {
+  // Only needed on 2000/XP but harmless on other Windows flavors.
+  auto crt_heap = _get_heap_handle();
+  ULONG enable_LFH = 2;
+  if (HeapSetInformation(reinterpret_cast<HANDLE>(crt_heap),
+                         HeapCompatibilityInformation,
+                         &enable_LFH, sizeof(enable_LFH))) {
+    VLOG(1) << "low fragmentation heap enabled";
+  }
+}
+
 #if !defined(WIN_CONSOLE_APP)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {
 #else   // !defined(WIN_CONSOLE_APP)
 int main() {
   HINSTANCE instance = GetModuleHandle(nullptr);
 #endif  // !defined(WIN_CONSOLE_APP)
+  SwitchToLFHeap();
 
 #if defined(ARCH_CPU_32_BITS)
   enum class FiberStatus { kConvertFailed, kCreateFiberFailed, kSuccess };
@@ -242,10 +254,8 @@ int main() {
   }
   // If we are already a fiber then continue normal execution.
 #endif  // defined(ARCH_CPU_32_BITS)
-
   SetCwdForBrowserProcess();
   install_static::InitializeFromPrimaryModule();
-  SignalInitializeCrashReporting();
   if (IsBrowserProcess())
     chrome::DisableDelayLoadFailureHooksForMainExecutable();
 #if defined(ARCH_CPU_32_BITS)
@@ -262,6 +272,9 @@ int main() {
   base::CommandLine::Init(0, nullptr);
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
+
+  if (!command_line->HasSwitch("disable-crashpad"))
+      SignalInitializeCrashReporting();
 
   const std::string process_type =
       command_line->GetSwitchValueASCII(switches::kProcessType);

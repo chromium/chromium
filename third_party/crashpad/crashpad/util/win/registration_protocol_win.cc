@@ -151,15 +151,16 @@ HANDLE CreateNamedPipeInstance(const std::wstring& pipe_name,
   SECURITY_ATTRIBUTES* security_attributes_pointer = nullptr;
 
   if (first_instance) {
-    // Pre-Vista does not have integrity levels.
-    if (IsWindowsVistaOrGreater()) {
+    // Pre-Vista does not have integrity levels. But we still need the crashpad
+    // process to inherit the handle.
       memset(&security_attributes, 0, sizeof(security_attributes));
       security_attributes.nLength = sizeof(SECURITY_ATTRIBUTES);
+	  if (IsWindowsVistaOrGreater()) {
       security_attributes.lpSecurityDescriptor =
           const_cast<void*>(GetSecurityDescriptorForNamedPipeInstance(nullptr));
+	  }
       security_attributes.bInheritHandle = TRUE;
       security_attributes_pointer = &security_attributes;
-    }
   }
 
   return CreateNamedPipe(

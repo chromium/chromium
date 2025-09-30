@@ -16,7 +16,7 @@ namespace content {
 
 class WebThemeEngineImplDefaultBrowserTest : public ContentBrowserTest {
  public:
-  WebThemeEngineImplDefaultBrowserTest() = default;
+  WebThemeEngineImplDefaultBrowserTest() {}
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -116,19 +116,36 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
                                   "window",
                                   "windowFrame",
                                   "windowText"};
-  const std::vector<std::string> expected_colors = {
-      "rgb(0, 0, 0)",       "rgb(0, 0, 0)",       "rgb(0, 102, 204)",
-      "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
-      "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
-      "rgb(0, 120, 215)",   "rgb(255, 255, 255)", "rgb(0, 0, 0)",
-      "rgb(255, 255, 255)", "rgb(128, 128, 128)", "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 0, 0)",
-      "rgb(240, 240, 240)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
-      "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
-      "rgb(0, 0, 0)",       "rgb(0, 0, 0)"};
+  std::vector<std::string> expected_colors;
+  if (base::win::GetVersion() <= base::win::Version::WIN8_1) {
+    expected_colors = {
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)",       "rgb(0, 102, 204)",
+        "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
+        "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
+        "rgb(51, 153, 255)",  "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(128, 128, 128)", "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(240, 240, 240)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)"};
+  } else {
+    expected_colors = {
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)",       "rgb(0, 102, 204)",
+        "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
+        "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(109, 109, 109)",
+        "rgb(0, 120, 215)",   "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(255, 255, 255)", "rgb(128, 128, 128)", "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 0, 0)",
+        "rgb(240, 240, 240)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",
+        "rgb(0, 0, 0)",       "rgb(0, 102, 204)",   "rgb(255, 255, 255)",
+        "rgb(0, 0, 0)",       "rgb(0, 0, 0)"};
+  }
 
   ASSERT_EQ(ids.size(), expected_colors.size());
 

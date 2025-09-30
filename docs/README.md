@@ -1,20 +1,33 @@
-# Chromium docs
+# Supermium - an up-to-date, open-source browser for legacy Windows users
 
-This directory contains [chromium project](https://www.chromium.org/Home/)
-documentation in [Gitiles-flavored Markdown]. It is automatically
-[rendered by Gitiles].
+The aim of Supermium is to provide the latest Chromium features, support for rendering the web and security patches to users
+of Windows Vista (with extended kernel), Windows 7 and Windows 8.x.
 
-[Gitiles-flavored Markdown]: https://gerrit.googlesource.com/gitiles/+/master/Documentation/markdown.md
-[rendered by Gitiles]: https://chromium.googlesource.com/chromium/src/+/main/docs/
+Releases are expected every one to two months.
 
-**If you add new documents, please also add a link to them in the Document Index
-below.**
+# Support this and other legacy software projects at: http://paypal.me/win32420
 
-[TOC]
+# Future objectives
 
-## Creating Documentation
+-Maintaining support for Manifest v2
 
-### Guidelines
+-Supporting Windows Vista (without extended kernel)
+
+-Restoring GDI font rendering
+
+-Adding basic GUI to installer to allow user to pick an install directory
+
+-Adding trapezoidal tabs option
+
+-"ungoogled" mode
+
+# Future objectives of lower priority
+
+-Supporting Windows XP
+
+-SSE2 build
+
+Upstream README.md follows below:
 
 *   See the [Chromium Documentation Guidelines](documentation_guidelines.md)
     and the

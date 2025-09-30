@@ -163,6 +163,7 @@ config("default_libs") {
     # instead the targets that use the less common ones (e.g. wininet or
     # winspool) should include those explicitly.
     libs = [
+      "ntdll.lib",
       "advapi32.lib",
       "comdlg32.lib",
       "dbghelp.lib",
@@ -172,6 +173,7 @@ config("default_libs") {
       "odbc32.lib",
       "odbccp32.lib",
       "oleaut32.lib",
+      "psapi.lib",
       "shell32.lib",
       "shlwapi.lib",
       "user32.lib",

@@ -134,6 +134,21 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
           ? NativeWidgetType::NATIVE_WIDGET_AURA
           : NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA;
 
+  BOOL dwm_enabled = FALSE;
+
+  typedef HRESULT(WINAPI* DwmIsCompositionEnabledFunc)(BOOL* enabled);
+  DwmIsCompositionEnabledFunc func_ = nullptr;
+
+  HMODULE dwmapi_library_ = LoadLibraryW(L"dwmapi.dll");
+  if (dwmapi_library_) {
+    func_ = reinterpret_cast<DwmIsCompositionEnabledFunc>(
+        GetProcAddress(dwmapi_library_, "DwmIsCompositionEnabled"));
+  }
+
+  if (func_) {
+      func_(&dwm_enabled);
+  }
+
   if (params->shadow_type == views::Widget::InitParams::ShadowType::kDrop &&
       params->shadow_elevation.has_value()) {
     // If the window defines an elevation based shadow in the Widget
@@ -142,6 +157,15 @@ views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     // TODO: This may no longer be needed if we get proper elevation-based
     // shadows on toplevel windows. See https://crbug.com/838667.
     native_widget_type = NativeWidgetType::NATIVE_WIDGET_AURA;
+  } else if (!dwm_enabled) {
+    // If we don't have composition (either because Glass is not enabled or
+    // because it was disabled at the command line), anything that requires
+    // transparency will be broken with a toplevel window, so force the use of
+    // a non toplevel window.
+    if (params->opacity ==
+            views::Widget::InitParams::WindowOpacity::kTranslucent &&
+        !params->force_software_compositing)
+      native_widget_type = NativeWidgetType::NATIVE_WIDGET_AURA;
   } else {
     // Otherwise, we can use a toplevel window (they get blended via
     // WS_EX_COMPOSITED, which allows for animation effects, and for exceeding

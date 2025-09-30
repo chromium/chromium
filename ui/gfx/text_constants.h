@@ -70,6 +70,8 @@ enum VerticalAlignment {
   ALIGN_TOP = 0,  // Align the text's top edge with that of its display area.
   ALIGN_MIDDLE,   // Align the text's center with that of its display area.
   ALIGN_BOTTOM,   // Align the text's bottom edge with that of its display area.
+  ALIGN_SPECIAL,  // Special alignment, equivalent to ALIGN_MIDDLE, but for the GDI renderer.
+  ALIGN_COMPACT,  // Another special alignment for #compact-ui tabs.
 };
 
 // The directionality modes used to determine the base text direction.

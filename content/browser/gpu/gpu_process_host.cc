@@ -170,7 +170,7 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
 // Forgive one GPU process crash after this many minutes.
 // This value should not be too small because then Chrome could end up in an
 // endless loop where it hangs and gets killed by GPU watchdog and hangs again.
-constexpr int kForgiveGpuCrashMinutes = 5;
+constexpr int kForgiveGpuCrashMinutes = 2;
 
 // Forgive one GPU process crash, when the GPU process is launched to run only
 // the display compositor, after this many minutes.
@@ -242,6 +242,7 @@ static const char* const kSwitchNames[] = {
     sandbox::policy::switches::kGpuSandboxFailuresFatal,
     sandbox::policy::switches::kDisableGpuSandbox,
     sandbox::policy::switches::kNoSandbox,
+    "legacy-sandbox",
 #if BUILDFLAG(IS_WIN)
     sandbox::policy::switches::kAllowThirdPartyModules,
 #endif

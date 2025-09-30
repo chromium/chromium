@@ -41,9 +41,19 @@ base::RepeatingCallback<mojo::PendingRemote<blink::mojom::DWriteFontProxy>(
 void CreateDirectWriteFactory(IDWriteFactory** factory) {
   // This shouldn't be necessary, but not having this causes breakage in
   // content_browsertests, and possibly other high-stress cases.
+  using DWriteCreateFactoryProc = decltype(DWriteCreateFactory)*;
+
+  HMODULE dwrite_dll = GetModuleHandleW(L"dwrite.dll");
+  
   PatchServiceManagerCalls();
 
-  CHECK(SUCCEEDED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_ISOLATED,
+  DWriteCreateFactoryProc dwrite_create_factory_proc =
+      reinterpret_cast<DWriteCreateFactoryProc>(
+          GetProcAddress(dwrite_dll, "DWriteCreateFactory"));
+  if (!dwrite_create_factory_proc)
+    return;
+
+  CHECK(SUCCEEDED(dwrite_create_factory_proc(DWRITE_FACTORY_TYPE_ISOLATED,
                                       __uuidof(IDWriteFactory),
                                       reinterpret_cast<IUnknown**>(factory))));
 }
@@ -53,7 +63,11 @@ void CreateDirectWriteFactory(IDWriteFactory** factory) {
 void InitializeDWriteFontProxy() {
   TRACE_EVENT0("dwrite,fonts", "InitializeDWriteFontProxy");
   mswr::ComPtr<IDWriteFactory> factory;
-
+  // Halt the init process if the DLL is not there.
+  HMODULE dwrite_dll = LoadLibraryW(L"dwrite.dll");
+  if (!dwrite_dll)
+    return;
+ 
   CreateDirectWriteFactory(&factory);
 
   if (!g_font_collection) {
@@ -79,7 +93,7 @@ void InitializeDWriteFontProxy() {
 
   skia::OverrideDefaultSkFontMgr(std::move(skia_font_manager));
 
-  DCHECK(g_font_fallback);
+  blink::WebFontRendering::SetUseSkiaFontFallback(g_font_fallback ? true : false);
 }
 
 void UninitializeDWriteFontProxy() {

@@ -15,6 +15,8 @@ EnumTraits<proxy_resolver_win::mojom::WinHttpStatus,
       return proxy_resolver_win::mojom::WinHttpStatus::kOk;
     case net::WinHttpStatus::kAborted:
       return proxy_resolver_win::mojom::WinHttpStatus::kAborted;
+   case net::WinHttpStatus::kFunctionsNotLoaded:
+      return proxy_resolver_win::mojom::WinHttpStatus::kFunctionsNotLoaded;
     case net::WinHttpStatus::kWinHttpOpenFailed:
       return proxy_resolver_win::mojom::WinHttpStatus::kWinHttpOpenFailed;
     case net::WinHttpStatus::kWinHttpSetTimeoutsFailed:
@@ -54,6 +56,9 @@ bool EnumTraits<proxy_resolver_win::mojom::WinHttpStatus, net::WinHttpStatus>::
       return true;
     case proxy_resolver_win::mojom::WinHttpStatus::kAborted:
       *output = net::WinHttpStatus::kAborted;
+      return true;
+    case proxy_resolver_win::mojom::WinHttpStatus::kFunctionsNotLoaded:
+      *output = net::WinHttpStatus::kFunctionsNotLoaded;
       return true;
     case proxy_resolver_win::mojom::WinHttpStatus::kWinHttpOpenFailed:
       *output = net::WinHttpStatus::kWinHttpOpenFailed;

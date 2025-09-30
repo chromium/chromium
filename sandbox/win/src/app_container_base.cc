@@ -26,6 +26,18 @@ namespace sandbox {
 
 namespace {
 
+typedef decltype(::CreateAppContainerProfile) CreateAppContainerProfileFunc;
+
+typedef decltype(::DeriveAppContainerSidFromAppContainerName)
+    DeriveAppContainerSidFromAppContainerNameFunc;
+
+typedef decltype(::DeleteAppContainerProfile) DeleteAppContainerProfileFunc;
+
+typedef decltype(::GetAppContainerFolderPath) GetAppContainerFolderPathFunc;
+
+typedef decltype(
+    ::GetAppContainerRegistryLocation) GetAppContainerRegistryLocationFunc;
+
 struct FreeSidDeleter {
   inline void operator()(void* ptr) const { ::FreeSid(ptr); }
 };

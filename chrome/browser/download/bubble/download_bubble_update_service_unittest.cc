@@ -30,6 +30,7 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "components/offline_items_collection/core/test_support/mock_offline_content_provider.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -101,7 +102,9 @@ std::unique_ptr<KeyedService> SetUpDownloadCoreService(
 class DownloadBubbleUpdateServiceTest : public testing::Test {
  public:
   DownloadBubbleUpdateServiceTest()
-      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
+  }
   DownloadBubbleUpdateServiceTest(const DownloadBubbleUpdateServiceTest&) =
       delete;
   DownloadBubbleUpdateServiceTest& operator=(
@@ -365,6 +368,7 @@ class DownloadBubbleUpdateServiceTest : public testing::Test {
                                                    delta);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   raw_ptr<NiceMock<content::MockDownloadManager>, DanglingUntriaged>

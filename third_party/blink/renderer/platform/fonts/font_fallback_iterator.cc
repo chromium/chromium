@@ -96,8 +96,9 @@ FontDataForRangeSet* FontFallbackIterator::UniqueOrNext(
 
   // Save first candidate to be returned if all other fonts fail, and we need
   // it to render the .notdef glyph.
-  if (!first_candidate_)
+  if (!first_candidate_) {
     first_candidate_ = candidate;
+  }
   return candidate;
 }
 
@@ -158,8 +159,9 @@ FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
 
   if (fallback_stage_ == kFirstCandidateForNotdefGlyph) {
     fallback_stage_ = kOutOfLuck;
-    if (!first_candidate_)
-      FontCache::CrashWithFontInfo(&font_description_);
+    if (!first_candidate_) {
+		FontCache::CrashWithFontInfo(&font_description_);		
+	}
     return first_candidate_;
   }
 

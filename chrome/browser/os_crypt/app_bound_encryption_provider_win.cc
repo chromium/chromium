@@ -18,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
@@ -245,7 +246,8 @@ void AppBoundEncryptionProviderWin::GenerateAndPersistNewKeyInternal(
 
 bool AppBoundEncryptionProviderWin::UseForEncryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return support_level_ == os_crypt::SupportLevel::kSupported;
+  return support_level_ == os_crypt::SupportLevel::kSupported 
+                           && base::win::GetVersion() >= base::win::Version::WIN10;
 }
 
 bool AppBoundEncryptionProviderWin::IsCompatibleWithOsCryptSync() {

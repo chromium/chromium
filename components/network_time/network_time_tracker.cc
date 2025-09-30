@@ -279,7 +279,7 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
 }
 
 bool NetworkTimeTracker::AreTimeFetchesEnabled() const {
-  return base::FeatureList::IsEnabled(kNetworkTimeServiceQuerying);
+  return false;
 }
 
 NetworkTimeTracker::FetchBehavior NetworkTimeTracker::GetFetchBehavior() const {

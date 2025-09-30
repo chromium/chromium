@@ -454,8 +454,19 @@ bool DiscardableSharedMemory::Purge(Time current_time) {
   base::span<uint8_t> mapped = mapped_memory();
   uint8_t* address = mapped.data();
   size_t length = AlignToPageSize(mapped.size());
+  
+  using DiscardVirtualMemoryFunction =
+      DWORD(WINAPI*)(PVOID virtualAddress, SIZE_T size);
+  static DiscardVirtualMemoryFunction discard_virtual_memory =
+      reinterpret_cast<DiscardVirtualMemoryFunction>(GetProcAddress(
+          GetModuleHandle(L"Kernel32.dll"), "DiscardVirtualMemory"));
 
-  DWORD ret = DiscardVirtualMemory(address, length);
+  // Use DiscardVirtualMemory when available because it releases faster than
+  // MEM_RESET.
+  DWORD ret = ERROR_NOT_SUPPORTED;
+  if (discard_virtual_memory) {
+    ret = discard_virtual_memory(address, length);
+  }
   // DiscardVirtualMemory is buggy in Win10 SP0, so fall back to MEM_RESET on
   // failure.
   if (ret != ERROR_SUCCESS) {

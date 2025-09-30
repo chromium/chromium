@@ -70,7 +70,6 @@ const char* const kBadFlags[] = {
     sandbox::policy::switches::kDisableGpuSandbox,
     sandbox::policy::switches::kDisableSeccompFilterSandbox,
     sandbox::policy::switches::kDisableSetuidSandbox,
-    sandbox::policy::switches::kNoSandbox,
 #if BUILDFLAG(IS_WIN)
     sandbox::policy::switches::kAllowThirdPartyModules,
 #endif

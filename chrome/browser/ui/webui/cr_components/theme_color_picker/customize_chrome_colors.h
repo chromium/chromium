@@ -27,6 +27,17 @@ inline constexpr std::array kCustomizeChromeColorIds{
     6,   // Yellow and white.
     5,   // Beige and white.
     1,   // Warm grey.
+    7,   // Green and white.
+    8,   // Light teal and white.
+    9,   // Light purple and white.
+    10,  // Pink and white.
+    11,  // Beige.
+    12,  // Orange.
+    18,  // Dark red and orange.
+    19,  // Dark green.
+    12,  // Orange.
+    18,  // Dark red and orange.
+    19,  // Dark green.
 };
 
 // The chrome colors selected and ordered by |kCustomizeChromeColorIds|.

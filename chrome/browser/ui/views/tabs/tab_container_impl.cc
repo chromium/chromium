@@ -527,6 +527,9 @@ std::optional<int> TabContainerImpl::GetModelIndexOf(
 }
 
 Tab* TabContainerImpl::GetTabAtModelIndex(int index) const {
+  if (!tabs_view_model_.view_size()) {
+    return nullptr;
+  }
   return tabs_view_model_.view_at(index);
 }
 

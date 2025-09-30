@@ -20,7 +20,7 @@
     <output filename="components_locale_settings_de.pak" type="data_package" lang="de" />
     <output filename="components_locale_settings_el.pak" type="data_package" lang="el" />
     <output filename="components_locale_settings_en-GB.pak" type="data_package" lang="en-GB" />
-    <output filename="components_locale_settings_en-US.pak" type="data_package" lang="en" />
+    <output filename="components_locale_settings_en-US.pak" type="data_package" lang="en-GB" />
     <output filename="components_locale_settings_es.pak" type="data_package" lang="es" />
     <if expr="is_ios">
       <then>

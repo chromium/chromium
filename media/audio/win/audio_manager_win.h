@@ -73,6 +73,15 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
  private:
   // Allow unit test to modify the utilized enumeration API.
   friend class AudioManagerTest;
+  
+  // Returns a PCMWaveInAudioInputStream instance or NULL on failure.
+  // This method converts MMDevice-style device ID to WaveIn-style device ID if
+  // necessary.
+  // (Please see device_enumeration_win.h for more info about the two kinds of
+  // device IDs.)
+  AudioInputStream* CreatePCMWaveInAudioInputStream(
+      const AudioParameters& params,
+      const std::string& device_id);
 
   // Helper methods for performing expensive initialization tasks on the audio
   // thread instead of on the UI thread which AudioManager is constructed on.

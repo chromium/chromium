@@ -45,6 +45,9 @@ enum class WinHttpStatus {
 
   // WinHttpGetProxyResult() API unexpectedly returned an empty list.
   kEmptyProxyList,
+
+  // WinHttp functions are not loaded
+  kFunctionsNotLoaded,
 };
 
 }  // namespace net

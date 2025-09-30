@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
@@ -121,9 +123,10 @@ bool ClientHintsPreferences::IsClientHintsAllowed(const KURL& url) {
   // TODO(crbug.com/862940): This should probably be using
   // network::IsUrlPotentiallyTrustworthy() instead of coercing the URL to an
   // origin first.
-  return (url.ProtocolIs("http") || url.ProtocolIs("https")) &&
+  return !base::FeatureList::IsEnabled(features::kRemoveClientHints) && 
+        ((url.ProtocolIs("http") || url.ProtocolIs("https")) &&
          network::IsOriginPotentiallyTrustworthy(
-             url::Origin::Create(GURL(url)));
+             url::Origin::Create(GURL(url))));
 }
 
 EnabledClientHints ClientHintsPreferences::GetEnabledClientHints() const {

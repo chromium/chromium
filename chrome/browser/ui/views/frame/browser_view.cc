@@ -1876,6 +1876,12 @@ std::vector<StatusBubble*> BrowserView::GetStatusBubbles() {
 }
 
 void BrowserView::UpdateTitleBar() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("string-to-translate") &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch("language-to-translate")) {
+    StartPartialTranslate(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("language-to-translate"), std::string("fr"), 
+                          base::WideToUTF16(base::CommandLine::ForCurrentProcess()->GetSwitchValueNative("string-to-translate")));
+    return;
+  }
   frame_->UpdateWindowTitle();
   if (web_app_window_title_) {
     DCHECK(GetIsWebAppType());
@@ -2370,6 +2376,9 @@ void BrowserView::ExitFullscreen() {
 void BrowserView::UpdateExclusiveAccessBubble(
     const ExclusiveAccessBubbleParams& params,
     ExclusiveAccessBubbleHideCallback first_hide_callback) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "hide-fullscreen-exit-ui"))
+	  return;
   // Trusted pinned mode does not allow to escape. So do not show the bubble.
   bool is_trusted_pinned =
       platform_util::IsBrowserLockedFullscreen(browser_.get());
@@ -3656,7 +3665,8 @@ DownloadShelf* BrowserView::GetDownloadShelf() {
   // Don't show download shelf if download bubble is enabled, except that the
   // shelf is already showing (this can happen if prefs were changed at
   // runtime).
-  if (download::IsDownloadBubbleEnabled() && !download_shelf_) {
+  if (download::IsDownloadBubbleEnabled() &&
+      !download_shelf_) {
     return nullptr;
   }
   if (!download_shelf_) {

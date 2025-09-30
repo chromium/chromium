@@ -286,6 +286,13 @@ bool ExtensionManagement::IsInstallationExplicitlyBlocked(
 bool ExtensionManagement::IsOffstoreInstallAllowed(
     const GURL& url,
     const GURL& referrer_url) const {
+   const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch("extension-mime-request-handling") &&
+      command_line.GetSwitchValueASCII("extension-mime-request-handling") ==
+      "always-prompt-for-install") {
+    return true;
+  }
   // No allowed install sites specified, disallow by default.
   if (!global_settings_->install_sources.has_value())
     return false;

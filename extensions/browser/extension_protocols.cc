@@ -246,12 +246,20 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
     return true;
   }
 
+  if (child_id != content::ChildProcessHost::kInvalidUniqueID &&
+      content::RenderProcessHost::FromID(child_id) &&
+      content::RenderProcessHost::FromID(child_id)->GetProcess().is_current() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch("single-process"))
+       return true;
+
   // Allow the extension module embedder to grant permission for loads.
   if (ExtensionsBrowserClient::Get()->AllowCrossRendererResourceLoad(
           request, destination, page_transition, child_id, is_incognito,
           extension, extensions, process_map, upstream_url)) {
     return true;
   }
+
+
 
   // No special exceptions for cross-process loading. Block the load.
   return false;

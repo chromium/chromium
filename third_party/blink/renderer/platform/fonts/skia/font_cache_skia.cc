@@ -219,7 +219,6 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
   DCHECK_NE(family, font_family_names::kSystemUi);
   // convert the name to utf8
   name = family.Utf8();
-
 #if BUILDFLAG(IS_ANDROID)
   // If this is a locale-specific family, try looking up locale-specific
   // typeface first.
@@ -233,6 +232,12 @@ sk_sp<SkTypeface> FontCache::CreateTypeface(
   // TODO(https://crbug.com/1425390: Assign FontCache::font_manager_ in the
   // ctor.
   auto font_manager = font_manager_ ? font_manager_ : skia::DefaultFontMgr();
+#if BUILDFLAG(IS_WIN)
+  if(!useDirectWrite()) {
+	return sk_sp<SkTypeface>(font_manager->legacyMakeTypeface(
+      name.empty() ? nullptr : name.c_str(), font_description.SkiaFontStyle()));	  
+  }
+#endif
   return sk_sp<SkTypeface>(font_manager->matchFamilyStyle(
       name.empty() ? nullptr : name.c_str(), font_description.SkiaFontStyle()));
 }

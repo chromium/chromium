@@ -184,11 +184,11 @@ LONG WINAPI UnhandledExceptionHandler(EXCEPTION_POINTERS* exception_pointers) {
   // ourselves in case the crash server is gone, so that we don't leave zombies
   // around. This would ideally never happen.
   Sleep(kMillisecondsUntilTerminate);
+  if (IsWindowsXPOrGreater()) {
+      LOG(ERROR) << "crash server did not respond, self-terminating";
 
-  LOG(ERROR) << "crash server did not respond, self-terminating";
-
-  SafeTerminateProcess(GetCurrentProcess(), kTerminationCodeCrashNoDump);
-
+      SafeTerminateProcess(GetCurrentProcess(), kTerminationCodeCrashNoDump);
+  }
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
@@ -457,7 +457,7 @@ bool StartHandlerProcess(
       initialize_proc_thread_attribute_list
           ? GET_FUNCTION(L"kernel32.dll", ::UpdateProcThreadAttribute)
           : nullptr;
-  if (!initialize_proc_thread_attribute_list || !update_proc_thread_attribute) {
+  if (!initialize_proc_thread_attribute_list || !update_proc_thread_attribute || !IsWindowsVistaOrGreater()) {
     // The OS doesn’t allow handle inheritance to be restricted, so the handler
     // will inherit every inheritable handle.
     creation_flags = 0;

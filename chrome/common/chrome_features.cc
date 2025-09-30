@@ -1529,6 +1529,11 @@ BASE_FEATURE(kThirdPartyModulesBlocking,
 BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
              "TreatUnsafeDownloadsAsActive",
              base::FEATURE_ENABLED_BY_DEFAULT);
+			 
+// Show warnings on downloads not delivered over HTTPS.
+BASE_FEATURE(kInsecureDownloadWarnings,
+             "InsecureDownloadWarnings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TrustSafetySentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)
@@ -1794,5 +1799,11 @@ BASE_FEATURE(kClassManagementEnabledMetricsProvider,
 BASE_FEATURE(kDisableShortcutsEnableDiy,
              "DisableShortcutsEnableDiy",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kShowManagedUi, 
+             "ShowManagedUi",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 }  // namespace features

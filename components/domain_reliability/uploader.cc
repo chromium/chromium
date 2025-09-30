@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -80,7 +81,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
     if (discard_uploads_)
       discarded_upload_count_++;
 
-    if (discard_uploads_ || shutdown_) {
+    if (discard_uploads_ || shutdown_ || base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
       DVLOG(1) << "Discarding report instead of uploading.";
       UploadResult result;
       result.status = UploadResult::SUCCESS;

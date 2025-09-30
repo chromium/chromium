@@ -21,6 +21,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
@@ -568,7 +569,16 @@ AutocompleteController::AutocompleteController(
       steady_state_omnibox_position_(
           metrics::OmniboxEventProto::UNKNOWN_POSITION) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
-
+  
+if (base::CommandLine::ForCurrentProcess()->HasSwitch("omnibox-autocomplete-filtering")) {
+    const std::string flag_value = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("omnibox-autocomplete-filtering");
+    provider_types &= AutocompleteProvider::TYPE_KEYWORD | AutocompleteProvider::TYPE_SEARCH |
+        AutocompleteProvider::TYPE_HISTORY_URL | AutocompleteProvider::TYPE_BOOKMARK | AutocompleteProvider::TYPE_BUILTIN;
+    if (!base::Contains(flag_value, "bookmarks"))
+      provider_types &= ~AutocompleteProvider::TYPE_BOOKMARK;
+    if (!base::Contains(flag_value, "chrome"))
+      provider_types &= ~AutocompleteProvider::TYPE_BUILTIN;
+  }
   // Providers run in the order they're added. Async providers should run first
   // so their async requests can be kicked off before waiting a few milliseconds
   // for the other sync providers to complete.

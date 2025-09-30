@@ -10,6 +10,7 @@
 #include <winioctl.h>
 
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -23,12 +24,18 @@ MachineIdProvider::MachineIdProvider() = default;
 MachineIdProvider::~MachineIdProvider() = default;
 
 bool MachineIdProvider::HasId() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-machine-id")) {
+    return false;
+  }
   return true;
 }
 
 // On windows, the machine id is based on the serial number of the drive Chrome
 // is running from.
 std::string MachineIdProvider::GetMachineId() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-machine-id")) {
+    return std::string();
+  }
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 

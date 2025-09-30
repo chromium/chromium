@@ -46,6 +46,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -294,7 +295,9 @@ void WaitForDownloadNotificationForDisplayService(
 // Base class for tests of download notifications.
 class DownloadNotificationTestBase : public InProcessBrowserTest {
  public:
-  DownloadNotificationTestBase() = default;
+  DownloadNotificationTestBase() {
+    scoped_feature_list_.InitAndDisableFeature(safe_browsing::kDownloadBubble);
+  }
 
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -329,6 +332,8 @@ class DownloadNotificationTestBase : public InProcessBrowserTest {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<NotificationDisplayServiceTester> incognito_display_service_;
   std::unique_ptr<SlowDownloadInterceptor> interceptor_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 //////////////////////////////////////////////////

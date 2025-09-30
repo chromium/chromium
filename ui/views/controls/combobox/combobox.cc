@@ -53,6 +53,10 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/gfx/win/direct_write.h"
+#endif
+
 namespace views {
 
 namespace {
@@ -640,7 +644,14 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
 
   gfx::Rect text_bounds(x, y, text_width, contents_height);
   AdjustBoundsForRTLUI(&text_bounds);
-  canvas->DrawStringRect(text, font_list, text_color, text_bounds);
+  #if BUILDFLAG(IS_WIN)
+  if (!gfx::win::IsDirectWriteEnabled())
+	canvas->DrawStringRectWithFlags(text, font_list, text_color, text_bounds, gfx::Canvas::GDI_OFFSET_RENDERING);
+  else
+	canvas->DrawStringRect(text, font_list, text_color, text_bounds);
+  #else
+  canvas->DrawStringRect(text, font_list, text_color, text_bounds);  
+  #endif
 
   // Draw the arrow.
   // TODO(crbug.com/40247801): Replace placeholder spacing and color values for

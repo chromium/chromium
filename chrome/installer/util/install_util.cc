@@ -245,10 +245,10 @@ base::Version InstallUtil::GetCriticalUpdateVersion() {
 }
 
 bool InstallUtil::IsOSSupported() {
-  // We do not support anything prior to Windows 10.
+  // We do not support anything prior to Windows Vista.
   VLOG(1) << base::SysInfo::OperatingSystemName() << ' '
           << base::SysInfo::OperatingSystemVersion();
-  return base::win::GetVersion() >= base::win::Version::WIN10;
+  return base::win::GetVersion() >= base::win::Version::VISTA;
 }
 
 void InstallUtil::AddInstallerResultItems(bool system_install,

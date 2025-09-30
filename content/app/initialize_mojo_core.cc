@@ -18,6 +18,10 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "sandbox/policy/sandbox_type.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace content {
 
 void InitializeMojoCore() {
@@ -43,9 +47,11 @@ void InitializeMojoCore() {
       config.force_direct_shared_memory_allocation = true;
   } else {
 #if BUILDFLAG(IS_WIN)
-    // On Windows it's not necessary to broker shared memory allocation, as
-    // even sandboxed processes can allocate their own without trouble.
-    config.force_direct_shared_memory_allocation = true;
+      config.force_direct_shared_memory_allocation = true;
+#elif BUILDFLAG(IS_ANDROID)
+    // On Android we run a Finch experiment testing direct memory allocation.
+    config.force_direct_shared_memory_allocation = base::FeatureList::IsEnabled(
+        mojo::core::kMojoDirectSharedMemoryAndroid);
 #endif
   }
 

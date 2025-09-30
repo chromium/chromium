@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -220,7 +221,8 @@ LocationBarView::LocationBarView(Browser* browser,
                  !v->GetOmniboxPopupView()->IsOpen();
         }));
     views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-    views::InstallPillHighlightPathGenerator(this);
+	if (!base::CommandLine::ForCurrentProcess()->HasSwitch("classic-omnibox"))
+		views::InstallPillHighlightPathGenerator(this);
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
     if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
@@ -249,6 +251,7 @@ void LocationBarView::Init() {
   // to draw outside the parent's bounds.
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
+  SetLayoutConstants();
 
   if (base::FeatureList::IsEnabled(
           content_settings::features::kLeftHandSideActivityIndicators)) {
@@ -410,7 +413,9 @@ void LocationBarView::Init() {
     if (!apps::features::ShouldShowLinkCapturingUX()) {
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     }
-    params.types_enabled.push_back(PageActionIconType::kPwaInstall);
+	if (!base::CommandLine::ForCurrentProcess()->HasSwitch("disable-pwa-install-prompt")) {
+      params.types_enabled.push_back(PageActionIconType::kPwaInstall);
+	}
     params.types_enabled.push_back(PageActionIconType::kFind);
     params.types_enabled.push_back(PageActionIconType::kTranslate);
     params.types_enabled.push_back(PageActionIconType::kZoom);
@@ -489,6 +494,8 @@ bool LocationBarView::IsInitialized() const {
 }
 
 int LocationBarView::GetBorderRadius() const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("classic-omnibox"))
+	  return 3;
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kMaximum, size());
 }
@@ -1228,6 +1235,10 @@ void LocationBarView::RefreshBackground() {
     // but still contains in-progress user input, a unique border color will be
     // applied.
     border_color = color_provider->GetColor(kColorLocationBarBorderOnMismatch);
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("classic-omnibox-border") && !is_caret_visible) {
+      border_color = SK_ColorGRAY;
   }
 
   if (is_popup_mode_) {

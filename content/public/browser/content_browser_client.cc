@@ -884,6 +884,10 @@ std::string ContentBrowserClient::GetDefaultDownloadName() {
   return std::string();
 }
 
+base::FilePath ContentBrowserClient::GetFontLookupTableCacheDir() {
+  return base::FilePath();
+}
+
 base::FilePath ContentBrowserClient::GetShaderDiskCacheDirectory() {
   return base::FilePath();
 }

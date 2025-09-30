@@ -488,6 +488,8 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   if (fixed_up_input.type() != metrics::OmniboxInputType::QUERY)
     matches_.push_back(what_you_typed_match);
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("omnibox-autocomplete-filtering"))
+    return;
   // We'll need the history service to run both passes, so try to obtain it.
   history::HistoryService* const history_service =
       client()->GetHistoryService();

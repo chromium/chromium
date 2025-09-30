@@ -10,6 +10,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_version.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
@@ -485,7 +486,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       (has_gl_usage && (d3d11_device_ != angle_d3d11_device_));
   const bool needs_shared_handle =
       needs_cross_device_synchronization || want_dcomp_texture;
-  if (needs_shared_handle) {
+  if (needs_shared_handle && base::win::GetVersion() >= base::win::Version::WIN8) {
     // TODO(crbug.com/40068319): Many texture formats cannot be shared on old
     // GPUs/drivers to try to detect that and implement a fallback path or
     // disallow Graphite/WebGPU in those cases.

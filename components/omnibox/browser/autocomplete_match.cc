@@ -2244,7 +2244,11 @@ bool AutocompleteMatch::TryRichAutocompletion(
     // This case intentionally doesn't set |rich_autocompletion_triggered| since
     // presumably non-rich autocompletion should also be able to handle this
     // case.
-    inline_autocompletion = primary_text.substr(input_text_lower.length());
+    if (primary_text.length() >= input_text_lower.length()) {
+      inline_autocompletion = primary_text.substr(input_text_lower.length());
+    } else {
+      inline_autocompletion = primary_text.substr(primary_text.length());
+    }
     allowed_to_be_default_match = true;
     RecordAdditionalInfo("autocompletion", "primary & prefix");
     return true;

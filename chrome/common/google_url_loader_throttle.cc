@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -171,6 +172,8 @@ void GoogleURLLoaderThrottle::DetachFromCurrentSequence() {}
 void GoogleURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	  return;
   if (dynamic_params_->force_safe_search) {
     GURL new_url;
     safe_search_api::ForceGoogleSafeSearch(request->url, &new_url);
@@ -245,6 +248,8 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
     std::vector<std::string>* to_be_removed_headers,
     net::HttpRequestHeaders* modified_headers,
     net::HttpRequestHeaders* modified_cors_exempt_headers) {
+	if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+		return;
   // URLLoaderThrottles can only change the redirect URL when the network
   // service is enabled. The non-network service path handles this in
   // ChromeNetworkDelegate.
@@ -304,6 +309,8 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
+	if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+		return;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (is_covered_by_bound_session_) {
     RecordBoundSessionStatusMetrics(is_deferred_for_bound_session_,

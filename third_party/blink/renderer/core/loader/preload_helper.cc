@@ -869,6 +869,16 @@ void PreloadHelper::LoadLinksFromHeader(
       }
     }
 
+    // For security purposes, set `referrerpolicy: "no-referrer"` in link loads
+    // from subresources. See https://crbug.com/415810136 for details.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kNoReferrerForPreloadFromSubresource)) {
+      if (IsSubresourceLoad(mode)) {
+        params.referrer_policy = network::mojom::ReferrerPolicy::kNever;
+      }
+    }
+
+
     if (params.rel.IsLinkPreload() && recursive_prefetch_token) {
       // Only preload headers are expected to have a recursive prefetch token
       // In response to that token's existence, we treat the request as a

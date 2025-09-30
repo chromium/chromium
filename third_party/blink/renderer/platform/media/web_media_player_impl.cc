@@ -1001,7 +1001,7 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
 void WebMediaPlayerImpl::Play() {
   DVLOG(1) << __func__;
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-
+  // Our last resort for blocking autoplaying.
   // User initiated play unlocks background video playback.
   if (frame_->HasTransientUserActivation())
     video_locked_when_paused_when_hidden_ = false;

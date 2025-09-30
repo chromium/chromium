@@ -504,7 +504,11 @@ ResultCode BrokerServicesBase::PreSpawnTarget(
     startup_info->SetAppContainer(container);
   }
 
-  startup_info->AddJobToAssociate(policy_base->GetJobHandle());
+  // On Win10, jobs are associated via startup_info.
+  if (base::win::GetVersion() >= base::win::Version::WIN10 &&
+      policy_base->HasJob()) {
+    startup_info->AddJobToAssociate(policy_base->GetJobHandle());
+  }
 
   if (!startup_info->BuildStartupInformation())
     return SBOX_ERROR_PROC_THREAD_ATTRIBUTES;

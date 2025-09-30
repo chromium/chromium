@@ -161,6 +161,9 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
       }
     }
   }
+
+  settings.initial_debug_state.block_lazy_compositing = 
+      !command_line->HasSwitch("force-lazy-compositor");
   settings.initial_debug_state.show_fps_counter =
       command_line->HasSwitch(switches::kUIShowFPSCounter);
   settings.initial_debug_state.show_layer_animation_bounds_rects =

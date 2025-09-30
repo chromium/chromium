@@ -56,7 +56,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme.h"
 
 // This was removed from Winvers.h but is still used.
@@ -211,11 +210,6 @@ NativeTheme* NativeTheme::GetInstanceForNativeUi() {
   return s_native_theme.get();
 }
 
-NativeTheme* NativeTheme::GetInstanceForDarkUI() {
-  static base::NoDestructor<NativeThemeWin> s_dark_native_theme(false, true);
-  return s_dark_native_theme.get();
-}
-
 // static
 bool NativeTheme::SystemDarkModeSupported() {
   static bool system_supports_dark_mode =
@@ -272,6 +266,21 @@ gfx::Size NativeThemeWin::GetPartSize(Part part,
                                                : gfx::Size();
 }
 
+void NativeThemeWin::PaintMenuItemBackground(
+    cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
+    State state,
+    const gfx::Rect& rect,
+    const MenuItemExtraParams& extra_params) const {
+  const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
+  cc::PaintFlags flags;
+  const ColorId id = (state == kHovered)
+                         ? kColorMenuItemBackgroundSelected
+                         : kColorMenuBackground;
+  flags.setColor(color_provider->GetColor(id));
+  canvas->drawRoundRect(gfx::RectToSkRect(rect), radius, radius, flags);
+}
+
 void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
                            const ui::ColorProvider* color_provider,
                            Part part,
@@ -297,9 +306,8 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
       PaintMenuBackground(canvas, color_provider, rect);
       return;
     case kMenuItemBackground:
-      CommonThemePaintMenuItemBackground(this, color_provider, canvas, state,
-                                         rect,
-                                         std::get<MenuItemExtraParams>(extra));
+      PaintMenuItemBackground(canvas, color_provider, state, rect,
+                              std::get<MenuItemExtraParams>(extra));
       return;
     default:
       PaintIndirect(canvas, part, state, rect, extra);
@@ -310,8 +318,7 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
 NativeThemeWin::NativeThemeWin(bool configure_web_instance,
                                bool should_only_use_dark_colors)
     : NativeTheme(should_only_use_dark_colors),
-      supports_windows_dark_mode_(base::win::IsDarkModeAvailable()),
-      color_change_listener_(this) {
+      supports_windows_dark_mode_(base::win::IsDarkModeAvailable()) {
   // By default UI should not use the system accent color.
   set_should_use_system_accent_color(false);
 
@@ -416,7 +423,15 @@ void NativeThemeWin::CloseHandlesInternal() {
   }
 }
 
-void NativeThemeWin::OnSysColorChange() {
+void NativeThemeWin::OnWndProc(HWND hwnd,
+                               UINT message,
+                               WPARAM wparam,
+                               LPARAM lparam) {
+  if (message != WM_SYSCOLORCHANGE &&
+      (message != WM_SETTINGCHANGE || wparam != SPI_SETHIGHCONTRAST)) {
+    return;
+  }
+
   UpdateSystemColors();
   if (!IsForcedHighContrast()) {
     set_forced_colors(IsUsingHighContrastThemeInternal());
@@ -758,11 +773,6 @@ NativeTheme::PreferredContrast NativeThemeWin::CalculatePreferredContrast()
   }
   return contrast_ratio <= 2.5 ? NativeTheme::PreferredContrast::kLess
                                : NativeTheme::PreferredContrast::kCustom;
-}
-
-NativeTheme::ColorScheme NativeThemeWin::GetDefaultSystemColorScheme() const {
-  return InForcedColorsMode() ? ColorScheme::kPlatformHighContrast
-                              : NativeTheme::GetDefaultSystemColorScheme();
 }
 
 void NativeThemeWin::PaintIndirect(cc::PaintCanvas* destination_canvas,
@@ -1689,20 +1699,13 @@ void NativeThemeWin::RegisterColorFilteringRegkeyObserver() {
 
 void NativeThemeWin::UpdateDarkModeStatus() {
   bool dark_mode_enabled = false;
-  bool system_dark_mode_enabled = false;
   if (hkcu_themes_regkey_.Valid()) {
     DWORD apps_use_light_theme = 1;
     hkcu_themes_regkey_.ReadValueDW(L"AppsUseLightTheme",
                                     &apps_use_light_theme);
     dark_mode_enabled = (apps_use_light_theme == 0);
-
-    DWORD system_uses_light_theme = 1;
-    hkcu_themes_regkey_.ReadValueDW(L"SystemUsesLightTheme",
-                                    &system_uses_light_theme);
-    system_dark_mode_enabled = (system_uses_light_theme == 0);
   }
   set_use_dark_colors(dark_mode_enabled);
-  set_use_dark_colors_for_system_integrated_ui(system_dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();

@@ -944,6 +944,9 @@ ChildProcessSecurityPolicyImpl::ChildProcessSecurityPolicyImpl()
   // IsWebSafeScheme(), and then eliminate the next two lines.
   RegisterWebSafeScheme(url::kBlobScheme);
   RegisterWebSafeScheme(url::kFileSystemScheme);
+  
+  if(base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	  RegisterWebSafeScheme(url::kTraceScheme);
 
   // We know about the following pseudo schemes and treat them specially.
   RegisterPseudoScheme(url::kAboutScheme);

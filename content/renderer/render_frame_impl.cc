@@ -1208,6 +1208,8 @@ WindowOpenDisposition NavigationPolicyToDisposition(
     case blink::kWebNavigationPolicyNewWindow:
       return WindowOpenDisposition::NEW_WINDOW;
     case blink::kWebNavigationPolicyNewPopup:
+	  if (base::CommandLine::ForCurrentProcess()->HasSwitch("popups-to-tabs"))
+         return WindowOpenDisposition::NEW_FOREGROUND_TAB;
       return WindowOpenDisposition::NEW_POPUP;
     case blink::kWebNavigationPolicyPictureInPicture:
       return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
@@ -2304,13 +2306,13 @@ void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
       // main frame when a commit (and ownership transfer) is imminent.
       // TODO(dcheng): This is the case of https://crbug.com/838348.
       DCHECK(is_main_frame_);
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
       CHECK(!in_frame_tree_);
 #else
       // Previously this CHECK() was disabled on Android because it was much
       // easier to hit the race there.
       CHECK(!in_frame_tree_);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
       break;
   }
 

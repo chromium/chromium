@@ -15,6 +15,62 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 
+/*
+EventSetInformation configuration macros:
+
+TraceLogging works best if the EventSetInformation API can be used to notify
+ETW that the provider uses TraceLogging event encoding.
+
+The EventSetInformation API is available on Windows 8 and later. (It is also
+available on fully-patched Windows 7, but not on Windows 7 RTM).
+
+The TLM_HAVE_EVENT_SET_INFORMATION and TLM_EVENT_SET_INFORMATION macros can
+be set before compiling this file to  control how the TlmProvider class deals
+with the EventSetInformation API.
+
+If these macros are not set, the default behavior is to check the WINVER
+macro at compile time:
+
+- If WINVER is set to Windows 7 or before, TlmProvider will use GetProcAddress
+  to locate EventSetInformation, and then invoke it if present. This is less
+  efficient, but works on older versions of Windows.
+- If WINVER is set to Windows 8 or later, TlmProvider will directly invoke
+  EventSetInformation. This is more efficient, but the resulting application
+  will only work correctly on newer versions of Windows.
+
+If you need to run on Windows 7 RTM, but for some reason need to set WINVER to
+Windows 8 or higher, you can override the default behavior by defining
+TLM_HAVE_EVENT_SET_INFORMATION=2 when compiling this file.
+
+Details:
+- The TLM_EVENT_SET_INFORMATION macro can be set the name of a replacement
+  function that TlmProvider should use instead of EventSetInformation.
+- The TLM_HAVE_EVENT_SET_INFORMATION macro can be set to 0 (disable the use of
+  EventSetInformation), 1 (directly invoke EventSetInformation), or 2 (try to
+  locate EventSetInformation via GetProcAddress, and invoke if found).
+*/
+
+// This code needs to run on Windows 7 and this is magic which
+// removes static linking to EventSetInformation
+#define TLM_HAVE_EVENT_SET_INFORMATION 2
+
+#ifndef TLM_EVENT_SET_INFORMATION
+#define TLM_EVENT_SET_INFORMATION EventSetInformation
+#ifndef TLM_HAVE_EVENT_SET_INFORMATION
+#if WINVER < 0x0602 || !defined(EVENT_FILTER_TYPE_SCHEMATIZED)
+// Find "EventSetInformation" via GetModuleHandleExW+GetProcAddress
+#define TLM_HAVE_EVENT_SET_INFORMATION 2
+#else
+// Directly invoke TLM_EVENT_SET_INFORMATION(...)
+#define TLM_HAVE_EVENT_SET_INFORMATION 1
+#endif
+#endif
+#elif !defined(TLM_HAVE_EVENT_SET_INFORMATION)
+// Directly invoke TLM_EVENT_SET_INFORMATION(...)
+#define TLM_HAVE_EVENT_SET_INFORMATION 1
+#endif
+
+
 TlmProvider::TlmProvider() noexcept = default;
 
 TlmProvider::~TlmProvider() {
@@ -27,7 +83,7 @@ TlmProvider::TlmProvider(const char* provider_name,
                              on_updated_callback) noexcept {
   ULONG status =
       Register(provider_name, provider_guid, std::move(on_updated_callback));
-  LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider resistration failure";
+  LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider registration failure";
 }
 
 // Appends a nul-terminated string to a metadata block.

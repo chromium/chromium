@@ -62,6 +62,9 @@ ChromePingManagerFactory::BuildServiceInstanceForBrowserContext(
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   hats_delegate = std::make_unique<ChromeSafeBrowsingHatsDelegate>(profile);
 #endif
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+    return nullptr;
+  }
   return PingManager::Create(
       GetV4ProtocolConfig(),
       g_browser_process->safe_browsing_service()->GetURLLoaderFactory(profile),

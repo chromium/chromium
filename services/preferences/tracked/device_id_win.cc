@@ -10,11 +10,16 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 
 MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {
   DCHECK(machine_id);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-machine-id")) {
+     return MachineIdStatus::NOT_IMPLEMENTED;
+  }
 
   wchar_t computer_name[MAX_COMPUTERNAME_LENGTH + 1] = {};
   DWORD computer_name_size = std::size(computer_name);

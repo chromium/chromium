@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include "base/win/windows_version.h"
+
 #include <algorithm>
 
 #include "extensions/browser/app_window/native_app_window.h"

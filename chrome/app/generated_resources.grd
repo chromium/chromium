@@ -29,7 +29,7 @@ are declared in tools/grit/grit_args.gni.
     <output filename="generated_resources_de.pak" type="data_package" lang="de" />
     <output filename="generated_resources_el.pak" type="data_package" lang="el" />
     <output filename="generated_resources_en-GB.pak" type="data_package" lang="en-GB" />
-    <output filename="generated_resources_en-US.pak" type="data_package" lang="en" />
+    <output filename="generated_resources_en-US.pak" type="data_package" lang="en-GB" />
     <output filename="generated_resources_es.pak" type="data_package" lang="es" />
     <output filename="generated_resources_es-419.pak" type="data_package" lang="es-419" />
     <output filename="generated_resources_et.pak" type="data_package" lang="et" />

@@ -13,6 +13,10 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/switches.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/assistant/buildflags.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -118,8 +122,6 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
         command_line->AppendSwitchASCII(
             switches::kServiceSandboxType,
             StringFromUtilitySandboxType(sandbox_type));
-      } else {
-        command_line->AppendSwitch(switches::kNoSandbox);
       }
       break;
     case Sandbox::kRenderer:
@@ -214,15 +216,23 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
   if (process_type.empty())
     return Sandbox::kNoSandbox;
 
-  if (process_type == switches::kRendererProcess)
+  if (process_type == switches::kRendererProcess) {
+    if (command_line.HasSwitch("legacy-sandbox"))
+      return Sandbox::kNoSandbox;
     return Sandbox::kRenderer;
-
+  }
   if (process_type == switches::kUtilityProcess) {
+#if BUILDFLAG(IS_WIN)
+    if (base::win::GetVersion() < base::win::Version::WIN10) {
+        return Sandbox::kNoSandbox;
+    }
+#endif
     return UtilitySandboxTypeFromString(
         command_line.GetSwitchValueASCII(switches::kServiceSandboxType));
   }
   if (process_type == switches::kGpuProcess) {
-    if (command_line.HasSwitch(switches::kDisableGpuSandbox))
+    if (command_line.HasSwitch(switches::kDisableGpuSandbox) ||
+        command_line.HasSwitch("legacy-sandbox"))
       return Sandbox::kNoSandbox;
     return Sandbox::kGpu;
   }

@@ -55,7 +55,7 @@ namespace {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr wchar_t kChromePolicyKey[] = L"SOFTWARE\\Policies\\Google\\Chrome";
 #else
-constexpr wchar_t kChromePolicyKey[] = L"SOFTWARE\\Policies\\Chromium";
+constexpr wchar_t kChromePolicyKey[] = L"SOFTWARE\\Policies\\Supermium";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_WIN)
 

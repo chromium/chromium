@@ -21,6 +21,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/win/access_token.h"
+#include "base/win/windows_version.h"
 #include "sandbox/win/src/acl.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/handle_closer_agent.h"
@@ -88,6 +89,8 @@ bool WarmupWindowsLocales() {
 }
 
 bool SetProcessIntegrityLevel(IntegrityLevel integrity_level) {
+  if (base::win::GetVersion() < base::win::Version::VISTA)
+    return true;
   std::optional<DWORD> rid = GetIntegrityLevelRid(integrity_level);
   if (!rid) {
     // No mandatory level specified, we don't change it.

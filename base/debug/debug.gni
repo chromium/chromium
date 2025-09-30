@@ -26,6 +26,13 @@ declare_args() {
   # Even if it's disabled we still collect some data, i.e. total number of
   # allocations. All other data will be set to a default value.
   build_allocation_trace_recorder_full_reporting = false
+
+  # A special build flag for the Supermium debugging builds.
+  #
+  # This enables stack traces in logs and non-fatalizes DCHECKs.
+  # Ultimately, it should help users collect necessary data for browser issues
+  # without setting up a dedicated debugger.
+  supermium_debug = false
 }
 
 assert(!(build_allocation_stack_trace_recorder && is_fuchsia),

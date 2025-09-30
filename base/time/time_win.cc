@@ -803,11 +803,11 @@ TimeTicks::Clock TimeTicks::GetClock() {
 
 namespace subtle {
 LiveTicks LiveTicksNowIgnoringOverride() {
-  ULONGLONG unbiased_interrupt_time;
-  QueryUnbiasedInterruptTimePrecise(&unbiased_interrupt_time);
+  LARGE_INTEGER unbiased_interrupt_time;
+  QueryPerformanceCounter(&unbiased_interrupt_time);
   // QueryUnbiasedInterruptTimePrecise gets the interrupt time in system time
   // units of 100 nanoseconds.
-  return LiveTicks() + Nanoseconds(unbiased_interrupt_time * 100);
+  return LiveTicks() + Nanoseconds(unbiased_interrupt_time.QuadPart * 100);
 }
 }  // namespace subtle
 

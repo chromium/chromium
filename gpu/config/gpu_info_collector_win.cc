@@ -308,6 +308,9 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
 
   CollectNPUInformation(gpu_info);
 
+  if (!::GetProcAddress(::GetModuleHandleW(L"dxgi.dll"), "CreateDXGIFactory1"))
+    return false;
+
   Microsoft::WRL::ComPtr<IDXGIFactory1> dxgi_factory;
   HRESULT hr = ::CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory));
   if (FAILED(hr))

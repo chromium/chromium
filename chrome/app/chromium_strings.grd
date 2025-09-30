@@ -24,7 +24,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
     <output filename="branded_strings_de.pak" type="data_package" lang="de" />
     <output filename="branded_strings_el.pak" type="data_package" lang="el" />
     <output filename="branded_strings_en-GB.pak" type="data_package" lang="en-GB" />
-    <output filename="branded_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="branded_strings_en-US.pak" type="data_package" lang="en-GB" />
     <output filename="branded_strings_es.pak" type="data_package" lang="es" />
     <output filename="branded_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="branded_strings_et.pak" type="data_package" lang="et" />
@@ -294,10 +294,10 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         </then>
         <else>
           <message name="IDS_PRODUCT_NAME" desc="The Chrome application name" translateable="false">
-            Chromium
+            Supermium
           </message>
           <message name="IDS_SHORT_PRODUCT_NAME" desc="The Chrome application short name." translateable="false">
-            Chromium
+            Supermium
           </message>
         </else>
       </if>
@@ -516,7 +516,7 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         </message>
       </if>
       <message name="IDS_ACCNAME_APP" desc="The accessible name for the app menu." translateable="false">
-        Chromium
+        Supermium
       </message>
       <!-- Hung Browser Detector -->
       <if expr="is_win">
@@ -606,7 +606,7 @@ Chromium is unable to recover your settings.
         Chromium lets you know if your passwords are ever compromised
       </message>
       <message name="IDS_PASSWORD_MANAGER_TITLE_BRAND" desc="The product name used in the title of the password bubble." translateable="false">
-        Chromium
+        Supermium
       </message>
       <message name="IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE" desc="The text of the Google Password Manager links displayed on Password Manager bubbles footer when the credentials are stored only locally.">
         Password Manager
@@ -995,7 +995,7 @@ Chromium is unable to recover your settings.
 
       <!-- Chrome sign-in page -->
       <message name="IDS_CHROME_SIGNIN_TITLE" desc="Title on the about:chrome-signin page" translateable="false">
-        Chromium
+        Supermium
       </message>
 
       <!-- DICE sign-in promo strings -->
@@ -2101,7 +2101,7 @@ Chromium is unable to recover your settings.
       <!-- User happiness tracking survey UI -->
       <if expr="not is_android">
         <message name="IDS_HATS_BUBBLE_TITLE" translateable="false" desc="The title of Happiness Tracking Survey's invitation banner, it invites users to take a survey">
-          Help us improve Chromium
+          Help us improve Supermium
         </message>
       </if>
 
@@ -2247,7 +2247,7 @@ Chromium is unable to recover your settings.
       <!-- ChromiumUpdater Strings -->
       <if expr="is_win">
         <message name="IDS_FRIENDLY_COMPANY_NAME" desc="Company name" translateable="false">
-          Chromium
+          Supermium
         </message>
         <message name="IDS_NO_UPDATE_RESPONSE" desc="Updater response for no updates when handling install result.">
           No update is available.

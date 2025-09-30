@@ -236,6 +236,8 @@ source_set("audio") {
       "win/core_audio_util_win.h",
       "win/device_enumeration_win.cc",
       "win/device_enumeration_win.h",
+      "win/wavein_input_win.cc",
+      "win/wavein_input_win.h",
       "win/waveout_output_win.cc",
       "win/waveout_output_win.h",
     ]

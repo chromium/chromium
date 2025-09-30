@@ -35,6 +35,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_unique_name_table.pb.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/icu_fold_case_util.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/ports/SkTypeface_win.h"
 #include "ui/gfx/win/direct_write.h"
 #include "ui/gfx/win/text_analysis_source.h"
 
@@ -445,6 +448,40 @@ void DWriteFontProxyImpl::MapCharacters(
   DCHECK_GT(result->mapped_length, 0u);
 }
 
+void DWriteFontProxyImpl::GetUniqueNameLookupTableIfAvailable(
+    GetUniqueNameLookupTableIfAvailableCallback callback) {
+  DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
+  /* Table is not synchronously available, return immediately. */
+  if (!DWriteFontLookupTableBuilder::GetInstance()
+           ->FontUniqueNameTableReady()) {
+    std::move(callback).Run(false, base::ReadOnlySharedMemoryRegion());
+    return;
+  }
+
+  std::move(callback).Run(
+      true,
+      DWriteFontLookupTableBuilder::GetInstance()->DuplicateMemoryRegion());
+}
+
+void DWriteFontProxyImpl::GetUniqueFontLookupMode(
+    GetUniqueFontLookupModeCallback callback) {
+  InitializeDirectWrite();
+  // If factory3_ is available, that means we can use IDWriteFontSet to filter
+  // for PostScript name and full font name directly and do not need to build
+  // the lookup table.
+  blink::mojom::UniqueFontLookupMode lookup_mode =
+      factory3_.Get() ? blink::mojom::UniqueFontLookupMode::kSingleLookups
+                      : blink::mojom::UniqueFontLookupMode::kRetrieveTable;
+  std::move(callback).Run(lookup_mode);
+}
+
+void DWriteFontProxyImpl::GetUniqueNameLookupTable(
+    GetUniqueNameLookupTableCallback callback) {
+  DCHECK(base::FeatureList::IsEnabled(features::kFontSrcLocalMatching));
+  DWriteFontLookupTableBuilder::GetInstance()->QueueShareMemoryRegionWhenReady(
+      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
+}
+
 void DWriteFontProxyImpl::MatchUniqueFont(
     const std::u16string& unique_font_name,
     MatchUniqueFontCallback callback) {
@@ -541,7 +578,52 @@ void DWriteFontProxyImpl::MatchUniqueFont(
   std::move(callback).Run(std::move(font_file), ttc_index);
 }
 
+void DWriteFontProxyImpl::FallbackFamilyAndStyleForCodepoint(
+    const std::string& base_family_name,
+    const std::string& locale_name,
+    uint32_t codepoint,
+    FallbackFamilyAndStyleForCodepointCallback callback) {
+  InitializeDirectWrite();
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback),
+      blink::mojom::FallbackFamilyAndStyle::New("",
+                                                /* weight */ 0,
+                                                /* width */ 0,
+                                                /* slant */ 0));
+
+  if (!codepoint || !collection_ || !factory_)
+    return;
+
+  sk_sp<SkFontMgr> font_mgr(
+      SkFontMgr_New_DirectWrite(factory_.Get(), collection_.Get()));
+
+  if (!font_mgr)
+    return;
+
+  const char* bcp47_locales[] = {locale_name.c_str()};
+  int num_locales = locale_name.empty() ? 0 : 1;
+  const char** locales = locale_name.empty() ? nullptr : bcp47_locales;
+
+  sk_sp<SkTypeface> typeface(font_mgr->matchFamilyStyleCharacter(
+      base_family_name.c_str(), SkFontStyle(), locales, num_locales,
+      codepoint));
+
+  if (!typeface)
+    return;
+
+  SkString family_name;
+  typeface->getFamilyName(&family_name);
+
+  SkFontStyle font_style = typeface->fontStyle();
+
+  auto result_fallback_and_style = blink::mojom::FallbackFamilyAndStyle::New(
+      family_name.c_str(), font_style.weight(), font_style.width(),
+      font_style.slant());
+  std::move(callback).Run(std::move(result_fallback_and_style));
+}
+
 void DWriteFontProxyImpl::InitializeDirectWrite() {
+  HRESULT hr;
   if (direct_write_initialized_)
     return;
   direct_write_initialized_ = true;
@@ -555,20 +637,30 @@ void DWriteFontProxyImpl::InitializeDirectWrite() {
     return;
   }
 
-  // QueryInterface for IDWriteFactory2. This should succeed since we only
-  // support >= Win10.
+  // QueryInterface for IDWriteFactory2. It's ok for this to fail if we are
+  // running an older version of DirectWrite (earlier than Win8.1).
   factory_.As<IDWriteFactory2>(&factory2_);
-  DCHECK(factory2_);
 
-  // QueryInterface for IDwriteFactory3, needed for MatchUniqueFont on Windows.
-  // This should succeed since we only support >= Win10.
+  // QueryInterface for IDwriteFactory3, needed for MatchUniqueFont on Windows
+  // 10. May fail on older versions, in which case, unique font matching must be
+  // done through indexing system fonts using DWriteFontLookupTableBuilder.
   factory_.As<IDWriteFactory3>(&factory3_);
-  DCHECK(factory3_);
 
-  // Normally identical to factory_->GetSystemFontCollection() unless a
-  // sideloaded font has been added using SideLoadFontForTesting().
-  HRESULT hr = GetLocalFontCollection(factory3_, &collection_);
+  // On Windows 10 and up (or Vista exkernel/Windows 8.x with modified dwrite.dll from 1809)
+  // you can take advantage of the extended DirectWrite APIs to sideload local fonts in
+  // addition to system fonts. But if IDWriteFactory3 is unavailable, fall back to
+  // GetSystemFontCollection.
+  // TODO: make DirectWrite optional for the benefit of the NT 5 users.
+
+  if(factory3_  == nullptr) {
+  hr = factory_->GetSystemFontCollection(&collection_);
   DCHECK(SUCCEEDED(hr));
+  }
+  else {
+  hr = GetLocalFontCollection(factory3_, &collection_);
+  DCHECK(SUCCEEDED(hr));
+  }
+  
 
   if (!collection_) {
     return;

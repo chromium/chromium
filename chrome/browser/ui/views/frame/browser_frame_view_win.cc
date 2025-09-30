@@ -15,6 +15,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -141,7 +142,9 @@ bool BrowserFrameViewWin::CaptionButtonsOnLeadingEdge() const {
 
 gfx::Rect BrowserFrameViewWin::GetBoundsForTabStripRegion(
     const gfx::Size& tabstrip_minimum_size) const {
-  const int x = CaptionButtonsOnLeadingEdge() ? CaptionButtonsRegionWidth() : 0;
+  int x = CaptionButtonsOnLeadingEdge() ? CaptionButtonsRegionWidth() : 0;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("old-tab-strip-bounds"))
+	  x = 8;
   int end_x = width();
   if (!CaptionButtonsOnLeadingEdge()) {
     end_x = std::min(width() - CaptionButtonsRegionWidth(), end_x);
@@ -427,7 +430,7 @@ void BrowserFrameViewWin::ResetWindowControls() {
 void BrowserFrameViewWin::OnThemeChanged() {
   BrowserNonClientFrameView::OnThemeChanged();
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
-    SetSystemMicaTitlebarAttributes();
+    SetSystemTitlebarAttributes();
   }
 }
 
@@ -655,25 +658,19 @@ bool BrowserFrameViewWin::ShouldShowWindowTitle(TitlebarType type) const {
 
 void BrowserFrameViewWin::TabletModeChanged() {
   if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
-    SetSystemMicaTitlebarAttributes();
+    SetSystemTitlebarAttributes();
   }
 }
 
-void BrowserFrameViewWin::SetSystemMicaTitlebarAttributes() {
-  CHECK(SystemTitlebarCanUseMicaMaterial());
-
-  const BOOL dark_titlebar_enabled =
-      frame()->GetColorMode() == ui::ColorProviderKey::ColorMode::kDark;
-  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
-                        DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
-                        sizeof(dark_titlebar_enabled));
-
-  const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
-      browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
-                                           : DWMSBT_MAINWINDOW;
-  DwmSetWindowAttribute(views::HWNDForWidget(frame()),
-                        DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
-                        sizeof(dwm_backdrop_type));
+void BrowserFrameViewWin::SetSystemTitlebarAttributes() {
+  if (!ShouldBrowserCustomDrawTitlebar(browser_view())) {
+    const DWM_SYSTEMBACKDROP_TYPE dwm_backdrop_type =
+        browser_view()->GetTabStripVisible() ? DWMSBT_TABBEDWINDOW
+                                             : DWMSBT_MAINWINDOW;
+    DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+                          DWMWA_SYSTEMBACKDROP_TYPE, &dwm_backdrop_type,
+                          sizeof(dwm_backdrop_type));
+  }
 }
 
 SkColor BrowserFrameViewWin::GetTitlebarColor() const {

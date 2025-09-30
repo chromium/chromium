@@ -29,13 +29,13 @@
 #include <mach-o/dyld.h>
 #endif
 
-#if PA_BUILDFLAG(IS_WIN)
-#include <windows.h>
-#endif  // PA_BUILDFLAG(IS_WIN)
-
 #if PA_CONFIG(ENABLE_SHADOW_METADATA) || PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
 #include <sys/mman.h>
 #endif
+
+#if PA_BUILDFLAG(IS_WIN)
+#include <windows.h>
+#endif  // PA_BUILDFLAG(IS_WIN)
 
 namespace partition_alloc::internal {
 
@@ -69,9 +69,9 @@ PA_NOINLINE void HandlePoolAllocFailure() {
     HandlePoolAllocFailureOutOfVASpace();
   } else if (alloc_page_error_code == ERROR_COMMITMENT_LIMIT ||
              alloc_page_error_code == ERROR_COMMITMENT_MINIMUM) {
-    // Should not happen, since as of Windows 8.1+, reserving address space
-    // should not be charged against the commit limit, aside from a very small
-    // amount per 64kiB block. Keep this path anyway, to check in crash reports.
+    // On Windows <8.1, MEM_RESERVE increases commit charge to account for
+    // not-yet-committed PTEs needed to cover that VA space, if it was to be
+    // committed (see crbug.com/1101421#c16).
     HandlePoolAllocFailureOutOfCommitCharge();
   } else
 #endif  // PA_BUILDFLAG(IS_WIN)
@@ -102,10 +102,33 @@ uintptr_t PartitionAddressSpace::pool_shadow_address_ =
 #endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-#if !PA_BUILDFLAG(IS_IOS)
-#error Dynamic pool size is only supported on iOS.
-#endif
+#if PA_BUILDFLAG(IS_WIN)
+bool PartitionAddressSpace::IsLegacyWindowsVersion() {
+  // Use ::RtlGetVersion instead of ::GetVersionEx or helpers from
+  // VersionHelpers.h because those alternatives change their behavior depending
+  // on whether or not the calling executable has a compatibility manifest
+  // resource. It's better for the allocator to not depend on that to decide the
+  // pool size.
+  // Assume legacy if ::RtlGetVersion is not available or it fails.
+  using RtlGetVersion = LONG(WINAPI*)(OSVERSIONINFOEX*);
+  const RtlGetVersion rtl_get_version = reinterpret_cast<RtlGetVersion>(
+      ::GetProcAddress(::GetModuleHandle(L"ntdll.dll"), "RtlGetVersion"));
+  if (!rtl_get_version) {
+    return true;
+  }
 
+  OSVERSIONINFOEX version_info = {};
+  version_info.dwOSVersionInfoSize = sizeof(version_info);
+  if (rtl_get_version(&version_info) != ERROR_SUCCESS) {
+    return true;
+  }
+
+  // Anything prior to Windows 8.1 is considered legacy for the allocator.
+  // Windows 8.1 is major 6 with minor 3.
+  return version_info.dwMajorVersion < 6 ||
+         (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion < 3);
+}
+#elif PA_BUILDFLAG(IS_IOS)
 bool PartitionAddressSpace::IsIOSTestProcess() {
   // On iOS, only applications with the extended virtual addressing entitlement
   // can use a large address space. Since Earl Grey test runner apps cannot get
@@ -137,6 +160,7 @@ bool PartitionAddressSpace::IsIOSTestProcess() {
 
   return has_suffix("Runner") || has_suffix("ios_web_view_inttests");
 }
+#endif  // PA_BUILDFLAG(IS_IOS)
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)

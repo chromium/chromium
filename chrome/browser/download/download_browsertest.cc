@@ -513,19 +513,23 @@ void CreateCompletedDownload(content::DownloadManager* download_manager,
 // Whether download UI is visible at all (download toolbar button for download
 // bubble, or download shelf).
 bool IsDownloadUiVisible(BrowserWindow* window) {
-  return window->GetDownloadBubbleUIController()
-      ->GetDownloadDisplayController()
-      ->download_display_for_testing()
-      ->IsShowing();
+  return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)
+             ? window->GetDownloadBubbleUIController()
+                   ->GetDownloadDisplayController()
+                   ->download_display_for_testing()
+                   ->IsShowing()
+             : window->IsDownloadShelfVisible();
 }
 
 // Whether download details are visible in the UI (partial view for download
 // bubble, or download shelf).
 bool IsDownloadDetailedUiVisible(BrowserWindow* window) {
-  return window->GetDownloadBubbleUIController()
-      ->GetDownloadDisplayController()
-      ->download_display_for_testing()
-      ->IsShowingDetails();
+  return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)
+             ? window->GetDownloadBubbleUIController()
+                   ->GetDownloadDisplayController()
+                   ->download_display_for_testing()
+                   ->IsShowingDetails()
+             : window->IsDownloadShelfVisible();
 }
 #endif
 
@@ -5222,7 +5226,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, PerWindowShelf) {
 
 // Check whether the downloads shelf is closed when the downloads tab is
 // invoked.
-IN_PROC_BROWSER_TEST_F(DownloadTest, CloseShelfOnDownloadsTab) {
+IN_PROC_BROWSER_TEST_F(DownloadShelfTest, CloseShelfOnDownloadsTab) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =

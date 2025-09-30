@@ -3036,6 +3036,8 @@ source_set("browser") {
       "renderer_host/direct_manipulation_helper_win.h",
       "renderer_host/dwrite_font_file_util_win.cc",
       "renderer_host/dwrite_font_file_util_win.h",
+      "renderer_host/dwrite_font_lookup_table_builder_win.cc",
+      "renderer_host/dwrite_font_lookup_table_builder_win.h",
       "renderer_host/dwrite_font_proxy_impl_win.cc",
       "renderer_host/dwrite_font_proxy_impl_win.h",
       "renderer_host/input/stylus_handwriting_callback_sink_win.cc",

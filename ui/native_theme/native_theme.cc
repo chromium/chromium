@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/command_line.h"
+#include "base/features.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -289,7 +290,7 @@ void NativeTheme::SetPreferredContrast(
 bool NativeTheme::IsForcedDarkMode() {
   static bool kIsForcedDarkMode =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceDarkMode);
+          switches::kForceDarkMode) || base::FeatureList::IsEnabled(base::features::kForceDarkModeFlag);
   return kIsForcedDarkMode;
 }
 

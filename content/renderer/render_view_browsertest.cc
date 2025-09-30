@@ -132,6 +132,10 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 #if BUILDFLAG(IS_OZONE)
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #endif
@@ -3096,6 +3100,12 @@ TEST_F(RenderViewImplScaleFactorTest, ConvertViewportToWindow) {
 TEST_F(RenderViewImplScaleFactorTest,
        DISABLED_GetCompositionCharacterBoundsTest) {  // http://crbug.com/582016
   SetDeviceScaleFactor(1.f);
+#if BUILDFLAG(IS_WIN)
+  // http://crbug.com/508747
+  if (base::win::GetVersion() >= base::win::Version::WIN10)
+    return;
+#endif
+
   LoadHTML("<textarea id=\"test\"></textarea>");
   ExecuteJavaScriptForTests("document.getElementById('test').focus();");
 

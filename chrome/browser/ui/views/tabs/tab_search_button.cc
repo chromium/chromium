@@ -23,8 +23,8 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
-constexpr int kCRTabSearchCornerRadius = 10;
-constexpr int kCRTabSearchFlatCornerRadius = 4;
+constexpr int kCRTabSearchCornerRadius = 16;
+constexpr int kCRTabSearchFlatCornerRadius = 0;
 constexpr int kComboButtonFlatCornerRadius = 0;
 }  // namespace
 

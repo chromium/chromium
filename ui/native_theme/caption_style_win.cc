@@ -14,6 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/core_winrt_util.h"
+#include "base/win/windows_version.h"
 #include "skia/ext/skia_utils_win.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"

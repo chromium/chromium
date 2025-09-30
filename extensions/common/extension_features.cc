@@ -92,7 +92,7 @@ BASE_FEATURE(kExtensionIconVariants,
 
 BASE_FEATURE(kExtensionManifestV2DeprecationWarning,
              "ExtensionManifestV2DeprecationWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionManifestV2Unsupported,
              "ExtensionManifestV2Unsupported",
@@ -104,7 +104,7 @@ BASE_FEATURE(kExtensionManifestV2ExceptionList,
 
 BASE_FEATURE(kExtensionManifestV2Disabled,
              "ExtensionManifestV2Disabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kExtensionManifestV2ExceptionListParam(
     &kExtensionManifestV2ExceptionList,
@@ -113,7 +113,7 @@ const base::FeatureParam<std::string> kExtensionManifestV2ExceptionListParam(
 
 BASE_FEATURE(kAllowLegacyMV2Extensions,
              "AllowLegacyMV2Extensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionWARForRedirect,
              "ExtensionWARForRedirect",

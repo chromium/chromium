@@ -440,6 +440,7 @@ void WriteToFd(int fd, const char* data, size_t length) {
   }
 }
 
+#if !BUILDFLAG(SUPERMIUM_DEBUG)
 void SetLogFatalCrashKey(LogMessage* log_message) {
 #if !BUILDFLAG(IS_NACL)
   // In case of an out-of-memory condition, this code could be reentered when
@@ -461,6 +462,7 @@ void SetLogFatalCrashKey(LogMessage* log_message) {
 
 #endif  // !BUILDFLAG(IS_NACL)
 }
+#endif
 
 std::string BuildCrashString(const char* file,
                              int line,
@@ -723,10 +725,10 @@ LogMessage::~LogMessage() {
 void LogMessage::Flush() {
   // Don't let actions from this method affect the system error after returning.
   base::ScopedClearLastError scoped_clear_last_error;
-
   size_t stack_start = stream_.str().length();
+
 #if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_NACL) && !defined(__UCLIBC__) && \
-    !BUILDFLAG(IS_AIX)
+    !BUILDFLAG(IS_AIX) || BUILDFLAG(SUPERMIUM_DEBUG)
   // Include a stack trace on a fatal, unless a debugger is attached.
   if (severity_ == LOGGING_FATAL && !base::debug::BeingDebugged()) {
     base::debug::StackTrace stack_trace;

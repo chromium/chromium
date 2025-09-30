@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/navigator_ua.h"
 
 #include "base/compiler_specific.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/renderer/core/frame/navigator_ua_data.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -12,6 +13,8 @@
 namespace blink {
 
 NavigatorUAData* NavigatorUA::userAgentData() {
+ if (base::FeatureList::IsEnabled(blink::features::kRemoveClientHints))
+    return nullptr;
   NavigatorUAData* ua_data =
       MakeGarbageCollected<NavigatorUAData>(GetUAExecutionContext());
 

@@ -153,6 +153,11 @@ void GetBiometricAvailabilityFromWindows(
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
+  if (base::win::GetVersion() < base::win::Version::WIN8) {
+    ReportCantCheckAvailability(thread, std::move(callback));
+    return;
+  }
+
   ComPtr<IUserConsentVerifierStatics> factory;
   HRESULT hr = base::win::GetActivationFactory<
       IUserConsentVerifierStatics,

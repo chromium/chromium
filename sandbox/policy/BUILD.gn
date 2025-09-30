@@ -164,6 +164,7 @@ component("policy") {
       ":win_hook_util",
       "//sandbox/win:sandbox",
     ]
+    public_deps += [ "//ui/gfx" ]
   }
   if (is_fuchsia) {
     sources += [

@@ -23,7 +23,7 @@ bool LayerTreeDebugState::RecordRenderingStats() const {
 }
 
 bool LayerTreeDebugState::ShouldCreateHudLayer() const {
-  return ShowDebugRects() || ShouldDrawHudInfo();
+  return ShowDebugRects() || ShouldDrawHudInfo() || block_lazy_compositing;
 }
 
 bool LayerTreeDebugState::ShowDebugRects() const {

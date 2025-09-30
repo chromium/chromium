@@ -254,14 +254,16 @@ void ChromeRenderFrameObserver::DidFinishLoad() {
   if (frame->Parent() || frame->IsInFencedFrameTree())
     return;
 
-  GURL osdd_url = frame->GetDocument().OpenSearchDescriptionURL();
-  if (!osdd_url.is_empty()) {
-    mojo::Remote<chrome::mojom::OpenSearchDescriptionDocumentHandler>
-        osdd_handler;
-    render_frame()->GetBrowserInterfaceBroker().GetInterface(
-        osdd_handler.BindNewPipeAndPassReceiver());
-    osdd_handler->PageHasOpenSearchDescriptionDocument(
-        frame->GetDocument().Url(), osdd_url);
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch("disable-search-engine-collection")) {
+	  GURL osdd_url = frame->GetDocument().OpenSearchDescriptionURL();
+	  if (!osdd_url.is_empty()) {
+		mojo::Remote<chrome::mojom::OpenSearchDescriptionDocumentHandler>
+			osdd_handler;
+		render_frame()->GetBrowserInterfaceBroker().GetInterface(
+			osdd_handler.BindNewPipeAndPassReceiver());
+		osdd_handler->PageHasOpenSearchDescriptionDocument(
+			frame->GetDocument().Url(), osdd_url);
+	}
   }
 }
 

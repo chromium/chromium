@@ -927,6 +927,9 @@ std::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
   probe::ApplyUserAgentMetadataOverride(probe::ToCoreProbeSink(document),
                                         &user_agent_metadata);
 
+ // if(user_agent_metadata->platform.empty())
+ //        return std::nullopt;
+
   return user_agent_metadata;
 }
 

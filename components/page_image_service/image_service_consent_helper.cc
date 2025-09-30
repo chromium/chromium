@@ -4,6 +4,7 @@
 
 #include "components/page_image_service/image_service_consent_helper.h"
 
+#include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/page_image_service/metrics_util.h"
 #include "components/sync/service/sync_service.h"
@@ -31,7 +32,7 @@ ImageServiceConsentHelper::ImageServiceConsentHelper(
       data_type_(data_type),
       timeout_duration_(base::Seconds(10)) {
   // `sync_service` can be null, for example when disabled via flags.
-  if (sync_service) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch("disable-sync") && sync_service) {
     sync_service_observer_.Observe(sync_service);
   }
 }

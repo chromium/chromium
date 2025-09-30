@@ -24,6 +24,8 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   LayerTreeDebugState();
   LayerTreeDebugState(const LayerTreeDebugState& other);
   ~LayerTreeDebugState();
+  
+  bool block_lazy_compositing = true;
 
   bool debugger_paused = false;
   bool show_fps_counter = false;

@@ -287,10 +287,13 @@ void ProcessSnapshotWin::InitializeUnloadedModules() {
 #else
 #error port
 #endif
-
   ULONG* element_size;
   ULONG* element_count;
   void* event_trace_address;
+  
+  if (!GetProcAddress(GetModuleHandleA("ntdll.dll"), "RtlGetUnloadEventTraceEx"))
+    return;
+
   RtlGetUnloadEventTraceEx(&element_size, &element_count, &event_trace_address);
 
   if (*element_size < sizeof(RTL_UNLOAD_EVENT_TRACE<Traits>)) {

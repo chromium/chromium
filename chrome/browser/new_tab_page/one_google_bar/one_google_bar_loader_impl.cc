@@ -307,6 +307,9 @@ OneGoogleBarLoaderImpl::OneGoogleBarLoaderImpl(
 OneGoogleBarLoaderImpl::~OneGoogleBarLoaderImpl() = default;
 
 void OneGoogleBarLoaderImpl::Load(OneGoogleCallback callback) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+	  return;
+  }
   callbacks_.push_back(std::move(callback));
 
   // Note: If there is an ongoing request, abandon it. It's possible that

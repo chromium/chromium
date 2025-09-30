@@ -65,6 +65,9 @@ DWORD Job::Init(JobLevel security_level,
           JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
       break;
     }
+	case JobLevel::kNone: {
+      return ERROR_BAD_ARGUMENTS;
+    }
   }
 
   if (!::SetInformationJobObject(job_handle_.get(),
@@ -84,20 +87,42 @@ DWORD Job::Init(JobLevel security_level,
 }
 
 bool Job::IsValid() {
-  return job_handle_.is_valid();
+  return job_handle_.IsValid();
 }
 
 HANDLE Job::GetHandle() {
-  return job_handle_.get();
+  return job_handle_.Get();
+}
+
+DWORD Job::UserHandleGrantAccess(HANDLE handle) {
+  if (!job_handle_.IsValid())
+    return ERROR_NO_DATA;
+
+  if (!::UserHandleGrantAccess(handle, job_handle_.Get(),
+                               true)) {  // Access allowed.
+    return ::GetLastError();
+  }
+
+  return ERROR_SUCCESS;
+}
+
+DWORD Job::AssignProcessToJob(HANDLE process_handle) {
+  if (!job_handle_.IsValid())
+    return ERROR_NO_DATA;
+
+  if (!::AssignProcessToJobObject(job_handle_.Get(), process_handle))
+    return ::GetLastError();
+
+  return ERROR_SUCCESS;
 }
 
 DWORD Job::SetActiveProcessLimit(DWORD processes) {
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = {};
 
-  if (!job_handle_.is_valid())
+  if (!job_handle_.IsValid())
     return ERROR_NO_DATA;
 
-  if (!::QueryInformationJobObject(job_handle_.get(),
+  if (!::QueryInformationJobObject(job_handle_.Get(),
                                    JobObjectExtendedLimitInformation, &jeli,
                                    sizeof(jeli), nullptr)) {
     return ::GetLastError();
@@ -105,7 +130,7 @@ DWORD Job::SetActiveProcessLimit(DWORD processes) {
   jeli.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
   jeli.BasicLimitInformation.ActiveProcessLimit = processes;
 
-  if (!::SetInformationJobObject(job_handle_.get(),
+  if (!::SetInformationJobObject(job_handle_.Get(),
                                  JobObjectExtendedLimitInformation, &jeli,
                                  sizeof(jeli))) {
     return ::GetLastError();

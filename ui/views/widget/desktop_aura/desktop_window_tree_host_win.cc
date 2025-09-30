@@ -139,7 +139,8 @@ DesktopWindowTreeHostWin::DesktopWindowTreeHostWin(
       drag_drop_client_(nullptr),
       should_animate_window_close_(false),
       pending_close_(false),
-      has_non_client_view_(false) {}
+      has_non_client_view_(false),
+      tooltip_(nullptr) {}
 
 DesktopWindowTreeHostWin::~DesktopWindowTreeHostWin() {
   desktop_native_widget_aura_->OnDesktopWindowTreeHostDestroyed(this);
@@ -247,7 +248,14 @@ void DesktopWindowTreeHostWin::OnWidgetThemeChanged(
 }
 
 std::unique_ptr<corewm::Tooltip> DesktopWindowTreeHostWin::CreateTooltip() {
-  return std::make_unique<corewm::TooltipAura>();
+  bool force_legacy_tooltips =
+      (base::win::GetVersion() < base::win::Version::WIN8) || base::CommandLine::ForCurrentProcess()->HasSwitch("legacy-tooltips-win");
+  if (!force_legacy_tooltips)
+    return std::make_unique<corewm::TooltipAura>();
+
+  DCHECK(!tooltip_);
+  tooltip_ = new corewm::TooltipWin(GetAcceleratedWidget());
+  return base::WrapUnique(tooltip_.get());
 }
 
 std::unique_ptr<aura::client::DragDropClient>
@@ -1291,6 +1299,12 @@ void DesktopWindowTreeHostWin::HandlePaintAccelerated(
   if (compositor()) {
     compositor()->ScheduleRedrawRect(invalid_rect);
   }
+}
+
+bool DesktopWindowTreeHostWin::HandleTooltipNotify(int w_param,
+                                                   NMHDR* l_param,
+                                                   LRESULT* l_result) {
+  return tooltip_ && tooltip_->HandleNotify(w_param, l_param, l_result);
 }
 
 void DesktopWindowTreeHostWin::HandleMenuLoop(bool in_menu_loop) {

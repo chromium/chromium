@@ -1791,6 +1791,7 @@ bool RenderProcessHostImpl::Init() {
   GetRendererInterface()->InitializeRenderer(
       GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
           browser_context_),
+      base::FeatureList::IsEnabled(blink::features::kRemoveClientHints) ? blink::UserAgentMetadata() : 
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
       GetContentClient()->browser()->GetOriginTrialsSettings(), trace_id);
@@ -3610,7 +3611,9 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kRendererWaitForJavaDebugger,
 #endif
 #if BUILDFLAG(IS_WIN)
+      switches::kDisableDirectWrite,
       switches::kDisableHighResTimer,
+      switches::kEnableWin7WebRtcHWH264Decoding,
       switches::kTextContrast,
       switches::kTextGamma,
       switches::kTrySupportedChannelLayouts,
@@ -3663,12 +3666,12 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     }
   }
 
-#if BUILDFLAG(IS_WIN) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_WIN) && defined(OFFICIAL_BUILD)
   // Needed because we can't show the dialog from the sandbox. Don't pass
   // --no-sandbox in official builds because that would bypass the bad_flgs
   // prompt.
-  if (renderer_cmd->HasSwitch(switches::kRendererStartupDialog) &&
-      !renderer_cmd->HasSwitch(sandbox::policy::switches::kNoSandbox)) {
+  if ((renderer_cmd->HasSwitch(switches::kRendererStartupDialog) &&
+      !renderer_cmd->HasSwitch(sandbox::policy::switches::kNoSandbox))) {
     renderer_cmd->AppendSwitch(sandbox::policy::switches::kNoSandbox);
   }
 #endif

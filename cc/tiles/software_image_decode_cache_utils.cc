@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
+#include "base/logging.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
@@ -20,6 +22,11 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+#if BUILDFLAG (IS_WIN) && _M_IX86
+#include <Windows.h>
+#include <psapi.h>
+#endif
 
 namespace cc {
 namespace {

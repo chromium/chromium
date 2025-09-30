@@ -822,11 +822,16 @@ bool HandleNewTabPageLocationOverride(
 
   // Don't change the URL when incognito mode.
   if (profile->IsOffTheRecord()) {
-    return false;
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch("custom-ntp"))
+      return false;
   }
 
   std::string ntp_location =
       profile->GetPrefs()->GetString(prefs::kNewTabPageLocationOverride);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("custom-ntp"))
+    ntp_location = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("custom-ntp");
+  if (profile->IsOffTheRecord() && ntp_location.find("chrome://") != std::string::npos) 
+	return false;
   if (ntp_location.empty()) {
     return false;
   }
@@ -4790,6 +4795,13 @@ std::string ChromeContentBrowserClient::GetDefaultDownloadName() {
   return l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME);
 }
 
+base::FilePath ChromeContentBrowserClient::GetFontLookupTableCacheDir() {
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  DCHECK(!user_data_dir.empty());
+  return user_data_dir.Append(FILE_PATH_LITERAL("FontLookupTableCache"));
+}
+
 base::FilePath ChromeContentBrowserClient::GetShaderDiskCacheDirectory() {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
@@ -5148,7 +5160,7 @@ bool ChromeContentBrowserClient::PreSpawnChild(
   }
 
   sandbox::MitigationFlags mitigations = config->GetProcessMitigations();
-  mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
+  // mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
   sandbox::ResultCode result = config->SetProcessMitigations(mitigations);
   if (result != sandbox::SBOX_ALL_OK) {
     return false;

@@ -52,8 +52,18 @@ class DWriteFontProxyUnitTest : public testing::Test {
   }
 
   static void SetUpTestCase() {
-    DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
-                        &factory);
+    using DWriteCreateFactoryProc = decltype(DWriteCreateFactory)*;
+    HMODULE dwrite_dll = LoadLibraryW(L"dwrite.dll");
+    if (!dwrite_dll)
+      return;
+
+    DWriteCreateFactoryProc dwrite_create_factory_proc =
+      reinterpret_cast<DWriteCreateFactoryProc>(
+          GetProcAddress(dwrite_dll, "DWriteCreateFactory"));
+    if (!dwrite_create_factory_proc)
+      return;
+    dwrite_create_factory_proc(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
+                               &factory);
 
     std::vector<wchar_t> font_path;
     font_path.resize(MAX_PATH);

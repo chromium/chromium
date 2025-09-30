@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/features.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
@@ -118,6 +119,59 @@ base::RefCountedMemory* ThemeHelper::GetRawData(
   return data;
 }
 
+// For legacy reasons, the theme supplier requires the incognito variants of
+// color IDs.  This converts from normal to incognito IDs where they exist.
+int GetIncognitoId(int id) {
+  switch (id) {
+    case TP::COLOR_FRAME_ACTIVE:
+      return TP::COLOR_FRAME_ACTIVE_INCOGNITO;
+    case TP::COLOR_FRAME_INACTIVE:
+      return TP::COLOR_FRAME_INACTIVE_INCOGNITO;
+    case TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE:
+      return TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO;
+    case TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE:
+      return TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO;
+    case TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE:
+      return TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO;
+    case TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE:
+      return TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO;
+    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_ACTIVE:
+      return TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE;
+    case TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INACTIVE:
+      return TP::COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE;
+    default:
+      return id;
+  }
+}
+
+// static
+bool ThemeHelper::ShouldIgnoreThemeSupplier(
+    int id,
+    bool incognito,
+    const CustomThemeSupplier* theme_supplier) {
+  if (incognito && base::FeatureList::IsEnabled(
+                       base::features::kIncognitoBrandConsistencyForDesktop)) {
+    return true;
+  }
+  // The incognito NTP uses the default background color instead of any theme
+  // background color, unless the theme also sets a custom background image.
+  return incognito && (id == TP::COLOR_NTP_BACKGROUND) &&
+         !HasCustomImage(IDR_THEME_NTP_BACKGROUND, theme_supplier);
+}
+
+
+// static 
+bool ThemeHelper::UseIncognitoColor(int id,
+                                    const CustomThemeSupplier* theme_supplier) {
+  // Incognito is disabled for any non-ignored custom theme colors so they apply
+  // atop a predictable state.
+  return ShouldIgnoreThemeSupplier(id, true, theme_supplier) ||
+         (!IsCustomTheme(theme_supplier) &&
+          (!theme_supplier || theme_supplier->CanUseIncognitoColors()));
+}
+
+
+
 color_utils::HSL ThemeHelper::GetTint(
     int id,
     bool incognito,
@@ -128,7 +182,7 @@ color_utils::HSL ThemeHelper::GetTint(
     return hsl;
   }
 
-  return TP::GetDefaultTint(id, incognito, UseDarkModeColors(theme_supplier));
+  return TP::GetDefaultTint(id, incognito  && UseIncognitoColor(id, theme_supplier), UseDarkModeColors(theme_supplier));
 }
 
 gfx::ImageSkia* ThemeHelper::GetImageSkiaNamed(

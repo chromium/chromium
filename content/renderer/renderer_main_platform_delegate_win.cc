@@ -31,6 +31,18 @@
 #include "ui/gfx/win/direct_write.h"
 
 namespace content {
+namespace {
+
+// Windows-only skia sandbox support
+// These are used for GDI-path rendering.
+void SkiaPreCacheFont(const LOGFONT& logfont) {
+  RenderThread* render_thread = RenderThread::Get();
+  if (render_thread) {
+    render_thread->PreCacheFont(logfont);
+  }
+}
+
+}  // namespace
 
 RendererMainPlatformDelegate::RendererMainPlatformDelegate(
     const MainFunctionParams& parameters)
@@ -44,8 +56,16 @@ void RendererMainPlatformDelegate::PlatformInitialize() {
 
   // Be mindful of what resources you acquire here. They can be used by
   // malicious code if the renderer gets compromised.
-  bool no_sandbox =
-      command_line.HasSwitch(sandbox::policy::switches::kNoSandbox);
+  bool no_sandbox = command_line.HasSwitch(sandbox::policy::switches::kNoSandbox);
+	  
+  bool use_direct_write = gfx::win::ShouldUseDirectWrite();
+  
+  if (use_direct_write) {
+      InitializeDWriteFontProxy();
+    } else {
+      SkTypeface_SetEnsureLOGFONTAccessibleProc(SkiaPreCacheFont);
+    }
+  blink::WebFontRendering::setUseDirectWrite(use_direct_write);
 
   if (!no_sandbox) {
     // ICU DateFormat class (used in base/time_format.cc) needs to get the

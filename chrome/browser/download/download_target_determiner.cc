@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -370,7 +371,7 @@ DownloadTargetDeterminer::DoSetInsecureDownloadStatus() {
   DCHECK(!virtual_path_.empty());
 
   next_state_ = STATE_NOTIFY_EXTENSIONS;
-
+  
   delegate_->GetInsecureDownloadStatus(
       download_, virtual_path_,
       base::BindOnce(&DownloadTargetDeterminer::GetInsecureDownloadStatusDone,
@@ -975,7 +976,10 @@ DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoCheckVisitedReferrerBefore() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   next_state_ = STATE_DETERMINE_INTERMEDIATE_PATH;
-
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium") ||
+	  !base::FeatureList::IsEnabled(features::kInsecureDownloadWarnings)) {
+	  return CONTINUE;
+  }
   // Checking if there are prior visits to the referrer is only necessary if the
   // danger level of the download depends on the file type.
   if (danger_type_ != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS &&
@@ -1236,10 +1240,12 @@ DownloadConfirmationReason DownloadTargetDeterminer::NeedsConfirmation(
     return DownloadConfirmationReason::SAVE_AS;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Don't prompt for extension downloads if the installation site is white
-  // listed.
-  if (download_crx_util::IsTrustedExtensionDownload(GetProfile(), *download_))
-    return DownloadConfirmationReason::NONE;
+if (!download_crx_util::ShouldDownloadAsRegularFile()) {
+    // Don't prompt for extension downloads.
+    if (download_crx_util::IsTrustedExtensionDownload(GetProfile(), *download_) ||
+        filename.MatchesExtension(extensions::kExtensionFileExtension))
+      return DownloadConfirmationReason::NONE;
+  }
 #endif
 
   // Don't prompt for file types that are marked for opening automatically.

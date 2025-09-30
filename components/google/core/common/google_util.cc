@@ -150,6 +150,8 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
 const char kGoogleHomepageURL[] = "https://www.google.com/";
 
 bool HasGoogleSearchQueryParam(std::string_view str) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   url::Component query(0, static_cast<int>(str.length())), key, value;
   while (url::ExtractQueryKeyValue(str, &query, &key, &value)) {
     std::string_view key_str = str.substr(key.begin, key.len);
@@ -167,11 +169,15 @@ std::string GetGoogleLocale(const std::string& application_locale) {
 
 GURL AppendGoogleLocaleParam(const GURL& url,
                              const std::string& application_locale) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return url;
   return net::AppendQueryParameter(url, "hl",
                                    GetGoogleLocale(application_locale));
 }
 
 std::string GetGoogleCountryCode(const GURL& google_homepage_url) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return "nolocale";
   std::string_view google_hostname = google_homepage_url.host_piece();
   // TODO(igorcov): This needs a fix for case when the host has a trailing dot,
   // like "google.com./". https://crbug.com/720295.
@@ -200,6 +206,8 @@ std::string GetGoogleCountryCode(const GURL& google_homepage_url) {
 GURL GetGoogleSearchURL(const GURL& google_homepage_url) {
   // To transform the homepage URL into the corresponding search URL, add the
   // "search" and the "q=" query string.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return google_homepage_url;
   GURL::Replacements replacements;
   replacements.SetPathStr("search");
   replacements.SetQueryStr("q=");
@@ -212,6 +220,10 @@ const GURL& CommandLineGoogleBaseURL() {
   // then unconditionally return it.
   static base::NoDestructor<std::string> switch_value;
   static base::NoDestructor<GURL> base_url;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+	*base_url = GURL();
+	return *base_url;
+  }
   std::string current_switch_value(
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kGoogleBaseURL));
@@ -226,6 +238,8 @@ const GURL& CommandLineGoogleBaseURL() {
 }
 
 bool StartsWithCommandLineGoogleBaseURL(const GURL& url) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   const GURL& base_url(CommandLineGoogleBaseURL());
   return base_url.is_valid() &&
          base::StartsWith(url.possibly_invalid_spec(), base_url.spec(),
@@ -235,18 +249,24 @@ bool StartsWithCommandLineGoogleBaseURL(const GURL& url) {
 bool IsGoogleDomainUrl(const GURL& url,
                        SubdomainPermission subdomain_permission,
                        PortPermission port_permission) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   return IsValidURL(url, port_permission) &&
          IsCanonicalHostGoogleHostname(url.host_piece(), subdomain_permission);
 }
 
 bool IsGoogleHostname(std::string_view host,
                       SubdomainPermission subdomain_permission) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   url::CanonHostInfo host_info;
   return IsCanonicalHostGoogleHostname(net::CanonicalizeHost(host, &host_info),
                                        subdomain_permission);
 }
 
 bool IsGoogleHomePageUrl(const GURL& url) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   // First check to see if this has a Google domain.
   if (!IsGoogleDomainUrl(url, DISALLOW_SUBDOMAIN,
                          DISALLOW_NON_STANDARD_PORTS) &&
@@ -261,6 +281,8 @@ bool IsGoogleHomePageUrl(const GURL& url) {
 }
 
 bool IsGoogleSearchUrl(const GURL& url) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   // First check to see if this has a Google domain.
   if (!IsGoogleDomainUrl(url, DISALLOW_SUBDOMAIN,
                          DISALLOW_NON_STANDARD_PORTS) &&
@@ -284,11 +306,19 @@ bool IsGoogleSearchUrl(const GURL& url) {
 bool IsYoutubeDomainUrl(const GURL& url,
                         SubdomainPermission subdomain_permission,
                         PortPermission port_permission) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+    return false;
+  }
+
   return IsValidURL(url, port_permission) &&
          IsCanonicalHostYoutubeHostname(url.host_piece(), subdomain_permission);
 }
 
 bool IsGoogleAssociatedDomainUrl(const GURL& url) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+    return false;
+  }
+
   if (IsGoogleDomainUrl(url, ALLOW_SUBDOMAIN, ALLOW_NON_STANDARD_PORTS)) {
     return true;
   }

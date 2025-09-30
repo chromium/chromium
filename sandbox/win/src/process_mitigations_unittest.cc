@@ -59,6 +59,22 @@ typedef struct _PROCESS_MITIGATION_SYSTEM_CALL_DISABLE_POLICY_2 {
 namespace {
 
 //------------------------------------------------------------------------------
+// Internal Defines & Functions
+//------------------------------------------------------------------------------
+
+// API defined in winbase.h.
+using GetProcessDEPPolicyFunction = decltype(&GetProcessDEPPolicy);
+
+// API defined in processthreadsapi.h.
+using GetProcessMitigationPolicyFunction =
+    decltype(&GetProcessMitigationPolicy);
+GetProcessMitigationPolicyFunction get_process_mitigation_policy;
+
+// APIs defined in wingdi.h.
+using AddFontMemResourceExFunction = decltype(&AddFontMemResourceEx);
+using RemoveFontMemResourceExFunction = decltype(&RemoveFontMemResourceEx);
+
+//------------------------------------------------------------------------------
 // NonSystemFont test helper function.
 //
 // 1. Pick font file and set up sandbox to allow read access to it.
@@ -113,6 +129,13 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
   if (!test)
     return SBOX_TEST_INVALID_PARAMETER;
 
+  get_process_mitigation_policy =
+      reinterpret_cast<GetProcessMitigationPolicyFunction>(::GetProcAddress(
+          ::GetModuleHandleW(L"kernel32.dll"), "GetProcessMitigationPolicy"));
+  if (!get_process_mitigation_policy)
+    return SBOX_TEST_NOT_FOUND;
+
+
   switch (test) {
     //--------------------------------------------------
     // MITIGATION_DEP
@@ -122,8 +145,9 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
 #if !defined(_WIN64)
       // DEP - always enabled on 64-bit.
       PROCESS_MITIGATION_DEP_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(), ProcessDEPPolicy,
-                                        &policy, sizeof(policy))) {
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
+                                         ProcessDEPPolicy, &policy,
+                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
       }
       if (!policy.Enable || !policy.Permanent)
@@ -137,9 +161,9 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_ASLR): {
       PROCESS_MITIGATION_ASLR_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
-                                        ProcessASLRPolicy, &policy,
-                                        sizeof(policy))) {
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
+                                         ProcessASLRPolicy, &policy,
+                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
       }
       if (!policy.EnableForceRelocateImages || !policy.DisallowStrippedImages)
@@ -152,9 +176,9 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_STRICTHANDLE): {
       PROCESS_MITIGATION_STRICT_HANDLE_CHECK_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
-                                        ProcessStrictHandleCheckPolicy, &policy,
-                                        sizeof(policy))) {
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
+                                         ProcessStrictHandleCheckPolicy,
+                                         &policy, sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
       }
       if (!policy.RaiseExceptionOnInvalidHandleReference ||
@@ -222,7 +246,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_EXTENSIONPOINT): {
       PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessExtensionPointDisablePolicy,
                                         &policy, sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -237,7 +261,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_DYNAMICCODE): {
       PROCESS_MITIGATION_DYNAMIC_CODE_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessDynamicCodePolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -252,7 +276,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_NONSYSFONT): {
       PROCESS_MITIGATION_FONT_DISABLE_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessFontDisablePolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -267,7 +291,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_MSSIGNED): {
       PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessSignaturePolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -282,7 +306,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_LOADNOREMOTE): {
       PROCESS_MITIGATION_IMAGE_LOAD_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessImageLoadPolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -297,7 +321,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_LOADNOLOW): {
       PROCESS_MITIGATION_IMAGE_LOAD_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessImageLoadPolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -312,7 +336,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_DYNAMICCODEOPTOUT): {
       PROCESS_MITIGATION_DYNAMIC_CODE_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessDynamicCodePolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -327,7 +351,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_LOADPREFERSYS32): {
       PROCESS_MITIGATION_IMAGE_LOAD_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessImageLoadPolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -352,7 +376,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_CETDISABLED): {
       PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessUserShadowStackPolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -368,7 +392,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_CETDYNAMICAPIS): {
       PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessUserShadowStackPolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -391,7 +415,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     //--------------------------------------------------
     case (TESTPOLICY_CETSTRICT): {
       PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessUserShadowStackPolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -432,7 +456,7 @@ SBOX_TESTS_COMMAND int CheckPolicy(int argc, wchar_t** argv) {
     case (TESTPOLICY_PREANDPOSTSTARTUP): {
       // Both policies should be set now.
       PROCESS_MITIGATION_IMAGE_LOAD_POLICY policy = {};
-      if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+      if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                         ProcessImageLoadPolicy, &policy,
                                         sizeof(policy))) {
         return SBOX_TEST_NOT_FOUND;
@@ -606,11 +630,18 @@ SBOX_TESTS_COMMAND int TestChildProcess(int argc, wchar_t** argv) {
       return SBOX_TEST_SUCCEEDED;
     }
   }
+
+  auto get_process_mitigation_policy =
+      reinterpret_cast<GetProcessMitigationPolicyFunction>(::GetProcAddress(
+          ::GetModuleHandleW(L"kernel32.dll"), "GetProcessMitigationPolicy"));
+  if (!get_process_mitigation_policy)
+    return SBOX_TEST_NOT_FOUND;
+
   // Process failed to be created.
   // Note: GetLastError from CreateProcess returns 5, "ERROR_ACCESS_DENIED".
   // Validate the NoChildProcessCreation policy is applied.
   PROCESS_MITIGATION_CHILD_PROCESS_POLICY policy = {};
-  if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
+  if (!get_process_mitigation_policy(::GetCurrentProcess(),
                                     ProcessChildProcessPolicy, &policy,
                                     sizeof(policy))) {
     return SBOX_TEST_NOT_FOUND;
@@ -1058,10 +1089,14 @@ TEST(ProcessMitigationsTest, CetDisablePolicy) {
 
   // Verify policy is available and set for this process (i.e. CET is
   // enabled via IFEO or through the CETCOMPAT bit on the executable).
+  auto get_process_mitigation_policy =
+      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
+          ::GetModuleHandleA("kernel32.dll"), "GetProcessMitigationPolicy"));
+
   PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY uss_policy;
-  if (!::GetProcessMitigationPolicy(GetCurrentProcess(),
-                                    ProcessUserShadowStackPolicy, &uss_policy,
-                                    sizeof(uss_policy))) {
+  if (!get_process_mitigation_policy(GetCurrentProcess(),
+                                     ProcessUserShadowStackPolicy, &uss_policy,
+                                     sizeof(uss_policy))) {
     return;
   }
 
@@ -1098,10 +1133,14 @@ TEST(ProcessMitigationsTest, CetAllowDynamicApis) {
 
   // Verify policy is available and set for this process (i.e. CET is
   // enabled via IFEO or through the CETCOMPAT bit on the executable).
+  auto get_process_mitigation_policy =
+      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
+          ::GetModuleHandleA("kernel32.dll"), "GetProcessMitigationPolicy"));
+
   PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY uss_policy;
-  if (!::GetProcessMitigationPolicy(GetCurrentProcess(),
-                                    ProcessUserShadowStackPolicy, &uss_policy,
-                                    sizeof(uss_policy))) {
+  if (!get_process_mitigation_policy(GetCurrentProcess(),
+                                     ProcessUserShadowStackPolicy, &uss_policy,
+                                     sizeof(uss_policy))) {
     return;
   }
 
@@ -1136,10 +1175,14 @@ TEST(ProcessMitigationsTest, CetStrictMode) {
 
   // Verify policy is available and set for this process (i.e. CET is
   // enabled via IFEO or through the CETCOMPAT bit on the executable).
+  auto get_process_mitigation_policy =
+      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
+          ::GetModuleHandleA("kernel32.dll"), "GetProcessMitigationPolicy"));
+
   PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY uss_policy;
-  if (!::GetProcessMitigationPolicy(GetCurrentProcess(),
-                                    ProcessUserShadowStackPolicy, &uss_policy,
-                                    sizeof(uss_policy))) {
+  if (!get_process_mitigation_policy(GetCurrentProcess(),
+                                     ProcessUserShadowStackPolicy, &uss_policy,
+                                     sizeof(uss_policy))) {
     return;
   }
 

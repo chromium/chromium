@@ -4,6 +4,8 @@
 
 #include <windows.h>
 
+#include <versionhelpers.h>  // windows.h must be before.
+
 #include <tuple>
 
 #include "base/test/test_reg_util_win.h"
@@ -37,14 +39,28 @@ bool SetExtensionPointEnabledFlag(bool creation) {
 }
 
 bool IsSecuritySet() {
-  // Check that extension points are disabled. (Legacy hooking.)
-  PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY policy = {};
-  if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
-                                    ProcessExtensionPointDisablePolicy, &policy,
-                                    sizeof(policy))) {
-    return false;
+  typedef decltype(GetProcessMitigationPolicy)* GetProcessMitigationPolicyFunc;
+
+  // Check the settings from EarlyBrowserSecurity().
+  if (::IsWindows8OrGreater()) {
+    GetProcessMitigationPolicyFunc get_process_mitigation_policy =
+        reinterpret_cast<GetProcessMitigationPolicyFunc>(::GetProcAddress(
+            ::GetModuleHandleW(L"kernel32.dll"), "GetProcessMitigationPolicy"));
+    if (!get_process_mitigation_policy)
+      return false;
+
+    // Check that extension points are disabled.
+    // (Legacy hooking.)
+    PROCESS_MITIGATION_EXTENSION_POINT_DISABLE_POLICY policy = {};
+    if (!get_process_mitigation_policy(::GetCurrentProcess(),
+                                       ProcessExtensionPointDisablePolicy,
+                                       &policy, sizeof(policy)))
+      return false;
+
+    return policy.DisableExtensionPoints;
   }
-  return policy.DisableExtensionPoints;
+
+  return true;
 }
 
 void RegRedirect(nt::ROOT_KEY key,
@@ -70,6 +86,9 @@ void CancelRegRedirect(nt::ROOT_KEY key) {
 }
 
 TEST(ChromeElfUtilTest, ValidateExtensionPointCallComesFromDLL) {
+
+  if (!::IsWindows8OrGreater())
+    return;
   // We should validate the exe version isn't used for this test
   elf_security::ValidateExeForTesting(true);
 
@@ -78,6 +97,8 @@ TEST(ChromeElfUtilTest, ValidateExtensionPointCallComesFromDLL) {
 }
 
 TEST(ChromeElfUtilTest, BrowserProcessSecurityTest) {
+  if (!::IsWindows8OrGreater())
+    return;
   // Set up registry override for this test.
   registry_util::RegistryOverrideManager override_manager;
   ASSERT_NO_FATAL_FAILURE(RegRedirect(nt::HKCU, &override_manager));

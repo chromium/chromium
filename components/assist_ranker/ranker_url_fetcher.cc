@@ -4,6 +4,7 @@
 
 #include "components/assist_ranker/ranker_url_fetcher.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/load_flags.h"
@@ -31,6 +32,9 @@ bool RankerURLFetcher::Request(
     const GURL& url,
     RankerURLFetcher::Callback callback,
     network::mojom::URLLoaderFactory* url_loader_factory) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+	  return false;
+  }
   // This function is not supposed to be called if the previous operation is not
   // finished.
   if (state_ == REQUESTING) {

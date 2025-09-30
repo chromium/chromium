@@ -62,7 +62,7 @@ constexpr int kPEMOutputColumns = 64;
 static_assert(kMaximumSupportedManifestVersion >=
                   kMinimumSupportedManifestVersion,
               "The modern manifest version must be supported.");
-bool g_silence_deprecated_manifest_version_warnings = false;
+bool g_silence_deprecated_manifest_version_warnings = true;
 
 // KEY MARKERS
 constexpr char kKeyBeginHeaderMarker[] = "-----BEGIN";

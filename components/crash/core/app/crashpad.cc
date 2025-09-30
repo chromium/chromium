@@ -257,7 +257,6 @@ void SetUploadConsent(bool consent) {
     // if consent is present.
     enable_uploads = consent && !crash_reporter_client->IsRunningUnattended();
   }
-
   crashpad::Settings* settings = g_database->GetSettings();
   settings->SetUploadsEnabled(enable_uploads &&
                               crash_reporter_client->GetCollectStatsInSample());

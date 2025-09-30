@@ -41,6 +41,8 @@ BASE_FEATURE_PARAM(int,
                    "ad-auction-signals-max-size-bytes",
                    10000);
 
+BASE_FEATURE(kRemoveClientHints, "DisableUserAgentClientHint", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BASE_FEATURE(kAvoidTrustedParamsCopies,
              "AvoidTrustedParamsCopies",

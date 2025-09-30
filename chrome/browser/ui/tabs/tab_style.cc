@@ -20,15 +20,14 @@ namespace {
 // the tab.
 constexpr int kChromeRefreshSeparatorThickness = 2;
 constexpr int kChromeRefreshSeparatorHorizontalMargin = 2;
-// TODO (crbug.com/1451400): This constant should be in LayoutConstants.
-constexpr int kChromeRefreshSeparatorHeight = 16;
+int kChromeRefreshSeparatorHeight = GetLayoutConstant(TAB_SEPARATOR_HEIGHT);
 
 // The padding from the top of the tab to the content area.
-constexpr int kChromeRefreshTabVerticalPadding = 6;
-constexpr int kChromeRefreshTabHorizontalPadding = 8;
+int kChromeRefreshTabVerticalPadding = GetLayoutConstant(TAB_VERTICAL_PADDING);
+int kChromeRefreshTabHorizontalPadding = GetLayoutConstant(TAB_HORIZONTAL_PADDING);
 
 // The standard tab width is 232 DIP, excluding separators and overlap.
-constexpr int kTabWidth = 232;
+int kTabWidth = GetLayoutConstant(TAB_WIDTH);
 
 }  // namespace
 
@@ -39,6 +38,10 @@ int TabStyle::GetStandardHeight() const {
 }
 
 int TabStyle::GetStandardWidth(const bool is_split) const {
+  // Layout constants may not be as immediate to initialize as we'd like.
+  // But they should be initialized at this point.  
+  if (!kTabWidth)
+	  kTabWidth = GetLayoutConstant(TAB_WIDTH);
   if (is_split) {
     // Split tabs appear as half width with one bottom extension. They also must
     // include half the tab overlap as the tabs fill the space between them.
@@ -104,11 +107,11 @@ int TabStyle::GetMinimumInactiveWidth() const {
 }
 
 int TabStyle::GetTopCornerRadius() const {
-  return 10;
+  return GetLayoutConstant(TAB_TOP_CORNER_RADIUS);
 }
 
 int TabStyle::GetBottomCornerRadius() const {
-  return 12;
+  return GetLayoutConstant(TAB_BOTTOM_CORNER_RADIUS);
 }
 
 int TabStyle::GetTabOverlap() const {
@@ -116,7 +119,7 @@ int TabStyle::GetTabOverlap() const {
   const float total_separator_width = GetSeparatorMargins().left() +
                                       GetSeparatorSize().width() +
                                       GetSeparatorMargins().right();
-  return 2 * GetBottomCornerRadius() - total_separator_width;
+  return 2 * GetLayoutConstant(TAB_OVERLAP) - total_separator_width;
 }
 
 gfx::Size TabStyle::GetPreviewImageSize() const {
@@ -126,11 +129,13 @@ gfx::Size TabStyle::GetPreviewImageSize() const {
 }
 
 gfx::Size TabStyle::GetSeparatorSize() const {
+  kChromeRefreshSeparatorHeight = GetLayoutConstant(TAB_SEPARATOR_HEIGHT);
   return gfx::Size(kChromeRefreshSeparatorThickness,
                    kChromeRefreshSeparatorHeight);
 }
 
 gfx::Insets TabStyle::GetSeparatorMargins() const {
+  SetLayoutConstants();
   return gfx::Insets::TLBR(GetLayoutConstant(TAB_STRIP_PADDING),
                            kChromeRefreshSeparatorHorizontalMargin,
                            GetLayoutConstant(TAB_STRIP_PADDING),

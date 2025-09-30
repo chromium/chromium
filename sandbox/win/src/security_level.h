@@ -95,6 +95,9 @@ enum TokenLevel {
 //  JobLevel        |General                            |Quota               |
 //                  |restrictions                       |restrictions        |
 // -----------------|---------------------------------- |--------------------|
+// kNone            | No job is assigned to the         | None               |
+//                  | sandboxed process.                |                    |
+// -----------------|---------------------------------- |--------------------|
 // kUnprotected     | None                              | *Kill on Job close.|
 // -----------------|---------------------------------- |--------------------|
 // kInteractive     | *Forbid system-wide changes using |                    |
@@ -120,7 +123,7 @@ enum TokenLevel {
 // In the context of the above table, 'user handles' refers to the handles of
 // windows, bitmaps, menus, etc. Files, treads and registry handles are kernel
 // handles and are not affected by the job level settings.
-enum class JobLevel { kLockdown = 0, kLimitedUser, kInteractive, kUnprotected };
+enum class JobLevel { kLockdown = 0, kLimitedUser, kInteractive, kUnprotected,  kNone };
 
 // These flags correspond to various process-level mitigations (eg. ASLR and
 // DEP). Most are implemented via UpdateProcThreadAttribute() plus flags for

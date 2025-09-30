@@ -141,6 +141,10 @@ bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
 
 bool IsChromeLabsEnabled() {
   // Always early out on the stable channel regardless of other conditions.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-chrome-labs")) {
+    return false;
+  }
+
   if (chrome::GetChannel() == version_info::Channel::STABLE) {
     return false;
   }

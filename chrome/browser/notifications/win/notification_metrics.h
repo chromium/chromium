@@ -139,8 +139,8 @@ enum class SetReadyCallbackStatus {
   kSuccess = 0,
   kShortcutMisconfiguration = 1 << 0,
   kComServerMisconfiguration = 1 << 1,
-  kComNotInitializedObsolete = 1 << 2,  // No longer possible w/ Win10+ only.
-  kMaxValue = kComNotInitializedObsolete,
+  kComNotInitialized = 1 << 2,
+  kMaxValue = kComNotInitialized,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

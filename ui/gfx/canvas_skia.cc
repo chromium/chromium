@@ -241,6 +241,10 @@ void Canvas::DrawStringRectWithFlags(std::u16string_view text,
                      render_text.get());
     if (range.IsValid())
       render_text->ApplyStyle(TEXT_STYLE_UNDERLINE, true, range);
+  
+    if(flags & GDI_OFFSET_RENDERING)
+		render_text->SetVerticalAlignment(gfx::ALIGN_SPECIAL);  
+	
     render_text->Draw(this);
   }
 

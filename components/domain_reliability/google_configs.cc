@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -562,7 +563,8 @@ std::unique_ptr<const DomainReliabilityConfig> MaybeGetGoogleConfig(
     const std::string& hostname) {
   bool is_www_subdomain =
       base::StartsWith(hostname, "www.", base::CompareCase::SENSITIVE);
-
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+    return nullptr;
   const auto itr = kGoogleConfigs.find(hostname);
   if (itr != std::end(kGoogleConfigs)) {
     return CreateGoogleConfig(hostname, itr->second, /*is_www=*/false);
@@ -586,6 +588,8 @@ std::vector<std::unique_ptr<const DomainReliabilityConfig>>
 GetAllGoogleConfigsForTesting() {
   std::vector<std::unique_ptr<const DomainReliabilityConfig>> configs_out;
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+    return configs_out;
   for (const auto& [hostname, params] : kGoogleConfigs) {
     configs_out.push_back(CreateGoogleConfig(hostname, params, false));
     if (params.duplicate_for_www) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 
+#include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -57,7 +58,9 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
       (ProfileIOData::IsHandledProtocol(scheme) ||
        base::EqualsCaseInsensitiveASCII(scheme, content::kViewSourceScheme) ||
        base::EqualsCaseInsensitiveASCII(scheme, url::kJavaScriptScheme) ||
-       base::EqualsCaseInsensitiveASCII(scheme, url::kDataScheme))) {
+       base::EqualsCaseInsensitiveASCII(scheme, url::kDataScheme) || 
+	   (base::EqualsCaseInsensitiveASCII(scheme, url::kTraceScheme) &&
+	   base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")))) {
     return metrics::OmniboxInputType::URL;
   }
 

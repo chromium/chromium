@@ -4,6 +4,7 @@
 
 #include "content/browser/font_access/font_enumeration_data_source_win.h"
 
+#include <Windows.h>
 #include <dwrite.h>
 #include <stdint.h>
 #include <wrl/client.h>
@@ -178,6 +179,23 @@ FontEnumerationDataSourceWin::~FontEnumerationDataSourceWin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+int CALLBACK EnumFontFamProc(ENUMLOGFONTA* lpelf,
+                             NEWTEXTMETRICA* lpntm,
+                             DWORD FontType,
+                             LPARAM lParam) 
+{
+  blink::FontEnumerationTable* font_enumeration_table =
+      (blink::FontEnumerationTable*)lParam;
+  blink::FontEnumerationTable_FontData* data =
+      font_enumeration_table->add_fonts();
+  data->set_postscript_name(std::string());
+  data->set_full_name(std::string("Click the font name itself"));
+  data->set_family(std::string((const char*)lpelf->elfFullName));
+  data->set_style(std::string((const char*)lpelf->elfStyle));
+
+  return 1;
+}
+
 blink::FontEnumerationTable FontEnumerationDataSourceWin::GetFonts(
     const std::string& locale) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -185,6 +203,14 @@ blink::FontEnumerationTable FontEnumerationDataSourceWin::GetFonts(
   blink::FontEnumerationTable font_enumeration_table;
 
   Microsoft::WRL::ComPtr<IDWriteFontCollection> collection = GetSystemFonts();
+  if (!collection)
+  {
+    HDC hDC = ::GetDC(NULL);
+    ::EnumFontFamiliesA(hDC, NULL, (FONTENUMPROCA)EnumFontFamProc,
+                        (LPARAM) &font_enumeration_table);
+    ::ReleaseDC(NULL, hDC);
+    return font_enumeration_table;
+  }
   uint32_t family_count;
   {
     base::ScopedBlockingCall scoped_blocking_call(

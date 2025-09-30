@@ -46,6 +46,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_font_prewarmer.h"
 #include "third_party/blink/renderer/platform/fonts/bitmap_glyphs_block_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -257,30 +259,74 @@ const SimpleFontData* FontCache::GetDWriteFallbackFamily(
       font_description, fallback_priority, codepoint);
   DCHECK(fallback_locale);
 
-  const std::string family_name = font_description.Family().FamilyName().Utf8();
+  // On Pre Windows 8.1 (where use_skia_font_fallback_ is false) we cannot call
+  // the Skia version, as there is no IDWriteFontFallback (which is
+  // proxyable). If no IDWriteFontFallback API exists in the DWrite Skia
+  // SkTypeface implemnetation it will proceed to call the layoutFallback method
+  // of SkTypeface DWrite implementation. This method we must not call in the
+  // renderer as it causes stability issues due to reaching a path that will try
+  // to load the system font collection in-process and thus load DLLs that are
+  // blocked in the renderer, see comment in dwrite_font_proxy_init_impl_win.cc
+  // InitializeDWriteFontProxy(). Hence, for Windows pre 8.1 we add a
+  // DWriteFontProxy code path to retrieve a family name as string for a
+  // character + language tag and call matchFamilyStyleCharacter on the browser
+  // side, where we can do that.
+  if (!use_skia_font_fallback_) {
+    String fallback_family;
+    SkFontStyle fallback_style;
 
-  Bcp47Vector locales;
-  locales.push_back(fallback_locale->LocaleForSkFontMgr());
-  sk_sp<SkTypeface> typeface(font_manager_->matchFamilyStyleCharacter(
-      family_name.c_str(), font_description.SkiaFontStyle(), locales.data(),
-      locales.size(), codepoint));
+    if (!fallback_params_cache_) {
+      fallback_params_cache_ = std::make_unique<FallbackFamilyStyleCache>();
+    }
 
-  if (!typeface) {
-    return nullptr;
+    fallback_params_cache_->Get(
+        font_description.GenericFamily(), fallback_locale->LocaleForSkFontMgr(),
+        fallback_priority, codepoint, &fallback_family, &fallback_style);
+    bool result_from_cache = !fallback_family.IsNull();
+
+    if (!result_from_cache) {
+        return nullptr;
+    }
+
+    FontFaceCreationParams create_by_family((AtomicString(fallback_family)));
+    FontDescription fallback_updated_font_description(font_description);
+    fallback_updated_font_description.UpdateFromSkiaFontStyle(fallback_style);
+    const FontPlatformData* data = GetFontPlatformData(
+        fallback_updated_font_description, create_by_family);
+    if (!data || !data->FontContainsCharacter(codepoint))
+      return nullptr;
+
+    if (!result_from_cache) {
+      fallback_params_cache_->Put(font_description.GenericFamily(),
+                                  fallback_locale->LocaleForSkFontMgr(),
+                                  fallback_priority, data->Typeface());
+    }
+    return FontDataFromFontPlatformData(data);
+  } else {
+    std::string family_name = font_description.Family().FamilyName().Utf8();
+    Bcp47Vector locales;
+    locales.push_back(fallback_locale->LocaleForSkFontMgr());
+    sk_sp<SkTypeface> typeface(font_manager_->matchFamilyStyleCharacter(
+        family_name.c_str(), font_description.SkiaFontStyle(), locales.data(),
+        locales.size(), codepoint));
+
+    if (!typeface)
+      return nullptr;
+
+    SkString skia_family;
+    typeface->getFamilyName(&skia_family);
+    FontDescription fallback_updated_font_description(font_description);
+    fallback_updated_font_description.UpdateFromSkiaFontStyle(
+        typeface->fontStyle());
+    FontFaceCreationParams create_by_family(ToAtomicString(skia_family));
+    const FontPlatformData* data = GetFontPlatformData(
+        fallback_updated_font_description, create_by_family);
+    if (!data || !data->FontContainsCharacter(codepoint))
+      return nullptr;
+    return FontDataFromFontPlatformData(data);
   }
-
-  SkString skia_family;
-  typeface->getFamilyName(&skia_family);
-  FontDescription fallback_updated_font_description(font_description);
-  fallback_updated_font_description.UpdateFromSkiaFontStyle(
-      typeface->fontStyle());
-  const FontFaceCreationParams create_by_family(ToAtomicString(skia_family));
-  const FontPlatformData* data =
-      GetFontPlatformData(fallback_updated_font_description, create_by_family);
-  if (!data || !data->FontContainsCharacter(codepoint)) {
-    return nullptr;
-  }
-  return FontDataFromFontPlatformData(data);
+  NOTREACHED();
+  return nullptr;
 }
 
 // Given the desired base font, this will create a SimpleFontData for a specific
@@ -314,7 +360,7 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
           font_description, character, fallback_priority_with_emoji_text);
 
   // Fall through to running the API-based fallback.
-  if (!hardcoded_list_fallback_font) {
+  if (!hardcoded_list_fallback_font && use_skia_font_fallback_) {
     return GetDWriteFallbackFamily(font_description, character,
                                    fallback_priority_with_emoji_text);
   }
@@ -455,7 +501,7 @@ const FontPlatformData* FontCache::CreateFontPlatformData(
 
   } else {
     typeface = CreateTypeface(font_description, creation_params, name);
-
+    
     // For a family match, Windows will always give us a valid pointer here,
     // even if the face name is non-existent. We have to double-check and see if
     // the family name was really used.

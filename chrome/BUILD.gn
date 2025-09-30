@@ -445,6 +445,11 @@ if (is_win) {
       deps += [ "//ui/compositor" ]
     }
 
+    if (current_cpu == "x86") {
+      # Don"t set an x64 base address (to avoid breaking HE-ASLR).
+      ldflags = [ "/BASE:0x12000000" ]
+    }
+
     if (is_chromeos) {
       deps += [ "//chrome/browser/ash/schedqos" ]
     }

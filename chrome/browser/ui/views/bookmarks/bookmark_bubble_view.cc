@@ -307,8 +307,10 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
                   ->GetComboboxByUniqueId(kBookmarkFolderFieldId)
                   ->selected_index());
 
-    browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHPowerBookmarksSidePanelFeature);
+    if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+      browser_->window()->MaybeShowFeaturePromo(
+          feature_engagement::kIPHPowerBookmarksSidePanelFeature);
+    }
   }
 
   RecentlyUsedFoldersComboModel* GetFolderModel() {
@@ -368,12 +370,21 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
   if (shopping_service->IsShoppingListEligible()) {
     product_info = shopping_service->GetAvailableProductInfoForUrl(url);
   }
-
+  
+  if (base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
   if (product_info.has_value() && !product_info->image_url.is_empty()) {
     HandleImageUrlResponse(profile, product_info->image_url);
   } else {
     // Fetch image from ImageService asynchronously
     FetchImageForUrl(url, profile);
+  }
+  } else {
+    dialog_model_builder.AddExtraButton(
+        base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
+                            base::Unretained(bubble_delegate)),
+        ui::DialogModel::Button::Params()
+            .SetLabel(l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS))
+            .AddAccelerator(ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)));
   }
 
   // Display favicon while awaiting one of the above options to load.
@@ -427,6 +438,9 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
     bool is_price_tracked = shopping_service->IsSubscribedFromCache(
         commerce::BuildUserSubscriptionForClusterId(
             product_info->product_cluster_id.value()));
+	if (!base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)) {
+      dialog_model_builder.AddSeparator();
+    }
     dialog_model_builder.AddCustomField(
         std::make_unique<views::BubbleDialogModelHost::CustomView>(
             std::make_unique<PriceTrackingView>(profile, url, is_price_tracked,

@@ -1139,6 +1139,21 @@
       ]
     },
     {
+      "id": 170,
+      "description": "Zero copy DXGI video hangs on shutdown on Win < 8.1",
+      "cr_bugs": [621190],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<",
+          "value": "8.1"
+        }
+      },
+      "features": [
+        "disable_dxgi_zero_copy_video"
+      ]
+    },
+    {
       "id": 219,
       "description": "Zero-copy DXGI video hangs or displays incorrect colors on older AMD drivers",
       "cr_bugs": [623029, 1025427],

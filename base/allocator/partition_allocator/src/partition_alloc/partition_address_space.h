@@ -385,11 +385,20 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
  private:
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  static bool IsIOSTestProcess();
+#if PA_BUILDFLAG(IS_IOS)
+static bool IsIOSTestProcess();
+static constexpr size_t kCorePoolSizeForIOSTestProcess = kGiB / 4;
 
   PA_ALWAYS_INLINE static size_t CorePoolSize() {
     return IsIOSTestProcess() ? kCorePoolSizeForIOSTestProcess : kCorePoolSize;
   }
+#elif PA_BUILDFLAG(IS_WIN)
+static bool IsLegacyWindowsVersion();
+  PA_ALWAYS_INLINE static size_t CorePoolSize() {
+    return IsLegacyWindowsVersion() ? kCorePoolSizeForLegacyWindows
+                                    : kCorePoolSize;
+  }
+#endif
 #else
   // The pool sizes should be as large as maximum whenever possible.
   PA_ALWAYS_INLINE static constexpr size_t CorePoolSize() {
@@ -424,6 +433,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
   // ArrayBuffers be located inside of it.
   static constexpr size_t kCorePoolSize = kPoolMaxSize;
   static_assert(base::bits::HasSingleBit(kCorePoolSize));
+#if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
+  // We can't afford pool sizes as large as kPoolMaxSize on Windows <8.1 (see
+  // crbug.com/1101421 and crbug.com/1217759).
+  static constexpr size_t kCorePoolSizeForLegacyWindows = 4 * kGiB;
+  static constexpr size_t kBRPPoolSizeForLegacyWindows = 4 * kGiB;
+  static_assert(kCorePoolSizeForLegacyWindows < kCorePoolSize);
+  static_assert(base::bits::HasSingleBit(kCorePoolSizeForLegacyWindows));
+  static_assert(base::bits::HasSingleBit(kBRPPoolSizeForLegacyWindows));
+#endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   static constexpr size_t kThreadIsolatedPoolSize = kGiB / 4;
   static_assert(base::bits::HasSingleBit(kThreadIsolatedPoolSize));
@@ -439,11 +457,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 #if !PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 #error iOS is only supported with a dynamically sized GigaCase.
 #endif
-
   // We can't afford pool sizes as large as kPoolMaxSize in iOS EarlGrey tests,
   // since the test process cannot use an extended virtual address space (see
   // crbug.com/1250788).
-  static constexpr size_t kCorePoolSizeForIOSTestProcess = kGiB / 4;
   static_assert(kCorePoolSizeForIOSTestProcess < kCorePoolSize);
   static_assert(base::bits::HasSingleBit(kCorePoolSizeForIOSTestProcess));
 #endif  // PA_BUILDFLAG(IOS_IOS)

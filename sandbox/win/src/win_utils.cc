@@ -165,6 +165,37 @@ DWORD GetLastErrorFromNtStatus(NTSTATUS status) {
   return GetNtExports()->RtlNtStatusToDosError(status);
 }
 
+std::optional<ProcessHandleMap> GetCurrentProcessHandlesWin7() {
+  DWORD handle_count = UINT_MAX;
+  const int kInvalidHandleThreshold = 100;
+  const size_t kHandleOffset = 4;  // Handles are always a multiple of 4.
+
+  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
+    return std::nullopt;
+  ProcessHandleMap handle_map;
+
+  uint32_t handle_value = 0;
+  int invalid_count = 0;
+
+  // Keep incrementing until we hit the number of handles reported by
+  // GetProcessHandleCount(). If we hit a very long sequence of invalid
+  // handles we assume that we've run past the end of the table.
+  while (handle_count && invalid_count < kInvalidHandleThreshold) {
+    handle_value += kHandleOffset;
+    HANDLE handle = base::win::Uint32ToHandle(handle_value);
+    auto type_name = GetTypeNameFromHandle(handle);
+    if (!type_name) {
+      ++invalid_count;
+      continue;
+    }
+
+    --handle_count;
+    handle_map[type_name.value()].push_back(handle);
+  }
+  return handle_map;
+}
+
+
 // This function uses the undocumented PEB ImageBaseAddress field to extract
 // the base address of the new process.
 void* GetProcessBaseAddress(HANDLE process) {

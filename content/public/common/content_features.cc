@@ -15,6 +15,10 @@
 #include "content/public/common/btm_utils.h"
 #include "content/public/common/buildflags.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace features {
 
 // All features in alphabetical order.
@@ -1501,6 +1505,11 @@ VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
 #else
+#if BUILDFLAG(IS_WIN)
+  if (base::win::GetVersion() <= base::win::Version::WIN7) {
+    return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
+  }
+#endif
   return base::FeatureList::IsEnabled(
              features::kRunVideoCaptureServiceInBrowserProcess)
              ? VideoCaptureServiceConfiguration::kEnabledForBrowserProcess

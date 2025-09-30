@@ -1554,6 +1554,10 @@
       status: "stable",
     },
     {
+      name: "UserAgentClientHint",
+      status: "stable",
+    },
+    {
       // Allows the CSS "accent-color" property to support the system accent color as the default option.
       name: "CSSSystemAccentColor",
       status: {

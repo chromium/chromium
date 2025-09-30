@@ -13,6 +13,8 @@
 #include "ui/gfx/switches.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#include "ui/base/ime/win/input_method_win_imm32.h"
 #include "ui/base/ime/win/input_method_win_tsf.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "ui/base/ime/mac/input_method_mac.h"
@@ -33,7 +35,12 @@ bool g_create_input_method_called = false;
 }  // namespace
 
 namespace ui {
-
+#if BUILDFLAG(IS_WIN)	
+bool IsUsingTSFForIME() {
+    return base::win::GetVersion() >= base::win::Version::WIN8 &&
+           base::FeatureList::IsEnabled(features::kTSFImeSupport);
+  }
+#endif
 std::unique_ptr<InputMethod> CreateInputMethod(
     ImeKeyEventDispatcher* ime_key_event_dispatcher,
     gfx::AcceleratedWidget widget) {
@@ -53,7 +60,12 @@ std::unique_ptr<InputMethod> CreateInputMethod(
     return base::WrapUnique(new MockInputMethod(ime_key_event_dispatcher));
 
 #if BUILDFLAG(IS_WIN)
-  return std::make_unique<InputMethodWinTSF>(ime_key_event_dispatcher, widget);
+  if (IsUsingTSFForIME()) {
+    return std::make_unique<InputMethodWinTSF>(ime_key_event_dispatcher,
+                                               widget);
+  }
+  return std::make_unique<InputMethodWinImm32>(ime_key_event_dispatcher,
+                                               widget);
 #elif BUILDFLAG(IS_APPLE)
   return std::make_unique<InputMethodMac>(ime_key_event_dispatcher);
 #elif BUILDFLAG(IS_OZONE)

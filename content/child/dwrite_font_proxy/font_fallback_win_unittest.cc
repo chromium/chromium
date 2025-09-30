@@ -27,7 +27,17 @@ namespace {
 class FontFallbackUnitTest : public testing::Test {
  public:
   FontFallbackUnitTest() {
-    DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
+	using DWriteCreateFactoryProc = decltype(DWriteCreateFactory)*;
+    HMODULE dwrite_dll = LoadLibraryW(L"dwrite.dll");
+	if (!dwrite_dll)
+		return;
+
+	DWriteCreateFactoryProc dwrite_create_factory_proc =
+      reinterpret_cast<DWriteCreateFactoryProc>(
+          GetProcAddress(dwrite_dll, "DWriteCreateFactory"));
+	if (!dwrite_create_factory_proc)
+		return;
+    dwrite_create_factory_proc(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
                         &factory_);
 
     factory_->CreateNumberSubstitution(DWRITE_NUMBER_SUBSTITUTION_METHOD_NONE,

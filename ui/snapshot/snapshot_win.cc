@@ -19,6 +19,11 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/image/image.h"
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 namespace ui {
 
 namespace {
@@ -27,6 +32,7 @@ void GrabHwndSnapshot(HWND window_handle,
                       const gfx::Rect& snapshot_bounds_in_pixels,
                       const gfx::Rect& clip_rect_in_pixels,
                       gfx::Image* image) {
+  BOOL result = false;
   gfx::Rect snapshot_bounds_in_window =
       snapshot_bounds_in_pixels + clip_rect_in_pixels.OffsetFromOrigin();
   gfx::Size bitmap_size(snapshot_bounds_in_window.right(),
@@ -41,8 +47,32 @@ void GrabHwndSnapshot(HWND window_handle,
   // but works starting in Windows 8.1. It allows for capturing the contents of
   // the window that are drawn using DirectComposition.
   UINT flags = PW_CLIENTONLY | PW_RENDERFULLCONTENT;
-
-  BOOL result = PrintWindow(window_handle, mem_hdc, flags);
+  
+  if (base::win::GetVersion() >= base::win::Version::WIN8_1){
+	result = PrintWindow(window_handle, mem_hdc, flags);
+  }
+  else {
+	// PrintWindow does not work for pre-Windows 8.1. So we'll use BitBlt.
+	// Copying from the window's actual HDC doesn't work so let's just use the full screen HDC.
+	// When a snapshot is captured the focus should be on the browser window anyway.
+	HDC window_hdc = GetDC(NULL);
+	
+	RECT window_rect;
+	
+	memset(&window_rect, 0, sizeof(RECT));
+	
+	result = GetWindowRect(window_handle, &window_rect);
+	
+	 if (!result) {
+    PLOG(ERROR) << "Failed to get valid rect for snapshot area.";
+    return;
+    }
+	// The left of the snapshot "window" rect is offset by 8 pixels to remove a bit of the dark grey showing through.
+	result = BitBlt(mem_hdc, 0, 0, bitmap_size.width(), bitmap_size.height(), 
+					window_hdc, window_rect.left + 8, window_rect.top, SRCCOPY);
+	
+	DeleteDC(window_hdc);
+  }
   if (!result) {
     PLOG(ERROR) << "Failed to print window";
     return;

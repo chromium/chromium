@@ -233,9 +233,8 @@ bool PathProviderWin(int key, FilePath* result) {
           break;
         }
       }
-      // Failing that, use C:\Program Files or C:\Program Files (x86) for older
-      // versions of Windows 10.
-      if (!PathService::Get(DIR_PROGRAM_FILES, &cur) || !PathIsWritable(cur)) {
+      // Failing that, use Temporary Internet Files on older versions of Windows.
+      if (!PathService::Get(DIR_IE_INTERNET_CACHE, &cur) || !PathIsWritable(cur)) {
         return false;
       }
       break;

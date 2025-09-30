@@ -100,6 +100,10 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
       return false;
     }
     ID3D11VideoDecoderOutputView* output_view = std::move(result).value();
+    // Supermium #573: extra verification of the video context interface due to some presumptive GPU driver issues.
+    if (!video_context_) {
+      return false;
+    }
     HRESULT hr;
     do {
       hr = video_context_->DecoderBeginFrame(video_decoder_.Get(), output_view,
@@ -388,7 +392,15 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
   if (supported_d3d11_version == D3D_FEATURE_LEVEL_11_1) {
     ComD3D11VideoContext1 video_context1;
     hr = video_context.As(&video_context1);
-    CHECK_EQ(hr, S_OK);
+    // Possible issue on some NVIDIA drivers that do not properly support
+    // Windows 8.x; they may not be able to create D3D11VideoContext1 but
+    // will create the older version.
+    if (hr != S_OK) {
+      return std::make_unique<D3D11VideoDecoderWrapperImpl<
+          ID3D11VideoContext, D3D11_VIDEO_DECODER_BUFFER_DESC>>(
+          media_log, std::move(video_device), std::move(video_context),
+          std::move(video_decoder));
+    }
     return std::make_unique<D3D11VideoDecoderWrapperImpl<
         ID3D11VideoContext1, D3D11_VIDEO_DECODER_BUFFER_DESC1>>(
         media_log, std::move(video_device), std::move(video_context1),

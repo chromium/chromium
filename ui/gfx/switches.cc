@@ -8,6 +8,11 @@
 #include "build/build_config.h"
 
 namespace switches {
+	
+#if BUILDFLAG(IS_WIN)
+// Disables the DirectWrite font rendering system on windows.
+const char kDisableDirectWrite[] = "disable-direct-write";
+#endif
 
 // Scale factor to apply to every animation duration. Must be >= 0.0. This will
 // only apply to LinearAnimation and its subclasses.

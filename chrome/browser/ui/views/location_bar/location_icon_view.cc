@@ -440,8 +440,10 @@ void LocationIconView::UpdateBorder() {
       const int kExtraRightPadding = 4;
       insets.set_right(insets.right() + kExtraRightPadding);
     }
+      SetBorder(views::CreateEmptyBorder(insets));
+	} else {
+      IconLabelBubbleView::UpdateBorder();	
   }
-  SetBorder(views::CreateEmptyBorder(insets));
 }
 
 gfx::Size LocationIconView::GetMinimumSizeForPreferredSize(

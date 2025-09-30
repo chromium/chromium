@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/debug/leak_annotations.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "build/build_config.h"
@@ -348,7 +349,8 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
 ui::ColorProviderKey::ThemeInitializerSupplier* BrowserFrame::GetCustomTheme()
     const {
   // Do not return any custom theme if this is an incognito browser.
-  if (IsIncognitoBrowser()) {
+  if (IsIncognitoBrowser() && base::FeatureList::IsEnabled(
+            base::features::kIncognitoBrandConsistencyForDesktop)) {
     return nullptr;
   }
 
@@ -506,7 +508,8 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   // color_mode.
   [this, &key, theme_service]() {
     // Currently the incognito browser is implemented as unthemed dark mode.
-    if (IsIncognitoBrowser()) {
+    if (IsIncognitoBrowser() || 
+        base::CommandLine::ForCurrentProcess()->HasSwitch("force-dark-mode")) {
       key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
       return;
     }
@@ -574,8 +577,20 @@ void BrowserFrame::SelectNativeTheme() {
   // of system theme (gtk, qt etc).
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   if (IsIncognitoBrowser()) {
-    SetNativeTheme(native_theme);
-    return;
+    // If the flag is enabled, then no matter if we are using the default theme
+    // or not we always use the dark ui instance.
+      if (base::FeatureList::IsEnabled(
+            base::features::kIncognitoBrandConsistencyForDesktop)) {
+      SetNativeTheme(ui::NativeTheme::GetInstanceForDarkUI());
+      return;
+    }
+
+    // Flag is disabled, fallback to using dark theme only if the incognito
+    // profile is using a default theme.
+      if (ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile())
+            ->UsingDefaultTheme()) {
+        native_theme = ui::NativeTheme::GetInstanceForDarkUI();
+	}
   }
 
   // Ignore the system theme for web apps with window-controls-overlay as the

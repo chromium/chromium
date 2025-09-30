@@ -662,6 +662,13 @@ void GetSuggestionsSummaryList(int error_code,
       !failed_url.SchemeIsHTTPOrHTTPS()) {
     suggestions &= ~SUGGEST_DIAGNOSE_TOOL;
   }
+ 
+  #if BUILDFLAG(IS_WIN)
+  if (base::win::GetVersion() < base::win::Version::VISTA) {
+    suggestions &= ~SUGGEST_DIAGNOSE_TOOL;
+  }
+  #endif
+
   // Remove the captive portal signin suggestion if not in a portal state.
   if (!error_page_params ||
       !error_page_params->FindBool(kIsPortalStateKey).value_or(false)) {

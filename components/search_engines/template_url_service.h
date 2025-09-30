@@ -906,6 +906,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // ---------- Browser state related members ---------------------------------
   raw_ref<PrefService> prefs_;
 
+  bool should_autocollect_; // Whether search engines should be auto-collected
+
   raw_ref<search_engines::SearchEngineChoiceService>
       search_engine_choice_service_;
 

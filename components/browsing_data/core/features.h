@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 
 namespace browsing_data::features {
+BASE_DECLARE_FEATURE(kClearDataOnExit);
 
 // Pipes down the BrowsingDataModel to power site settings on Android.
 #if BUILDFLAG(IS_ANDROID)

@@ -120,6 +120,10 @@ BASE_FEATURE(kDelayedWarnings,
              "SafeBrowsingDelayedWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDownloadBubble,
+             "DownloadBubble",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If true, a delayed warning will be shown when the user clicks on the page.
 // If false, the warning won't be shown, but a metric will be recorded on the
 // first click.
@@ -133,7 +137,7 @@ BASE_FEATURE(kDlpRegionalizedEndpoints,
 
 BASE_FEATURE(kDownloadsPageReferrerUrl,
              "DownloadsPageReferrerUrl",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadWarningSurvey,
              "DownloadWarningSurvey",
@@ -382,6 +386,7 @@ base::Value::List GetFeatureStatusList() {
       &kCreateNotificationsAcceptedClientSafeBrowsingReports,
       &kDelayedWarnings,
       &kDlpRegionalizedEndpoints,
+      &kDownloadBubble,
       &kEnhancedFieldsForSecOps,
       &kEnhancedSafeBrowsingPromo,
       &kEnterprisePasswordReuseUiRefresh,

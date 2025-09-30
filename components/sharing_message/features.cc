@@ -6,4 +6,6 @@
 
 #include "build/build_config.h"
 
-BASE_FEATURE(kClickToCall, "ClickToCall", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClickToCall, "ClickToCall", base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisableQRGenerator, "DisableQRGenerator", base::FEATURE_DISABLED_BY_DEFAULT);

@@ -461,6 +461,11 @@ void ScrollBar::TrackClicked() {
 
 void ScrollBar::ScrollContentsToOffset() {
   ScrollToPosition(contents_scroll_offset_);
+  // Safeguard against a divide-by-zero bug that happens when separating
+  // multiple tabs into separate windows.
+  contents_size_ = std::max(1, contents_size_);
+  viewport_size_ = std::max(1, viewport_size_);
+  
   thumb_->SetPosition(CalculateThumbPosition(contents_scroll_offset_));
 }
 
@@ -483,6 +488,7 @@ int ScrollBar::CalculateThumbPosition(int contents_scroll_offset) const {
   if (viewport_size_ == contents_size_) {
     return 0;
   }
+
   return (contents_scroll_offset * thumb_max) /
          (contents_size_ - viewport_size_);
 }

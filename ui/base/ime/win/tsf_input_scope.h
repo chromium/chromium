@@ -16,6 +16,10 @@
 namespace ui {
 namespace tsf_inputscope {
 
+// Initializes the TSF for input scopes. It loads the tsf dll and get the
+// function pointer for setting the input scopes in TSF.
+COMPONENT_EXPORT(UI_BASE_IME_WIN) void InitializeTsfForInputScopes();
+
 // Returns InputScope list corresoponding to ui::TextInputType and
 // ui::TextInputMode.
 // This function is only used from following functions but declared for test.
@@ -33,6 +37,15 @@ COMPONENT_EXPORT(UI_BASE_IME_WIN)
 ITfInputScope* CreateInputScope(TextInputType text_input_type,
                                 TextInputMode text_input_mode,
                                 bool should_do_learning);
+								
+// A wrapper of the SetInputScopes API exported by msctf.dll.
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms629026.aspx
+// Does nothing on Windows XP in case TSF is disabled.
+// NOTE: For TSF-aware window, you should use ITfInputScope instead.
+COMPONENT_EXPORT(UI_BASE_IME_WIN)
+void SetInputScopeForTsfUnawareWindow(HWND window_handle,
+                                      TextInputType text_input_type,
+                                      TextInputMode text_input_mode);
 
 // A wrapper of the SetInputScope API exported by msctf.dll.
 COMPONENT_EXPORT(UI_BASE_IME_WIN)

@@ -150,7 +150,6 @@ VizProcessTransportFactory::VizProcessTransportFactory(
   GetHostFrameSinkManager()->SetConnectionLostCallback(
       base::BindRepeating(&VizProcessTransportFactory::OnGpuProcessLost,
                           weak_ptr_factory_.GetWeakPtr()));
-
   if (GpuDataManagerImpl::GetInstance()->IsGpuCompositingDisabled()) {
     DisableGpuCompositing(nullptr);
   }

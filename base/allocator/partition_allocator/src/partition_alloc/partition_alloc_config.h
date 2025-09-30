@@ -35,18 +35,21 @@ static_assert(sizeof(void*) == 8, "");
 static_assert(sizeof(void*) != 8, "");
 #endif  // PA_CONFIG(HAS_64_BITS_POINTERS)
 
-#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && PA_BUILDFLAG(IS_IOS)
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS) && (PA_BUILDFLAG(IS_IOS) || PA_BUILDFLAG(IS_WIN))
 // Allow PA to select an alternate pool size at run-time before initialization,
 // rather than using a single constexpr value.
 //
 // This is needed on iOS because iOS test processes can't handle large pools
 // (see crbug.com/1250788).
 //
+// This is needed on Windows, because OS versions <8.1 incur commit charge even
+// on reserved address space, thus don't handle large pools well (see
+// crbug.com/1101421 and crbug.com/1217759).
 // This setting is specific to 64-bit, as 32-bit has a different implementation.
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 1
 #else
 #define PA_CONFIG_DYNAMICALLY_SELECT_POOL_SIZE() 0
-#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && PA_BUILDFLAG(IS_IOS)
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS) && (PA_BUILDFLAG(IS_IOS) || PA_BUILDFLAG(IS_WIN))
 
 // POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
 // features such as futex(2).

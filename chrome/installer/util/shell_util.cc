@@ -20,6 +20,7 @@
 
 #include <shellapi.h>
 #include <shlobj.h>
+#include <Windows.h>
 #include <wrl/client.h>
 
 #include <algorithm>
@@ -305,12 +306,13 @@ void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
     entries->back()->set_removal_flag(RegistryEntry::RemovalFlag::VALUE);
   }
 
-  // The following entries are required but do not depend on the DelegateExecute
-  // verb handler being set.
-  if (!app_info.app_id.empty()) {
-    entries->push_back(std::make_unique<RegistryEntry>(
-        prog_id_path, ShellUtil::kRegAppUserModelId, app_info.app_id));
-  }
+  // The following entries are required as of Windows 8, but do not
+  // depend on the DelegateExecute verb handler being set.
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
+    if (!app_info.app_id.empty()) {
+      entries->push_back(std::make_unique<RegistryEntry>(
+          prog_id_path, ShellUtil::kRegAppUserModelId, app_info.app_id));
+    }
 
   // Add \Software\Classes\<prog_id>\Application entries
   std::wstring application_path(prog_id_path + ShellUtil::kRegApplication);
@@ -339,6 +341,7 @@ void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
         application_path, ShellUtil::kRegApplicationCompany,
         app_info.publisher_name));
   }
+}
 }
 
 // This method returns a list of all the registry entries that are needed to
@@ -731,6 +734,26 @@ bool ElevateAndRegisterChrome(
   return false;
 }
 
+// Launches the Windows 7 and Windows 8 dialog for picking the application to
+// handle the given protocol. Most importantly, this is used to set the default
+// handler for http (and, implicitly with it, https). In that case it is also
+// known as the 'how do you want to open webpages' dialog.
+// It is required that Chrome be already *registered* for the given protocol.
+bool LaunchSelectDefaultProtocolHandlerDialog(const wchar_t* protocol) {
+  DCHECK(protocol);
+  OPENASINFO open_as_info = {};
+  open_as_info.pcszFile = protocol;
+  open_as_info.oaifInFlags =
+      OAIF_URL_PROTOCOL | OAIF_FORCE_REGISTRATION | OAIF_REGISTER_EXT;
+  HRESULT hr = SHOpenWithDialog(nullptr, &open_as_info);
+  DLOG_IF(WARNING, FAILED(hr)) << "Failed to set as default " << protocol
+                               << " handler; hr=0x" << std::hex << hr;
+  if (FAILED(hr))
+    return false;
+  SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+  return true;
+}
+
 // Returns true if |chrome_exe| has been registered with |suffix| for |mode|.
 // |confirmation_level| is the level of verification desired as described in
 // the RegistrationConfirmationLevel enum above.
@@ -764,11 +787,12 @@ bool QuickIsChromeRegisteredForMode(
   }
   reg_key += ShellUtil::kRegShellOpen;
 
-  // ProgId and shell integration registrations are allowed to reside in HKCU
-  // for user-level installs, and values there have priority over values in
-  // HKLM.
+  // ProgId registrations are allowed to reside in HKCU for user-level installs
+  // (and values there have priority over values in HKLM). The same is true for
+  // shell integration entries as of Windows 8.
   if (confirmation_level == CONFIRM_PROGID_REGISTRATION ||
-      confirmation_level == CONFIRM_SHELL_REGISTRATION) {
+      (confirmation_level == CONFIRM_SHELL_REGISTRATION &&
+       base::win::GetVersion() >= base::win::Version::WIN8)) {
     const RegKey key_hkcu(HKEY_CURRENT_USER, reg_key.c_str(), KEY_QUERY_VALUE);
     std::wstring hkcu_value;
     // If |reg_key| is present in HKCU, assert that it points to |chrome_exe|.
@@ -842,7 +866,9 @@ bool GetInstallationSpecificSuffix(const base::FilePath& chrome_exe,
 // be placed for this install. As of Windows 8 everything can go in HKCU for
 // per-user installs.
 HKEY DetermineRegistrationRoot(bool is_per_user) {
-  return is_per_user ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
+    return is_per_user && base::win::GetVersion() >= base::win::Version::WIN8
+             ? HKEY_CURRENT_USER
+             : HKEY_LOCAL_MACHINE;
 }
 
 // Associates Chrome with supported protocols and file associations. This should
@@ -1069,6 +1095,7 @@ ShellUtil::DefaultState ProbeSingleCurrentDefaultHandler(
 // Returns true on success.
 bool GetAppShortcutsFolder(ShellUtil::ShellChange level, base::FilePath* path) {
   DCHECK(path);
+  DCHECK_GE(base::win::GetVersion(), base::win::Version::WIN8);
 
   base::FilePath folder;
   if (!base::PathService::Get(base::DIR_APP_SHORTCUTS, &folder)) {
@@ -1446,6 +1473,7 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
 bool RegisterApplicationForProtocols(const std::vector<std::wstring>& protocols,
                                      const std::wstring& prog_id,
                                      const base::FilePath& chrome_exe) {
+  DCHECK_GT(base::win::GetVersion(), base::win::Version::WIN7);
   std::vector<std::unique_ptr<RegistryEntry>> entries;
   ShellUtil::ApplicationInfo app_info =
       ShellUtil::GetApplicationInfoForProgId(prog_id);
@@ -1598,10 +1626,12 @@ bool ShellUtil::ShortcutLocationIsSupported(ShortcutLocation location) {
     case SHORTCUT_LOCATION_START_MENU_ROOT:                   // Falls through.
     case SHORTCUT_LOCATION_START_MENU_CHROME_DIR_DEPRECATED:  // Falls through.
     case SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR:        // Falls through.
-    case SHORTCUT_LOCATION_STARTUP:                           // Falls through.
-    case SHORTCUT_LOCATION_TASKBAR_PINS:                      // Falls through.
+    case SHORTCUT_LOCATION_STARTUP:
+       return true;
+    case SHORTCUT_LOCATION_TASKBAR_PINS:
+      return base::win::GetVersion() >= base::win::Version::WIN7;
     case SHORTCUT_LOCATION_APP_SHORTCUTS:
-      return true;
+      return base::win::GetVersion() >= base::win::Version::WIN8;
     default:
       NOTREACHED();
   }
@@ -2006,6 +2036,17 @@ bool ShellUtil::CanMakeChromeDefaultUnattended() {
   return base::win::GetVersion() < base::win::Version::WIN8;
 }
 
+// static
+ShellUtil::InteractiveSetDefaultMode ShellUtil::GetInteractiveSetDefaultMode() {
+  DCHECK(!CanMakeChromeDefaultUnattended());
+  // TODO(crbug.com/1385856): Remove all code associated with INTENT_PICKER,
+  // including InteractiveSetDefaultMode and GetInteractiveSetDefaultMode().
+  if (base::win::GetVersion() >= base::win::Version::WIN10)
+    return InteractiveSetDefaultMode::SYSTEM_SETTINGS;
+
+  return InteractiveSetDefaultMode::INTENT_PICKER;
+}
+
 bool ShellUtil::MakeChromeDefault(int shell_change,
                                   const base::FilePath& chrome_exe,
                                   bool elevate_if_not_admin) {
@@ -2088,6 +2129,25 @@ bool ShellUtil::ShowMakeChromeDefaultSystemUI(
   bool is_win11_or_greater =
       base::win::GetVersion() >= base::win::Version::WIN11;
   if (!is_default) {
+     switch (GetInteractiveSetDefaultMode()) {
+      case INTENT_PICKER: {
+        // On Windows 8, you can't set yourself as the default handler
+        // programmatically. In other words IApplicationAssociationRegistration
+        // has been rendered useless. What you can do is to launch
+        // "Set Program Associations" section of the "Default Programs"
+        // control panel, which is a mess, or pop the concise "How you want to
+        // open webpages?" dialog.  We choose the latter.
+        succeeded = LaunchSelectDefaultProtocolHandlerDialog(L"http");
+      } break;
+      case SYSTEM_SETTINGS:
+        // On Windows 10, you can't even launch the associations dialog.
+        // So we launch the settings dialog. Quoting from MSDN: "The Open With
+        // dialog box can no longer be used to change the default program used
+        // to open a file extension. You can only use SHOpenWithDialog to open
+        // a single file."
+        succeeded = base::win::LaunchDefaultAppsSettingsModernDialog(L"http");
+        break;
+    }
     if (is_win11_or_greater) {
       // Launch the Windows Apps Settings dialog and navigate to the settings
       // page for Chrome.
@@ -2207,9 +2267,24 @@ bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
   bool is_default =
       (GetChromeDefaultProtocolClientState(protocol) == IS_DEFAULT);
   if (!is_default) {
-    // Launch the Windows settings dialog.
-    succeeded =
-        base::win::LaunchDefaultAppsSettingsModernDialog(protocol.c_str());
+    switch (GetInteractiveSetDefaultMode()) {
+      case INTENT_PICKER: {
+        // On Windows 8, you can't set yourself as the default handler
+        // programmatically. In other words IApplicationAssociationRegistration
+        // has been rendered useless. What you can do is to launch
+        // "Set Program Associations" section of the "Default Programs"
+        // control panel, which is a mess, or pop the concise "How you want to
+        // open
+        // links of this type (protocol)?" dialog.  We choose the latter.
+        succeeded = LaunchSelectDefaultProtocolHandlerDialog(protocol.c_str());
+      } break;
+      case SYSTEM_SETTINGS:
+        // On Windows 10, you can't even launch the associations dialog.
+        // So we launch the settings dialog.
+        succeeded =
+            base::win::LaunchDefaultAppsSettingsModernDialog(protocol.c_str());
+        break;
+    }
     is_default = (succeeded &&
                   GetChromeDefaultProtocolClientState(protocol) == IS_DEFAULT);
   }
@@ -2582,16 +2657,19 @@ bool ShellUtil::AddAppProtocolAssociations(
     if (!AddRegistryEntries(HKEY_CURRENT_USER, entries))
       success = false;
 
-    // Removing the existing user choice for a given protocol forces Windows to
-    // present a disambiguation dialog the next time this protocol is invoked
-    // from the OS.
-    std::unique_ptr<RegistryEntry> entry = GetProtocolUserChoiceEntry(protocol);
-    if (!installer::DeleteRegistryValue(HKEY_CURRENT_USER, entry->key_path(),
-                                        WorkItem::kWow64Default, kRegProgId)) {
-      success = false;
+    // On Windows 10, removing the existing user choice for a given protocol
+    // forces Windows to present a disambiguation dialog the next time this
+    // protocol is invoked from the OS.
+    if (base::win::GetVersion() >= base::win::Version::WIN10) {
+      std::unique_ptr<RegistryEntry> entry =
+          GetProtocolUserChoiceEntry(protocol);
+      if (!installer::DeleteRegistryValue(HKEY_CURRENT_USER, entry->key_path(),
+                                          WorkItem::kWow64Default,
+                                          kRegProgId)) {
+        success = false;
+      }
     }
   }
-
   return success;
 }
 

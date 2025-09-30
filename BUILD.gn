@@ -74,7 +74,18 @@ declare_args() {
 if (is_official_build) {
   # An official (maximally optimized!) component (optimized for build times)
   # build doesn't make sense and usually doesn't work.
-  assert(!is_component_build)
+    assert(!is_component_build)
+}
+
+# Supermium target that simply pulls in the chrome target as a dependency
+group("supermium") {
+  if (is_win || is_linux || is_mac) {
+    deps = [ "//chrome:chrome" ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome:chrome_dll" ]
+  }
 }
 
 # The `gn_all` target is used to list all of the main targets in the build, so

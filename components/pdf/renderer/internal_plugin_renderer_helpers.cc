@@ -29,7 +29,8 @@ namespace pdf {
 
 bool IsPdfRenderer() {
   static const bool has_switch =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kPdfRenderer);
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kPdfRenderer) ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kSingleProcess);
   return has_switch;
 }
 

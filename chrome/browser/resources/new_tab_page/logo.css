@@ -24,15 +24,14 @@
 
 #logo {
   forced-color-adjust: none;
-  height: 92px;
-  width: 272px;
+  height: 80px;
+  width: 219px;
 }
 
 :host([single-colored]) #logo {
   -webkit-mask-image: url(./icons/google_logo.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
-  background-color: var(--ntp-logo-color);
 }
 
 :host(:not([single-colored])) #logo {

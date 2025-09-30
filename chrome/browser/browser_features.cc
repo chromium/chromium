@@ -283,6 +283,8 @@ BASE_FEATURE(kWebUsbDeviceDetection,
              "WebUsbDeviceDetection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClearDataOnExit, "ClearDataOnExit", base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Disable dynamic code using ACG. Prevents the browser process from generating
 // dynamic code or modifying executable code. See comments in

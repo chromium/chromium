@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history/history_utils.h"
 
+#include "base/command_line.h"
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "url/gurl.h"
@@ -24,6 +25,8 @@ bool CanAddURLToHistory(const GURL& url) {
       url.SchemeIs(content::kViewSourceScheme) ||
       url.SchemeIs(chrome::kChromeNativeScheme) ||
       url.SchemeIs(chrome::kChromeSearchScheme) ||
+	  (url.SchemeIs(url::kTraceScheme) && 
+	  base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) ||
       url.SchemeIs(dom_distiller::kDomDistillerScheme))
     return false;
 

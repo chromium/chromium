@@ -27,7 +27,9 @@
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
+#include "chrome/browser/about_flags.h"
 #include "chrome/browser/active_use_util.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_features.h"
@@ -107,6 +109,7 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_ids_provider.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/synthetic_trial_syncer.h"
 #include "content/public/browser/web_ui_controller_factory.h"
@@ -1059,8 +1062,16 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
       ui::TouchUiController::Get());
 #endif
 
-  // Add Site Isolation switches as dictated by policy.
   auto* command_line = base::CommandLine::ForCurrentProcess();
+#if BUILDFLAG(IS_WIN)
+  // Use a special legacy sandbox if running less than Windows 10.
+  if (base::win::GetVersion() < base::win::Version::WIN10 &&
+      !command_line->HasSwitch("no-sandbox")) {
+    command_line->AppendSwitch("legacy-sandbox");
+  }
+#endif
+
+  // Add Site Isolation switches as dictated by policy.
   if (local_state->GetBoolean(prefs::kSitePerProcess) &&
       site_isolation::SiteIsolationPolicy::IsEnterprisePolicyApplicable() &&
       !command_line->HasSwitch(switches::kSitePerProcess)) {
@@ -1687,6 +1698,16 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         g_browser_process->profile_manager()->GetLastOpenedProfiles();
   }
 #endif
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            "apply-ungoogled-supermium")) {
+        flags_ui::PrefServiceFlagsStorage flags_storage(g_browser_process->local_state());
+        about_flags::SetFeatureEntryEnabled(&flags_storage, "ungoogled-supermium",
+                                            /*enable=*/true);
+    flags_storage.CommitPendingWrites();		
+    return CHROME_RESULT_CODE_NORMAL_EXIT_UPGRADE_RELAUNCHED;
+  }
+
   // This step is costly.
   if (browser_creator_->Start(*base::CommandLine::ForCurrentProcess(),
                               base::FilePath(), profile_info,

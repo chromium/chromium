@@ -4,6 +4,7 @@
 
 #include "components/translate/core/browser/translate_url_fetcher.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "components/translate/core/browser/translate_download_manager.h"
@@ -33,6 +34,8 @@ bool TranslateURLFetcher::Request(const GURL& url,
                                   bool is_incognito) {
   // This function is not supposed to be called if the previous operation is not
   // finished.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	return false;
   if (state_ == REQUESTING) {
     NOTREACHED();
   }

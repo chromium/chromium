@@ -12,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
@@ -330,10 +331,12 @@ void Tab::Layout(PassKey) {
   UpdateIconVisibility();
 
   const int start = contents_rect.x();
-
   // The bounds for the favicon will include extra width for the attention
   // indicator, but visually it will be smaller at kFaviconSize wide.
-  gfx::Rect favicon_bounds(start, contents_rect.y(), 0, 0);
+  gfx::Rect favicon_bounds(start + GetLayoutConstant(TAB_FAVICON_X_OFFSET), 
+                           GetLayoutConstant(TAB_FAVICON_Y_OFFSET), 0, 0);
+  if (favicon_bounds.right() >= (contents_rect.right() - (GetLayoutConstant(TAB_FAVICON_X_OFFSET) * 4)))
+      favicon_bounds.set_x(favicon_bounds.x() - GetLayoutConstant(TAB_FAVICON_X_OFFSET));
   if (showing_icon_) {
     if (center_icon_) {
       // When centering the favicon, the favicon is allowed to escape the normal
@@ -357,7 +360,7 @@ void Tab::Layout(PassKey) {
 
   const int after_title_padding = GetLayoutConstant(TAB_AFTER_TITLE_PADDING);
 
-  int close_x = contents_rect.right();
+  int close_x = contents_rect.right() - 18 + GetLayoutConstant(TAB_CLOSE_BUTTON_X_OFFSET);
   if (showing_close_button_) {
     // The visible size is the button's hover shape size. The actual size
     // includes the border insets for the button.
@@ -369,7 +372,8 @@ void Tab::Layout(PassKey) {
     // The close button is vertically centered in the contents_rect.
     const int top =
         contents_rect.y() +
-        Center(contents_rect.height(), close_button_actual_size.height());
+        Center(contents_rect.height(), close_button_actual_size.height())
+        + GetLayoutConstant(TAB_CLOSE_BUTTON_Y_OFFSET);
 
     // The visible part of the close button should be placed against the
     // right of the contents rect unless the tab is so small that it would
@@ -440,7 +444,7 @@ void Tab::Layout(PassKey) {
     const int title_width = std::max(title_right - title_left, 0);
     // The Label will automatically center the font's cap height within the
     // provided vertical space.
-    const gfx::Rect title_bounds(title_left, contents_rect.y(), title_width,
+    const gfx::Rect title_bounds(title_left, contents_rect.y() + GetLayoutConstant(TAB_TITLE_Y_OFFSET), title_width,
                                  contents_rect.height());
     show_title = title_width > 0;
 
@@ -1152,7 +1156,8 @@ void Tab::UpdateIconVisibility() {
   // In case of touch optimized UI, the close button has an extra padding on the
   // left that needs to be considered.
   const int close_button_width = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE) +
-                                 GetLayoutConstant(TAB_AFTER_TITLE_PADDING);
+                                 GetLayoutConstant(TAB_AFTER_TITLE_PADDING) +
+                                 GetLayoutConstant(TAB_CLOSE_BUTTON_X_OFFSET);
   const bool large_enough_for_close_button =
       available_width >= (touch_ui ? kTouchMinimumContentsWidthForCloseButtons
                                    : kMinimumContentsWidthForCloseButtons);
@@ -1166,7 +1171,11 @@ void Tab::UpdateIconVisibility() {
     // Close button is shown on active tabs regardless of the size.
     showing_close_button_ = true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    available_width -= close_button_width;
+	if (base::CommandLine::ForCurrentProcess()->HasSwitch("hide-tab-close-buttons")) {
+      showing_close_button_ = false;
+    } else {
+      available_width -= close_button_width;
+	}
 
     showing_alert_indicator_ =
         has_alert_icon && alert_icon_width <= available_width;
@@ -1195,6 +1204,8 @@ void Tab::UpdateIconVisibility() {
         !controller_->IsLockedForOnTask() &&
 #endif
         large_enough_for_close_button;
+	if (base::CommandLine::ForCurrentProcess()->HasSwitch("hide-tab-close-buttons"))
+      showing_close_button_ = false;
     if (showing_close_button_) {
       available_width -= close_button_width;
     }

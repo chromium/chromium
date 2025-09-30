@@ -23,6 +23,36 @@
 #include "media/cdm/cdm_host_files.h"
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
+namespace cdm {
+
+#if defined(_WIN32)
+typedef wchar_t FilePathCharType;
+typedef HANDLE PlatformFile;
+const PlatformFile kInvalidPlatformFile = INVALID_HANDLE_VALUE;
+#else
+typedef char FilePathCharType;
+typedef int PlatformFile;
+const PlatformFile kInvalidPlatformFile = -1;
+#endif  // defined(_WIN32)
+
+
+struct HostFile {
+  HostFile(const FilePathCharType* file_path,
+           PlatformFile file,
+           PlatformFile sig_file)
+      : file_path(file_path), file(file), sig_file(sig_file) {}
+
+  // File that is part of the host of the CDM.
+  const FilePathCharType* file_path = nullptr;
+  PlatformFile file = kInvalidPlatformFile;
+
+  // Signature file for |file|.
+  PlatformFile sig_file = kInvalidPlatformFile;
+};
+	
+	
+}
+
 namespace media {
 
 class MEDIA_EXPORT CdmModule {

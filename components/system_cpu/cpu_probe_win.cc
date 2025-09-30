@@ -92,7 +92,7 @@ std::optional<CpuSample> CpuProbeWin::BlockingTaskRunnerHelper::Update() {
     const auto* query_info = is_running_in_vm
                                  ? kHypervisorLogicalProcessorCounter
                                  : kProcessorCounter;
-    pdh_status = PdhAddEnglishCounter(cpu_query_.get(), query_info, NULL,
+    pdh_status = PdhAddCounter(cpu_query_.get(), query_info, NULL,
                                       &cpu_percent_utilization_);
 
     // When Chrome is running under a different hypervisor, we can add the
@@ -102,14 +102,14 @@ std::optional<CpuSample> CpuProbeWin::BlockingTaskRunnerHelper::Update() {
       pdh_status = PdhCollectQueryData(cpu_query_.get());
       if (pdh_status != ERROR_SUCCESS) {
         query_info = kProcessorCounter;
-        pdh_status = PdhAddEnglishCounter(cpu_query_.get(), query_info, NULL,
+        pdh_status = PdhAddCounter(cpu_query_.get(), query_info, NULL,
                                           &cpu_percent_utilization_);
       }
     }
 
     if (pdh_status != ERROR_SUCCESS) {
       cpu_query_.reset();
-      LOG(ERROR) << "PdhAddEnglishCounter failed for '" << query_info
+      LOG(ERROR) << "PdhAddCounter failed for '" << query_info
                  << "': " << logging::SystemErrorCodeToString(pdh_status);
       return std::nullopt;
     }

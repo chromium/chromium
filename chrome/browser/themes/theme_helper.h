@@ -94,10 +94,22 @@ class ThemeHelper {
 
  private:
   friend class theme_service_internal::ThemeServiceTest;
+  
+  // Whether the default incognito color/tint for |id| should be used, if
+  // available.
+  static bool UseIncognitoColor(int id,
+                                const CustomThemeSupplier* theme_supplier);
 
   // Whether dark default colors/tints should be used, if available.
   static bool UseDarkModeColors(const CustomThemeSupplier* theme_supplier);
 
+  // Whether the color from |theme_supplier| (if any) should be ignored for
+  // the given |id| and |incognito| state.
+  static bool ShouldIgnoreThemeSupplier(
+      int id,
+      bool incognito,
+      const CustomThemeSupplier* theme_supplier);
+	  
   // Returns a cross platform image for an id.
   gfx::Image GetImageNamed(int id,
                            bool incognito,

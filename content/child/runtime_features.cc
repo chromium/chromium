@@ -4,7 +4,6 @@
 
 #include "content/child/runtime_features.h"
 
-#include <string>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -54,6 +53,10 @@
 
 #if BUILDFLAG(ENABLE_VR)
 #include "device/vr/public/cpp/features.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #endif
 
 using blink::WebRuntimeFeatures;

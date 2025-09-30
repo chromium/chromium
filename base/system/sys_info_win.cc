@@ -161,6 +161,9 @@ int SysInfo::NumberOfProcessors() {
 
 // static
 int SysInfo::NumberOfEfficientProcessorsImpl() {
+  // No efficiency support before Windows 10.
+  if (win::GetVersion() < win::Version::WIN10)
+	  return 0;
   std::vector<BYTE> efficiency_classes = GetCoreEfficiencyClasses();
   if (efficiency_classes.empty()) {
     return 0;

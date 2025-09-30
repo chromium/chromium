@@ -941,8 +941,9 @@ bool IsLink(const FilePath& file_path) {
 }
 
 bool GetFileInfo(const FilePath& file_path, File::Info* results) {
+  #if !BUILDFLAG(SUPERMIUM_DEBUG)
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-
+  #endif
   WIN32_FILE_ATTRIBUTE_DATA attr;
   if (!GetFileAttributesEx(file_path.value().c_str(), GetFileExInfoStandard,
                            &attr)) {

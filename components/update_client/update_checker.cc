@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -104,6 +105,9 @@ void UpdateCheckerImpl::CheckForUpdates(
     scoped_refptr<UpdateContext> context,
     const base::flat_map<std::string, std::string>& additional_attributes,
     UpdateCheckCallback update_check_callback) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium")) {
+	  return;
+  }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   update_check_callback_ = std::move(update_check_callback);

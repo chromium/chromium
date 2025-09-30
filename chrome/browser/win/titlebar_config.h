@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
+
 #ifndef CHROME_BROWSER_WIN_TITLEBAR_CONFIG_H_
 #define CHROME_BROWSER_WIN_TITLEBAR_CONFIG_H_
 
@@ -9,5 +11,10 @@ class BrowserView;
 
 // Returns whether we should custom draw the titlebar for a browser window.
 bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view);
+
+// Returns whether we should always custom draw the system title bar.
+bool ShouldCustomDrawSystemTitlebar();
+
+BASE_DECLARE_FEATURE(kForceXpTheme);
 
 #endif  // CHROME_BROWSER_WIN_TITLEBAR_CONFIG_H_

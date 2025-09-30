@@ -290,7 +290,7 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
   win::StartupInformation startup_info_wrapper;
   STARTUPINFO* startup_info = startup_info_wrapper.startup_info();
   DWORD flags = 0;
-
+  
   // Count extended attributes before reserving space.
   DWORD attribute_count = 0;
   // Count PROC_THREAD_ATTRIBUTE_MITIGATION_POLICY.
@@ -300,7 +300,7 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
   }
 
   // Count PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
-  if (!options.handles_to_inherit.empty()) {
+  if (!options.handles_to_inherit.empty() && base::win::GetVersion() >= base::win::Version::VISTA) {
     ++attribute_count;
   }
 
@@ -329,7 +329,11 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
 
   // Set PROC_THREAD_ATTRIBUTE_HANDLE_LIST.
   bool inherit_handles = options.inherit_mode == LaunchOptions::Inherit::kAll;
-  if (!options.handles_to_inherit.empty()) {
+  if (!options.handles_to_inherit.empty() && 
+	  base::win::GetVersion() < base::win::Version::VISTA) {
+	  inherit_handles = true;
+  }
+  if (!options.handles_to_inherit.empty() && base::win::GetVersion() >= base::win::Version::VISTA) {
     DCHECK_GT(attribute_count, 0u);
     DCHECK_EQ(options.inherit_mode, LaunchOptions::Inherit::kSpecific);
 

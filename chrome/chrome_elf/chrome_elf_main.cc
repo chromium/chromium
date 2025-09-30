@@ -69,6 +69,7 @@ bool IsTemporaryUserDataDirectoryCreatedForHeadless() {
 //         that will blow up with the loader lock held.
 //         https://bugs.chromium.org/p/chromium/issues/detail?id=748949#c18
 BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID reserved) {
+	
   if (reason == DLL_PROCESS_ATTACH) {
     install_static::InitializeProductDetailsForPrimaryModule();
     install_static::InitializeProcessType();

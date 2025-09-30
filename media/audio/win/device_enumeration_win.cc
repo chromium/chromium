@@ -164,6 +164,54 @@ bool GetOutputDeviceNamesWinXP(AudioDeviceNames* device_names) {
                                  waveOutGetDevCapsW>(device_names);
 }
 
+std::string ConvertToWinXPInputDeviceId(const std::string& device_id) {
+  UINT number_of_active_devices = waveInGetNumDevs();
+  MMRESULT result = MMSYSERR_NOERROR;
+
+  UINT i = 0;
+  for (; i < number_of_active_devices; ++i) {
+    size_t size = 0;
+    // Get the size (including the terminating NULL) of the endpoint ID of the
+    // waveIn device.
+    result = waveInMessage(reinterpret_cast<HWAVEIN>(i),
+                           DRV_QUERYFUNCTIONINSTANCEIDSIZE,
+                           reinterpret_cast<DWORD_PTR>(&size), NULL);
+    if (result != MMSYSERR_NOERROR)
+      continue;
+
+    ScopedCoMem<WCHAR> id;
+    id.Reset(static_cast<WCHAR*>(CoTaskMemAlloc(size)));
+    if (!id)
+      continue;
+
+    // Get the endpoint ID string for this waveIn device.
+    result = waveInMessage(
+        reinterpret_cast<HWAVEIN>(i), DRV_QUERYFUNCTIONINSTANCEID,
+        reinterpret_cast<DWORD_PTR>(static_cast<WCHAR*>(id)), size);
+    if (result != MMSYSERR_NOERROR)
+      continue;
+
+    std::string utf8_id = base::WideToUTF8(static_cast<WCHAR*>(id));
+    // Check whether the endpoint ID string of this waveIn device matches that
+    // of the audio endpoint device.
+    if (device_id == utf8_id)
+      break;
+  }
+
+  // If a matching waveIn device was found, convert the unique endpoint ID
+  // string to a standard friendly name with max 32 characters.
+  if (i < number_of_active_devices) {
+    WAVEINCAPS capabilities;
+
+    result = waveInGetDevCaps(i, &capabilities, sizeof(capabilities));
+    if (result == MMSYSERR_NOERROR)
+      return base::WideToUTF8(capabilities.szPname);
+  }
+
+  return std::string();
+  
+}
+
 std::string GetDeviceSuffixWin(const std::string& controller_id) {
   std::string suffix;
   if (controller_id.size() >= 21 && controller_id.substr(0, 8) == "USB\\VID_" &&

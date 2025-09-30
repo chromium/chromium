@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/windows_version.h"
 
 namespace ui::tsf_inputscope {
 namespace {
@@ -149,6 +150,35 @@ InputScope ConvertTextInputModeToInputScope(TextInputMode text_input_mode) {
 
 }  // namespace
 
+typedef HRESULT(WINAPI* SetInputScopesFunc)(HWND window_handle,
+                                            const InputScope* input_scope, 
+											UINT num_input_scopes,
+											WCHAR**, /* unused */
+											UINT, /* unused */
+											WCHAR*, /* unused */
+											WCHAR* /* unused */);
+
+BOOL g_get_proc_done = false;
+SetInputScopesFunc g_set_input_scopes = NULL;
+void InitializeTsfForInputScopes() {
+  DCHECK(base::CurrentUIThread::IsSet());
+  // Thread safety is not required because this function is under UI thread.
+  if (!g_get_proc_done) {
+    g_get_proc_done = true;
+	
+	// For stability reasons, we do not support Windows XP.
+    if (base::win::GetVersion() < base::win::Version::VISTA)
+      return;
+
+    HMODULE module = NULL;
+    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN, L"msctf.dll",
+        &module)) {
+      g_set_input_scopes = reinterpret_cast<SetInputScopesFunc>(
+          GetProcAddress(module, "SetInputScopes"));
+    }
+  }
+}
+
 std::vector<InputScope> GetInputScopes(TextInputType text_input_type,
                                        TextInputMode text_input_mode) {
   std::vector<InputScope> input_scopes;
@@ -183,6 +213,18 @@ typedef HRESULT(WINAPI* SetInputScopeFunc)(HWND window_handle,
 
 SetInputScopeFunc g_set_input_scope = NULL;
 bool g_get_set_input_scope_done = false;
+
+void SetInputScopeForTsfUnawareWindow(HWND window_handle,
+                                      TextInputType text_input_type,
+                                      TextInputMode text_input_mode) {
+  if (!g_set_input_scopes)
+    return;
+
+  std::vector<InputScope> input_scopes = GetInputScopes(text_input_type,
+                                                        text_input_mode);
+  g_set_input_scopes(window_handle, &input_scopes[0], input_scopes.size(),
+                     NULL, 0, NULL, NULL);
+}
 
 void SetInputScope(HWND window_handle, InputScope input_scope) {
   CHECK(base::CurrentUIThread::IsSet());

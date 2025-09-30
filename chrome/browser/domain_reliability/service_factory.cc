@@ -36,6 +36,8 @@ bool ShouldCreateService() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableDomainReliability))
     return false;
+  if (command_line->HasSwitch("ungoogled-supermium"))
+	return false;
   if (command_line->HasSwitch(switches::kEnableDomainReliability))
     return true;
   if (!IsDomainReliabilityAllowed()) {

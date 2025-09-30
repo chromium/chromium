@@ -31,6 +31,15 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOn3GbDevices);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
 #endif
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kForceDarkModeFlag);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kIncognitoBrandConsistencyForDesktop);
+
+#if BUILDFLAG(IS_WIN)
+BASE_EXPORT BASE_DECLARE_FEATURE(kForceGdi);
+#endif
+
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_EXPORT BASE_DECLARE_FEATURE(kBackgroundNotPerceptibleBinding);
 BASE_EXPORT BASE_DECLARE_FEATURE(kCollectAndroidFrameTimelineMetrics);

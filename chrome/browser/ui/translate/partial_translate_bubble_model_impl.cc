@@ -7,11 +7,17 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/path_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/language_detection/core/constants.h"
 #include "components/translate/content/browser/partial_translate_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -238,6 +244,14 @@ void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
     SetSourceLanguage(response.source_language);
     SetTargetLanguage(response.target_language);
     SetTargetText(response.translated_text);
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch("string-to-translate") &&
+        base::CommandLine::ForCurrentProcess()->HasSwitch("language-to-translate")) {
+      base::FilePath userdir;
+      if (base::PathService::Get(chrome::DIR_LOGS, &userdir)) {
+         const base::FilePath userpath = userdir.Append(FILE_PATH_LITERAL("translateresult"));
+         base::WriteFile(userpath, base::UTF16ToUTF8(response.translated_text));
+      }
+    }
     SetViewState(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
     error_type_ = translate::TranslateErrors::NONE;
     initial_request_completed_ = true;
@@ -247,6 +261,11 @@ void PartialTranslateBubbleModelImpl::OnPartialTranslateResponse(
 
   for (PartialTranslateBubbleModel::Observer& obs : observers_) {
     obs.OnPartialTranslateComplete();
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("string-to-translate") &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch("language-to-translate")) {
+  base::Process process = base::Process(base::GetCurrentProcessHandle());
+  process.Terminate(0, true);
   }
 }
 

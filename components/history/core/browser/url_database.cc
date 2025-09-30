@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -356,6 +357,11 @@ bool URLDatabase::AutocompleteForPrefix(const std::string& prefix,
 }
 
 bool URLDatabase::IsTypedHost(const std::string& host, std::string* scheme) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("user-data-dir"))
+  {  // Some portable users have had issues initializing the browser starting here.
+     // Temporary change as a result.
+     return false;
+  }
   const char* schemes[] = {
     url::kHttpScheme,
     url::kHttpsScheme,

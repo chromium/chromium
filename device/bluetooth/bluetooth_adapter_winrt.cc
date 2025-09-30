@@ -662,6 +662,7 @@ void BluetoothAdapterWinrt::InitForTests(
     ComPtr<IBluetoothAdapterStatics> bluetooth_adapter_statics,
     ComPtr<IDeviceInformationStatics> device_information_statics,
     ComPtr<IRadioStatics> radio_statics) {
+
   auto statics = PerformSlowInitTasks();
 
   // This allows any passed in values (which would be fakes) to replace

@@ -53,11 +53,18 @@
 namespace blink {
 
 namespace {
+	
+const char kArial[] = "Arial";
+const char kTimesNewRoman[] = "Times New Roman";
 
 inline bool IsFontPresent(const char* font_name_utf8,
                           const SkFontMgr& font_manager) {
-  sk_sp<SkTypeface> tf(
-      font_manager.matchFamilyStyle(font_name_utf8, SkFontStyle()));
+  sk_sp<SkTypeface> tf;
+  if(FontCache::useDirectWrite()) {
+	tf = font_manager.matchFamilyStyle(font_name_utf8, SkFontStyle());
+  } else {
+	tf = font_manager.legacyMakeTypeface(font_name_utf8, SkFontStyle());
+  }
   if (!tf)
     return false;
 
@@ -660,6 +667,40 @@ const AtomicString& GetFallbackFamily(
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kLastResort,
                                   ("lucida sans unicode"));
   return kLastResort;
+}
+
+bool GetOutOfProcessFallbackFamily(
+    UChar32 character,
+    FontDescription::GenericFamilyType generic_family,
+    String bcp47_language_tag,
+    FontFallbackPriority,
+    const mojo::Remote<mojom::blink::DWriteFontProxy>& service,
+    String* fallback_family,
+    SkFontStyle* fallback_style) {
+  String base_family_name_approximation;
+  switch (generic_family) {
+    case FontDescription::kMonospaceFamily:
+      base_family_name_approximation = font_family_names::kCourierNew;
+      break;
+    case FontDescription::kSansSerifFamily:
+      base_family_name_approximation = kArial;
+      break;
+    default:
+      base_family_name_approximation = kTimesNewRoman;
+  }
+
+  mojom::blink::FallbackFamilyAndStylePtr fallback_family_and_style;
+  bool mojo_result = service->FallbackFamilyAndStyleForCodepoint(
+      base_family_name_approximation, bcp47_language_tag, character,
+      &fallback_family_and_style);
+
+  SECURITY_DCHECK(fallback_family);
+  SECURITY_DCHECK(fallback_style);
+  *fallback_family = fallback_family_and_style->fallback_family_name;
+  *fallback_style = SkFontStyle(
+      fallback_family_and_style->weight, fallback_family_and_style->width,
+      static_cast<SkFontStyle::Slant>(fallback_family_and_style->slant));
+  return mojo_result;
 }
 
 }  // namespace blink

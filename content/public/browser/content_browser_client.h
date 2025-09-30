@@ -1468,6 +1468,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // else we should do with the file.
   virtual std::string GetDefaultDownloadName();
 
+  // Returns the path to the font lookup table cache directory in which - on
+  // Windows 7 & 8 - we cache font name meta information to perform @font-face {
+  // src: local() } lookups.
+  virtual base::FilePath GetFontLookupTableCacheDir();
+
   // Returns the path to the browser shader disk cache root.
   virtual base::FilePath GetShaderDiskCacheDirectory();
 

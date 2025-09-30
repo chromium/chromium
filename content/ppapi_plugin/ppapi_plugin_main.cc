@@ -161,7 +161,12 @@ int PpapiPluginMain(MainFunctionParams parameters) {
 #if BUILDFLAG(IS_WIN)
   if (!base::win::IsUser32AndGdi32Available())
     gfx::win::InitializeDirectWrite();
-  InitializeDWriteFontProxy();
+  bool use_direct_write = gfx::win::IsDirectWriteEnabled();
+  if (use_direct_write) {
+    InitializeDWriteFontProxy();
+  }
+
+  blink::WebFontRendering::setUseDirectWrite(use_direct_write);
 
   int antialiasing_enabled = 1;
   base::StringToInt(

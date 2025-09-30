@@ -67,6 +67,9 @@ constexpr base::TimeDelta kTouchPopupTimeout = base::Seconds(10);
 constexpr base::TimeDelta kKeyPressPopupDelay = base::Seconds(1);
 
 bool IsExitUiEnabled() {
+	if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "hide-fullscreen-exit-ui"))
+		return false;
 #if BUILDFLAG(IS_MAC)
   // Exit UI is unnecessary, since Mac uses the OS fullscreen such that window
   // menu and controls reveal when the cursor is moved to the top.

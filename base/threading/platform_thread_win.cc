@@ -221,7 +221,10 @@ void AssertMemoryPriority(HANDLE thread, int memory_priority) {
       reinterpret_cast<decltype(&::GetThreadInformation)>(::GetProcAddress(
           ::GetModuleHandle(L"Kernel32.dll"), "GetThreadInformation"));
 
-  DCHECK(get_thread_information_fn);
+  if (!get_thread_information_fn) {
+    DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
+    return;
+  }
 
   MEMORY_PRIORITY_INFORMATION memory_priority_information = {};
   DCHECK(get_thread_information_fn(thread, ::ThreadMemoryPriority,
@@ -407,8 +410,12 @@ void SetCurrentThreadPriority(ThreadType thread_type,
     // Override the memory priority.
     MEMORY_PRIORITY_INFORMATION memory_priority{.MemoryPriority =
                                                     MEMORY_PRIORITY_NORMAL};
+	  static const auto set_thread_information_fn =
+      reinterpret_cast<decltype(&::SetThreadInformation)>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "SetThreadInformation"));
+      DCHECK(set_thread_information_fn);
     [[maybe_unused]] const BOOL memory_priority_success =
-        SetThreadInformation(thread_handle, ::ThreadMemoryPriority,
+        set_thread_information_fn(thread_handle, ::ThreadMemoryPriority,
                              &memory_priority, sizeof(memory_priority));
     DPLOG_IF(ERROR, !memory_priority_success)
         << "Set thread memory priority failed.";
@@ -431,6 +438,15 @@ void SetCurrentThreadPriority(ThreadType thread_type,
 
 void SetCurrentThreadQualityOfService(ThreadType thread_type) {
   // QoS and power throttling were introduced in Win10 1709.
+ if (win::GetVersion() < win::Version::WIN10_RS3) {
+    return;
+  }
+
+  static const auto set_thread_information_fn =
+      reinterpret_cast<decltype(&::SetThreadInformation)>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "SetThreadInformation"));
+  DCHECK(set_thread_information_fn);
+
   bool desire_ecoqos = false;
   switch (thread_type) {
     case ThreadType::kBackground:
@@ -451,11 +467,10 @@ void SetCurrentThreadQualityOfService(ThreadType thread_type) {
       .StateMask =
           desire_ecoqos ? THREAD_POWER_THROTTLING_EXECUTION_SPEED : 0ul,
   };
-  [[maybe_unused]] const BOOL success = ::SetThreadInformation(
+  [[maybe_unused]] const BOOL success = set_thread_information_fn(
       ::GetCurrentThread(), ::ThreadPowerThrottling,
       &thread_power_throttling_state, sizeof(thread_power_throttling_state));
-  // Failure is expected on versions of Windows prior to RS3.
-  DPLOG_IF(ERROR, !success && win::GetVersion() >= win::Version::WIN10_RS3)
+  DPLOG_IF(ERROR, !success)
       << "Failed to set EcoQoS to " << std::boolalpha << desire_ecoqos;
 }
 

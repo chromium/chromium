@@ -529,8 +529,13 @@ void ProfileNetworkContextService::ConfigureNetworkContextParams(
 
 void ProfileNetworkContextService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(embedder_support::kAlternateErrorPagesEnabled,
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-captive-portals")) {
+     registry->RegisterBooleanPref(embedder_support::kAlternateErrorPagesEnabled,
+                                false);
+  } else {
+     registry->RegisterBooleanPref(embedder_support::kAlternateErrorPagesEnabled,
                                 true);
+  }
   registry->RegisterBooleanPref(prefs::kQuicAllowed, true);
   registry->RegisterBooleanPref(prefs::kGloballyScopeHTTPAuthCacheEnabled,
                                 false);

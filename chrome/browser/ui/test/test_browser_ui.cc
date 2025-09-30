@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 
 #include "base/command_line.h"
+#include "base/features.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
@@ -165,8 +166,8 @@ void TestBrowserUi::ShowAndVerifyUi() {
   // Gold files for pixel tests are for light mode, so if dark mode is not
   // forced, and host is in dark mode, skip test.
   if (!IsInteractiveUi() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceDarkMode) &&
+      (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceDarkMode) || base::FeatureList::IsEnabled(base::features::kForceDarkModeFlag) &&
       ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
     GTEST_SKIP() << "Host is in dark mode; skipping test";
   }

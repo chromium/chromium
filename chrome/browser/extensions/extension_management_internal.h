@@ -189,7 +189,7 @@ struct GlobalSettings {
   std::optional<std::vector<Manifest::Type>> allowed_types;
 
   // An enum setting indicates if manifest v2 is allowed.
-  ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kDefault;
+  ManifestV2Setting manifest_v2_setting = ManifestV2Setting::kEnabled;
 
   UnpublishedAvailability unpublished_availability_setting =
       UnpublishedAvailability::kAllowUnpublished;

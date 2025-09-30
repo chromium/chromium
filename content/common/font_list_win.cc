@@ -17,7 +17,51 @@
 #include "base/values.h"
 #include "ui/gfx/win/direct_write.h"
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 namespace content {
+
+static int CALLBACK EnumFontFamExProc(ENUMLOGFONTEXW* logical_font,
+                                      NEWTEXTMETRICEXW* physical_font,
+                                      DWORD font_type,
+                                      LPARAM lparam) {
+  std::set<std::wstring>* font_names =
+      reinterpret_cast<std::set<std::wstring>*>(lparam);
+  if (font_names) {
+    const LOGFONTW& lf = logical_font->elfLogFont;
+    if (lf.lfFaceName[0] && lf.lfFaceName[0] != '@') {
+      std::wstring face_name(lf.lfFaceName);
+      font_names->insert(face_name);
+    }
+  }
+  return 1;
+}
+
+base::Value::List GetFontList_SlowBlocking_Legacy() {
+  std::set<std::u16string> font_names;
+
+  LOGFONTW logfont;
+  memset(&logfont, 0, sizeof(logfont));
+  logfont.lfCharSet = DEFAULT_CHARSET;
+
+  HDC hdc = ::GetDC(NULL);
+  ::EnumFontFamiliesExW(hdc, &logfont, (FONTENUMPROCW)&EnumFontFamExProc,
+                        (LPARAM)&font_names, 0);
+  ::ReleaseDC(NULL, hdc);
+
+  base::Value::List font_list;
+  std::set<std::u16string>::iterator iter;
+  for (iter = font_names.begin(); iter != font_names.end(); ++iter) {
+    base::Value::List font_item;
+    font_item.Append(*iter);
+    font_item.Append(*iter);
+    font_list.Append(std::move(font_item));
+  }
+  return font_list;
+}
 
 base::Value::List GetFontList_SlowBlocking() {
   TRACE_EVENT0("fonts", "GetFontList_SlowBlocking");
@@ -26,12 +70,13 @@ base::Value::List GetFontList_SlowBlocking() {
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
   gfx::win::CreateDWriteFactory(&factory);
+  // Fall back to GDI font list API if DirectWrite is unavailable
   if (!factory)
-    return font_list;
+    return GetFontList_SlowBlocking_Legacy();
 
   Microsoft::WRL::ComPtr<IDWriteFontCollection> collection;
   if (FAILED(factory->GetSystemFontCollection(&collection)))
-    return font_list;
+    return GetFontList_SlowBlocking_Legacy();
 
   // Retrieve the localized font family name. If there is no localized name,
   // used the native name instead.

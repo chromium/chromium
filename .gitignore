@@ -121,6 +121,7 @@ vs-chromium-project.txt
 /chrome/android/profiles/arm.local.txt
 /chrome/android/profiles/local.txt
 /chrome/angle_unittests_run.xml
+/chrome/app/resources
 /chrome/build/pgo_profiles/
 /chrome/gl_tests_run.xml
 /chrome/gles2_conform_test_run.xml
@@ -202,6 +203,7 @@ vs-chromium-project.txt
 /components/history_clusters/internal
 /components/leveldb_proto_test_support.xml
 /components/search_engines/prepopulated_engines.xml
+/components/strings
 /components/suggestions.xml
 /components/variations.xml
 /components/vector_icons/google_chrome/

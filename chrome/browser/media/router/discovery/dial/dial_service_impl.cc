@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -461,7 +462,10 @@ void DialServiceImpl::StartDiscovery() {
 void DialServiceImpl::SendNetworkList(
     const std::optional<NetworkInterfaceList>& networks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))
+	  return;
+  
   using InterfaceIndexAddressFamily = std::pair<uint32_t, net::AddressFamily>;
   std::set<InterfaceIndexAddressFamily> interface_index_addr_family_seen;
   net::IPAddressList ip_addresses;

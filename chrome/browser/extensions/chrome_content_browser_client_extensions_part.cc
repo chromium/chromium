@@ -447,6 +447,11 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   }
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
+  if (process_host->GetProcess().is_current() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kSingleProcess))
+       return true;
+
+
   // Otherwise, the process is wrong for this extension URL.
   return false;
 }

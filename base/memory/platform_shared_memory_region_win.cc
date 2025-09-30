@@ -17,6 +17,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
+#include "base/win/windows_version.h"
 #include "partition_alloc/page_allocator.h"
 
 namespace base::subtle {
@@ -77,6 +78,7 @@ HANDLE CreateFileMappingWithReducedPermissions(SECURITY_ATTRIBUTES* sa,
   HANDLE h = CreateFileMapping(INVALID_HANDLE_VALUE, sa, PAGE_READWRITE, 0,
                                static_cast<DWORD>(rounded_size), name);
   if (!h) {
+     LOG(ERROR) << "CreateFileMappingW failed with error " << GetLastError() << ".";
     return nullptr;
   }
 
@@ -224,12 +226,11 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     return {};
   }
 
-  std::u16string name;
   SECURITY_ATTRIBUTES sa = {sizeof(sa), &sd, FALSE};
   // Ask for the file mapping with reduced permisions to avoid passing the
   // access control permissions granted by default into unpriviledged process.
   HANDLE h = CreateFileMappingWithReducedPermissions(
-      &sa, rounded_size, name.empty() ? nullptr : as_wcstr(name));
+      &sa, rounded_size, nullptr);
   if (h == nullptr) {
     // The error is logged within CreateFileMappingWithReducedPermissions().
     return {};
@@ -265,7 +266,7 @@ PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   bool is_read_only = !success;
   bool expected_read_only = mode == Mode::kReadOnly;
 
-  if (is_read_only != expected_read_only) {
+  if (win::GetVersion() >= win::Version::WIN8_1 && is_read_only != expected_read_only) {
     return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
                                          : TakeError::kExpectedWritableButNot);
   }

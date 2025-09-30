@@ -30,6 +30,11 @@ BASE_FEATURE(kEnableTouchDragCursorSync,
              "EnableTouchDragCursorSync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, widgets inherit the theme from their parent widget.
+BASE_FEATURE(kInheritNativeThemeFromParentWidget,
+			 "InheritNativeThemeFromParentWidget", 
+			 base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables enlargement of HWNDs to a minimum size of 64x64 to handle reported
 // graphical glitches on certain hardware.
 // TODO(crbug.com/401996981): Remove this once enlargement is confirmed to no

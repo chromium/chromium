@@ -423,6 +423,8 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   void CheckConsistency() const;
 #endif
 
+  void DeallocRuns();
+
  protected:
   // Ensure |grapheme_| is computed. |BreakGlyphs| is valid only when
   // |grapheme_| is computed.

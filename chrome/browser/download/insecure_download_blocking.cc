@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
@@ -300,7 +301,9 @@ struct InsecureDownloadData {
         download_source == DownloadSource::OFFLINE_PAGE ||
         download_source == DownloadSource::INTERNAL_API ||
         download_source == DownloadSource::EXTENSION_API ||
-        download_source == DownloadSource::EXTENSION_INSTALLER) {
+        download_source == DownloadSource::EXTENSION_INSTALLER ||
+        base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium") ||
+        !base::FeatureList::IsEnabled(features::kInsecureDownloadWarnings)) {
       base::UmaHistogramEnumeration(
           kInsecureDownloadHistogramName,
           InsecureDownloadSecurityStatus::kDownloadIgnored);
@@ -340,7 +343,9 @@ struct InsecureDownloadData {
         download_source == DownloadSource::OFFLINE_PAGE ||
         download_source == DownloadSource::INTERNAL_API ||
         download_source == DownloadSource::EXTENSION_API ||
-        download_source == DownloadSource::EXTENSION_INSTALLER) {
+        download_source == DownloadSource::EXTENSION_INSTALLER ||
+        base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium") ||
+        !base::FeatureList::IsEnabled(features::kInsecureDownloadWarnings)) {
       is_insecure_download_ = false;
     } else {  // Not ignorable download.
       // TODO(crbug.com/40857867): Add blocking metrics.
@@ -488,7 +493,8 @@ InsecureDownloadStatus GetInsecureDownloadStatusForDownload(
   // Show a visible (bypassable) warning on insecure downloads.
   // Since mixed download blocking is more severe, exclude mixed downloads from
   // this early-return to let the mixed download logic below apply.
-  if (data.is_insecure_download_ && !data.is_mixed_content_) {
+  if (base::FeatureList::IsEnabled(features::kInsecureDownloadWarnings) &&
+      data.is_insecure_download_ && !data.is_mixed_content_) {
     // Except when using HFM, don't warn on files that are likely to be safe.
     if (!IsHttpsFirstModeEnabled(profile) &&
         ContainsExtension(kSafeExtensions, data.extension_)) {

@@ -420,6 +420,8 @@ void CleanupJob(const Microsoft::WRL::ComPtr<IBackgroundCopyJob>& job) {
 }
 
 void CheckIsMta() {
+  // Enforce this as set.
+  ::CoInitializeEx(NULL, COINIT_MULTITHREADED);
   CHECK_EQ(base::win::GetComApartmentTypeForThread(),
            base::win::ComApartmentType::MTA);
 }

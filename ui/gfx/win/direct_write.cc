@@ -13,11 +13,13 @@
 #include <string>
 #include <string_view>
 
+#include "base/command_line.h"
 #include "base/debug/alias.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/windows_version.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
@@ -25,7 +27,21 @@
 namespace gfx {
 namespace win {
 
+bool ShouldUseDirectWrite() {
+  // Considering that there are seemingly some decent DirectWrite implementations
+  // out there for XP, we will no longer discriminate by OS version.
+  if (!::LoadLibraryA("dwrite.dll")) {
+    return false;
+  }
+  // If forced off, don't use it.
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  return !command_line.HasSwitch("disable-direct-write");;
+}
+
 namespace {
+
+static bool dwrite_enabled = false;
 
 // Pointer to the global IDWriteFactory interface.
 IDWriteFactory* g_direct_write_factory = nullptr;
@@ -126,9 +142,22 @@ void SideLoadFontForTesting(base::FilePath path) {
 }
 
 void CreateDWriteFactory(IDWriteFactory** factory) {
+  if (!gfx::win::ShouldUseDirectWrite())
+    return;
+
+  using DWriteCreateFactoryProc = decltype(DWriteCreateFactory)*;
+  HMODULE dwrite_dll = LoadLibraryW(L"dwrite.dll");
+  if (!dwrite_dll)
+    return;
+
+  DWriteCreateFactoryProc dwrite_create_factory_proc =
+      reinterpret_cast<DWriteCreateFactoryProc>(
+          GetProcAddress(dwrite_dll, "DWriteCreateFactory"));
+  if (!dwrite_create_factory_proc)
+    return;
   Microsoft::WRL::ComPtr<IUnknown> factory_unknown;
   HRESULT hr =
-      DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
+      dwrite_create_factory_proc(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory),
                           &factory_unknown);
   if (FAILED(hr)) {
     base::debug::Alias(&hr);
@@ -146,7 +175,11 @@ void InitializeDirectWrite() {
 
   Microsoft::WRL::ComPtr<IDWriteFactory> factory;
   CreateDWriteFactory(&factory);
-  CHECK(!!factory);
+  if (factory == nullptr) {
+	  sk_sp<SkFontMgr> direct_write_font_mgr = SkFontMgr_New_GDI();
+	  skia::OverrideDefaultSkFontMgr(std::move(direct_write_font_mgr));
+	  return;
+  }
   SetDirectWriteFactory(factory.Get());
 
   // Get a font collection that contains sideloaded fonts for web tests, or
@@ -160,14 +193,47 @@ void InitializeDirectWrite() {
     DCHECK(!should_use_collection);
   }
 
+  // The skia call to create a new DirectWrite font manager instance can fail
+  // if we are unable to get the system font collection from the DirectWrite
+  // factory. The GetSystemFontCollection method in the IDWriteFactory
+  // interface fails with E_INVALIDARG on certain Windows 7 gold versions
+  // (6.1.7600.*).
+
   sk_sp<SkFontMgr> direct_write_font_mgr = SkFontMgr_New_DirectWrite(
       factory.Get(), should_use_collection ? collection.Get() : nullptr);
-  CHECK(!!direct_write_font_mgr);
+
+
+  int iteration = 0;
+  if (!direct_write_font_mgr &&
+      base::win::GetVersion() == base::win::Version::WIN7) {
+    // Windows (win7_rtm) may fail to map the service sections
+    // (crbug.com/956064).
+    constexpr int kMaxRetries = 5;
+    constexpr base::TimeDelta kRetrySleepTime = base::Microseconds(500);
+    while (iteration < kMaxRetries) {
+      base::PlatformThread::Sleep(kRetrySleepTime);
+      direct_write_font_mgr = SkFontMgr_New_DirectWrite(factory.Get());
+      if (direct_write_font_mgr)
+        break;
+      ++iteration;
+    }
+  }
+  if (!direct_write_font_mgr)
+    iteration = -1;
+  DCHECK(!!direct_write_font_mgr);
+  if (!direct_write_font_mgr)
+    direct_write_font_mgr = SkFontMgr_New_GDI();
+  else
+	dwrite_enabled = true;
 
   // Override the default skia font manager. This must be called before any
   // use of the skia font manager is done (e.g. before any call to
   // skia::DefaultFontMgr()).
   skia::OverrideDefaultSkFontMgr(std::move(direct_write_font_mgr));
+}
+
+bool IsDirectWriteEnabled() {
+  return dwrite_enabled;
 }
 
 IDWriteFactory* GetDirectWriteFactory() {

@@ -7,6 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/logging.h"
+#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -18,6 +22,7 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/variations/variations_associated_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -39,6 +44,13 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
+// Todo: set both non-hover and hover colours.
+// When hover mode is on, start adjusting the colour towards the hover colour, but then
+// start adjusting backward when hover is off.
+// Also add presets for v60-era and v109-era themes.
+
+// Diamond tabs and other esoteric shapes can be paid.
+
 // static
 const gfx::Size NewTabButton::kButtonSize{28, 28};
 
@@ -55,6 +67,84 @@ class NewTabButton::HighlightPathGenerator
         view->GetContentsBounds().origin(), false);
   }
 };
+
+typedef struct DataItem {
+	int datakey; // index of point on the tab
+	std::vector<float> values; // set of coordinate pairs
+}DataItem;
+
+bool GetNtbCustomStr(std::string& tabstr) {
+    base::FilePath userdir;
+    if(!base::PathService::Get(chrome::DIR_USER_DATA, &userdir))
+        return false; // Things are seriously wrong if the user data directory cannot be located.
+    const base::FilePath userpath = userdir.Append(FILE_PATH_LITERAL("scs"));
+    std::string bufstr;
+    base::ReadFileToString(userpath, &bufstr);
+
+    if (bufstr.empty())
+        return false;
+    std::string::size_type sectionstart = bufstr.find("ntb");
+    std::string::size_type sectionend = bufstr.find("endntb");
+
+   if (sectionstart == std::string::npos || sectionend == std::string::npos)
+      return false;
+
+    tabstr.append(bufstr.substr(sectionstart, sectionend - sectionstart).c_str());
+    return true;
+}
+
+bool UserDefinedNtbShape(SkPath& path, std::string& sectionContent) {
+    std::string::size_type pos = 0;
+    while ((pos = sectionContent.find("{", pos)) != std::string::npos) {
+        std::string::size_type endPos = sectionContent.find("}", pos);
+        if (endPos == std::string::npos) {
+            break;
+        }
+
+        std::string dataItemStr = sectionContent.substr(pos + 1, endPos - pos - 1);
+        std::string::size_type equalPos = dataItemStr.find('=');
+
+        if (equalPos != std::string::npos) {
+            DataItem dataItem;
+         std::string key = dataItemStr.substr(0, equalPos);
+         if(!std::all_of(key.begin(), key.end(), [](char c) {return c >= '0' && c <= '9';}))
+             break;
+            dataItem.datakey = std::stoi(key);
+            std::string valuesStr = dataItemStr.substr(equalPos + 1);
+
+            // Parse the values
+            std::istringstream valuesStream(valuesStr);
+            std::string value;
+            while (std::getline(valuesStream, value, ',')) {
+            if(!std::all_of(value.begin(), value.end(), [](char c) {return (c >= '0' && c <= '9') || c == '.';}))
+               break; // No exceptions, so we must verify that there are only integers in the value before continuing.
+                       // If not, the config file is considered to be "compromised" and needs to be replaced or fixed.
+                     // We will not tolerate any unexpected values in the data.
+            if(value.size() > 6)
+               break; // Any "unnecessarily large" numbers will also be blocked.
+            float val = std::stof(value);
+
+                dataItem.values.push_back(val);
+            }
+         if (dataItem.datakey == 8) {
+            // bit 4 (0x8) is used to implement the directive to move the starting point of the path.
+            if (dataItem.values.size() != 2)
+               break; // Fail if there is an incorrect quantity of values in the data item.
+            path.moveTo(dataItem.values.at(0), dataItem.values.at(1));
+         }
+
+         if (dataItem.values.size() != 6)
+            break; // Fail if there is an incorrect quantity of values in the data item.
+
+         path.cubicTo(dataItem.values.at(0), dataItem.values.at(1), dataItem.values.at(2),
+                      dataItem.values.at(3), dataItem.values.at(4), dataItem.values.at(5));
+        }
+
+        pos = endPos + 1;
+    }
+
+   return true;
+}
 
 NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
     : views::ImageButton(std::move(callback)), tab_strip_(tab_strip) {
@@ -73,15 +163,16 @@ NewTabButton::NewTabButton(TabStrip* tab_strip, PressedCallback callback)
 
   ink_drop_container_ =
       AddChildView(std::make_unique<views::InkDropContainerView>());
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") != "v60" &&
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") != "rectangular") {
+      views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+      views::InkDrop::Get(this)->SetHighlightOpacity(0.16f);
+      views::InkDrop::Get(this)->SetVisibleOpacity(0.14f);
 
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetHighlightOpacity(0.16f);
-  views::InkDrop::Get(this)->SetVisibleOpacity(0.14f);
-
-  SetInstallFocusRingOnFocus(true);
-  views::HighlightPathGenerator::Install(
-      this, std::make_unique<NewTabButton::HighlightPathGenerator>());
-
+      SetInstallFocusRingOnFocus(true);
+      views::HighlightPathGenerator::Install(
+          this, std::make_unique<NewTabButton::HighlightPathGenerator>());
+  }
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   SetProperty(views::kElementIdentifierKey, kNewTabButtonElementId);
@@ -130,9 +221,38 @@ int NewTabButton::GetCornerRadius() const {
 
 SkPath NewTabButton::GetBorderPath(const gfx::Point& origin,
                                    bool extend_to_top) const {
-  const float radius = GetCornerRadius();
+  float radius = GetCornerRadius();
 
   SkPath path;
+  std::string ntbstr;
+  bool is_custom_str_available = false; 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("enable-advanced-customization")) {
+      is_custom_str_available = GetNtbCustomStr(ntbstr);
+  }
+  UserDefinedNtbShape(path, ntbstr);
+
+  if (is_custom_str_available && !path.isEmpty()) {
+      return path;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") == "v60") {
+    SkPoint pts [] = {SkPoint(4.0, 8.0), SkPoint(24.0, 8.0), SkPoint(28.0, 20.0), SkPoint(8.0, 20.0)};
+    path.moveTo(origin.x() * 1.10f, SkScalar(8.0));
+    path.addPoly(pts, 4, true);
+    return path;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") == "rectangular") {
+    SkPoint pts [] = {SkPoint(8.0, 8.0), SkPoint(32.0, 8.0), SkPoint(32.0, 20.0), SkPoint(8.0, 20.0)};
+    path.moveTo(origin.x() * 1.10f, SkScalar(8.0));
+    path.addPoly(pts, 4, true);
+    return path;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("compact-tab-ui")) {
+    radius -= 2;
+  }
+
   if (extend_to_top) {
     path.moveTo(origin.x(), 0);
     const float diameter = radius * 2;
@@ -203,7 +323,10 @@ void NewTabButton::NotifyClick(const ui::Event& event) {
 
 void NewTabButton::PaintButtonContents(gfx::Canvas* canvas) {
   PaintFill(canvas);
-  PaintIcon(canvas);
+  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") != "v60" &&
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") != "rectangular") {
+     PaintIcon(canvas);
+  }
 }
 
 gfx::Size NewTabButton::CalculatePreferredSize(
@@ -252,11 +375,34 @@ void NewTabButton::PaintFill(gfx::Canvas* canvas) const {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     canvas->Translate(GetContentsBounds().OffsetFromOrigin());
-    flags.setColor(GetColorProvider()->GetColor(
-        GetWidget()->ShouldPaintAsActive()
-            ? background_frame_active_color_id_
-            : background_frame_inactive_color_id_));
+
+    if (GetState() == STATE_HOVERED) {
+        flags.setColor(SkColorSetARGB(0x80, 90, 90, 90));
+    } else {
+        if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") == "v60" ||
+            base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("supermium-tab-options") == "rectangular") {
+            flags.setColor(GetColorProvider()->GetColor(
+                GetWidget()->ShouldPaintAsActive()
+                   ? background_frame_inactive_color_id_
+                   : background_frame_active_color_id_));
+       } else {
+            flags.setColor(GetColorProvider()->GetColor(
+                GetWidget()->ShouldPaintAsActive()
+                   ? background_frame_active_color_id_
+                   : background_frame_inactive_color_id_));
+       }
+    }
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch("transparent-tabs")) {
+        flags.setAlphaf(0.7f);
+    }
     canvas->DrawPath(GetBorderPath(gfx::Point(), false), flags);
+    if (GetLayoutConstant(TAB_HARD_BORDER)) {
+        flags.setColor(SkColorSetRGB(0, 0, 0));    
+        flags.setAlphaf(0.7f);
+        flags.setStyle(cc::PaintFlags::kStroke_Style);
+        canvas->DrawPath(GetBorderPath(gfx::Point(), false),
+                         flags);
+    }
   }
 }
 
@@ -270,8 +416,11 @@ void NewTabButton::PaintIcon(gfx::Canvas* canvas) {
   constexpr int kStrokeWidth = 2;
   flags.setStrokeWidth(kStrokeWidth);
 
-  const int radius = ui::TouchUiController::Get()->touch_ui() ? 7 : 6;
+  int radius = ui::TouchUiController::Get()->touch_ui() ? 7 : 6;
   const int offset = GetCornerRadius() - radius;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("compact-tab-ui")) {
+    radius -= 2;
+  }
   // The cap will be added outside the end of the stroke; inset to compensate.
   constexpr int kCapRadius = kStrokeWidth / 2;
   const int start = offset + kCapRadius;

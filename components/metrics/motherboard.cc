@@ -16,6 +16,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/scoped_native_library.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_bstr.h"

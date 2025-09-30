@@ -62,6 +62,7 @@
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/process_mitigations.h"
 #include "sandbox/win/src/sandbox.h"
+#include "ui/gfx/win/direct_write.h"
 
 namespace sandbox {
 namespace policy {
@@ -217,7 +218,9 @@ ResultCode AddDefaultConfigForSandboxedProcess(TargetConfig* config) {
     return result;
 
   config->SetLockdownDefaultDacl();
-  config->AddKernelObjectToClose(HandleToClose::kDeviceApi);
+  // Win8+ adds a device DeviceApi that we don't need.
+  if (base::win::GetVersion() >= base::win::Version::WIN8)
+    config->AddKernelObjectToClose(HandleToClose::kDeviceApi);
   config->SetDesktop(Desktop::kAlternateWinstation);
 
   return SBOX_ALL_OK;
@@ -464,6 +467,12 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
       MITIGATION_IMAGE_LOAD_NO_REMOTE | MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
       MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
       MITIGATION_KTM_COMPONENT | MITIGATION_FSCTL_DISABLED;
+	  
+  #if !defined(NACL_WIN64)
+    // Don't block font loading with GDI.
+    if (!gfx::win::ShouldUseDirectWrite())
+      mitigations &= ~(MITIGATION_NONSYSTEM_FONT_DISABLE | MITIGATION_HEAP_TERMINATE);
+  #endif
 
   // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
   // disabled for processes we know are not compatible.
@@ -504,10 +513,12 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     // TODO(crbug.com/40088338) Remove if we can reliably not load
     // cryptbase.dll.
     config->AddKernelObjectToClose(HandleToClose::kKsecDD);
-    result = SandboxWin::AddWin32kLockdownPolicy(config);
-    if (result != SBOX_ALL_OK) {
-      return result;
-    }
+	if (gfx::win::ShouldUseDirectWrite()) {
+     result = SandboxWin::AddWin32kLockdownPolicy(config);
+     if (result != SBOX_ALL_OK) {
+       return result;
+     }
+   }
   }
 
   if (!delegate->DisableDefaultPolicy()) {
@@ -600,12 +611,18 @@ ResultCode LaunchWithoutSandbox(
   // on process shutdown, in which case TerminateProcess can fail. See
   // https://crbug.com/820996.
   if (delegate->ShouldUnsandboxedRunInJob()) {
+    BOOL in_job = true;
+    // Prior to Windows 8 nested jobs aren't possible.
+    if (base::win::GetVersion() >= base::win::Version::WIN8 ||
+        (::IsProcessInJob(::GetCurrentProcess(), nullptr, &in_job) &&
+         !in_job)) {
     static base::NoDestructor<base::win::ScopedHandle> job_object(
         CreateUnsandboxedJob());
     if (!job_object->is_valid()) {
       return SBOX_ERROR_CANNOT_INIT_JOB;
     }
     options.job_handle = job_object->get();
+    }
   }
 
   // Chromium binaries are marked as CET Compatible but some processes
@@ -712,6 +729,9 @@ ResultCode SandboxWin::AddAppContainerPolicy(TargetConfig* config,
 // static
 ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   DCHECK(!config->IsConfigured());
+  // Win32k Lockdown is supported on Windows 8+.
+  if (base::win::GetVersion() < base::win::Version::WIN8)
+    return SBOX_ALL_OK;
   MitigationFlags flags = config->GetProcessMitigations();
   // Check not enabling twice. Should not happen.
   DCHECK_EQ(0U, flags & MITIGATION_WIN32K_DISABLE);

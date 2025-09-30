@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
@@ -33,6 +34,7 @@
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -45,6 +47,10 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 namespace gfx {
 
@@ -257,23 +263,25 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
     // Support Microsoft defined PUA on Windows.
     // see:
     // https://docs.microsoft.com/en-us/windows/uwp/design/style/segoe-ui-symbol-font
-    switch (codepoint) {
-      case 0xF093:  // ButtonA
-      case 0xF094:  // ButtonB
-      case 0xF095:  // ButtonY
-      case 0xF096:  // ButtonX
-      case 0xF108:  // LeftStick
-      case 0xF109:  // RightStick
-      case 0xF10A:  // TriggerLeft
-      case 0xF10B:  // TriggerRight
-      case 0xF10C:  // BumperLeft
-      case 0xF10D:  // BumperRight
-      case 0xF10E:  // Dpad
-      case 0xEECA:  // ButtonView2
-      case 0xEDE3:  // ButtonMenu
-        return codepoint;
-      default:
-        break;
+  if (base::win::GetVersion() >= base::win::Version::WIN10) {
+      switch (codepoint) {
+        case 0xF093:  // ButtonA
+        case 0xF094:  // ButtonB
+        case 0xF095:  // ButtonY
+        case 0xF096:  // ButtonX
+        case 0xF108:  // LeftStick
+        case 0xF109:  // RightStick
+        case 0xF10A:  // TriggerLeft
+        case 0xF10B:  // TriggerRight
+        case 0xF10C:  // BumperLeft
+        case 0xF10D:  // BumperRight
+        case 0xF10E:  // Dpad
+        case 0xEECA:  // ButtonView2
+        case 0xEDE3:  // ButtonMenu
+          return codepoint;
+        default:
+          break;
+      }
     }
 #endif
     const int8_t codepoint_category = u_charType(codepoint);
@@ -373,7 +381,7 @@ void SkiaTextRenderer::DrawPosText(const SkPoint* pos,
   static_assert(sizeof(*pos) == 2 * sizeof(*run_buffer.pos), "");
   UNSAFE_TODO(memcpy(run_buffer.pos, pos, glyph_count * sizeof(*pos)));
 
-  canvas_skia_->drawTextBlob(builder.make(), 0, 0, flags_);
+  canvas_skia_->drawTextBlob(builder.make(), 0, 0 + special_y_offset_, flags_);
 }
 
 void SkiaTextRenderer::DrawUnderline(int x,
@@ -1035,7 +1043,7 @@ int RenderText::GetContentWidth() {
 int RenderText::GetBaseline() {
   if (baseline_ == kInvalidBaseline) {
     const int centering_height =
-        (vertical_alignment_ == ALIGN_MIDDLE)
+        (vertical_alignment_ == ALIGN_MIDDLE || vertical_alignment_ == ALIGN_SPECIAL || vertical_alignment_ == ALIGN_COMPACT)
             ? display_rect().height()
             : std::max(font_list().GetHeight(), min_line_height());
     baseline_ = DetermineBaselineCenteringText(centering_height, font_list());
@@ -1065,7 +1073,12 @@ void RenderText::Draw(Canvas* canvas, bool select_all) {
       draw_selections = GetAllSelections();
 
     DrawSelections(canvas, draw_selections);
+
     internal::SkiaTextRenderer renderer(canvas);
+	
+	if (vertical_alignment_ == ALIGN_SPECIAL) {
+		renderer.SetSpecialYOffset(4); // This will push down the offending labels in GDI to the point that they will appear centred
+	}
     DrawVisualText(&renderer, draw_selections);
   }
 
@@ -1217,8 +1230,13 @@ Rect RenderText::GetCursorBounds(const SelectionModel& caret,
               base::ClampCeil(Clamp(xspan.GetMin()));
     }
   }
+  
   Size line_size = gfx::ToCeiledSize(GetLineSizeF(caret));
   size_t line = GetLineContainingCaret(caret);
+  
+  if (vertical_alignment_ == ALIGN_SPECIAL) {
+	  line_size.set_height(line_size.height() + 8);
+  }
   return Rect(ToViewPoint(PointF(x, 0), line), Size(width, line_size.height()));
 }
 
@@ -1906,6 +1924,8 @@ Vector2d RenderText::GetAlignmentOffset(size_t line_number) {
       offset.set_y(0);
       break;
     case ALIGN_MIDDLE:
+	case ALIGN_SPECIAL:
+	case ALIGN_COMPACT:
       if (multiline_)
         offset.set_y((display_rect_.height() - GetStringSize().height()) / 2);
       else

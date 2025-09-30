@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
@@ -83,8 +84,13 @@ bool TrackedSplitPreference::EnforceAndReport(
         pref_path_, invalid_keys, external_validation_invalid_keys, value_state,
         external_validation_value_state, helper_.IsPersonal());
   }
-  TrackedPreferenceHelper::ResetAction reset_action =
-      helper_.GetAction(value_state);
+   
+  TrackedPreferenceHelper::ResetAction reset_action = helper_.GetAction(value_state);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-machine-id") ||
+   base::CommandLine::ForCurrentProcess()->HasSwitch("disable-encryption") || 
+   base::CommandLine::ForCurrentProcess()->HasSwitch("revert-from-portable")) {
+     reset_action = TrackedPreferenceHelper::DONT_RESET;
+  }
   helper_.ReportAction(reset_action);
 
   if (reset_action == TrackedPreferenceHelper::DO_RESET) {

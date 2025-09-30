@@ -389,7 +389,14 @@ bool BrowserDesktopWindowTreeHostWin::GetDwmFrameInsetsInPixels(
     tabstrip_region_bounds = display::win::GetScreenWin()->DIPToClientRect(
         GetHWND(), tabstrip_region_bounds);
 
-    *insets = gfx::Insets::TLBR(tabstrip_region_bounds.bottom(), 0, 0, 0);
+    // The 2 px (not DIP) at the inner edges of Win 7 glass are a light and dark
+    // line, so we must inset further to account for those.
+    constexpr int kWin7GlassInset = 2;
+    const int inset = (base::win::GetVersion() < base::win::Version::WIN8)
+                          ? kWin7GlassInset
+                          : 0;
+    *insets = gfx::Insets::TLBR(tabstrip_region_bounds.bottom() + inset, inset,
+                                inset, inset);
   }
   return true;
 }
@@ -493,6 +500,10 @@ views::FrameMode BrowserDesktopWindowTreeHostWin::GetFrameMode() const {
     return views::FrameMode::SYSTEM_DRAWN;
   }
 
+  if (browser_view_->GetIsWebAppType()) {
+	return views::FrameMode::CUSTOM_DRAWN; 
+  }
+
   const views::FrameMode system_frame_mode =
       ShouldBrowserCustomDrawTitlebar(browser_view_)
           ? views::FrameMode::SYSTEM_DRAWN_NO_CONTROLS
@@ -531,6 +542,15 @@ bool BrowserDesktopWindowTreeHostWin::ShouldUseNativeFrame() const {
   if (!browser_view_->GetIsNormalType()) {
     return true;
   }
+
+  // Use the custom frame where desired.
+  if (!browser_view_->GetIsNormalType()) {
+	 if(!browser_view_->GetIsWebAppType() && GetWidget()->GetThemeProvider()->ShouldUseNativeFrame())
+		return true;
+	 else
+		return false;
+  }
+
   // Otherwise, we use the native frame when we're told we should by the theme
   // provider (e.g. no custom theme is active).
   return GetWidget()->GetThemeProvider()->ShouldUseNativeFrame();

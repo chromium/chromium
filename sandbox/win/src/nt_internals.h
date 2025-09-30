@@ -156,6 +156,14 @@ typedef NTSTATUS(WINAPI* NtSetInformationThreadFunction)(
     IN PVOID ThreadInformation,
     IN ULONG ThreadInformationLength);
 
+typedef struct _PROCESS_ACCESS_TOKEN {
+  HANDLE token;
+  HANDLE thread;
+} PROCESS_ACCESS_TOKEN;
+
+// Partial definition only for values not in PROCESS_INFO_CLASS.
+constexpr auto ProcessInformationAccessToken = static_cast<PROCESSINFOCLASS>(9);
+
 // Partial definition only adding fields not in winternl.h, from
 // https://msdn.microsoft.com/en-us/library/windows/desktop/aa813706(v=vs.85).aspx
 typedef struct _NT_PEB {

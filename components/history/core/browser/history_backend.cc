@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -1327,7 +1328,8 @@ void HistoryBackend::InitImpl(
   db_->GetStartDate(&first_recorded_time_);
 
   // Start expiring old stuff.
-  expirer_.StartExpiringOldStuff(base::Days(kExpireDaysThreshold));
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch("keep-old-history"))
+    expirer_.StartExpiringOldStuff(base::Days(kExpireDaysThreshold));
 }
 
 void HistoryBackend::OnMemoryPressure(

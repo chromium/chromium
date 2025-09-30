@@ -800,6 +800,11 @@ const char kRelauncherProcessDMGDevice[] = "dmg-device";
 // installation.
 const char kMakeChromeDefault[] = "make-chrome-default";
 
+// Download upload disabling, followed by Ungoogled Supermium which has a much broader scope:
+const char kDisableDownloadUpload[] = "disable-download-upload";
+
+const char kUngoogledSupermium[] = "ungoogled-supermium";
+
 // A process type (switches::kProcessType) that cleans up the browser's
 // temporary code sign clone.
 const char kCodeSignCloneCleanupProcess[] = "code-sign-clone-cleanup";

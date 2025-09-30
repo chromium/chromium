@@ -14,6 +14,7 @@
 #include <wincrypt.h>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -41,6 +42,11 @@ constexpr uint8_t kDPAPIKeyPrefix[] = {'D', 'P', 'A', 'P', 'I'};
 
 std::optional<std::vector<uint8_t>> DecryptKeyWithDPAPI(
     base::span<const uint8_t> ciphertext) {
+		
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-encryption")) {
+        return std::vector<uint8_t>(ciphertext.data(),
+                              ciphertext.data() + ciphertext.size());
+  }
   DATA_BLOB input = {};
   input.pbData = const_cast<BYTE*>(ciphertext.data());
   input.cbData = static_cast<DWORD>(ciphertext.size());

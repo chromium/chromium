@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -821,14 +822,17 @@ void UpdateNavigationRequestClientUaHeaders(
     net::HttpRequestHeaders* headers,
     const std::optional<GURL>& request_url) {
   DCHECK(frame_tree_node);
+  if (base::FeatureList::IsEnabled(blink::features::kRemoveClientHints))
+    return;
   if (!ShouldAddClientHints(origin, frame_tree_node, delegate, request_url)) {
     return;
   }
+  GURL url = origin.GetURL();
 
   ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, override_ua, frame_tree_node,
-      ClientUaHeaderCallType::kAfterCreated, headers, {}, request_url, data);
+      ClientUaHeaderCallType::kAfterCreated, headers, {}, url, data);
 }
 
 namespace {
@@ -842,6 +846,8 @@ void AddRequestClientHintsHeaders(
     FrameTreeNode* frame_tree_node,
     const network::ParsedPermissionsPolicy& container_policy,
     const std::optional<GURL>& request_url) {
+  if (base::FeatureList::IsEnabled(blink::features::kRemoveClientHints))
+    return;
   ClientHintsExtendedData data(origin, frame_tree_node, delegate, request_url);
   UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
       data, container_policy);
@@ -888,7 +894,7 @@ void AddRequestClientHintsHeaders(
   UpdateNavigationRequestClientUaHeadersImpl(
       delegate, is_ua_override_on, frame_tree_node,
       ClientUaHeaderCallType::kDuringCreation, headers, container_policy,
-      request_url, data);
+      url, data);
 
   if (ShouldAddClientHint(data, WebClientHintsType::kPrefersColorScheme)) {
     AddPrefersColorSchemeHeader(headers, frame_tree_node);

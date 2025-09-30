@@ -24,6 +24,9 @@
 #include <optional>
 
 #include "base/containers/heap_array.h"
+#include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
@@ -32,6 +35,7 @@
 #include "base/win/ntsecapi_shim.h"
 #include "base/win/win_util.h"
 #include "base/win/wincred_shim.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/grit/branded_strings.h"
@@ -47,6 +51,13 @@ namespace password_manager_util_win {
 namespace {
 
 const unsigned kMaxPasswordRetries = 3;
+
+const unsigned kCredUiDefaultFlags =
+    CREDUI_FLAGS_GENERIC_CREDENTIALS |
+    CREDUI_FLAGS_EXCLUDE_CERTIFICATES |
+    CREDUI_FLAGS_KEEP_USERNAME |
+    CREDUI_FLAGS_ALWAYS_SHOW_UI |
+    CREDUI_FLAGS_DO_NOT_PERSIST;
 
 struct PasswordCheckPrefs {
   void Read(PrefService* local_state);
@@ -179,6 +190,11 @@ CredentialBufferValidator::GetTokenInformation(HANDLE token) {
   return token_info_buffer;
 }
 
+// TODO(crbug.com/574581) Remove this feature once this is confirmed to work
+// as expected.
+BASE_FEATURE(kCredUIPromptForWindowsCredentialsFeature,
+    "CredUIPromptForWindowsCredentials", base::FEATURE_ENABLED_BY_DEFAULT);
+
 void PasswordCheckPrefs::Read(PrefService* local_state) {
   blank_password =
       local_state->GetBoolean(password_manager::prefs::kOsPasswordBlank);
@@ -297,10 +313,106 @@ bool DeviceAuthenticationPresent(const WCHAR* username) {
   return base::win::IsEnrolledToDomain() || !CheckBlankPassword(username);
 }
 
-}  // namespace
+// Authenticate the user using the old Windows credential prompt.
+bool AuthenticateUserOld(gfx::NativeWindow window,
+                         const std::u16string& password_prompt) {
+  bool retval = false;
+  CREDUI_INFO cui = {};
+  WCHAR username[CREDUI_MAX_USERNAME_LENGTH+1] = {};
+  WCHAR displayname[CREDUI_MAX_USERNAME_LENGTH+1] = {};
+  WCHAR password[CREDUI_MAX_PASSWORD_LENGTH+1] = {};
+  DWORD username_length = CREDUI_MAX_USERNAME_LENGTH;
+  std::u16string product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+  HANDLE handle = INVALID_HANDLE_VALUE;
+  size_t tries = 0;
+  bool use_displayname = false;
+  bool use_principalname = false;
+  DWORD logon_result = 0;
+  // On a domain, we obtain the User Principal Name
+  // for domain authentication.
+  if (GetUserNameEx(NameUserPrincipal, username, &username_length)) {
+    use_principalname = true;
+  } else {
+    username_length = CREDUI_MAX_USERNAME_LENGTH;
+    // Otherwise, we're a workstation, use the plain local username.
+    if (!GetUserName(username, &username_length)) {
+      DLOG(ERROR) << "Unable to obtain username " << GetLastError();
+      return false;
+    } else {
+      // As we are on a workstation, it's possible the user
+      // has no password, so check here.
+      if (CheckBlankPassword(username))
+        return true;
+    }
+  }
 
-bool AuthenticateUser(gfx::NativeWindow window,
-                      const std::u16string& password_prompt) {
+  // Try and obtain a friendly display name.
+  username_length = CREDUI_MAX_USERNAME_LENGTH;
+  if (GetUserNameEx(NameDisplay, displayname, &username_length))
+    use_displayname = true;
+
+  cui.cbSize = sizeof(CREDUI_INFO);
+  cui.hwndParent = NULL;
+  cui.hwndParent = window->GetHost()->GetAcceleratedWidget();
+
+  cui.pszMessageText = base::as_wcstr(password_prompt);
+  cui.pszCaptionText = base::as_wcstr(product_name);
+
+  cui.hbmBanner = NULL;
+  BOOL save_password = FALSE;
+  DWORD credErr = NO_ERROR;
+
+  do {
+    tries++;
+
+    // TODO(wfh) Make sure we support smart cards here.
+    credErr = CredUIPromptForCredentials(
+        &cui,
+        base::as_wcstr(product_name),
+        NULL,
+        0,
+        use_displayname ? displayname : username,
+        CREDUI_MAX_USERNAME_LENGTH+1,
+        password,
+        CREDUI_MAX_PASSWORD_LENGTH+1,
+        &save_password,
+        kCredUiDefaultFlags |
+        (tries > 1 ? CREDUI_FLAGS_INCORRECT_PASSWORD : 0));
+
+    if (credErr == NO_ERROR) {
+      logon_result = LogonUser(username,
+                               use_principalname ? NULL : L".",
+                               password,
+                               LOGON32_LOGON_INTERACTIVE,
+                               LOGON32_PROVIDER_DEFAULT,
+                               &handle);
+      if (logon_result) {
+        retval = true;
+        CloseHandle(handle);
+      } else {
+        if (GetLastError() == ERROR_ACCOUNT_RESTRICTION &&
+            wcslen(password) == 0) {
+          // Password is blank, so permit.
+          retval = true;
+        } else {
+          DLOG(WARNING) << "Unable to authenticate " << GetLastError();
+        }
+      }
+      SecureZeroMemory(password, sizeof(password));
+    }
+  } while (credErr == NO_ERROR &&
+           (retval == false && tries < kMaxPasswordRetries));
+  return retval;
+}
+
+// Authenticate the user using the new Windows credential prompt.  The new
+// prompt allows the user to authenticate using additional credential providers,
+// such as PINs, smartcards, fingerprint scanners, and so on.  It also still
+// allows the user to authenticate with their password.  This old prompt only
+// supported password authentication which is not enough for enterprise
+// environments.
+bool AuthenticateUserNew(gfx::NativeWindow window,
+                         const std::u16string& password_prompt) {
   bool retval = false;
   WCHAR cur_username[CREDUI_MAX_USERNAME_LENGTH + 1] = {};
   DWORD cur_username_length = std::size(cur_username);
@@ -371,6 +483,15 @@ bool AuthenticateUser(gfx::NativeWindow window,
   } while (!retval && tries < kMaxPasswordRetries);
 
   return retval;
+}
+
+}  // namespace
+
+bool AuthenticateUser(gfx::NativeWindow window,
+                      const std::u16string& password_prompt) {
+  return base::FeatureList::IsEnabled(kCredUIPromptForWindowsCredentialsFeature) && base::win::GetVersion() >= base::win::Version::VISTA
+             ? AuthenticateUserNew(window, password_prompt)
+             : AuthenticateUserOld(window, password_prompt);
 }
 
 bool CanAuthenticateWithScreenLock() {

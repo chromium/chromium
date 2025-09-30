@@ -35,6 +35,7 @@
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "chrome/browser/win/titlebar_config.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_window_handle_event_info.pbzero.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -356,7 +357,8 @@ class HWNDMessageHandler::ScopedRedrawLock {
         hwnd_(owner_->hwnd()),
         should_lock_(owner_->IsVisible() && !owner->HasChildRenderingWindow() &&
                      ::IsWindow(hwnd_) && !owner_->IsHeadless() &&
-                     (!(GetWindowLong(hwnd_, GWL_STYLE) & WS_CAPTION))) {
+                     (!(GetWindowLong(hwnd_, GWL_STYLE) & WS_CAPTION) ||
+					  ShouldCustomDrawSystemTitlebar())) {
     if (should_lock_) {
       owner_->LockUpdates();
     }
@@ -614,7 +616,8 @@ void HWNDMessageHandler::SetParentOrOwner(HWND new_parent) {
 }
 
 void HWNDMessageHandler::SetDwmFrameExtension(DwmFrameState state) {
-  if (!delegate_->HasFrame() && !is_translucent_) {
+  if (!delegate_->HasFrame() && !ShouldCustomDrawSystemTitlebar() &&
+	  !is_translucent_) {
     MARGINS m = {0, 0, 0, 0};
     if (state == DwmFrameState::kOn && !IsMaximized()) {
       m = {0, 0, 1, 0};
@@ -1934,7 +1937,8 @@ void HWNDMessageHandler::OnEnterSizeMove() {
 
 LRESULT HWNDMessageHandler::OnEraseBkgnd(HDC dc) {
   gfx::Insets insets;
-  if (delegate_->GetDwmFrameInsetsInPixels(&insets) && !insets.IsEmpty() &&
+  if (!ShouldCustomDrawSystemTitlebar() && 
+	  delegate_->GetDwmFrameInsetsInPixels(&insets) && !insets.IsEmpty() &&
       needs_dwm_frame_clear_) {
     // This is necessary to avoid white flashing in the titlebar area around the
     // minimize/maximize/close buttons.
@@ -2178,8 +2182,12 @@ LRESULT HWNDMessageHandler::OnMouseRange(UINT message,
 LRESULT HWNDMessageHandler::OnPointerActivate(UINT message,
                                               WPARAM w_param,
                                               LPARAM l_param) {
+  using GetPointerTypeFn = BOOL(WINAPI*)(UINT32, POINTER_INPUT_TYPE*);
+  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
   POINTER_INPUT_TYPE pointer_type;
-  if (::GetPointerType(GET_POINTERID_WPARAM(w_param), &pointer_type) &&
+  static const auto get_pointer_type = reinterpret_cast<GetPointerTypeFn>(
+      base::win::GetUser32FunctionPointer("GetPointerType"));
+  if (get_pointer_type && get_pointer_type(pointer_id, &pointer_type) &&
       pointer_type == PT_TOUCHPAD) {
     return PA_NOACTIVATE;
   }
@@ -2187,17 +2195,29 @@ LRESULT HWNDMessageHandler::OnPointerActivate(UINT message,
   return -1;
 }
 
+
 LRESULT HWNDMessageHandler::OnPointerEvent(UINT message,
                                            WPARAM w_param,
                                            LPARAM l_param) {
-  POINTER_INPUT_TYPE pointer_type;
-  // If the WM_POINTER messages are not sent from a stylus device, then we do
-  // not handle them to make sure we do not change the current behavior of
-  // touch and mouse inputs.
-  if (!::GetPointerType(GET_POINTERID_WPARAM(w_param), &pointer_type)) {
+  // WM_POINTER is not supported on Windows 7.
+  if (base::win::GetVersion() == base::win::Version::WIN7) {
     SetMsgHandled(FALSE);
     return -1;
   }
+
+  UINT32 pointer_id = GET_POINTERID_WPARAM(w_param);
+  using GetPointerTypeFn = BOOL(WINAPI*)(UINT32, POINTER_INPUT_TYPE*);
+  POINTER_INPUT_TYPE pointer_type;
+  static const auto get_pointer_type = reinterpret_cast<GetPointerTypeFn>(
+      base::win::GetUser32FunctionPointer("GetPointerType"));
+  // If the WM_POINTER messages are not sent from a stylus device, then we do
+  // not handle them to make sure we do not change the current behavior of
+  // touch and mouse inputs.
+  if (!get_pointer_type || !get_pointer_type(pointer_id, &pointer_type)) {
+    SetMsgHandled(FALSE);
+    return -1;
+  }
+
 
   // |HandlePointerEventTypePenClient| assumes all pen events happen on the
   // client area, so WM_NCPOINTER messages sent to it would eventually be
@@ -2523,6 +2543,7 @@ void HWNDMessageHandler::OnNCPaint(HRGN rgn) {
   // It's required to avoid some native painting artifacts from appearing when
   // the window is resized.
   if (!delegate_->HasNonClientView() || IsFrameSystemDrawn()) {
+	  if (!ShouldCustomDrawSystemTitlebar()) {
     // The default WM_NCPAINT handler under Aero Glass doesn't clear the
     // nonclient area, so it'll remain the default white color. That area is
     // invisible initially (covered by the window border) but can become
@@ -2548,6 +2569,7 @@ void HWNDMessageHandler::OnNCPaint(HRGN rgn) {
     ::FillRect(dc, &dirty_region, brush);
     ::DeleteObject(brush);
     ::ReleaseDC(hwnd(), dc);
+	}
     SetMsgHandled(FALSE);
     return;
   }
@@ -2586,6 +2608,12 @@ LRESULT HWNDMessageHandler::OnNCUAHDrawFrame(UINT message,
   // an explanation about why we need to handle this message.
   SetMsgHandled(delegate_->GetFrameMode() == FrameMode::CUSTOM_DRAWN);
   return 0;
+}
+
+LRESULT HWNDMessageHandler::OnNotify(int w_param, NMHDR* l_param) {
+  LRESULT l_result = 0;
+  SetMsgHandled(delegate_->HandleTooltipNotify(w_param, l_param, &l_result));
+  return l_result;
 }
 
 void HWNDMessageHandler::OnPaint(HDC dc) {
@@ -3571,7 +3599,6 @@ bool HWNDMessageHandler::IsSynthesizedMouseMessage(unsigned int message,
 }
 
 void HWNDMessageHandler::PerformDwmTransition() {
-  CHECK(IsFrameSystemDrawn());
 
   dwm_transition_desired_ = false;
   delegate_->HandleFrameChanged();
@@ -3582,7 +3609,8 @@ void HWNDMessageHandler::UpdateDwmFrame() {
   TRACE_EVENT0("ui", "HWNDMessageHandler::UpdateDwmFrame");
 
   gfx::Insets insets;
-  if (delegate_->GetDwmFrameInsetsInPixels(&insets)) {
+  if (!ShouldCustomDrawSystemTitlebar() &&
+      delegate_->GetDwmFrameInsetsInPixels(&insets)) {
     MARGINS margins = {insets.left(), insets.right(), insets.top(),
                        insets.bottom()};
     DwmExtendFrameIntoClientArea(hwnd(), &margins);

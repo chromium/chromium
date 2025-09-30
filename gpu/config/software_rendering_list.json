@@ -404,6 +404,21 @@
       ]
     },
     {
+      "id": 79,
+      "description": "Disable GPU on all Windows versions prior to and including Vista",
+      "cr_bugs": [315199],
+      "os": {
+        "type": "win",
+        "version": {
+          "op": "<=",
+          "value": "6.0"
+        }
+      },
+      "features": [
+        "all"
+      ]
+    },
+    {
       "id": 86,
       "description": "Intel Graphics Media Accelerator 3150 causes the GPU process to hang running WebGL",
       "cr_bugs": [305431],

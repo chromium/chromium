@@ -21,6 +21,7 @@
 #include "base/threading/thread_local.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/windows_version.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/win/mock_tsf_bridge.h"
@@ -202,6 +203,10 @@ TSFBridgeImpl::~TSFBridgeImpl() {
 
 HRESULT TSFBridgeImpl::Initialize() {
   DCHECK(base::CurrentUIThread::IsSet());
+  
+// if (!features::IsUsingTSFForIME())
+ //    return E_FAIL;
+ 
   if (client_id_ != TF_CLIENTID_NULL) {
     DVLOG(1) << "Already initialized.";
     return S_OK;  // shouldn't return error code in this case.
@@ -724,6 +729,10 @@ HRESULT TSFBridge::Initialize() {
     return S_OK;
   }
 
+  // If we aren't supporting TSF early out.
+  if (!base::FeatureList::IsEnabled(features::kTSFImeSupport) || base::win::GetVersion() < base::win::Version::WIN8)
+    return E_FAIL;
+
   auto delegate = std::make_unique<TSFBridgeImpl>();
   HRESULT hr = delegate->Initialize();
   if (SUCCEEDED(hr)) {
@@ -737,6 +746,8 @@ void TSFBridge::InitializeForTesting() {
   if (!base::CurrentUIThread::IsSet()) {
     return;
   }
+  if (!base::FeatureList::IsEnabled(features::kTSFImeSupport))
+    return;
   ReplaceThreadLocalTSFBridge(std::make_unique<MockTSFBridge>());
 }
 

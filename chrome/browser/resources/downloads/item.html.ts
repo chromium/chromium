@@ -49,7 +49,7 @@ export function getHtml(this: DownloadsItemElement) {
             ?hidden="${!this.shouldShowReferrerUrl_()}">
           <!-- Text populated dynamically -->
         </div>
-        <a id="url" ?hidden="${this.showReferrerUrl_}" target="_blank"
+        <a id="url" target="_blank"
           @click="${this.onUrlClick_}" focus-row-control
           focus-type="url">${this.getDisplayUrlStr_()}</a>
       </div>

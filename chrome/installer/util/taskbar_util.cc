@@ -116,7 +116,9 @@ bool UnpinShortcutWithIPinnedList3(const base::FilePath& shortcut) {
 bool CanPinShortcutToTaskbar() {
   // "Pin to taskbar" isn't directly supported in Windows 10, but WIN10_RS5 has
   // some undocumented interfaces to do pinning.
-  return base::win::GetVersion() >= base::win::Version::WIN10_RS5;
+  // And the alternate method should theoretically work since Windows Desktop Update,
+  // always return true.
+  return true;
 }
 
 bool PinShortcutToTaskbar(const base::FilePath& shortcut) {

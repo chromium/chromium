@@ -15,11 +15,12 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/win/registry.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/sys_color_change_listener.h"
+#include "ui/gfx/win/singleton_hwnd_observer.h"
 #include "ui/native_theme/native_theme.h"
 
 class SkCanvas;
@@ -32,9 +33,7 @@ namespace ui {
 // of several PaintXXX methods to an API, inherited from the NativeTheme base
 // class, that consists of a single Paint() method with a argument to indicate
 // what kind of part to paint.
-class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin
-    : public NativeTheme,
-      public gfx::SysColorChangeListener {
+class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
  public:
   enum ThemeName {
     BUTTON,
@@ -86,7 +85,6 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin
   PreferredColorScheme CalculatePreferredColorScheme() const override;
 
   PreferredContrast CalculatePreferredContrast() const override;
-  ColorScheme GetDefaultSystemColorScheme() const override;
 
  protected:
   friend class NativeTheme;
@@ -103,8 +101,8 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin
   bool IsUsingHighContrastThemeInternal() const;
   void CloseHandlesInternal();
 
-  // gfx::SysColorChangeListener:
-  void OnSysColorChange() override;
+  // Called by `singleton_hwnd_observer_`.
+  void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
 
   // Update the locally cached set of system colors.
   void UpdateSystemColors();
@@ -119,6 +117,11 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin
   void PaintMenuBackground(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
                            const gfx::Rect& rect) const;
+  void PaintMenuItemBackground(cc::PaintCanvas* canvas,
+                               const ColorProvider* color_provider,
+                               State state,
+                               const gfx::Rect& rect,
+                               const MenuItemExtraParams& extra_params) const;
 
   // Paint directly to canvas' HDC.
   void PaintDirect(SkCanvas* destination_canvas,
@@ -227,8 +230,9 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin
   // A cache of open theme handles.
   mutable HANDLE theme_handles_[LAST];
 
-  // The system color change listener and the updated cache of system colors.
-  gfx::ScopedSysColorChangeListener color_change_listener_;
+  // Color/high contrast mode change observer.
+  gfx::SingletonHwndObserver singleton_hwnd_observer_{
+      base::BindRepeating(&NativeThemeWin::OnWndProc, base::Unretained(this))};
 
   // Used to notify the web native theme of changes to dark mode, high
   // contrast, preferred color scheme, and preferred contrast.

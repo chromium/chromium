@@ -26,7 +26,13 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
     case WebClientHintsType::kUAFullVersionList:
     case WebClientHintsType::kUABitness:
     case WebClientHintsType::kUAWoW64:
+      if (base::FeatureList::IsEnabled(features::kRemoveClientHints))
+        return true;
+      break;
     case WebClientHintsType::kUAFormFactors:
+      if (base::FeatureList::IsEnabled(features::kRemoveClientHints))
+         return true;
+      break;
     case WebClientHintsType::kPrefersColorScheme:
     case WebClientHintsType::kViewportHeight:
     case WebClientHintsType::kDeviceMemory:

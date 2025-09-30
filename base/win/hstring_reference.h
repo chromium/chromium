@@ -9,7 +9,8 @@
 
 #include "base/base_export.h"
 
-namespace base::win {
+namespace base {
+namespace win {
 
 // HStringReference is an HSTRING representation of a null terminated
 // string backed by memory that outlives the HStringReference instance.
@@ -47,6 +48,7 @@ class BASE_EXPORT HStringReference {
   HSTRING_HEADER hstring_header_;
 };
 
-}  // namespace base::win
+}  // namespace win
+}  // namespace base
 
 #endif  // BASE_WIN_HSTRING_REFERENCE_H_

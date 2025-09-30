@@ -50,10 +50,12 @@ using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
 class DownloadBubbleRowViewInfoTest : public testing::Test,
                                       public DownloadBubbleRowViewInfoObserver {
  public:
-  DownloadBubbleRowViewInfoTest() = default;
+  DownloadBubbleRowViewInfoTest() {
+    scoped_feature_list_.InitAndEnableFeature(safe_browsing::kDownloadBubble);
+  }
 
   void SetUp() override {
-    if (!download::IsDownloadBubbleEnabled()) {
+    if (!download::IsDownloadBubbleEnabled(profile())) {
       GTEST_SKIP();
     }
     item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
@@ -129,6 +131,7 @@ class DownloadBubbleRowViewInfoTest : public testing::Test,
     }
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<NiceMock<download::MockDownloadItem>> item_;

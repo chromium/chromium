@@ -83,6 +83,9 @@ class COMPONENT_EXPORT(GFX) Canvas {
     // when rendering text onto a fully- or partially-transparent background
     // that will later be blended with another image.
     NO_SUBPIXEL_RENDERING = 1 << 9,
+	
+	// Workaround for GDI offset rendering issues.
+	GDI_OFFSET_RENDERING = 1 << 10,
   };
 
   // Creates an empty canvas with image_scale of 1x.

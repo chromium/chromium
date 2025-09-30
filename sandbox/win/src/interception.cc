@@ -25,6 +25,7 @@
 #include "base/rand_util.h"
 #include "base/scoped_native_library.h"
 #include "base/win/pe_image.h"
+#include "base/win/windows_version.h"
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/internal_types.h"
@@ -429,7 +430,39 @@ InterceptionManager::PatchClientFunctions(DllInterceptionData* thunks,
   patch.dll_data.num_thunks = 0;
   patch.dll_data.used_bytes = offsetof(DllInterceptionData, thunks);
 
-  ServiceResolverThunk thunk(child_->Process(), /*relaxed=*/true);
+  std::unique_ptr<ServiceResolverThunk> thunk;
+#if defined(_WIN64)
+  thunk = std::make_unique<ServiceResolverThunk>(child_->Process(), true);
+#else  
+  DWORD base_code = 0;
+  DWORD bytes_read = 0;
+  base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
+  base::win::Version real_os_version = os_info->Kernel32Version();
+  if (os_info->IsWowX86OnAMD64()) {
+    if (real_os_version >= base::win::Version::WIN10)
+      thunk.reset(new Wow64W10ResolverThunk(child_->Process(), true));
+    else if (real_os_version >= base::win::Version::WIN8)
+      thunk.reset(new Wow64W8ResolverThunk(child_->Process(), true));
+    else {
+      thunk.reset(new Wow64ResolverThunk(child_->Process(), true));
+	  if(!::ReadProcessMemory(child_->Process(), ntdll_base, &base_code,
+			sizeof(base_code), &bytes_read)) {
+				if(::GetLastError() == ERROR_PARTIAL_COPY) {
+					::ResumeThread(child_->MainThread());
+					while(!::ReadProcessMemory(child_->Process(), ntdll_base, &base_code,
+						sizeof(base_code), &bytes_read)) {
+						;
+					}
+					::SuspendThread(child_->MainThread());
+					}
+			}
+	}
+  } else if (real_os_version >= base::win::Version::WIN8) {
+    thunk.reset(new Win8ResolverThunk(child_->Process(), true));
+  } else {
+    thunk.reset(new ServiceResolverThunk(child_->Process(), true));
+  }
+#endif
 
   patch.originals = {};
   for (const auto& interception : interceptions_) {
@@ -440,7 +473,7 @@ InterceptionManager::PatchClientFunctions(DllInterceptionData* thunks,
     if (INTERCEPTION_SERVICE_CALL != interception.type)
       return base::unexpected(SBOX_ERROR_BAD_PARAMS);
 
-    NTSTATUS ret = thunk.Setup(
+    NTSTATUS ret = thunk->Setup(
         ntdll_base, nullptr, interception.function.c_str(),
         interception.interceptor.c_str(), interception.interceptor_address,
         &thunks->thunks[patch.dll_data.num_thunks],

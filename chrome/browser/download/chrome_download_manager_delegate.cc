@@ -55,6 +55,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -194,7 +195,7 @@ bool IsEphemeralWarningCancellationEnabled() {
 #if BUILDFLAG(IS_ANDROID)
   return ShouldShowSafeBrowsingAndroidDownloadWarnings();
 #else
-  return download::IsDownloadBubbleEnabled();
+  return true;
 #endif
 }
 
@@ -1954,6 +1955,10 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferredForFile(
 bool ChromeDownloadManagerDelegate::ShouldBlockFile(
     download::DownloadItem* item,
     download::DownloadDangerType danger_type) const {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch("disable-download-upload") ||
+		base::CommandLine::ForCurrentProcess()->HasSwitch("ungoogled-supermium"))	{
+	  return false;
+  }
   // Chrome-initiated background downloads should not be blocked.
   if (item && !item->RequireSafetyChecks()) {
     return false;
