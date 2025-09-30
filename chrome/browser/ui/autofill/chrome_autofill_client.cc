@@ -85,6 +85,8 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -969,6 +971,47 @@ void ChromeAutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
   hats_service->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerAutofillAddressUserDeclinedSave, web_contents(),
       /*timeout_ms=*/5000);
+#endif
+}
+
+void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
+    bool suggestion_accepted,
+    EntityType entity_type) {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+
+  const std::string trigger_id = [&]() {
+    switch (entity_type.name()) {
+      case EntityTypeName::kPassport:
+        return features::kAutofillAiFillingSurveyPassportTriggerId.Get();
+      case EntityTypeName::kDriversLicense:
+        return features::kAutofillAiFillingSurveyDriversLicenseTriggerId.Get();
+      case EntityTypeName::kFlightReservation:
+        return features::kAutofillAiFillingSurveyFlightReservationTriggerId
+            .Get();
+      case EntityTypeName::kKnownTravelerNumber:
+        return features::kAutofillAiFillingSurveyKTNTriggerId.Get();
+      case EntityTypeName::kVehicle:
+        return features::kAutofillAiFillingSurveyVehicleInfoTriggerId.Get();
+      case EntityTypeName::kNationalIdCard:
+        return features::kAutofillAiFillingSurveyNationalIDTriggerId.Get();
+      case EntityTypeName::kRedressNumber:
+        return features::kAutofillAiFillingSurveyRedressNumberTriggerId.Get();
+    }
+    return std::string();
+  }();
+  if (!trigger_id.empty()) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerAutofillAiFilling, web_contents(),
+        /*timeout_ms=*/5000,
+        {{"User accepted suggestion", suggestion_accepted}}, {},
+        HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
+        base::DoNothing(), trigger_id);
+  }
 #endif
 }
 

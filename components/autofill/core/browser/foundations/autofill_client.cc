@@ -227,6 +227,12 @@ void AutofillClient::TriggerDeclinedSaveAddressReasonSurvey() {
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::TriggerAutofillAiFillingJourneySurvey(
+    bool suggestion_accepted,
+    EntityType entity_type) {
+  NOTIMPLEMENTED();
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator() {
   return nullptr;

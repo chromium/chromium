@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
@@ -191,6 +192,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data) final;
   void TriggerDeclinedSaveAddressReasonSurvey() final;
+  void TriggerAutofillAiFillingJourneySurvey(bool suggestion_accepted,
+                                             EntityType entity_type) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillPaymentMethodsEnabled() const final;

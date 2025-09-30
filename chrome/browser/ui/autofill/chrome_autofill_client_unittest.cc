@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -35,6 +36,8 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
@@ -42,6 +45,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/mock_autofill_suggestion_delegate.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -501,6 +505,58 @@ TEST_F(ChromeAutofillClientTest, TriggerUserPerceptionOfAutofillAddressSurvey) {
 
   client()->TriggerUserPerceptionOfAutofillSurvey(FillingProduct::kAddress,
                                                   field_filling_stats_data);
+}
+
+// Test that the Autofill AI filling journey survey calls the hats service with
+// the expected params.
+TEST_F(ChromeAutofillClientTest,
+       TriggerUserAutofillAiFillingJourneySurvey_Passport_SuggestionAccepted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAutofillAiFillingSurvey,
+                             {{"autofill_ai_filling_survey_passport_trigger_id",
+                               "12345"}}}},
+      /*disabled_features=*/{});
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerAutofillAiFilling, _, _,
+                  Eq(SurveyBitsData({{"User accepted suggestion", true}})), _,
+                  _, _, _, Eq("12345"), _));
+
+  client()->TriggerAutofillAiFillingJourneySurvey(
+      /*suggestion_accepted=*/true, EntityType(EntityTypeName::kPassport));
+}
+
+TEST_F(
+    ChromeAutofillClientTest,
+    TriggerUserAutofillAiFillingJourneySurvey_NationalId_SuggestionDeclined) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{features::kAutofillAiFillingSurvey,
+        {{"autofill_ai_filling_survey_national_id_trigger_id", "12345"}}}},
+      /*disabled_features=*/{});
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+  EXPECT_CALL(*mock_hats_service, CanShowAnySurvey)
+      .WillRepeatedly(Return(true));
+
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerAutofillAiFilling, _, _,
+                  Eq(SurveyBitsData({{"User accepted suggestion", false}})), _,
+                  _, _, _, Eq("12345"), _));
+
+  client()->TriggerAutofillAiFillingJourneySurvey(
+      /*suggestion_accepted=*/false,
+      EntityType(EntityTypeName::kNationalIdCard));
 }
 
 TEST_F(ChromeAutofillClientTest,

@@ -19,6 +19,8 @@
 // Trigger identifiers currently used; duplicates not allowed.
 extern const char kHatsSurveyTriggerAutofillAddress[];
 extern const char kHatsSurveyTriggerAutofillAddressUserPerception[];
+extern const char kHatsSurveyTriggerAutofillAiFilling[];
+extern const char kHatsSurveyTriggerAutofillAiSavePrompt[];
 extern const char kHatsSurveyTriggerAutofillAddressUserDeclinedSuggestion[];
 extern const char kHatsSurveyTriggerAutofillAddressUserDeclinedSave[];
 extern const char kHatsSurveyTriggerAutofillCreditCardUserPerception[];
