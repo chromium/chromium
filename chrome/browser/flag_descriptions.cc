@@ -3702,11 +3702,6 @@ const char kRootScrollbarFollowsThemeDescription[] =
     "If enabled makes the root scrollbar follow the browser's theme color.";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-const char kRubyShortHeuristicsName[] = "Short ruby heuristics";
-const char kRubyShortHeuristicsDescription[] =
-    "When enabled, line breaking doesn't happen inside <ruby>s with shorter "
-    "contents even if `text-wrap: nowrap` is not specified.";
-
 const char kMBIModeName[] = "MBI Scheduling Mode";
 const char kMBIModeDescription[] =
     "Enables independent agent cluster scheduling, via the "

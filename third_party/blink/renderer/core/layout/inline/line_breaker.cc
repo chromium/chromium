@@ -3540,9 +3540,6 @@ bool LineBreaker::IsMonolithicRuby(
     return true;
   }
 
-  if (!RuntimeEnabledFeatures::RubyShortHeuristicsEnabled()) {
-    return false;
-  }
   // Not breakable if the number of the base letters is <= 4 and the number of
   // the annotation letters is <= 8.
   //

@@ -2114,9 +2114,6 @@ extern const char kRootScrollbarFollowsTheme[];
 extern const char kRootScrollbarFollowsThemeDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
-extern const char kRubyShortHeuristicsName[];
-extern const char kRubyShortHeuristicsDescription[];
-
 extern const char kMBIModeName[];
 extern const char kMBIModeDescription[];
 

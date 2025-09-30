@@ -4282,11 +4282,6 @@
       status: "stable",
     },
     {
-      // crbug.com/324111880
-      name: "RubyShortHeuristics",
-      status: "stable",
-    },
-    {
       // HTML event loop invoking 'Run snapshot post-layout state steps' from
       // the CSSOM View per spec proposal.
       name: "RunSnapshotPostLayoutStateSteps",

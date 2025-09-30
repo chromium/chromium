@@ -8948,14 +8948,6 @@
     "expiry_milestone": 180
   },
   {
-    "name": "ruby-short-heuristics",
-    "owners": [
-      "tkent@chromium.org",
-      "layout-dev@chromium.org"
-    ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "run-video-capture-service-in-browser",
     "owners": [ "agpalak@chromium.org", "herre@chromium.org", "video-cmi-apis@google.com" ],
     "expiry_milestone": 160
