@@ -16201,6 +16201,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
         return;
       break;
     case base::TERMINATION_STATUS_OOM:
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
 #if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
