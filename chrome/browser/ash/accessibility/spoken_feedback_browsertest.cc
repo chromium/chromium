@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, OpenLogPage) {
 
 IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest,
                        CheckChromeVoxPerformCommandMetric) {
-  chromevox_test_utils()->EnableChromeVox(/*check_for_intro=*/false);
+  chromevox_test_utils()->EnableChromeVox();
   base::HistogramTester histogram_tester;
 
   // Command.ANNOUNCE_BATTERY_DESCRIPTION

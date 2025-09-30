@@ -29,7 +29,7 @@ ChromeVoxTestUtils::ChromeVoxTestUtils() {
 
 ChromeVoxTestUtils::~ChromeVoxTestUtils() = default;
 
-void ChromeVoxTestUtils::EnableChromeVox(bool check_for_intro) {
+void ChromeVoxTestUtils::EnableChromeVox(bool check_for_speech) {
   // Enable ChromeVox, disable earcons and wait for key mappings to be fetched.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   Profile* profile = GetProfile();
@@ -55,11 +55,16 @@ void ChromeVoxTestUtils::EnableChromeVox(bool check_for_intro) {
     host_helper.WaitForHostCompletedFirstLoad();
   }
 
-  sm()->ExpectSpeechPattern(
-      check_for_intro ? "ChromeVox spoken feedback is ready" : "*");
-  sm()->Call([this]() { GlobalizeModule("ChromeVox"); });
-  sm()->Call([this]() { DisableEarcons(); });
-  sm()->Call([this]() { WaitForReady(); });
+  if (check_for_speech) {
+    sm()->ExpectSpeechPattern("ChromeVox spoken feedback is ready");
+    sm()->Call([this]() { WaitForReady(); });
+    sm()->Call([this]() { GlobalizeModule("ChromeVox"); });
+    sm()->Call([this]() { DisableEarcons(); });
+  } else {
+    WaitForReady();
+    GlobalizeModule("ChromeVox");
+    DisableEarcons();
+  }
 }
 
 void ChromeVoxTestUtils::GlobalizeModule(const std::string& name) {
