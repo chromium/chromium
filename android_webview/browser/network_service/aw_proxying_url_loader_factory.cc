@@ -113,6 +113,14 @@ const char kAutoLoginHeaderName[] = "X-Auto-Login";
 
 // Handles intercepted, in-progress requests/responses, so that they can be
 // controlled and modified accordingly.
+//
+// At a high level this class calls shouldInterceptRequest (when appropriate)
+// then either:
+// - loads the response provided by shouldInterceptRequest.
+// - loads the response from an Android resource.
+// - loads the response from the network.
+//
+// It also handles redirects and origin-matched headers.
 class InterceptedRequest : public network::mojom::URLLoader,
                            public network::mojom::URLLoaderClient {
  public:
@@ -139,6 +147,7 @@ class InterceptedRequest : public network::mojom::URLLoader,
 
   ~InterceptedRequest() override;
 
+  // Main entry point for the request.
   void Restart();
 
   // network::mojom::URLLoaderClient
@@ -164,22 +173,21 @@ class InterceptedRequest : public network::mojom::URLLoader,
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
 
+  // Returns true if the request was restarted or completed.
+  bool InputStreamFailed(bool restart_needed);
+
+ private:
+  void InterceptWithCookieHeader(std::string cookie);
+  void InterceptResponseReceived(
+      AwContentsIoThreadClient::InterceptResponseData async_result);
+
+  // Called to progress the request without calling shouldInterceptRequest.
+  void SendNoIntercept();
+
   void ContinueAfterIntercept();
   void ContinueAfterInterceptWithOverride(
       std::unique_ptr<embedder_support::WebResourceResponse> response,
       std::unique_ptr<embedder_support::InputStream> input_stream);
-
-  void InterceptResponseReceived(
-      AwContentsIoThreadClient::InterceptResponseData async_result);
-
-  // Returns true if the request was restarted or completed.
-  bool InputStreamFailed(bool restart_needed);
-
-  void GetCookieStringOnUI(bool accept_third_party_cookies,
-                           base::OnceClosure complete);
-
-  void InterceptWithCookieHeader(
-      std::string cookie);
 
   // Applies the `AwOriginMatchedHeaders` that match the current
   // `request_.url`.
@@ -189,8 +197,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
   void ApplyOriginMatchedHeaders(
       std::vector<std::string>* redirect_headers_to_remove,
       net::HttpRequestHeaders* redirect_headers_to_modify);
-
- private:
 
   std::unique_ptr<AwContentsIoThreadClient> GetIoThreadClient();
 
@@ -214,8 +220,6 @@ class InterceptedRequest : public network::mojom::URLLoader,
   // Posts the error callback to the UI thread, ensuring that at most we send
   // only one.
   void SendErrorCallback(int error_code, bool safebrowsing_hit);
-
-  void SendNoIntercept();
 
   // Logs the cumulative time spent by the AwContentsIoThreadClient during this
   // request.
@@ -389,8 +393,58 @@ InterceptedRequest::~InterceptedRequest() {
     SendErrorCallback(error_status_, false);
 }
 
-void InterceptedRequest::InterceptWithCookieHeader(
-    std::string cookie) {
+void InterceptedRequest::Restart() {
+  TRACE_EVENT0("android_webview", "InterceptedRequest::Restart");
+  io_thread_client_call_duration_ = base::TimeDelta();
+  std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
+      GetIoThreadClient();
+
+  if (ShouldBlockURL(request_.url, io_thread_client.get(),
+                     io_thread_client_call_duration_)) {
+    SendErrorAndCompleteImmediately(net::ERR_ACCESS_DENIED);
+    return;
+  }
+
+  if (!request_was_redirected_) {
+    // Do not call this if the request has already been redirected, as it will
+    // be called from `FollowRedirect` in that case.
+    ApplyOriginMatchedHeaders(nullptr, nullptr);
+  }
+
+  request_.load_flags =
+      UpdateLoadFlags(request_.load_flags, io_thread_client.get(),
+                      io_thread_client_call_duration_);
+
+  if (!io_thread_client || ShouldNotInterceptRequest()) {
+    SendNoIntercept();
+  } else {
+    if (request_.referrer.is_valid()) {
+      // intentionally override if referrer header already exists
+      request_.headers.SetHeader(net::HttpRequestHeaders::kReferer,
+                                 request_.referrer.spec());
+    }
+
+    if (get_cookie_header_.has_value() &&
+        io_thread_client->ShouldAcceptCookies(
+            io_thread_client_call_duration_)) {
+      bool accept_third_party_cookies =
+          io_thread_client->ShouldAcceptThirdPartyCookies(
+              io_thread_client_call_duration_);
+
+      std::move(get_cookie_header_)
+          ->Run(accept_third_party_cookies, request_,
+                base::BindOnce(&InterceptedRequest::InterceptWithCookieHeader,
+                               weak_factory_.GetWeakPtr()));
+    } else {
+      io_thread_client->ShouldInterceptRequestAsync(
+          AwWebResourceRequest(request_),
+          base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
+                         weak_factory_.GetWeakPtr()));
+    }
+  }
+}
+
+void InterceptedRequest::InterceptWithCookieHeader(std::string cookie) {
   if (cookie != "") {
     request_.headers.SetHeader(net::HttpRequestHeaders::kCookie, cookie);
   }
@@ -409,6 +463,95 @@ void InterceptedRequest::InterceptWithCookieHeader(
   } else {
     SendNoIntercept();
   }
+}
+
+void InterceptedRequest::InterceptResponseReceived(
+    AwContentsIoThreadClient::InterceptResponseData async_result) {
+  // We send the application's package name in the X-Requested-With header for
+  // compatibility with previous WebView versions. This should not be visible to
+  // shouldInterceptRequest. It should also not trigger CORS prefetch if
+  // OOR-CORS is enabled.
+  std::string header = content::GetCorsExemptRequestedWithHeaderName();
+
+  // Only overwrite if the header hasn't already been set
+  if (!request_.headers.HasHeader(header)) {
+    request_.cors_exempt_headers.SetHeader(
+        header, base::android::apk_info::host_package_name());
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (async_result.response && async_result.response->RaisedException(env)) {
+    // The JNI handler has already raised an exception. Fail the resource load
+    // as it may be insecure to load on error.
+    SendErrorAndCompleteImmediately(net::ERR_UNEXPECTED);
+    return;
+  }
+
+  if (async_result.response && async_result.response->HasResponse(env)) {
+    // non-null response: make sure to use it as an override for the
+    // normal network data.
+    ContinueAfterInterceptWithOverride(async_result.response->GetResponse(env),
+                                       std::move(async_result.input_stream));
+    return;
+  }
+
+  // Request was not intercepted/overridden. Proceed with loading from network,
+  // unless this is a special |intercept_only_| loader, which happens for
+  // external schemes: e.g. unsupported schemes and cid: schemes.
+  if (intercept_only_) {
+    SendErrorAndCompleteImmediately(net::ERR_UNKNOWN_URL_SCHEME);
+    return;
+  }
+
+  ContinueAfterIntercept();
+}
+
+void InterceptedRequest::ContinueAfterIntercept() {
+  LogIoThreadClientTimeSpent();
+  // For WebViewClassic compatibility this job can only accept URLs that can be
+  // opened. URLs that cannot be opened should be resolved by the next handler.
+  //
+  // If a request is initially handled here but the job fails due to it being
+  // unable to open the InputStream for that request the request is marked as
+  // previously failed and restarted.
+  // Restarting a request involves creating a new job for that request. This
+  // handler will ignore requests known to have previously failed to 1) prevent
+  // an infinite loop, 2) ensure that the next handler in line gets the
+  // opportunity to create a job for the request.
+  if (!input_stream_previously_failed_ &&
+      (request_.url.SchemeIs(url::kContentScheme) ||
+       android_webview::IsAndroidSpecialFileUrl(request_.url))) {
+    embedder_support::AndroidStreamReaderURLLoader* loader =
+        new embedder_support::AndroidStreamReaderURLLoader(
+            request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
+            traffic_annotation_,
+            std::make_unique<ProtocolResponseDelegate>(
+                request_.url, weak_factory_.GetWeakPtr()),
+            security_options_, set_cookie_header_);
+    loader->Start(nullptr);
+    return;
+  }
+
+  if (!target_loader_ && target_factory_) {
+    target_factory_->CreateLoaderAndStart(
+        target_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
+        request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
+        traffic_annotation_);
+  }
+}
+
+void InterceptedRequest::ContinueAfterInterceptWithOverride(
+    std::unique_ptr<embedder_support::WebResourceResponse> response,
+    std::unique_ptr<embedder_support::InputStream> input_stream) {
+  LogIoThreadClientTimeSpent();
+  embedder_support::AndroidStreamReaderURLLoader* loader =
+      new embedder_support::AndroidStreamReaderURLLoader(
+          request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
+          traffic_annotation_,
+          std::make_unique<InterceptResponseDelegate>(
+              std::move(response), weak_factory_.GetWeakPtr()),
+          std::nullopt, set_cookie_header_);
+  loader->Start(std::move(input_stream));
 }
 
 void InterceptedRequest::ApplyOriginMatchedHeaders(
@@ -465,57 +608,6 @@ void InterceptedRequest::ApplyOriginMatchedHeaders(
   }
 }
 
-void InterceptedRequest::Restart() {
-  TRACE_EVENT0("android_webview", "InterceptedRequest::Restart");
-  io_thread_client_call_duration_ = base::TimeDelta();
-  std::unique_ptr<AwContentsIoThreadClient> io_thread_client =
-      GetIoThreadClient();
-
-  if (ShouldBlockURL(request_.url, io_thread_client.get(),
-                     io_thread_client_call_duration_)) {
-    SendErrorAndCompleteImmediately(net::ERR_ACCESS_DENIED);
-    return;
-  }
-
-  if (!request_was_redirected_) {
-    // Do not call this if the request has already been redirected, as it will
-    // be called from `FollowRedirect` in that case.
-    ApplyOriginMatchedHeaders(nullptr, nullptr);
-  }
-
-  request_.load_flags =
-      UpdateLoadFlags(request_.load_flags, io_thread_client.get(),
-                      io_thread_client_call_duration_);
-
-  if (!io_thread_client || ShouldNotInterceptRequest()) {
-    SendNoIntercept();
-  } else {
-    if (request_.referrer.is_valid()) {
-      // intentionally override if referrer header already exists
-      request_.headers.SetHeader(net::HttpRequestHeaders::kReferer,
-                                 request_.referrer.spec());
-    }
-
-    if (get_cookie_header_.has_value() &&
-        io_thread_client->ShouldAcceptCookies(
-            io_thread_client_call_duration_)) {
-      bool accept_third_party_cookies =
-          io_thread_client->ShouldAcceptThirdPartyCookies(
-              io_thread_client_call_duration_);
-
-      std::move(get_cookie_header_)
-          ->Run(accept_third_party_cookies, request_,
-                base::BindOnce(&InterceptedRequest::InterceptWithCookieHeader,
-                               weak_factory_.GetWeakPtr()));
-    } else {
-      io_thread_client->ShouldInterceptRequestAsync(
-          AwWebResourceRequest(request_),
-          base::BindOnce(&InterceptedRequest::InterceptResponseReceived,
-                         weak_factory_.GetWeakPtr()));
-    }
-  }
-}
-
 // logic for when not to invoke shouldInterceptRequest callback
 bool InterceptedRequest::ShouldNotInterceptRequest() {
   if (request_was_redirected_) {
@@ -543,47 +635,6 @@ bool InterceptedRequest::ShouldNotInterceptRequest() {
   return !input_stream_previously_failed_ &&
          (request_.url.SchemeIs(url::kContentScheme) ||
           android_webview::IsAndroidSpecialFileUrl(request_.url));
-}
-
-void InterceptedRequest::InterceptResponseReceived(
-    AwContentsIoThreadClient::InterceptResponseData async_result) {
-  // We send the application's package name in the X-Requested-With header for
-  // compatibility with previous WebView versions. This should not be visible to
-  // shouldInterceptRequest. It should also not trigger CORS prefetch if
-  // OOR-CORS is enabled.
-  std::string header = content::GetCorsExemptRequestedWithHeaderName();
-
-  // Only overwrite if the header hasn't already been set
-  if (!request_.headers.HasHeader(header)) {
-    request_.cors_exempt_headers.SetHeader(
-        header, base::android::apk_info::host_package_name());
-  }
-
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (async_result.response && async_result.response->RaisedException(env)) {
-    // The JNI handler has already raised an exception. Fail the resource load
-    // as it may be insecure to load on error.
-    SendErrorAndCompleteImmediately(net::ERR_UNEXPECTED);
-    return;
-  }
-
-  if (async_result.response && async_result.response->HasResponse(env)) {
-    // non-null response: make sure to use it as an override for the
-    // normal network data.
-    ContinueAfterInterceptWithOverride(async_result.response->GetResponse(env),
-                                       std::move(async_result.input_stream));
-    return;
-  }
-
-  // Request was not intercepted/overridden. Proceed with loading from network,
-  // unless this is a special |intercept_only_| loader, which happens for
-  // external schemes: e.g. unsupported schemes and cid: schemes.
-  if (intercept_only_) {
-    SendErrorAndCompleteImmediately(net::ERR_UNKNOWN_URL_SCHEME);
-    return;
-  }
-
-  ContinueAfterIntercept();
 }
 
 void InterceptedRequest::LogIoThreadClientTimeSpent() {
@@ -616,54 +667,6 @@ bool InterceptedRequest::InputStreamFailed(bool restart_needed) {
   proxied_client_receiver_.reset();
   Restart();
   return true;  // request restarted
-}
-
-void InterceptedRequest::ContinueAfterIntercept() {
-  LogIoThreadClientTimeSpent();
-  // For WebViewClassic compatibility this job can only accept URLs that can be
-  // opened. URLs that cannot be opened should be resolved by the next handler.
-  //
-  // If a request is initially handled here but the job fails due to it being
-  // unable to open the InputStream for that request the request is marked as
-  // previously failed and restarted.
-  // Restarting a request involves creating a new job for that request. This
-  // handler will ignore requests known to have previously failed to 1) prevent
-  // an infinite loop, 2) ensure that the next handler in line gets the
-  // opportunity to create a job for the request.
-  if (!input_stream_previously_failed_ &&
-      (request_.url.SchemeIs(url::kContentScheme) ||
-       android_webview::IsAndroidSpecialFileUrl(request_.url))) {
-    embedder_support::AndroidStreamReaderURLLoader* loader =
-        new embedder_support::AndroidStreamReaderURLLoader(
-            request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
-            traffic_annotation_,
-            std::make_unique<ProtocolResponseDelegate>(
-                request_.url, weak_factory_.GetWeakPtr()),
-            security_options_, set_cookie_header_);
-    loader->Start(nullptr);
-    return;
-  }
-
-  if (!target_loader_ && target_factory_) {
-    target_factory_->CreateLoaderAndStart(
-        target_loader_.BindNewPipeAndPassReceiver(), request_id_, options_,
-        request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
-        traffic_annotation_);
-  }
-}
-
-void InterceptedRequest::ContinueAfterInterceptWithOverride(
-    std::unique_ptr<embedder_support::WebResourceResponse> response,
-    std::unique_ptr<embedder_support::InputStream> input_stream) {
-  LogIoThreadClientTimeSpent();
-  embedder_support::AndroidStreamReaderURLLoader* loader =
-      new embedder_support::AndroidStreamReaderURLLoader(
-          request_, proxied_client_receiver_.BindNewPipeAndPassRemote(),
-          traffic_annotation_,
-          std::make_unique<InterceptResponseDelegate>(
-              std::move(response), weak_factory_.GetWeakPtr()),
-          std::nullopt, set_cookie_header_);
-  loader->Start(std::move(input_stream));
 }
 
 namespace {
