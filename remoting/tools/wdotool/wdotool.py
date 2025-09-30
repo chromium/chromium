@@ -254,13 +254,15 @@ class MoveByAction(argparse.Action):
 
 
 class ClickAction(argparse.Action):
+  BTN_LEFT = 0x110  # Per linux/input-event-codes.h
   def __call__(self,
                parser: argparse.ArgumentParser,
                namespace: argparse.Namespace,
                value: Any,
                option: Optional[str] = None) -> None:
-    namespace.executors.append(lambda d: d.button.pointer_button(
-        value, True).frame().pointer_button(value, False).frame())
+    namespace.executors.append(
+      lambda d: d.button.button_button(value + self.BTN_LEFT, True).frame(
+      ).button_button(value + self.BTN_LEFT, False).frame())
 
 
 class TypeAction(argparse.Action):
