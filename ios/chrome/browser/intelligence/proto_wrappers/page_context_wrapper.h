@@ -77,6 +77,13 @@ using PageContextWrapperCallbackResponse =
 // nothing if `shouldGetSnapshot` is NO.
 @property(nonatomic, assign) BOOL shouldForceUpdateMissingSnapshots;
 
+// Since most of the extraction needs to run on the main thread anyways,
+// enabling this flag will simply post the task on the main thread instead of
+// executing it synchronously, so it can be picked up at a later (hopefully
+// better) time. Use this for non time-sensitive or user-facing PageContext
+// extractions.
+@property(nonatomic, assign) BOOL isLowPriorityExtraction;
+
 // Text to highlight in the snapshot. Will be highlighted just before taking the
 // snapshot, and unhighlighted right after. Nil if no text should be
 // highlighted. Only applies if the tab being processed is currently visible,

@@ -21,6 +21,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/token.h"
@@ -235,57 +236,16 @@ result.links = linksArray;
 }
 
 - (void)populatePageContextFieldsAsyncWithTimeout:(base::TimeDelta)timeout {
-  CHECK_GE(_asyncTasksToComplete, 0);
-  _pageContextMetrics = [[PageContextWrapperMetrics alloc] init];
-  __weak PageContextWrapper* weakSelf = self;
-
-  // Start the timer.
-  _timeoutTimer.Start(FROM_HERE, timeout, base::BindOnce(^{
-                        [weakSelf onTimeout];
-                      }));
-
-  if (_asyncTasksToComplete == 0) {
-    [self asyncWorkCompletedForPageContext];
+  if (_isLowPriorityExtraction) {
+    __weak PageContextWrapper* weakSelf = self;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf populateAsyncFields:timeout];
+        }));
     return;
   }
 
-  // Use a `BarrierClosure` to ensure all async tasks are completed before
-  // executing the overall completion callback. The BarrierClosure will wait
-  // until the `pageContextBarrier` callback is itself run
-  // `_asyncTasksToComplete` times, then post the completion handler to execute
-  // on the next loop of the current sequence.
-  base::RepeatingClosure pageContextBarrier = base::BarrierClosure(
-      _asyncTasksToComplete,
-      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
-                         base::BindOnce(^{
-                           [weakSelf asyncWorkCompletedForPageContext];
-                         })));
-
-  // Asynchronous work. *IMPORTANT NOTES*:
-  // When adding async tasks below, an accompanying setter should also be
-  // created to follow the disabled-by-default pattern (which
-  // increments/decrements `_asyncTasksToComplete` accordingly). Also, if a
-  // given task is enabled, every code path for that task should eventually
-  // execute the `pageContextBarrier` callback, otherwise the `BarrierClosure`
-  // will never execute its completion block.
-
-  if (_shouldGetSnapshot) {
-    [self processSnapshotWithBarrier:pageContextBarrier];
-  }
-
-  if (_shouldGetAnnotatedPageContent || _shouldGetInnerText) {
-    [self processAnnotatedPageContentWithBarrier:pageContextBarrier];
-  }
-
-  // Create full page PDF representation of the WebState, if enabled.
-  if (_shouldGetFullPagePDF) {
-    [_pageContextMetrics executionStartedForTask:PageContextTask::kPDF];
-
-    _webState->CreateFullPagePdf(base::BindOnce(^(NSData* PDFData) {
-      [weakSelf encodeAndSetFullPagePDF:PDFData];
-      pageContextBarrier.Run();
-    }));
-  }
+  [self populateAsyncFields:timeout];
 }
 
 #pragma mark - Setters
@@ -345,6 +305,61 @@ result.links = linksArray;
 }
 
 #pragma mark - Private
+
+// Populates the fields of the PageContext proto which necessitate async calls.
+- (void)populateAsyncFields:(base::TimeDelta)timeout {
+  CHECK_GE(_asyncTasksToComplete, 0);
+  _pageContextMetrics = [[PageContextWrapperMetrics alloc] init];
+  __weak PageContextWrapper* weakSelf = self;
+
+  // Start the timer.
+  _timeoutTimer.Start(FROM_HERE, timeout, base::BindOnce(^{
+                        [weakSelf onTimeout];
+                      }));
+
+  if (_asyncTasksToComplete == 0) {
+    [self asyncWorkCompletedForPageContext];
+    return;
+  }
+
+  // Use a `BarrierClosure` to ensure all async tasks are completed before
+  // executing the overall completion callback. The BarrierClosure will wait
+  // until the `pageContextBarrier` callback is itself run
+  // `_asyncTasksToComplete` times, then post the completion handler to execute
+  // on the next loop of the current sequence.
+  base::RepeatingClosure pageContextBarrier = base::BarrierClosure(
+      _asyncTasksToComplete,
+      base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                         base::BindOnce(^{
+                           [weakSelf asyncWorkCompletedForPageContext];
+                         })));
+
+  // Asynchronous work. *IMPORTANT NOTES*:
+  // When adding async tasks below, an accompanying setter should also be
+  // created to follow the disabled-by-default pattern (which
+  // increments/decrements `_asyncTasksToComplete` accordingly). Also, if a
+  // given task is enabled, every code path for that task should eventually
+  // execute the `pageContextBarrier` callback, otherwise the `BarrierClosure`
+  // will never execute its completion block.
+
+  if (_shouldGetSnapshot) {
+    [self processSnapshotWithBarrier:pageContextBarrier];
+  }
+
+  if (_shouldGetAnnotatedPageContent || _shouldGetInnerText) {
+    [self processAnnotatedPageContentWithBarrier:pageContextBarrier];
+  }
+
+  // Create full page PDF representation of the WebState, if enabled.
+  if (_shouldGetFullPagePDF) {
+    [_pageContextMetrics executionStartedForTask:PageContextTask::kPDF];
+
+    _webState->CreateFullPagePdf(base::BindOnce(^(NSData* PDFData) {
+      [weakSelf encodeAndSetFullPagePDF:PDFData];
+      pageContextBarrier.Run();
+    }));
+  }
+}
 
 // Retrieve WebState snapshot. The barrier's callback will be executed for all
 // codepaths in this method.

@@ -75,6 +75,7 @@ void PersistTabContextBrowserAgent::WasHidden(web::WebState* web_state) {
                          weak_factory_.GetWeakPtr(), webstate_unique_id)];
   [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
   [page_context_wrapper_ setShouldGetInnerText:YES];
+  [page_context_wrapper_ setIsLowPriorityExtraction:YES];
   [page_context_wrapper_ populatePageContextFieldsAsync];
 }
 
