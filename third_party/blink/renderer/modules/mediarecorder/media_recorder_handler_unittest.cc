@@ -348,8 +348,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
     };
 
     media::mp4::AVCDecoderConfigurationRecord avc_config;
-    ASSERT_TRUE(
-        avc_config.Parse(test_data.data(), static_cast<int>(test_data.size())));
+    ASSERT_TRUE(avc_config.Parse(test_data));
     ASSERT_TRUE(avc_config.Serialize(codec_description));
   }
 #endif

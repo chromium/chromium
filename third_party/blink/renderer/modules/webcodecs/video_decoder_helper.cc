@@ -19,11 +19,9 @@ namespace blink {
 // static
 std::unique_ptr<VideoDecoderHelper> VideoDecoderHelper::Create(
     media::VideoType video_type,
-    const uint8_t* configuration_record,
-    int configuration_record_size,
+    base::span<const uint8_t> configuration_record,
     Status* status_out) {
-  DCHECK(configuration_record);
-  DCHECK(configuration_record_size);
+  DCHECK(!configuration_record.empty());
   DCHECK(status_out);
   std::unique_ptr<VideoDecoderHelper> decoder_helper = nullptr;
   if (video_type.codec != media::VideoCodec::kH264 &&
@@ -45,8 +43,7 @@ std::unique_ptr<VideoDecoderHelper> VideoDecoderHelper::Create(
         // !BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
     decoder_helper = std::make_unique<VideoDecoderHelper>(video_type);
-    *status_out = decoder_helper->Initialize(configuration_record,
-                                             configuration_record_size);
+    *status_out = decoder_helper->Initialize(configuration_record);
   }
   if (*status_out != Status::kSucceed) {
     decoder_helper.reset();
@@ -74,18 +71,18 @@ VideoDecoderHelper::VideoDecoderHelper(media::VideoType video_type) {
 VideoDecoderHelper::~VideoDecoderHelper() = default;
 
 VideoDecoderHelper::Status VideoDecoderHelper::Initialize(
-    const uint8_t* configuration_record,
-    int configuration_record_size) {
+    base::span<const uint8_t> configuration_record) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   bool initialized = false;
   if (h264_converter_ && h264_avcc_) {
-    initialized = h264_converter_->ParseConfiguration(
-        configuration_record, configuration_record_size, h264_avcc_.get());
+    initialized = h264_converter_->ParseConfiguration(configuration_record,
+                                                      h264_avcc_.get());
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
     initialized = h265_converter_->ParseConfiguration(
-        configuration_record, configuration_record_size, h265_hvcc_.get());
+        configuration_record.data(), configuration_record.size(),
+        h265_hvcc_.get());
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
   if (initialized) {
@@ -99,19 +96,19 @@ VideoDecoderHelper::Status VideoDecoderHelper::Initialize(
 }
 
 uint32_t VideoDecoderHelper::CalculateNeededOutputBufferSize(
-    const uint8_t* input,
-    uint32_t input_size,
+    base::span<const uint8_t> input,
     bool is_first_chunk) const {
   uint32_t output_size = 0;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (h264_converter_ && h264_avcc_) {
     output_size = h264_converter_->CalculateNeededOutputBufferSize(
-        input, input_size, is_first_chunk ? h264_avcc_.get() : nullptr);
+        input, is_first_chunk ? h264_avcc_.get() : nullptr);
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
     output_size = h265_converter_->CalculateNeededOutputBufferSize(
-        input, input_size, is_first_chunk ? h265_hvcc_.get() : nullptr);
+        input.data(), input.size(),
+        is_first_chunk ? h265_hvcc_.get() : nullptr);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -119,23 +116,22 @@ uint32_t VideoDecoderHelper::CalculateNeededOutputBufferSize(
 }
 
 VideoDecoderHelper::Status VideoDecoderHelper::ConvertNalUnitStreamToByteStream(
-    const uint8_t* input,
-    uint32_t input_size,
-    uint8_t* output,
+    base::span<const uint8_t> input,
+    base::span<uint8_t> output,
     uint32_t* output_size,
     bool is_first_chunk) {
   bool converted = false;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (h264_converter_ && h264_avcc_) {
     converted = h264_converter_->ConvertNalUnitStreamToByteStream(
-        input, input_size, is_first_chunk ? h264_avcc_.get() : nullptr, output,
+        input, is_first_chunk ? h264_avcc_.get() : nullptr, output,
         output_size);
   }
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   else if (h265_converter_ && h265_hvcc_) {
     converted = h265_converter_->ConvertNalUnitStreamToByteStream(
-        input, input_size, is_first_chunk ? h265_hvcc_.get() : nullptr, output,
-        output_size);
+        input.data(), input.size(), is_first_chunk ? h265_hvcc_.get() : nullptr,
+        output.data(), output_size);
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)

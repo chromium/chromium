@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/muxers/mp4_muxer_delegate.h"
 
 #include "base/logging.h"
@@ -187,8 +186,7 @@ void Mp4MuxerDelegate::BuildMovieVideoTrack(
 
     mp4::writable_boxes::AVCDecoderConfiguration avc_config;
     mp4::AVCDecoderConfigurationRecord avc_config_record;
-    bool result = avc_config_record.Parse(codec_description.value().data(),
-                                          codec_description.value().size());
+    bool result = avc_config_record.Parse(codec_description.value());
     DCHECK(result);
 
     avc_config.avc_config_record = std::move(avc_config_record);

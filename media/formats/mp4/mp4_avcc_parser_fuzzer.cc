@@ -5,11 +5,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/formats/mp4/box_definitions.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  media::mp4::AVCDecoderConfigurationRecord().Parse(data, size);
+  media::mp4::AVCDecoderConfigurationRecord().Parse(
+      // SAFETY: This is guaranteed by the fuzzer API.
+      UNSAFE_BUFFERS(base::span(data, size)));
   return 0;
 }
 

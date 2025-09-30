@@ -32,17 +32,6 @@ class FFmpegCommonTest : public testing::Test {
 
 uint8_t kExtraData[5] = {0x00, 0x01, 0x02, 0x03, 0x04};
 
-inline base::span<uint8_t> AVCodecParametersExtraDataToSpan(
-    const AVCodecParameters* codec_context) {
-  // SAFETY:
-  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a9befe0b86412646017afb0051d144d13
-  // ffmpeg documentation: The allocated size of `extradata` must be at least
-  // `extradata_size + AV_INPUT_BUFFER_PADDING_SIZE`.
-  return UNSAFE_BUFFERS(
-      base::span(codec_context->extradata,
-                 base::checked_cast<size_t>(codec_context->extradata_size)));
-}
-
 template <typename T>
 void TestConfigConvertExtraData(
     AVStream* stream,

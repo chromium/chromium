@@ -108,7 +108,7 @@ class Mp4MuxerDelegateTest : public ::testing::TestWithParam<TestParam> {
         0x0,   // numOfSequanceParameterSetExt = 0
     };
     mp4::AVCDecoderConfigurationRecord avc_config;
-    ASSERT_TRUE(avc_config.Parse(test_data.data(), test_data.size()));
+    ASSERT_TRUE(avc_config.Parse(test_data));
     ASSERT_TRUE(avc_config.Serialize(video_codec_description));
   }
 

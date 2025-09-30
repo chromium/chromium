@@ -233,7 +233,7 @@ struct MEDIA_EXPORT AVCDecoderConfigurationRecord : Box {
   //       context and therefore the box header is not expected to be present
   //       in |data|.
   // Returns true if |data| was successfully parsed.
-  bool Parse(const uint8_t* data, int data_size);
+  bool Parse(base::span<const uint8_t> data);
   bool Serialize(std::vector<uint8_t>& output) const;
 
   uint8_t version;

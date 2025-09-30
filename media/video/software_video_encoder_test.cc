@@ -1219,8 +1219,8 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
             H264ToAnnexBBitstreamConverter converter;
             mp4::AVCDecoderConfigurationRecord avc_config;
-            bool parse_ok = converter.ParseConfiguration(
-                desc->data(), desc->size(), &avc_config);
+            bool parse_ok =
+                converter.ParseConfiguration(desc.value(), &avc_config);
             EXPECT_TRUE(parse_ok);
             EXPECT_EQ(profile_, ProfileIDToVideoCodecProfile(
                                     avc_config.profile_indication));

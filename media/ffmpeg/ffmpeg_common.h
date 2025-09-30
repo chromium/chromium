@@ -6,6 +6,7 @@
 #define MEDIA_FFMPEG_FFMPEG_COMMON_H_
 
 #include <stdint.h>
+
 #include <string>
 
 // Used for FFmpeg error codes.
@@ -105,6 +106,18 @@ inline base::span<AVStream*> AVFormatContextToSpan(
                  base::checked_cast<size_t>(codec_context->nb_streams)));
 }
 
+inline base::span<uint8_t> AVCodecContextExtraDataToSpan(
+    const AVCodecContext* codec_context) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecContext.html#abe964316aaaa61967b012efdcced79c4
+  // ffmpeg documentation: The allocated memory should be
+  // `AV_INPUT_BUFFER_PADDING_SIZE` bytes larger than `extradata_size`. So when
+  // we only use extradata_size bytes, it is safe.
+  return UNSAFE_BUFFERS(
+      base::span(codec_context->extradata,
+                 base::checked_cast<size_t>(codec_context->extradata_size)));
+}
+
 inline base::span<AVPacketSideData> AVCodecParametersCodedSideToSpan(
     const AVCodecParameters* codecpar) {
   // SAFETY:
@@ -114,6 +127,17 @@ inline base::span<AVPacketSideData> AVCodecParametersCodedSideToSpan(
   return UNSAFE_BUFFERS(
       base::span(codecpar->coded_side_data,
                  base::checked_cast<size_t>(codecpar->nb_coded_side_data)));
+}
+
+inline base::span<uint8_t> AVCodecParametersExtraDataToSpan(
+    const AVCodecParameters* codecpar) {
+  // SAFETY:
+  // https://ffmpeg.org/doxygen/trunk/structAVCodecParameters.html#a9befe0b86412646017afb0051d144d13
+  // ffmpeg documentation: The allocated size of `extradata` must be at least
+  // `extradata_size + AV_INPUT_BUFFER_PADDING_SIZE`.
+  return UNSAFE_BUFFERS(
+      base::span(codecpar->extradata,
+                 base::checked_cast<size_t>(codecpar->extradata_size)));
 }
 
 // Converts an int64_t timestamp in |time_base| units to a base::TimeDelta.
@@ -143,17 +167,15 @@ AVStreamToAVCodecContext(const AVStream* stream);
 // Returns false if conversion fails, in which case |config| is not modified.
 MEDIA_EXPORT bool AVStreamToAudioDecoderConfig(const AVStream* stream,
                                                AudioDecoderConfig* config);
-void AudioDecoderConfigToAVCodecContext(
-    const AudioDecoderConfig& config,
-    AVCodecContext* codec_context);
+void AudioDecoderConfigToAVCodecContext(const AudioDecoderConfig& config,
+                                        AVCodecContext* codec_context);
 
 // Returns true if AVStream is successfully converted to a VideoDecoderConfig.
 // Returns false if conversion fails, in which case |config| is not modified.
 MEDIA_EXPORT bool AVStreamToVideoDecoderConfig(const AVStream* stream,
                                                VideoDecoderConfig* config);
-void VideoDecoderConfigToAVCodecContext(
-    const VideoDecoderConfig& config,
-    AVCodecContext* codec_context);
+void VideoDecoderConfigToAVCodecContext(const VideoDecoderConfig& config,
+                                        AVCodecContext* codec_context);
 
 // Returns true if AVCodecContext is successfully converted to an
 // AudioDecoderConfig. Returns false if conversion fails, in which case |config|

@@ -697,8 +697,8 @@ bool AVCDecoderConfigurationRecord::Parse(BoxReader* reader) {
   return ParseInternal(reader, reader->media_log());
 }
 
-bool AVCDecoderConfigurationRecord::Parse(const uint8_t* data, int data_size) {
-  BufferReader reader(data, data_size);
+bool AVCDecoderConfigurationRecord::Parse(base::span<const uint8_t> data) {
+  BufferReader reader(data.data(), data.size());
   NullMediaLog media_log;
   return ParseInternal(&reader, &media_log);
 }

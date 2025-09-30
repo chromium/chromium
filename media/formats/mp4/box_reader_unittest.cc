@@ -507,7 +507,7 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromMp4) {
   };
 
   AVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
 
   EXPECT_EQ(record.version, 1);
   EXPECT_EQ(record.profile_indication, 0x64);
@@ -554,7 +554,7 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordInvalidREXT) {
   };
 
   AVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
 
   // Default values should be used.
   EXPECT_EQ(record.chroma_format, 0);
@@ -572,7 +572,7 @@ TEST_F(BoxReaderTest, AVCDecoderConfigurationRecordTakenFromStream) {
       0x00, 0x02, 0x49, 0xF3, 0xF8, 0xC7, 0x0E, 0xD0, 0xB1, 0x68, 0x90,
       0x01, 0x00, 0x04, 0x68, 0xEB, 0x73, 0x52};
   AVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
   std::vector<uint8_t> output;
   EXPECT_TRUE(record.Serialize(output));
   ASSERT_THAT(output, testing::ElementsAreArray(test_data));

@@ -88,18 +88,6 @@ void ApplyCodecContextSecuritySettings(AVCodecContext* codec_context) {
   }
 }
 
-inline base::span<uint8_t> AVCodecContextToSpan(
-    const AVCodecContext* codec_context) {
-  // SAFETY:
-  // https://ffmpeg.org/doxygen/6.0/structAVCodecContext.html#abe964316aaaa61967b012efdcced79c4
-  // ffmpeg documentation: The allocated memory should be
-  // `AV_INPUT_BUFFER_PADDING_SIZE` bytes larger than `extradata_size`. So when
-  // we only use extradata_size bytes, it is safe.
-  return UNSAFE_BUFFERS(
-      base::span(codec_context->extradata,
-                 base::checked_cast<size_t>(codec_context->extradata_size)));
-}
-
 template <typename T>
 void CopyBufferFromConfig(const T& config, AVCodecContext* codec_context) {
   if (config.extra_data().empty()) {
@@ -471,7 +459,7 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
   if (codec_context->extradata_size > 0) {
     extra_data.resize(codec_context->extradata_size);
     base::span(extra_data)
-        .copy_from_nonoverlapping(AVCodecContextToSpan(codec_context));
+        .copy_from_nonoverlapping(AVCodecContextExtraDataToSpan(codec_context));
   }
 
   config->Initialize(codec, sample_format, channel_layout, codec_context->sample_rate,
@@ -618,8 +606,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       if (profile == VIDEO_CODEC_PROFILE_UNKNOWN && codec_context->extradata &&
           codec_context->extradata_size) {
         mp4::AVCDecoderConfigurationRecord avc_config;
-        if (avc_config.Parse(codec_context->extradata,
-                             codec_context->extradata_size)) {
+        if (avc_config.Parse(
+                AVCodecContextExtraDataToSpan(codec_context.get()))) {
           profile = ProfileIDToVideoCodecProfile(avc_config.profile_indication);
         }
       }
@@ -796,7 +784,8 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
   if (codec_context->extradata_size > 0) {
     extra_data.resize(codec_context->extradata_size);
     base::span(extra_data)
-        .copy_from_nonoverlapping(AVCodecContextToSpan(codec_context.get()));
+        .copy_from_nonoverlapping(
+            AVCodecContextExtraDataToSpan(codec_context.get()));
   }
 
   VideoTransformation video_transformation = VideoTransformation();

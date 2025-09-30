@@ -465,9 +465,8 @@ VideoDecoder::MakeMediaVideoDecoderConfigInternal(
       (video_type.codec == media::VideoCodec::kH264 ||
        video_type.codec == media::VideoCodec::kHEVC)) {
     VideoDecoderHelper::Status status;
-    decoder_specific_data.decoder_helper = VideoDecoderHelper::Create(
-        video_type, extra_data.data(), static_cast<int>(extra_data.size()),
-        &status);
+    decoder_specific_data.decoder_helper =
+        VideoDecoderHelper::Create(video_type, extra_data, &status);
     if (status != VideoDecoderHelper::Status::kSucceed) {
       if (video_type.codec == media::VideoCodec::kH264) {
         if (status == VideoDecoderHelper::Status::kDescriptionParseFailed) {
@@ -593,13 +592,11 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
   scoped_refptr<media::DecoderBuffer> decoder_buffer = chunk.buffer();
   if (decoder_specific_data_.decoder_helper) {
     auto decoder_buffer_span = base::span(*chunk.buffer());
-    const uint8_t* src = decoder_buffer_span.data();
-    size_t src_size = decoder_buffer_span.size();
 
     // Note: this may not be safe if support for SharedArrayBuffers is added.
     uint32_t output_size =
         decoder_specific_data_.decoder_helper->CalculateNeededOutputBufferSize(
-            src, static_cast<uint32_t>(src_size), verify_key_frame);
+            decoder_buffer_span, verify_key_frame);
     if (!output_size) {
       return media::DecoderStatus(
           media::DecoderStatus::Codes::kMalformedBitstream,
@@ -608,8 +605,8 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
 
     std::vector<uint8_t> buf(output_size);
     if (decoder_specific_data_.decoder_helper->ConvertNalUnitStreamToByteStream(
-            src, static_cast<uint32_t>(src_size), buf.data(), &output_size,
-            verify_key_frame) != VideoDecoderHelper::Status::kSucceed) {
+            decoder_buffer_span, buf, &output_size, verify_key_frame) !=
+        VideoDecoderHelper::Status::kSucceed) {
       return media::DecoderStatus(
           media::DecoderStatus::Codes::kMalformedBitstream,
           "Unable to convert NALU to byte stream.");
