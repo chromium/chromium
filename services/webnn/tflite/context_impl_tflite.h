@@ -28,7 +28,8 @@ class ContextImplTflite final : public WebNNContextImpl {
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
+      scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker);
 
   ContextImplTflite(const WebNNContextImpl&) = delete;
   ContextImplTflite& operator=(const ContextImplTflite&) = delete;

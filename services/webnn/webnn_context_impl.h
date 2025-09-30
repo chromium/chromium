@@ -61,7 +61,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
+      scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -242,6 +243,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Data pipe handles for transferring tensor data across processes.
   mojo::ScopedDataPipeConsumerHandle write_tensor_consumer_;
   mojo::ScopedDataPipeProducerHandle read_tensor_producer_;
+
+  // The MemoryTypeTracker is used for creating tensors from shared images.
+  // It is stored on the context because only the tracker it was created with
+  // is thread safe.
+  gpu::MemoryTypeTracker memory_type_tracker_;
 };
 
 }  // namespace webnn

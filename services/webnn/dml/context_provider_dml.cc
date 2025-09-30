@@ -57,7 +57,8 @@ CreateDmlContext(scoped_refptr<Adapter> adapter,
                  const gpu::GpuFeatureInfo& gpu_feature_info,
                  gpu::CommandBufferId command_buffer_id,
                  std::unique_ptr<ScopedSequence> sequence,
-                 scoped_refptr<gpu::SchedulerTaskRunner> task_runner) {
+                 scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+                 scoped_refptr<gpu::MemoryTracker> memory_tracker) {
   ASSIGN_OR_RETURN(
       auto command_recorder,
       CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()),
@@ -71,7 +72,7 @@ CreateDmlContext(scoped_refptr<Adapter> adapter,
       std::move(options), std::move(write_tensor_consumer),
       std::move(read_tensor_producer), std::move(command_recorder),
       gpu_feature_info, command_buffer_id, std::move(sequence),
-      std::move(task_runner));
+      std::move(task_runner), std::move(memory_tracker));
 }
 
 }  // namespace
@@ -102,7 +103,8 @@ CreateContextFromOptions(
     WebNNContextProviderImpl* context_provider,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner) {
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker) {
   DCHECK(gpu_feature_info.IsInitialized());
   if (gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_WEBNN] !=
       gpu::kGpuFeatureStatusEnabled) {
@@ -156,7 +158,7 @@ CreateContextFromOptions(
       std::move(adapter_creation_result.value()), std::move(receiver),
       context_provider, std::move(options), std::move(write_tensor_consumer),
       std::move(read_tensor_producer), gpu_feature_info, command_buffer_id,
-      std::move(sequence), std::move(task_runner));
+      std::move(sequence), std::move(task_runner), std::move(memory_tracker));
 }
 
 }  // namespace webnn::dml

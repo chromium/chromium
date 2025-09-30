@@ -597,7 +597,8 @@ ContextImplDml::ContextImplDml(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GetProperties(adapter->max_supported_feature_level()),
@@ -606,7 +607,8 @@ ContextImplDml::ContextImplDml(
                        std::move(read_tensor_producer),
                        command_buffer_id,
                        std::move(sequence),
-                       std::move(task_runner)),
+                       std::move(task_runner),
+                       std::move(memory_tracker)),
       adapter_(std::move(adapter)),
       command_recorder_(std::move(command_recorder)),
       gpu_feature_info_(gpu_feature_info) {

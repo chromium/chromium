@@ -46,7 +46,8 @@ WebNNContextImpl::WebNNContextImpl(
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker)
     : WebNNObjectImpl<mojom::WebNNContext, blink::WebNNContextToken>(
           std::move(receiver),
           task_runner),
@@ -57,7 +58,8 @@ WebNNContextImpl::WebNNContextImpl(
       sequence_(std::move(sequence)),
       scheduler_task_runner_(std::move(task_runner)),
       write_tensor_consumer_(std::move(write_tensor_consumer)),
-      read_tensor_producer_(std::move(read_tensor_producer)) {
+      read_tensor_producer_(std::move(read_tensor_producer)),
+      memory_type_tracker_(std::move(memory_tracker)) {
   CHECK(context_provider_);
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
@@ -181,7 +183,7 @@ void WebNNContextImpl::WaitSyncToken(const gpu::SyncToken& fence) {
   // Prevent WebNN from performing further operations until the specified
   // SyncToken fence has been released.
   base::OnceClosure nop_task = base::DoNothing();
-  context_provider()->scheduler()->ScheduleTask(gpu::Scheduler::Task(
+  sequence_->scheduler().ScheduleTask(gpu::Scheduler::Task(
       sequence_->sequence_id(), std::move(nop_task), {fence}));
 }
 
@@ -194,7 +196,7 @@ gpu::SyncToken WebNNContextImpl::GenVerifiedSyncToken() {
   // appending a no-op task - the sync token will be automatically signaled
   // by the scheduler after this task executes.
   base::OnceClosure nop_task = base::DoNothing();
-  context_provider()->scheduler()->ScheduleTask(gpu::Scheduler::Task(
+  sequence_->scheduler().ScheduleTask(gpu::Scheduler::Task(
       sequence_->sequence_id(), std::move(nop_task), {}, verified_release));
 
   // Verify the release since the sync token could be passed to another Mojo
@@ -285,13 +287,9 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
             constexpr char kWebNNCreateTensorErrorMessage[] =
                 "Failed to create tensor.";
 
-            // TODO(crbug.com/345352987): give WebNN its own memory source and
-            // tracker.
             std::unique_ptr<gpu::WebNNTensorRepresentation> representation =
                 shared_image_manager->ProduceWebNNTensor(
-                    mailbox, self->context_provider()
-                                 ->shared_context_state()
-                                 ->memory_type_tracker());
+                    mailbox, &self->memory_type_tracker_);
             if (!representation) {
               std::move(callback).Run(ToError<mojom::CreateTensorResult>(
                   mojom::Error::Code::kUnknownError,

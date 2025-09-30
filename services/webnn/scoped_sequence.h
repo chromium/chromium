@@ -40,6 +40,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedSequence {
   ScopedSequence& operator=(const ScopedSequence&) = delete;
 
   gpu::SequenceId sequence_id() const { return sequence_id_; }
+  gpu::Scheduler& scheduler() const { return scheduler_.get(); }
 
  private:
   const raw_ref<gpu::Scheduler> scheduler_;

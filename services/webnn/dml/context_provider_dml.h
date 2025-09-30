@@ -16,6 +16,7 @@ class SharedContextState;
 struct GpuFeatureInfo;
 struct GPUInfo;
 class SchedulerTaskRunner;
+class MemoryTracker;
 }  // namespace gpu
 
 namespace webnn {
@@ -43,7 +44,8 @@ CreateContextFromOptions(
     WebNNContextProviderImpl* context_provider,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker);
 
 }  // namespace dml
 

@@ -27,7 +27,8 @@ ContextImplCoreml::ContextImplCoreml(
     mojom::CreateContextOptionsPtr options,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner)
+    scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker)
     : WebNNContextImpl(std::move(receiver),
                        context_provider,
                        GraphBuilderCoreml::GetContextProperties(),
@@ -36,7 +37,8 @@ ContextImplCoreml::ContextImplCoreml(
                        mojo::ScopedDataPipeProducerHandle(),
                        command_buffer_id,
                        std::move(sequence),
-                       std::move(task_runner)) {}
+                       std::move(task_runner),
+                       std::move(memory_tracker)) {}
 
 ContextImplCoreml::~ContextImplCoreml() = default;
 

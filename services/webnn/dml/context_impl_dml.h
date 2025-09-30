@@ -39,7 +39,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
                  const gpu::GpuFeatureInfo& gpu_feature_info,
                  gpu::CommandBufferId command_buffer_id,
                  std::unique_ptr<ScopedSequence> sequence,
-                 scoped_refptr<gpu::SchedulerTaskRunner> task_runner);
+                 scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+                 scoped_refptr<gpu::MemoryTracker> memory_tracker);
 
   ContextImplDml(const WebNNContextImpl&) = delete;
   ContextImplDml& operator=(const ContextImplDml&) = delete;

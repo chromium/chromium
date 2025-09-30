@@ -97,12 +97,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
         gpu::CommandBufferId command_buffer_id,
         std::unique_ptr<ScopedSequence> sequence,
         scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+        scoped_refptr<gpu::MemoryTracker> memory_tracker,
         CreateWebNNContextCallback callback) = 0;
   };
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
-
-  gpu::Scheduler* scheduler() const { return scheduler_; }
 
   int32_t client_id() const { return client_id_; }
 
@@ -111,12 +110,19 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   }
 
   scoped_refptr<gpu::SharedContextState> shared_context_state() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return shared_context_state_;
   }
 
   gpu::SharedImageManager* shared_image_manager() const {
     return shared_image_manager_;
   }
+
+ protected:
+  // SequenceChecker for WebNNContextProviderImpl. It attaches to the sequence
+  // on which this object is constructed. All message dispatches and any access
+  // to `main_thread_task_runner_` must happen on the same sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
  private:
   WebNNContextProviderImpl(
@@ -162,6 +168,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   const int32_t client_id_;
+
+  // The memory tracker from the `shared_context_state_` which is used to create
+  // tensors from shared images.
+  // TODO(crbug.com/345352987): give WebNN its own memory source and
+  // tracker.
+  scoped_refptr<gpu::MemoryTracker> memory_tracker_;
 };
 
 }  // namespace webnn
