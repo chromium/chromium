@@ -60,6 +60,20 @@ std::unique_ptr<GlicInactiveSidePanelUi> GlicInactiveSidePanelUi::From(
 }
 
 GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
+    base::WeakPtr<tabs::TabInterface> tab,
+    const GlicSidePanelUi& active_ui)
+    : tab_(tab) {
+  if (!tab_ || !tab_->GetTabFeatures()) {
+    return;
+  }
+
+  auto* glic_side_panel_coordinator =
+      tab_->GetTabFeatures()->glic_side_panel_coordinator();
+  coordinator_observation_.Observe(glic_side_panel_coordinator);
+  glic_side_panel_coordinator->SetContentsView(CreateView(tab_));
+}
+
+GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
     base::WeakPtr<tabs::TabInterface> tab)
     : tab_(tab) {
   if (!tab_ || !tab_->GetTabFeatures()) {
@@ -94,7 +108,15 @@ bool GlicInactiveSidePanelUi::IsShowing() const {
 }
 
 void GlicInactiveSidePanelUi::Show() {
-  NOTIMPLEMENTED();
+  if (!tab_ || !tab_->GetTabFeatures()) {
+    return;
+  }
+  SidePanelRegistry* registry = tab_->GetTabFeatures()->side_panel_registry();
+  SidePanelEntry* glic_entry =
+      registry->GetEntryForKey(SidePanelEntry::Key(SidePanelEntry::Id::kGlic));
+  if (glic_entry) {
+    registry->SetActiveEntry(glic_entry);
+  }
 }
 
 void GlicInactiveSidePanelUi::Close() {

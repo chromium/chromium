@@ -180,6 +180,7 @@ class GlicInstanceImpl : public GlicInstance,
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   void DeactivateCurrentEmbedder();
   GlicUiEmbedder* CreateActiveEmbedderFor(const EmbedderKey& key);
+  void ShowInactiveSidePanelEmbedderFor(tabs::TabInterface* tab);
   void MaybeShowHostUi(GlicUiEmbedder* embedder);
   void OnAssociatedTabDestroyed(tabs::TabInterface* tab,
                                 const InstanceId& instance_id);
@@ -190,6 +191,7 @@ class GlicInstanceImpl : public GlicInstance,
           callback,
       std::vector<std::string> returned_suggestions);
   void MaybeDeactivateEmbedderAndCloseHostUi(EmbedderKey key);
+  EmbedderEntry& AssociateTab(tabs::TabInterface* tab);
 
   using StateChangeCallbackList =
       base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;

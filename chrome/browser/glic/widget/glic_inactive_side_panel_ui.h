@@ -25,6 +25,9 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
       const GlicSidePanelUi& active_ui,
       base::WeakPtr<tabs::TabInterface> tab);
 
+  explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab);
+  GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
+                          const GlicSidePanelUi& active_ui);
   ~GlicInactiveSidePanelUi() override;
 
   // GlicUiEmbedder:
@@ -40,7 +43,6 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   void OnScreenshotCaptured(gfx::Image screenshot);
 
  private:
-  explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab);
   std::unique_ptr<views::View> CreateView(
       base::WeakPtr<tabs::TabInterface> tab);
   void UpdateImageView();
