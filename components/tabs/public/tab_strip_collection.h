@@ -62,13 +62,6 @@ class TabStripCollection : public TabCollection {
   // due to bad input then CHECK.
   std::unique_ptr<TabInterface> RemoveTabAtIndexRecursive(size_t index);
 
-  // Removes the tab from the collection. If `close_empty_group_collection` is
-  // true then group collection is closed when the last tab is removed from
-  // the group collection.
-  std::unique_ptr<TabInterface> RemoveTabRecursive(
-      TabInterface* tab,
-      bool close_empty_group_collection = true);
-
   // TabCollection:
   // Tabs and Collections are not allowed to be removed from TabStripCollection.
   // `MaybeRemoveTab` and `MaybeRemoveCollection` will return nullptr.
@@ -132,6 +125,13 @@ class TabStripCollection : public TabCollection {
                            size_t index,
                            std::optional<tab_groups::TabGroupId> new_group_id,
                            bool new_pinned_state);
+
+  // Removes the tab from the collection. If `close_empty_group_collection` is
+  // true then group collection is closed when the last tab is removed from
+  // the group collection.
+  std::unique_ptr<TabInterface> RemoveTabRecursiveImpl(
+      TabInterface* tab,
+      bool close_empty_group_collection = true);
 
   // If the group specified by new_group is detached, pop it from the detached
   // groups vector and add it to the collections structure at the specified

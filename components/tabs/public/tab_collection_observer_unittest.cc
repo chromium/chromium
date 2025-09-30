@@ -334,4 +334,92 @@ TEST_F(TabCollectionObserverTest, OnSplitCreated) {
                               split_tabs::SplitTabLayout::kVertical, 0.5));
 }
 
+TEST_F(TabCollectionObserverTest, OnTabRemoved) {
+  // Setup with one group tab
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+
+  EXPECT_CALL(*GetGroupFactory(), Create)
+      .WillOnce(testing::Invoke(
+          [&](tabs::TabGroupTabCollection* collection,
+              const tab_groups::TabGroupId& id,
+              const tab_groups::TabGroupVisualData& visual_data) {
+            // Return a valid MockTabGroup object.
+            return std::make_unique<MockTabGroup>(collection, id, visual_data);
+          }));
+
+  std::unique_ptr<tabs::MockTabInterface> pinned_tab = CreateMockTab();
+  std::unique_ptr<tabs::MockTabInterface> unpinned_tab = CreateMockTab();
+  std::unique_ptr<tabs::MockTabInterface> group_tab_0 = CreateMockTab();
+  std::unique_ptr<tabs::MockTabInterface> group_tab_1 = CreateMockTab();
+  tabs::MockTabInterface* pinned_tab_ptr = pinned_tab.get();
+  tabs::MockTabInterface* unpinned_tab_ptr = unpinned_tab.get();
+  tabs::MockTabInterface* group_tab_0_ptr = group_tab_0.get();
+  tabs::MockTabInterface* group_tab_1_ptr = group_tab_1.get();
+  TabHandle pinned_tab_handle = pinned_tab->GetHandle();
+  TabHandle unpinned_tab_handle = unpinned_tab->GetHandle();
+  TabHandle group_tab_1_handle = group_tab_1->GetHandle();
+
+  tabs::TabStripCollection* collection = GetTabstripCollection();
+  std::unique_ptr<tabs::TabGroupTabCollection> group_collection =
+      std::make_unique<tabs::TabGroupTabCollection>(
+          *GetGroupFactory(), group_id, tab_groups::TabGroupVisualData());
+  tabs::TabGroupTabCollection* group_collection_ptr = group_collection.get();
+  TabCollectionHandle group_collection_handle = group_collection->GetHandle();
+  group_collection->AddTab(std::move(group_tab_0), 0);
+  collection->AddTabRecursive(std::move(pinned_tab), 0, std::nullopt, true);
+  collection->AddTabRecursive(std::move(unpinned_tab), 1, std::nullopt, false);
+  collection->InsertTabCollectionAt(std::move(group_collection), 2, false,
+                                    std::nullopt);
+  collection->AddTabRecursive(std::move(group_tab_1), 3, group_id, false);
+
+  MockTabCollectionObserver& observer = GetObserver();
+
+  // Test for non-final group tab.
+  {
+    EXPECT_CALL(*group_tab_1_ptr, GetParentCollection(testing::_))
+        .WillRepeatedly(Return(group_collection_ptr));
+    EXPECT_CALL(*group_tab_1_ptr, GetGroup()).WillRepeatedly(Return(group_id));
+    EXPECT_CALL(observer, OnChildrenRemoved(testing::Eq(
+                              tabs::TabCollectionNodes{group_tab_1_handle})))
+        .Times(1);
+
+    collection->RemoveTabAtIndexRecursive(3);
+  }
+
+  // Test for final group tab.
+  {
+    EXPECT_CALL(*group_tab_0_ptr, GetParentCollection(testing::_))
+        .WillRepeatedly(Return(group_collection_ptr));
+    EXPECT_CALL(*group_tab_0_ptr, GetGroup()).WillRepeatedly(Return(group_id));
+    EXPECT_CALL(observer,
+                OnChildrenRemoved(testing::Eq(
+                    tabs::TabCollectionNodes{group_collection_handle})))
+        .Times(1);
+
+    collection->RemoveTabAtIndexRecursive(2);
+  }
+
+  // Test for unpinned tab.
+  {
+    EXPECT_CALL(*unpinned_tab_ptr, GetParentCollection(testing::_))
+        .WillRepeatedly(Return(collection->unpinned_collection()));
+    EXPECT_CALL(observer, OnChildrenRemoved(testing::Eq(
+                              tabs::TabCollectionNodes{unpinned_tab_handle})))
+        .Times(1);
+
+    collection->RemoveTabAtIndexRecursive(1);
+  }
+
+  // Test for pinned tab.
+  {
+    EXPECT_CALL(*pinned_tab_ptr, GetParentCollection(testing::_))
+        .WillRepeatedly(Return(collection->pinned_collection()));
+    EXPECT_CALL(observer, OnChildrenRemoved(testing::Eq(
+                              tabs::TabCollectionNodes{pinned_tab_handle})))
+        .Times(1);
+
+    collection->RemoveTabAtIndexRecursive(0);
+  }
+}
+
 }  // namespace tabs

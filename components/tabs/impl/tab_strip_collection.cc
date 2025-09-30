@@ -15,6 +15,7 @@
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_collection_observer.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
@@ -119,7 +120,7 @@ void TabStripCollection::MoveTabRecursive(
         old_group_collection);
   } else {
     std::unique_ptr<TabInterface> moved_data =
-        RemoveTabRecursive(tab, old_group != new_group_id);
+        RemoveTabRecursiveImpl(tab, old_group != new_group_id);
     AddTabRecursiveImpl(std::move(moved_data), final_index, new_group_id,
                         new_pinned_state);
   }
@@ -328,26 +329,35 @@ void TabStripCollection::MoveTabGroupTo(const tab_groups::TabGroupId& group,
 std::unique_ptr<TabInterface> TabStripCollection::RemoveTabAtIndexRecursive(
     size_t index) {
   TabInterface* tab_to_be_removed = GetTabAtIndexRecursive(index);
-  return RemoveTabRecursive(tab_to_be_removed);
-}
-
-std::unique_ptr<TabInterface> TabStripCollection::RemoveTabRecursive(
-    TabInterface* tab,
-    bool close_empty_group_collection) {
-  CHECK(tab);
-
-  TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
-  const std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
+  std::optional<tab_groups::TabGroupId> group_id =
+      tab_to_be_removed->GetGroup();
+  TabCollection* parent_collection =
+      tab_to_be_removed->GetParentCollection(GetPassKey());
+  CHECK(parent_collection);
+  TabCollection* grandparent_collection =
+      parent_collection->GetParentCollection();
 
   std::unique_ptr<TabInterface> removed_tab =
-      parent_collection->MaybeRemoveTab(tab);
+      RemoveTabRecursiveImpl(tab_to_be_removed);
 
-  CHECK(removed_tab);
-
-  if (group.has_value() && close_empty_group_collection) {
-    MaybeRemoveGroupCollection(GetTabGroupCollection(group.value()));
+  if (group_id.has_value()) {
+    TabGroupTabCollection* detached_group =
+        GetDetachedTabGroup(group_id.value());
+    if (detached_group) {
+      CHECK(grandparent_collection);
+      grandparent_collection->NotifyOnChildrenRemoved(
+          GetPassKey(),
+          std::vector{std::variant<tabs::TabCollectionHandle, tabs::TabHandle>{
+              detached_group->GetHandle()}},
+          this);
+      return removed_tab;
+    }
   }
-
+  parent_collection->NotifyOnChildrenRemoved(
+      GetPassKey(),
+      std::vector{std::variant<tabs::TabCollectionHandle, tabs::TabHandle>{
+          removed_tab->GetHandle()}},
+      this);
   return removed_tab;
 }
 
@@ -515,6 +525,26 @@ std::optional<const tab_groups::TabGroupId> TabStripCollection::FindGroupIdFor(
   }
 
   return std::nullopt;
+}
+
+std::unique_ptr<TabInterface> TabStripCollection::RemoveTabRecursiveImpl(
+    TabInterface* tab,
+    bool close_empty_group_collection) {
+  CHECK(tab);
+
+  TabCollection* parent_collection = tab->GetParentCollection(GetPassKey());
+  const std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
+
+  std::unique_ptr<TabInterface> removed_tab =
+      parent_collection->MaybeRemoveTab(tab);
+
+  CHECK(removed_tab);
+
+  if (group.has_value() && close_empty_group_collection) {
+    MaybeRemoveGroupCollection(GetTabGroupCollection(group.value()));
+  }
+
+  return removed_tab;
 }
 
 TabGroupTabCollection* TabStripCollection::MaybeAttachDetachedGroupCollection(

@@ -226,12 +226,18 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
     return GetChildren();
   }
 
+  using NodeHandle = std::variant<Handle, TabHandle>;
+  using NodeHandles = std::vector<NodeHandle>;
+
   void NotifyOnChildrenAdded(
       base::PassKey<TabCollection> pass_key,
-      const std::vector<std::variant<TabCollection::Handle, tabs::TabHandle>>&
-          handles,
+      const NodeHandles& handles,
       const std::pair<tabs::TabCollection*, int>& insertion_details,
       TabCollection* notification_root);
+
+  void NotifyOnChildrenRemoved(base::PassKey<TabCollection> pass_key,
+                               const NodeHandles& handles,
+                               TabCollection* notification_root);
 
  protected:
   explicit TabCollection(Type type,
@@ -262,9 +268,8 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
 };
 
 using TabCollectionHandle = TabCollection::Handle;
-using TabCollectionNodeHandle =
-    std::variant<tabs::TabCollectionHandle, tabs::TabHandle>;
-using TabCollectionNodes = std::vector<TabCollectionNodeHandle>;
+using TabCollectionNodeHandle = TabCollection::NodeHandle;
+using TabCollectionNodes = TabCollection::NodeHandles;
 
 }  // namespace tabs
 
