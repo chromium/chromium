@@ -710,6 +710,8 @@ class AutofillClient {
       std::optional<EntityInstance> old_entity,
       EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback);
 
+  virtual void ShowEmailVerifiedToast();
+
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();
 

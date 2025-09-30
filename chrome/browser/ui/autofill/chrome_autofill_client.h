@@ -230,6 +230,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       std::optional<EntityInstance> old_entity,
       EntitySaveOrUpdatePromptResultCallback save_prompt_acceptance_callback)
       override;
+  void ShowEmailVerifiedToast() final;
 
   // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>

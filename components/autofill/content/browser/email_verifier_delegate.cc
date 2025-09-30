@@ -31,7 +31,7 @@ EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client)
 
 EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client,
                                              EmailVerifierBuilder builder)
-    : client_(*client), email_verifier_builder_(std::move(builder)) {
+    : email_verifier_builder_(std::move(builder)) {
   observation_.Observe(client);
 }
 
@@ -96,6 +96,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
               return;
             }
 
+            manager->client().ShowEmailVerifiedToast();
             manager->driver().DispatchEmailVerifiedEvent(field_id,
                                                          *presentation_token);
           },

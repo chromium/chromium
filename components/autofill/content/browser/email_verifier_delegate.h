@@ -46,8 +46,6 @@ class EmailVerifierDelegate : public AutofillManager::Observer {
       const FillingPayload& filling_payload) override;
 
  private:
-  const raw_ref<AutofillClient> client_;
-
   EmailVerifierBuilder email_verifier_builder_;
 
   ScopedAutofillManagersObservation observation_{this};

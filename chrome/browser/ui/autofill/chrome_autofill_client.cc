@@ -68,6 +68,8 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "chrome/browser/ui/singleton_tabs.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/channel_info.h"
@@ -1160,6 +1162,28 @@ Profile* ChromeAutofillClient::GetProfile() const {
     return nullptr;
   }
   return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+}
+
+void ChromeAutofillClient::ShowEmailVerifiedToast() {
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents());
+  if (!tab_interface) {
+    return;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  // The toast is only supported on desktop for now, since Android uses
+  // snackbars instead.
+  BrowserWindowInterface* window_interface =
+      tab_interface->GetBrowserWindowInterface();
+  if (!window_interface) {
+    return;
+  }
+  ToastController* toast_controller =
+      window_interface->GetFeatures().toast_controller();
+  if (toast_controller) {
+    toast_controller->MaybeShowToast(ToastParams(ToastId::kEmailVerified));
+  }
+#endif
 }
 
 void ChromeAutofillClient::ShowAutofillSuggestionsImpl(

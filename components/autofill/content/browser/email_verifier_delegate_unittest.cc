@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/browser/email_verifier_delegate.h"
 
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -58,6 +59,14 @@ FormData ValidForm() {
 
 }  // namespace
 
+class MockAutofillClient : public TestAutofillClient {
+ public:
+  MockAutofillClient() = default;
+  ~MockAutofillClient() override = default;
+
+  MOCK_METHOD(void, ShowEmailVerifiedToast, (), (override));
+};
+
 class EmailVerifierDelegateTest : public testing::Test {
  public:
   void SetUp() override {
@@ -85,7 +94,7 @@ class EmailVerifierDelegateTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
 
-  TestAutofillClient client_;
+  MockAutofillClient client_;
   std::unique_ptr<MockAutofillDriver> driver_;
   std::unique_ptr<TestBrowserAutofillManager> manager_;
   std::unique_ptr<MockEmailVerifier> email_verifier_;
@@ -113,6 +122,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
 
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent(form->field(0)->global_id(),
                                                    "test_token"));
+  EXPECT_CALL(client_, ShowEmailVerifiedToast);
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
@@ -137,6 +147,7 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
 
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
   AutofillProfile profile = test::GetFullProfile();
@@ -157,6 +168,7 @@ TEST_F(EmailVerifierDelegateTest, NotFillAction) {
 
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
@@ -187,6 +199,7 @@ TEST_F(EmailVerifierDelegateTest, NoNonce) {
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
 
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
@@ -216,6 +229,7 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
   EXPECT_CALL(*email_verifier_, Verify).Times(0);
 
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
@@ -245,6 +259,7 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
 
   // When the verification fails, the event is not dispatched.
   EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
