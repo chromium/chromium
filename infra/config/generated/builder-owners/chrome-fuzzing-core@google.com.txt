@@ -13,7 +13,7 @@ ci/Libfuzzer Upload Mac ASan
 ci/Libfuzzer Upload Windows ASan
 ci/Libfuzzer Upload iOS Catalyst Debug
 ci/android-arm64-libfuzzer-hwasan
-ci/android-x64-libfuzzer-asan
+ci/android-desktop-x64-libfuzzer-asan
 ci/chromeos-x64-libfuzzer-asan-rel-tests
 ci/linux-centipede-fuzz-coverage
 ci/linux-x64-centipede-asan-rel-tests
@@ -25,7 +25,7 @@ ci/linux-x86-libfuzzer-asan-rel-tests
 ci/mac-arm64-libfuzzer-asan-rel-tests
 ci/win-x64-libfuzzer-asan-rel-tests
 try/android-arm64-libfuzzer-hwasan
-try/android-x64-libfuzzer-asan
+try/android-desktop-x64-libfuzzer-asan
 try/chromeos-libfuzzer-asan-rel
 try/chromeos-x64-libfuzzer-asan-rel-tests
 try/linux-centipede-high-end-asan-dcheck

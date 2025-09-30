@@ -6,6 +6,7 @@
     "is_asan": true,
     "is_component_build": true,
     "is_debug": false,
+    "is_desktop_android": true,
     "optimize_for_fuzzing": true,
     "pdf_enable_xfa": true,
     "proprietary_codecs": true,

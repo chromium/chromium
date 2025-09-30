@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/android-x64-libfuzzer-asan/gn-args.json"
+        "infra/config/generated/builders/ci/android-desktop-x64-libfuzzer-asan/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-x64-libfuzzer-asan",
+              "builder": "android-desktop-x64-libfuzzer-asan",
               "project": "chromium"
             },
             "builder_spec": {
@@ -38,13 +38,13 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-x64-libfuzzer-asan",
+          "builder": "android-desktop-x64-libfuzzer-asan",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android-x64-libfuzzer-asan",
+          "builder": "android-desktop-x64-libfuzzer-asan",
           "group": "tryserver.chromium.fuzz"
         }
       ],
@@ -73,5 +73,5 @@
   "builder_group": "chromium.fuzz",
   "recipe": "chromium/fuzz",
   "upload_bucket": "chromium-browser-libfuzzer",
-  "upload_directory": "android-x64-asan"
+  "upload_directory": "android-desktop-x64-asan"
 }
