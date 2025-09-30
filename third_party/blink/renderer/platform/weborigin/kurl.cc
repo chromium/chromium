@@ -824,10 +824,10 @@ bool KURL::IsHierarchical() const {
 bool KURL::IsStandard() const {
   if (string_.IsNull() || parsed_.scheme.is_empty())
     return false;
-  return string_.Is8Bit() ? url::IsStandard(parsed_.scheme.as_string_view_on(
-                                AsURLChar8Subtle(string_).data()))
-                          : url::IsStandard(parsed_.scheme.as_string_view_on(
-                                UNSAFE_TODO(string_.Characters16())));
+  return string_.Is8Bit() ? url::IsStandard(AsURLChar8Subtle(string_).substr(
+                                parsed_.scheme.begin, parsed_.scheme.len))
+                          : url::IsStandard(string_.View16().substr(
+                                parsed_.scheme.begin, parsed_.scheme.len));
 }
 
 bool EqualIgnoringFragmentIdentifier(const KURL& a, const KURL& b) {
