@@ -162,8 +162,9 @@ class AutoPictureInPictureTabHelper
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // Called from Java when the user closes the PiP window soon after it opened.
-  void OnQuickDismissal();
+  // Called from Java when the user dismissed the PiP window either soon after
+  // it opened or using the hide button.
+  void OnPictureInPictureDismissed();
 
   int GetDismissCountForTesting(const GURL& url);
 

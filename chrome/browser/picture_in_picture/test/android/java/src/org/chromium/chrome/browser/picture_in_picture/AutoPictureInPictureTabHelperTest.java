@@ -133,22 +133,15 @@ public class AutoPictureInPictureTabHelperTest {
     @MediumTest
     public void testHideAutoPip() throws TimeoutException {
         WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
-        assertTrue(
-                "Page should have registered for auto-pip.",
-                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
-                        webContents));
-
         Tab originalTab = mPage.getTab();
-        Tab newTab = createNewTabInBackground(originalTab);
-
-        fulfillVideoPlaybackConditions(webContents);
-        switchToTab(newTab);
-        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
-                webContents, true, "Did not enter auto-PiP after tab hidden.");
-
-        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
-        assertNotNull("PictureInPictureActivity not found.", pipActivity);
-        CriteriaHelper.pollUiThread(pipActivity::isInPictureInPictureMode);
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
+        // After enterAutoPip, we are on a new tab.
+        final Tab[] newTab = new Tab[1];
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    newTab[0] = mActivity.getTabModelSelector().getCurrentTab();
+                });
+        assertNotEquals("Should be on a new tab after entering auto-PiP.", originalTab, newTab[0]);
 
         // Simulate clicking the hide button.
         ThreadUtils.runOnUiThreadBlocking(pipActivity::triggerHideActionForTesting);
@@ -165,11 +158,11 @@ public class AutoPictureInPictureTabHelperTest {
                 () -> {
                     assertEquals(
                             "Should still be on the new tab.",
-                            newTab.getId(),
+                            newTab[0].getId(),
                             mActivity.getTabModelSelector().getCurrentTab().getId());
                 });
 
-        // Verify that the video is still playing.
+        // Verify that the video is still playing on the original tab.
         switchToTab(originalTab);
         assertFalse(
                 "Video should still be playing.", DOMUtils.isMediaPaused(webContents, VIDEO_ID));
@@ -492,6 +485,34 @@ public class AutoPictureInPictureTabHelperTest {
         assertEquals(
                 "Dismiss count should not be incremented after the timer expires.",
                 0,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+    }
+
+    @Test
+    @MediumTest
+    public void testHideButtonIncrementsDismissCount() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        String url = mActivityTestRule.getTestServer().getURL(AUTO_PIP_VIDEO_PAGE);
+        Tab originalTab = mPage.getTab();
+
+        // Verify the initial dismiss count is 0.
+        assertEquals(
+                "Initial dismiss count should be 0.",
+                0,
+                AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
+
+        PictureInPictureActivity pipActivity = enterAutoPip(webContents, originalTab);
+
+        // Simulate clicking the hide button.
+        ThreadUtils.runOnUiThreadBlocking(pipActivity::triggerHideActionForTesting);
+
+        // Wait for the PiP activity to be destroyed.
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
+
+        // Verify that the dismiss count is now 1.
+        assertEquals(
+                "Dismiss count should be 1 after hide button dismissal.",
+                1,
                 AutoPictureInPictureTabHelperTestUtils.getDismissCountForTesting(webContents, url));
     }
 

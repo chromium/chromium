@@ -306,13 +306,13 @@ void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
   }
 }
 
-void OverlayWindowAndroid::OnQuickDismissal(JNIEnv* env) {
+void OverlayWindowAndroid::OnDismissal(JNIEnv* env) {
   // Verify that the dismissal is for an auto-PiP session, not a user-initiated
   // one, before triggering the embargo logic.
   if (IsInAutoPictureInPicture()) {
     AutoPictureInPictureTabHelper::FromWebContents(
         controller_->GetWebContents())
-        ->OnQuickDismissal();
+        ->OnPictureInPictureDismissed();
   }
 }
 

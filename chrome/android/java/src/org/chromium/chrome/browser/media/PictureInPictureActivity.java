@@ -126,6 +126,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private @Nullable Handler mQuickDismissalHandler;
     private @Nullable Runnable mQuickDismissalRunnable;
 
+    private boolean mHideButtonClicked;
+
     private @Nullable Integer mMaxActionsForTesting;
 
     /** A helper class for managing media action buttons in PictureInPicture window. */
@@ -513,6 +515,7 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                 case MediaSessionAction.EXIT_PICTURE_IN_PICTURE:
                     if (ChromeFeatureList.isEnabled(
                             MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)) {
+                        mHideButtonClicked = true;
                         PictureInPictureActivityJni.get().hide(mNativeOverlayWindowAndroid);
                         // TODO(crbug.com/421606013): record action usage metrics.
                     }
@@ -765,24 +768,16 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
     @SuppressWarnings("NullAway")
     private void onExitPictureInPicture(boolean closeByNative) {
-        if (mQuickDismissalHandler != null && mQuickDismissalRunnable != null) {
-            mQuickDismissalHandler.removeCallbacks(mQuickDismissalRunnable);
-            mQuickDismissalRunnable = null;
-
-            // If this was a quick dismissal, notify the native side. We must check that the
-            // native window still exists, as this cleanup path can be called after the native0
-            // side has been destroyed.
-            if (mNativeOverlayWindowAndroid != 0) {
-                PictureInPictureActivityJni.get().onQuickDismissal(mNativeOverlayWindowAndroid);
-            }
+        // If PiP window was dismissed, notify the native side. We must check that the
+        // native window still exists, as this cleanup path can be called after the native
+        // side has been destroyed.
+        if (handleUserDismissal() && mNativeOverlayWindowAndroid != 0) {
+            PictureInPictureActivityJni.get().onDismissal(mNativeOverlayWindowAndroid);
         }
-        // TODO(crbug.com/421606013): if pip closed by the hide button, call native to increase the
-        // embargo counter.
 
         if (!closeByNative && mNativeOverlayWindowAndroid != 0) {
             PictureInPictureActivityJni.get().destroyStartedByJava(mNativeOverlayWindowAndroid);
         }
-
         // If called by `closeByNative`, it means that the native side will be freed at some point
         // after this returns.  If `!closeByNative`, then we asked the native side to start cleaning
         // up just now via `destroyStartedByJava()` (if we have a native side).  Either way, we
@@ -812,6 +807,29 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         mTabObserver = null;
 
         this.finish();
+    }
+
+    /**
+     * Checks if the Picture-in-Picture window should be considered "dismissed" by the user, which
+     * can happen either via a "quick dismissal" (closing it shortly after it appears) or by
+     * clicking the "hide" button.
+     *
+     * @return True if the window was dismissed, false otherwise.
+     */
+    private boolean handleUserDismissal() {
+        boolean wasQuickDismissal = false;
+        if (mQuickDismissalHandler != null && mQuickDismissalRunnable != null) {
+            mQuickDismissalHandler.removeCallbacks(mQuickDismissalRunnable);
+            mQuickDismissalRunnable = null;
+            wasQuickDismissal = true;
+        }
+
+        boolean wasHidden = mHideButtonClicked;
+        if (wasHidden) {
+            mHideButtonClicked = false;
+        }
+
+        return wasQuickDismissal || wasHidden;
     }
 
     @SuppressLint("NewApi")
@@ -1014,6 +1032,6 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
         void onBackToTab(long nativeOverlayWindowAndroid);
 
-        void onQuickDismissal(long nativeOverlayWindowAndroid);
+        void onDismissal(long nativeOverlayWindowAndroid);
     }
 }

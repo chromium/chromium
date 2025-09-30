@@ -786,9 +786,13 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-void AutoPictureInPictureTabHelper::OnQuickDismissal() {
-  // A "quick dismissal" is when the user closes the PiP window shortly after it
-  // appeared. This is a signal that they may not want auto-PiP for this site.
+void AutoPictureInPictureTabHelper::OnPictureInPictureDismissed() {
+  // An auto-PiP window is considered "dismissed" by the user if it's closed
+  // shortly after appearing ("quick dismissal") or if the "hide" button is
+  // clicked. Both actions signal that the user may not want auto-PiP for this
+  // site, so we increment the dismissal count to potentially embargo the
+  // feature.
+  //
   // We only count dismissals if the tab is not active, to avoid counting cases
   // where the PiP window is automatically closed when switching back to the
   // tab.
