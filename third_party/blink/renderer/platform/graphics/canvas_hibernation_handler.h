@@ -21,6 +21,9 @@ namespace blink {
 
 class CanvasResourceProvider;
 
+inline constexpr char kCanvasHibernationEventHistogramName[] =
+    "Blink.Canvas.HibernationEvents";
+
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
@@ -61,7 +64,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
 
   static void ReportHibernationEvent(
       CanvasHibernationHandler::HibernationEvent event) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
+    UMA_HISTOGRAM_ENUMERATION(kCanvasHibernationEventHistogramName, event);
   }
 
   explicit CanvasHibernationHandler(Delegate& delegate);

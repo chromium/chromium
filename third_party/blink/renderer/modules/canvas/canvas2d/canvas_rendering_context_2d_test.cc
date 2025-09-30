@@ -2197,7 +2197,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
@@ -2214,7 +2214,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally,
         1);
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
@@ -2312,7 +2312,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
@@ -2329,7 +2329,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 0);
     EXPECT_FALSE(handler.IsHibernating());
   }
@@ -2346,7 +2346,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally,
         1);
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
@@ -2372,7 +2372,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
@@ -2388,7 +2388,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
     base::HistogramTester histogram_tester;
     TearDownPage();
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationEndedWithTeardown,
         1);
@@ -2415,7 +2415,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
@@ -2431,7 +2431,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     WaitForHibernation();
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedBecauseNoSurface,
         1);
@@ -2455,7 +2455,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     ASSERT_FALSE(Context2D()->IsHibernating());
   }
@@ -2471,7 +2471,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     WaitForHibernation();
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueToSwitchToUnacceleratedRendering,
         1);
@@ -2504,7 +2504,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     base::HistogramTester histogram_tester;
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationEndedWithFallbackToSW,
         1);
@@ -2531,7 +2531,7 @@ TEST_P(
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     ASSERT_FALSE(Context2D()->IsHibernating());
   }
@@ -2563,7 +2563,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
@@ -2579,7 +2579,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     WaitForHibernation();
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueToVisibilityChange,
         1);
@@ -2614,7 +2614,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
@@ -2627,7 +2627,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
     WaitForHibernation();
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueGpuContextLoss,
         1);
@@ -2658,7 +2658,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     base::HistogramTester histogram_tester;
     Context2D()->GetOrCreateCanvas2DResourceProvider();
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::
             kHibernationEndedWithSwitchToBackgroundRendering,
         1);
@@ -2798,7 +2798,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
-        "Blink.Canvas.HibernationEvents",
+        kCanvasHibernationEventHistogramName,
         CanvasHibernationHandler::HibernationEvent::kHibernationScheduled, 1);
     EXPECT_FALSE(handler.IsHibernating());
   }
