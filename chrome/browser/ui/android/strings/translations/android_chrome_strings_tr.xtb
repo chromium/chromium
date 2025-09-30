@@ -357,7 +357,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2687009626279857299">Bu cihazda çalışmayı durdurdu</translation>
 <translation id="2702516483241149200">Yeni: bu metne kaydıran bir bağlantı paylaşın</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> tarayıcıda aç</translation>
-<translation id="271033894570825754">Yeni</translation>
+<translation id="271033894570825754">Yeni koleksiyon</translation>
 <translation id="2718352093833049315">Kablosuz ağ varken</translation>
 <translation id="2718846868787000099">Siteler, tercih ettiğiniz dillerde içerik göstermek için tercihlerinizi görebilir</translation>
 <translation id="2723001399770238859">ses</translation>
@@ -1660,7 +1660,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8439974325294139057"><ph name="LANG" /> - Dil hazır, <ph name="APP_NAME" /> uygulamasını yeniden başlatın.</translation>
 <translation id="8442258441309440798">Şu anda yeni haber bulunmuyor</translation>
 <translation id="8443209985646068659">Chrome güncellenemiyor</translation>
-<translation id="8443600937324357591">Sekmeyi başka bir pencereye taşı</translation>
+<translation id="8443600937324357591">Sekmeyi başka bir pencereye taşıyın</translation>
 <translation id="8445448999790540984">Şifreler dışa aktarılamıyor</translation>
 <translation id="8446884382197647889">Daha Fazla Bilgi Edinin</translation>
 <translation id="8449781591250785734">{NUM_SITES,plural, =1{1 sitenin izinleri kaldırıldı}other{# sitenin izinleri kaldırıldı}}</translation>

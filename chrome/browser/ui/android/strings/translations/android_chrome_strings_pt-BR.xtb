@@ -259,7 +259,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2239812875700136898">Controle suas matérias com o botão "Opções do Discover"</translation>
 <translation id="2247789808226901522">Cartão vencido</translation>
 <translation id="2249635629516220541">Personalize as informações usadas pelos sites para mostrar anúncios</translation>
-<translation id="2253927598983295051">Escolha o que compartilhar com o app <ph name="APP_NAME" /></translation>
+<translation id="2253927598983295051">Escolha o que compartilhar com <ph name="APP_NAME" /></translation>
 <translation id="2276696007612801991">Acesse sua Conta do Google para verificar as senhas</translation>
 <translation id="2281243904606300427"><ph name="TAB_TITLE" /> (guia anônima selecionada)</translation>
 <translation id="2286841657746966508">Endereço de faturamento</translation>
@@ -357,7 +357,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2687009626279857299">Parou de funcionar neste dispositivo</translation>
 <translation id="2702516483241149200">Novo: compartilhe um link para este texto</translation>
 <translation id="2708226184420201102">Abrir no navegador <ph name="PRODUCT_NAME" /></translation>
-<translation id="271033894570825754">Novo</translation>
+<translation id="271033894570825754">Nova</translation>
 <translation id="2718352093833049315">Apenas com Wi-Fi</translation>
 <translation id="2718846868787000099">Os sites que você visita podem ver suas preferências para exibir conteúdo nos seus idiomas preferidos</translation>
 <translation id="2723001399770238859">áudio</translation>
@@ -504,7 +504,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3435465986463792564">Muitas janelas? Gerencie aqui.</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas senhas, exporte-as agora, atualize o Google Play Services e importe-as de volta ao Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Ver instruções completas<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Segurança</translation>
-<translation id="3435914367318771664">Adicionar guia ao novo grupo</translation>
+<translation id="3435914367318771664">Incluir no novo grupo</translation>
 <translation id="3439276997620616816">Suas guias recentes serão mostradas aqui</translation>
 <translation id="3443221991560634068">Atualizar a página atual</translation>
 <translation id="3444179773590444986">Enviar feedback sobre o tema escuro para sites?</translation>
@@ -661,7 +661,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4180726336228139707">Somente neste dispositivo</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4188221736490993796">Ordenar de Z a A</translation>
-<translation id="4195643157523330669">Abrir em uma nova guia</translation>
+<translation id="4195643157523330669">Abrir em nova guia</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 guia neste dispositivo}one{# guia neste dispositivo}other{# guias neste dispositivo}}</translation>
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Você usou neste site</translation>
@@ -1203,7 +1203,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6545017243486555795">Limpar todos os dados</translation>
 <translation id="6546511553472444032">O arquivo pode ser nocivo</translation>
 <translation id="6550891580932862748">Não protege você contra sites, downloads e extensões perigosos. Suas configurações da Navegação Segura em outros produtos do Google não serão afetadas.</translation>
-<translation id="6554822972009632311">O filtro de conteúdo está ativado</translation>
+<translation id="6554822972009632311">Filtro de conteúdo ativado</translation>
 <translation id="6556542240154580383">{TAB_COUNT,plural, =1{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_ONE" /> outra serão fechadas}one{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outra serão fechadas}other{A guia <ph name="TAB_TITLE" /> e <ph name="TAB_COUNT_MANY" /> outras serão fechadas}}</translation>
 <translation id="6560414384669816528">Pesquisar usando o Sogou</translation>
 <translation id="656065428026159829">Ver mais</translation>

@@ -29,7 +29,7 @@
 <translation id="190587075670221089">حذف</translation>
 <translation id="1907737156431278478">مثال</translation>
 <translation id="1930711995431081526">الحالة</translation>
-<translation id="1946271899482435442">عرض أداة اختيار التاريخ</translation>
+<translation id="1946271899482435442">عرض منتقي التاريخ</translation>
 <translation id="2031987842108996681">درجات اللون الأحمر</translation>
 <translation id="2158401438286456825">قائمة صفحات</translation>
 <translation id="2291999235780842123">مربع اختيار</translation>
@@ -42,7 +42,7 @@
 <translation id="248395913932153421">يوم</translation>
 <translation id="2508569020611168319">قائمة علامات التبويب</translation>
 <translation id="2530182415807757784">اختيار متعدد، لم يتم الاختيار.</translation>
-<translation id="2561842179657104141">عرض المزيد من أدوات التحكم في الوسائط</translation>
+<translation id="2561842179657104141">عرض المزيد من عناصر التحكم في الوسائط</translation>
 <translation id="2572483411312390101">تشغيل</translation>
 <translation id="2634240155926812724">درجات اللون الأخضر</translation>
 <translation id="2657045182931379222">كائن رسومي</translation>
@@ -62,9 +62,9 @@
 <translation id="3220661731597678625">الخطوة الحالية</translation>
 <translation id="3329013043687509092">تشبع اللون</translation>
 <translation id="3486220673238053218">تعريف</translation>
-<translation id="3557673793733683882"><ph name="HEADING_LEVEL" />Heading</translation>
+<translation id="3557673793733683882">عنوان <ph name="HEADING_LEVEL" /></translation>
 <translation id="3670698553867754311">منتقي الأسبوع</translation>
-<translation id="3706100364254443312">التبديل</translation>
+<translation id="3706100364254443312">تبديل</translation>
 <translation id="3808586225841795776">عبارة</translation>
 <translation id="3920932319529768807">خاتمة</translation>
 <translation id="3924558731517983934">التطبيق</translation>
@@ -116,7 +116,7 @@
 <translation id="5425179576310518467">التاريخ الحالي</translation>
 <translation id="5453733299334684579">عنصر متفرع</translation>
 <translation id="546643433018805598">نص منخفض</translation>
-<translation id="5468998798572797635">الخروج من وضع ملء الشاشة</translation>
+<translation id="5468998798572797635">إنهاء وضع ملء الشاشة</translation>
 <translation id="5476505524087279545">إزالة علامة الاختيار</translation>
 <translation id="5516424706154626233">منتقي التاريخ</translation>
 <translation id="5546461542133609677">إعادة الصوت</translation>
@@ -156,7 +156,7 @@
 <translation id="6572309429103589720">قواعد لغوية غير صالحة</translation>
 <translation id="658823671542763450">تشغيل وضع ملء الشاشة</translation>
 <translation id="663493177488814956">البطاقات</translation>
-<translation id="6637586476836377253">سجّل</translation>
+<translation id="6637586476836377253">log</translation>
 <translation id="6692633176391053278">تخطي</translation>
 <translation id="6696580792574109116">منتقي الشهر</translation>
 <translation id="6719914554879143100">تم تحديد الخيار بعلامة. ضمن مجموعة في الخيار <ph name="INDEX" /> من إجمالي <ph name="COUNT" /></translation>
@@ -164,13 +164,13 @@
 <translation id="6820615603175220800">مرجع قائمة مراجع</translation>
 <translation id="6831465880655513317">يمكنك استخدام مجموعة خيارات الألوان المتاحة من خلال شريط تمرير ثنائي الأبعاد لاختيار تشبُّع اللون والإضاءة.</translation>
 <translation id="6843725295806269523">كتم الصوت</translation>
-<translation id="6845533974506654842">الضغط</translation>
+<translation id="6845533974506654842">اضغط</translation>
 <translation id="6885760532393684712">الدليل</translation>
 <translation id="689129560213475294">إشارة ناشر</translation>
 <translation id="6919089238568236262">إظهار قائمة اختيار مقطع الفيديو</translation>
 <translation id="6934078000481955284">علامة اقتباس فقرة</translation>
 <translation id="693476918119313863">عنوان</translation>
-<translation id="6941933287844615239">تنزيل الوسائط</translation>
+<translation id="6941933287844615239">تنزيل وسائط</translation>
 <translation id="6981594929165378967">إدراج</translation>
 <translation id="698788488269350478">موسّع</translation>
 <translation id="7034405885550056553">اقتراح</translation>

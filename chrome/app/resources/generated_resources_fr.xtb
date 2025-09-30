@@ -559,7 +559,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1375938286942050085">La configuration est terminée ! Et si vous prépariez aussi votre appareil pour les jeux vidéo ?</translation>
 <translation id="137651782282853227">Les adresses enregistrées s'afficheront ici</translation>
 <translation id="1376771218494401509">Nommer la &amp;fenêtre</translation>
-<translation id="1377438103060664754">Si l'un de vos mots de passe est détecté lors d'une violation de données, le Gestionnaire de mots de passe de Google vous demande si vous souhaitez le remplacer par un mot de passe sécurisé</translation>
+<translation id="1377438103060664754">Si l'un de vos mots de passe est exposé lors d'une violation de données, le Gestionnaire de mots de passe de Google vous demande si vous souhaitez le remplacer par un mot de passe sécurisé</translation>
 <translation id="1377600615067678409">Ignorer pour le moment</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> contrôle ce paramètre</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Aucun mot de passe compromis}=1{1 mot de passe compromis}one{{NUM_COMPROMISED} mot de passe compromis}other{{NUM_COMPROMISED} mots de passe compromis}}</translation>
@@ -1322,7 +1322,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1901760057081700494">Le fuseau horaire est actuellement défini sur <ph name="TIME_ZONE_ENTRY" />. Pour mettre à jour automatiquement le fuseau horaire, <ph name="BEGIN_LINK" />activez l'accès à la position du système<ph name="END_LINK" />.</translation>
 <translation id="1904580727789512086">Les URL que vous consultez sont enregistrées dans votre compte Google</translation>
 <translation id="1906181697255754968">Les sites accèdent généralement aux fichiers et aux dossiers sur votre appareil pour proposer des fonctionnalités comme la sauvegarde automatique de votre travail</translation>
-<translation id="1906488504371069394">Découvrez d'autres extensions et thèmes sur le <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.</translation>
+<translation id="1906488504371069394">Découvrez d'autres extensions et thèmes sur le <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Dictez du texte. Appuyez sur Recherche+D, puis commencez à parler.</translation>
 <translation id="1907659324308286326">Certains accessoires Thunderbolt ou USB4 ont besoin d'accéder à la mémoire pour fonctionner correctement.</translation>
 <translation id="1908591798274282246">Rouvrir le groupe fermé</translation>
@@ -2497,9 +2497,9 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2706304388244371417">Sauvegarder dans Google Drive. Restaurez les données ou changez d'appareil facilement et à tout moment. Les données des applis sont sauvegardées. Les sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe du compte Google de votre enfant. <ph name="BEGIN_LINK1" />En savoir plus sur la sauvegarde<ph name="BEGIN_LINK1_END" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="2706462751667573066">Haut</translation>
 <translation id="270921614578699633">Moyenne de</translation>
-<translation id="2709516037105925701">Saisie automatique</translation>
+<translation id="2709516037105925701">Saisir automatiquement</translation>
 <translation id="2710101514844343743">Données d'utilisation et de diagnostic</translation>
-<translation id="271033894570825754">Nouveau</translation>
+<translation id="271033894570825754">Nouvelle collection</translation>
 <translation id="2710507903599773521">Votre <ph name="DEVICE_TYPE" /> est désormais déverrouillé</translation>
 <translation id="2710676967944965821">Réinitialiser toutes les autorisations du lecteur de carte à puce ?</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
@@ -4654,7 +4654,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="421182450098841253">&amp;Afficher la barre de favoris</translation>
 <translation id="4211904048067111541">Ne plus utiliser avec les applis Android</translation>
 <translation id="42126664696688958">Exporter</translation>
-<translation id="4213540068152645535">Problème lors de la modification de votre mot de passe</translation>
+<translation id="4213540068152645535">Problème pour modifier votre mot de passe</translation>
 <translation id="42137655013211669">L'accès à cette ressource est interdit sur ce serveur.</translation>
 <translation id="4213918571089943508">Compte Google de l'enfant</translation>
 <translation id="4214192212360095377">Désactiver maintenant</translation>
@@ -4781,7 +4781,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4295072614469448764">L'application est disponible via votre terminal. Il peut également y avoir une icône dans votre lanceur d'applications.</translation>
 <translation id="4295979599050707005">Veuillez vous reconnecter pour confirmer que votre compte <ph name="USER_EMAIL" /> peut être utilisé avec des sites Web, des applications et des extensions dans Chrome et Google Play. Vous pouvez également supprimer ce compte. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Applis installées et en streaming depuis <ph name="APP_NAME" /></translation>
-<translation id="4296632172536745000">Votre mot de passe d'origine pour ce site a été détecté lors d'une violation de données publique. Le <ph name="DATE" />, vous avez demandé à <ph name="BRAND" /> de modifier automatiquement votre mot de passe.</translation>
+<translation id="4296632172536745000">Votre mot de passe d'origine pour ce site a été exposé lors d'une violation de données publique. Le <ph name="DATE" />, vous avez demandé au <ph name="BRAND" /> de modifier automatiquement votre mot de passe.</translation>
 <translation id="4297219207642690536">Redémarrer et réinitialiser</translation>
 <translation id="4297813521149011456">Rotation de l'écran</translation>
 <translation id="4298660926525614540">Noms de mémoires de stockage amovibles</translation>
@@ -5396,7 +5396,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4744268813103118742">Accéder au site</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Réactiver le son du site}one{Réactiver le son du site}other{Réactiver le son des sites}}</translation>
-<translation id="4745096442457817087">Votre mot de passe a été détecté lors d'une violation de données publique</translation>
+<translation id="4745096442457817087">Votre mot de passe a été exposé lors d'une violation de données publiques</translation>
 <translation id="4745500401920035244">Votre administrateur a effectué une modification s'appliquant à tout le système qui désactive certains anciens profils. Vous ne pouvez plus accéder à ce profil, mais vous pouvez toujours le supprimer.</translation>
 <translation id="474609389162964566">Dites "Hey Google" pour parler à l'Assistant</translation>
 <translation id="4746757725581505837">Vous êtes sur le point de supprimer vos données du <ph name="BRAND" />, qui sont enregistrées sur cet appareil</translation>
@@ -11451,7 +11451,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="8993059306046735527">Même si vous oubliez votre mot de passe <ph name="DEVICE_TYPE" />, vous pouvez restaurer vos données locales. Vous devrez pour cela vous connecter à votre compte Google ou utiliser la récupération de compte.</translation>
 <translation id="8993198843374358393">Copier le hachage du certificat pour <ph name="CERT_NAME" /></translation>
 <translation id="8993737615451556423">Elles permettent d'accélérer, de ralentir et de suspendre la lecture à voix haute</translation>
-<translation id="8993787625629280252">Si Chrome trouve l'un de vos mots de passe du fait d'une violation de données publique, il peut vous proposer de le modifier pour vous si vous êtes connecté</translation>
+<translation id="8993787625629280252">Si Chrome découvre que l'un de vos mots de passe a été exposé lors d'une violation de données publiques, il peut vous proposer de le modifier pour vous si vous êtes connecté</translation>
 <translation id="899384117894244799">Supprimer un utilisateur avec accès restreint</translation>
 <translation id="8993853206419610596">Développer toutes les demandes</translation>
 <translation id="8993945059918628059">Appuyez sur le lecteur d'empreinte digitale. Les données liées à votre empreinte digitale sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
@@ -11553,7 +11553,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9057354806206861646">Calendrier des mises à jour</translation>
 <translation id="9058070466596314168">{NUM_NOTIFICATION,plural, =1{Environ 1 notification par jour}one{Environ {NUM_NOTIFICATION} notification par jour}other{Environ {NUM_NOTIFICATION} notifications par jour}}</translation>
 <translation id="9058760336383947367">Affichez le PPD de l'imprimante</translation>
-<translation id="9061521313218438086">Si Chrome trouve l'un de vos mots de passe du fait d'une violation de données, le Gestionnaire de mots de passe de Google peut vous proposer de le modifier pour vous si vous êtes connecté.</translation>
+<translation id="9061521313218438086">Si Chrome découvre que l'un de vos mots de passe a été exposé lors d'une violation de données publiques, le Gestionnaire de mots de passe de Google peut vous proposer de le modifier pour vous si vous êtes connecté.</translation>
 <translation id="9061694916020926968">Vous devez être connecté à un compte Google pour utiliser Steam pour Chromebook (bêta). Connectez-vous et réessayez.</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Erreur de la ligne <ph name="ERROR_LINE_START" /> à la ligne <ph name="ERROR_LINE_END" /></translation>

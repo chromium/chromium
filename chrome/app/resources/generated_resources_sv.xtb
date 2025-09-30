@@ -2511,7 +2511,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="270921614578699633">Medelvärde för</translation>
 <translation id="2709516037105925701">Autofyll</translation>
 <translation id="2710101514844343743">Diagnostik- och användningsdata</translation>
-<translation id="271033894570825754">Ny</translation>
+<translation id="271033894570825754">Ny samling</translation>
 <translation id="2710507903599773521">Din <ph name="DEVICE_TYPE" /> är nu upplåst</translation>
 <translation id="2710676967944965821">Vill du återställa alla behörigheter för smartkortsläsare?</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
@@ -7734,7 +7734,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="641867537956679916">Administratören har loggat in för att undersöka ett problem. Du kan använda enheten igen när administratören har gett tillbaka kontrollen.</translation>
 <translation id="641899100123938294">Sök efter nya enheter</translation>
 <translation id="6419524191360800346">En uppgradering till Debian 11 (Bullseye) är tillgänglig</translation>
-<translation id="6419546358665792306">Läs in okomprimerat tillägg</translation>
+<translation id="6419546358665792306">Läs in opaketerat tillägg</translation>
 <translation id="642469772702851743">Enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av ägaren.</translation>
 <translation id="6425556984042222041">Hastighet för text till tal</translation>
 <translation id="642729974267661262">Får inte spela upp ljud</translation>

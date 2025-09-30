@@ -796,7 +796,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2296331629987861142">Payez facilement en plusieurs versements (sous réserve d'éligibilité, des frais s'appliquent)</translation>
 <translation id="2300306941146563769">Non importé</translation>
 <translation id="2301098101308036335">Quels sites Web sont consultés et à quel moment.</translation>
-<translation id="2302571905116831849">Saisir automatiquement la carte de fidélité</translation>
+<translation id="2302571905116831849">Saisie automatique de la carte de fidélité</translation>
 <translation id="230286397113210245">Bouton "Ouvrir une fenêtre de navigation privée" à activer pour ouvrir une nouvelle fenêtre de navigation privée</translation>
 <translation id="2303437270440428119">Feuille de calcul OpenDocument</translation>
 <translation id="2305294852062272447">Enregistrer le permis de conduire ?</translation>
@@ -1043,7 +1043,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2704283930420550640">La valeur ne respecte pas le format requis.</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2705137772291741111">La copie enregistrée (en cache) de ce site est illisible.</translation>
-<translation id="2709516037105925701">Saisie automatique</translation>
+<translation id="2709516037105925701">Saisir automatiquement</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2715432479109522636">Exploitation minière et métaux</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" /> : appuyer sur Tabulation, puis sur Entrée pour gérer vos paiements et informations sur vos cartes de crédit dans les paramètres Chrome</translation>
@@ -1698,7 +1698,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> pouces)</translation>
 <translation id="3792826587784915501">Films cultes et indépendants</translation>
 <translation id="3793574014653384240">Nombre et causes des plantages survenus récemment</translation>
-<translation id="3795624560191557077">Vous avez récemment modifié un mot de passe qui a fait l'objet d'une violation de données publiques. En cas de problème, le Gestionnaire de mots de passe de Google peut vous aider à vous connecter.</translation>
+<translation id="3795624560191557077">Vous avez récemment modifié un mot de passe qui a été exposé lors d'une violation de données publiques. En cas de problème, le Gestionnaire de mots de passe de Google peut vous aider à vous connecter.</translation>
 <translation id="3796181268473765083">Payez en versements mensuels ou en quatre fois sans intérêts (sous réserve d'éligibilité)</translation>
 <translation id="3799805948399000906">Police demandée</translation>
 <translation id="3801297763951514916">Vous le consultez fréquemment</translation>
@@ -1735,7 +1735,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3839220096695873023">Véhicules hybrides et alternatifs</translation>
 <translation id="3841356782900714251">Lecteurs de cartes à puce</translation>
 <translation id="384315386171052386">Poissons et fruits de mer</translation>
-<translation id="3843447501960446468">Gérez les cartes de fidélité...</translation>
+<translation id="3843447501960446468">Gérer les cartes de fidélité...</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour créer rapidement un document Google Docs</translation>
 <translation id="385051799172605136">Retour</translation>
@@ -2065,7 +2065,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4366943895537458493">Plaque</translation>
 <translation id="4369179505195332608">Modifier le permis de conduire</translation>
 <translation id="437040971055499437">Un événement lié à la sécurité se produit</translation>
-<translation id="4371591986692297148">Inactive</translation>
+<translation id="4371591986692297148">Inactifs</translation>
 <translation id="4372948949327679948">Valeur attendue : <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Portes et fenêtres</translation>
 <translation id="4377125064752653719">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le certificat présenté par le serveur a été révoqué par son émetteur. Cela signifie que le certificat présenté par le serveur ne doit pas être approuvé. Il est donc possible que vous communiquiez avec un pirate informatique.</translation>
@@ -4906,7 +4906,7 @@ Informations supplémentaires :
 <translation id="9155211586651734179">Périphériques audio connectés</translation>
 <translation id="9155646082713385498">Magazines</translation>
 <translation id="9157595877708044936">Configuration en cours...</translation>
-<translation id="9158491153040481956">Vous avez récemment modifié un mot de passe qui a fait l'objet d'une violation de données publiques. En cas de problème, le Gestionnaire de mots de passe peut vous aider à vous connecter.</translation>
+<translation id="9158491153040481956">Vous avez récemment modifié un mot de passe qui a été exposé lors d'une violation de données publiques. En cas de problème, le Gestionnaire de mots de passe peut vous aider à vous connecter.</translation>
 <translation id="9161794544616754735">{0,plural, =1{<ph name="FILE_NAME" /> peut inclure du contenu sensible}one{<ph name="FILE_COUNT" /> fichier peut inclure du contenu sensible}other{<ph name="FILE_COUNT" /> fichiers peuvent inclure du contenu sensible}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> – Pour quitter le plein écran, appuyez sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Message Slack</translation>

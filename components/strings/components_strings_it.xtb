@@ -114,7 +114,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1190491977647722791">Carta (pesante)</translation>
 <translation id="1194278116501666615">Aggiornamento avanzamento precaricamento ArcVm</translation>
 <translation id="1195073053842921378">Questo indirizzo verrà eliminato da questo dispositivo</translation>
-<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
+<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli autorizzati da te</translation>
 <translation id="1197088940767939838">Arancione</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> ha rimosso la scheda "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="1201402288615127009">Avanti</translation>
@@ -927,7 +927,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2505063700931618106">Dati della carta salvati</translation>
 <translation id="2505268675989099013">Proteggi account</translation>
 <translation id="2508626115198287271"><ph name="BENEFIT_DESCRIPTION" /> (si applicano termini)</translation>
-<translation id="2512101340618156538">Non consentita (opzione predefinita)</translation>
+<translation id="2512101340618156538">Non consentiti (predefinito)</translation>
 <translation id="2512413427717747692">Imposta Chrome come pulsante del browser predefinito, premi Invio per impostare Chrome come browser predefinito del sistema nelle impostazioni di iOS</translation>
 <translation id="2514548229949738417">Casa e giardino</translation>
 <translation id="2515629240566999685">Controllare il segnale nella tua area</translation>
@@ -2003,7 +2003,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4281998142035485137">{0,plural, =1{Aprire il file riservato?}other{Aprire i file riservati?}}</translation>
 <translation id="4282280603030594840">Acquisto veicoli</translation>
 <translation id="4282346679996504092">Gli avvisi per questo prodotto sono stati disattivati e il preferito è stato rimosso</translation>
-<translation id="4285498937028063278">Sblocca</translation>
+<translation id="4285498937028063278">Stacca</translation>
 <translation id="4287495839370498922">Privacy per gli annunci migliorata in Chrome</translation>
 <translation id="4288101205645068104">Elimina il veicolo</translation>
 <translation id="4290920330097335010">Non consentire mai</translation>
@@ -2062,7 +2062,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4366943895537458493">Lastra</translation>
 <translation id="4369179505195332608">Modifica patente di guida</translation>
 <translation id="437040971055499437">Si verifica un evento di sicurezza</translation>
-<translation id="4371591986692297148">Non attivo</translation>
+<translation id="4371591986692297148">Inattivi</translation>
 <translation id="4372948949327679948">È previsto il valore <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Porte e finestre</translation>
 <translation id="4377125064752653719">Hai tentato di accedere a <ph name="DOMAIN" /> ma il server ha presentato un certificato revocato dall'autorità di certificazione. Ciò significa che le credenziali di sicurezza presentate dal server non sono assolutamente attendibili. Potresti avere stabilito una comunicazione con un utente malintenzionato.</translation>
@@ -2471,7 +2471,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5089810972385038852">Stato</translation>
 <translation id="5090647584136241764">Aggiungi schede con prodotti simili per confrontare facilmente i dettagli che ti interessano</translation>
 <translation id="5093232627742069661">Piegatura a Z standard</translation>
-<translation id="5093417502834168387">Hai problemi di accesso? Prova un altro metodo</translation>
+<translation id="5093417502834168387">Problemi di accesso? Prova un altro metodo</translation>
 <translation id="5094747076828555589">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile da Chromium. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="5097099694988056070">Statistiche del dispositivo quali l'utilizzo di CPU/RAM</translation>
 <translation id="5097468150760963273">68,5 × 99 cm</translation>

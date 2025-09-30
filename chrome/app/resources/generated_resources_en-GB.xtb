@@ -2511,7 +2511,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="270921614578699633">Average Over</translation>
 <translation id="2709516037105925701">Autofill</translation>
 <translation id="2710101514844343743">Usage and diagnostic data</translation>
-<translation id="271033894570825754">New</translation>
+<translation id="271033894570825754">New collection</translation>
 <translation id="2710507903599773521">Your <ph name="DEVICE_TYPE" /> is now unlocked</translation>
 <translation id="2710676967944965821">Reset all smart card reader permissions?</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
@@ -4795,7 +4795,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4295072614469448764">App is available in your terminal. There may also be an icon in your Launcher.</translation>
 <translation id="4295979599050707005">Please sign in again to confirm that your account <ph name="USER_EMAIL" /> can be used with websites, apps and extensions in Chrome and Google Play. You may also remove this account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Installed and streamed applications from <ph name="APP_NAME" /></translation>
-<translation id="4296632172536745000">Your original password for this site was found in a public data breach. On <ph name="DATE" />, you asked <ph name="BRAND" /> to automatically change your password for you.</translation>
+<translation id="4296632172536745000">Your original password for this site was found in a public data breach. On <ph name="DATE" />, you asked <ph name="BRAND" /> to change your password automatically for you.</translation>
 <translation id="4297219207642690536">Restart and reset</translation>
 <translation id="4297813521149011456">Display rotation</translation>
 <translation id="4298660926525614540">Removable Storage Names</translation>
@@ -9103,7 +9103,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7396017167185131589">Shared folders will appear here</translation>
 <translation id="7396845648024431313"><ph name="APP_NAME" /> will launch at system startup and continue to run in the background, even once you've closed all other <ph name="PRODUCT_NAME" /> windows.</translation>
 <translation id="7399045143794278225">Customise sync</translation>
-<translation id="7399616692258236448">Location requests are automatically blocked for all sites except the ones you allow</translation>
+<translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones that you allow</translation>
 <translation id="7399802613464275309">Safety check</translation>
 <translation id="7400059772197434086">is blocked from using your information on</translation>
 <translation id="7400418766976504921">URL</translation>

@@ -1090,7 +1090,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2784949926578158345">Se ha restablecido la conexión.</translation>
 <translation id="2786008859124691917">Bicicletas y accesorios</translation>
 <translation id="2792012897584536778">Los administradores de este dispositivo han configurado certificados de seguridad que pueden permitirles ver el contenido de los sitios web que visitas.</translation>
-<translation id="2794233252405721443">Sito web bloqueado</translation>
+<translation id="2794233252405721443">Sito bloqueado</translation>
 <translation id="2794629552137076216">Cristal (revestimiento)</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2799758406651937857">Ropa para hombre</translation>
@@ -2065,7 +2065,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4366943895537458493">Lámina</translation>
 <translation id="4369179505195332608">Editar carné de conducir</translation>
 <translation id="437040971055499437">Se ha producido una actividad relacionada con la seguridad</translation>
-<translation id="4371591986692297148">Inactivo</translation>
+<translation id="4371591986692297148">Inactivas</translation>
 <translation id="4372948949327679948">Se esperaba un valor <ph name="VALUE_TYPE" />.</translation>
 <translation id="437620492464254965">Puertas y ventanas</translation>
 <translation id="4377125064752653719">Has intentado acceder a <ph name="DOMAIN" />, pero el emisor ha revocado el certificado mostrado por el servidor, lo que significa que las credenciales de seguridad presentadas por el servidor no son de confianza. Es posible que hayas accedido a la página de un atacante.</translation>
@@ -3855,7 +3855,7 @@ Más información:
 <translation id="7393475648162498734">Muestra las recompensas y ventajas disponibles para tus tarjetas al tramitar una compra</translation>
 <translation id="7393971683644170444">Conectando con el proveedor de tu tarjeta...</translation>
 <translation id="739728382607845710">Icono del controlador de pagos</translation>
-<translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto en los que permitas</translation>
+<translation id="7399616692258236448">Las solicitudes de ubicación se bloquean automáticamente en todos los sitios, excepto en los que las permitas</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Comparte esta pestaña mediante el enlace, creando un código QR, enviando contenido y más</translation>
 <translation id="7403591733719184120">Tu <ph name="DEVICE_NAME" /> está administrado</translation>

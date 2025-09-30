@@ -1694,7 +1694,7 @@
 <translation id="3792100426446126328"><ph name="NAME" />（<ph name="WIDTH" /> x <ph name="HEIGHT" /> 英寸）</translation>
 <translation id="3792826587784915501">邪典电影与独立电影</translation>
 <translation id="3793574014653384240">近期发生崩溃的次数和原因</translation>
-<translation id="3795624560191557077">您最近更改了遭遇公开数据泄露的密码。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
+<translation id="3795624560191557077">您最近更改的密码已在某次公开数据泄露事件中外泄。如果您遇到问题，Google 密码管理工具可以帮助您登录。</translation>
 <translation id="3796181268473765083">分 4 期免息付款或按月分期付款（需满足资格要求）</translation>
 <translation id="3799805948399000906">请求的字体</translation>
 <translation id="3801297763951514916">您经常访问</translation>
@@ -2315,7 +2315,7 @@
 <translation id="4832388034239846146">如需分享标签页分组，请更新 Chrome</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4832961164064927107">烧烤</translation>
-<translation id="4834250788637067901">Google Pay 中存储的付款方式、优惠和地址信息</translation>
+<translation id="4834250788637067901">Google Pay 中存储的支付方式、优惠和地址信息</translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4844937814014739139">滚动和缩放分享的标签页</translation>
@@ -2470,7 +2470,7 @@
 <translation id="5089810972385038852">州/省/直辖市/自治区</translation>
 <translation id="5090647584136241764">添加包含类似商品的标签页，即可轻松比较您关心的细节部分</translation>
 <translation id="5093232627742069661">Z 型折</translation>
-<translation id="5093417502834168387">无法登录？请试试其他方式</translation>
+<translation id="5093417502834168387">登录时遇到问题？请试试其他方式</translation>
 <translation id="5094747076828555589">此服务器无法证明它是<ph name="DOMAIN" />；Chromium不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="5097099694988056070">设备统计信息（例如 CPU/RAM 使用情况）</translation>
 <translation id="5097468150760963273">27 x 39 英寸</translation>
@@ -4901,7 +4901,7 @@
 <translation id="9155211586651734179">已连接音频外围设备</translation>
 <translation id="9155646082713385498">杂志</translation>
 <translation id="9157595877708044936">正在设置...</translation>
-<translation id="9158491153040481956">您最近更改了遭遇公开数据泄露的密码。如果您遇到问题，密码管理工具可以帮助您登录。</translation>
+<translation id="9158491153040481956">您最近更改的密码已在某次公开数据泄露事件中外泄。如果您遇到问题，密码管理工具可以帮助您登录。</translation>
 <translation id="9161794544616754735">{0,plural, =1{“<ph name="FILE_NAME" />”可能包含敏感内容}other{<ph name="FILE_COUNT" /> 个文件可能包含敏感内容}}</translation>
 <translation id="9162097962559874470"><ph name="ORIGIN" /> - 若要退出全屏模式，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="9163287596625611517">Slack 消息</translation>

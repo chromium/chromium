@@ -1735,7 +1735,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3839220096695873023">Veículos híbridos e alternativos</translation>
 <translation id="3841356782900714251">Leitores de cartão inteligente</translation>
 <translation id="384315386171052386">Peixes e frutos do mar</translation>
-<translation id="3843447501960446468">Gerencie cartões fidelidade…</translation>
+<translation id="3843447501960446468">Gerenciar cartões fidelidade…</translation>
 <translation id="3844725157150297127">RA1</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para criar rapidamente um novo arquivo do Documentos Google</translation>
 <translation id="385051799172605136">Voltar</translation>
@@ -1934,7 +1934,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4190446002599583608">Pesquisa no histórico com tecnologia de IA</translation>
 <translation id="4191334393248735295">Duração</translation>
 <translation id="4195459680867822611">Botão "Ver dicas do Chrome". Ative para saber mais sobre os recursos do Chrome</translation>
-<translation id="4195643157523330669">Abrir em uma nova guia</translation>
+<translation id="4195643157523330669">Abrir em nova guia</translation>
 <translation id="4196861286325780578">&amp;Refazer mover</translation>
 <translation id="4199637363739172710">Relógios</translation>
 <translation id="4202554117186904723">Quinto rolo</translation>
@@ -2474,7 +2474,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090647584136241764">Adicione guias com produtos semelhantes para comparar com facilidade os detalhes que são importantes para você</translation>
 <translation id="5093232627742069661">Dobra sanfona</translation>
-<translation id="5093417502834168387">Problema para fazer login? Tente de outro jeito</translation>
+<translation id="5093417502834168387">Problemas no login? Tente de outro jeito</translation>
 <translation id="5094747076828555589">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o Chromium. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="5097099694988056070">Estatísticas do dispositivo, como uso de CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 pol.</translation>
@@ -3855,7 +3855,7 @@ Mais detalhes:
 <translation id="7393475648162498734">Mostrar recompensas e benefícios disponíveis para seus cartões na finalização da compra</translation>
 <translation id="7393971683644170444">Conectando ao emissor do seu cartão…</translation>
 <translation id="739728382607845710">Ícone do gerenciador de pagamentos</translation>
-<translation id="7399616692258236448">Os pedidos de acesso à localização são bloqueados automaticamente para todos os sites, exceto os que você permitir</translation>
+<translation id="7399616692258236448">Os pedidos de acesso ao local são bloqueados automaticamente para todos os sites, exceto aqueles que você permitir</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Compartilhar esta guia com um link, um QR code, uma transmissão, entre outras opções</translation>
 <translation id="7403591733719184120">Seu <ph name="DEVICE_NAME" /> é gerenciado</translation>

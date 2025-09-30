@@ -796,7 +796,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2296331629987861142">Taksitle kolayca ödeyin (Uygunluk koşullarına tabidir; ilgili ücretler alınır.)</translation>
 <translation id="2300306941146563769">Yüklenmeyenler</translation>
 <translation id="2301098101308036335">Hangi web sitelerinin ne zaman ziyaret edildiği.</translation>
-<translation id="2302571905116831849">Otomatik doldurulan bağlılık kartı</translation>
+<translation id="2302571905116831849">Otomatik doldurulacak bağlılık kartı</translation>
 <translation id="230286397113210245">Gizli pencere aç düğmesi, yeni gizli pencere açıp gizli olarak göz atmak için etkinleştirin</translation>
 <translation id="2303437270440428119">OpenDocument E-tablosu</translation>
 <translation id="2305294852062272447">Sürücü belgesi kaydedilsin mi?</translation>
@@ -1090,7 +1090,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2784949926578158345">Bağlantı sıfırlandı.</translation>
 <translation id="2786008859124691917">Bisikletler ve Aksesuarlar</translation>
 <translation id="2792012897584536778">Bu cihazın yöneticileri, ziyaret ettiğiniz web sitelerinin içeriğini görmelerine izin verebilecek güvenlik sertifikaları ayarladı.</translation>
-<translation id="2794233252405721443">Site engellenmiş</translation>
+<translation id="2794233252405721443">Site engellendi</translation>
 <translation id="2794629552137076216">Cam (Yüzeyli)</translation>
 <translation id="2799223571221894425">Yeniden başlat</translation>
 <translation id="2799758406651937857">Erkek Giyim</translation>
@@ -3325,7 +3325,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="647330291963761005">Güncellemeler yükleniyor</translation>
 <translation id="6474220430271405609">Politika Testleri</translation>
 <translation id="6475672344094591109">Ziyaret ettiğiniz siteler, reklamlarının performansını ölçmek için Chrome'dan bilgi isteyebilir. Chrome, sitelerin diğer sitelerle paylaşabileceği bilgileri sınırlandırarak gizliliğinizi korur.</translation>
-<translation id="6476284679642588870">Ödeme yöntemlerini yönetin</translation>
+<translation id="6476284679642588870">Ödeme yöntemlerini yönet</translation>
 <translation id="647881094269678013">Oyunculuk ve Tiyatro</translation>
 <translation id="6480864723214312258">Ev Tipi Piller</translation>
 <translation id="6487678699866233349">Dünya Müziği</translation>

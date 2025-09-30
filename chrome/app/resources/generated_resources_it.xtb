@@ -304,7 +304,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="11947597112837849">indirizzo email</translation>
 <translation id="1195210374336998651">Vai alle impostazioni dell'app</translation>
 <translation id="1195447618553298278">Errore sconosciuto.</translation>
-<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli che consenti tu</translation>
+<translation id="1195558154361252544">Le notifiche vengono bloccate automaticamente per tutti i siti, tranne per quelli autorizzati da te</translation>
 <translation id="1197088940767939838">Arancione</translation>
 <translation id="11978075283960463">Dati archiviati nell'app: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Strumenti per persone ipovedenti</translation>
@@ -1667,7 +1667,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2136476978468204130">La passphrase inserita non è corretta</translation>
 <translation id="2137128126782078222">Non consentire notifiche da <ph name="WEBSITE" /></translation>
 <translation id="2139919072249842737">Pulsante di configurazione</translation>
-<translation id="2140788884185208305">Condizioni batteria</translation>
+<translation id="2140788884185208305">Stato della batteria</translation>
 <translation id="2142328300403846845">Apri link come</translation>
 <translation id="2142484069755256151">Crea un PIN di recupero di 6 cifre per il Gestore delle password di Google, cifra del PIN: <ph name="NUM_DIGIT" /> di 6</translation>
 <translation id="2142582065325732898">Attiva <ph name="LINK1_BEGIN" />Sincronizzazione Chrome<ph name="LINK1_END" /> per visualizzare le schede recenti di Chrome. <ph name="LINK2_BEGIN" />Scopri di più<ph name="LINK2_END" /></translation>
@@ -2498,7 +2498,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="270921614578699633">Media superiore a</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
 <translation id="2710101514844343743">Dati diagnostici e sull'utilizzo</translation>
-<translation id="271033894570825754">Nuovo</translation>
+<translation id="271033894570825754">Nuova raccolta</translation>
 <translation id="2710507903599773521">Il tuo <ph name="DEVICE_TYPE" /> è ora sbloccato</translation>
 <translation id="2710676967944965821">Reimpostare tutte le autorizzazioni del lettore di smart card?</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
@@ -4191,7 +4191,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3873315167136380065">Per attivare questa funzione, <ph name="BEGIN_LINK" />reimposta la sincronizzazione<ph name="END_LINK" /> per rimuovere la passphrase di sincronizzazione</translation>
 <translation id="3873423927483480833">Mostra i codici PIN</translation>
 <translation id="3873915545594852654">Si è verificato un problema con ARC++.</translation>
-<translation id="3874845889165401548">Questa funzionalità utilizza l'AI ed è sperimentale.</translation>
+<translation id="3874845889165401548">Questa funzionalità utilizza l'AI ed è sperimentale</translation>
 <translation id="3875511946736639169">Attiva le immagini</translation>
 <translation id="3875815154304214043">L'app <ph name="APP_NAME" /> è stata impostata in modo da essere aperta in una nuova scheda del browser; anche i link supportati verranno aperti nel browser. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Finestre ridimensionate in alto</translation>
@@ -4761,7 +4761,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4282196459431406533">Funzione Smart Lock attiva</translation>
 <translation id="4284903252249997120">Screen reader ChromeVox e Seleziona per ascoltare</translation>
 <translation id="4285418559658561636">Aggiorna password</translation>
-<translation id="4285498937028063278">Sblocca</translation>
+<translation id="4285498937028063278">Stacca</translation>
 <translation id="428565720843367874">La scansione del software antivirus non è inaspettatamente riuscita durante la scansione di questo file.</translation>
 <translation id="4286409554022318832"><ph name="NUM_OF_APPS" /> app installate verranno rimosse</translation>
 <translation id="4287099557599763816">Screen reader</translation>
@@ -8002,7 +8002,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6624687053722465643">Dolcezza</translation>
 <translation id="6626581113916585374">Modalità effetto</translation>
 <translation id="6627743754845412571">Non autorizzati a monitorare le tue mani</translation>
-<translation id="6628184833987882108">I contenuti di questo sito vengono inviati a Google e potrebbero essere esaminati da revisori per migliorare questa funzionalità.</translation>
+<translation id="6628184833987882108">I contenuti di questo sito vengono inviati a Google e potrebbero essere esaminati da revisori per migliorare questa funzionalità</translation>
 <translation id="6628316682330029452">I certificati client sono certificati che ti identificano agli altri server.</translation>
 <translation id="6628328486509726751">Data/ora caricamento: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
@@ -9442,7 +9442,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
 <translation id="7647403192093989392">Nessuna attività recente</translation>
 <translation id="7648023614017258011">Chrome sta verificando il bundle di installazione</translation>
-<translation id="7648048654005891115">Stile mappa di chiavi</translation>
+<translation id="7648048654005891115">Stile mappa dei tasti</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7650141368285545431">Usa passkey da un altro dispositivo</translation>
 <translation id="7650178491875594325">Ripristina i dati locali</translation>
@@ -11640,7 +11640,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9115675100829699941">&amp;Preferiti</translation>
 <translation id="9116366756388192417">Scegli un argomento</translation>
 <translation id="9116799625073598554">App per creare note</translation>
-<translation id="9117030152748022724">Gestisci le tue applicazioni</translation>
+<translation id="9117030152748022724">Gestisci le tue app</translation>
 <translation id="9120362425083889527">Impossibile completare l'installazione. Riprova o chiudi questa finestra.</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Per un'esperienza ottimale, installa <ph name="DEVICE_OS" /> sul disco interno. Puoi anche installarlo in un secondo momento dalla schermata di accesso.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Se non vuoi installarlo ora, puoi eseguirlo da un'unità USB per provarlo. In questo modo manterrai il tuo attuale sistema operativo e i tuoi dati, ma potresti riscontrare limiti relativi allo spazio di archiviazione e alle prestazioni.<ph name="END_PARAGRAPH2" /></translation>

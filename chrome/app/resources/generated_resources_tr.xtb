@@ -2496,7 +2496,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="270921614578699633">Ortalamaya Dahil Olan Örnek Sayısı</translation>
 <translation id="2709516037105925701">Otomatik doldurma</translation>
 <translation id="2710101514844343743">Kullanım ve teşhis verileri</translation>
-<translation id="271033894570825754">Yeni</translation>
+<translation id="271033894570825754">Yeni koleksiyon</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> cihazınızın kilidi açıldı</translation>
 <translation id="2710676967944965821">Tüm akıllı kart okuyucu izinleri sıfırlansın mı?</translation>
 <translation id="2713106313042589954">Kamerayı kapat</translation>
@@ -4187,7 +4187,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3873315167136380065">Bu özelliği açmak için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlayarak<ph name="END_LINK" /> senkronizasyon parolanızı kaldırın</translation>
 <translation id="3873423927483480833">PIN numaralarını göster</translation>
 <translation id="3873915545594852654">ARC++ ile ilgili bir sorun oluştu.</translation>
-<translation id="3874845889165401548">Bu özellik yapay zekadan yararlanır ve deneyseldir.</translation>
+<translation id="3874845889165401548">Bu özellik yapay zekadan yararlanır ve deneyseldir</translation>
 <translation id="3875511946736639169">Resimleri etkinleştir</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />, yeni bir tarayıcı sekmesinde açılacak şekilde ayarlandı. Desteklenen bağlantılar da tarayıcıda açılacak. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">Üst taraftaki pencereler yeniden boyutlandırıldı</translation>
@@ -4848,7 +4848,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4349828822184870497">Faydalı</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> sitesinin konumuma erişmesini her zaman engelle</translation>
 <translation id="435185728237714178">Yüklü ve akışla yayınlanan uygulamaları yönetmek için "<ph name="APP_NAME" />" uygulamasına gidin</translation>
-<translation id="4352913519324947509">Şifreniz değiştirilmedi ancak siteye eski şifrenizle erişebilirsiniz</translation>
+<translation id="4352913519324947509">Şifreniz değiştirilmedi ama yine de mevcut şifrenizle siteye erişebilirsiniz</translation>
 <translation id="4354073718307267720">Bir site çevremin 3D haritasını oluşturmak veya kamera konumunu takip etmek istediğinde sor</translation>
 <translation id="4354344420232759511">Ziyaret ettiğiniz siteler burada görünür</translation>
 <translation id="435527878592612277">Fotoğrafınızı seçin</translation>
@@ -5393,7 +5393,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4744268813103118742">Siteye git</translation>
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Sitenin sesini aç}other{Sitelerin sesini aç}}</translation>
-<translation id="4745096442457817087">Bu şifrenin, herkese açık bir veri ihlaline karıştığı belirlendi.</translation>
+<translation id="4745096442457817087">Bu şifrenin, herkese açık bir veri ihlaline karıştığı belirlendi</translation>
 <translation id="4745500401920035244">Yöneticiniz, bazı eski profilleri devre dışı bırakan, sistem çapında bir değişiklik yaptı. Artık bu profile erişemezsiniz ancak profili kaldırabilirsiniz.</translation>
 <translation id="474609389162964566">Asistanınıza "Ok Google" diyerek erişin</translation>
 <translation id="4746757725581505837">Bu cihazda kayıtlı <ph name="BRAND" /> verilerinizi silmek üzeresiniz</translation>
@@ -8002,7 +8002,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6624687053722465643">Tatlı</translation>
 <translation id="6626581113916585374">Efekt modu</translation>
 <translation id="6627743754845412571">Ellerinizi izlemesine izin verilmeyen siteler</translation>
-<translation id="6628184833987882108">Bu sitedeki içerikler Google'a gönderilir ve bu özelliğin geliştirilmesi için inceleme uzmanları tarafından görüntülenebilir.</translation>
+<translation id="6628184833987882108">Bu sitedeki içerikler Google'a gönderilir ve bu özelliğin geliştirilmesi için inceleme uzmanları tarafından görüntülenebilir</translation>
 <translation id="6628316682330029452">İstemci sertifikaları, diğer sunuculara sizi tanıtan sertifikalardır.</translation>
 <translation id="6628328486509726751">Yüklenme zamanı: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>

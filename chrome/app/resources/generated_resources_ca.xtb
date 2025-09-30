@@ -1993,7 +1993,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2355314311311231464">S'ha produït un problema amb el proveïment perquè no s'ha pogut recuperar la informació del compte. Torna-ho a provar. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2355477091455974894">Opcions d'estalvi d'energia</translation>
 <translation id="2355604387869345912">Activa la compartició de xarxa instantània</translation>
-<translation id="2356070529366658676">Pregunta-ho</translation>
+<translation id="2356070529366658676">Pregunta</translation>
 <translation id="2357330829548294574">Suprimeix <ph name="USER_NAME" /></translation>
 <translation id="2357343506242630761">Afegeix el lloc web a la llista de llocs web permesos</translation>
 <translation id="2358777858338503863">Fes clic per permetre-ho a <ph name="ORIGIN" />:</translation>
@@ -2498,7 +2498,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="270921614578699633">Mitjana finalitzada</translation>
 <translation id="2709516037105925701">Emplenament automàtic</translation>
 <translation id="2710101514844343743">Dades d'ús i de diagnòstic</translation>
-<translation id="271033894570825754">Nou</translation>
+<translation id="271033894570825754">Col·lecció nova</translation>
 <translation id="2710507903599773521">El teu dispositiu (<ph name="DEVICE_TYPE" />) s'ha desbloquejat</translation>
 <translation id="2710676967944965821">Vols restablir tots els permisos del lector de targetes intel·ligents?</translation>
 <translation id="2713106313042589954">Desactiva la càmera</translation>

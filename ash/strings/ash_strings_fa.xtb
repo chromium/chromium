@@ -120,7 +120,7 @@
 <translation id="1341651618736211726">سرریز</translation>
 <translation id="1341926407152459446">استفاده از «<ph name="DEVICE_NAME" />» برای ورودی و خروجی صوتی</translation>
 <translation id="1346748346194534595">راست</translation>
-<translation id="1350494136075914725">درحال انجام · رفتن به برگه</translation>
+<translation id="1350494136075914725">درحال انجام · رفتن به زبانه</translation>
 <translation id="1351937230027495976">کوچک کردن منو</translation>
 <translation id="1360220746312242196">رفتن به مورد منطبق قبلی در جستجو هنگام جستجوی صفحه</translation>
 <translation id="1360788414852622716">درحال غیرفعال کردن نمایه. ممکن است چند دقیقه طول بکشد.</translation>
@@ -171,7 +171,7 @@
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
 <translation id="1523032696246003">باتری <ph name="BATTERY_PERCENTAGE" />٪ | <ph name="TIME" /> مانده تا شارژ کامل</translation>
 <translation id="1525508553941733066">رد کردن</translation>
-<translation id="1526448108126799339">باز کردن برگه جدید در پنجره جدید</translation>
+<translation id="1526448108126799339">باز کردن زبانه جدید در پنجره جدید</translation>
 <translation id="1528259147807435347">هفته گذشته ویرایش شده است</translation>
 <translation id="1536604384701784949">برای استفاده از <ph name="USER_EMAIL_ADDRESS" />، باید ابتدا از سیستم همه حساب‌ها خارج شوید. برای خروج از سیستم، «لغو» را انتخاب کنید تا به عقب برگردید. سپس زمان را انتخاب کنید تا ناحیه نشانگر وضعیت باز شود و سپس «خروج از سیستم»را انتخاب کنید. سپس دوباره به سیستم <ph name="USER_EMAIL_ADDRESS_2" /> وارد شوید.</translation>
 <translation id="15373452373711364">نشانگر موشواره بزرگ</translation>
@@ -359,7 +359,7 @@
 <translation id="2223384056430485343">در صفحهٔ دونیمه</translation>
 <translation id="2224075387478458881">ضبط صفحه‌نمایش هنگامی که محتوای محافظت‌شده نمایان باشد مجاز نیست</translation>
 <translation id="2227179592712503583">حذف پیشنهاد</translation>
-<translation id="2248634276911611268">باز کردن پیوند در برگه جدید و رفتن به این برگه جدید</translation>
+<translation id="2248634276911611268">باز کردن پیوند در زبانه جدید و رفتن به این زبانه جدید</translation>
 <translation id="2253808149208613283">برای سفارشی‌سازی این دستگاه، برنامه را نصب کنید</translation>
 <translation id="225680501294068881">درحال جستجو برای دستگاه‌ها...</translation>
 <translation id="2257486738914982088">هنگام بارگیری <ph name="FILENAME" /> مشکلی پیش آمد</translation>
@@ -370,7 +370,7 @@
 <translation id="2268813581635650749">خارج کردن همه از سیستم</translation>
 <translation id="2276987123919776440">‫۱۵ دقیقه</translation>
 <translation id="2277103315734023688">رفتن به جلو</translation>
-<translation id="2282073721614284166">باز کردن پیوند در برگه</translation>
+<translation id="2282073721614284166">باز کردن پیوند در زبانه</translation>
 <translation id="2292698582925480719">مقیاس نمایش</translation>
 <translation id="2293443480080733021">‏می‌خواهید روی چه چیزی تمرکز کنید؟ برای افزودن تکلیف، کلید Enter را فشار دهید؟</translation>
 <translation id="229397294990920565">داده تلفن همراه درحال خاموش شدن است...</translation>
@@ -403,7 +403,7 @@
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
 <translation id="2370971919968699910">ممکن است هزینه داده دربر داشته باشد.
 ‫<ph name="DEVICECOUNT" /> دستگاه متصل است.</translation>
-<translation id="2383521554963939360">گروه‌های برگه و برنامه</translation>
+<translation id="2383521554963939360">گروه‌های زبانه و برنامه</translation>
 <translation id="2386292613071805067">انتخاب همه‌چیز در صفحه</translation>
 <translation id="2389423187722941333">‏روشن/خاموش کردن Gemini</translation>
 <translation id="2392659840443812875">نقطه اتصالی دردسترس نیست. دستگاهتان باید همین اطراف باشد و بلوتوث آن روشن باشد.</translation>
@@ -460,7 +460,7 @@
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
 <translation id="2530896289327917474">روشن یا خاموش کردن مرور با نشانگر نوشتار</translation>
 <translation id="2531025035050312891">دستگاه کند است</translation>
-<translation id="2531107890083353124">همان‌طور که برگه را می‌کشید، <ph name="KEY_ONE" /> را فشار دهید</translation>
+<translation id="2531107890083353124">همان‌طور که زبانه را می‌کشید، <ph name="KEY_ONE" /> را فشار دهید</translation>
 <translation id="2532199152994248594">با کشیدن یا فشار دادن کلید «فاصله»، ناحیه‌ای را برای عکس گرفتن انتخاب کنید</translation>
 <translation id="2545334090614121435">‏می‌خواهید از کلید Home استفاده کنید؟ از این استفاده کنید:</translation>
 <translation id="254900897760075745">کپی کردن محتوای انتخاب‌شده در بریده‌دان</translation>
@@ -746,7 +746,7 @@
 <translation id="3517037892157925473">آخرین به‌روزرسانی تکالیف: <ph name="TIME" />، <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{دستگاه را تا یک دقیقه دیگر به‌روزرسانی کنید}one{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}other{دستگاه را تا # دقیقه دیگر به‌روزرسانی کنید}}</translation>
 <translation id="3522979239100719575">درحال جستجوی نمایه‌های دردسترس. ممکن است چند دقیقه طول بکشد.</translation>
-<translation id="3526440770046466733">باز کردن پیوند در برگه جدید و ماندن در برگه کنونی</translation>
+<translation id="3526440770046466733">باز کردن پیوند در زبانه جدید و ماندن در زبانه کنونی</translation>
 <translation id="353086728817903341">به <ph name="NUM_DEVICES" /> دستگاه متصل است</translation>
 <translation id="3532247131850366052">‏«کاربرگ‌نگار Google» ایجاد نشد</translation>
 <translation id="3533126039236445965">برنامه‌های موجود در قفسه</translation>
@@ -811,7 +811,7 @@
 <translation id="3666266999138159418">برای پنهان کردن پنجره شناور، تند بکشید</translation>
 <translation id="367531336287639526">انتخاب اولین نماد در سمت راست نوار نشانی</translation>
 <translation id="3677931086890821290">‏با این کار، همه برنامه‌ها و وب‌سایت‌های دارای اجازه مکان و ChromeOS مجاز می‌شوند از مکان شبکه‌های تلفن همراه و Wi-Fi استفاده کنند.</translation>
-<translation id="3679827876008292680">رفتن به آخرین برگه در پنجره</translation>
+<translation id="3679827876008292680">رفتن به آخرین زبانه در پنجره</translation>
 <translation id="36813544980941320">‏تلفنتان و <ph name="DEVICE_NAME" /> باهم از شبکه‌های Wi-Fi استفاده خواهند کرد</translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> سپس <ph name="KEY_TWO" /></translation>
 <translation id="3694122362646626770">وب‌سایت‌ها</translation>
@@ -920,7 +920,7 @@
 <translation id="404437169852192935">به‌روزرسانی‌ها به‌پایان رسید</translation>
 <translation id="4049230407053723315">تنظیمات فوری</translation>
 <translation id="4054070260844648638">نمایان برای همه</translation>
-<translation id="4057003836560082631">برگه مرورگر <ph name="INDEX" /> از <ph name="TOTAL_COUNT" />. ‏<ph name="SITE_TITLE" />، ‏<ph name="SITE_URL" /></translation>
+<translation id="4057003836560082631">زبانه مرورگر <ph name="INDEX" /> از <ph name="TOTAL_COUNT" />. ‏<ph name="SITE_TITLE" />، ‏<ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">جهت دیدن پیشنهادهای شخصی‌سازی‌شده برای فعالیت‌های بعدی، کلید «نمای کلی» را فشار دهید</translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{خاموش برای یک برنامه}one{خاموش برای # برنامه}other{خاموش برای # برنامه}}</translation>
 <translation id="4066027111132117168">در، <ph name="REMAINING_TIME" /></translation>
@@ -1164,7 +1164,7 @@
 <translation id="479989351350248267">جستجو</translation>
 <translation id="4804818685124855865">قطع اتصال</translation>
 <translation id="4806631651704497161">محو کردن خفیف</translation>
-<translation id="4813311884204119883">کشیدن پیوند به قسمتی خالی در نوار برگه</translation>
+<translation id="4813311884204119883">کشیدن پیوند به قسمتی خالی در نوار زبانه</translation>
 <translation id="4814539958450445987">صفحه ورود به سیستم</translation>
 <translation id="481455355267255546">بعدی</translation>
 <translation id="481749895090480684">فهرست کارها: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
@@ -1249,7 +1249,7 @@
 <translation id="5043679421800073804">کلیک کردن یا ضربه زدن روی آخرین نماد در قفسه</translation>
 <translation id="504465286040788597">پاراگراف قبلی</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
-<translation id="5056587122125565772">ایجاد تصویر</translation>
+<translation id="5056587122125565772">ساختن تصویر</translation>
 <translation id="5058794129231928255">‏«سندنگار Google» ایجاد نشد</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
@@ -1347,7 +1347,7 @@
 <translation id="5356963482258194581">بین زمینه تاریک و روشن جابه‌جا شوید. روی میز کار کلیک راست کنید و «کاغذدیواری و سبک» را انتخاب کنید.</translation>
 <translation id="536019650977002321">سرپرستتان ضبط صدا را غیرمجاز کرده است. برای اطلاعات بیشتر، با سرپرست تماس بگیرید.</translation>
 <translation id="5361524080961918551">فایل‌های گفتار <ph name="LANGUAGE" /> کامل بارگیری نشده‌اند</translation>
-<translation id="5363163447017455357"><ph name="DELIMITER" /> رفتن به این برگه</translation>
+<translation id="5363163447017455357"><ph name="DELIMITER" /> رفتن به این زبانه</translation>
 <translation id="5364693579536176785">فضای ذخیره‌سازی</translation>
 <translation id="5369573834963677938">کنترل چهره برای دیگر کاربران دستگاه دردسترس خواهد بود</translation>
 <translation id="5369717264580061086">‏پیش‌دید کردن فایل در برنامه Files</translation>
@@ -1404,7 +1404,7 @@
 <translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای رؤیت‌پذیری</translation>
 <translation id="5558314826121965174">خلاقیت</translation>
 <translation id="556042886152191864">دکمه</translation>
-<translation id="5570122939431135380">باز کردن برگه جدید در پنجره ناشناس جدید</translation>
+<translation id="5570122939431135380">باز کردن زبانه جدید در پنجره ناشناس جدید</translation>
 <translation id="5571066253365925590">بلوتوث فعال شد</translation>
 <translation id="5572632238877308040">ضروریات</translation>
 <translation id="557563299383177668">پاراگراف بعدی</translation>
@@ -1482,7 +1482,7 @@
 <translation id="5785221443435874078">برداشتن این پیشنهاد</translation>
 <translation id="5787431783058088906">دریافت کردن هدیه</translation>
 <translation id="5788127256798019331">‏فایل‌های Play</translation>
-<translation id="5788535737706478207">باز کردن مجدد آخرین برگه یا پنجره بسته‌شده</translation>
+<translation id="5788535737706478207">باز کردن مجدد آخرین زبانه یا پنجره بسته‌شده</translation>
 <translation id="5790085346892983794">موفق شدید</translation>
 <translation id="5791926618942305301">‏در حالت ضبط صفحه‌نمایش، روی <ph name="TYPE" /> <ph name="SOURCE" /> تنظیم کنید. برای انتخاب نوع ضبط، کلید Tab را فشار دهید. برای ضبط کردن، کلید Enter را فشار دهید. برای انتخاب کردن ناحیه ضبط، روی نماگرفت جزئی تنظیم کنید. اگر ازقبل فعال نیست، کلید Space را برای انتخاب منطقه فشار دهید.</translation>
 <translation id="579415080077680903">بی‌صدا</translation>
@@ -1968,7 +1968,7 @@
 <translation id="742608627846767349">صبح‌به‌خیر،</translation>
 <translation id="743058460480092004">دوربین و میکروفن در حال استفاده هستند.</translation>
 <translation id="7440404390546433462">‏جستجوی Google</translation>
-<translation id="7441711280402516925">درحال پخش · رفتن به برگه</translation>
+<translation id="7441711280402516925">درحال پخش · رفتن به زبانه</translation>
 <translation id="7453330308669753048">نتیجه سابقه «جستجو» برداشته شد</translation>
 <translation id="7459485586006128091">نقطه اتصال به‌دلیل خطای داخلی خاموش شد. چند دقیقه دیگر دوباره متصل شوید.</translation>
 <translation id="7461924472993315131">پین</translation>
@@ -2065,7 +2065,7 @@
 <translation id="7724603315864178912">برش</translation>
 <translation id="7725108879223146004">نمایش جزئیات نقطه اتصال. نقطه اتصال درحال خاموش شدن است.</translation>
 <translation id="7726391492136714301">مشاهده کردن اعلان‌ها و برنامه‌های تلفن شما</translation>
-<translation id="7727952505535211425">باز کردن وب‌سایت در نوار نشانی در برگه جدید</translation>
+<translation id="7727952505535211425">باز کردن وب‌سایت در نوار نشانی در زبانه جدید</translation>
 <translation id="7728657226117099693">خاموش کردن «قفل تبدیل»</translation>
 <translation id="7742327441377685481">اعلانی ندارید</translation>
 <translation id="7748275671948949022">برجسته کردن دکمه «راه‌انداز» در قفسه</translation>
@@ -2102,7 +2102,7 @@
 <translation id="7872786842639831132">خاموش</translation>
 <translation id="7875575368831396199">ظاهراً بلوتوث در <ph name="DEVICE_TYPE" /> شما خاموش است. لطفاً برای استفاده از «مرکز کنترل تلفن»، بلوتوث را روشن کنید.</translation>
 <translation id="7884446017008693258">تنظیمات نقطه اتصال</translation>
-<translation id="7884902759927478774">لغو کشیدن برگه</translation>
+<translation id="7884902759927478774">لغو کشیدن زبانه</translation>
 <translation id="7886169021410746335">تنظیمات حریم خصوصی را تنظیم کند</translation>
 <translation id="7886277072580235377">وقتی از سیستم خارج شوید، جلسه اینترنت پاک خواهد شد. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">‏Send an email (ایمیل ارسال کن)</translation>
@@ -2216,7 +2216,7 @@
 <translation id="81817143961839203">تصویر درج نشد</translation>
 <translation id="8185090165691050712">روشن/ خاموش کردن منو برای تغییر اندازه ‏حالت قفل</translation>
 <translation id="8192727139462702395">هرگاه بلوتوث را خاموش کنید، اتصال این دستگاه‌های خارجی از <ph name="DEVICE_TYPE" /> قطع خواهد شد:</translation>
-<translation id="8198456017687137612">فرستادن برگه</translation>
+<translation id="8198456017687137612">فرستادن زبانه</translation>
 <translation id="8200772114523450471">ازسرگیری</translation>
 <translation id="820256110035940528">‫<ph name="TITLE" /> به‌مدت <ph name="FOCUSED_TIME" /> تمرکز کردید. برای تمرکز مجدد، «تنظیمات فوری» را باز کنید.</translation>
 <translation id="8203224998425013577">نمایش اموجی و گیف بیشتر</translation>
@@ -2295,7 +2295,7 @@
 <translation id="8480418399907765580">نمایش نوارابزار</translation>
 <translation id="8487660088084188539">‏وقتی این ویژگی‌ها را روشن می‌کنید، ممکن است نوشتار، محتوای سند، و نشانی صفحه وب واردشده به سرورهای Google ارسال شود. از این اطلاعات مطابق با <ph name="LINK_TO_SERVICE_TERMS" />، برای تولید پیشنهاد نوشتاری، تولید خلاصه، پاسخ به سؤالات، و بهبود محصول استفاده می‌شود. اطلاعات شخصی، حساس، یا محرمانه را وارد نکنید.</translation>
 <translation id="8487699605742506766">نقطه اتصال</translation>
-<translation id="8491237443345908933">باز کردن پیوند در برگه جدید</translation>
+<translation id="8491237443345908933">باز کردن پیوند در زبانه جدید</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> از <ph name="SPECIFIED_RESOLUTION" /> پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> تغییر کرد. برای حفظ تغییرات، روی تأیید کلیک کنید. تنظیمات قبلی <ph name="TIMEOUT_SECONDS" /> دیگر بازیابی خواهد شد.</translation>
 <translation id="8507563469658346379">همه، <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">ایجاد میز کار جدید</translation>

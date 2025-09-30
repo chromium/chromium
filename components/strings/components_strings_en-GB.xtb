@@ -1804,7 +1804,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3975852104434126461">Automotive industry</translation>
 <translation id="3984581365661308170">Envelope no.11</translation>
 <translation id="398470910934384994">Birds</translation>
-<translation id="3985750352229496475">Manage Addresses…</translation>
+<translation id="3985750352229496475">Manage addresses…</translation>
 <translation id="3986557181852957825">Google Pay, Klarna logo</translation>
 <translation id="3986705137476756801">Turn off Live Caption for now</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
@@ -3093,7 +3093,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="612178891608320683">Vegan cuisine</translation>
 <translation id="6122181661879998141">front of your card</translation>
 <translation id="6124058285696691147">Download the attachment</translation>
-<translation id="6124432979022149706">Chrome Enterprise connectors</translation>
+<translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6126565365696310362">Envelope Chinese no.2</translation>
 <translation id="6127379762771434464">Item removed</translation>
 <translation id="6131824478727057281">location</translation>
@@ -3855,7 +3855,7 @@ Additional details:
 <translation id="7393475648162498734">Show which rewards and benefits are available for your cards at checkout</translation>
 <translation id="7393971683644170444">Connecting to your card provider…</translation>
 <translation id="739728382607845710">Payment handler icon</translation>
-<translation id="7399616692258236448">Location requests are automatically blocked for all sites except the ones you allow</translation>
+<translation id="7399616692258236448">Location requests are automatically blocked for all sites except ones that you allow</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403392780200267761">Share this tab by sharing the link, creating a QR code, casting and more</translation>
 <translation id="7403591733719184120">Your <ph name="DEVICE_NAME" /> is managed</translation>
