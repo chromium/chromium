@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/apple/tweak_info_plist.gni")
+import("//build/config/features.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/web_view/features.gni")
 import("//ios/web_view/framework/sources.gni")
@@ -51,7 +52,17 @@ source_set("web_view_sources") {
 }
 
 ios_framework_bundle("web_view") {
-  app_ext_safe = true
+  # Building the framework as app extension safe requires building with
+  # `use_partition_alloc = false`. When `use_blink=true`, `gn check`
+  # fails as `//third_party/blink` and its dependencies includes files
+  # from `//partition_alloc` even when `use_partition_alloc = false`.
+  #
+  # See https://crbug.com/448107419 for example of failures for this
+  # configuration. Since ChromeWebView is not shipped when building with
+  # `use_blink = true`, do not build it as app extension safe in that
+  # case.
+  app_ext_safe = !use_blink
+
   output_name = ios_web_view_output_name
   info_plist_target = ":info_plist"
 
