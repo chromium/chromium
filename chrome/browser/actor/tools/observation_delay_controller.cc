@@ -33,10 +33,12 @@ using ::content::WebContents;
 using ::content::WebContentsObserver;
 
 namespace {
-// This timeout is long but based on the NavigationToLoadEventFired UMA. This
-// should be tuned with real world usage.
-// TODO(b/447789076): Make this a kGlicActor feature param.
-constexpr base::TimeDelta kCompletionTimeout = base::Seconds(10);
+
+// Timeout used when waiting for the tool to complete.
+base::TimeDelta GetCompletionTimeout() {
+  return features::kActorObservationDelayTimeout.Get();
+}
+
 }  // namespace
 
 ObservationDelayController::ObservationDelayController(
@@ -80,7 +82,7 @@ void ObservationDelayController::Wait(
 
   ready_callback_ = std::move(callback);
 
-  PostMoveToStateClosure(State::kDidTimeout, kCompletionTimeout).Run();
+  PostMoveToStateClosure(State::kDidTimeout, GetCompletionTimeout()).Run();
 
   if (page_stability_monitor_remote_.is_bound()) {
     MoveToState(State::kWaitForPageStability);

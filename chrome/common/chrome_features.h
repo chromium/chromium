@@ -272,6 +272,8 @@ extern const base::FeatureParam<base::TimeDelta>(
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(
     kGlicActorPageStabilityInvokeCallbackDelay);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>(kActorObservationDelayTimeout);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicActorScrollTargetIntoView;
