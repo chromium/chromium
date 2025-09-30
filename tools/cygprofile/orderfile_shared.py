@@ -61,7 +61,7 @@ def CollectProfiles(profiler: android_profile_tool.AndroidProfileTool,
           'webview_installer_path must be provided for webview profiling')
     profiler.InstallAndSetWebViewProvider(webview_installer_path)
     return profiler.CollectWebViewStartupProfile(apk_path_or_browser_name,
-                                                 out_dir_str)
+                                                 arch, out_dir_str)
 
   if arch == 'arm64':
     return profiler.CollectSpeedometerProfile(apk_path_or_browser_name,
