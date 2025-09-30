@@ -61,9 +61,11 @@ IN_PROC_BROWSER_TEST_F(BrowserListBrowserTest,
   const BrowserList* browser_list = BrowserList::GetInstance();
   EXPECT_EQ(1U, browser_list->size());
 
+  BrowserWindowInterface* const last_active_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   Browser* result = chrome::FindBrowserWithUiElementContext(
-      BrowserElements::From(browser_list->get(0))->GetContext());
-  EXPECT_EQ(browser_list->get(0), result);
+      BrowserElements::From(last_active_browser)->GetContext());
+  EXPECT_EQ(last_active_browser, result);
 
   Browser* browser2 =
       Browser::Create(Browser::CreateParams(GetProfile(), true));

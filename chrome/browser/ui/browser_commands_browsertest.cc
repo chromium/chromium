@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
@@ -362,26 +363,31 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveTabsToNewWindow) {
   AddTabs(browser(), 1);
   std::vector<int> indices = {0};
   // 2 (Current) - 1 (Moved) = 1
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   chrome::MoveTabsToNewWindow(browser(), indices);
-  ASSERT_TRUE(browser()->tab_strip_model()->count() == 1);
+  const BrowserWindowInterface* const second_browser =
+      browser_created_observer->Wait();
+  ASSERT_TRUE(browser()->GetTabStripModel()->count() == 1);
 
   // Multi-Tab Move to New Window.
   // 1 (Current) + 3 (Added) = 4
   AddTabs(browser(), 3);
   indices = {0, 1};
   // 4 (Current) - 2 (Moved) = 2
+  browser_created_observer.emplace();
   chrome::MoveTabsToNewWindow(browser(), indices);
-  ASSERT_TRUE(browser()->tab_strip_model()->count() == 2);
+  const BrowserWindowInterface* const third_browser =
+      browser_created_observer->Wait();
+  ASSERT_TRUE(browser()->GetTabStripModel()->count() == 2);
 
   // Check that the two additional windows have been created.
   BrowserList* active_browser_list = BrowserList::GetInstance();
   EXPECT_EQ(3u, active_browser_list->size());
 
   // Check that the tabs made it to other windows.
-  Browser* browser = active_browser_list->get(1);
-  EXPECT_EQ(1, browser->tab_strip_model()->count());
-  browser = active_browser_list->get(2);
-  EXPECT_EQ(2, browser->tab_strip_model()->count());
+  EXPECT_EQ(1, second_browser->GetTabStripModel()->count());
+  EXPECT_EQ(2, third_browser->GetTabStripModel()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {

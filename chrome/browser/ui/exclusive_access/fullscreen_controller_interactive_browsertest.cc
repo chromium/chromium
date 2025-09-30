@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
@@ -1332,9 +1333,9 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
   }
 
   // Get the display matching the `browser`'s current window bounds.
-  display::Display GetCurrentDisplay(Browser* browser) const {
+  display::Display GetCurrentDisplay(BrowserWindowInterface* browser) const {
     return display::Screen::Get()->GetDisplayMatching(
-        browser->window()->GetBounds());
+        browser->GetWindow()->GetBounds());
   }
 
   // Wait for a JS content fullscreen change with the given script and options.
@@ -1886,11 +1887,12 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
       return !!document.fullscreenElement && !!w && !w.closed;
     })();
   )";
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   EXPECT_TRUE(RequestContentFullscreenFromScript(script, true).ExtractBool());
+  BrowserWindowInterface* const popup = browser_created_observer.Wait();
   EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
   EXPECT_EQ(0u, popup_blocker->GetBlockedPopupsCount());
   EXPECT_EQ(2u, browser_list->size());
-  Browser* popup = browser_list->get(1);
   EXPECT_NE(browser(), popup);
   EXPECT_NE(GetCurrentDisplay(browser()).id(), GetCurrentDisplay(popup).id());
 

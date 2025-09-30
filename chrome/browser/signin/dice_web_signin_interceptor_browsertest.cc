@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
@@ -397,18 +398,21 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
 
   // Add the account to the cookies (simulates the account reconcilor).
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   signin::SetCookieAccounts(new_identity_manager, test_url_loader_factory(),
                             {{account_info.email, account_info.gaia}});
+  const BrowserWindowInterface* const added_browser =
+      browser_created_observer.Wait();
+  ASSERT_TRUE(added_browser);
 
   // A browser has been created for the new profile and the tab was moved there.
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
-  Browser* added_browser = BrowserList::GetInstance()->get(1);
-  ASSERT_TRUE(added_browser);
-  EXPECT_EQ(added_browser->profile(), new_profile);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(
-      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
@@ -428,6 +432,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::RunLoop loop;
   Profile* other_profile = nullptr;
   base::OnceCallback<void(Browser*)> callback =
@@ -439,10 +444,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
                             std::move(callback));
   loop.Run();
   ASSERT_TRUE(other_profile);
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
-  Browser* other_browser = BrowserList::GetInstance()->get(1);
+  const BrowserWindowInterface* const other_browser =
+      browser_created_observer.Wait();
   ASSERT_TRUE(other_browser);
-  ASSERT_EQ(other_browser->profile(), other_profile);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  ASSERT_EQ(other_browser->GetProfile(), other_profile);
   // Add the account to the other profile.
   signin::IdentityManager* other_identity_manager =
       IdentityManagerFactory::GetForProfile(other_profile);
@@ -458,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
   int original_tab_count = browser()->tab_strip_model()->count();
-  int other_original_tab_count = other_browser->tab_strip_model()->count();
+  int other_original_tab_count = other_browser->GetTabStripModel()->count();
 
   // Start the interception.
   GetInterceptorDelegate(GetProfile())
@@ -478,11 +484,12 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   // The tab was moved to the new browser.
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(other_browser->tab_strip_model()->count(),
+  EXPECT_EQ(other_browser->GetTabStripModel()->count(),
             other_original_tab_count + 1);
-  EXPECT_EQ(
-      other_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(other_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
@@ -528,18 +535,21 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
 
   // Add the account to the cookies (simulates the account reconcilor).
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   signin::SetCookieAccounts(new_identity_manager, test_url_loader_factory(),
                             {{account_info.email, account_info.gaia}});
+  const BrowserWindowInterface* const added_browser =
+      browser_created_observer.Wait();
+  ASSERT_TRUE(added_browser);
 
   // A browser has been created for the new profile on the new tab page.
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
-  Browser* added_browser = BrowserList::GetInstance()->get(1);
-  ASSERT_TRUE(added_browser);
-  EXPECT_EQ(added_browser->profile(), new_profile);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(
-      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      GURL("chrome://newtab/"));
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            GURL("chrome://newtab/"));
 }
 
 class DiceWebSigninInterceptorWithChromeSigninHelpersBrowserTest
@@ -2531,18 +2541,21 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
 
   // Add the account to the cookies (simulates the account reconcilor).
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   signin::SetCookieAccounts(new_identity_manager, test_url_loader_factory(),
                             {{account_info.email, account_info.gaia}});
+  const BrowserWindowInterface* const added_browser =
+      browser_created_observer.Wait();
+  ASSERT_TRUE(added_browser);
 
   // A browser has been created for the new profile and the tab was moved there.
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
-  Browser* added_browser = BrowserList::GetInstance()->get(1);
-  ASSERT_TRUE(added_browser);
-  EXPECT_EQ(added_browser->profile(), new_profile);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(
-      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(added_browser->GetProfile(), new_profile);
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
+  EXPECT_EQ(added_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::
@@ -2569,6 +2582,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   const base::FilePath profile_path =
       profile_manager->GenerateNextProfileDirectoryPath();
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::RunLoop loop;
   Profile* other_profile = nullptr;
   base::OnceCallback<void(Browser*)> callback =
@@ -2580,10 +2594,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
                             std::move(callback));
   loop.Run();
   ASSERT_TRUE(other_profile);
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
-  Browser* other_browser = BrowserList::GetInstance()->get(1);
+  const BrowserWindowInterface* const other_browser =
+      browser_created_observer.Wait();
   ASSERT_TRUE(other_browser);
-  ASSERT_EQ(other_browser->profile(), other_profile);
+  ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
+  ASSERT_EQ(other_browser->GetProfile(), other_profile);
   // Add the account to the other profile.
   signin::IdentityManager* other_identity_manager =
       IdentityManagerFactory::GetForProfile(other_profile);
@@ -2599,8 +2614,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   // Add a tab.
   GURL intercepted_url = embedded_test_server()->GetURL("/defaultresponse");
   content::WebContents* web_contents = AddTab(intercepted_url);
-  int original_tab_count = browser()->tab_strip_model()->count();
-  int other_original_tab_count = other_browser->tab_strip_model()->count();
+  int original_tab_count = browser()->GetTabStripModel()->count();
+  int other_original_tab_count = other_browser->GetTabStripModel()->count();
 
   // Start the interception.
   GetInterceptorDelegate(GetProfile())
@@ -2619,12 +2634,13 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
 
   // The tab was moved to the new browser.
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
-  EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(other_browser->tab_strip_model()->count(),
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), original_tab_count - 1);
+  EXPECT_EQ(other_browser->GetTabStripModel()->count(),
             other_original_tab_count + 1);
-  EXPECT_EQ(
-      other_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      intercepted_url);
+  EXPECT_EQ(other_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetVisibleURL(),
+            intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::

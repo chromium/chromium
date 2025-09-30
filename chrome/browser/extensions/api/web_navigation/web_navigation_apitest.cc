@@ -26,6 +26,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
@@ -127,8 +129,9 @@ class DelayLoadStartAndExecuteJavascript : public content::WebContentsObserver {
         : owner_(owner) {
       // Assume only one window open, which is fine for these tests.
       CHECK_EQ(BrowserList::GetInstance()->size(), 1u);
-      Browser* browser = BrowserList::GetInstance()->get(0);
-      browser->tab_strip_model()->AddObserver(this);
+      BrowserWindowInterface* const browser =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      browser->GetTabStripModel()->AddObserver(this);
     }
 
     // TabStripModelObserver:

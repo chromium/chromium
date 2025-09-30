@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -298,8 +300,10 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   ASSERT_EQ(2u, active_browser_list->size());
 
   // Choose one browser to be active; the other to be inactive.
-  Browser* active_window = active_browser_list->get(0);
-  Browser* inactive_window = active_browser_list->get(1);
+  BrowserWindowInterface* const active_window =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  BrowserWindowInterface* const inactive_window =
+      ui_test_utils::GetBrowserNotInSet({active_window});
 
   // Activate the active browser and wait for the inactive browser to be
   // inactive.

@@ -83,6 +83,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
   DesktopPaymentsWindowManagerInteractiveUiTest() = default;
 
   void ShowUi(const std::string& name) override {
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     if (name.find("Vcn3ds") != std::string::npos) {
       client()->set_last_committed_primary_main_frame_url(GURL(kTestUrl));
 
@@ -115,6 +116,7 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
     } else {
       NOTREACHED();
     }
+    popup_browser_ = browser_created_observer.Wait();
   }
 
   bool VerifyUi() override {
@@ -158,22 +160,15 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
 
  protected:
   content::WebContents* GetOriginalPageWebContents() {
-    // The original page is always created first, so it is the first browser in
-    // the browser list.
-    return BrowserList::GetInstance()
-        ->get(0)
-        ->tab_strip_model()
-        ->GetActiveWebContents();
+    // The original page is always created first.
+    return browser()->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::WebContents* GetPopupWebContents() {
-    // The pop-up must be created from `source_web_contents`, so it is the
-    // second browser in the BrowserList.
-    return BrowserList::GetInstance()
-        ->get(1)
-        ->tab_strip_model()
-        ->GetActiveWebContents();
+    return popup_browser_->GetTabStripModel()->GetActiveWebContents();
   }
+
+  BrowserWindowInterface* popup_browser() { return popup_browser_; }
 
   void ClosePopupAndWait() {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -221,6 +216,8 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
 
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse>
       authentication_response_;
+
+  raw_ptr<BrowserWindowInterface> popup_browser_;
 };
 
 // Tests that an error dialog is shown if there is no metadata returned from the
@@ -809,9 +806,8 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   // Activate the original browser and check that the browser containing the
   // pop-up's web contents becomes the last active browser.
-  ui_test_utils::BrowserActivationWaiter waiter(
-      BrowserList::GetInstance()->get(1));
-  BrowserList::GetInstance()->get(0)->window()->Activate();
+  ui_test_utils::BrowserActivationWaiter waiter(popup_browser());
+  browser()->GetWindow()->Activate();
   waiter.WaitForActivation();
   EXPECT_TRUE(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
                   ->GetTabStripModel()
@@ -1076,12 +1072,9 @@ class PaymentsWindowUserConsentDialogIntegrationTest
   }
 
   DesktopPaymentsWindowManager& GetWindowManager() {
-    // The original page is always created first, so it is the first browser in
-    // the browser list.
-    auto* original_page_web_contents = BrowserList::GetInstance()
-                                           ->get(0)
-                                           ->tab_strip_model()
-                                           ->GetActiveWebContents();
+    // The original page is always created first.
+    auto* original_page_web_contents =
+        browser()->GetTabStripModel()->GetActiveWebContents();
     return *static_cast<DesktopPaymentsWindowManager*>(
         test_autofill_client_injector_[original_page_web_contents]
             ->GetPaymentsAutofillClient()

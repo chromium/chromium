@@ -11,8 +11,11 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
@@ -84,37 +87,44 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
 
   EXPECT_EQ(1u, browser_list->size());
   // Close the browser window so that clicking the icon creates a new window.
-  CloseBrowserSynchronously(browser_list->get(0));
+  CloseBrowserSynchronously(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EXPECT_EQ(0u, browser_list->size());
   EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
 
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   OpenBrowserUsingShelfOnRootWindow(root_windows[1]);
+  BrowserWindowInterface* new_browser = browser_created_observer->Wait();
 
   // A new browser window should be opened on the 2nd display.
   display::Screen* screen = display::Screen::Get();
   std::pair<display::Display, display::Display> displays =
       ui_test_utils::GetDisplays(screen);
   EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(displays.second.id(),
-            screen
-                ->GetDisplayNearestWindow(
-                    browser_list->get(0)->window()->GetNativeWindow())
-                .id());
+  EXPECT_EQ(
+      displays.second.id(),
+      screen
+          ->GetDisplayNearestWindow(new_browser->GetWindow()->GetNativeWindow())
+          .id());
   EXPECT_EQ(root_windows[1], ash::Shell::GetRootWindowForNewWindows());
 
   // Close the browser window so that clicking the icon creates a new window.
-  CloseBrowserSynchronously(browser_list->get(0));
+  CloseBrowserSynchronously(new_browser);
+  new_browser = nullptr;
   EXPECT_EQ(0u, browser_list->size());
 
+  browser_created_observer.emplace();
   OpenBrowserUsingShelfOnRootWindow(root_windows[0]);
+  new_browser = browser_created_observer->Wait();
 
   // A new browser window should be opened on the 1st display.
   EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(displays.first.id(),
-            screen
-                ->GetDisplayNearestWindow(
-                    browser_list->get(0)->window()->GetNativeWindow())
-                .id());
+  EXPECT_EQ(
+      displays.first.id(),
+      screen
+          ->GetDisplayNearestWindow(new_browser->GetWindow()->GetNativeWindow())
+          .id());
   EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
 }
 

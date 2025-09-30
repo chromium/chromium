@@ -1038,6 +1038,7 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
     size_t initial_browser_count = browser_list_->size();
 
     // This starts navigation in embedded frame and waits for it to finish.
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     create_embedded_frame(web_app_frame, cert_error_url);
 
     // Embedded Frame must have broken page which causes login tab
@@ -1065,10 +1066,11 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
 
     if (should_open_new_browser) {
       ASSERT_EQ(initial_browser_count + 1, browser_list_->size());
-      Browser* new_browser = browser_list_->get(initial_browser_count);
+      BrowserWindowInterface* const new_browser =
+          browser_created_observer.Wait();
       ASSERT_TRUE(new_browser);
 
-      tab_strip_model = new_browser->tab_strip_model();
+      tab_strip_model = new_browser->GetTabStripModel();
     } else {
       EXPECT_EQ(initial_browser_count, browser_list_->size());
       tab_strip_model = browser()->tab_strip_model();

@@ -6,12 +6,14 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_controller.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_test_util.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -149,14 +151,29 @@ class AccountChooserControllerInteractiveUiTest
             "Expect two browsers."),
         Check(
             []() {
-              return BrowserList::GetInstance()->get(1)->is_type_popup();
+              return ui_test_utils::FindMatchingBrowsers(
+                         [](BrowserWindowInterface* browser) {
+                           return browser->GetType() ==
+                                  BrowserWindowInterface::Type::TYPE_POPUP;
+                         })
+                         .size() == 1;
             },
             "Expect second browser is popup."));
   }
 
   // Must be called after VerifyPopupOpened().
   auto ClosePopup() {
-    return Do([]() { BrowserList::GetInstance()->get(1)->window()->Close(); });
+    return Do([]() {
+      BrowserWindowInterface* const popup_browser =
+          ui_test_utils::FindMatchingBrowsers(
+              [](BrowserWindowInterface* browser) {
+                return browser->GetType() ==
+                       BrowserWindowInterface::Type::TYPE_POPUP;
+              })
+              .front();
+      CHECK(popup_browser);
+      popup_browser->GetWindow()->Close();
+    });
   }
 
   auto VerifyPopupClosed() {

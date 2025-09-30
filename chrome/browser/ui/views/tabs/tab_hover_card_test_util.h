@@ -25,13 +25,14 @@ class TabHoverCardTestUtil {
   TabHoverCardTestUtil(const TabHoverCardTestUtil&) = delete;
   void operator=(const TabHoverCardTestUtil&) = delete;
 
-  static TabStrip* GetTabStrip(Browser* browser);
+  static TabStrip* GetTabStrip(BrowserWindowInterface* browser);
   static TabHoverCardBubbleView* GetHoverCard(TabStrip* tab_strip);
   static TabHoverCardBubbleView* WaitForHoverCardVisible(TabStrip* tab_strip);
   static bool IsHoverCardVisible(TabStrip* tab_strip);
   static int GetHoverCardsSeenCount(Browser* browser);
-  static TabHoverCardBubbleView* SimulateHoverTab(Browser* browser,
-                                                  int tab_index);
+  static TabHoverCardBubbleView* SimulateHoverTab(
+      BrowserWindowInterface* browser,
+      int tab_index);
 
   // Similar to views::test::WidgetDestroyedWaiter but for the hover card for
   // TabStrip. Waiting after the hover card's widget is destroyed (or if there
