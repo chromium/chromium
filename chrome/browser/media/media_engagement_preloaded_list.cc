@@ -7,6 +7,8 @@
 #include <cstdint>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -63,10 +65,7 @@ bool MediaEngagementPreloadedList::LoadFromFile(const base::FilePath& path) {
   }
 
   // Copy data from the protobuf message.
-  dafsa_ = std::vector<uint8_t>(
-      message.dafsa().c_str(),
-      UNSAFE_TODO(message.dafsa().c_str() + message.dafsa().length()));
-
+  dafsa_ = base::ToVector(base::as_byte_span(message.dafsa()));
   is_loaded_ = true;
   return true;
 }
