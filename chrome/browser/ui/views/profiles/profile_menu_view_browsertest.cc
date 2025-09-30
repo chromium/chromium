@@ -2541,7 +2541,12 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
  protected:
   ProfileMenuSigninAccessPointTest()
       : delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
-            &mock_signin_ui_delegate_)) {}
+            &mock_signin_ui_delegate_)) {
+    // TODO(crbug.com/448053484): Investigate why enabling the feature leads to
+    // test flakiness.
+    feature_list_.InitAndDisableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
 
   void OpenProfileMenuFromCoordinator(
       std::optional<signin_metrics::AccessPoint> explicit_access_point =
