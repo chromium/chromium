@@ -218,15 +218,16 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer[kColorItemSelectionBackground] = {kColorNativeHighlight};
   mixer[kColorMenuSelectionBackground] = {kColorNativeHighlight};
   mixer[kColorSubtleAccent] = {kColorNativeHighlight};
+  mixer[kColorTableBackgroundSelectedFocused] = {kColorNativeHighlight};
   mixer[kColorTextfieldSelectionBackground] = {kColorNativeHighlight};
   mixer[kColorTextSelectionBackground] = {kColorNativeHighlight};
+  mixer[kColorTreeNodeBackgroundSelectedFocused] = {kColorNativeHighlight};
 
   // Highlight/Selected Text Foreground
   mixer[kColorButtonForegroundProminent] = {kColorNativeHighlightText};
   mixer[kColorMenuItemForegroundSelected] = {kColorNativeHighlightText};
   mixer[kColorNotificationInputForeground] = {kColorNativeHighlightText};
   mixer[kColorTableForegroundSelectedFocused] = {kColorNativeHighlightText};
-  mixer[kColorTableForegroundSelectedUnfocused] = {kColorNativeHighlightText};
   mixer[kColorTextSelectionForeground] = {kColorNativeHighlightText};
   mixer[kColorTreeNodeForegroundSelectedFocused] = {kColorNativeHighlightText};
   mixer[kColorTreeNodeForegroundSelectedUnfocused] = {

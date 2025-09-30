@@ -655,7 +655,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
     mixer[kColorTaskManagerTableBackgroundSelectedFocused] = {
         ui::kColorSysTonalContainer};
     mixer[kColorTaskManagerTableBackgroundSelectedUnfocused] = {
-        ui::kColorSysTonalContainer};
+        kColorTaskManagerTableBackgroundSelectedFocused};
 
     mixer[kColorTaskManagerSearchBarBackground] = {SK_ColorTRANSPARENT};
     mixer[kColorTaskManagerSearchBarTransparent] = {SK_ColorTRANSPARENT};
