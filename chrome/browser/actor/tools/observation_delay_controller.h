@@ -58,44 +58,43 @@ class ObservationDelayController : public content::WebContentsObserver {
             ReadyCallback callback);
 
   // content::WebContentsObserver
-  void DidStartLoading() override;
   void DidStopLoading() override;
 
- private:
-  void WaitForVisualStateUpdate();
-  void VisualStateUpdated(bool success);
-  void Timeout();
-  void WaitForLoading();
-  void OnMonitorDisconnected();
-
+  // Public for tests
   enum class State {
     kInitial,
     kWaitForPageStability,
+    kPageStabilityMonitorDisconnected,
     kWaitForLoadCompletion,
+    kWaitForVisualStateUpdate,
+    kDidTimeout,
     kDone
   };
   static std::string_view StateToString(State state);
+
+ protected:
+  // Protected so tests can hook into state changes and some internal state.
+  virtual void SetState(State state);
+  State state_ = State::kInitial;
+  mojo::Remote<mojom::PageStabilityMonitor> page_stability_monitor_remote_;
+
+ private:
   friend std::ostream& operator<<(
       std::ostream& o,
       const ObservationDelayController::State& state);
 
-  enum class LoadState {
-    kWaitingForLoadStart,
-    kWaitingForLoadStop,
-    kWaitingForVisualUpdate,
-    kDone
-  };
-  LoadState load_state_ = LoadState::kWaitingForLoadStart;
-
-  void MoveToState(State state);
+  void OnMonitorDisconnected();
   void DCheckStateTransition(State old_state, State new_state);
+  void MoveToState(State state);
   base::OnceClosure MoveToStateClosure(State new_state);
+  base::OnceClosure PostMoveToStateClosure(
+      State new_state,
+      base::TimeDelta delay = base::TimeDelta());
 
-  State state_ = State::kInitial;
   ReadyCallback ready_callback_;
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry_;
-  mojo::Remote<mojom::PageStabilityMonitor> page_stability_monitor_remote_;
   base::TimeDelta page_stability_start_delay_;
+
   base::WeakPtrFactory<ObservationDelayController> weak_ptr_factory_{this};
 };
 
