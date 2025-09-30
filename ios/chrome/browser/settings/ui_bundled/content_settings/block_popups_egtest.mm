@@ -173,15 +173,7 @@ class ScopedBlockPopupsException {
 
 // Tests that the "exceptions" section on the settings page is hidden and
 // revealed properly when the preference switch is toggled.
-// TODO(crbug.com/441738071): Flaky on device.
-#if TARGET_OS_IPHONE && !TARGET_OS_SIMULATOR
-#define MAYBE_testSettingsPageWithExceptions \
-  FLAKY_testSettingsPageWithExceptions
-#else
-#define MAYBE_testSettingsPageWithExceptions \
-  testSettingsPageWithExceptions
-#endif
-- (void)MAYBE_testSettingsPageWithExceptions {
+- (void)testSettingsPageWithExceptions {
   std::string allowedPattern = "[*.]example.com";
   ScopedBlockPopupsPref prefSetter(CONTENT_SETTING_BLOCK);
   ScopedBlockPopupsException exceptionSetter(allowedPattern);
