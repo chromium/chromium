@@ -30,6 +30,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -120,8 +121,8 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
   }
   static constexpr SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
       SECURITY_MANDATORY_LABEL_AUTHORITY;
-  if (UNSAFE_TODO(std::memcmp(authority, &kMandatoryLabelAuth,
-                              sizeof(SID_IDENTIFIER_AUTHORITY)))) {
+  if (base::byte_span_from_ref(*authority) !=
+      base::byte_span_from_ref(kMandatoryLabelAuth)) {
     return E_FAIL;
   }
   PUCHAR count = ::GetSidSubAuthorityCount(sid);
