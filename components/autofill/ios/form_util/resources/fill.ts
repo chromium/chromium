@@ -516,7 +516,7 @@ gCrWebLegacy.fill.webFormControlElementToFormField = function(
   }
 
   field.aria_label = fillUtil.getAriaLabel(element);
-  field.aria_description = gCrWebLegacy.fill.getAriaDescription(element);
+  field.aria_description = fillUtil.getAriaDescription(element);
 
   if (!gCrWebLegacy.fill.isAutofillableElement(element)) {
     return;

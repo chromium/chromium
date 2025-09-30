@@ -633,9 +633,9 @@ function getAriaLabel(element: Element): string {
 /**
  * Returns the coalesced text referenced by the aria-describedby attribute.
  */
-gCrWebLegacy.fill.getAriaDescription = function(element: Element): string {
+function getAriaDescription(element: Element): string {
   return coalesceTextByIdList(element, 'aria-describedby');
-};
+}
 
 /**
  * Searches an element's ancestors to see if the element is inside a <form> or
@@ -776,4 +776,5 @@ export {
   getUniqueID,
   shouldAutocomplete,
   getAriaLabel,
+  getAriaDescription,
 };

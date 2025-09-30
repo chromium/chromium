@@ -284,7 +284,8 @@ TEST_F(FillJsTest, GetAriaDescriptionSingle) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
+    @"__gCrWeb.getRegisteredApi('fill_test_api')."
+    @"getFunction('getAriaDescription')(document.getElementById('input'));");
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -298,7 +299,8 @@ TEST_F(FillJsTest, GetAriaDescriptionMulti) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
+    @"__gCrWeb.getRegisteredApi('fill_test_api')."
+    @"getFunction('getAriaDescription')(document.getElementById('input'));");
   NSString* expected_result = @"aria description";
   EXPECT_NSEQ(result, expected_result);
 }
@@ -310,7 +312,8 @@ TEST_F(FillJsTest, GetAriaDescriptionInvalid) {
             "</body></html>");
 
   id result = ExecuteJavaScriptInAutofillContentWorld(
-      @"__gCrWeb.fill.getAriaDescription(document.getElementById('input'));");
+    @"__gCrWeb.getRegisteredApi('fill_test_api')."
+    @"getFunction('getAriaDescription')(document.getElementById('input'));");
   NSString* expected_result = @"";
   EXPECT_NSEQ(result, expected_result);
 }
