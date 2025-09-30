@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <unordered_map>
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
