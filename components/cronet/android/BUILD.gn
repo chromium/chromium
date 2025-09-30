@@ -1994,9 +1994,9 @@ copy("cronet_package_copy_resources") {
   outputs = [ "$_package_dir/res/raw/{{source_file_part}}" ]
 }
 
-# Enforce that ARM Neon is not used when building for ARMv7
-if (target_cpu == "arm" && arm_version == 7 && !arm_use_neon) {
-  action("enforce_no_neon") {
+# Enforce that ARM Neon is not used when building for ARMv7.
+if (target_cpu == "arm" && arm_version == 7) {
+  action("enforce_no_neon_on_armv7") {
     script = "//components/cronet/tools/check_no_neon.py"
     outputs = [ "$target_gen_dir/$target_name.stamp" ]
     args = [
@@ -2011,6 +2011,9 @@ if (target_cpu == "arm" && arm_version == 7 && !arm_use_neon) {
       rebase_path(outputs[0], root_build_dir),
     ]
     deps = [ "//base" ]
+  }
+} else {
+  group("enforce_no_neon_on_armv7") {
   }
 }
 
@@ -2142,36 +2145,29 @@ if (!using_sanitizer) {
 }
 
 group("cronet_non_test_package") {
-  # Target containing all of cronet's non-test targets.
-  # Enforce that arm_use_neon==false when building for ARMv7 by
-  # not including any deps in cronet_package target otherwise.
-  if (!(target_cpu == "arm" && arm_version == 7) || !arm_use_neon) {
-    deps = [
-      ":cronet_package_copy",
-      ":cronet_package_copy_native_headers",
-      ":cronet_package_copy_native_lib",
-      ":cronet_package_copy_native_lib_unstripped",
-      ":cronet_package_copy_resources",
-      ":jar_cronet_api_source",
-      ":jar_cronet_impl_common_java_source",
-      ":jar_cronet_impl_fake_java_source",
-      ":jar_cronet_impl_native_java_source",
-      ":jar_cronet_impl_platform_java_source",
-      ":jar_cronet_sample_source",
-      ":jar_cronet_shared_source",
-      ":jar_httpengine_native_provider_java_source",
-      ":repackage_api",
-      ":repackage_fake",
-      ":repackage_httpengine_native_provider",
-      ":repackage_impl_common",
-      ":repackage_native",
-      ":repackage_platform",
-      ":repackage_shared",
-    ]
-    if (current_cpu == "arm" && arm_version == 7) {
-      deps += [ ":enforce_no_neon" ]
-    }
-  }
+  deps = [
+    ":cronet_package_copy",
+    ":cronet_package_copy_native_headers",
+    ":cronet_package_copy_native_lib",
+    ":cronet_package_copy_native_lib_unstripped",
+    ":cronet_package_copy_resources",
+    ":enforce_no_neon_on_armv7",
+    ":jar_cronet_api_source",
+    ":jar_cronet_impl_common_java_source",
+    ":jar_cronet_impl_fake_java_source",
+    ":jar_cronet_impl_native_java_source",
+    ":jar_cronet_impl_platform_java_source",
+    ":jar_cronet_sample_source",
+    ":jar_cronet_shared_source",
+    ":jar_httpengine_native_provider_java_source",
+    ":repackage_api",
+    ":repackage_fake",
+    ":repackage_httpengine_native_provider",
+    ":repackage_impl_common",
+    ":repackage_native",
+    ":repackage_platform",
+    ":repackage_shared",
+  ]
 }
 
 group("cronet_test_package") {
