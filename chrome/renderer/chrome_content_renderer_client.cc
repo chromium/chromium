@@ -898,7 +898,7 @@ bool ChromeContentRendererClient::OverrideCreatePlugin(
 #endif
 
 #if BUILDFLAG(ENABLE_SECURE_EMBED)
-  if (secure_embed::MayCreatePlugin(render_frame, params, plugin)) {
+  if (secure_embed::MaybeCreatePlugin(render_frame, params, plugin)) {
     return true;
   }
 #endif

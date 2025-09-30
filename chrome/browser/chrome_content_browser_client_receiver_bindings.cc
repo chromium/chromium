@@ -38,6 +38,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/mojo_safe_browsing_impl.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/secure_embed/buildflags/buildflags.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
@@ -129,6 +130,10 @@
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+#include "components/secure_embed/browser/secure_embed_host.h"
 #endif
 
 namespace {
@@ -564,6 +569,17 @@ void ChromeContentBrowserClient::
           },
           &render_frame_host));
 #endif  //  !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SECURE_EMBED)
+  // TODO(secure-embed): restrict access to SecureEmbedHost. Maybe move to
+  // PopulateChromeWebUIFrameBindersPartsDesktop().
+  associated_registry.AddInterface<secure_embed::mojom::SecureEmbedHost>(
+    base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<
+          secure_embed::mojom::SecureEmbedHost> receiver) {
+        secure_embed::SecureEmbedHost::BindSecureEmbedHost(render_frame_host, std::move(receiver));
+      }, &render_frame_host));
+#endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 #if BUILDFLAG(ENABLE_PRINTING)
   associated_registry.AddInterface<printing::mojom::PrintManagerHost>(
       base::BindRepeating(

@@ -24,6 +24,7 @@ import("//components/lens/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/sync/features.gni")
+import("//components/secure_embed/buildflags/buildflags.gni")
 import("//components/services/on_device_translation/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//content/public/common/features.gni")
@@ -8129,6 +8130,12 @@ static_library("browser") {
       "rlz/chrome_rlz_tracker_delegate.h",
       "rlz/chrome_rlz_tracker_web_contents_observer.cc",
       "rlz/chrome_rlz_tracker_web_contents_observer.h",
+    ]
+  }
+
+  if (enable_secure_embed) {
+    deps += [
+      "//components/secure_embed/browser",
     ]
   }
 
