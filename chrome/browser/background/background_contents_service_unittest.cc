@@ -24,6 +24,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -150,6 +151,10 @@ class BackgroundContentsServiceNotificationTest
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<BackgroundContentsService> background_service_;
+
+  bool HasIcons(scoped_refptr<extensions::Extension> extension) {
+    return !extensions::IconsInfo::GetIcons(extension.get()).empty();
+  }
 };
 
 TEST_F(BackgroundContentsServiceTest, Create) {
@@ -263,7 +268,7 @@ TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloon) {
   scoped_refptr<extensions::Extension> extension =
       extension_test_util::LoadManifest("image_loading_tracker", "app.json");
   ASSERT_TRUE(extension.get());
-  ASSERT_TRUE(extension->GetManifestData("icons"));
+  ASSERT_TRUE(HasIcons(extension));
 
   const message_center::Notification notification =
       CreateCrashNotification(extension);
@@ -274,7 +279,7 @@ TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloonShutdown) {
   scoped_refptr<extensions::Extension> extension =
       extension_test_util::LoadManifest("image_loading_tracker", "app.json");
   ASSERT_TRUE(extension.get());
-  ASSERT_TRUE(extension->GetManifestData("icons"));
+  ASSERT_TRUE(HasIcons(extension));
 
   std::string notification_id = BackgroundContentsService::
       GetNotificationDelegateIdForExtensionForTesting(extension->id());
@@ -295,7 +300,7 @@ TEST_F(BackgroundContentsServiceNotificationTest, TestShowBalloonNoIcon) {
   scoped_refptr<extensions::Extension> extension =
       extension_test_util::LoadManifest("app", "manifest.json");
   ASSERT_TRUE(extension.get());
-  ASSERT_FALSE(extension->GetManifestData("icons"));
+  ASSERT_FALSE(HasIcons(extension));
 
   const message_center::Notification notification =
       CreateCrashNotification(extension);

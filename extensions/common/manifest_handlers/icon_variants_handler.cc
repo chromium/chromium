@@ -97,7 +97,7 @@ const IconVariantsInfo* IconVariantsInfo::GetIconVariants(
     return nullptr;
   }
   return static_cast<IconVariantsInfo*>(
-      extension.GetManifestData(ManifestKeys::kIconVariants));
+      extension.GetManifestData(keys::kIconVariants));
 }
 
 // static
