@@ -237,8 +237,6 @@ TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
     EXPECT_TRUE(
         request_handler->transport_availability_info().has_empty_allow_list);
     EXPECT_FALSE(request_handler->transport_availability_info()
-                     .is_only_hybrid_or_internal);
-    EXPECT_FALSE(request_handler->transport_availability_info()
                      .request_is_internal_only);
   }
   {
@@ -256,8 +254,6 @@ TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
                      .transport_list_did_include_security_key);
     EXPECT_FALSE(
         request_handler->transport_availability_info().has_empty_allow_list);
-    EXPECT_TRUE(request_handler->transport_availability_info()
-                    .is_only_hybrid_or_internal);
     EXPECT_FALSE(request_handler->transport_availability_info()
                      .request_is_internal_only);
   }
@@ -278,8 +274,6 @@ TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
     EXPECT_FALSE(
         request_handler->transport_availability_info().has_empty_allow_list);
     EXPECT_FALSE(request_handler->transport_availability_info()
-                     .is_only_hybrid_or_internal);
-    EXPECT_FALSE(request_handler->transport_availability_info()
                      .request_is_internal_only);
   }
   {
@@ -296,8 +290,6 @@ TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
                     .transport_list_did_include_security_key);
     EXPECT_FALSE(
         request_handler->transport_availability_info().has_empty_allow_list);
-    EXPECT_FALSE(request_handler->transport_availability_info()
-                     .is_only_hybrid_or_internal);
     EXPECT_FALSE(request_handler->transport_availability_info()
                      .request_is_internal_only);
   }
@@ -316,8 +308,6 @@ TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
     EXPECT_FALSE(
         request_handler->transport_availability_info().has_empty_allow_list);
     EXPECT_FALSE(request_handler->transport_availability_info()
-                     .is_only_hybrid_or_internal);
-    EXPECT_FALSE(request_handler->transport_availability_info()
                      .request_is_internal_only);
   }
   {
@@ -335,8 +325,6 @@ TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {
                      .transport_list_did_include_security_key);
     EXPECT_FALSE(
         request_handler->transport_availability_info().has_empty_allow_list);
-    EXPECT_TRUE(request_handler->transport_availability_info()
-                    .is_only_hybrid_or_internal);
     EXPECT_TRUE(request_handler->transport_availability_info()
                     .request_is_internal_only);
   }

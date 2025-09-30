@@ -91,10 +91,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // list.
     bool has_empty_allow_list = false;
 
-    // is_only_hybrid_or_internal is true if credentials in the allow-list only
-    // contain the hybrid or internal transports.
-    bool is_only_hybrid_or_internal = false;
-
     // True this process has iCloud Keychain support. Only meaningful on macOS.
     bool has_icloud_keychain = false;
 

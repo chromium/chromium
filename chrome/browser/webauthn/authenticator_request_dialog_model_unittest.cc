@@ -1124,7 +1124,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     } else if (base::Contains(
                    test.params,
                    TransportAvailabilityParam::kOnlyHybridOrInternal)) {
-      transports_info.is_only_hybrid_or_internal = true;
       transports_info.transport_list_did_include_hybrid = true;
       transports_info.transport_list_did_include_security_key = false;
     } else {
