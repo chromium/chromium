@@ -138,11 +138,10 @@ void GraphImplOrt::CreateAndBuild(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
-      base::BindOnce(
-          &GraphImplOrt::CreateAndBuildOnBackgroundThread,
-          std::move(graph_info), context->session_options(), context->env(),
-          context->properties(), std::move(constant_operands),
-          context->is_external_data_supported(), std::move(scoped_trace)),
+      base::BindOnce(&GraphImplOrt::CreateAndBuildOnBackgroundThread,
+                     std::move(graph_info), context->session_options(),
+                     context->env(), context->properties(),
+                     std::move(constant_operands), std::move(scoped_trace)),
       base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::move(receiver),
                      context->AsWeakPtr(), std::move(compute_resource_info),
                      std::move(callback)));
@@ -157,13 +156,12 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
     ContextProperties context_properties,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    bool is_external_data_supported,
     ScopedTrace scoped_trace) {
   scoped_trace.AddStep("Create model info");
   std::unique_ptr<ModelEditor::ModelInfo> model_info =
-      GraphBuilderOrt::CreateAndBuild(
-          *graph_info, std::move(context_properties),
-          std::move(constant_operands), is_external_data_supported);
+      GraphBuilderOrt::CreateAndBuild(*graph_info,
+                                      std::move(context_properties),
+                                      std::move(constant_operands));
 
   scoped_trace.AddStep("Create session from model");
   ScopedOrtSession session;

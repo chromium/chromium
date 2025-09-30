@@ -62,8 +62,7 @@ class GraphBuilderOrt {
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      bool is_external_data_supported);
+          constant_operands);
 
   GraphBuilderOrt(const GraphBuilderOrt&) = delete;
   GraphBuilderOrt& operator=(const GraphBuilderOrt&) = delete;
@@ -75,8 +74,7 @@ class GraphBuilderOrt {
       const mojom::GraphInfo& graph_info,
       ContextProperties context_properties,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
-          constant_operands,
-      bool is_external_data_supported);
+          constant_operands);
 
   const mojom::Operand& GetOperand(OperandId operand_id) const;
 

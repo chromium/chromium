@@ -27,14 +27,12 @@ struct EpWorkarounds {
   // TODO(crbug.com/429253567): Specify the minimum package version that
   // supports these features without requiring workarounds.
 
-  bool disable_external_data = false;
   // By default ONNX Resize op supports any axes, but some EPs may only support
   // NCHW layout. `ContextProperties.resample_2d_axes` setting will respect to
   // this limit.
   bool resample2d_limit_to_nchw = false;
 
   EpWorkarounds& operator|=(const EpWorkarounds& other) {
-    disable_external_data |= other.disable_external_data;
     resample2d_limit_to_nchw |= other.resample2d_limit_to_nchw;
     return *this;
   }

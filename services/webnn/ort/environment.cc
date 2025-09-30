@@ -54,7 +54,6 @@ constexpr auto kKnownEPs = base::MakeFixedFlatMap<base::cstring_view, EpInfo>({
             .vendor_id = 0x8086,
             .workarounds =
                 {
-                    .disable_external_data = true,
                     .resample2d_limit_to_nchw = true,
                 },
             // OpenVINO EP configuration. Keys and values must align with the

@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
         operand_output_name_to_onnx_output_name;
   };
 
-  ModelEditor(bool is_external_data_supported = true);
+  ModelEditor();
   ~ModelEditor();
   ModelEditor(const ModelEditor&) = delete;
   ModelEditor& operator=(const ModelEditor&) = delete;
@@ -112,8 +112,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ModelEditor {
       operand_input_name_to_onnx_input_name_map;
   std::vector<std::pair<std::string, std::string>>
       operand_output_name_to_onnx_output_name_map;
-
-  const bool is_external_data_supported_;
 };
 
 }  // namespace webnn::ort

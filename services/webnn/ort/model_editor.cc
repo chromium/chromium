@@ -96,9 +96,7 @@ ModelEditor::ModelInfo::ModelInfo()
     : external_weights_manager(std::make_unique<ExternalWeightsManager>()) {}
 ModelEditor::ModelInfo::~ModelInfo() = default;
 
-ModelEditor::ModelEditor(bool is_external_data_supported)
-    : model_info_(std::make_unique<ModelInfo>()),
-      is_external_data_supported_(is_external_data_supported) {
+ModelEditor::ModelEditor() : model_info_(std::make_unique<ModelInfo>()) {
   const OrtModelEditorApi* ort_model_editor_api = GetOrtModelEditorApi();
   CHECK_STATUS(ort_model_editor_api->CreateGraph(
       ScopedOrtGraph::Receiver(graph_).get()));
@@ -130,7 +128,6 @@ void ModelEditor::AddInitializer(
   CHECK(!has_built_);
 
   bool use_external_data =
-      is_external_data_supported_ &&
       constant_operand->ByteSpan().size() >= kMinExternalDataSize;
   const OperandDescriptor& descriptor = constant_operand->descriptor();
   ONNXTensorElementDataType data_type =
@@ -151,8 +148,7 @@ void ModelEditor::AddInitializer(base::cstring_view name,
                                  base::span<const uint8_t> data) {
   CHECK(!has_built_);
 
-  bool use_external_data =
-      is_external_data_supported_ && data.size() >= kMinExternalDataSize;
+  bool use_external_data = data.size() >= kMinExternalDataSize;
   if (use_external_data) {
     AddInitializerAsExternalData(name, data_type, shape,
                                  base::HeapArray<uint8_t>::CopiedFrom(data));
