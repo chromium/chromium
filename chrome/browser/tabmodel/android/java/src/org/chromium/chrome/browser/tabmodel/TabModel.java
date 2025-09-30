@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -14,7 +15,9 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 
@@ -24,6 +27,8 @@ import java.util.Set;
  */
 @NullMarked
 public interface TabModel extends SupportsTabModelObserver, TabList {
+    Map<Integer, Long> sTabPinTimestampMap = new HashMap<>();
+
     /** Returns the profile associated with the current model. */
     @Nullable Profile getProfile();
 
@@ -229,4 +234,33 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
      * @param tab The {@link Tab} to check.
      */
     boolean isMuted(Tab tab);
+
+    private static long getCurrentTimeMillis() {
+        return System.currentTimeMillis();
+    }
+
+    /**
+     * Records the timestamp when a tab is pinned.
+     *
+     * @param tab The tab that was pinned.
+     */
+    default void recordPinTimestamp(Tab tab) {
+        sTabPinTimestampMap.put(tab.getId(), getCurrentTimeMillis());
+    }
+
+    /**
+     * Records the duration for which a tab was pinned. This is called when a tab is unpinned. If a
+     * timestamp for the tab's pinning exists, it calculates the duration and records it to a
+     * histogram.
+     *
+     * @param tab The tab that was unpinned.
+     */
+    default void recordPinnedDuration(Tab tab) {
+        if (sTabPinTimestampMap.containsKey(tab.getId())) {
+            long pinTimestamp = sTabPinTimestampMap.get(tab.getId());
+            long duration = getCurrentTimeMillis() - pinTimestamp;
+            RecordHistogram.recordLongTimesHistogram100("Tab.PinnedDuration", duration);
+            sTabPinTimestampMap.remove(tab.getId());
+        }
+    }
 }

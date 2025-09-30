@@ -731,6 +731,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.PinnedDuration" units="ms" expires_after="2026-10-01">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android only] Records the total time for which a tab was pinned within a
+    single session. The value is the duration between the tab being pinned and
+    when it was unpinned.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Preview.TimeToStoreAfterTabSwitch" units="ms"
     expires_after="2026-03-01">
   <owner>dfried@chromium.org</owner>

@@ -422,6 +422,7 @@ public class TabModelImpl extends TabModelJniBridge {
         // miscount groups, and hit an out-of-bounds.
         notifyWillChangeInPinState(tab);
         tab.setIsPinned(true);
+        recordPinTimestamp(tab);
         moveTab(tab.getId(), availableIndex);
         notifyDidChangeInPinState(tab);
     }
@@ -441,6 +442,7 @@ public class TabModelImpl extends TabModelJniBridge {
 
         notifyWillChangeInPinState(tab);
         tab.setIsPinned(false);
+        recordPinnedDuration(tab);
         notifyDidChangeInPinState(tab);
     }
 

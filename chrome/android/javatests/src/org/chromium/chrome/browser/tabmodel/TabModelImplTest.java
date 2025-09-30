@@ -41,6 +41,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1892,5 +1893,34 @@ public class TabModelImplTest {
 
     private void printTab(StringBuilder sb, Tab tab, int index) {
         sb.append(index).append(": ").append(tab.getId()).append(",\n");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_PINNED_TABS,
+        ChromeFeatureList.ANDROID_PINNED_TABS_TABLET_TAB_STRIP
+    })
+    public void testPinUnpinTab_RecordsHistogram() {
+        createTabs(2);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    Tab tabUnderInvestigation = tabModel.getTabAt(0);
+
+                    HistogramWatcher histogram =
+                            HistogramWatcher.newBuilder()
+                                    .expectAnyRecord("Tab.PinnedDuration")
+                                    .build();
+
+                    // Pin and unpin the tab.
+                    tabModel.pinTab(tabUnderInvestigation.getId());
+                    tabModel.unpinTab(tabUnderInvestigation.getId());
+
+                    // Verify that the histogram was recorded.
+                    histogram.assertExpected();
+                });
     }
 }
