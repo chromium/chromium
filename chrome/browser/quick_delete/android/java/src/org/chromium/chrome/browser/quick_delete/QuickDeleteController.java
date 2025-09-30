@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -38,6 +39,9 @@ import java.util.List;
 /** A controller responsible for setting up quick delete MVC. */
 @NullMarked
 public class QuickDeleteController {
+    // LINT.IfChange(TipsPrefNames)
+    public static final String QUICK_DELETE_EVER_USED_PREF = "browser.quick_delete_ever_used";
+    // LINT.ThenChange(//components/browsing_data/core/pref_names.h:TipsPrefNames)
 
     private final Context mContext;
     private final QuickDeleteDelegate mDelegate;
@@ -172,6 +176,7 @@ public class QuickDeleteController {
             @TimePeriod int timePeriod, boolean isTabClosureDisabled) {
         RecordHistogram.recordBooleanHistogram(
                 "Privacy.QuickDelete.TabsEnabled", !isTabClosureDisabled);
+        UserPrefs.get(mProfile).setBoolean(QUICK_DELETE_EVER_USED_PREF, true);
 
         // Ensure that no in-product help is triggered during tab closure and the post-deletion
         // experience.
