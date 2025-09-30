@@ -3640,7 +3640,9 @@ message TpmVersionInfo {
   // This field represents the tpm device id and vendor id
   // which is a combined value as declared in the TPM spec.
   optional string did_vid = 8;
-  optional string kernel_version = 9;
+  // This field represents the kernel key version stored in tpm
+  // which is used to prevent OS rollback to less secure versions.
+  optional string kernel_key_version = 9;
 }
 
 // Contains status of the TPM unit.
