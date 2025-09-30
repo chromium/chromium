@@ -329,6 +329,18 @@ bool StoredDeviceInfoStillAccurate(const DeviceInfo* stored,
              stored->auto_sign_out_last_signin_timestamp();
 }
 
+int CalculateMaxConcurrentEvents(const std::multimap<base::Time, int>& events) {
+  int max_overlapping = 0;
+  int overlapping = 0;
+  for (const auto& [time, value] : events) {
+    overlapping += value;
+    DCHECK_LE(0, overlapping);
+    max_overlapping = std::max(max_overlapping, overlapping);
+  }
+  DCHECK_EQ(overlapping, 0);
+  return max_overlapping;
+}
+
 }  // namespace
 
 DeviceInfoSyncBridge::ImmutableDeviceInfoAndSpecifics::
@@ -957,7 +969,7 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
   const base::Time now = base::Time::Now();
   absl::flat_hash_map<std::pair<DeviceInfo::FormFactor, DeviceInfo::OsType>,
                       std::multimap<base::Time, int>>
-      relevant_events;
+      events_by_type;
 
   for (const auto& [cache_guid, device_info_and_specifics] : all_data_) {
     if (!IsChromeClient(device_info_and_specifics.specifics())) {
@@ -980,22 +992,15 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
           device_info_and_specifics.device_info().os_type();
       DeviceInfo::FormFactor form_factor =
           device_info_and_specifics.device_info().form_factor();
-      relevant_events[{form_factor, os_type}].emplace(begin, 1);
-      relevant_events[{form_factor, os_type}].emplace(end, -1);
+      events_by_type[{form_factor, os_type}].emplace(begin, 1);
+      events_by_type[{form_factor, os_type}].emplace(end, -1);
     }
   }
 
   absl::flat_hash_map<DeviceInfo::FormFactor, int> device_count_by_form_factor;
-  for (const auto& [type, events] : relevant_events) {
-    int max_overlapping = 0;
-    int overlapping = 0;
-    for (const auto& [time, value] : events) {
-      overlapping += value;
-      DCHECK_LE(0, overlapping);
-      max_overlapping = std::max(max_overlapping, overlapping);
-    }
-    DCHECK_EQ(overlapping, 0);
-    device_count_by_form_factor[type.first] += max_overlapping;
+  for (const auto& [type, events] : events_by_type) {
+    device_count_by_form_factor[type.first] +=
+        CalculateMaxConcurrentEvents(events);
   }
 
   return device_count_by_form_factor;

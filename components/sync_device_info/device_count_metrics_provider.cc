@@ -19,6 +19,13 @@ using DeviceType = DeviceInfo::FormFactor;
 
 namespace {
 
+struct MaxDeviceCounts {
+  int total = 0;
+  int desktop = 0;
+  int phone = 0;
+  int tablet = 0;
+};
+
 // Returns the count for the given |form_factor|, or 0 if not found.
 int GetCount(const absl::flat_hash_map<DeviceInfo::FormFactor, int>& counts,
              DeviceInfo::FormFactor form_factor) {
@@ -42,32 +49,33 @@ void DeviceCountMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   std::vector<const DeviceInfoTracker*> trackers;
   provide_trackers_.Run(&trackers);
-  int max_total = 0;
-  int max_desktop_count = 0;
-  int max_phone_count = 0;
-  int max_tablet_count = 0;
-  for (auto* tracker : trackers) {
+
+  MaxDeviceCounts max_counts;
+
+  for (const DeviceInfoTracker* tracker : trackers) {
     absl::flat_hash_map<DeviceType, int> count_by_type =
         tracker->CountActiveDevicesByType();
+
     const int total_devices = std::accumulate(
         count_by_type.begin(), count_by_type.end(), 0,
         [](int sum, const auto& pair) { return sum + pair.second; });
 
-    max_total = std::max(max_total, total_devices);
-    max_desktop_count = std::max(
-        max_desktop_count,
-        GetCount(count_by_type, DeviceInfo::FormFactor::kDesktop));
-    max_phone_count = std::max(
-        max_phone_count, GetCount(count_by_type, DeviceInfo::FormFactor::kPhone));
-    max_tablet_count = std::max(
-        max_tablet_count,
-        GetCount(count_by_type, DeviceInfo::FormFactor::kTablet));
+    max_counts.total = std::max(max_counts.total, total_devices);
+    max_counts.desktop =
+        std::max(max_counts.desktop,
+                 GetCount(count_by_type, DeviceInfo::FormFactor::kDesktop));
+    max_counts.phone =
+        std::max(max_counts.phone,
+                 GetCount(count_by_type, DeviceInfo::FormFactor::kPhone));
+    max_counts.tablet =
+        std::max(max_counts.tablet,
+                 GetCount(count_by_type, DeviceInfo::FormFactor::kTablet));
   }
 
-  RecordDeviceCountMetric("Sync.DeviceCount2", max_total);
-  RecordDeviceCountMetric("Sync.DeviceCount2.Desktop", max_desktop_count);
-  RecordDeviceCountMetric("Sync.DeviceCount2.Phone", max_phone_count);
-  RecordDeviceCountMetric("Sync.DeviceCount2.Tablet", max_tablet_count);
+  RecordDeviceCountMetric("Sync.DeviceCount2", max_counts.total);
+  RecordDeviceCountMetric("Sync.DeviceCount2.Desktop", max_counts.desktop);
+  RecordDeviceCountMetric("Sync.DeviceCount2.Phone", max_counts.phone);
+  RecordDeviceCountMetric("Sync.DeviceCount2.Tablet", max_counts.tablet);
 }
 
 }  // namespace syncer
