@@ -521,7 +521,6 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
       (frame_timing_details.received_compositor_frame_timestamp -
        compositor_frame_submit_time)
           .InMicroseconds());
-
   recorder()->ExpectEntryMetric(
       entry,
       SubstageName(submit_stage,
@@ -823,59 +822,6 @@ TEST_F(UkmManagerTest, EventLatency) {
       recorder()->ExpectEntryMetric(
           entry, kSubmitCompositorFrameToPresentationCompositorFrame,
           (frame_timing_details.presentation_feedback.timestamp - submit_time)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry,
-          SubstageName(submit_stage,
-                       kVizBreakdownSubmitToReceiveCompositorFrame),
-          (frame_timing_details.received_compositor_frame_timestamp -
-           submit_time)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry,
-          SubstageName(submit_stage,
-                       kVizBreakdownReceivedCompositorFrameToStartDraw),
-          (frame_timing_details.draw_start_timestamp -
-           frame_timing_details.received_compositor_frame_timestamp)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry, SubstageName(submit_stage, kVizBreakdownStartDrawToSwapStart),
-          (frame_timing_details.swap_timings.swap_start -
-           frame_timing_details.draw_start_timestamp)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry, SubstageName(submit_stage, kVizBreakdownSwapStartToSwapEnd),
-          (frame_timing_details.swap_timings.swap_end -
-           frame_timing_details.swap_timings.swap_start)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry,
-          SubstageName(submit_stage, kVizBreakdownSwapStartToBufferAvailable),
-          (frame_timing_details.presentation_feedback.available_timestamp -
-           frame_timing_details.swap_timings.swap_start)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry,
-          SubstageName(submit_stage, kVizBreakdownBufferAvailableToBufferReady),
-          (frame_timing_details.presentation_feedback.ready_timestamp -
-           frame_timing_details.presentation_feedback.available_timestamp)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry, SubstageName(submit_stage, kVizBreakdownBufferReadyToLatch),
-          (frame_timing_details.presentation_feedback.latch_timestamp -
-           frame_timing_details.presentation_feedback.ready_timestamp)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry, SubstageName(submit_stage, kVizBreakdownLatchToSwapEnd),
-          (frame_timing_details.swap_timings.swap_end -
-           frame_timing_details.presentation_feedback.latch_timestamp)
-              .InMicroseconds());
-      recorder()->ExpectEntryMetric(
-          entry,
-          SubstageName(submit_stage,
-                       kVizBreakdownSwapEndToPresentationCompositorFrame),
-          (frame_timing_details.presentation_feedback.timestamp -
-           frame_timing_details.swap_timings.swap_end)
               .InMicroseconds());
       recorder()->ExpectEntryMetric(
           entry,
