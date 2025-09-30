@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,8 +97,7 @@ public class ThemeUtilsUnitTest {
         int themeColor =
                 ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                         mContext,
-                        SurfaceColorUpdateUtils.getDefaultThemeColor(
-                                mContext, /* isIncognito= */ false),
+                        ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false),
                         /* isIncognito= */ false,
                         /* isCustomTab= */ false);
         assertEquals(expectedColor, themeColor);
@@ -105,8 +105,7 @@ public class ThemeUtilsUnitTest {
         themeColor =
                 ThemeUtils.getTextBoxColorForToolbarBackgroundInNonNativePage(
                         mContext,
-                        SurfaceColorUpdateUtils.getDefaultThemeColor(
-                                mContext, /* isIncognito= */ false),
+                        ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false),
                         /* isIncognito= */ false,
                         /* isCustomTab= */ true);
         assertEquals(expectedColor, themeColor);

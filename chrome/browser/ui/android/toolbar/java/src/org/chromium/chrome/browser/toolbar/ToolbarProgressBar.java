@@ -25,8 +25,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.interpolators.Interpolators;
@@ -370,7 +370,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         if (mThemeColor != 0) {
             setThemeColor(mThemeColor, false);
         } else {
-            setThemeColor(SurfaceColorUpdateUtils.getDefaultThemeColor(getContext(), false), false);
+            setThemeColor(ChromeColors.getDefaultThemeColor(getContext(), false), false);
         }
     }
 

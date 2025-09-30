@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -75,6 +74,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -133,7 +133,7 @@ public class CustomTabActivityEphemeralTest {
 
     private static int getThemeColor(CustomTabActivity activity) {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> SurfaceColorUpdateUtils.getDefaultThemeColor(activity, false));
+                () -> ChromeColors.getDefaultThemeColor(activity, /* isIncognito= */ false));
     }
 
     private static int getToolbarColor(CustomTabActivity activity) {

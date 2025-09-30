@@ -20,7 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /** {@link ColorProvider} implementation used for Auth Tab. */
@@ -67,7 +67,7 @@ public class AuthTabColorProvider implements ColorProvider {
         if (params.getToolbarColor() != null) {
             return ColorUtils.getOpaqueColor(params.getToolbarColor());
         }
-        return SurfaceColorUpdateUtils.getDefaultThemeColor(context, /* isIncognito= */ false);
+        return ChromeColors.getDefaultThemeColor(context, /* isIncognito= */ false);
     }
 
     @Override

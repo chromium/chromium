@@ -48,10 +48,10 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesTh
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -335,7 +335,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
         var actual = themeColorProvider.calculateTheme(ThemeColorSource.BROWSER_DEFAULT, tab);
         assertEquals(
                 "Should be app default color",
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ false),
+                ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ false),
                 actual.color);
         assertEquals(
                 "Should be chrome default scheme",
@@ -358,7 +358,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
         var actual = themeColorProvider.calculateTheme(ThemeColorSource.BROWSER_DEFAULT, tab);
         assertEquals(
                 "Should be incognito color",
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, /* isIncognito= */ true),
+                ChromeColors.getDefaultThemeColor(mContext, /* isIncognito= */ true),
                 actual.color);
         assertEquals(
                 "Should be incognito scheme",

@@ -13,7 +13,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -84,7 +83,7 @@ public class TabUiThemeUtil {
 
     /** Returns the tab strip selected tab color. */
     public static @ColorInt int getTabStripSelectedTabColor(Context context, boolean isIncognito) {
-        return SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
+        return ChromeColors.getDefaultThemeColor(context, isIncognito);
     }
 
     /** Returns the dragged tab background color. */
@@ -101,7 +100,7 @@ public class TabUiThemeUtil {
     public static @ColorInt int getTabStripMultiSelectedTabColor(
             Context context, boolean isIncognito) {
         int baseColor = getTabStripBackgroundColor(context, isIncognito);
-        int overlayColor = SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
+        int overlayColor = ChromeColors.getDefaultThemeColor(context, isIncognito);
         float overlayAlpha =
                 ResourcesCompat.getFloat(context.getResources(), R.dimen.multi_selected_tab_alpha);
 

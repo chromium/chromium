@@ -46,12 +46,12 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -228,7 +228,7 @@ public class CustomTabToolbarColorControllerUnitTest {
         mColorController = createController();
 
         // expected theme is the browser default
-        @ColorInt int expectedColor = SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, false);
+        @ColorInt int expectedColor = ChromeColors.getDefaultThemeColor(mContext, false);
         @BrandedColorScheme
         int expectedColorScheme =
                 ColorUtils.shouldUseLightForegroundOnBackground(expectedColor)

@@ -36,9 +36,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.TestActivity;
 
@@ -100,7 +100,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* isNtp= */ false,
                 /* isIncognito= */ false,
                 /* isTopToolbar= */ false,
-                /* backgroundColor= */ SurfaceColorUpdateUtils.getDefaultThemeColor(
+                /* backgroundColor= */ ChromeColors.getDefaultThemeColor(
                         mActivity, /* isIncognito= */ false),
                 /* tabCount= */ 12,
                 /* toolbarHeight= */ 30,
@@ -109,7 +109,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* ntpToolbarTransitionPercentage= */ 1f);
 
         assertDefaultSettings(
-                /* buttonColor= */ SurfaceColorUpdateUtils.getDefaultThemeColor(
+                /* buttonColor= */ ChromeColors.getDefaultThemeColor(
                         mActivity, /* isIncognito= */ false),
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 12,
@@ -123,7 +123,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* isNtp= */ false,
                 /* isIncognito= */ false,
                 /* isTopToolbar= */ false,
-                /* backgroundColor= */ SurfaceColorUpdateUtils.getDefaultThemeColor(
+                /* backgroundColor= */ ChromeColors.getDefaultThemeColor(
                         mActivity, /* isIncognito= */ false),
                 /* tabCount= */ 12,
                 /* toolbarHeight= */ 7,
@@ -139,7 +139,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* isNtp= */ true,
                 /* isIncognito= */ false,
                 /* isTopToolbar= */ false,
-                /* backgroundColor= */ SurfaceColorUpdateUtils.getDefaultThemeColor(
+                /* backgroundColor= */ ChromeColors.getDefaultThemeColor(
                         mActivity, /* isIncognito= */ false),
                 /* tabCount= */ 56,
                 /* toolbarHeight= */ 94,
@@ -148,7 +148,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* ntpToolbarTransitionPercentage= */ 1f);
 
         assertDefaultSettings(
-                SurfaceColorUpdateUtils.getDefaultThemeColor(mActivity, /* isIncognito= */ false),
+                ChromeColors.getDefaultThemeColor(mActivity, /* isIncognito= */ false),
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 56,
                 /* topMargin= */ 84,
@@ -277,7 +277,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* isNtp= */ false,
                 /* isIncognito= */ false,
                 /* isTopToolbar= */ false,
-                /* backgroundColor= */ SurfaceColorUpdateUtils.getDefaultThemeColor(
+                /* backgroundColor= */ ChromeColors.getDefaultThemeColor(
                         mActivity, /* isIncognito= */ false),
                 /* tabCount= */ 0,
                 /* toolbarHeight= */ 0,
@@ -293,7 +293,7 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* isNtp= */ false,
                 /* isIncognito= */ true,
                 /* isTopToolbar= */ false,
-                /* backgroundColor= */ SurfaceColorUpdateUtils.getDefaultThemeColor(
+                /* backgroundColor= */ ChromeColors.getDefaultThemeColor(
                         mActivity, /* isIncognito= */ true),
                 /* tabCount= */ 0,
                 /* toolbarHeight= */ 0,

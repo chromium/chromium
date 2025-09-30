@@ -16,7 +16,6 @@ import com.google.android.material.color.MaterialColors;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -45,19 +44,6 @@ public class SurfaceColorUpdateUtils {
     public static boolean useNewGm3GtsTabGroupColors() {
         return ChromeFeatureList.sAndroidTabGroupsColorUpdateGm3.isEnabled()
                 || ThemeModuleUtils.isForceEnableDependencies();
-    }
-
-    /**
-     * Returns the background color for the toolbar based on the enabled flag and other parameters.
-     *
-     * @param context {@link Context} used to retrieve colors.
-     * @return The background color.
-     */
-    public static @ColorInt int getDefaultThemeColor(Context context, boolean isIncognito) {
-        if (useNewToolbarSurfaceColor() && !isIncognito) {
-            return SemanticColorUtils.getColorSurfaceContainerHigh(context);
-        }
-        return ChromeColors.getDefaultThemeColor(context, isIncognito);
     }
 
     /**

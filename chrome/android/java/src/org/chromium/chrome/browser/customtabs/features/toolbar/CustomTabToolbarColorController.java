@@ -16,13 +16,13 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 /** Maintains the toolbar color for {@link CustomTabActivity}. */
@@ -166,7 +166,7 @@ public class CustomTabToolbarColorController
     }
 
     private int getDefaultColor() {
-        return SurfaceColorUpdateUtils.getDefaultThemeColor(
+        return ChromeColors.getDefaultThemeColor(
                 mContext, mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO);
     }
 
