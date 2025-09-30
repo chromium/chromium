@@ -2015,7 +2015,7 @@ enum HistogramValue {
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionFunctions)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionFunctions)
 
 }  // namespace extensions::functions
 

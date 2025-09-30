@@ -598,7 +598,7 @@ enum HistogramValue {
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionEvents)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/extensions/enums.xml:ExtensionEvents)
 
 }  // namespace events
 }  // namespace extensions
