@@ -719,6 +719,7 @@ void UpdateTileDisplayLayerExtra(const mojom::TileDisplayLayerExtraPtr& extra,
   layer.SetIsDirectlyCompositedImage(extra->is_directly_composited_image);
   layer.SetNearestNeighbor(extra->nearest_neighbor);
   layer.SetContentColorUsage(extra->content_color_usage);
+  layer.SetRecordedBounds(extra->recorded_bounds);
 }
 
 base::expected<void, std::string> UpdateLayer(const mojom::Layer& wire,

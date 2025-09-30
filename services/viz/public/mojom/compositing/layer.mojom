@@ -122,6 +122,11 @@ struct TileDisplayLayerExtra {
 
   // The color usage of the layer's content.
   gfx.mojom.ContentColorUsage content_color_usage;
+
+  // Valid rectangle in which anything is recorded and can be rastered from.
+  // This is also used during AppendQuads to decide if a quad needs to be
+  // drawn.
+  gfx.mojom.Rect recorded_bounds;
 };
 
 // Extra fields in a cc::ScrollbarLayerImplBase that has been added

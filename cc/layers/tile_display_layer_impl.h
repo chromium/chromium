@@ -141,7 +141,6 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
 
   Tiling& GetOrCreateTilingFromScaleKey(float scale_key);
   void RemoveTiling(float scale_key);
-
   void SetSolidColor(std::optional<SkColor4f> color) { solid_color_ = color; }
   void SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
     is_backdrop_filter_mask_ = is_backdrop_filter_mask;
@@ -152,6 +151,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   void SetNearestNeighbor(bool nearest_neighbor) {
     nearest_neighbor_ = nearest_neighbor;
   }
+  void SetRecordedBounds(const gfx::Rect& bounds) { recorded_bounds_ = bounds; }
   bool is_directly_composited_image() const {
     return is_directly_composited_image_;
   }
@@ -195,6 +195,7 @@ class CC_EXPORT TileDisplayLayerImpl : public LayerImpl {
   bool is_directly_composited_image_ = false;
   bool nearest_neighbor_ = false;
   gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
+  gfx::Rect recorded_bounds_;
 
   // Denotes an area that is damaged and needs redraw. This is in the layer's
   // space.

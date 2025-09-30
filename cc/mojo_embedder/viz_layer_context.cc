@@ -944,6 +944,8 @@ void SerializeLayer(LayerImpl& layer,
       tile_display_extra->nearest_neighbor = picture_layer.nearest_neighbor();
       tile_display_extra->content_color_usage =
           picture_layer.GetContentColorUsage();
+      tile_display_extra->recorded_bounds =
+          picture_layer.GetRasterSource()->recorded_bounds();
       wire.layer_extra = viz::mojom::LayerExtra::NewTileDisplayLayerExtra(
           std::move(tile_display_extra));
       SerializePictureLayerTileUpdates(picture_layer, resource_provider,
