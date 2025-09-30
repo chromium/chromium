@@ -69,3 +69,5 @@ bool IsShareExtensionForMultiprofileEnabled() {
   return base::FeatureList::IsEnabled(kShareExtensionForMultiprofile) &&
          AreSeparateProfilesForManagedAccountsEnabled();
 }
+
+BASE_FEATURE(kDestroyOTRProfileEarly, base::FEATURE_DISABLED_BY_DEFAULT);

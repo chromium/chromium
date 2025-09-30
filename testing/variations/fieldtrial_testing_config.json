@@ -8821,6 +8821,21 @@
             ]
         }
     ],
+    "DestroyOTRProfileEarly": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DestroyOTRProfileEarly"
+                    ]
+                }
+            ]
+        }
+    ],
     "DestroySystemProfiles": [
         {
             "platforms": [
