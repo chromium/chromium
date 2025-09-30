@@ -1,12 +1,11 @@
 caption: This policy allows administrators to encrypt http cache on disk.
 desc: |-
   This policy allows the administrators to encrypt browser http cache on disk.
-  http cache on supported platforms.
+  Currently only supported on Windows.
 
   When this policy is Enabled, browser cache will be encrypted.
 
-  When this policy is Disabled or not set, browser cache
-  will not be encrypted.
+  When this policy is Disabled or not set, browser cache will not be encrypted.
 
   Browser cache encryption may result in a performance impact.
 owners:
