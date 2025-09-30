@@ -105,6 +105,13 @@ void WhatsNewHandler::RecordModuleImpression(
   histogram_name.append(module_name);
   base::UmaHistogramEnumeration(histogram_name, position);
 
+  WhatsNewInteractionData::CreateForWebContents(web_contents_);
+  WhatsNewInteractionData* interaction_data =
+      WhatsNewInteractionData::FromWebContents(web_contents_);
+  if (interaction_data) {
+    interaction_data->add_module_shown(module_name, position);
+  }
+
 #if BUILDFLAG(ENABLE_GLIC)
   if (module_name == "GlicIntro") {
     if (auto* glic_service =

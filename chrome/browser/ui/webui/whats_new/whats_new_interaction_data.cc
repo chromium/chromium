@@ -7,6 +7,9 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom-shared.h"
 #include "content/public/browser/web_contents.h"
 
+WhatsNewInteractionData::InteractionMetrics::InteractionMetrics() = default;
+WhatsNewInteractionData::InteractionMetrics::~InteractionMetrics() = default;
+
 WhatsNewInteractionData::WhatsNewInteractionData(
     content::WebContents* web_contents)
     : content::WebContentsUserData<WhatsNewInteractionData>(*web_contents) {}

@@ -590,7 +590,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
-      std::vector<std::string>{"What's New Scroll Depth"}),
+      std::vector<std::string>{
+          "Has seen Incognito tracking protection features on What's New page",
+      });
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_COMPOSE)

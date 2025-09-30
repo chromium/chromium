@@ -35,13 +35,14 @@ namespace {
 
 using ::testing::_;
 using ::testing::ContainerEq;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Return;
 using WhatsNewSurveyStatus = ::privacy_sandbox::
     PrivacySandboxWhatsNewSurveyService::WhatsNewSurveyStatus;
 
 // Helper to run the Nth argument as a base::OnceClosure and return a value.
-// For LaunchDelayedSurveyForWebContents, index 6 is success, 7 is failure.
+// For LaunchSurveyForWebContents, index 4 is success, 5 is failure.
 template <size_t I, typename T>
 auto RunOnceClosureAndReturn(T output) {
   return [output = std::move(output)](auto&&... args) -> decltype(auto) {
@@ -127,18 +128,19 @@ class PrivacySandboxWhatsNewSurveyServiceNullHatsServiceTest
   }
 };
 
-class PrivacySandboxWhatsNewSurveyServicePSDTest
+class PrivacySandboxWhatsNewSurveyServicePsdTest
     : public PrivacySandboxWhatsNewSurveyServiceFeatureEnabledTest {
  public:
-  PrivacySandboxWhatsNewSurveyServicePSDTest() = default;
+  PrivacySandboxWhatsNewSurveyServicePsdTest() = default;
 
  protected:
-  void SetScrollDepth(whats_new::mojom::ScrollDepth depth) {
+  void AddModuleShown(const std::string& name,
+                      whats_new::mojom::ModulePosition position) {
     WhatsNewInteractionData::CreateForWebContents(web_contents());
-    WhatsNewInteractionData* scroll_data =
+    WhatsNewInteractionData* interaction_data =
         WhatsNewInteractionData::FromWebContents(web_contents());
-    ASSERT_TRUE(scroll_data);
-    scroll_data->set_scroll_depth(depth);
+    ASSERT_NE(interaction_data, nullptr);
+    interaction_data->add_module_shown(name, position);
   }
 };
 
@@ -207,49 +209,24 @@ TEST_F(PrivacySandboxWhatsNewSurveyServiceNullHatsServiceTest,
 }
 
 // Test the successful survey launch path with default PSD.
-TEST_F(PrivacySandboxWhatsNewSurveyServicePSDTest,
-       MaybeShowSurvey_Launched_Success_DefaultPSD) {
-  // PSD should default to "No data" if not set in WhatsNewScrollData
-  std::map<std::string, std::string> expected_psd = {
-      {"What's New Scroll Depth", "No data"}};
+TEST_F(PrivacySandboxWhatsNewSurveyServicePsdTest,
+       MaybeShowSurvey_Launched_Success_DefaultPsd) {
+  // No InteractionData created.
+  SurveyStringData expected_psd = {{kHasSeenActFeaturesPsdKey, "unknown"}};
   ASSERT_NE(HatsServiceFactory::GetForProfile(profile(),
                                               /*create_if_necessary=*/true),
             nullptr);
 
   EXPECT_CALL(*hats_service(),
-              LaunchSurveyForWebContents(_, web_contents(), _,
-                                         ContainerEq(expected_psd), _, _, _, _))
-      .WillOnce(RunOnceClosureAndReturn<4>(true));
-
-  service_->MaybeShowSurvey(web_contents());
-
-  // skip the delay
-  base::TimeDelta delay = kPrivacySandboxWhatsNewSurveyDelay.Get();
-  task_environment()->FastForwardBy(delay);
-
-  histogram_tester_.ExpectBucketCount("PrivacySandbox.WhatsNewSurvey.Status",
-                                      WhatsNewSurveyStatus::kSurveyShown, 1);
-  histogram_tester_.ExpectBucketCount("PrivacySandbox.WhatsNewSurvey.Status",
-                                      WhatsNewSurveyStatus::kSurveyLaunched, 1);
-  histogram_tester_.ExpectTotalCount("PrivacySandbox.WhatsNewSurvey.Status", 2);
-}
-
-// Test the successful survey launch path with non-default PSD.
-TEST_F(PrivacySandboxWhatsNewSurveyServicePSDTest,
-       MaybeShowSurvey_Launched_Success_NonDefaultPSD) {
-  // Set a specific scroll depth
-  SetScrollDepth(whats_new::mojom::ScrollDepth::k75);
-
-  std::map<std::string, std::string> expected_psd = {
-      {"What's New Scroll Depth", "75"}};
-
-  ASSERT_NE(HatsServiceFactory::GetForProfile(profile(),
-                                              /*create_if_necessary=*/true),
-            nullptr);
-
-  EXPECT_CALL(*hats_service(),
-              LaunchSurveyForWebContents(_, web_contents(), _,
-                                         ContainerEq(expected_psd), _, _, _, _))
+              LaunchSurveyForWebContents(
+                  /*trigger=*/_,
+                  /*web_contents=*/web_contents(),
+                  /*product_specific_bits_data=*/IsEmpty(),
+                  /*product_specific_string_data=*/ContainerEq(expected_psd),
+                  /*success_callback=*/_,
+                  /*failure_callback=*/_,
+                  /*supplied_trigger_id=*/_,
+                  /*survey_options=*/_))
       .WillOnce(RunOnceClosureAndReturn<4>(true));
 
   service_->MaybeShowSurvey(web_contents());
@@ -266,20 +243,25 @@ TEST_F(PrivacySandboxWhatsNewSurveyServicePSDTest,
 }
 
 // Test survey launch failure path with PSD.
-TEST_F(PrivacySandboxWhatsNewSurveyServicePSDTest,
-       MaybeShowSurvey_Launched_Failure_WithPSD) {
-  SetScrollDepth(whats_new::mojom::ScrollDepth::k25);
-
+TEST_F(PrivacySandboxWhatsNewSurveyServicePsdTest,
+       MaybeShowSurvey_Launched_Failure_WithPsd) {
   ASSERT_NE(HatsServiceFactory::GetForProfile(profile(),
                                               /*create_if_necessary=*/true),
             nullptr);
 
-  std::map<std::string, std::string> expected_psd = {
-      {"What's New Scroll Depth", "25"}};
+  // No InteractionData created.
+  SurveyStringData expected_psd = {{kHasSeenActFeaturesPsdKey, "unknown"}};
 
   EXPECT_CALL(*hats_service(),
-              LaunchSurveyForWebContents(_, web_contents(), _,
-                                         ContainerEq(expected_psd), _, _, _, _))
+              LaunchSurveyForWebContents(
+                  /*trigger=*/_,
+                  /*web_contents=*/web_contents(),
+                  /*product_specific_bits_data=*/IsEmpty(),
+                  /*product_specific_string_data=*/ContainerEq(expected_psd),
+                  /*success_callback=*/_,
+                  /*failure_callback=*/_,
+                  /*supplied_trigger_id=*/_,
+                  /*survey_options=*/_))
       .WillOnce(RunOnceClosureAndReturn<5>(true));
 
   service_->MaybeShowSurvey(web_contents());
@@ -290,10 +272,49 @@ TEST_F(PrivacySandboxWhatsNewSurveyServicePSDTest,
   histogram_tester_.ExpectBucketCount("PrivacySandbox.WhatsNewSurvey.Status",
                                       WhatsNewSurveyStatus::kSurveyLaunchFailed,
                                       1);
-
   histogram_tester_.ExpectBucketCount("PrivacySandbox.WhatsNewSurvey.Status",
                                       WhatsNewSurveyStatus::kSurveyLaunched, 1);
   histogram_tester_.ExpectTotalCount("PrivacySandbox.WhatsNewSurvey.Status", 2);
+}
+
+TEST_F(PrivacySandboxWhatsNewSurveyServicePsdTest, Psd_ActModuleShown) {
+  AddModuleShown(privacy_sandbox::kPrivacySandboxActWhatsNew.name,
+                 whats_new::mojom::ModulePosition::kSpotlight1);
+
+  SurveyStringData expected_psd = {{kHasSeenActFeaturesPsdKey, "true"}};
+
+  EXPECT_CALL(*hats_service(),
+              LaunchSurveyForWebContents(
+                  /*trigger=*/_,
+                  /*web_contents=*/web_contents(),
+                  /*product_specific_bits_data=*/IsEmpty(),
+                  /*product_specific_string_data=*/ContainerEq(expected_psd),
+                  /*success_callback=*/_,
+                  /*failure_callback=*/_,
+                  /*supplied_trigger_id=*/_,
+                  /*survey_options=*/_));
+  service_->MaybeShowSurvey(web_contents());
+  task_environment()->FastForwardBy(kPrivacySandboxWhatsNewSurveyDelay.Get());
+}
+
+TEST_F(PrivacySandboxWhatsNewSurveyServicePsdTest, Psd_OtherModuleShown) {
+  AddModuleShown("SomeOtherModule",
+                 whats_new::mojom::ModulePosition::kSpotlight1);
+
+  SurveyStringData expected_psd = {{kHasSeenActFeaturesPsdKey, "false"}};
+
+  EXPECT_CALL(*hats_service(),
+              LaunchSurveyForWebContents(
+                  /*trigger=*/_,
+                  /*web_contents=*/web_contents(),
+                  /*product_specific_bits_data=*/IsEmpty(),
+                  /*product_specific_string_data=*/ContainerEq(expected_psd),
+                  /*success_callback=*/_,
+                  /*failure_callback=*/_,
+                  /*supplied_trigger_id=*/_,
+                  /*survey_options=*/_));
+  service_->MaybeShowSurvey(web_contents());
+  task_environment()->FastForwardBy(kPrivacySandboxWhatsNewSurveyDelay.Get());
 }
 
 }  // namespace privacy_sandbox

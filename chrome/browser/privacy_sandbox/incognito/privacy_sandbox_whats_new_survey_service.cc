@@ -4,7 +4,6 @@
 
 #include "privacy_sandbox_whats_new_survey_service.h"
 
-#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,6 +20,20 @@
 #include "content/public/browser/web_contents.h"
 #include "privacy_sandbox_incognito_features.h"
 #include "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+bool WasModuleShown(
+    const std::vector<WhatsNewInteractionData::ModuleShown>& modules_shown,
+    std::string_view module_name) {
+  return std::any_of(
+      modules_shown.begin(), modules_shown.end(),
+      [module_name](const WhatsNewInteractionData::ModuleShown& module) {
+        return module.name == module_name;
+      });
+}
+
+}  // namespace
 
 namespace privacy_sandbox {
 
@@ -42,7 +55,7 @@ void PrivacySandboxWhatsNewSurveyService::RecordSurveyStatus(
 }
 
 void PrivacySandboxWhatsNewSurveyService::MaybeShowSurvey(
-    content::WebContents* web_contents) {
+    content::WebContents* const web_contents) {
   if (!IsSurveyEnabled()) {
     RecordSurveyStatus(WhatsNewSurveyStatus::kFeatureDisabled);
     return;
@@ -66,6 +79,29 @@ void PrivacySandboxWhatsNewSurveyService::OnSurveyFailure() {
   RecordSurveyStatus(WhatsNewSurveyStatus::kSurveyLaunchFailed);
 }
 
+SurveyStringData PrivacySandboxWhatsNewSurveyService::GetPsd(
+    content::WebContents* const web_contents) {
+  SurveyStringData psd = {};
+
+  WhatsNewInteractionData* interaction_data =
+      WhatsNewInteractionData::FromWebContents(web_contents);
+
+  if (interaction_data) {
+    const std::vector<WhatsNewInteractionData::ModuleShown>& modules =
+        interaction_data->modules_shown();
+    psd[kHasSeenActFeaturesPsdKey] =
+        WasModuleShown(modules,
+                       privacy_sandbox::kPrivacySandboxActWhatsNew.name)
+            ? "true"
+            : "false";
+  } else {
+    // We cannot tell whether user has seen our module.
+    psd[kHasSeenActFeaturesPsdKey] = "unknown";
+  }
+
+  return psd;
+}
+
 void PrivacySandboxWhatsNewSurveyService::LaunchSurveyWithPsd(
     base::WeakPtr<content::WebContents> web_contents_weak_ptr,
     const std::string& trigger) {
@@ -84,21 +120,15 @@ void PrivacySandboxWhatsNewSurveyService::LaunchSurveyWithPsd(
   }
 
   // Calculate PSD at the moment of launch
-  std::string scroll_depth_value = "No data";
-  WhatsNewInteractionData* interaction_data =
-      WhatsNewInteractionData::FromWebContents(web_contents);
-  if (interaction_data) {
-    scroll_depth_value = base::NumberToString(
-        static_cast<int>(interaction_data->scroll_depth()));
-  }
 
-  SurveyStringData psd = {{"What's New Scroll Depth", scroll_depth_value}};
+  SurveyStringData psd = GetPsd(web_contents);
 
   RecordSurveyStatus(WhatsNewSurveyStatus::kSurveyLaunched);
   // Launch the survey immediately with the fresh PSD
   hats_service->LaunchSurveyForWebContents(
       trigger, web_contents,
-      /*product_specific_bits_data=*/{}, psd,
+      /*product_specific_bits_data=*/{},
+      /*product_specific_string_data=*/psd,
       /*success_callback=*/
       base::BindOnce(&PrivacySandboxWhatsNewSurveyService::OnSurveyShown,
                      weak_ptr_factory_.GetWeakPtr()),
