@@ -31,6 +31,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "content/child/memory_coordinator/child_memory_consumer_registry.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -39,6 +40,7 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_thread.h"
+#include "content/renderer/memory_coordinator/renderer_memory_coordinator_policy.h"
 #include "content/renderer/render_process_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_main_platform_delegate.h"
@@ -217,6 +219,10 @@ int RendererMain(MainFunctionParams parameters) {
   // zygote_main_linux.cc.  However, calling multiple times from the same thread
   // is OK.
   InitializeWebRtcModuleBeforeSandbox();
+
+  RendererMemoryCoordinatorPolicy render_memory_coordinator_policy(
+      static_cast<ChildMemoryConsumerRegistry&>(
+          base::MemoryConsumerRegistry::Get()));
 
   {
     content::ContentRendererClient* client = GetContentClient()->renderer();

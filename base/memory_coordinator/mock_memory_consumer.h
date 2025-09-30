@@ -19,6 +19,18 @@ class MockMemoryConsumer : public MemoryConsumer {
   MOCK_METHOD(void, OnReleaseMemory, (), (override));
 };
 
+// Same as MockMemoryConsumer, but automatically registers with the global
+// registry.
+class RegisteredMockMemoryConsumer : public MockMemoryConsumer {
+ public:
+  RegisteredMockMemoryConsumer(std::string_view consumer_id,
+                               MemoryConsumerTraits traits);
+  ~RegisteredMockMemoryConsumer() override;
+
+ private:
+  ScopedMemoryConsumerRegistration registration_;
+};
+
 }  // namespace base
 
 #endif  // BASE_MEMORY_COORDINATOR_MOCK_MEMORY_CONSUMER_H_
