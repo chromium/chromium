@@ -31,7 +31,7 @@ PrerenderAttributes::PrerenderAttributes(
     ui::PageTransition transition_type,
     bool should_warm_up_compositor,
     bool should_prepare_paint_tree,
-    bool should_pause_javascript_execution,
+    blink::mojom::SpeculationAction prerender_action_type,
     base::RepeatingCallback<bool(const GURL&,
                                  const std::optional<UrlMatchType>&)>
         url_match_predicate,
@@ -49,7 +49,7 @@ PrerenderAttributes::PrerenderAttributes(
       transition_type(transition_type),
       should_warm_up_compositor(should_warm_up_compositor),
       should_prepare_paint_tree(should_prepare_paint_tree),
-      should_pause_javascript_execution(should_pause_javascript_execution),
+      prerender_action_type(prerender_action_type),
       url_match_predicate(std::move(url_match_predicate)),
       prerender_navigation_handle_callback(
           std::move(prerender_navigation_handle_callback)),
@@ -70,6 +70,14 @@ PrerenderAttributes::PrerenderAttributes(
   CHECK(!IsBrowserInitiated() ||
         !initiator_devtools_navigation_token.has_value());
   CHECK(!IsBrowserInitiated() || !this->speculation_rules_params.has_value());
+  switch (prerender_action_type) {
+    case blink::mojom::SpeculationAction::kPrerender:
+    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+      break;
+    case blink::mojom::SpeculationAction::kPrefetch:
+    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+      NOTREACHED();
+  }
 }
 
 PrerenderAttributes::~PrerenderAttributes() = default;

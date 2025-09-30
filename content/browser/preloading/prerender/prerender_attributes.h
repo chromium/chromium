@@ -21,6 +21,7 @@
 #include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -50,7 +51,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       ui::PageTransition transition_type,
       bool should_warm_up_compositor,
       bool should_prepare_paint_tree,
-      bool should_pause_javascript_execution,
+      blink::mojom::SpeculationAction prerender_action_type,
       base::RepeatingCallback<bool(const GURL&,
                                    const std::optional<UrlMatchType>&)>
           url_match_predicate,
@@ -128,8 +129,8 @@ struct CONTENT_EXPORT PrerenderAttributes {
   // then the intermediate result can be reused after activation.
   bool should_prepare_paint_tree = false;
 
-  // Whether to pause the renderer process's JavaScript execution.
-  bool should_pause_javascript_execution = false;
+  // The action type of the speculation rule that triggered this prerender.
+  blink::mojom::SpeculationAction prerender_action_type;
 
   // If the caller wants to override the default holdback processing, they can
   // set this. Otherwise, it will be computed as part of

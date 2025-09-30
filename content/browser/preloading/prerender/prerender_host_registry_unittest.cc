@@ -208,7 +208,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             ui::PAGE_TRANSITION_LINK,
             /*should_warm_up_compositor=*/false,
             /*should_prepare_paint_tree=*/false,
-            /*should_pause_javascript_execution=*/false,
+            blink::mojom::SpeculationAction::kPrerender,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
             PreloadPipelineInfoImpl::Create(
@@ -224,7 +224,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
             /*should_warm_up_compositor=*/false,
             /*should_prepare_paint_tree=*/false,
-            /*should_pause_javascript_execution=*/false,
+            blink::mojom::SpeculationAction::kPrerender,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{},
             PreloadPipelineInfoImpl::Create(

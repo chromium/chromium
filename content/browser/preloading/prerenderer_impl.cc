@@ -45,18 +45,6 @@ PreloadingType ConvertSpeculationActionToPreloadingType(
   }
 }
 
-bool ShouldPauseJavaScriptExecution(blink::mojom::SpeculationAction action) {
-  switch (action) {
-    case blink::mojom::SpeculationAction::kPrerender:
-      return false;
-    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
-      return true;
-    case blink::mojom::SpeculationAction::kPrefetch:
-    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
-      NOTREACHED();
-  }
-}
-
 }  // namespace
 
 struct PrerendererImpl::PrerenderInfo {
@@ -401,8 +389,7 @@ bool PrerendererImpl::MaybePrerender(
       Referrer{*candidate->referrer}, no_vary_search_hint, &rfhi,
       web_contents->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
       should_warm_up_compositor,
-      /*should_prepare_paint_tree=*/false,
-      ShouldPauseJavaScriptExecution(candidate->action),
+      /*should_prepare_paint_tree=*/false, candidate->action,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
       PreloadPipelineInfoImpl::Create(
