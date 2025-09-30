@@ -11,13 +11,30 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
+
+namespace {
+
+void ShowLoginErrorForBrowser(const SigninUIError& error, Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
+  LoginUIServiceFactory::GetForProfile(browser->profile())
+      ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
+}
+
+}  // namespace
 
 ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
     ProfilePickerWebContentsHost* host,
@@ -51,6 +68,9 @@ void ProfileManagementFlowControllerImpl::
                 &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
                 // Binding as Unretained as `this`
                 // outlives the step controllers.
+                base::Unretained(this)),
+            base::BindOnce(
+                &ProfileManagementFlowControllerImpl::HandleSigninError,
                 base::Unretained(this))));
   }
 
@@ -124,6 +144,27 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   // `ScopedProfileKeepAlive` and we need the next step to register its own
   // before this the account selection's is released.
   UnregisterStep(Step::kAccountSelection);
+}
+
+void ProfileManagementFlowControllerImpl::HandleSigninError(
+    Profile* profile,
+    content::WebContents* contents,
+    const SigninUIError& error) {
+  CHECK_EQ(Step::kAccountSelection, current_step());
+  CHECK(!error.IsOk());
+
+  RegisterStep(
+      Step::kFinishFlow,
+      ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
+          host(),
+          base::BindOnce(
+              &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
+              base::Unretained(this), profile,
+              PostHostClearedCallback(
+                  base::BindOnce(&ShowLoginErrorForBrowser,
+                                 error)))));
+  SwitchToStep(Step::kFinishFlow, /*reset_state=*/true);
+  return;
 }
 
 void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps(

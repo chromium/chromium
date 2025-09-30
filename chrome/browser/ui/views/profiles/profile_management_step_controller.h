@@ -44,10 +44,14 @@ class ProfileManagementStepController {
       std::unique_ptr<content::WebContents>,
       StepSwitchFinishedCallback step_switch_finished_callback)>;
 
+  using SigninErrorCallback = base::OnceCallback<
+      void(Profile*, content::WebContents*, const SigninUIError&)>;
+
   static std::unique_ptr<ProfileManagementStepController> CreateForSignIn(
       ProfilePickerWebContentsHost* host,
       std::unique_ptr<ProfilePickerSignInProvider> sign_in_provider,
-      SignInStepFinishedCallback signed_in_callback);
+      SignInStepFinishedCallback signed_in_callback,
+      SigninErrorCallback signin_error_callback);
 
   // Creates a step controller that will take over from the sign-in step during
   // a SAML sign-in flow, and transition the flow into a browser window where it
