@@ -600,7 +600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ConfigureDataTypeManager.IsGaiaAccountId" enum="Boolean"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeMetadataConsistency{SyncDataType}"
-    enum="SyncMetadataConsistency" expires_after="2026-01-25">
+    enum="SyncMetadataConsistency" expires_after="2026-03-29">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1644,7 +1644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PendingInvalidationStatus"
-    enum="PendingInvalidationStatus" expires_after="2026-01-25">
+    enum="PendingInvalidationStatus" expires_after="2026-03-29">
   <owner>shabdan@google.com</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1753,7 +1753,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ProblematicServerSideBookmarks"
-    enum="RemoteBookmarkUpdateError" expires_after="2026-01-26">
+    enum="RemoteBookmarkUpdateError" expires_after="2026-03-29">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -2004,7 +2004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SignoutWithUnsyncedData" enum="Boolean"
-    expires_after="2026-01-20">
+    expires_after="2026-03-29">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
@@ -2067,7 +2067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SyncableServiceStartTime{SyncDataType}" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>ankushkush@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>

@@ -2436,7 +2436,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Intents.LinkCapturingEvent2"
-    enum="LinkCapturingEvent" expires_after="2026-01-25">
+    enum="LinkCapturingEvent" expires_after="2026-03-29">
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -3134,7 +3134,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Regmon.PolicyHandlerTime" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>chiav@chromium.org</owner>
   <owner>crmullins@chromium.org</owner>
   <summary>
@@ -3144,7 +3144,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Regmon.PolicyViolation"
-    enum="NetworkAnnotationHashCodes" expires_after="2026-01-25">
+    enum="NetworkAnnotationHashCodes" expires_after="2026-03-29">
   <owner>chiav@chromium.org</owner>
   <owner>crmullins@chromium.org</owner>
   <summary>
@@ -3156,7 +3156,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Regmon.ReportViolationTime" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>chiav@chromium.org</owner>
   <owner>crmullins@chromium.org</owner>
   <summary>
@@ -3241,7 +3241,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.SAML.Provider" enum="ChromeOSSamlProvider"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>mslus@chromium.org</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>Records SAML provider when SAML login flow is used.</summary>

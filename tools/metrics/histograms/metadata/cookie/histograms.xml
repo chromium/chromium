@@ -519,7 +519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.GetCookieListWithOptions.Duration.Subsampled"
-    units="microseconds" expires_after="2026-01-25">
+    units="microseconds" expires_after="2026-03-29">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

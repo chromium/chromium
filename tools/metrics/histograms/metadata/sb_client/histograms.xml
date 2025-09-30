@@ -303,7 +303,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientDownload.TailoredWarningType"
-    enum="TailoredWarningType" expires_after="2025-11-16">
+    enum="TailoredWarningType" expires_after="2026-03-29">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -808,7 +808,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelDownloadSuccess"
-    enum="BooleanSuccess" expires_after="2026-01-25">
+    enum="BooleanSuccess" expires_after="2026-03-29">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -854,7 +854,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.OnDeviceModelFetchTime" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

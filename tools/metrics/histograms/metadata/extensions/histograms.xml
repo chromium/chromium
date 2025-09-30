@@ -3271,7 +3271,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.LoadingFromCommandLine" enum="LoadExtensionFlag"
-    expires_after="2025-11-30">
+    expires_after="2026-03-29">
   <owner>richche@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3921,7 +3921,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ServiceWorkerBackground.MultiWorkerVersionIdMatch"
-    enum="Boolean" expires_after="2026-01-01">
+    enum="Boolean" expires_after="2026-03-29">
   <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -4873,7 +4873,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ZeroStatePromo.IphActionChromeWebStoreLink"
-    enum="WebStoreLinkClicked" expires_after="2026-01-25">
+    enum="WebStoreLinkClicked" expires_after="2026-03-29">
   <owner>uwyiming@chromium.org</owner>
   <owner>cws-consumer-team@google.com</owner>
   <summary>

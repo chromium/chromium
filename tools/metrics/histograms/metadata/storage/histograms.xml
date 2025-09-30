@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IndexedDB.ClientKeepActiveRemotesCount" units="count"
-    expires_after="2026-03-22">
+    expires_after="2026-03-29">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -846,7 +846,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoSizeInKB" units="KB"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>fergal@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -856,7 +856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrime" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>fergal@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -876,7 +876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrimeFor{LocalStorageSizes}" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>fergal@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

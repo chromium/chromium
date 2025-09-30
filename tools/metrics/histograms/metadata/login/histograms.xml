@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.Flow.{UserVisibility}.{UserCount}"
-    enum="LoginFlowUserLoginType" expires_after="2026-01-25">
+    enum="LoginFlowUserLoginType" expires_after="2026-03-29">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

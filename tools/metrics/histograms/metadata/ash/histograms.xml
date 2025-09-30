@@ -2345,7 +2345,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DarkTheme.SystemTray.IsDarkModeEnabled" enum="Boolean"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>minch@chromium.org</owner>
   <owner>changmar@chromium.org</owner>
   <summary>
@@ -4054,7 +4054,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.FullRestore.ShowInformedRestoreDialog" enum="BooleanHit"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>hewer@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>Emmited every time the informed restore dialog shows up.</summary>
@@ -4558,7 +4558,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.Glanceables.TimeManagement.{GlanceableBubble}.{ExpandState}.AnimationSmoothness"
-    units="%" expires_after="2025-12-31">
+    units="%" expires_after="2026-03-29">
   <owner>wcwang@google.com</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>

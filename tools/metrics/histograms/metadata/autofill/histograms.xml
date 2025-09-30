@@ -1174,7 +1174,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.EditedAutofilledFieldAtSubmission"
-    enum="AutofilledFieldUserEditingStatus" expires_after="2025-12-12">
+    enum="AutofilledFieldUserEditingStatus" expires_after="2026-03-29">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1196,7 +1196,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Ai.EntityTable.DecryptStatus2"
-    enum="AutofillAiDecryptStatus" expires_after="2025-12-12">
+    enum="AutofillAiDecryptStatus" expires_after="2026-03-29">
   <owner>jihadghanna@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3080,7 +3080,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.DriverRouter.TriggerFormExtractionExcept.Duration"
-    units="microseconds" expires_after="2025-12-28">
+    units="microseconds" expires_after="2026-03-29">
   <owner>vincb@google.com</owner>
   <owner>schwering@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -3591,7 +3591,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Filling.DidAlternativeNameFieldRequireConversion"
-    enum="BooleanYesNo" expires_after="2025-12-17">
+    enum="BooleanYesNo" expires_after="2026-03-29">
   <owner>aayazhan@google.com</owner>
   <owner>sygiet@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -7266,7 +7266,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.SubmittedAlternativeNameFieldValueCharacterSet"
     enum="AutofillAlternativeNameFieldValueCharacterSet"
-    expires_after="2025-12-24">
+    expires_after="2026-03-29">
   <owner>aayazhan@google.com</owner>
   <owner>sygiet@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>

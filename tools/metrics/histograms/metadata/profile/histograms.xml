@@ -887,7 +887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.OrganizationAvailableTiming" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

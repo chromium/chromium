@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.FilteredTriggerDataPercentage"
-    units="%" expires_after="2026-01-25">
+    units="%" expires_after="2026-03-29">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -380,7 +380,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ClearDataTime" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -745,7 +745,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.NamedBudgetsPer{Type}Registration"
-    units="named_budgets" expires_after="2026-01-25">
+    units="named_budgets" expires_after="2026-03-29">
   <owner>tquintanilla@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -759,7 +759,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.NavigationDataHostStatus3"
-    enum="ConversionNavigationDataHostStatus" expires_after="2026-01-25">
+    enum="ConversionNavigationDataHostStatus" expires_after="2026-03-29">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -926,7 +926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.OsRegistrationsSkipBufferRegistrationsSize"
-    units="count" expires_after="2026-01-25">
+    units="count" expires_after="2026-03-29">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1172,7 +1172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.Storage.ClearDataWithFilterDuration" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>csharrison@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -1412,7 +1412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ValuesPerFilter" units="values"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>

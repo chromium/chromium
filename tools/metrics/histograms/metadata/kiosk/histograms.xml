@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.LaunchDuration.{KioskType}" units="ms"
-    expires_after="2026-01-25">
+    expires_after="2026-03-29">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>Records the total duration it takes to launch a kiosk app.</summary>

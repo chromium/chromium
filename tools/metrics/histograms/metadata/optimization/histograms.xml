@@ -1184,7 +1184,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelToBeInstalledReason.{ModelExecutionFeature}"
-    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2026-01-24">
+    enum="OptimizationGuideOnDeviceModelStatus" expires_after="2026-03-29">
   <owner>holte@chromium.org</owner>
   <owner>andysjlim@chromium.org</owner>
   <summary>
@@ -1480,7 +1480,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecutor.ModelLoadingDuration2.{OptimizationTarget}"
-    units="ms" expires_after="2026-01-11">
+    units="ms" expires_after="2026-03-29">
   <owner>wittman@chromium.org</owner>
   <owner>rajendrant@chromium.org</owner>
   <summary>
@@ -1688,7 +1688,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted"
-    enum="Boolean" expires_after="2026-01-25">
+    enum="Boolean" expires_after="2026-03-29">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
