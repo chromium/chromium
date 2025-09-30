@@ -68,6 +68,10 @@ class ContextualSearchboxHandler
       composebox_query::mojom::FileUploadStatus file_upload_status,
       const std::optional<FileUploadErrorType>& error_type) override;
 
+  // SearchboxHandler:
+  std::string AutocompleteIconToResourceName(
+      const gfx::VectorIcon& icon) override;
+
  protected:
   std::set<base::UnguessableToken> deleted_context_tokens_;
   std::unique_ptr<ComposeboxQueryController> query_controller_;
