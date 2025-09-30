@@ -2705,11 +2705,6 @@
     "expiry_milestone": 143
   },
   {
-    "name": "enable-accessibility-bounce-keys",
-    "owners": [ "aluh@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "enable-accessibility-captions-on-braille-display",
     "owners": [ "anastasi@google.com", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 150
@@ -2836,11 +2831,6 @@
     "name": "enable-accessibility-shake-to-locate",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 146
-  },
-  {
-    "name": "enable-accessibility-slow-keys",
-    "owners": [ "aluh@chromium.org", "//ash/accessibility/OWNERS" ],
-    "expiry_milestone": 143
   },
   {
     "name": "enable-accessibility-text-formatting",

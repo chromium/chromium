@@ -3690,12 +3690,6 @@ extern const char kUseAngleDefault[];
 extern const char kAcceleratedMjpegDecodeName[];
 extern const char kAcceleratedMjpegDecodeDescription[];
 
-extern const char kAccessibilityBounceKeysName[];
-extern const char kAccessibilityBounceKeysDescription[];
-
-extern const char kAccessibilitySlowKeysName[];
-extern const char kAccessibilitySlowKeysDescription[];
-
 extern const char kAllowApnModificationPolicyName[];
 extern const char kAllowApnModificationPolicyDescription[];
 
