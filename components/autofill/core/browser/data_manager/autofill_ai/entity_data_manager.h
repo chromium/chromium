@@ -97,6 +97,9 @@ class EntityDataManager : public KeyedService,
   base::optional_ref<const EntityInstance> GetEntityInstance(
       const EntityInstance::EntityId& guid) const LIFETIME_BOUND;
 
+  // Returns if there are any pending queries to the web database.
+  bool HasPendingQueries() const;
+
   // AutofillWebDataServiceObserver:
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
 

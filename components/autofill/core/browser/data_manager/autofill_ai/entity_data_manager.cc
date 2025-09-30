@@ -152,6 +152,10 @@ base::optional_ref<EntityInstance> EntityDataManager::GetMutableEntityInstance(
   return *it;
 }
 
+bool EntityDataManager::HasPendingQueries() const {
+  return pending_query_ != 0;
+}
+
 void EntityDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {
   if (data_type == syncer::AUTOFILL_VALUABLE && WalletPublicPassesEnabled()) {
     LoadEntities();
