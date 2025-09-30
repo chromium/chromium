@@ -222,6 +222,7 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog) {
 }
 
 void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
+  CHECK(dialog);
   g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
 
   if (!parent || !parent->GetHost()) {

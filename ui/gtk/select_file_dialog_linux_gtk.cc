@@ -196,6 +196,7 @@ SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
     dialogs.push_back(pair.first);
   }
   for (GtkWidget* dialog : dialogs) {
+    CHECK(dialog);
     GtkWindowDestroy(dialog);
     OnFileChooserDestroy(dialog);
   }
@@ -617,6 +618,7 @@ void SelectFileDialogLinuxGtk::OnFileChooserDestroy(GtkWidget* dialog) {
   // `state.parent` can be nullptr when closing the host window
   // while opening the file-picker.
   if (state.parent) {
+    CHECK(dialog);
     ClearAuraTransientParent(dialog, state.parent);
     state.parent->RemoveObserver(this);
   }
