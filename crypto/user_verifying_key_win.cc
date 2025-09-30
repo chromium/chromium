@@ -164,7 +164,6 @@ class HelloDialogForegrounder
       return;
     }
 
-    constexpr wchar_t kTargetWindowName[] = L"Windows Security";
     constexpr wchar_t kTargetClassName[] = L"Credential Dialog Xaml Host";
     if (state_ == State::kPollingForFirstAppearance) {
       constexpr int kMaxIterations = 40;
@@ -174,7 +173,7 @@ class HelloDialogForegrounder
         return;
       }
 
-      if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
+      if (HWND hwnd = FindWindowW(kTargetClassName, nullptr)) {
         base::UmaHistogramExactLinear(
             "WebAuthentication.Windows.FindHelloDialogIterationCount",
             iteration,
@@ -189,7 +188,7 @@ class HelloDialogForegrounder
       }
     } else {
       CHECK_EQ(state_, State::kPollingForAuthRetry);
-      if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
+      if (HWND hwnd = FindWindowW(kTargetClassName, nullptr)) {
         SetForegroundWindow(hwnd);
       }
       interval = 500;
