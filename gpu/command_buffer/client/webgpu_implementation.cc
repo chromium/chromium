@@ -154,10 +154,6 @@ void WebGPUImplementation::SetAggressivelyFreeResources(
     bool aggressively_free_resources) {
   NOTIMPLEMENTED();
 }
-uint64_t WebGPUImplementation::ShareGroupTracingGUID() const {
-  NOTIMPLEMENTED();
-  return 0;
-}
 void WebGPUImplementation::SetErrorMessageCallback(
     base::RepeatingCallback<void(const char*, int32_t)> callback) {
   NOTIMPLEMENTED();

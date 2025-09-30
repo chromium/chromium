@@ -6853,10 +6853,6 @@ GLboolean GLES2Implementation::UnmapBufferCHROMIUM(GLuint target) {
   return true;
 }
 
-uint64_t GLES2Implementation::ShareGroupTracingGUID() const {
-  return share_group_->TracingGUID();
-}
-
 void GLES2Implementation::SetErrorMessageCallback(
     base::RepeatingCallback<void(const char*, int32_t)> callback) {
   error_message_callback_ = std::move(callback);

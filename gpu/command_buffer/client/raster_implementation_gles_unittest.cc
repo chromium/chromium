@@ -150,7 +150,6 @@ class ContextSupportStub : public ContextSupport {
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override {
   }
 
-  uint64_t ShareGroupTracingGUID() const override { return 0; }
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override {}
   bool ThreadSafeShallowLockDiscardableTexture(uint32_t texture_id) override {

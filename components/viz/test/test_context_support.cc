@@ -72,11 +72,6 @@ void TestContextSupport::CallAllSyncPointCallbacks() {
   sync_point_callbacks_.clear();
 }
 
-uint64_t TestContextSupport::ShareGroupTracingGUID() const {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
 void TestContextSupport::SetErrorMessageCallback(
     base::RepeatingCallback<void(const char*, int32_t)> callback) {}
 

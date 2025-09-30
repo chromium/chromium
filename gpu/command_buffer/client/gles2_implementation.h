@@ -130,7 +130,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
 
   // ContextSupport implementation.
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
-  uint64_t ShareGroupTracingGUID() const override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
   bool ThreadSafeShallowLockDiscardableTexture(uint32_t texture_id) override;
