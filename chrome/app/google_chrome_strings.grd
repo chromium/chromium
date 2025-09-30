@@ -1342,7 +1342,7 @@ Google Chrome is unable to recover your settings.
       </if>
 
       <message name="IDS_APP_ALSO_DELETE_APPS_DATA" desc="Checkbox text to ask the user during uninstall; Whether they want to remove associated data for the app being uninstalled. Only used when uninstalling an app associated with a particular website.">
-        Remove this apps data from Chrome
+        Remove this app's data from Chrome
       </message>
 
       <!-- App shortcuts -->
