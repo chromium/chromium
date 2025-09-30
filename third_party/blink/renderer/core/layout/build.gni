@@ -471,6 +471,7 @@ blink_core_sources_layout = [
   "min_max_sizes_cache.h",
   "natural_sizing_info.cc",
   "natural_sizing_info.h",
+  "non_overflowing_scroll_range.cc",
   "non_overflowing_scroll_range.h",
   "oof_positioned_node.cc",
   "oof_positioned_node.h",

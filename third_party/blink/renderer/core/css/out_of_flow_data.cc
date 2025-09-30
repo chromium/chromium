@@ -154,4 +154,18 @@ bool OutOfFlowData::SetPendingRememberedScrollOffsets(
   return true;
 }
 
+String OutOfFlowData::RememberedScrollOffsets::ToString() const {
+  StringBuilder builder;
+  builder.Append("RememberedScrollOffsets = [\n");
+  for (const auto& offset : offsets_) {
+    builder.Append("  ");
+    builder.Append(offset.key->DebugName());
+    builder.Append(": ");
+    builder.Append(offset.value.ToString());
+    builder.Append(",\n");
+  }
+  builder.Append("]\n");
+  return builder.ReleaseString();
+}
+
 }  // namespace blink

@@ -51,6 +51,8 @@ class CORE_EXPORT OutOfFlowData final
 
     void Trace(Visitor* visitor) const { visitor->Trace(offsets_); }
 
+    String ToString() const;
+
    private:
     HeapHashMap<WeakMember<const Element>, PhysicalOffset> offsets_;
   };

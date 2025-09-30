@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/geometry/scroll_offset_range.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
 
 namespace blink {
@@ -38,6 +39,8 @@ struct NonOverflowingScrollRange {
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(anchor_element); }
+
+  String ToString() const;
 };
 
 }  // namespace blink
