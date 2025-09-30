@@ -85,6 +85,12 @@ public interface Callback<T extends @Nullable Object> {
             callback.onResult(Long.valueOf(result));
         }
 
+        @SuppressWarnings("unchecked")
+        @CalledByNative("Helper")
+        static void onTimeResultFromNative(Callback callback, long result) {
+            callback.onResult(Long.valueOf(result));
+        }
+
         @CalledByNative("Helper")
         static void runRunnable(Runnable runnable) {
             runnable.run();
