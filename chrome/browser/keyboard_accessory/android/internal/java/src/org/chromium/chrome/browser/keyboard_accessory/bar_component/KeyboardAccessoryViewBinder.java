@@ -23,10 +23,13 @@ import static org.chromium.chrome.browser.keyboard_accessory.bar_component.Keybo
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -52,6 +55,7 @@ import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.function.Function;
@@ -82,11 +86,10 @@ class KeyboardAccessoryViewBinder {
             case BarItem.Type.TAB_LAYOUT:
                 return new SheetOpenerViewHolder(parent);
             case BarItem.Type.ACTION_BUTTON:
-                return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_action);
+            case BarItem.Type.DISMISS_CHIP:
+                return new BarItemTextViewHolder(parent, viewType);
             case BarItem.Type.ACTION_CHIP:
                 return new BarItemActionChipViewHolder(parent);
-            case BarItem.Type.DISMISS_CHIP:
-                return new BarItemTextViewHolder(parent, R.layout.keyboard_accessory_dismiss);
             default:
                 throw new IllegalStateException("Action type " + viewType + " was not handled!");
         }
@@ -308,8 +311,11 @@ class KeyboardAccessoryViewBinder {
     }
 
     static class BarItemTextViewHolder extends BarItemViewHolder<BarItem, TextView> {
-        BarItemTextViewHolder(ViewGroup parent, @LayoutRes int layout) {
-            super(parent, layout);
+        private final @BarItem.Type int mBarItemType;
+
+        BarItemTextViewHolder(ViewGroup parent, @BarItem.Type int barItemType) {
+            super(new ButtonCompat(parent.getContext(), selectStyleForSuggestion(barItemType)));
+            mBarItemType = barItemType;
         }
 
         @Override
@@ -318,6 +324,43 @@ class KeyboardAccessoryViewBinder {
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
             textView.setText(barItem.getCaptionId());
             textView.setOnClickListener(view -> action.getCallback().onResult(action));
+            // Margins can be either set in XML layouts or programmatically, they can't be part of
+            // the KeyboardAccessory* styles.
+            applyMargins(textView);
+        }
+
+        private void applyMargins(TextView textView) {
+            MarginLayoutParams params =
+                    new MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+            Resources resources = textView.getContext().getResources();
+            switch (mBarItemType) {
+                case BarItem.Type.ACTION_BUTTON:
+                    params.setMarginEnd(
+                            resources.getDimensionPixelSize(
+                                    R.dimen.keyboard_accessory_bar_item_padding));
+                    break;
+                case BarItem.Type.DISMISS_CHIP:
+                    params.setMarginEnd(
+                            resources.getDimensionPixelSize(
+                                    R.dimen.keyboard_accessory_dismiss_button_margin_end));
+                    break;
+                default:
+                    assert false : "Not a button item type: " + mBarItemType;
+            }
+            textView.setLayoutParams(params);
+        }
+
+        @StyleRes
+        private static int selectStyleForSuggestion(@BarItem.Type int barItemType) {
+            switch (barItemType) {
+                case BarItem.Type.ACTION_BUTTON:
+                    return R.style.KeyboardAccessoryActionButtonThemeOverlay;
+                case BarItem.Type.DISMISS_CHIP:
+                    return R.style.KeyboardAccessoryDismissButtonThemeOverlay;
+                default:
+                    assert false : "Not a button item type: " + barItemType;
+                    return 0;
+            }
         }
     }
 

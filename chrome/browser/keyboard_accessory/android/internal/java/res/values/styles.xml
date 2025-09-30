@@ -9,6 +9,25 @@ found in the LICENSE file.
     <style name="TextAppearance.DividerText" parent="TextAppearance.TextLarge.Secondary">
         <item name="android:textColor">@color/baseline_neutral_70</item>
     </style>
+    <style name="KeyboardAccessoryActionButton" parent="FilledButton">
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingEnd">@dimen/keyboard_accessory_suggestion_padding</item>
+        <item name="android:paddingStart">@dimen/keyboard_accessory_suggestion_padding</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="KeyboardAccessoryActionButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryActionButton</item>
+    </style>
+    <style name="KeyboardAccessoryDismissButton" parent="TextButton">
+        <item name="android:gravity">center</item>
+        <item name="android:paddingEnd">@dimen/keyboard_accessory_dismiss_button_padding_horizontal</item>
+        <item name="android:paddingStart">@dimen/keyboard_accessory_dismiss_button_padding_horizontal</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+    <style name="KeyboardAccessoryDismissButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryDismissButton</item>
+    </style>
     <style name="KeyboardAccessoryChip" parent="AssistiveChip">
         <item name="iconWidth">
             @dimen/keyboard_accessory_bar_item_icon_width
