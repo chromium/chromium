@@ -14,7 +14,6 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -35,6 +34,7 @@ class UkmRecorder;
 
 namespace blink {
 
+class CustomCountHistogram;
 enum class DocumentUpdateReason;
 
 // This class aggregates and records time based UKM and UMA metrics
