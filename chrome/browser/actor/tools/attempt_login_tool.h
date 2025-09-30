@@ -72,6 +72,10 @@ class AttemptLoginTool : public Tool {
 
   tabs::TabHandle tab_handle_;
 
+  // Set on invocation. Used to check if the document changed during credential
+  // selection.
+  content::GlobalRenderFrameHostToken main_rfh_token_;
+
   InvokeCallback invoke_callback_;
 
   base::WeakPtrFactory<AttemptLoginTool> weak_ptr_factory_{this};

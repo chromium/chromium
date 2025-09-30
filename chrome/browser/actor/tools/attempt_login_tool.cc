@@ -90,12 +90,15 @@ void AttemptLoginTool::Invoke(InvokeCallback callback) {
     return;
   }
 
+  content::RenderFrameHost* main_rfh =
+      tab->GetContents()->GetPrimaryMainFrame();
+  main_rfh_token_ = main_rfh->GetGlobalFrameToken();
+
   invoke_callback_ = std::move(callback);
 
   // First check if there is a user selected credential for the current request
   // origin. If so, use it immediately.
-  const url::Origin& current_origin =
-      tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  const url::Origin& current_origin = main_rfh->GetLastCommittedOrigin();
   const std::optional<actor_login::Credential> user_selected_credential =
       tool_delegate().GetUserSelectedCredential(current_origin);
   if (user_selected_credential.has_value()) {
@@ -257,6 +260,17 @@ void AttemptLoginTool::OnCredentialSelected(
                      MakeResult(mojom::ActionResultCode::kTabWentAway));
     return;
   }
+
+  if (main_rfh_token_ !=
+      tab->GetContents()->GetPrimaryMainFrame()->GetGlobalFrameToken()) {
+    // Don't proceed with the login attempt, if the page changed while we were
+    // waiting for credential selection.
+    // TODO(mcnee): Add a separate error code.
+    PostResponseTask(std::move(invoke_callback_),
+                     MakeResult(mojom::ActionResultCode::kError));
+    return;
+  }
+
   GetActorLoginService().AttemptLogin(
       tab, *selected_credential,
       base::BindOnce(&AttemptLoginTool::OnAttemptLogin,

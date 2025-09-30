@@ -464,6 +464,43 @@ IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest, SavedCredentialNotUsed) {
             mock_login_service().last_credential_used()->username);
 }
 
+// If a navigation occurs during credential selection, do not proceed with the
+// login attempt and return an error instead.
+IN_PROC_BROWSER_TEST_P(ActorAttemptLoginToolTest,
+                       NavigationWhileRequestingCredential) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  const GURL url2 = embedded_https_test_server().GetURL("other.example.com",
+                                                        "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  mock_login_service().SetCredential(MakeTestCredential(
+      u"username", url, /*immediately_available_to_login=*/true));
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  base::test::TestFuture<base::OnceClosure> select_creds;
+  EXPECT_CALL(mock_execution_engine(), PromptToSelectCredential(_, _, _))
+      .WillOnce([this, &select_creds](
+                    const std::vector<actor_login::Credential>& credentials,
+                    const MockExecutionEngine::IconMap&,
+                    ToolDelegate::CredentialSelectedCallback callback) {
+        select_creds.SetValue(base::BindOnce(
+            std::move(callback), MakeSelectCredentialDialogResponse(
+                                     actor_task().id(), credentials[0].id)));
+      });
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  ASSERT_TRUE(select_creds.Wait());
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url2));
+
+  select_creds.Take().Run();
+  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+}
+
 class ActorAttemptLoginToolTestWithFaviconService
     : public ActorAttemptLoginToolTest {
  public:
