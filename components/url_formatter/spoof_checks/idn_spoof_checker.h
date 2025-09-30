@@ -13,8 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/url_formatter/spoof_checks/skeleton_generator.h"
-#include "net/extras/preload_data/decoder.h"
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/common/unicode/uversion.h"
@@ -27,9 +25,11 @@ class UnicodeString;
 
 }  // namespace U_ICU_NAMESPACE
 
+class SkeletonGenerator;
 struct USpoofChecker;
 
 namespace url_formatter {
+
 FORWARD_DECLARE_TEST(UrlFormatterTest, IDNToUnicode);
 
 using Skeletons = base::flat_set<std::string>;
