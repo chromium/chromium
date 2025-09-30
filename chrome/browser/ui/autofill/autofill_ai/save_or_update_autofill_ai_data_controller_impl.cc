@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -306,7 +305,9 @@ bool SaveOrUpdateAutofillAiDataControllerImpl::IsWalletableEntity() const {
 void SaveOrUpdateAutofillAiDataControllerImpl::OnGoToWalletLinkClicked() {
   if (Browser* browser = chrome::FindBrowserWithTab(web_contents())) {
     reopen_bubble_when_web_contents_becomes_visible_ = true;
-    ShowSingletonTab(browser, GURL(chrome::kWalletPassesPageURL));
+    static constexpr std::string_view kWalletPassesUrl =
+        "https://wallet.google.com/wallet/passes";
+    ShowSingletonTab(browser, GURL(kWalletPassesUrl));
   }
 }
 

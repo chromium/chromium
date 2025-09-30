@@ -213,7 +213,6 @@ function entityInstaceToEntityInstanceWithLabels(entityInstance, sublabel) {
     guid: entityInstance.guid,
     entityInstanceLabel: entityInstance.type.typeNameAsString,
     entityInstanceSubLabel: sublabel,
-    stored_in_wallet: false,
   });
 };
 
