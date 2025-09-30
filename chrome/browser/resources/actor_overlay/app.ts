@@ -7,10 +7,11 @@ import '/strings.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Point} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 
 import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import {ActorOverlayBrowserProxy} from './browser_proxy.js';
 
 export interface ActorOverlayAppElement {
@@ -27,7 +28,7 @@ export class ActorOverlayAppElement extends CrLitElement {
   }
 
   override render() {
-    return html`<div id="magicCursor"></div>`;
+    return getHtml.bind(this)();
   }
 
   private eventTracker_: EventTracker = new EventTracker();
