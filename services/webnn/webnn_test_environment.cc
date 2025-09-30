@@ -37,7 +37,7 @@ WebNNTestEnvironment::WebNNTestEnvironment(
       /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
       std::move(gpu_info), /*shared_image_manager=*/nullptr,
       std::move(lose_all_contexts_callback),
-      task_environment_.GetMainThreadTaskRunner(), &scheduler_,
+      base::SingleThreadTaskRunner::GetCurrentDefault(), &scheduler_,
       kFakeClientIdForTesting);
 }
 
