@@ -192,11 +192,8 @@ Then, refer to the instructions for your SSH / remote desktop workflow below.
 If you’re using a Linux client, please check and make sure
 [depot_tools can access your security keys](#linux_security-keys-access).
 
-Then, on the local machine, set the security key plugin with
-\`GOOGLE_AUTHN_WEBAUTHN_PLUGIN\` environment variable, then use
-\`luci-auth-ssh-helper\` to SSH into the remote machine.
-
-You can specify SSH options (such as port forwarding) after a double dash.
+Then, use `luci-auth-ssh-helper` to SSH into the remote machine. You can
+specify SSH options (such as port forwarding) after a double dash.
 
 ```
 luci-auth-ssh-helper [-- ssh_options...] [user@]host
@@ -263,7 +260,6 @@ First, start `luci-auth-ssh-helper` in daemon mode on a TCP port (we use 10899
 in the example). The helper will listen for incoming ReAuth challenges.
 
 ```
-set GOOGLE_AUTH_WEBAUTHN_PLUGIN=luci-auth-fido2-plugin
 luci-auth-ssh-helper -mode=daemon -port=10899
 ```
 
