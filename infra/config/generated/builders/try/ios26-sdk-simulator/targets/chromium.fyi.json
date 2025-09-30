@@ -11,7 +11,7 @@
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
-          "26.0",
+          "26.1",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -24,7 +24,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPad Air (6th generation) 26.0",
+        "name": "ios_chrome_integration_eg2tests_module iPad Air (6th generation) 26.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -43,8 +43,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_1",
+              "path": "Runtime-ios-26.1"
             },
             {
               "name": "xcode_ios_17b5025f",
@@ -56,7 +56,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPad Air (6th generation) 26.0"
+        "variant_id": "iPad Air (6th generation) 26.1"
       },
       {
         "args": [
@@ -65,7 +65,7 @@
           "--platform",
           "iPhone 16",
           "--version",
-          "26.0",
+          "26.1",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -78,7 +78,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.0",
+        "name": "ios_chrome_integration_eg2tests_module iPhone 16 26.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -97,8 +97,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_1",
+              "path": "Runtime-ios-26.1"
             },
             {
               "name": "xcode_ios_17b5025f",
@@ -110,7 +110,7 @@
         },
         "test": "ios_chrome_integration_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_integration_eg2tests_module/",
-        "variant_id": "iPhone 16 26.0"
+        "variant_id": "iPhone 16 26.1"
       },
       {
         "args": [
@@ -119,7 +119,7 @@
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
-          "26.0",
+          "26.1",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -132,7 +132,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPad Air (6th generation) 26.0",
+        "name": "ios_chrome_ui_eg2tests_module iPad Air (6th generation) 26.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -151,8 +151,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_1",
+              "path": "Runtime-ios-26.1"
             },
             {
               "name": "xcode_ios_17b5025f",
@@ -164,7 +164,7 @@
         },
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPad Air (6th generation) 26.0"
+        "variant_id": "iPad Air (6th generation) 26.1"
       },
       {
         "args": [
@@ -173,7 +173,7 @@
           "--platform",
           "iPhone 16",
           "--version",
-          "26.0",
+          "26.1",
           "--xcodebuild-sim-runner",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
@@ -186,7 +186,7 @@
         },
         "module_name": "//ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module",
         "module_scheme": "xctest",
-        "name": "ios_chrome_ui_eg2tests_module iPhone 16 26.0",
+        "name": "ios_chrome_ui_eg2tests_module iPhone 16 26.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -205,8 +205,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_1",
+              "path": "Runtime-ios-26.1"
             },
             {
               "name": "xcode_ios_17b5025f",
@@ -218,14 +218,14 @@
         },
         "test": "ios_chrome_ui_eg2tests_module",
         "test_id_prefix": "ninja://ios/chrome/test/earl_grey2:ios_chrome_ui_eg2tests_module/",
-        "variant_id": "iPhone 16 26.0"
+        "variant_id": "iPhone 16 26.1"
       },
       {
         "args": [
           "--platform",
           "iPad Air 11-inch (M2)",
           "--version",
-          "26.0",
+          "26.1",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -237,7 +237,7 @@
         },
         "module_name": "//ios/web:ios_web_inttests",
         "module_scheme": "gtest",
-        "name": "ios_web_inttests iPad Air (6th generation) 26.0",
+        "name": "ios_web_inttests iPad Air (6th generation) 26.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -256,8 +256,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_1",
+              "path": "Runtime-ios-26.1"
             },
             {
               "name": "xcode_ios_17b5025f",
@@ -268,14 +268,14 @@
         },
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPad Air (6th generation) 26.0"
+        "variant_id": "iPad Air (6th generation) 26.1"
       },
       {
         "args": [
           "--platform",
           "iPhone 16",
           "--version",
-          "26.0",
+          "26.1",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -287,7 +287,7 @@
         },
         "module_name": "//ios/web:ios_web_inttests",
         "module_scheme": "gtest",
-        "name": "ios_web_inttests iPhone 16 26.0",
+        "name": "ios_web_inttests iPhone 16 26.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -306,8 +306,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_1",
+              "path": "Runtime-ios-26.1"
             },
             {
               "name": "xcode_ios_17b5025f",
@@ -318,14 +318,14 @@
         },
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPhone 16 26.0"
+        "variant_id": "iPhone 16 26.1"
       },
       {
         "args": [
           "--platform",
           "iPhone SE (3rd generation)",
           "--version",
-          "26.0",
+          "26.1",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -337,7 +337,7 @@
         },
         "module_name": "//ios/web:ios_web_inttests",
         "module_scheme": "gtest",
-        "name": "ios_web_inttests iPhone SE (3rd generation) 26.0",
+        "name": "ios_web_inttests iPhone SE (3rd generation) 26.1",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -356,8 +356,8 @@
           },
           "named_caches": [
             {
-              "name": "runtime_ios_26_0",
-              "path": "Runtime-ios-26.0"
+              "name": "runtime_ios_26_1",
+              "path": "Runtime-ios-26.1"
             },
             {
               "name": "xcode_ios_17b5025f",
@@ -368,7 +368,7 @@
         },
         "test": "ios_web_inttests",
         "test_id_prefix": "ninja://ios/web:ios_web_inttests/",
-        "variant_id": "iPhone SE (3rd generation) 26.0"
+        "variant_id": "iPhone SE (3rd generation) 26.1"
       }
     ]
   }
