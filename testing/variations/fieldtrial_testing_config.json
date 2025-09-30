@@ -12752,6 +12752,21 @@
             ]
         }
     ],
+    "IOSAutofillBottomSheetNewBlur": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillBottomSheetNewBlur"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAutofillRefillForForms": [
         {
             "platforms": [
