@@ -541,14 +541,11 @@ void OnCheckDownloadAllowedFailed(
 
 ChromeDownloadManagerDelegate::ChromeDownloadManagerDelegate(Profile* profile)
     : profile_(profile),
-      next_download_id_(download::DownloadItem::kInvalidId),
-      next_id_retrieved_(false),
-      download_prefs_(new DownloadPrefs(profile)),
-      is_file_picker_showing_(false) {
 #if BUILDFLAG(IS_ANDROID)
-  download_dialog_bridge_ = std::make_unique<DownloadDialogBridge>();
-  download_message_bridge_ = std::make_unique<DownloadMessageBridge>();
+      download_dialog_bridge_(std::make_unique<DownloadDialogBridge>()),
+      download_message_bridge_(std::make_unique<DownloadMessageBridge>()),
 #endif
+      download_prefs_(std::make_unique<DownloadPrefs>(profile)) {
 }
 
 ChromeDownloadManagerDelegate::~ChromeDownloadManagerDelegate() {
@@ -1847,7 +1844,6 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
       // These other results should never be returned.
       NOTREACHED();
   }
-
 }
 #endif  // SAFE_BROWSING_DOWNLOAD_PROTECTION
 
