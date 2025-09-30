@@ -42,6 +42,9 @@ ToggleEvent::ToggleEvent(const AtomicString& type,
   if (initializer->hasNewState()) {
     new_state_ = initializer->newState();
   }
+  if (initializer->hasSource()) {
+    source_ = initializer->source();
+  }
 }
 
 ToggleEvent::~ToggleEvent() = default;
