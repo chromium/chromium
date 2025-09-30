@@ -102,7 +102,12 @@ const CONTENT_STATES: Record<ContentType, ContentState> = {
   },
 };
 
+// TODO: crbug.com/440400392- Investigate extracting instances of referencing
+// read aloud model directly to an observer.
+
 // Handles the business logic for the visual content of the Reading mode panel.
+// This class also is responsible for updating read aloud model when the
+// visual content changes.
 export class ContentController {
   private nodeStore_: NodeStore = NodeStore.getInstance();
   private speechController_: SpeechController = SpeechController.getInstance();
@@ -160,6 +165,13 @@ export class ContentController {
 
   onNodeWillBeDeleted(nodeId: number) {
     const deletedNode = this.nodeStore_.getDomNode(nodeId) as ChildNode;
+
+    // When a node is deleted, the read aloud model can get out of sync with the
+    // DOM. To be safe, delete the node from the model.
+    if (deletedNode && chrome.readingMode.isTsTextSegmentationEnabled) {
+      getReadAloudModel().onNodeWillBeDeleted?.(deletedNode);
+    }
+
     if (deletedNode) {
       this.nodeStore_.removeDomNode(deletedNode);
       deletedNode.remove();

@@ -114,6 +114,48 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     this.resetState_();
   }
 
+
+  onNodeWillBeDeleted(deletedNode: Node) {
+    if (!this.isInitialized()) {
+      return;
+    }
+
+    const oldCurrentIndex = this.currentIndex_;
+
+    // Filter out any segments containing the now deleted node.
+    this.sentences_.forEach(sentence => {
+      sentence.segments = sentence.segments.filter(
+          segment => !segment.node.domNode()?.isEqualNode(deletedNode));
+    });
+
+    // Before filtering the main sentences list, count how many sentences
+    // that came before the current sentence are now empty.
+    let numRemovedBeforeCurrent = 0;
+    if (oldCurrentIndex > 0) {
+      for (let i = 0; i < oldCurrentIndex; i++) {
+        if (this.sentences_[i]!.segments.length === 0) {
+          numRemovedBeforeCurrent++;
+        }
+      }
+    }
+
+    // Now, filter out all empty sentences from the main list.
+    this.sentences_ =
+        this.sentences_.filter(sentence => sentence.segments.length > 0);
+
+    if (oldCurrentIndex !== -1) {
+      // The new index is the old index, shifted by the number of sentences
+      // that were removed before it.
+      this.currentIndex_ = oldCurrentIndex - numRemovedBeforeCurrent;
+
+      // Ensure currentIndex is not out of bounds.
+      if (this.currentIndex_ >= this.sentences_.length) {
+        this.currentIndex_ =
+            this.sentences_.length > 0 ? this.sentences_.length - 1 : -1;
+      }
+    }
+  }
+
   private resetState_() {
     this.sentences_ = [];
     this.currentIndex_ = -1;

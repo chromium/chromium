@@ -39,6 +39,10 @@ export interface ReadAloudModelBrowserProxy {
   // Resets the model. Method is optional because the V8 model handles this
   // in C++.
   resetModel?(): void;
+
+  // Deletes a node from the model. Optional because the V8 model handles this
+  // in C++.
+  onNodeWillBeDeleted?(node: Node): void;
 }
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {
