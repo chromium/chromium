@@ -371,7 +371,8 @@ void StreamMixer::CreatePostProcessors(CastMediaShlib::ResultCallback callback,
   mixer_pipeline_.reset();
 
   if (!override_config.empty()) {
-    auto value = base::JSONReader::Read(override_config);
+    auto value = base::JSONReader::Read(override_config,
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(value) << "Invalid JSON";
     PostProcessingPipelineParser parser(std::move(*value));
     mixer_pipeline_ = MixerPipeline::CreateMixerPipeline(

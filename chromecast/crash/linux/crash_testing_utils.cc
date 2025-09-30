@@ -45,7 +45,8 @@ std::optional<base::Value::List> ParseLockFile(const std::string& path) {
   for (const std::string& line : lines) {
     if (line.size() == 0)
       continue;
-    std::optional<base::Value> dump_info = base::JSONReader::Read(line);
+    std::optional<base::Value> dump_info =
+        base::JSONReader::Read(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     RCHECK(dump_info.has_value(), std::nullopt, "Invalid DumpInfo");
     DumpInfo info(&dump_info.value());
     RCHECK(info.valid(), std::nullopt, "Invalid DumpInfo");
@@ -90,7 +91,8 @@ bool WriteMetadataFile(const std::string& path,
 }  // namespace
 
 std::unique_ptr<DumpInfo> CreateDumpInfo(const std::string& json_string) {
-  std::optional<base::Value> value = base::JSONReader::Read(json_string);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   return value.has_value() ? std::make_unique<DumpInfo>(&value.value())
                            : std::make_unique<DumpInfo>(nullptr);
 }
