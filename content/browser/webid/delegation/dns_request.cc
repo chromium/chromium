@@ -25,7 +25,8 @@ void DnsRequest::SendRequest(const std::string& hostname,
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
   parameters->dns_query_type = net::DnsQueryType::TXT;
-
+  parameters->cache_usage =
+      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
   auto* network_context = network_context_getter_.Run();
   if (!network_context) {
     std::move(callback_).Run(std::nullopt);
