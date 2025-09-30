@@ -630,11 +630,14 @@ void PictureInPictureWindowManager::CreateWindowInternal(
 }
 
 void PictureInPictureWindowManager::CloseWindowInternal() {
-  CHECK(pip_window_controller_);
-
   video_web_contents_observer_.reset();
-  pip_window_controller_->Close(false /* should_pause_video */);
-  pip_window_controller_ = nullptr;
+
+  // Close and reset the picture-in-picture window controller, if it exists.
+  if (pip_window_controller_) {
+    pip_window_controller_->Close(false /* should_pause_video */);
+    pip_window_controller_ = nullptr;
+  }
+
   opener_display_.reset();
 
 #if !BUILDFLAG(IS_ANDROID)
