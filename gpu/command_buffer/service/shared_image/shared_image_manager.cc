@@ -244,14 +244,19 @@ SharedImageManager::SharedImageManager(
     bool display_context_on_another_thread,
     viz::VulkanContextProvider* vulkan_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> io_runner)
-    : display_context_on_another_thread_(display_context_on_another_thread),
+    : display_context_on_another_thread_(display_context_on_another_thread)
 #if BUILDFLAG(IS_WIN)
+      ,
       dxgi_shared_handle_manager_(
-          base::MakeRefCounted<DXGISharedHandleManager>()),
+          base::MakeRefCounted<DXGISharedHandleManager>())
 #endif
+#if !BUILDFLAG(IS_MAC)
+      ,
       gpu_memory_buffer_factory_(
           gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider,
-                                                        std::move(io_runner))) {
+                                                        std::move(io_runner)))
+#endif
+{
   DCHECK(!display_context_on_another_thread || thread_safe);
   if (thread_safe) {
     lock_.emplace();
