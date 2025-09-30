@@ -2657,6 +2657,170 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       CanvasCanDehibernateIfGpuContextIsLostAndRestored) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  WaitForHibernation();
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Lose GPU context. Because the canvas is hibernating, it has no GPU
+  // resources and is therefore not impacted by the context loss.
+  LoseContext();
+  EXPECT_FALSE(Context2D()->IsContextLost());
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // The GPU context is automatically restored and the canvas can correctly
+  // de-hibernate.
+  {
+    base::HistogramTester histogram_tester;
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally,
+        1);
+  }
+
+  EXPECT_FALSE(Context2D()->IsContextLost());
+  EXPECT_FALSE(handler.IsHibernating());
+  EXPECT_TRUE(Context2D()->IsCanvas2DResourceProviderValid());
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       MakingPageVisibleDowngradesHibernatedCanvasToCpuIfContextIsLost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  // Configure context provider to stay lost after context losses.
+  CreateContextProvider(SetIsContextLost::kNotModifyValue);
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  WaitForHibernation();
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Lose GPU context. Because the canvas is hibernating, it has no GPU
+  // resources and is therefore not impacted by the context loss.
+  LoseContext();
+  EXPECT_FALSE(Context2D()->IsContextLost());
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Since the GPU context is still lost, waking from hibernation will cause the
+  // canvas to downgrade to CPU.
+  {
+    base::HistogramTester histogram_tester;
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithFallbackToSW,
+        1);
+  }
+
+  EXPECT_FALSE(handler.IsHibernating());
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
+  // Detection of GPU context losses isn't currently supported while hibernated.
+  EXPECT_FALSE(Context2D()->IsContextLost());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       BackgroundRenderingDowngradesHibernatedCanvasToCpuIfContextIsLost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  // Configure context provider to stay lost after context losses.
+  CreateContextProvider(SetIsContextLost::kNotModifyValue);
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  WaitForHibernation();
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Lose GPU context. Because the canvas is hibernating, it has no GPU
+  // resources and is therefore not impacted by the context loss.
+  LoseContext();
+  EXPECT_FALSE(Context2D()->IsContextLost());
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Since the GPU context is still lost, background rendering will wake up the
+  // canvas in CPU mode.
+  {
+    base::HistogramTester histogram_tester;
+    RunInTask(base::BindLambdaForTesting(
+        [this] { Context2D()->fillRect(0, 0, 10, 10); }));
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithSwitchToBackgroundRendering,
+        1);
+  }
+
+  EXPECT_FALSE(handler.IsHibernating());
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
+  // Detection of GPU context losses isn't currently supported while hibernated.
+  EXPECT_FALSE(Context2D()->IsContextLost());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ResetDowngradesHibernatedCanvasToCpuIfContextIsLost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  // Configure context provider to stay lost after context losses.
+  CreateContextProvider(SetIsContextLost::kNotModifyValue);
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  WaitForHibernation();
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Lose GPU context. Because the canvas is hibernating, it has no GPU
+  // resources and is therefore not impacted by the context loss.
+  LoseContext();
+  EXPECT_FALSE(Context2D()->IsContextLost());
+
+  // Since the GPU context is still lost, resetting the canvas will end
+  // hibernation in CPU mode.
+  {
+    base::HistogramTester histogram_tester;
+    RunInTask(base::BindLambdaForTesting(
+        [this] { CanvasElement().SetSize(gfx::Size(10, 10)); }));
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedOnReset,
+        1);
+  }
+
+  EXPECT_FALSE(handler.IsHibernating());
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kCPU);
+  // Detection of GPU context losses isn't currently supported while hibernated.
+  EXPECT_FALSE(Context2D()->IsContextLost());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        BackgroundRenderingAbortsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
