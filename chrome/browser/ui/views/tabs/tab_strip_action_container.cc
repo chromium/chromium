@@ -565,7 +565,6 @@ void TabStripActionContainer::OnGlicButtonClicked() {
   }
 
   ExecuteHideTabStripNudge(glic_button_);
-  glic_button_->RestoreDefaultLabel();
   // Reset state manually since there wont be a mouse up event as the animation
   // moves the button out of the way.
   glic_button_->SetState(views::Button::ButtonState::STATE_NORMAL);
@@ -577,7 +576,6 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabStripNudge(glic_button_);
-  glic_button_->RestoreDefaultLabel();
 }
 
 void TabStripActionContainer::OnGlicButtonHovered() {
@@ -1025,6 +1023,11 @@ void TabStripActionContainer::AnimationCanceled(
 void TabStripActionContainer::AnimationEnded(const gfx::Animation* animation) {
   animation_session_->ApplyAnimationValue(animation);
   animation_session_->MarkAnimationDone(animation);
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_button_) {
+    glic_button_->OnAnimationEnded();
+  }
+#endif
 }
 
 void TabStripActionContainer::OnAnimationSessionEnded() {
