@@ -346,7 +346,7 @@ TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactory(
 TestProfileIOS::Builder& TestProfileIOS::Builder::AddTestingFactories(
     TestingFactories testing_factories) {
   for (auto& item : testing_factories) {
-    testing_factories.emplace_back(std::move(item));
+    testing_factories_.emplace_back(std::move(item));
   }
   return *this;
 }
