@@ -834,7 +834,9 @@ class TabImpl implements Tab {
         freeze();
         Referrer referrer = params.getReferrer();
         assumeNonNull(mWebContentsState);
-        mWebContentsState =
+        // The only reason this should still be null is if we failed to allocate a byte buffer,
+        // which probably means we are close to an OOM.
+        boolean success =
                 mWebContentsState.appendPendingNavigation(
                         mProfile,
                         title,
@@ -844,9 +846,6 @@ class TabImpl implements Tab {
                         referrer != null ? referrer.getPolicy() : 0,
                         params.getInitiatorOrigin());
 
-        // The only reason this should still be null is if we failed to allocate a byte buffer,
-        // which probably means we are close to an OOM.
-        boolean success = mWebContentsState != null;
         RecordHistogram.recordBooleanHistogram(
                 "Tabs.FreezeAndAppendPendingNavigationResult", success);
         if (success) {
@@ -854,6 +853,10 @@ class TabImpl implements Tab {
             mPendingLoadParams = null;
             mUrl = new GURL(assumeNonNull(mWebContentsState).getVirtualUrlFromState());
         } else {
+            // If we failed to append the pending navigation, clear the WebContentsState and restore
+            // the tab to a blank state.
+            mWebContentsState = null;
+
             // Since we are not allowed to auto-navigate the only remaining fallback is to clobber
             // all navigation state and treat the tab as if it is in a pending load state. All the
             // previous state was already cleaned up so we just need to set the params here.
@@ -866,7 +869,7 @@ class TabImpl implements Tab {
         }
         observers.rewind();
         notifyFaviconChanged();
-        updateTitle(title == null ? "" : title);
+        updateTitle(title == null ? mUrl.getSpec() : title);
 
         while (observers.hasNext()) {
             observers.next().onNavigationEntriesAppended(this);
@@ -1253,6 +1256,8 @@ class TabImpl implements Tab {
                 mUrl = new GURL(loadUrlParams.getUrl());
                 if (pendingTitle != null) {
                     setTitle(pendingTitle);
+                } else {
+                    setTitle(mUrl.getSpec());
                 }
             }
 
@@ -2477,9 +2482,8 @@ class TabImpl implements Tab {
     @CalledByNative
     private void deleteNavigationEntriesFromFrozenState(long predicate) {
         if (mWebContentsState == null) return;
-        WebContentsState newState = mWebContentsState.deleteNavigationEntries(predicate);
-        if (newState != null) {
-            mWebContentsState = newState;
+        boolean success = mWebContentsState.deleteNavigationEntries(predicate);
+        if (success) {
             notifyNavigationEntriesDeleted();
         }
     }

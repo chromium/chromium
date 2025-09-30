@@ -71,8 +71,7 @@ public class WebContentsState {
         }
     }
 
-    // TODO(crbug.com/447345580): Allow this to swap with an unpacked representation.
-    private final PackedData mPackedData;
+    private PackedData mPackedData;
 
     private @Nullable String mFallbackUrlForRestorationFailure;
 
@@ -86,7 +85,7 @@ public class WebContentsState {
     public static @Nullable WebContentsState getWebContentsStateFromWebContents(
             WebContents webContents) {
         ByteBuffer buffer = WebContentsStateJni.get().getContentsStateAsByteBuffer(webContents);
-        return newWebContentsStateFromByteBuffer(buffer);
+        return maybeCreateNewWebContentsState(buffer);
     }
 
     /**
@@ -111,7 +110,7 @@ public class WebContentsState {
                 WebContentsStateJni.get()
                         .createSingleNavigationStateAsByteBuffer(
                                 profile, title, url, referrerUrl, referrerPolicy, initiatorOrigin);
-        return newWebContentsStateFromByteBuffer(buffer);
+        return maybeCreateNewWebContentsState(buffer);
     }
 
     /** Returns a singleton empty {@link WebContentsState}. */
@@ -194,12 +193,12 @@ public class WebContentsState {
      *
      * @param predicate Handle for a deletion predicate interpreted by native code. Only valid
      *     during this call frame.
-     * @return A new {@link WebContentsState} or null if nothing changed.
+     * @return Whether any deletions happened.
      */
-    public @Nullable WebContentsState deleteNavigationEntries(long predicate) {
+    public boolean deleteNavigationEntries(long predicate) {
         ByteBuffer newBuffer =
                 WebContentsStateJni.get().deleteNavigationEntries(buffer(), version(), predicate);
-        return newWebContentsStateFromByteBuffer(newBuffer);
+        return maybeSwapPackedData(newBuffer);
     }
 
     /**
@@ -211,9 +210,9 @@ public class WebContentsState {
      * @param referrerUrl URL for the referrer.
      * @param referrerPolicy Policy for the referrer.
      * @param initiatorOrigin Initiator of the navigation.
-     * @return A new {@link WebContentsState} with the pending navigation attached.
+     * @return Whether the operation was successful.
      */
-    public @Nullable WebContentsState appendPendingNavigation(
+    public boolean appendPendingNavigation(
             Profile profile,
             @Nullable String title,
             String url,
@@ -231,13 +230,19 @@ public class WebContentsState {
                                 referrerUrl,
                                 referrerPolicy,
                                 initiatorOrigin);
-        return newWebContentsStateFromByteBuffer(buffer);
+        return maybeSwapPackedData(buffer);
     }
 
-    private static @Nullable WebContentsState newWebContentsStateFromByteBuffer(
+    private boolean maybeSwapPackedData(@Nullable ByteBuffer buffer) {
+        if (buffer == null) return false;
+        mPackedData = new PackedData(buffer, CONTENTS_STATE_CURRENT_VERSION);
+        return true;
+    }
+
+    private static @Nullable WebContentsState maybeCreateNewWebContentsState(
             @Nullable ByteBuffer buffer) {
         if (buffer == null) return null;
-        return new WebContentsState(buffer, WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        return new WebContentsState(buffer, CONTENTS_STATE_CURRENT_VERSION);
     }
 
     @NativeMethods
