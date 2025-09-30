@@ -95,7 +95,7 @@ uint16_t XRCompositionLayer::textureHeight() const {
 }
 
 uint16_t XRCompositionLayer::textureArrayLength() const {
-  return drawing_context_->TextureWidth();
+  return drawing_context_->TextureArrayLength();
 }
 
 void XRCompositionLayer::OnFrameStart() {
