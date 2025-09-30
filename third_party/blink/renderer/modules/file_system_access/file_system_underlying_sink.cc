@@ -100,28 +100,28 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
     const WriteParams& params,
     ExceptionState& exception_state) {
   if (params.type() == V8WriteCommandType::Enum::kTruncate) {
-    if (!params.hasSizeNonNull()) {
+    const std::optional<uint64_t> size = params.getSizeOr(std::nullopt);
+    if (!size) {
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. truncate requires a size argument");
       return EmptyPromise();
     }
-    return Truncate(script_state, params.sizeNonNull(), exception_state);
+    return Truncate(script_state, *size, exception_state);
   }
 
   if (params.type() == V8WriteCommandType::Enum::kSeek) {
-    if (!params.hasPositionNonNull()) {
+    const std::optional<uint64_t> position = params.getPositionOr(std::nullopt);
+    if (!position) {
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. seek requires a position argument");
       return EmptyPromise();
     }
-    return Seek(script_state, params.positionNonNull(), exception_state);
+    return Seek(script_state, *position, exception_state);
   }
 
   if (params.type() == V8WriteCommandType::Enum::kWrite) {
-    uint64_t position =
-        params.hasPositionNonNull() ? params.positionNonNull() : offset_;
     if (!params.hasData()) {
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
@@ -134,6 +134,7 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
           "Invalid params passed. write requires a non-null data");
       return EmptyPromise();
     }
+    uint64_t position = params.getPositionOr(std::nullopt).value_or(offset_);
     return WriteData(script_state, position, params.data(), exception_state);
   }
 

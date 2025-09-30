@@ -2510,9 +2510,9 @@ bool CopyAuctionReportBuyerDebugModeConfigFromIdlToMojo(
       input.auctionReportBuyerDebugModeConfig();
   bool enabled = debug_mode_config->enabled();
   std::optional<uint64_t> debug_key;
-  if (debug_mode_config->hasDebugKeyNonNull()) {
+  if (debug_mode_config->hasDebugKey() && debug_mode_config->debugKey()) {
     ASSIGN_OR_RETURN(
-        debug_key, CopyBigIntToUint64(debug_mode_config->debugKeyNonNull()),
+        debug_key, CopyBigIntToUint64(*debug_mode_config->debugKey()),
         [&](String error) {
           exception_state.ThrowTypeError(ErrorInvalidAuctionConfigUint(
               input, "auctionReportBuyerDebugModeConfig", error));
