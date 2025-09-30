@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 
 #include "base/check_deref.h"
+#include "base/notreached.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -44,14 +45,49 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/user_education/common/user_education_features.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+namespace signin {
 
 namespace {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 using signin::SignInPromoType;
 using signin_util::SignedInState;
 
 constexpr int kSigninPromoShownThreshold = 5;
 constexpr int kSigninPromoDismissedThreshold = 2;
+
+// Prefs that are part of the dictionary from
+// `SigninPrefs::GetOrCreateAvatarButtonPromoCountDictionary()` that maps the
+// used and shown counts for the promos listed in
+// `ProfileMenuAvatarButtonPromoType` (Except for
+// `ProfileMenuAvatarButtonPromoType::kSyncPromo`).
+constexpr char kAvatarButtonHistorySyncPromoShownCount[] =
+    "AvatarButtonHistorySyncPromoShownCount";
+constexpr char kAvatarButtonHistorySyncPromoUsedCount[] =
+    "AvatarButtonHistorySyncPromoUsedCount";
+
+const char* GetAvatarButtonPromoShownKey(
+    ProfileMenuAvatarButtonPromoType promo_type) {
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoType::kHistorySyncPromo:
+      return kAvatarButtonHistorySyncPromoShownCount;
+    case ProfileMenuAvatarButtonPromoType::kSyncPromo:
+      NOTREACHED() << "SyncPromo uses the SigninPrefs values directly";
+  }
+}
+
+const char* GetAvatarButtonPromoUsedKey(
+    ProfileMenuAvatarButtonPromoType promo_type) {
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoType::kHistorySyncPromo:
+      return kAvatarButtonHistorySyncPromoUsedCount;
+    case ProfileMenuAvatarButtonPromoType::kSyncPromo:
+      NOTREACHED() << "SyncPromo uses the SigninPrefs values directly";
+  }
+}
 
 syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
   switch (type) {
@@ -168,10 +204,9 @@ bool ShouldShowSignInPromoCommon(Profile& profile, SignInPromoType type) {
   return ShouldShowPromoBasedOnImpressionOrDismissalCount(profile, type);
 }
 
-}  // namespace
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-namespace signin {
+}  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
 bool ShouldShowSyncPromo(Profile& profile) {
@@ -485,7 +520,7 @@ SyncPromoIdentityPillManager::SyncPromoIdentityPillManager(
 SyncPromoIdentityPillManager::~SyncPromoIdentityPillManager() = default;
 
 bool SyncPromoIdentityPillManager::ShouldShowPromo(
-    ProfileMenuAvatarButtonPromoType promo_type) const {
+    ProfileMenuAvatarButtonPromoType promo_type) {
   const AccountInfo account = GetSignedInAccountInfo();
   if (account.gaia.empty()) {
     // If there is no account available, the promo should not be shown (the sync
@@ -496,26 +531,28 @@ bool SyncPromoIdentityPillManager::ShouldShowPromo(
     return false;
   }
 
-  switch (promo_type) {
-    case signin::ProfileMenuAvatarButtonPromoType::kHistorySyncPromo: {
-      CHECK(base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos));
-      const int show_count =
-          signin_prefs_.GetHistorySyncPromoIdentityPillShownCount(account.gaia);
-      const int used_count =
-          signin_prefs_.GetHistorySyncPromoIdentityPillUsedCount(account.gaia);
-      return show_count < max_shown_count_ && used_count < max_used_count_;
-    }
-    case signin::ProfileMenuAvatarButtonPromoType::kSyncPromo: {
-      CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-      const int sync_show_count =
-          signin_prefs_.GetSyncPromoIdentityPillShownCount(account.gaia);
-      const int sync_used_count =
-          signin_prefs_.GetSyncPromoIdentityPillUsedCount(account.gaia);
-      return sync_show_count < max_shown_count_ &&
-             sync_used_count < max_used_count_;
-    }
+  int promo_shown_count = 0;
+  int promo_used_count = 0;
+  if (promo_type == ProfileMenuAvatarButtonPromoType::kSyncPromo) {
+    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+    promo_shown_count =
+        signin_prefs_.GetSyncPromoIdentityPillShownCount(account.gaia);
+    promo_used_count =
+        signin_prefs_.GetSyncPromoIdentityPillUsedCount(account.gaia);
+  } else {
+    base::DictValue& promo_counts =
+        signin_prefs_.GetOrCreateAvatarButtonPromoCountDictionary(account.gaia);
+
+    promo_shown_count =
+        promo_counts.FindInt(GetAvatarButtonPromoShownKey(promo_type))
+            .value_or(0);
+    promo_used_count =
+        promo_counts.FindInt(GetAvatarButtonPromoUsedKey(promo_type))
+            .value_or(0);
   }
+
+  return promo_shown_count < max_shown_count_ &&
+         promo_used_count < max_used_count_;
 }
 
 void SyncPromoIdentityPillManager::RecordPromoShown(
@@ -527,18 +564,17 @@ void SyncPromoIdentityPillManager::RecordPromoShown(
     return;
   }
 
-  switch (promo_type) {
-    case signin::ProfileMenuAvatarButtonPromoType::kHistorySyncPromo:
-      CHECK(base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos));
-      signin_prefs_.IncrementHistorySyncPromoIdentityPillShownCount(
-          account.gaia);
-      return;
-    case signin::ProfileMenuAvatarButtonPromoType::kSyncPromo:
-      CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-      signin_prefs_.IncrementSyncPromoIdentityPillShownCount(account.gaia);
-      return;
+  if (promo_type == ProfileMenuAvatarButtonPromoType::kSyncPromo) {
+    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+    signin_prefs_.IncrementSyncPromoIdentityPillShownCount(account.gaia);
+    return;
   }
+
+  base::DictValue& promo_counts =
+      signin_prefs_.GetOrCreateAvatarButtonPromoCountDictionary(account.gaia);
+  const char* shown_key = GetAvatarButtonPromoShownKey(promo_type);
+  int new_conut = promo_counts.FindInt(shown_key).value_or(0) + 1;
+  promo_counts.Set(shown_key, new_conut);
 }
 
 void SyncPromoIdentityPillManager::RecordPromoUsed(
@@ -550,18 +586,17 @@ void SyncPromoIdentityPillManager::RecordPromoUsed(
     return;
   }
 
-  switch (promo_type) {
-    case signin::ProfileMenuAvatarButtonPromoType::kHistorySyncPromo:
-      CHECK(base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos));
-      signin_prefs_.IncrementHistorySyncPromoIdentityPillUsedCount(
-          account.gaia);
-      return;
-    case signin::ProfileMenuAvatarButtonPromoType::kSyncPromo:
-      CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-      signin_prefs_.IncrementSyncPromoIdentityPillUsedCount(account.gaia);
-      return;
+  if (promo_type == ProfileMenuAvatarButtonPromoType::kSyncPromo) {
+    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+    signin_prefs_.IncrementSyncPromoIdentityPillUsedCount(account.gaia);
+    return;
   }
+
+  base::DictValue& promo_counts =
+      signin_prefs_.GetOrCreateAvatarButtonPromoCountDictionary(account.gaia);
+  const char* used_key = GetAvatarButtonPromoUsedKey(promo_type);
+  int new_conut = promo_counts.FindInt(used_key).value_or(0) + 1;
+  promo_counts.Set(used_key, new_conut);
 }
 
 bool SyncPromoIdentityPillManager::ArePromotionsEnabled() const {

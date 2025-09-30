@@ -111,7 +111,7 @@ class SyncPromoIdentityPillManager : public signin::IdentityManager::Observer {
   SyncPromoIdentityPillManager& operator=(SyncPromoIdentityPillManager&&) =
       delete;
 
-  bool ShouldShowPromo(ProfileMenuAvatarButtonPromoType promo_type) const;
+  bool ShouldShowPromo(ProfileMenuAvatarButtonPromoType promo_type);
   void RecordPromoShown(ProfileMenuAvatarButtonPromoType promo_type);
   void RecordPromoUsed(ProfileMenuAvatarButtonPromoType promo_type);
 

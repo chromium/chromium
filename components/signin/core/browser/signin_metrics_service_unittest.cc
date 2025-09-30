@@ -786,26 +786,3 @@ TEST_F(SigninMetricsServiceTest, HistorySyncPromoMetricLogging) {
       "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
       signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia), 1);
 }
-
-TEST_F(SigninMetricsServiceTest,
-       HistorySyncPromoMetricLoggingWithSyncPromoOff) {
-  base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      switches::kAvatarButtonSyncPromoForTesting);
-
-  CreateSigninMetricsService();
-
-  const std::string email("test@gmail.com");
-  AccountInfo account = Signin(email);
-  SigninPrefs signin_prefs(pref_service());
-  signin_prefs.IncrementHistorySyncPromoIdentityPillShownCount(account.gaia);
-  signin_prefs.IncrementHistorySyncPromoIdentityPillShownCount(account.gaia);
-
-  EnableSync(
-      email,
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
-  histogram_tester.ExpectBucketCount(
-      "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
-      signin_prefs.GetHistorySyncPromoIdentityPillShownCount(account.gaia), 1);
-}

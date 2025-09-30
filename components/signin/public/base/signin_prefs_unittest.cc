@@ -302,3 +302,22 @@ TEST_F(SigninPrefsTest, BookmarkBatchUploadPromo) {
   ASSERT_TRUE(bookmark_batch_upload_info2.second.has_value());
   EXPECT_GT(bookmark_batch_upload_info2.second.value(), reference2);
 }
+
+TEST_F(SigninPrefsTest, DeprecatingPrefsInAccountDict) {
+  const GaiaId gaia_id("gaia_id_1");
+
+  // Increment a random valid pref.
+  signin_prefs().IncrementChromeSigninBubbleRepromptCount(gaia_id);
+  ASSERT_TRUE(HasAccountPrefs(gaia_id));
+  ASSERT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id), 1);
+
+  ASSERT_FALSE(signin_prefs().GetDeprecatedPrefForTesting(gaia_id).has_value());
+
+  signin_prefs().SetDeprecatedPrefForTesting(gaia_id);
+  ASSERT_TRUE(signin_prefs().GetDeprecatedPrefForTesting(gaia_id).has_value());
+
+  // This should clear the deprecated prefs and keep the valid pref.
+  signin_prefs().MigrateObsoleteSigninPrefs();
+  EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id), 1);
+  EXPECT_FALSE(signin_prefs().GetDeprecatedPrefForTesting(gaia_id).has_value());
+}
