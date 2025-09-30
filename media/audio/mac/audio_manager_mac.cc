@@ -244,33 +244,28 @@ AudioDeviceID AudioManagerMac::GetAudioDeviceIdByUId(
   return audio_device_id;
 }
 
-static bool GetDefaultDevice(AudioDeviceID* device, bool input) {
+bool AudioManagerMac::GetDefaultInputDevice(AudioDeviceID* input_device) {
   DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
-  CHECK(device);
-
-  // Obtain the AudioDeviceID of the default input or output AudioDevice.
-  AudioObjectPropertyAddress pa;
-  pa.mSelector = input ? kAudioHardwarePropertyDefaultInputDevice
-                       : kAudioHardwarePropertyDefaultOutputDevice;
-  pa.mScope = kAudioObjectPropertyScopeGlobal;
-  pa.mElement = kAudioObjectPropertyElementMain;
-
-  UInt32 size = sizeof(*device);
-  OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &pa, 0,
-                                               0, &size, device);
-  if ((result != kAudioHardwareNoError) || (*device == kAudioDeviceUnknown)) {
-    DLOG(ERROR) << "Error getting default AudioDevice.";
+  CHECK(input_device);
+  std::optional<AudioDeviceID> device =
+      core_audio_mac::GetDefaultDevice(/*input=*/true);
+  if (!device) {
     return false;
   }
+  *input_device = *device;
   return true;
 }
 
-bool AudioManagerMac::GetDefaultInputDevice(AudioDeviceID* input_device) {
-  return GetDefaultDevice(input_device, true);
-}
-
 bool AudioManagerMac::GetDefaultOutputDevice(AudioDeviceID* output_device) {
-  return GetDefaultDevice(output_device, false);
+  DCHECK(AudioManager::Get()->GetTaskRunner()->BelongsToCurrentThread());
+  CHECK(output_device);
+  std::optional<AudioDeviceID> device =
+      core_audio_mac::GetDefaultDevice(/*input=*/false);
+  if (!device) {
+    return false;
+  }
+  *output_device = *device;
+  return true;
 }
 
 // Returns the total number of channels on a device; regardless of what the
@@ -876,26 +871,12 @@ std::string AudioManagerMac::GetDefaultInputDeviceID() {
 
 std::string AudioManagerMac::GetDefaultDeviceID(bool is_input) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  AudioDeviceID device_id = kAudioObjectUnknown;
-  if (!GetDefaultDevice(&device_id, is_input)) {
+  std::optional<AudioDeviceID> device_id =
+      core_audio_mac::GetDefaultDevice(is_input);
+  if (!device_id) {
     return std::string();
   }
-
-  const AudioObjectPropertyAddress property_address = {
-      kAudioDevicePropertyDeviceUID, kAudioObjectPropertyScopeGlobal,
-      kAudioObjectPropertyElementMain};
-  CFStringRef device_uid = NULL;
-  UInt32 size = sizeof(device_uid);
-  OSStatus status = AudioObjectGetPropertyData(device_id, &property_address, 0,
-                                               NULL, &size, &device_uid);
-  if (status != kAudioHardwareNoError || !device_uid) {
-    return std::string();
-  }
-
-  std::string ret(base::SysCFStringRefToUTF8(device_uid));
-  CFRelease(device_uid);
-
-  return ret;
+  return core_audio_mac::GetDeviceUniqueID(*device_id).value_or(std::string());
 }
 
 AudioInputStream* AudioManagerMac::MakeLinearInputStream(
