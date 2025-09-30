@@ -711,7 +711,7 @@ SharedImageFactory::CreateNativeGpuMemoryBufferHandle(
     const gfx::Size& size,
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return IOSurfaceImageBackingFactory::CreateGpuMemoryBufferHandle(size,
                                                                    format);
 #else
