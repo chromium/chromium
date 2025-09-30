@@ -212,6 +212,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -7031,6 +7032,23 @@ bool ChromeContentBrowserClient::HandleWebUI(
     *url = ReplaceURLHostAndPath(*url, chrome::kChromeUISettingsHost,
                                  chrome::kChromeUIHelpHost);
   }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+
+  // Rewrite chrome://settings/autofill to chrome://settings/yourSavedInfo.
+  if (url->SchemeIs(content::kChromeUIScheme) &&
+      url->host() == chrome::kChromeUISettingsHost &&
+      url->path() == chrome::kChromeUIAutofillPath &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kYourSavedInfoSettingsPage)) {
+    GURL::Replacements replacements;
+    replacements.SetPathStr(chrome::kChromeUIYourSavedInfoPath);
+    *url = url->ReplaceComponents(replacements);
+  }
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   if (url->SchemeIs(content::kChromeUIScheme) &&

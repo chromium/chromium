@@ -54,6 +54,7 @@ inline constexpr char kChromeUIAppsWithDeprecationDialogURL[] =
     "chrome://apps?showDeletionDialog=";
 inline constexpr char kChromeUIAppsWithForceInstalledDeprecationDialogURL[] =
     "chrome://apps?showForceInstallDialog=";
+inline constexpr char kChromeUIAutofillPath[] = "/autofill";
 inline constexpr char kChromeUIAutofillInternalsHost[] = "autofill-internals";
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 inline constexpr char kChromeUIBatchUploadHost[] = "batch-upload";
@@ -407,6 +408,7 @@ inline constexpr char kChromeUIWebuiBrowserHost[] = "webui-browser";
 inline constexpr char kChromeUIWebuiBrowserURL[] = "chrome://webui-browser/";
 inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
 inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
+inline constexpr char kChromeUIYourSavedInfoPath[] = "/yourSavedInfo";
 inline constexpr char kCookiesSubPagePath[] = "/cookies";
 inline constexpr char kTrackingProtectionSubPagePath[] = "/trackingProtection";
 #endif  // BUILDFLAG(IS_ANDROID)

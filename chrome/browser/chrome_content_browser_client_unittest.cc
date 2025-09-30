@@ -49,6 +49,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -1134,6 +1135,24 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectHelpURL) {
   EXPECT_EQ(GURL(chrome::kChromeUIAppDisabledURL), dest_url);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(ChromeContentSettingsRedirectTest, RedirectAutofillURL) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kYourSavedInfoSettingsPage);
+
+  TestChromeContentBrowserClient test_content_browser_client;
+  const GURL help_url("chrome://settings/autofill");
+  GURL dest_url = help_url;
+  test_content_browser_client.HandleWebUI(&dest_url, &profile_);
+  EXPECT_EQ(GURL("chrome://settings/yourSavedInfo"), dest_url);
+}
+
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 class CaptivePortalCheckNetworkContext final
     : public network::TestNetworkContext {
