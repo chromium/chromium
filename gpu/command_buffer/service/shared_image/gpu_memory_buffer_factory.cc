@@ -10,10 +10,6 @@
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 
-#if BUILDFLAG(IS_APPLE)
-#include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_io_surface.h"
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #include "gpu/command_buffer/service/shared_image/gpu_memory_buffer_factory_native_pixmap.h"
 #endif
@@ -24,14 +20,13 @@
 
 namespace gpu {
 
+#if !BUILDFLAG(IS_APPLE)
 // static
 std::unique_ptr<GpuMemoryBufferFactory>
 GpuMemoryBufferFactory::CreateNativeType(
     viz::VulkanContextProvider* vulkan_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> io_runner) {
-#if BUILDFLAG(IS_APPLE)
-  return std::make_unique<GpuMemoryBufferFactoryIOSurface>();
-#elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android does not support creating native GMBs (i.e., from
   // AHardwareBuffers), but the codebase is structured such that it is easier
   // to create a dummy factory than create no factory.
@@ -45,5 +40,6 @@ GpuMemoryBufferFactory::CreateNativeType(
   return nullptr;
 #endif
 }
+#endif
 
 }  // namespace gpu

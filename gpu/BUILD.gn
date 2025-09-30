@@ -555,7 +555,6 @@ test("gpu_unittests") {
   if (is_mac) {
     sources += [
       "command_buffer/client/internal/mappable_buffer_io_surface_unittest.cc",
-      "command_buffer/service/shared_image/gpu_memory_buffer_factory_io_surface_unittest.cc",
     ]
   }
 

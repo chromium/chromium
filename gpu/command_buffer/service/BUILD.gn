@@ -527,8 +527,6 @@ target(link_target_type, "gles2_sources") {
 
   if (is_apple) {
     sources += [
-      "shared_image/gpu_memory_buffer_factory_io_surface.cc",
-      "shared_image/gpu_memory_buffer_factory_io_surface.h",
       "shared_image/iosurface_image_backing.h",
       "shared_image/iosurface_image_backing.mm",
       "shared_image/iosurface_image_backing_factory.h",
