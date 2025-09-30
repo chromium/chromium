@@ -70,13 +70,6 @@
 // Tests that search engine choice dialog is moved to the other active scene
 // when the current scene is removed.
 - (void)testOpenSecondWindow {
-  // TODO(crbug.com/443718522): Re-enable the test.
-#if !TARGET_OS_SIMULATOR
-  if (base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-#endif
-
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
