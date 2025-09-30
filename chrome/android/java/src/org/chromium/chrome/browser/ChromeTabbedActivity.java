@@ -1016,7 +1016,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             getCompositorViewHolderSupplier(),
                             getContentView().findViewById(R.id.coordinator),
                             getToolbarManager(),
-                            mRootUiCoordinator.getScrimManager().getScrimVisibilitySupplier());
+                            mRootUiCoordinator.getScrimManager().getScrimVisibilitySupplier(),
+                            mTopInsetCoordinatorSupplier);
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

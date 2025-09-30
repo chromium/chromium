@@ -41,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -62,6 +63,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -116,12 +118,15 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private ToggleTabStackButton mTabSwitcherButton;
     @Mock private View mToolbar;
     @Mock private NewTabPage mNtp;
+    @Mock private TopInsetCoordinator mTopInsetCoordinator;
     private SceneLayer mSceneLayer;
 
     private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<TopInsetCoordinator> mTopInsetCoordinatorSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Float> mNtpSearchBoxTransitionPercentageSupplier =
             new ObservableSupplierImpl<>(0f);
@@ -180,6 +185,7 @@ public class NewTabAnimationLayoutUnitTest {
         when(mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier())
                 .thenReturn(mNtpSearchBoxTransitionPercentageSupplier);
         mCompositorViewHolderSupplier.set(mCompositorViewHolder);
+        mTopInsetCoordinatorSupplier.set(mTopInsetCoordinator);
         mScrimVisibilitySupplier.set(false);
         doAnswer(
                         invocation -> {
@@ -208,7 +214,8 @@ public class NewTabAnimationLayoutUnitTest {
                                 mAnimationHostView,
                                 mToolbarManager,
                                 mBrowserControlsManager,
-                                mScrimVisibilitySupplier));
+                                mScrimVisibilitySupplier,
+                                mTopInsetCoordinatorSupplier));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
         when(mAnimationHostView.findViewById(R.id.tab_switcher_button))
@@ -346,6 +353,34 @@ public class NewTabAnimationLayoutUnitTest {
                 .removeView(any(NewForegroundTabAnimationHostView.class));
         verify(mTabModelSelector).selectModel(false);
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
+    }
+
+    @Test
+    public void testOnTabCreated_tabCreatedInForeground_topPadding() {
+        when(mNewTab.isNativePage()).thenReturn(true);
+        when(mNewTab.getNativePage()).thenReturn(mNtp);
+        when(mNtp.supportsEdgeToEdgeOnTop()).thenReturn(true);
+        when(mTopInsetCoordinator.getSystemTopInset()).thenReturn(100);
+        when(mBrowserControlsManager.getContentOffset()).thenReturn(50);
+
+        mNewTabAnimationLayout.onTabCreated(
+                FAKE_TIME,
+                NEW_TAB_ID,
+                /* index= */ 1,
+                CURRENT_TAB_ID,
+                /* newIsIncognito= */ false,
+                /* background= */ false,
+                /* originX= */ 0f,
+                /* originY= */ 0f);
+
+        mNewTabAnimationLayout.updateSceneLayer(null, null, null, null, mBrowserControlsManager);
+
+        LayoutTab layoutTab = mNewTabAnimationLayout.getLayoutTabsToRender()[0];
+        assertEquals(
+                "Top padding should be applied.",
+                150,
+                layoutTab.get(LayoutTab.CONTENT_OFFSET),
+                MathUtils.EPSILON);
     }
 
     @Test

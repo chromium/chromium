@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayou
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.NewTabAnimationUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -38,8 +39,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
     private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final ToolbarManager mToolbarManager;
+    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final ToolbarManager mToolbarManager;
     private final ViewGroup mContentView;
     private Layout mSimpleAnimationLayout;
 
@@ -71,7 +73,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup contentView,
             ToolbarManager toolbarManager,
-            ObservableSupplier<Boolean> scrimVisibilitySupplier) {
+            ObservableSupplier<Boolean> scrimVisibilitySupplier,
+            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier) {
         super(
                 host,
                 contentContainer,
@@ -84,6 +87,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         mContentView = contentView;
         mToolbarManager = toolbarManager;
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
     }
 
     @Override
@@ -118,7 +122,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                             mContentView,
                             mToolbarManager,
                             getBrowserControlsManager(),
-                            mScrimVisibilitySupplier);
+                            mScrimVisibilitySupplier,
+                            mTopInsetCoordinatorSupplier);
         } else {
             mSimpleAnimationLayout =
                     new SimpleAnimationLayout(context, this, renderHost, getContentContainer());

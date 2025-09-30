@@ -1364,6 +1364,11 @@ public class NewTabPageLayout extends LinearLayout
                 getPaddingBottom());
     }
 
+    /** Returns the top inset of the NTP. */
+    int getTopInset() {
+        return mTopInset;
+    }
+
     private boolean isInSingleUrlMode() {
         return mSearchProviderHasLogo || mIsOmniboxMobileParityUpdateV2Enabled;
     }

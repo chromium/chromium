@@ -49,6 +49,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuData;
 import org.chromium.chrome.browser.tab.TabId;
@@ -95,17 +97,22 @@ public class NewTabAnimationLayout extends Layout {
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final CustomTabCount mCustomTabCount;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserVisibilityDelegate;
+    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
+    private final Callback<TopInsetCoordinator> mTopInsetCoordinatorObserver =
+            this::onTopInsetCoordinatorAvailable;
 
     private @Nullable StaticTabSceneLayer mSceneLayer;
     private @Nullable NewBackgroundTabAnimationHostView mBackgroundHostView;
     private @Nullable NewForegroundTabAnimationHostView mForegroundHostView;
     private @Nullable AnimatorSet mTabCreatedBackgroundAnimation;
+    private @Nullable TopInsetCoordinator mTopInsetCoordinator;
     private @Nullable Runnable mAnimationRunnable;
     private @Nullable Runnable mTimeoutRunnable;
     private @Nullable Callback<Boolean> mVisibilityObserver;
     private @TabId int mNextTabId = Tab.INVALID_TAB_ID;
     private int mBrowserControlsVisibilityToken = TokenHolder.INVALID_TOKEN;
     private int mCustomTabCountToken = TokenHolder.INVALID_TOKEN;
+    private int mTopPadding;
     private boolean mSkipForceAnimationToFinish;
     private boolean mRunOnNextLayoutImmediatelyForTesting;
 
@@ -133,7 +140,8 @@ public class NewTabAnimationLayout extends Layout {
             ViewGroup animationHostView,
             ToolbarManager toolbarManager,
             BrowserControlsManager browserControlsManager,
-            ObservableSupplier<Boolean> scrimVisibilitySupplier) {
+            ObservableSupplier<Boolean> scrimVisibilitySupplier,
+            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier) {
         super(context, updateHost, renderHost);
         mLayoutStateProvider = layoutStateProvider;
         mContentContainer = contentContainer;
@@ -146,6 +154,8 @@ public class NewTabAnimationLayout extends Layout {
         mCustomTabCount = mToolbarManager.getCustomTabCount();
         mBrowserVisibilityDelegate = browserControlsManager.getBrowserVisibilityDelegate();
         mLogsEnabled = ChromeFeatureList.sShowNewTabAnimationsLogs.getValue();
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
+        topInsetCoordinatorSupplier.addSyncObserverAndCallIfNonNull(mTopInsetCoordinatorObserver);
     }
 
     @Override
@@ -155,6 +165,9 @@ public class NewTabAnimationLayout extends Layout {
 
     @Override
     public void destroy() {
+        if (mTopInsetCoordinator == null) {
+            mTopInsetCoordinatorSupplier.removeObserver(mTopInsetCoordinatorObserver);
+        }
         if (mSceneLayer != null) {
             mSceneLayer.destroy();
             mSceneLayer = null;
@@ -265,6 +278,7 @@ public class NewTabAnimationLayout extends Layout {
             float originX,
             float originY) {
         assert mTabModelSelector != null;
+        mTopPadding = 0;
         Tab newTab = mTabModelSelector.getModel(newIsIncognito).getTabById(id);
         if (newTab != null
                 && newTab.getLaunchType() == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
@@ -318,8 +332,8 @@ public class NewTabAnimationLayout extends Layout {
             tabCreatedInBackground(oldTab, isRegularNtp, x, y, visibilitySupplier);
         } else {
             assumeNonNull(newTab);
-            tabCreatedInForeground(
-                    id, sourceId, newIsIncognito, getForegroundRectStart(oldTab, newTab));
+            mTopPadding = getTopInsetIfNeeded(newTab);
+            tabCreatedInForeground(id, sourceId, newIsIncognito, oldTab, newTab);
         }
     }
 
@@ -344,7 +358,7 @@ public class NewTabAnimationLayout extends Layout {
 
         LayoutTab layoutTab = getLayoutTab();
         layoutTab.set(LayoutTab.IS_ACTIVE_LAYOUT, isActive());
-        layoutTab.set(LayoutTab.CONTENT_OFFSET, browserControls.getContentOffset());
+        layoutTab.set(LayoutTab.CONTENT_OFFSET, browserControls.getContentOffset() + mTopPadding);
         mSceneLayer.update(layoutTab);
     }
 
@@ -508,10 +522,15 @@ public class NewTabAnimationLayout extends Layout {
      * @param id The id of the new tab to animate.
      * @param sourceId The id of the tab that spawned this new tab.
      * @param newIsIncognito True if the new tab is an incognito tab.
-     * @param rectStart Origin point where the animation starts.
+     * @param oldTab The current {@link Tab}.
+     * @param newTab The new {@link Tab} to animate.
      */
     private void tabCreatedInForeground(
-            @TabId int id, @TabId int sourceId, boolean newIsIncognito, @RectStart int rectStart) {
+            @TabId int id,
+            @TabId int sourceId,
+            boolean newIsIncognito,
+            @Nullable Tab oldTab,
+            Tab newTab) {
         LayoutTab newLayoutTab = createLayoutTab(id, newIsIncognito);
         if (mLayoutTabs == null || mLayoutTabs.length == 0) {
             mLayoutTabs = new LayoutTab[] {newLayoutTab};
@@ -539,6 +558,7 @@ public class NewTabAnimationLayout extends Layout {
         Rect finalRect = new Rect();
         Rect hostViewRect = new Rect();
         mAnimationHostView.getGlobalVisibleRect(hostViewRect);
+        @RectStart int rectStart = getForegroundRectStart(oldTab, newTab);
 
         if (rectStart != RectStart.CENTER) {
             RectF compositorViewportRectf = new RectF();
@@ -576,6 +596,22 @@ public class NewTabAnimationLayout extends Layout {
 
             // 0 instead of -1 since the rect is not expanding from this corner.
             finalRect.top = 0;
+        }
+
+        if (mTopInsetCoordinator != null) {
+            // Adjust rect proportions for top padding in E2E.
+            final boolean isNewTabE2E = mTopPadding > 0;
+            final boolean isOldTabE2E = NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(oldTab);
+            if (isNewTabE2E && isOldTabE2E) {
+                // Case: E2E -> E2E.
+                finalRect.top += mTopPadding;
+            } else if (isNewTabE2E) {
+                // Case: non-E2E -> E2E, or null -> E2E.
+                finalRect.offset(0, mTopPadding);
+            } else if (isOldTabE2E) {
+                // Case: E2E -> non-E2E.
+                finalRect.bottom -= mTopInsetCoordinator.getSystemTopInset();
+            }
         }
 
         NewTabAnimationUtils.updateRects(rectStart, isRtl, initialRect, finalRect);
@@ -687,6 +723,8 @@ public class NewTabAnimationLayout extends Layout {
         ObservableSupplier<Float> ntpSearchBoxTransitionPercentageSupplier =
                 mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier();
 
+        int toolbarHeight = toolbarPosition[1] + getTopInsetIfNeeded(animationTab);
+
         mBackgroundHostView.setUpAnimation(
                 tabSwitcherButton,
                 isRegularNtp,
@@ -694,7 +732,7 @@ public class NewTabAnimationLayout extends Layout {
                 isTopToolbar,
                 toolbarColor,
                 prevTabCount,
-                toolbarPosition[1],
+                toolbarHeight,
                 compositorViewRect.top,
                 compositorViewRect.left,
                 ntpSearchBoxTransitionPercentageSupplier.get());
@@ -813,6 +851,19 @@ public class NewTabAnimationLayout extends Layout {
                     mBrowserControlsVisibilityToken);
             mBrowserControlsVisibilityToken = TokenHolder.INVALID_TOKEN;
         }
+    }
+
+    private int getTopInsetIfNeeded(@Nullable Tab tab) {
+        if (mTopInsetCoordinator != null
+                && NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(tab)) {
+            return mTopInsetCoordinator.getSystemTopInset();
+        }
+        return 0;
+    }
+
+    private void onTopInsetCoordinatorAvailable(TopInsetCoordinator topInsetCoordinator) {
+        mTopInsetCoordinatorSupplier.removeObserver(mTopInsetCoordinatorObserver);
+        mTopInsetCoordinator = topInsetCoordinator;
     }
 
     protected void setRunOnNextLayoutImmediatelyForTesting(boolean runImmediately) {

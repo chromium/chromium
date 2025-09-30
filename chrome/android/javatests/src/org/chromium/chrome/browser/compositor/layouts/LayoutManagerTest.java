@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -104,6 +105,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private HubLayoutDependencyHolder mHubLayoutDependencyHolder;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    @Mock private ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     @Mock private ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
@@ -234,7 +236,8 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                         mCompositorViewHolderSupplier,
                         mContentView,
                         mToolbarManager,
-                        mScrimVisibilitySupplier);
+                        mScrimVisibilitySupplier,
+                        mTopInsetCoordinatorSupplier);
 
         tabContentManagerSupplier.set(tabContentManager);
         mManager = mManagerPhone;

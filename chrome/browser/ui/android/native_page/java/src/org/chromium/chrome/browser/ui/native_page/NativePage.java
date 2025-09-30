@@ -101,6 +101,11 @@ public interface NativePage {
         return false;
     }
 
+    /** Returns the top inset of the native page. */
+    default int getTopInset() {
+        return 0;
+    }
+
     /** Updates the native page based on the given url. */
     void updateForUrl(String url);
 

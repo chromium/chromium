@@ -631,6 +631,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.compositor") {
   deps = [
     ":chrome_test_java_helper",
     "//base:holder_java",
+    "//chrome/browser/ntp_customization:java",
   ]
 }
 
@@ -1582,6 +1583,7 @@ android_library("chrome_test_java_various") {
   deps = [
     ":chrome_test_java_helper",
     "//base:holder_java",
+    "//chrome/browser/ntp_customization:java",
     "//components/browser_ui/http_auth/android:java",
   ]
 }

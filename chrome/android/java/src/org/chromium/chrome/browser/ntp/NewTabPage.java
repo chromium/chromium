@@ -1225,6 +1225,11 @@ public class NewTabPage
         mNewTabPageLayout.reload();
     }
 
+    @Override
+    public int getTopInset() {
+        return mNewTabPageLayout.getTopInset();
+    }
+
     // InvalidationAwareThumbnailProvider
 
     @Override

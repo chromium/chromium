@@ -293,6 +293,11 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer {
         refreshWindowInsets(newType != NtpBackgroundImageType.DEFAULT);
     }
 
+    /** Returns the system's top inset. */
+    public int getSystemTopInset() {
+        return mSystemInsets.top;
+    }
+
     // Adds observers which track Tab and Layout transitions and are only needed when the customized
     // background is selected for NTPs.
     private void addObservers() {

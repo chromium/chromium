@@ -263,9 +263,12 @@ public class TabContentManager {
     }
 
     private @Nullable Bitmap readbackNativeView(
-            View viewToDraw, float scale, NativePage nativePage) {
+            View viewToDraw, float scale, @Nullable NativePage nativePage) {
         Bitmap bitmap;
         float overlayTranslateY = mBrowserControlsStateProvider.getTopVisibleContentOffset();
+        if (nativePage != null) {
+            overlayTranslateY += nativePage.getTopInset();
+        }
 
         float leftMargin = 0.f;
         float topMargin = 0.f;
