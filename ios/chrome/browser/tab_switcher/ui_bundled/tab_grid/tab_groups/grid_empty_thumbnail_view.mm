@@ -79,7 +79,9 @@ const CGFloat kGridCellBarHeight = 22;
     case EmptyThumbnailLayoutTypeCenteredPortrait:
       [NSLayoutConstraint activateConstraints:_portraitCenteredConstraints];
       _stackView.alignment = UIStackViewAlignmentLeading;
-      _stackView.spacing = kLargeSpacingGroup;
+      _stackView.spacing = _type == EmptyThumbnailTypeGridCell
+                               ? kLargeSpacingGroup
+                               : kSmallVerticalSpacing;
       break;
     case EmptyThumbnailLayoutTypeLandscape:
       [NSLayoutConstraint activateConstraints:_landscapeConstraints];
