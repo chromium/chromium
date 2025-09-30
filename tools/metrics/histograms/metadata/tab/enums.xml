@@ -306,12 +306,12 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(TabGroupingTransitionType) -->
 
 <enum name="TabGroupingTransitionType">
-  <int value="-1" label="Invalid type"/>
-  <int value="0" label="Active tab was ungrouped, new tab was left ungrouped"/>
-  <int value="1" label="Active tab was ungrouped, new tab later grouped"/>
-  <int value="2" label="Active tab was grouped, new tab left ungrouped"/>
-  <int value="3" label="Active tab was grouped, new tab left in that group"/>
-  <int value="4"
+  <int value="0" label="Invalid type"/>
+  <int value="1" label="Active tab was ungrouped, new tab was left ungrouped"/>
+  <int value="2" label="Active tab was ungrouped, new tab later grouped"/>
+  <int value="3" label="Active tab was grouped, new tab left ungrouped"/>
+  <int value="4" label="Active tab was grouped, new tab left in that group"/>
+  <int value="5"
       label="Active tab was grouped, new tab put in different group"/>
 </enum>
 

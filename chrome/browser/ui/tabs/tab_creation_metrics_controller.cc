@@ -97,7 +97,7 @@ void TabCreationMetricsController::RecordTabGroupingTransition(
       type = TabGroupingTransitionType::kGroupedToOutsidePreviousGroup;
     }
   }
-  base::UmaHistogramEnumeration("Tab.GroupingTransition", type);
+  base::UmaHistogramEnumeration("Tab.GroupingTransition2", type);
 }
 
 }  // namespace tabs

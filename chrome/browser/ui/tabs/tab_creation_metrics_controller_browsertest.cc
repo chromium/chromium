@@ -25,7 +25,7 @@
 
 namespace tabs {
 
-constexpr char kHistogramName[] = "Tab.GroupingTransition";
+constexpr char kHistogramName[] = "Tab.GroupingTransition2";
 
 class TabCreationMetricsTest : public InProcessBrowserTest {
  public:

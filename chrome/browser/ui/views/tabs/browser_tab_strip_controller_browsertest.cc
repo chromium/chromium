@@ -26,7 +26,7 @@ ui::MouseEvent dummy_event_ = ui::MouseEvent(ui::EventType::kMousePressed,
                                              0,
                                              0);
 
-constexpr char kHistogramName[] = "Tab.GroupingTransition";
+constexpr char kHistogramName[] = "Tab.GroupingTransition2";
 }  // namespace
 
 class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
