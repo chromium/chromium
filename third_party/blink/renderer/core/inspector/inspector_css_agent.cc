@@ -364,6 +364,7 @@ enum ForcePseudoClassFlags {
   kPseudoAutofill = 1 << 22,
   kPseudoLink = 1 << 23,
   kPseudoOpen = 1 << 24,
+  kPseudoTargetCurrent = 1 << 25,
 };
 
 static unsigned ComputePseudoClassMask(
@@ -374,6 +375,7 @@ static unsigned ComputePseudoClassMask(
   DEFINE_STATIC_LOCAL(String, focusVisible, ("focus-visible"));
   DEFINE_STATIC_LOCAL(String, focusWithin, ("focus-within"));
   DEFINE_STATIC_LOCAL(String, target, ("target"));
+  DEFINE_STATIC_LOCAL(String, targetCurrent, ("target-current"));
   // Specific pseudo states
   DEFINE_STATIC_LOCAL(String, enabled, ("enabled"));
   DEFINE_STATIC_LOCAL(String, disabled, ("disabled"));
@@ -412,6 +414,8 @@ static unsigned ComputePseudoClassMask(
       result |= kPseudoFocusWithin;
     } else if (pseudo_class == target) {
       result |= kPseudoTarget;
+    } else if (pseudo_class == targetCurrent) {
+      result |= kPseudoTargetCurrent;
     } else if (pseudo_class == enabled) {
       result |= kPseudoEnabled;
     } else if (pseudo_class == disabled) {
@@ -1106,6 +1110,9 @@ void InspectorCSSAgent::ForcePseudoState(Element* element,
       break;
     case CSSSelector::kPseudoTarget:
       force = forced_pseudo_state & kPseudoTarget;
+      break;
+    case CSSSelector::kPseudoTargetCurrent:
+      force = forced_pseudo_state & kPseudoTargetCurrent;
       break;
     case CSSSelector::kPseudoEnabled:
       force = forced_pseudo_state & kPseudoEnabled;

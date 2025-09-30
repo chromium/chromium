@@ -2658,6 +2658,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       break;
     }
     case CSSSelector::kPseudoTargetCurrent: {
+      probe::ForcePseudoState(&element, CSSSelector::kPseudoTargetCurrent,
+                              &force_pseudo_state);
+      if (force_pseudo_state) {
+        return true;
+      }
       if (element.IsScrollMarkerPseudoElement()) {
         return To<ScrollMarkerPseudoElement>(element).IsSelected();
       }
