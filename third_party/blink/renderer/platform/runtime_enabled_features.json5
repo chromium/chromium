@@ -2954,6 +2954,7 @@
         "Mac": "stable",
         "Linux": "stable",
         "ChromeOS": "stable",
+        "Android": "test",
         "default": "",
       },
       origin_trial_feature_name: "LanguageDetectionAPI",
