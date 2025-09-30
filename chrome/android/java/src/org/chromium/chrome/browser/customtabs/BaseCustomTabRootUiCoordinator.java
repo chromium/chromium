@@ -785,8 +785,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                 IntentUtils.addTrustedIntentExtras(fullHistoryIntent);
                                 mActivity.startActivity(fullHistoryIntent);
                             },
-                            this::setHeaderAsOverlay);
-            mBrowserControlsManager.addObserver(mWebAppHeaderLayoutCoordinator);
+                            this::setHeaderAsOverlay,
+                            mBrowserControlsManager);
         }
     }
 

@@ -44,6 +44,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
@@ -92,6 +93,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Mock public WebappExtras mWebAppExtras;
     @Mock public Tab mTab;
     @Mock public Callback<Boolean> mSetHeaderAsOverlayCallback;
+    @Mock public BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private WebAppHeaderLayoutCoordinator mCoordinator;
     private Activity mActivity;
@@ -131,7 +133,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         mIntentDataProvider,
                         mScrimManager,
                         mHistoryDelegate,
-                        mSetHeaderAsOverlayCallback);
+                        mSetHeaderAsOverlayCallback,
+                        mBrowserControlsStateProvider);
     }
 
     private void setupDesktopWindowing(boolean isInDesktopWindow) {

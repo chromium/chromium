@@ -80,6 +80,7 @@ public class WebAppHeaderLayoutCoordinator
     private boolean mShowButtons;
     private long mLastButtonVisibilityChangeTime;
     private final Callback<Boolean> mSetHeaderAsOverlayCallback;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -95,7 +96,8 @@ public class WebAppHeaderLayoutCoordinator
             BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
             ScrimManager scrimManager,
             NavigationPopup.HistoryDelegate historyDelegate,
-            Callback<Boolean> setHeaderAsOverlayCallback) {
+            Callback<Boolean> setHeaderAsOverlayCallback,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         assert browserServicesIntentDataProvider.isWebApkActivity()
                 || browserServicesIntentDataProvider.isTrustedWebActivity();
 
@@ -105,6 +107,9 @@ public class WebAppHeaderLayoutCoordinator
         mDisabledControlsHolder = new TokenHolder(this::updateControlsEnabledState);
         mScrimManager = scrimManager;
         mSetHeaderAsOverlayCallback = setHeaderAsOverlayCallback;
+
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mBrowserControlsStateProvider.addObserver(this);
 
         mViewStub = viewStub;
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
@@ -159,6 +164,10 @@ public class WebAppHeaderLayoutCoordinator
                         mDisplayMode,
                         mSetHeaderAsOverlayCallback);
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
+
+        // Initial visibility state must be initialized after mediator is initialized.
+        onAndroidControlsVisibilityChanged(
+                mBrowserControlsStateProvider.getAndroidControlsVisibility());
 
         mMediator.getUnoccludedWidthSupplier().addObserver(mOnUnoccludedWidthCallback);
         if (mDisplayMode == DisplayMode.MINIMAL_UI) {
@@ -298,6 +307,7 @@ public class WebAppHeaderLayoutCoordinator
         logControlsVisibilityChange(mAppHeaderUnoccludedWidthPx >= mMinUIControlsMinWidthPx);
 
         mDesktopWindowStateManager.removeObserver(this);
+        mBrowserControlsStateProvider.removeObserver(this);
 
         if (mView != null) {
             mView.destroy();

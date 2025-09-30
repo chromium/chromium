@@ -141,7 +141,10 @@ class WebAppHeaderLayoutMediator
 
     private void updateHeaderAsOverlay() {
         mHeaderAsOverlay =
-                mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY && !mBrowserControlsVisible;
+                mCurrentHeaderState != null
+                        && mCurrentHeaderState.isInDesktopWindow()
+                        && mDisplayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
+                        && !mBrowserControlsVisible;
         mSetHeaderAsOverlayCallback.onResult(mHeaderAsOverlay);
         updateBackgroundBars();
         updateNonDraggableAreas();
