@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/host/glic_actor_interactive_uitest_common.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_test.h"
@@ -16,9 +17,10 @@ using apc::ClickAction;
 using ClickType = ClickAction::ClickType;
 using ClickCount = ClickAction::ClickCount;
 
+constexpr std::string_view kClickableButtonLabel = "clickable";
+
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  constexpr std::string_view kClickableButtonLabel = "clickable";
 
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
@@ -31,9 +33,35 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionSucceeds) {
                   WaitForJsResult(kNewActorTabId, "expect_single_left_click"));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicActorUiTest, ClickActionWithCoordinatesSucceeds) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  constexpr std::string_view kClickableButtonSelector = "clickable";
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+  gfx::Rect clickable_button_bounds;
+
+  auto click_provider =
+      base::BindLambdaForTesting([&clickable_button_bounds, this]() {
+        gfx::Point coordinate = clickable_button_bounds.CenterPoint();
+        apc::Actions action =
+            actor::MakeClick(tab_handle_, coordinate, apc::ClickAction::LEFT,
+                             apc::ClickAction::SINGLE);
+
+        action.set_task_id(task_id_.value());
+        return EncodeActionProto(action);
+      });
+
+  RunTestSequence(InitializeWithOpenGlicWindow(),
+                  StartActorTaskInNewTab(task_url, kNewActorTabId),
+                  GetPageContextFromFocusedTab(),
+                  GetClientRect(kNewActorTabId, kClickableButtonSelector,
+                                clickable_button_bounds),
+                  ExecuteAction(std::move(click_provider)),
+                  WaitForJsResult(kNewActorTabId, "expect_single_left_click"));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  constexpr std::string_view kClickableButtonLabel = "clickable";
 
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
@@ -48,7 +76,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblClickActionSucceeds) {
 
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, RightClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  constexpr std::string_view kClickableButtonLabel = "clickable";
 
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
@@ -63,7 +90,6 @@ IN_PROC_BROWSER_TEST_F(GlicActorUiTest, RightClickActionSucceeds) {
 
 IN_PROC_BROWSER_TEST_F(GlicActorUiTest, DblRightClickActionSucceeds) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
-  constexpr std::string_view kClickableButtonLabel = "clickable";
 
   const GURL task_url =
       embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
