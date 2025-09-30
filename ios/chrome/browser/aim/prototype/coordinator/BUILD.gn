@@ -16,6 +16,9 @@ source_set("coordinator") {
     "aim_prototype_entrypoint.h",
     "aim_prototype_mediator.h",
     "aim_prototype_mediator.mm",
+    "aim_prototype_navigation_mediator.h",
+    "aim_prototype_navigation_mediator.mm",
+    "aim_prototype_url_loader.h",
   ]
   deps = [
     "//components/application_locale_storage",
@@ -60,6 +63,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/browser/variations/model/client",

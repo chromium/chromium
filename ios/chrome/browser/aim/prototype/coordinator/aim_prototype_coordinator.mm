@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_omnibox_client.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_entrypoint.h"
 #import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_mediator.h"
+#import "ios/chrome/browser/aim/prototype/coordinator/aim_prototype_navigation_mediator.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_view_controller.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
@@ -45,7 +46,7 @@ namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
-@interface AIMPrototypeCoordinator () <AIMPrototypeMediatorDelegate,
+@interface AIMPrototypeCoordinator () <AIMPrototypeNavigationMediatorDelegate,
                                        AIMPrototypeViewControllerDelegate,
                                        LocationBarModelDelegateWebStateProvider,
                                        LocationBarURLLoader,
@@ -60,6 +61,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 @implementation AIMPrototypeCoordinator {
   AIMPrototypeViewController* _viewController;
   AIMPrototypeMediator* _mediator;
+  AIMPrototypeNavigationMediator* _navigationMediator;
   id<VoiceSearchController> _voiceSearchController;
   /// The prewarmed picker as it takes time to appear.
   PHPickerViewController* _picker;
@@ -110,15 +112,22 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
           /*send_lns_surface=*/false,
           /*enable_multi_context_input_flow=*/false);
 
+  web::WebState::CreateParams params =
+      web::WebState::CreateParams(self.profile);
+  _navigationMediator = [[AIMPrototypeNavigationMediator alloc]
+      initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
+                      webStateParams:params];
+  _navigationMediator.consumer = _viewController;
+  _navigationMediator.delegate = self;
+
   FaviconLoader* faviconLoader =
       IOSChromeFaviconLoaderFactory::GetForProfile(self.profile);
   _mediator = [[AIMPrototypeMediator alloc]
-      initWithUrlLoadingBrowserAgent:urlLoadingBrowserAgent
-           composeboxQueryController:std::move(composeboxQueryController)
-                        webStateList:self.browser->GetWebStateList()
-                       faviconLoader:faviconLoader];
+      initWithComposeboxQueryController:std::move(composeboxQueryController)
+                           webStateList:self.browser->GetWebStateList()
+                          faviconLoader:faviconLoader];
+  _mediator.urlLoader = _navigationMediator;
   _mediator.consumer = _viewController;
-  _mediator.delegate = self;
   _viewController.mutator = _mediator;
   _voiceSearchController.dispatcher = _mediator;
 
@@ -164,6 +173,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   _voiceSearchController = nil;
   [_mediator disconnect];
   _mediator = nil;
+  [_navigationMediator disconnect];
+  _navigationMediator = nil;
   [_omniboxCoordinator endEditing];
   [_omniboxCoordinator stop];
   _omniboxCoordinator = nil;
@@ -279,9 +290,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [picker dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - AIMPrototypeMediatorDelegate
+#pragma mark - AIMPrototypeNavigationMediatorDelegate
 
-- (void)dismissAimPrototype {
+- (void)dismissAIMPrototype {
   id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   [commands hideAIMPrototype];
@@ -321,7 +332,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }
 
-  [self dismissAimPrototype];
+  [self dismissAIMPrototype];
 }
 
 #pragma mark - LocationBarModelDelegateWebStateProvider

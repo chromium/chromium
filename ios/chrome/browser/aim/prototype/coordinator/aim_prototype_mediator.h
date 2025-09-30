@@ -15,17 +15,11 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 
+@protocol AIMPrototypeURLLoader;
 class ComposeboxQueryControllerIOS;
-@class AIMPrototypeMediator;
-class UrlLoadingBrowserAgent;
 class FaviconLoader;
 class GURL;
 class WebStateList;
-
-// Delegate for the AIM prototype mediator.
-@protocol AIMPrototypeMediatorDelegate
-- (void)dismissAimPrototype;
-@end
 
 // Mediator for the AIM prototype.
 @interface AIMPrototypeMediator : NSObject <AIMOmniboxClientDelegate,
@@ -34,15 +28,13 @@ class WebStateList;
                                             LoadQueryCommands>
 
 @property(nonatomic, weak) id<AIMPrototypeConsumer> consumer;
-@property(nonatomic, weak) id<AIMPrototypeMediatorDelegate> delegate;
+@property(nonatomic, weak) id<AIMPrototypeURLLoader> urlLoader;
 
-- (instancetype)initWithUrlLoadingBrowserAgent:
-                    (UrlLoadingBrowserAgent*)urlLoadingBrowserAgent
-                     composeboxQueryController:
-                         (std::unique_ptr<ComposeboxQueryControllerIOS>)
-                             composeboxQueryController
-                                  webStateList:(WebStateList*)webStateList
-                                 faviconLoader:(FaviconLoader*)faviconLoader;
+- (instancetype)initWithComposeboxQueryController:
+                    (std::unique_ptr<ComposeboxQueryControllerIOS>)
+                        composeboxQueryController
+                                     webStateList:(WebStateList*)webStateList
+                                    faviconLoader:(FaviconLoader*)faviconLoader;
 
 - (void)disconnect;
 

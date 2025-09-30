@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_animation_context_provider.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_consumer.h"
 #import "ios/chrome/browser/aim/prototype/ui/aim_prototype_mutator.h"
+#import "ios/chrome/browser/aim/prototype/ui/aim_prototype_navigation_consumer.h"
 
 @protocol AIMPrototypeMutator;
 @class AIMPrototypeViewController;
@@ -32,7 +33,8 @@
 // View controller for the AIM prototype.
 @interface AIMPrototypeViewController
     : UIViewController <AIMPrototypeAnimationContextProvider,
-                        AIMPrototypeConsumer>
+                        AIMPrototypeConsumer,
+                        AIMPrototypeNavigationConsumer>
 
 @property(nonatomic, weak) id<AIMPrototypeViewControllerDelegate> delegate;
 @property(nonatomic, weak) id<AIMPrototypeMutator> mutator;
