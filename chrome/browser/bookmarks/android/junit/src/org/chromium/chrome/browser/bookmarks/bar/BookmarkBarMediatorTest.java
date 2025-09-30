@@ -281,6 +281,10 @@ public class BookmarkBarMediatorTest {
                 .set(
                         BookmarkBarButtonProperties.TEXT_APPEARANCE_ID,
                         R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light);
+        verify(mAllBookmarksButtonModel)
+                .set(
+                        BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID,
+                        R.drawable.default_chip_ripple_baseline);
     }
 
     @Test
@@ -319,5 +323,10 @@ public class BookmarkBarMediatorTest {
                 "New folder item should have the light icon tint",
                 R.color.default_icon_color_light_tint_list,
                 itemModel.get(BookmarkBarButtonProperties.ICON_TINT_LIST_ID));
+
+        assertEquals(
+                "New item should have the baseline background",
+                R.drawable.default_chip_ripple_baseline,
+                itemModel.get(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID));
     }
 }

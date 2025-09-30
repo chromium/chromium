@@ -62,6 +62,10 @@ class BookmarkBarButtonProperties {
     public static final ReadableObjectPropertyKey<BookmarkItem> BOOKMARK_ITEM =
             new ReadableObjectPropertyKey<>();
 
+    /** The background drawable for this button. */
+    public static final WritableIntPropertyKey BACKGROUND_DRAWABLE_ID =
+            new WritableIntPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 CLICK_CALLBACK,
@@ -71,6 +75,7 @@ class BookmarkBarButtonProperties {
                 TITLE,
                 FOLDER_CONTENT_DESCRIPTION,
                 TEXT_APPEARANCE_ID,
-                BOOKMARK_ITEM
+                BOOKMARK_ITEM,
+                BACKGROUND_DRAWABLE_ID
             };
 }
