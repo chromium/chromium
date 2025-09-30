@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom-data-view.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -418,6 +419,11 @@ void Host::DetachPanel(GlicPageHandler* page_handler) {
   if (handler_info_ && handler_info_->page_handler == page_handler) {
     delegate_->Detach();
   }
+}
+
+void Host::ClosePanel(GlicPageHandler* page_handler) {
+  delegate_->ClosePanel();
+  glic_service().GetScreenshotCapturer().CloseScreenPicker();
 }
 
 void Host::SetPanelDraggableAreas(

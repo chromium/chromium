@@ -41,6 +41,7 @@ class GlicFloatingUi : public GlicUiEmbedder, public Host::EmbedderDelegate {
   void SwitchConversation(
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  void ClosePanel() override;
 
  private:
   std::unique_ptr<views::View> CreateView();

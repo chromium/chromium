@@ -119,7 +119,7 @@ Profile* GlicProfileManager::GetProfileForLaunch() const {
 void GlicProfileManager::SetActiveGlic(GlicKeyedService* glic) {
   if (last_active_glic_ && last_active_glic_.get() != glic &&
       last_active_glic_->IsWindowShowing()) {
-    last_active_glic_->ClosePanel();
+    last_active_glic_->window_controller().Close();
   }
   Profile* last_active_glic_profile = nullptr;
   if (glic) {
@@ -245,7 +245,7 @@ void GlicProfileManager::ShowProfilePicker() {
       &GlicProfileManager::DidSelectProfile, weak_ptr_factory_.GetWeakPtr());
   // If the panel is not closed it will be on top of the profile picker.
   if (last_active_glic_) {
-    last_active_glic_->ClosePanel();
+    last_active_glic_->window_controller().Close();
   }
   ProfilePicker::Show(
       ProfilePicker::Params::ForGlicManager(std::move(callback)));

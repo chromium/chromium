@@ -867,7 +867,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
-  void ClosePanel() override { glic_service_->ClosePanel(); }
+  void ClosePanel() override { host().ClosePanel(page_handler_); }
 
   void ClosePanelAndShutdown() override {
     // Despite the name, CloseUI here tears down the web client in addition to
@@ -1730,13 +1730,13 @@ content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
 }
 
 void GlicPageHandler::ClosePanel(ClosePanelCallback callback) {
-  GetGlicService()->ClosePanel();
+  host().ClosePanel(this);
   std::move(callback).Run();
 }
 
 void GlicPageHandler::OpenProfilePickerAndClosePanel() {
   glic::GlicProfileManager::GetInstance()->ShowProfilePicker();
-  GetGlicService()->ClosePanel();
+  host().ClosePanel(this);
 }
 
 void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
@@ -1746,7 +1746,7 @@ void GlicPageHandler::OpenDisabledByAdminLinkAndClosePanel() {
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
-  GetGlicService()->ClosePanel();
+  host().ClosePanel(this);
   base::RecordAction(
       base::UserMetricsAction("Glic.DisabledByAdminPanelLinkClicked"));
 }
@@ -1757,7 +1757,7 @@ void GlicPageHandler::SignInAndClosePanel() {
       // Unretained is safe because the keyed service owns the
       // auth controller and the window controller.
       base::Unretained(&GetGlicService()->window_controller()), nullptr));
-  GetGlicService()->ClosePanel();
+  host().ClosePanel(this);
 }
 
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,

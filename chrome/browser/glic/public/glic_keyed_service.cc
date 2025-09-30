@@ -259,6 +259,10 @@ void GlicKeyedService::CloseUI() {
   fre_controller_->Shutdown();
 }
 
+void GlicKeyedService::ClosePanel() {
+  window_controller().Close();
+}
+
 void GlicKeyedService::PrepareForOpen() {
   fre_controller().MaybePreconnect();
 
@@ -405,11 +409,6 @@ void GlicKeyedService::CreateTab(
     tab_data->url = url;
   }
   std::move(callback).Run(std::move(tab_data));
-}
-
-void GlicKeyedService::ClosePanel() {
-  window_controller().Close();
-  screenshot_capturer_->CloseScreenPicker();
 }
 
 void GlicKeyedService::SetContextAccessIndicator(bool show) {

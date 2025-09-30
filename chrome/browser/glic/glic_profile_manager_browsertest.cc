@@ -131,8 +131,10 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   GlicProfileManager::GetInstance()->SetActiveGlic(service0);
 }
 
+// TODO(crbug.com/448406730): Re-enable after testing the logic of close panel
+// being now handled by EmbedderDelegate.
 IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
-                       SetActiveGlic_DifferentProfiles) {
+                       DISABLED_SetActiveGlic_DifferentProfiles) {
   auto* service0 = GetMockGlicKeyedService(browser()->profile());
 
   auto* profile1 = CreateNewProfile();

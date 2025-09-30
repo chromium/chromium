@@ -58,6 +58,7 @@ class Host : public GlicSharingManagerProvider {
     // Attaches glic to the last focused Chrome window.
     virtual void Attach() = 0;
     virtual void Detach() = 0;
+    virtual void ClosePanel() = 0;
     // Sets the minimum widget size that the widget will allow the user to
     // resize
     // to.
@@ -277,6 +278,7 @@ class Host : public GlicSharingManagerProvider {
 
   void AttachPanel(GlicPageHandler* page_handler);
   void DetachPanel(GlicPageHandler* page_handler);
+  void ClosePanel(GlicPageHandler* page_handler);
   // Sets the areas of the view from which it should be draggable.
   void SetPanelDraggableAreas(GlicPageHandler* page_handler,
                               const std::vector<gfx::Rect>& draggable_areas);
@@ -368,6 +370,7 @@ class EmptyEmbedderDelegate : public Host::EmbedderDelegate {
   void EnableDragResize(bool enabled) override {}
   void Attach() override {}
   void Detach() override {}
+  void ClosePanel() override {}
   void SetMinimumWidgetSize(const gfx::Size& size) override {}
   bool IsShowing() const override;
   void SwitchConversation(

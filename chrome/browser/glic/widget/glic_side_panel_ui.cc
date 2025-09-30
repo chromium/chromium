@@ -124,6 +124,10 @@ void GlicSidePanelUi::Close() {
   side_panel_coordinator->Close();
 }
 
+void GlicSidePanelUi::ClosePanel() {
+  Close();
+}
+
 std::unique_ptr<GlicUiEmbedder> GlicSidePanelUi::CreateInactiveEmbedder()
     const {
   return GlicInactiveSidePanelUi::From(*this, tab_);

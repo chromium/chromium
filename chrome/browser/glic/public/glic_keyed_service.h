@@ -115,6 +115,11 @@ class GlicKeyedService : public KeyedService,
   // manager.
   void CloseUI();
 
+  // Close the panel. Virtual for testing.
+  // TODO(crbug.com/448406730): Remove testing logic that relies on
+  // GKS::ClosePanel since close panel is now being handled by EmbedderDelegate.
+  virtual void ClosePanel();
+
   GlicEnabling& enabling() { return *enabling_.get(); }
 
   GlicMetrics* metrics() { return metrics_.get(); }
@@ -135,7 +140,6 @@ class GlicKeyedService : public KeyedService,
 
   // Private API for the glic WebUI.
 
-  virtual void ClosePanel();
   void SetContextAccessIndicator(bool show);
 
   // Callback for changes to the context access indicator status.
@@ -213,6 +217,10 @@ class GlicKeyedService : public KeyedService,
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 
   AuthController& GetAuthController() { return *auth_controller_; }
+
+  GlicScreenshotCapturer& GetScreenshotCapturer() {
+    return *screenshot_capturer_;
+  }
 
   bool IsActiveWebContents(content::WebContents* contents);
 

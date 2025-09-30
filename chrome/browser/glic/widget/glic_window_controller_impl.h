@@ -138,6 +138,7 @@ class GlicWindowControllerImpl
   void EnableDragResize(bool enabled) override;
   void Attach() override;
   void Detach() override;
+  void ClosePanel() override;
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
   void SwitchConversation(

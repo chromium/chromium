@@ -65,7 +65,7 @@ class GlicKeyedServiceBrowserTest : public InProcessBrowserTest {
 
     // First open it so close pathway triggers.
     glic_service->window_controller().ShowDetachedForTesting();
-    glic_service->ClosePanel();
+    glic_service->window_controller().Close();
   }
 
  private:

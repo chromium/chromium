@@ -68,6 +68,10 @@ void GlicFloatingUi::Close() {
   NOTIMPLEMENTED();
 }
 
+void GlicFloatingUi::ClosePanel() {
+  Close();
+}
+
 std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
   return GlicInactiveFloatingUi::From(*this);
 }

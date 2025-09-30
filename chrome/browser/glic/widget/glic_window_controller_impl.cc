@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
@@ -1213,6 +1214,11 @@ void GlicWindowControllerImpl::Close() {
   if (base::FeatureList::IsEnabled(features::kGlicUnloadOnClose)) {
     host().Shutdown();
   }
+}
+
+void GlicWindowControllerImpl::ClosePanel() {
+  Close();
+  glic_service_->GetScreenshotCapturer().CloseScreenPicker();
 }
 
 void GlicWindowControllerImpl::ResetAndHidePanel() {

@@ -60,6 +60,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
 
   // GlicUiEmbedder and Host::Delegate:
   bool IsShowing() const override;
+  void ClosePanel() override;
 
   void TakeScreenshot(ui::GrabSnapshotImageCallback callback) const;
 
