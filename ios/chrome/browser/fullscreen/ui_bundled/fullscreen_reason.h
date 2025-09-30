@@ -12,6 +12,7 @@ enum class FullscreenExitReason {
   kUserInitiatedFinishedByCode,
   kUserTapped,
   kBottomReached,
+  kNoChange,
 };
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_REASON_H_

@@ -309,6 +309,7 @@ FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
       return FullscreenAnimatorStyle::EXIT_FULLSCREEN;
     case FullscreenModelScrollDirection::kNone:
       // Leave in fullscreen, if still in fullscreen.
+      fullscreen_exit_reason_ = FullscreenExitReason::kNoChange;
       return AreCGFloatsEqual(model_->progress(), 0.0)
                  ? FullscreenAnimatorStyle::ENTER_FULLSCREEN
                  : FullscreenAnimatorStyle::EXIT_FULLSCREEN;
@@ -338,6 +339,8 @@ FullscreenMediator::ConvertFullscreenExitReasonToTransitionReason(
       return FullscreenModeTransitionReason::kForcedByCode;
     case FullscreenExitReason::kUserInitiatedFinishedByCode:
       return FullscreenModeTransitionReason::kUserInitiatedFinishedByCode;
+    case FullscreenExitReason::kNoChange:
+      return FullscreenModeTransitionReason::kNoChange;
     case FullscreenExitReason::kUserControlled:
       NOTREACHED();
   }
