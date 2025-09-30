@@ -224,7 +224,23 @@ function createRoutes(): SettingsRoutes {
     r.FONTS = r.APPEARANCE.createChild('/fonts');
   }
 
-  if (visibility.autofill !== false) {
+  if (loadTimeData.getBoolean('enableYourSavedInfoSettingsPage')) {
+    if (visibility.yourSavedInfo !== false) {
+      r.YOUR_SAVED_INFO = r.BASIC.createSection(
+          '/yourSavedInfo', 'yourSavedInfo',
+          loadTimeData.getString('yourSavedInfoPageTitle'));
+
+      r.PAYMENTS = r.YOUR_SAVED_INFO.createChild('/payments');
+      r.ADDRESSES = r.YOUR_SAVED_INFO.createChild('/addresses');
+
+      // TODO(crbug.com/438666322): add routing for "Identity docs"
+      // TODO(crbug.com/438667363): add routing for "Travel"
+
+      // <if expr="is_win or is_macosx">
+      r.PASSKEYS = r.YOUR_SAVED_INFO.createChild('/passkeys');
+      // </if>
+    }
+  } else if (visibility.autofill !== false) {
     r.AUTOFILL = r.BASIC.createSection(
         '/autofill', 'autofill', loadTimeData.getString('autofillPageTitle'));
     r.PAYMENTS = r.AUTOFILL.createChild('/payments');
@@ -237,13 +253,6 @@ function createRoutes(): SettingsRoutes {
     // <if expr="is_win or is_macosx">
     r.PASSKEYS = r.AUTOFILL.createChild('/passkeys');
     // </if>
-  }
-
-  if (visibility.yourSavedInfo !== false &&
-      loadTimeData.getBoolean('enableYourSavedInfoSettingsPage')) {
-    r.YOUR_SAVED_INFO = r.BASIC.createSection(
-        '/yourSavedInfo', 'yourSavedInfo',
-        loadTimeData.getString('yourSavedInfoPageTitle'));
   }
 
   if (visibility.privacy !== false) {

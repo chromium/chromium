@@ -27,6 +27,7 @@ suite('SettingsMain', function() {
 
     loadTimeData.overrideValues(Object.assign(
         {
+          enableYourSavedInfoSettingsPage: false,
           isGuest: false,
           showAiPage: false,
           showResetProfileBanner: false,
@@ -193,5 +194,21 @@ suite('SettingsMain', function() {
     createSettingsMain({showResetProfileBanner: true});
     assertTrue(!!settingsMain.shadowRoot!.querySelector(
         'settings-reset-profile-banner'));
+  });
+
+    test('shows either autofill or yourSavedInfo page', function() {
+    // Reset tested element and set yourSavedInfo experiment to false
+    createSettingsMain();
+
+    // Only autofill page should be visible
+    assertTrue(!!settingsMain.shadowRoot!.querySelector(`#autofill`));
+    assertFalse(!!settingsMain.shadowRoot!.querySelector(`#yourSavedInfo`));
+
+    // Reset tested element and set yourSavedInfo experiment to true
+    createSettingsMain({enableYourSavedInfoSettingsPage: true});
+
+    // Only yourSavedInfo page should be visible
+    assertFalse(!!settingsMain.shadowRoot!.querySelector(`#autofill`));
+    assertTrue(!!settingsMain.shadowRoot!.querySelector(`#yourSavedInfo`));
   });
 });

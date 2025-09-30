@@ -68,6 +68,20 @@ export class SettingsYourSavedInfoPageIndexElement extends
           this.$.viewManager.switchView(
               'parent', 'no-animation', 'no-animation');
           break;
+        case routes.ADDRESSES:
+          this.$.viewManager.switchView(
+              'addresses', 'no-animation', 'no-animation');
+          break;
+        // <if expr="is_win or is_macosx">
+        case routes.PASSKEYS:
+          this.$.viewManager.switchView(
+              'passkeys', 'no-animation', 'no-animation');
+          break;
+        // </if>
+        case routes.PAYMENTS:
+          this.$.viewManager.switchView(
+              'payments', 'no-animation', 'no-animation');
+          break;
         default:
           // Nothing to do. Other parent elements are responsible for updating
           // the displayed contents.

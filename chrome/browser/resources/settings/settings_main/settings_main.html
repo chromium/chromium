@@ -78,7 +78,7 @@
     </div>
   </template>
 
-  <template is="dom-if" if="[[showPage_(pageVisibility_.autofill)]]">
+  <template is="dom-if" if="[[showAutofillPage_(pageVisibility_.autofill)]]">
     <div slot="view" id="autofill">
       <template is="dom-if" if="[[renderPlugin_(
           routes_.AUTOFILL, lastRoute_, inSearchMode_)]]">

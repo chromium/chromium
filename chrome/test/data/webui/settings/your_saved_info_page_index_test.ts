@@ -40,5 +40,19 @@ suite('YourSavedInfoPageIndex', function() {
     Router.getInstance().navigateTo(routes.YOUR_SAVED_INFO);
     await microtasksFinished();
     assertActiveView('parent');
+
+    Router.getInstance().navigateTo(routes.PAYMENTS);
+    await microtasksFinished();
+    assertActiveView('payments');
+
+    Router.getInstance().navigateTo(routes.ADDRESSES);
+    await microtasksFinished();
+    assertActiveView('addresses');
+
+    // <if expr="is_win or is_macosx">
+    Router.getInstance().navigateTo(routes.PASSKEYS);
+    await microtasksFinished();
+    assertActiveView('passkeys');
+    // </if>
   });
 });

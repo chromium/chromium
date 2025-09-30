@@ -7,6 +7,22 @@
 
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     show-all$="[[shouldShowAll]]">
+
   <settings-your-saved-info-page slot="view" id="parent" prefs="{{prefs}}">
   </settings-your-saved-info-page>
+
+  <settings-autofill-section slot="view" id="addresses" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-autofill-section>
+
+<if expr="is_win or is_macosx">
+  <settings-passkeys-subpage slot="view" id="passkeys"
+      data-parent-view-id="parent">
+  </settings-passkeys-subpage>
+</if>
+
+  <settings-payments-section slot="view" id="payments" prefs="{{prefs}}"
+      data-parent-view-id="parent">
+  </settings-payments-section>
+
 </cr-view-manager>
