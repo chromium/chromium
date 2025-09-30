@@ -2997,7 +2997,6 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE})
     public void
             testBackPressManagerAddsSystemNavigationObserver_WhenPredictiveBackGestureIsSupported() {
         CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();

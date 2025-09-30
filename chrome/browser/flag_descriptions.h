@@ -2892,9 +2892,6 @@ extern const char kCCTOpenInBrowserButtonIfAllowedByEmbedderDescription[];
 extern const char kCCTOpenInBrowserButtonIfEnabledByEmbedderName[];
 extern const char kCCTOpenInBrowserButtonIfEnabledByEmbedderDescription[];
 
-extern const char kCCTPredictiveBackGestureName[];
-extern const char kCCTPredictiveBackGestureDescription[];
-
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 

@@ -162,10 +162,8 @@ public class CustomTabActivityNavigationController
 
     /** Whether the feature of predictive back gesture is supported. */
     public static boolean supportsPredictiveBackGesture() {
-        boolean isAtLeastB =
-                (sVersionForTesting == null ? Build.VERSION.SDK_INT : sVersionForTesting)
-                        >= Build.VERSION_CODES.BAKLAVA;
-        return isAtLeastB && ChromeFeatureList.sCctPredictiveBackGesture.isEnabled();
+        return (sVersionForTesting == null ? Build.VERSION.SDK_INT : sVersionForTesting)
+                >= Build.VERSION_CODES.BAKLAVA;
     }
 
     public CustomTabActivityNavigationController(
