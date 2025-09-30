@@ -501,6 +501,22 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testShouldShowIconRow_Tablet_MissingToolbarComponents() {
+        doReturn(true).when(mToolbarManager).areAnyToolbarComponentsMissingForWidth(any());
+        when(mDecorView.getWidth())
+                .thenReturn(
+                        (int)
+                                (600
+                                        * ContextUtils.getApplicationContext()
+                                                .getResources()
+                                                .getDisplayMetrics()
+                                                .density));
+        assertTrue(mTabbedAppMenuPropertiesDelegate.shouldShowIconRow());
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
     public void testShouldShowIconRow_TabletNarrow() {
         when(mDecorView.getWidth())
                 .thenReturn(

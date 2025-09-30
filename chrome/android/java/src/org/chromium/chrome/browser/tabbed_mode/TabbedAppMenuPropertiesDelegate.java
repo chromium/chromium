@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tinker_tank.TinkerTankDelegate;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
@@ -972,11 +973,17 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     @VisibleForTesting
     boolean shouldShowIconRow() {
-        boolean shouldShowIconRow =
-                mIsTablet
-                        ? mDecorView.getWidth()
-                                < DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(mContext)
-                        : true;
+        boolean shouldShowIconRow = true;
+        if (mIsTablet) {
+            boolean widthOnTabletBelowMinimum =
+                    mDecorView.getWidth()
+                            < DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(mContext);
+            boolean appMenuIconsHiddenForWidth =
+                    ChromeFeatureList.sToolbarTabletResizeRefactor.isEnabled()
+                            && mToolbarManager.areAnyToolbarComponentsMissingForWidth(
+                                    ToolbarUtils.APP_MENU_ICON_ROW_COMPONENTS);
+            shouldShowIconRow = widthOnTabletBelowMinimum || appMenuIconsHiddenForWidth;
+        }
 
         final boolean isMenuButtonOnTop = mToolbarManager != null;
         shouldShowIconRow &= isMenuButtonOnTop;

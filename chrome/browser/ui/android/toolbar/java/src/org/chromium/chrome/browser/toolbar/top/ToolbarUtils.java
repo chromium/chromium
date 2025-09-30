@@ -44,6 +44,11 @@ public class ToolbarUtils {
                 ToolbarComponentId.HOME,
             };
 
+    public static final @ToolbarComponentId int[] APP_MENU_ICON_ROW_COMPONENTS =
+            new int[] {
+                ToolbarComponentId.RELOAD, ToolbarComponentId.FORWARD,
+            };
+
     @IntDef({
         ToolbarComponentId.HOME,
         ToolbarComponentId.BACK,
@@ -58,7 +63,7 @@ public class ToolbarUtils {
         ToolbarComponentId.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface ToolbarComponentId {
+    public @interface ToolbarComponentId {
         int HOME = 0;
         int BACK = 1;
         int FORWARD = 2;

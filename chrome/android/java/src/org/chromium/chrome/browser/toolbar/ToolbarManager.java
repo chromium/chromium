@@ -164,6 +164,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
+import org.chromium.chrome.browser.toolbar.top.ToolbarUtils.ToolbarComponentId;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
@@ -3253,6 +3254,15 @@ public class ToolbarManager
      */
     public ToolbarLayout getToolbarLayoutForTesting() {
         return mToolbarLayout;
+    }
+
+    public boolean areAnyToolbarComponentsMissingForWidth(
+            @ToolbarComponentId int[] toolbarComponents) {
+        if (mToolbarLayout instanceof ToolbarTablet) {
+            return ((ToolbarTablet) mToolbarLayout)
+                    .areAnyToolbarComponentsMissingForWidth(toolbarComponents);
+        }
+        return false;
     }
 
     public HomeButtonCoordinator getHomeButtonCoordinatorForTesting() {

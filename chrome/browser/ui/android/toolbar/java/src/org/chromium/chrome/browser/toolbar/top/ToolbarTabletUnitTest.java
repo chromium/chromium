@@ -1078,6 +1078,20 @@ public final class ToolbarTabletUnitTest {
                         MENU));
     }
 
+    @SuppressLint("WrongCall")
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
+    public void testAreAnyToolbarComponentsMissingForWidth() {
+        doReturn(true).when(mReloadButtonCoordinator).isVisible();
+        assertFalse(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
+
+        doReturn(false).when(mReloadButtonCoordinator).isVisible();
+        assertTrue(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
+
+        doReturn(true).when(mReloadButtonCoordinator).isVisible();
+        assertFalse(mToolbarTablet.areAnyToolbarComponentsMissingForWidth(new int[] {RELOAD}));
+    }
+
     @SuppressWarnings("DirectInvocationOnMock")
     private void assertToolbarComponentsReceivedWidth(
             @ToolbarComponentId Set<Integer> visibleComponents) {
