@@ -2084,11 +2084,6 @@ BASE_FEATURE(kTerminalDev, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables experimental feature for resizing tiling windows.
 BASE_FEATURE(kTilingWindowResize, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable listening to prefs for virtual keyboard policy in login
-// screen.
-BASE_FEATURE(kTouchVirtualKeyboardPolicyListenPrefsAtLogin,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the TrafficCountersHandler class to auto-reset traffic counters
 // and shows Data Usage in the Celluar Settings UI.
 BASE_FEATURE(kTrafficCountersEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
