@@ -673,25 +673,25 @@ void WebContentsDelegateAndroid::ContentsZoomChange(bool zoom_in) {
 }
 
 content::NavigationController::UserAgentOverrideOption
-WebContentsDelegateAndroid::ShouldOverrideUserAgentForPrerender2(
+WebContentsDelegateAndroid::ShouldOverrideUserAgentForPreloading(
     const GURL& url) {
   // Killswitch
   if (!base::FeatureList::IsEnabled(
           features::kPreloadingRespectUserAgentOverride)) {
-    return WebContentsDelegate::ShouldOverrideUserAgentForPrerender2(url);
+    return WebContentsDelegate::ShouldOverrideUserAgentForPreloading(url);
   }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null()) {
     // Fallback to base class version when JNI is unavailable.
-    return WebContentsDelegate::ShouldOverrideUserAgentForPrerender2(url);
+    return WebContentsDelegate::ShouldOverrideUserAgentForPreloading(url);
   }
 
   ScopedJavaLocalRef<jobject> j_url =
       url::GURLAndroid::FromNativeGURL(env, url);
   int j_override_option =
-      Java_WebContentsDelegateAndroid_shouldOverrideUserAgentForPrerender2(
+      Java_WebContentsDelegateAndroid_shouldOverrideUserAgentForPreloading(
           env, obj, j_url);
   return static_cast<content::NavigationController::UserAgentOverrideOption>(
       j_override_option);

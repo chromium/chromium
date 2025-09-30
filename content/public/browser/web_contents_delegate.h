@@ -779,10 +779,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Returns whether to override user agent for prerendering navigation. `url`
   // is the target URL of the request. This function can be called repeatedly
   // for each URL in the redirect chain.
-  // TODO(crbug.com/441612842): Rename this function to clarify that this
-  // function can be used for general preloading.
   virtual NavigationController::UserAgentOverrideOption
-  ShouldOverrideUserAgentForPrerender2(const GURL& url);
+  ShouldOverrideUserAgentForPreloading(const GURL& url);
 
   // Returns true if the embedder allows initiator and transition type mismatch
   // for prerender activation navigations that are embedder-initiated and have

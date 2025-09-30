@@ -13256,7 +13256,7 @@ class ScopedUserAgentOverrideTestDelegate : public WebContentsDelegate {
   }
 
   NavigationController::UserAgentOverrideOption
-  ShouldOverrideUserAgentForPrerender2(const GURL& url) override {
+  ShouldOverrideUserAgentForPreloading(const GURL& url) override {
     return override_option_;
   }
 

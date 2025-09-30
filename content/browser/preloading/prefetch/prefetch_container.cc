@@ -1412,7 +1412,7 @@ bool PrefetchContainer::ShouldApplyUserAgentOverride(
   }
   raw_ptr<WebContentsDelegate> delegate = referring_web_contents->GetDelegate();
   NavigationController::UserAgentOverrideOption option =
-      delegate ? delegate->ShouldOverrideUserAgentForPrerender2(request_url)
+      delegate ? delegate->ShouldOverrideUserAgentForPreloading(request_url)
                : NavigationController::UA_OVERRIDE_INHERIT;
   // Use the primary main frame of initiator's WebContents to guess if we should
   // apply UA overrides in this prefetch request. Note that this decision is

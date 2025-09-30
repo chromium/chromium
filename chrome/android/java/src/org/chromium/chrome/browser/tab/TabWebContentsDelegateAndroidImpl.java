@@ -630,7 +630,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public @UserAgentOverrideOption int shouldOverrideUserAgentForPrerender2(GURL url) {
+    public @UserAgentOverrideOption int shouldOverrideUserAgentForPreloading(GURL url) {
         return mTab.calculateUserAgentOverrideOption(url);
     }
 

@@ -417,7 +417,7 @@ int WebContentsDelegate::AllowedPrerenderingCount(WebContents& web_contents) {
 }
 
 NavigationController::UserAgentOverrideOption
-WebContentsDelegate::ShouldOverrideUserAgentForPrerender2(const GURL& url) {
+WebContentsDelegate::ShouldOverrideUserAgentForPreloading(const GURL& url) {
   return NavigationController::UA_OVERRIDE_INHERIT;
 }
 

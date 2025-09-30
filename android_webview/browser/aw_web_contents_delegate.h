@@ -88,7 +88,7 @@ class AwWebContentsDelegate
       content::PreloadingTriggerType trigger_type) override;
   int AllowedPrerenderingCount(content::WebContents& web_contents) override;
   content::NavigationController::UserAgentOverrideOption
-  ShouldOverrideUserAgentForPrerender2(const GURL& url) override;
+  ShouldOverrideUserAgentForPreloading(const GURL& url) override;
   bool ShouldAllowPartialParamMismatchOfPrerender2(
       content::NavigationHandle& navigation_handle) override;
 
