@@ -48,6 +48,16 @@ EntityInstance GetServerVehicleEntityInstanceWithRandomGuid() {
            EntityInstance::AreAttributesReadOnly(false)});
 }
 
+EntityInstance GetFlightReservationEntityInstanceWithRandomGuid() {
+  return autofill::test::GetFlightReservationEntityInstanceWithRandomGuid(
+      {.nickname = "",
+       .date_modified = {},
+       .record_type = EntityInstance::RecordType::kServerWallet,
+       // Flight reservations are read-only.
+       .are_attributes_read_only =
+           EntityInstance::AreAttributesReadOnly(true)});
+}
+
 sync_pb::SyncEntity LoyaltyCardToSyncEntity(const LoyaltyCard& loyalty_card) {
   sync_pb::SyncEntity entity;
   entity.set_name(std::string(loyalty_card.id()));
@@ -349,13 +359,16 @@ class SingleClientEntityValuablesSyncTest
 
 // Entities data should get loaded on initial sync.
 IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, InitialSync) {
-  const EntityInstance entity = GetServerVehicleEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(entity)});
+  const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance flight =
+      GetFlightReservationEntityInstanceWithRandomGuid();
+  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
+                                    EntityInstanceToSyncEntity(flight)});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
   // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(edm->GetEntityInstances(), ElementsAre(entity));
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 }
 
 // ChromeOS does not support late signin after profile creation, so the test
@@ -364,13 +377,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, InitialSync) {
 // Wallet entities should get cleared from the entity database when the user
 // signs out.
 IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSignOut) {
-  const EntityInstance entity = GetServerVehicleEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(entity)});
+  const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance flight =
+      GetFlightReservationEntityInstanceWithRandomGuid();
+  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
+                                    EntityInstanceToSyncEntity(flight)});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
   // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(edm->GetEntityInstances(), ElementsAre(entity));
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 
   // Signout, the data & metadata should be gone.
   GetClient(0)->SignOutPrimaryAccount();
@@ -382,13 +398,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSignOut) {
 // Wallet should get cleared from the database when the user enters the
 // sync paused state (e.g. persistent auth error).
 IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSyncPaused) {
-  const EntityInstance entity = GetServerVehicleEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(entity)});
+  const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance flight =
+      GetFlightReservationEntityInstanceWithRandomGuid();
+  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
+                                    EntityInstanceToSyncEntity(flight)});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
   // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(edm->GetEntityInstances(), ElementsAre(entity));
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 
   // Enter sync paused state, the data & metadata should be gone.
   GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
@@ -397,38 +416,50 @@ IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest, ClearOnSyncPaused) {
 
   // When exiting the sync paused state, the data should be redownloaded.
   GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
-  WaitForNumberOfEntityInstancesCards(1, edm);
-  EXPECT_EQ(1uL, edm->GetEntityInstances().size());
+  WaitForNumberOfEntityInstancesCards(2, edm);
+  EXPECT_EQ(2uL, edm->GetEntityInstances().size());
 }
 
 // Valuables are not using incremental updates. Make sure existing entities gets
 // replaced when synced down.
 IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
                        NewSyncDataShouldReplaceExistingData) {
-  const EntityInstance entity = GetServerVehicleEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(entity)});
+  const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance flight =
+      GetFlightReservationEntityInstanceWithRandomGuid();
+  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
+                                    EntityInstanceToSyncEntity(flight)});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 
   // Put some completely new data in the sync server.
-  const EntityInstance entity2 = GetServerVehicleEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(entity2)});
+  const EntityInstance vehicle2 =
+      GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance flight2 =
+      GetFlightReservationEntityInstanceWithRandomGuid();
+  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle2),
+                                    EntityInstanceToSyncEntity(flight2)});
   EntityDataChangedWaiter(edm).Wait();
-  EXPECT_THAT(edm->GetEntityInstances(), ElementsAre(entity2));
+  EXPECT_THAT(edm->GetEntityInstances(),
+              UnorderedElementsAre(vehicle2, flight2));
 }
 
 // Wallet entities should get cleared from the entity database when the user
 // disables payments sync.
 IN_PROC_BROWSER_TEST_F(SingleClientEntityValuablesSyncTest,
                        ClearOnDisablePaymentsSync) {
-  const EntityInstance entity = GetServerVehicleEntityInstanceWithRandomGuid();
-  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(entity)});
+  const EntityInstance vehicle = GetServerVehicleEntityInstanceWithRandomGuid();
+  const EntityInstance flight =
+      GetFlightReservationEntityInstanceWithRandomGuid();
+  GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(vehicle),
+                                    EntityInstanceToSyncEntity(flight)});
   ASSERT_TRUE(SetupSync());
   EntityDataManager* edm = GetEntityDataManager(0);
   ASSERT_NE(nullptr, edm);
   // Make sure the data & metadata is in the DB.
-  EXPECT_THAT(edm->GetEntityInstances(), ElementsAre(entity));
+  EXPECT_THAT(edm->GetEntityInstances(), UnorderedElementsAre(vehicle, flight));
 
   // Turn off payments sync, the data & metadata should be gone.
   ASSERT_TRUE(
