@@ -1726,6 +1726,11 @@
       // https://chromestatus.com/feature/5134293578285056
       name: "Database",
     },
+    // https://crbug.com/448174611
+    {
+      name: "DeclarativeCSSModules",
+      status: "test",
+    },
     {
       // https://crbug.com/393631108
       name: "DecoupleComputedBorderWidthFromStyle",
