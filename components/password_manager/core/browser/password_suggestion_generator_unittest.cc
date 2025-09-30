@@ -171,6 +171,7 @@ Matcher<Suggestion> EqualsManagePasswordsSuggestion(
                      Suggestion::Icon::kGooglePasswordManager));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 Matcher<Suggestion> EqualsTroubleSigningInSuggestion(
     const Suggestion::Payload& payload) {
   return AllOf(
@@ -181,6 +182,7 @@ Matcher<Suggestion> EqualsTroubleSigningInSuggestion(
                                  IDS_PASSWORD_MANAGER_UI_TROUBLE_SIGNING_IN),
                              Suggestion::Text::IsPrimary(false))));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 Matcher<Suggestion> EqualsBackupPasswordSuggestion(
     const std::u16string& main_text,
@@ -1574,9 +1576,11 @@ TEST_F(PasswordSuggestionGeneratorTest,
               fill_data.preferred_login.username_value,
               password_label(fill_data.preferred_login.password_value.size()),
               /*realm_label=*/u"", favicon()),
+#if !BUILDFLAG(IS_ANDROID)
           EqualsTroubleSigningInSuggestion(
               PasswordAndMetadataToSuggestionDetails(
                   fill_data.preferred_login)),
+#endif  // !BUILDFLAG(IS_ANDROID)
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }
@@ -1675,7 +1679,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
               additional_credeтtial.username_value,
               password_label(additional_credeтtial.password_value.size()),
               /*realm_label=*/u"", favicon()),
+#if !BUILDFLAG(IS_ANDROID)
           EqualsTroubleSigningInSuggestion(payload_trouble),
+#endif  // !BUILDFLAG(IS_ANDROID)
           EqualsSuggestion(SuggestionType::kSeparator),
           EqualsManagePasswordsSuggestion()));
 }

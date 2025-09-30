@@ -200,6 +200,7 @@ void AppendSuggestionIfMatching(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void AppendTroubleSigningInSuggestion(
     const autofill::PasswordAndMetadata& credential,
     std::vector<Suggestion>* suggestions) {
@@ -240,6 +241,7 @@ void MaybeAppendTroubleSigningInSuggestion(
     }
   }
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // This function attempts to fill |suggestions| from |fill_data| based on
 // |current_username| that is the current value of the field.
@@ -264,8 +266,10 @@ void GetSuggestions(
             [](const Suggestion& a, const Suggestion& b) {
               return a.main_text.value < b.main_text.value;
             });
+#if !BUILDFLAG(IS_ANDROID)
   MaybeAppendTroubleSigningInSuggestion(undo_password_change_controller,
                                         fill_data, suggestions);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 Suggestion CreateFillPasswordChildSuggestion(
