@@ -1392,7 +1392,7 @@ TEST_P(ReportingEventRouterTest,
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 TEST_P(ReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
   test::SetOnSecurityEventReporting(
       profile_->GetPrefs(), /*enabled=*/true,
@@ -1461,7 +1461,7 @@ TEST_P(ReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
       enterprise_connectors::EventResult::ALLOWED, 1234);
   run_loop.Run();
 }
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 INSTANTIATE_TEST_SUITE_P(, ReportingEventRouterTest, ::testing::Bool());
 

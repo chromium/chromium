@@ -69,7 +69,10 @@
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+// "nogncheck" is necessary here because GN doesn't properly handle the
+// conditional statements in BUILD.gn files that import this file. See
+// "gn help nogncheck" for more information.
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"  // nogncheck
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #endif
