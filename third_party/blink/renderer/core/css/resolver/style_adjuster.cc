@@ -618,13 +618,6 @@ static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
     return;
   }
 
-  if (!RuntimeEnabledFeatures::ListStylePositionQuirkStandardEnabled()) {
-    if (IsA<HTMLUListElement>(element) || IsA<HTMLOListElement>(element)) {
-      builder.SetIsInsideListElement();
-      return;
-    }
-  }
-
   if (builder.Display() == EDisplay::kContents) {
     // See https://drafts.csswg.org/css-display/#unbox-html
     // Some of these elements are handled with other adjustments above.

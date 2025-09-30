@@ -3014,12 +3014,6 @@
       status: "stable",
     },
     {
-      // Enabling this changes the `list-style-position` quirk to match the
-      // HTML standard spec.
-      name: "ListStylePositionQuirkStandard",
-      status: "stable",
-    },
-    {
       // Reverse origin trial allowing Local Network Access requests on
       // non-secure contexts (but still requiring a permission grant from the
       // user).

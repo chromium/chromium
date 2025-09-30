@@ -1027,14 +1027,6 @@
       default_value: "false",
       custom_compare: true,
     },
-    {
-      // crbug.com/41241289 Remove with the "ListStylePositionQuirk" flag.
-      name: "IsInsideListElement",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      custom_compare: true,
-      inherited: true,
-    },
 
     // This field disables the 'overflow' check in |LayoutBlock::
     // InlineBlockBaseline()|. For 'inline-block', CSS says that the baseline

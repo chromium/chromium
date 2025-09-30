@@ -2801,19 +2801,6 @@ bool ComputedStyle::MarkerShouldBeInside(
       ListStylePosition() == EListStylePosition::kInside) {
     return true;
   }
-  if (!RuntimeEnabledFeatures::ListStylePositionQuirkStandardEnabled()) {
-    // Force the marker of <li> elements with no <ol> or <ul> ancestor to have
-    // an inside position.
-    // TODO(crbug.com/41241289): This quirk predates WebKit, it was added to
-    // match the behavior of the Internet Explorer from that time. However,
-    // Microsoft ended up removing it (before switching to Blink), and Firefox
-    // never had it, so it may be possible to get rid of it.
-    if (IsA<HTMLLIElement>(parent) && !IsInsideListElement() &&
-        PseudoElementLayoutObjectIsNeeded(kPseudoIdMarker, marker_style,
-                                          &parent)) {
-      return true;
-    }
-  }
   return false;
 }
 
