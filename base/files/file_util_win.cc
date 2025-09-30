@@ -735,7 +735,7 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
 // The directory is created under SystemTemp for security reasons if the caller
 // is the default admin (i.e., no split token, such as the SYSTEM user or the
 // built-in administrator) to avoid attacks from lower privilege processes.
-bool CreateNewTempDirectory(const FilePath::StringType& prefix,
+bool CreateNewTempDirectory(FilePath::StringViewType prefix,
                             FilePath* new_temp_path) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
 

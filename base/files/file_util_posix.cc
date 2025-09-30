@@ -929,7 +929,7 @@ bool CreateTemporaryDirInDir(const FilePath& base_dir,
                                      new_dir);
 }
 
-bool CreateNewTempDirectory(const FilePath::StringType& prefix,
+bool CreateNewTempDirectory(FilePath::StringViewType prefix,
                             FilePath* new_temp_path) {
   FilePath tmpdir;
   if (!GetTempDir(&tmpdir)) {

@@ -3285,7 +3285,7 @@ TEST_F(FileUtilTest, FILEToFile) {
 
 TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   FilePath temp_dir;
-  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  ASSERT_TRUE(CreateNewTempDirectory(FPL(""), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
   EXPECT_TRUE(DeleteFile(temp_dir));
 }
@@ -3314,7 +3314,7 @@ TEST_F(FileUtilTest, TempDirectoryParentTest) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   FilePath temp_dir;
-  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  ASSERT_TRUE(CreateNewTempDirectory(FPL(""), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
 
   FilePath expected_parent_dir;

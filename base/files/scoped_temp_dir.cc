@@ -41,7 +41,7 @@ bool ScopedTempDir::CreateUniqueTempDir(FilePath::StringViewType prefix) {
   }
 
   // The `prefix` serves as a template for the unique name.
-  if (!CreateNewTempDirectory(FilePath::StringType(prefix), &path_)) {
+  if (!CreateNewTempDirectory(prefix, &path_)) {
     return false;
   }
 
