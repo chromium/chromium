@@ -286,9 +286,9 @@ See [the functional spec](functional_spec.md#logging) for more details.
 Updates can be force-triggered by running the updater as follows for Windows:
 * Run the following from a medium `cmd` prompt for `user` installs, and from an
   elevated prompt with the `--system` switch for `system` installs:
-  `{%LocalAppData%|%programfiles(x86)%}\{Company}\{Company}Update\{Company}Update.exe --update-apps {--system}`.
+  `Start /w {%LocalAppData%|%programfiles(x86)%}\{Company}\{Company}Updater\{latest version}\updater.exe --update-apps {--system}`.
 * For example, using "Google" as the `Company`:
-  `{%LocalAppData%|%programfiles(x86)%}\Google\GoogleUpdate\GoogleUpdate.exe --update-apps {--system}`.
+  `Start /w {%LocalAppData%|%programfiles(x86)%}\Google\GoogleUpdater\142.0.7416.0\updater.exe --update-apps {--system}`.
 
 Similar steps apply for macOS. The example below is using "Google" as the
 `Company`:
