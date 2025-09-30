@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
@@ -56,18 +58,29 @@ public class TabArchiveTimeDeltaPreference extends Preference
             RadioButtonWithDescription layout =
                     (RadioButtonWithDescription) holder.findViewById(getIdForIndex(i));
             assert layout != null;
-            if (currentOpt == 0) {
-                layout.setPrimaryText(
-                        getContext().getString(R.string.archive_settings_time_delta_never));
-            } else {
-                layout.setPrimaryText(
-                        getContext()
-                                .getResources()
-                                .getQuantityString(
-                                        R.plurals.archive_settings_time_delta,
-                                        currentOpt,
-                                        currentOpt));
+
+            // Normally this would be handled by a pluralized string, but due to an unresolved bug
+            // (crbug.com/445193521), the delta values must be hardcoded for translators.
+            final @StringRes int archiveSettingsTimeDeltaRes;
+            switch (currentOpt) {
+                case 0:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_never;
+                    break;
+                case 7:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_7_days;
+                    break;
+                case 14:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_14_days;
+                    break;
+                case 21:
+                    archiveSettingsTimeDeltaRes = R.string.archive_settings_time_delta_21_days;
+                    break;
+                default:
+                    assert false : "Invalid time delta option: " + currentOpt;
+
+                    archiveSettingsTimeDeltaRes = Resources.ID_NULL;
             }
+            layout.setPrimaryText(getContext().getString(archiveSettingsTimeDeltaRes));
             mRadioButtons[i] = layout;
         }
 

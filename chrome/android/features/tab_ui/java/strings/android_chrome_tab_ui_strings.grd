@@ -960,14 +960,17 @@
           other {Inactive tabs and groups will be closed after <ph name="MONTH_COUNT_MANY">%1$d<ex>3</ex></ph> months}
         }
       </message>
-      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA" desc="The string to show how many days until a tab is considered inactive.">
-        {DAY_COUNT, plural,
-          =1 {After 1 day inactive}
-          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days inactive}
-        }
-      </message>
       <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_NEVER" desc="The string for the option to never archive tabs.">
         Never
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_7_DAYS" desc="The string to show that it will be 7 days until a tab is considered inactive.">
+        After 7 days inactive
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_14_DAYS" desc="The string to show that it will be 14 days until a tab is considered inactive.">
+        After 14 days inactive
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TIME_DELTA_21_DAYS" desc="The string to show that it will be 21 days until a tab is considered inactive.">
+        After 21 days inactive
       </message>
       <message name="IDS_ARCHIVE_DIALOG_CLOSE_ALL_INACTIVE_TABS_CONFIRMATION_TITLE" desc="The title to show in the action confirmation dialog.">
         {TAB_COUNT, plural,
