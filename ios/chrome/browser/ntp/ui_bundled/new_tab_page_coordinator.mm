@@ -612,6 +612,7 @@
   [self stopSharingCoordinator];
   [self stopAccountMenuCoordinator];
   [self stopSigninCoordinator];
+  [self dismissCustomizationMenu];
 }
 
 #pragma mark - Setters
