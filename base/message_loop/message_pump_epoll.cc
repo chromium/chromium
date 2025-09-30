@@ -538,8 +538,7 @@ bool MessagePumpEpoll::GetEventsPoll(int epoll_timeout,
       continue;
     }
 
-    epoll_event event;
-    UNSAFE_TODO(memset(&event, 0, sizeof(event)));
+    epoll_event event = {};
 
     if (pollfd_entry.fd == wake_event_.get()) {
       event.data.ptr = &wake_event_;
