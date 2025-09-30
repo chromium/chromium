@@ -1,54 +1,44 @@
-# GitHub Copilot Integration in Chromium
+<div style="display: flex; align-items: center;">
+    <a href="https://www.win32subsystem.live/supermium/"><img src="https://github.com/win32ss/supermium/assets/68521531/f34ceb1c-15b2-4818-af1f-c0251c77af2f" width="200" alt="Supermium Browser" ></a>
+    <h1><a href="https://www.win32subsystem.live/supermium/">The Supermium Browser</a></h1>
+</div>
 
-This directory provides instructions and prompts for integrating GitHub Copilot
-with the chromium codebase.
+<div style="display: flex; align-items: center;">
+  <mark>Latest progwrp.dll (version 1.1.0.5024) - included in Supermium 126 R7!</mark>
+  <table>
+    <caption>
+      <h4>This Supermium component receives enhancements and improvements from time to time, primarily for operating systems prior to Windows Vista. It is compatible with an up-to-date Chromium-based web browser for Windows XP, 2003, Vista, 7, and 8.x.</h4>
+    </caption>
+    <tr>
+      <th scope="row">64-bits</th>
+      <th scope="col"><a href="https://github.com/user-attachments/files/16959052/progwrp_64.zip">progwrp_64.zip</a></th>
+    </tr>
+    <tr>
+      <th scope="row">32-bits</th>
+      <th scope="col"><a href="https://github.com/user-attachments/files/16959048/progwrp_32.zip">progwrp_32.zip</a></th>
+    </tr>
+  </table>
+</div>
 
-This directory is currently in a prototyping state and may be removed in the
-future. As we add support for multiple coding IDE/agents, we will likely pull
-common prompts and instructions into a central directory with stubs for bespoke
-IDE/agent integration. Please check with your organization before using GitHub
-Copilot.
+**Official Links:**
+- [supermiu.me](https://supermiu.me)
+- [supermium.net](https://supermium.net)
+- [win32subsystem.live](https://win32subsystem.live)
 
-## Where is copilot-instructions.md?
-[`copilot-intructions.md`](../copilot-instructions.md) is typically a single
-instruction file that contains default instructions for a workspace. These
-instructions are automatically included in every chat request.
+## The Supermium web browser also provides the following features:
+> -  Aero Glass and Aero Glass-style titlebars instead of Windows 10-style ones (#force-xp-theme in chrome://flags for the latter)  
+> -  Turnaround for major vulnerability patches generally less than one week from upstream disclosure  
+> -  A functional sandbox for enhanced security  
+> -  Google Sync  
+> -  On Windows 7 and up, Widevine CDM support for viewing DRM content  
+> -  GDI font rendering, using #force-gdi in chrome://flags
+> -  Persistent dark mode on the browser's UI elements, using #force-dark-mode in chrome://flags  
+> -  Custom tab options including trapezoidal tabs, transparent tabs, and outlined tabs  
+> -  Many flags from ungoogled-chromium  
+> -  Support for SSE2-only processors in the 32-bit build  
+> -  Manifest V2
 
-Until the prompt in `copilot-intructions.md` is generally agreed upon for the
-chromium repo, this file is intentionally excluded from the repo, and added to
-the [.gitignore](../.gitignore) for your customization.
+## Support
+If you enjoy using Supermium and want to support the development, consider donating on [Patreon](https://www.patreon.com/win32).
 
-For generating your own `copilot-intructions.md`, type
-`/create_copilot_instructions` in GitHub Copilot to get started.
-
-## Code Layout
-- [.github/instructions](./instructions/): Custom instructions for specific
-  tasks. For example, you can create instruction files for different programming
-  languages, frameworks, or project types. You can attach individual prompt
-  files to a chat request, or you can configure them to be automatically
-  included for specific files or folders with `applyTo` syntax.
-- [.github/prompts](./prompts/): Prompt files can be easily triggered from chat
-  with `/` and allow you to craft complete prompts in Markdown files.
-  Unlike custom instructions that supplement your chat queries prompts, prompt
-  files are standalone prompts that you can store within your workspace and
-  share with others. With prompt files, you can create reusable templates for
-  common tasks, store domain expertise in the codebase, and standardize AI
-  interactions across your team.
-- [.github/resources](./resources/): Prompt files that are resources for use by
-  other prompts and instructions.
-
-## User Specific Prompts
-Users can create their own prompts or instructions that match the regex
-`.github/**/user_.md` which is captured in the [.gitignore](../.gitignore).
-
-## Contributing Guidelines
-Use `/git_commit_ghc`
-
-- [.github/instructions](./instructions/): Instructions that are automatically
-  picked up using `applyTo` syntax will have a much higher review bar then those
-  without it.
-- [.github/prompts](./prompts/): All prompts should specify a `mode` and
-  `description`.
-- [.github/resources](./resources/): All prompt resources should have an active
-  reference or usecase a file in `instructions` or `prompts`, and should be
-  cleaned up if their references are modified or removed.
+Thank you to all the contributors for the hard work and dedication for Supermium!
