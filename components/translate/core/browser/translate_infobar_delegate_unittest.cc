@@ -79,7 +79,7 @@ class MockManagerObserver : public infobars::InfoBarManager::Observer {
               (infobars::InfoBar*, infobars::InfoBar*),
               (override));
   MOCK_METHOD(void,
-              OnManagerShuttingDown,
+              OnManagerWillBeDestroyed,
               (infobars::InfoBarManager*),
               (override));
 };
@@ -121,7 +121,6 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    infobar_manager_->ShutDown();
     ::testing::Test::TearDown();
   }
 

@@ -39,7 +39,6 @@ class PermissionsTabHelperTest : public PlatformTest {
   }
 
   ~PermissionsTabHelperTest() override {
-    InfoBarManagerImpl::FromWebState(&web_state_)->ShutDown();
     web_state_.RemoveObserver(PermissionsTabHelper::FromWebState(&web_state_));
   }
 

@@ -91,7 +91,7 @@ class InfoBarContainer : public InfoBarManager::Observer {
   void OnInfoBarAdded(InfoBar* infobar) override;
   void OnInfoBarRemoved(InfoBar* infobar, bool animate) override;
   void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar) override;
-  void OnManagerShuttingDown(InfoBarManager* manager) override;
+  void OnManagerWillBeDestroyed(InfoBarManager* manager) override;
 
   // Adds |infobar| to this container before the existing infobar at position
   // |position| and calls Show() on it.  |animate| is passed along to

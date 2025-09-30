@@ -219,8 +219,8 @@ void TranslateOverlayTabHelper::TranslateInfobarObserver::OnInfoBarAdded(
   }
 }
 
-void TranslateOverlayTabHelper::TranslateInfobarObserver::OnManagerShuttingDown(
-    infobars::InfoBarManager* manager) {
+void TranslateOverlayTabHelper::TranslateInfobarObserver::
+    OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) {
   DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
   infobar_manager_scoped_observation_.Reset();
 }

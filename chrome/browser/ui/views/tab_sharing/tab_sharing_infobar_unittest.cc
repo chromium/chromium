@@ -168,7 +168,6 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
   }
 
   void TearDown() override {
-    infobar_manager_->ShutDown();
     ::testing::Test::TearDown();
   }
 

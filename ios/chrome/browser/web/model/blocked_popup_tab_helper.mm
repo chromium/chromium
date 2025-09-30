@@ -159,7 +159,7 @@ void BlockedPopupTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
   }
 }
 
-void BlockedPopupTabHelper::OnManagerShuttingDown(
+void BlockedPopupTabHelper::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* infobar_manager) {
   DCHECK(scoped_observation_.IsObservingSource(infobar_manager));
   scoped_observation_.Reset();

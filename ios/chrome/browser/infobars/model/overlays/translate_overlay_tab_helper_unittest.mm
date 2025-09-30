@@ -78,9 +78,7 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
         ->AddInfoBar(std::move(infobar));
   }
 
-  ~TranslateInfobarOverlayTranslateOverlayTabHelperTest() override {
-    InfoBarManagerImpl::FromWebState(&web_state_)->ShutDown();
-  }
+  ~TranslateInfobarOverlayTranslateOverlayTabHelperTest() override = default;
 
   // Returns the front request of `web_state_`'s OverlayRequestQueue.
   OverlayRequest* front_request() {

@@ -119,7 +119,7 @@ class InfobarBadgeTabHelper
     void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
     void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
                            infobars::InfoBar* new_infobar) override;
-    void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+    void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
 
     // The owning tab helper.
     raw_ptr<InfobarBadgeTabHelper> tab_helper_ = nullptr;
