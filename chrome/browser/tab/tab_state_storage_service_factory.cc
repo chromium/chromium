@@ -10,6 +10,8 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/jni_headers/TabStateStorageServiceFactory_jni.h"
+#include "chrome/browser/tab/tab_storage_packager.h"
+#include "chrome/browser/tab/tab_storage_packager_android.h"
 
 namespace tabs {
 
@@ -58,7 +60,12 @@ TabStateStorageServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = static_cast<Profile*>(context);
   std::unique_ptr<TabStateStorageBackend> tab_backend =
       std::make_unique<TabStateStorageBackend>(profile->GetPath());
-  return std::make_unique<TabStateStorageService>(std::move(tab_backend));
+  std::unique_ptr<TabStoragePackager> packager;
+#if BUILDFLAG(IS_ANDROID)
+  packager = std::make_unique<TabStoragePackagerAndroid>();
+#endif
+  return std::make_unique<TabStateStorageService>(std::move(tab_backend),
+                                                  std::move(packager));
 }
 
 }  // namespace tabs

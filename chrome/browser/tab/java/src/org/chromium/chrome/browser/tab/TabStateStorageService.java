@@ -32,56 +32,12 @@ public class TabStateStorageService {
     }
 
     /**
-     * Saves the tab state to persistent storage. This approach takes raw fields instead of an
-     * object.
+     * Saves the tab state to persistent storage.
      *
-     * @param id The id of the tab.
-     * @param parentTabId The tab id of the tab that spawned this tab, optional.
-     * @param rootId If the tab is part of a tab group, the owner tab id.
-     * @param timestampMillis The last time it was shown.
-     * @param webContentsStateBuffer Holds serialized web contents data.
-     * @param webContentsStateVersion The version of the web contents state.
-     * @param openerAppId If associated with another app, its id. Optional.
-     * @param themeColor The toolbar color specified by the page. Optional.
-     * @param launchTypeAtCreation How the tab was created.
-     * @param userAgent What user agent should be passed in the HTTP requests.
-     * @param lastNavigationCommittedTimestampMillis The time the last navigation was made.
-     * @param tabGroupId The group id if the tab is in a group. Optional.
-     * @param tabHasSensitiveContent If there is sensitive content.
-     * @param isPinned Whether the tab is pinned.
+     * @param tab The tab to save to storage.
      */
-    public void saveTabData(
-            int id,
-            int parentTabId,
-            int rootId,
-            long timestampMillis,
-            @Nullable ByteBuffer webContentsStateBuffer,
-            int webContentsStateVersion,
-            String openerAppId,
-            int themeColor,
-            int launchTypeAtCreation,
-            @TabUserAgent int userAgent,
-            long lastNavigationCommittedTimestampMillis,
-            @Nullable Token tabGroupId,
-            boolean tabHasSensitiveContent,
-            boolean isPinned) {
-        TabStateStorageServiceJni.get()
-                .saveTab(
-                        mNativeTabStateStorageService,
-                        id,
-                        parentTabId,
-                        rootId,
-                        timestampMillis,
-                        webContentsStateBuffer,
-                        webContentsStateVersion,
-                        openerAppId,
-                        themeColor,
-                        launchTypeAtCreation,
-                        userAgent,
-                        lastNavigationCommittedTimestampMillis,
-                        tabGroupId,
-                        tabHasSensitiveContent,
-                        isPinned);
+    public void saveTabData(Tab tab) {
+        TabStateStorageServiceJni.get().saveTab(mNativeTabStateStorageService, tab);
     }
 
     /**
@@ -132,22 +88,7 @@ public class TabStateStorageService {
 
     @NativeMethods
     interface Natives {
-        void saveTab(
-                long nativeTabStateStorageServiceAndroid,
-                int id,
-                int parentTabId,
-                int rootId,
-                long timestampMillis,
-                @Nullable ByteBuffer webContentsStateBuffer,
-                int webContentsStateVersion,
-                @Nullable @JniType("std::string") String openerAppId,
-                int themeColor,
-                int launchTypeAtCreation,
-                int userAgent,
-                long lastNavigationCommittedTimestampMillis,
-                @Nullable Token tabGroupId,
-                boolean tabHasSensitiveContent,
-                boolean isPinned);
+        void saveTab(long nativeTabStateStorageServiceAndroid, @JniType("TabAndroid*") Tab tab);
 
         void loadAllTabs(long nativeTabStateStorageServiceAndroid, Callback<TabState[]> callback);
     }

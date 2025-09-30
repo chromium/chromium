@@ -21,7 +21,7 @@ namespace tabs {
 class TabStoragePackagerAndroid : public TabStoragePackager {
  public:
   TabStoragePackagerAndroid();
-  ~TabStoragePackagerAndroid();
+  ~TabStoragePackagerAndroid() override;
 
   TabStoragePackagerAndroid(const TabStoragePackagerAndroid&) = delete;
   TabStoragePackagerAndroid& operator=(const TabStoragePackagerAndroid&) =
@@ -43,6 +43,7 @@ class TabStoragePackagerAndroid : public TabStoragePackager {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
+  std::unique_ptr<TabStoragePackage> package_;
   // A reference to the Java version of this class.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };

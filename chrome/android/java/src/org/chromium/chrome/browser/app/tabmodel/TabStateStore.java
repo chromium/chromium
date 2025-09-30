@@ -12,7 +12,6 @@ import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
@@ -100,22 +99,7 @@ public class TabStateStore {
     }
 
     private void saveTab(Tab tab) {
-        WebContentsState state = tab.getWebContentsState();
-        mTabStateStorageService.saveTabData(
-                tab.getId(),
-                tab.getParentId(),
-                tab.getRootId(),
-                tab.getTimestampMillis(),
-                state == null ? null : state.buffer(),
-                state == null ? 0 : state.version(),
-                assumeNonNull(TabAssociatedApp.getAppId(tab)),
-                tab.getThemeColor(),
-                tab.getTabLaunchTypeAtCreation(),
-                tab.getUserAgent(),
-                tab.getLastNavigationCommittedTimestampMillis(),
-                tab.getTabGroupId(),
-                tab.getTabHasSensitiveContent(),
-                tab.getIsPinned());
+        mTabStateStorageService.saveTabData(tab);
     }
 
     private void onTabRegistered(Tab tab) {

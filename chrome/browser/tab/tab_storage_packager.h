@@ -18,8 +18,8 @@ namespace tabs {
 // This class is used to package tab data for use in the background thread.
 class TabStoragePackager {
  public:
-  TabStoragePackager();
-  ~TabStoragePackager();
+  TabStoragePackager() = default;
+  virtual ~TabStoragePackager() = default;
 
   TabStoragePackager(const TabStoragePackager&) = delete;
   TabStoragePackager& operator=(const TabStoragePackager&) = delete;
@@ -32,9 +32,6 @@ class TabStoragePackager {
   // transferred out of the packager. After this call, the stored package will
   // be null.
   virtual std::unique_ptr<TabStoragePackage> ReleasePackage() = 0;
-
- protected:
-  std::unique_ptr<TabStoragePackage> package_;
 };
 
 }  // namespace tabs

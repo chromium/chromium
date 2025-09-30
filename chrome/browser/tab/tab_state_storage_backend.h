@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/tab/protocol/tab_state.pb.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
+#include "chrome/browser/tab/tab_storage_package.h"
 
 namespace tabs {
 
@@ -28,11 +29,13 @@ class TabStateStorageBackend {
 
   void Initialize();
 
-  void SaveNode(int id, int type, std::string payload, std::string children);
+  void Save(std::unique_ptr<TabStoragePackage> package);
 
   void LoadAllNodes(base::OnceCallback<void(std::vector<NodeState>)> callback);
 
  private:
+  void PopulateTabState(tabs_pb::TabState* tab_state,
+                        const TabStoragePackage& package);
   void OnDBReady(bool success);
   void OnWrite(bool success);
   void OnAllTabsRead(base::OnceCallback<void(std::vector<NodeState>)> callback,

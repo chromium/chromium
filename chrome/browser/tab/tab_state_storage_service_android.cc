@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/token.h"
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 
@@ -86,42 +87,8 @@ TabStateStorageServiceAndroid::TabStateStorageServiceAndroid(
 
 TabStateStorageServiceAndroid::~TabStateStorageServiceAndroid() = default;
 
-void TabStateStorageServiceAndroid::SaveTab(
-    JNIEnv* env,
-    int id,
-    int parent_tab_id,
-    int root_id,
-    long timestamp_millis,
-    const jni_zero::JavaParamRef<jobject>& web_contents_state_buffer,
-    int web_contents_state_version,
-    std::string opener_app_id,
-    int theme_color,
-    int launch_type_at_creation,
-    int user_agent,
-    long last_navigation_committed_timestamp_millis,
-    const jni_zero::JavaParamRef<jobject>& j_tab_group_id,
-    bool tab_has_sensitive_content,
-    bool is_pinned) {
-  std::unique_ptr<std::string> web_content_state_string;
-  if (web_contents_state_buffer) {
-    base::span<const uint8_t> span =
-        base::android::JavaByteBufferToSpan(env, web_contents_state_buffer);
-    web_content_state_string =
-        std::make_unique<std::string>(span.begin(), span.end());
-  }
-
-  std::unique_ptr<base::Token> tab_group_id;
-  if (j_tab_group_id) {
-    tab_group_id = std::make_unique<base::Token>(
-        base::android::TokenAndroid::FromJavaToken(env, j_tab_group_id));
-  }
-
-  tab_state_storage_service_->SaveTab(
-      id, parent_tab_id, root_id, timestamp_millis,
-      web_content_state_string.get(), web_contents_state_version, opener_app_id,
-      theme_color, launch_type_at_creation, user_agent,
-      last_navigation_committed_timestamp_millis, tab_group_id.get(),
-      tab_has_sensitive_content, is_pinned);
+void TabStateStorageServiceAndroid::SaveTab(JNIEnv* env, TabAndroid* tab) {
+  tab_state_storage_service_->SaveTab(tab);
 }
 
 void TabStateStorageServiceAndroid::LoadAllTabs(
