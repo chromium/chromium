@@ -40,8 +40,7 @@ void ChangeRequestsStateTask::UpdateRequests(UpdateRequestsResult read_result) {
 
   // We are only going to make an update to the items that were found. Statuses
   // of the missing items will be added at the end.
-  std::vector<SavePageRequest> items_to_update;
-  for (auto request : read_result.updated_items) {
+  for (auto& request : read_result.updated_items) {
     // Decrease the started_attempt_count_ for offlining requests paused by the
     // user (https://crbug.com/701037).
     if (request.request_state() == SavePageRequest::RequestState::OFFLINING &&
@@ -49,12 +48,12 @@ void ChangeRequestsStateTask::UpdateRequests(UpdateRequestsResult read_result) {
       request.set_started_attempt_count(request.started_attempt_count() - 1);
     }
     request.set_request_state(new_state_);
-    items_to_update.push_back(request);
   }
 
   store_->UpdateRequests(
-      items_to_update, base::BindOnce(&ChangeRequestsStateTask::UpdateCompleted,
-                                      weak_ptr_factory_.GetWeakPtr()));
+      read_result.updated_items,
+      base::BindOnce(&ChangeRequestsStateTask::UpdateCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChangeRequestsStateTask::UpdateCompleted(

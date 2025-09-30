@@ -41,7 +41,7 @@ namespace {
 //       experimentIds: ["`experiment_id`"]
 //     }
 std::string BuildRequestBody(std::u16string query,
-                             std::vector<int>& suggestion_types) {
+                             const std::vector<int>& suggestion_types) {
   base::Value::Dict root;
   root.Set("query", query);
 
@@ -166,7 +166,7 @@ void EnterpriseSearchAggregatorSuggestionsService::AccessTokenAvailable(
   token_fetcher_.reset();
 
   auto request_bodies = std::vector<std::string>{};
-  for (auto suggestion_type : suggestion_types) {
+  for (const auto& suggestion_type : suggestion_types) {
     const std::string& request_body = BuildRequestBody(query, suggestion_type);
     request_bodies.push_back(request_body);
   }

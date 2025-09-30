@@ -1966,8 +1966,10 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
     }
   }
 
-  for (auto [group_id, group_indices] : indices_per_tab_group) {
-    const TabGroup* group = group_model_->GetTabGroup(group_id);
+  for (const auto& [immutable_group_id, immutable_group_indices] :
+       indices_per_tab_group) {
+    auto group_indices = immutable_group_indices;
+    const TabGroup* group = group_model_->GetTabGroup(immutable_group_id);
     CHECK(group);
     tabs::TabInterface* first_tab_in_group = group->GetFirstTab();
     CHECK(first_tab_in_group);
@@ -1983,7 +1985,7 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
         group_indices.begin(), group_indices.end(), group_indices.begin(),
         [first_tab_index](int index) { return index - first_tab_index; });
     auto [left_of_group, right_of_group] =
-        contents_data_->GetTabGroupCollection(group_id)
+        contents_data_->GetTabGroupCollection(immutable_group_id)
             ->SeparateTabsByVisualPosition(group_indices);
     for (auto partition : {&left_of_group, &right_of_group}) {
       std::transform(

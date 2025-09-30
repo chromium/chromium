@@ -632,7 +632,7 @@ void CompileDownloadQueryOrderBy(const std::vector<std::string>& order_by_strs,
   if (sorter_types.Get().empty())
     InitSortTypeMap(sorter_types.Pointer());
 
-  for (auto term_str : order_by_strs) {
+  for (std::string_view term_str : order_by_strs) {
     if (term_str.empty())
       continue;
     DownloadQuery::SortDirection direction = DownloadQuery::ASCENDING;
