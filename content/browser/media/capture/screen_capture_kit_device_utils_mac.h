@@ -13,9 +13,17 @@ class VideoCaptureDevice;
 }  // namespace media
 
 namespace content {
+class WebContents;
 
 std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
 CreateScreenCaptureKitDeviceMac(const DesktopMediaID& source);
+
+using NativeWindowIdMac = int64_t;
+// Returns the windowNumber prorperty of the window associated to
+// |web_contents| if there is an associated window with a positive
+// windowNumber, or nullopt otherwise.
+std::optional<NativeWindowIdMac> GetNativeWindowIdMac(
+    WebContents& web_contents);
 
 }  // namespace content
 

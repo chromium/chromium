@@ -3458,7 +3458,9 @@ test("content_unittests") {
       "../browser/media/capture/web_contents_frame_tracker_unittest.cc",
       "../browser/renderer_host/media/sub_capture_target_id_web_contents_helper_unittest.cc",
     ]
-
+    if (is_mac) {
+      sources += [ "../browser/media/capture/pip_screen_capture_coordinator_impl_unittest.cc" ]
+    }
     if (!is_android && !is_ios) {
       deps += [
         "//content/common:buildflags",

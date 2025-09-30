@@ -4,7 +4,12 @@
 
 #include "content/browser/media/capture/screen_capture_kit_device_utils_mac.h"
 
+#include <AppKit/AppKit.h>
+
+#include <optional>
+
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
+#include "content/public/browser/web_contents.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace content {
@@ -19,6 +24,23 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
   } else {
     return nullptr;
   }
+}
+
+std::optional<NativeWindowIdMac> GetNativeWindowIdMac(
+    WebContents& web_contents) {
+  gfx::NativeView native_view = web_contents.GetNativeView();
+  NSView* ns_view = native_view.GetNativeNSView();
+  if (!ns_view) {
+    return std::nullopt;
+  }
+
+  NSWindow* ns_window = [ns_view window];
+  if (!ns_window) {
+    return std::nullopt;
+  }
+
+  int64_t window_number = [ns_window windowNumber];
+  return window_number > 0 ? std::make_optional(window_number) : std::nullopt;
 }
 
 }  // namespace content
