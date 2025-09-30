@@ -355,7 +355,8 @@ void BrowsingHistoryService::GetLastVisitToHostBeforeRecentNavigations(
     base::OnceCallback<void(base::Time)> callback) {
   base::Time now = base::Time::Now();
   local_history_->GetLastVisitToHost(
-      host_name, base::Time() /* before_time */, now /* end_time */,
+      host_name, /*begin_time=*/base::Time(), /*end_time=*/now,
+      VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(
           &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete,
           weak_factory_.GetWeakPtr(), host_name, now, std::move(callback)),
@@ -377,7 +378,8 @@ void BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete(
           ? result.last_visit
           : query_start_time - base::Minutes(1);
   local_history_->GetLastVisitToHost(
-      host_name, base::Time() /* before_time */, end_time /* end_time */,
+      host_name, /*begin_time=*/base::Time(), end_time,
+      VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(
           &BrowsingHistoryService::OnLastVisitBeforeRecentNavigationsComplete2,
           weak_factory_.GetWeakPtr(), std::move(callback)),

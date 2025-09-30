@@ -413,9 +413,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // time range [`begin_time`, `end_time`). If the given host has not been
   // visited in the given time range, the result will have a null base::Time,
   // but still report success. Only queries http and https hosts.
-  HistoryLastVisitResult GetLastVisitToHost(const std::string& host,
-                                            base::Time begin_time,
-                                            base::Time end_time);
+  HistoryLastVisitResult GetLastVisitToHost(
+      const std::string& host,
+      base::Time begin_time,
+      base::Time end_time,
+      VisitQuery404sPolicy policy_for_404_visits);
 
   // Same as the above, but for the given origin instead of host.
   HistoryLastVisitResult GetLastVisitToOrigin(

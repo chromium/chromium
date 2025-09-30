@@ -241,6 +241,7 @@ class VisitDatabase {
   bool GetLastVisitToHost(const std::string& host,
                           base::Time begin_time,
                           base::Time end_time,
+                          VisitQuery404sPolicy policy_for_404_visits,
                           base::Time* last_visit);
 
   // Same as the above, but for the given origin instead of host.

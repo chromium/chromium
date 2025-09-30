@@ -2145,11 +2145,12 @@ GetAllAppIdsResult HistoryBackend::GetAllAppIds() {
 HistoryLastVisitResult HistoryBackend::GetLastVisitToHost(
     const std::string& host,
     base::Time begin_time,
-    base::Time end_time) {
+    base::Time end_time,
+    VisitQuery404sPolicy policy_for_404_visits) {
   base::Time last_visit;
-  return {
-      db_ && db_->GetLastVisitToHost(host, begin_time, end_time, &last_visit),
-      last_visit};
+  return {db_ && db_->GetLastVisitToHost(host, begin_time, end_time,
+                                         policy_for_404_visits, &last_visit),
+          last_visit};
 }
 
 HistoryLastVisitResult HistoryBackend::GetLastVisitToOrigin(

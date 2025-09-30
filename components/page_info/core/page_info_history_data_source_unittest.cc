@@ -26,6 +26,7 @@ class MockHistoryService : public HistoryService {
               (const std::string& host,
                base::Time begin_time,
                base::Time end_time,
+               history::VisitQuery404sPolicy policy_for_404_visits,
                GetLastVisitCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));
@@ -44,6 +45,7 @@ base::CancelableTaskTracker::TaskId ReturnVisitedNever(
     const std::string& host,
     base::Time begin_time,
     base::Time end_time,
+    history::VisitQuery404sPolicy policy_for_404_visits,
     history::HistoryService::GetLastVisitCallback callback,
     base::CancelableTaskTracker* tracker) {
   history::HistoryLastVisitResult result;
@@ -57,6 +59,7 @@ base::CancelableTaskTracker::TaskId ReturnVisitedBase(
     const std::string& host,
     base::Time begin_time,
     base::Time end_time,
+    history::VisitQuery404sPolicy policy_for_404_visits,
     history::HistoryService::GetLastVisitCallback callback,
     base::CancelableTaskTracker* tracker) {
   history::HistoryLastVisitResult result;
@@ -70,6 +73,7 @@ base::CancelableTaskTracker::TaskId ReturnLastVisited(
     const std::string& host,
     base::Time begin_time,
     base::Time end_time,
+    history::VisitQuery404sPolicy policy_for_404_visits,
     history::HistoryService::GetLastVisitCallback callback,
     base::CancelableTaskTracker* tracker) {
   history::HistoryLastVisitResult result;
@@ -179,7 +183,7 @@ class PageInfoHistoryDataSourceTest : public testing::Test {
 
 TEST_F(PageInfoHistoryDataSourceTest, NoHistory) {
   // GetLastVisitToHost is called only once.
-  EXPECT_CALL(*history_service(), GetLastVisitToHost(_, _, _, _, _))
+  EXPECT_CALL(*history_service(), GetLastVisitToHost(_, _, _, _, _, _))
       .WillOnce(&ReturnVisitedNever);
   data_source()->GetLastVisitedTimestamp(base::BindOnce(
       [](std::optional<base::Time> time) { EXPECT_FALSE(time.has_value()); }));
@@ -188,7 +192,7 @@ TEST_F(PageInfoHistoryDataSourceTest, NoHistory) {
 TEST_F(PageInfoHistoryDataSourceTest, LastVisitedTimestamp) {
   // GetLastVisitToHost is called twice, once to get the latest visit (base) and
   // the second to get the visit before it (last visit).
-  EXPECT_CALL(*history_service(), GetLastVisitToHost(_, _, _, _, _))
+  EXPECT_CALL(*history_service(), GetLastVisitToHost(_, _, _, _, _, _))
       .WillOnce(&ReturnVisitedBase)
       .WillOnce(&ReturnLastVisited);
   data_source()->GetLastVisitedTimestamp(
