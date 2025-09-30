@@ -57,6 +57,10 @@ BASE_DECLARE_FEATURE(kClientSideDetectionCreditCardForm);
 extern const base::FeatureParam<double> kCsdCreditCardFormHCAcceptanceRate;
 // Sets the percentage of credit card forms that trigger a CSD ping.
 extern const base::FeatureParam<double> kCsdCreditCardFormSampleRate;
+// Sets the maximum site engagement allowed when sending a CSD ping.
+// The int value corresponds to the value of blink::mojom::EngagementLevel
+// (//third_party/blink/public/mojom/site_engagement/site_engagement.mojom).
+extern const base::FeatureParam<int> kCsdCreditCardFormMaxSiteEngagement;
 
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);

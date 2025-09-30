@@ -1151,6 +1151,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.SiteEngagement.CreditCardForm"
+    enum="SiteEngagementLevel" expires_after="2026-09-30">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>bcb@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the site engagement level reported at the time of an event that
+    triggers preclassification of the Credit Card Form type. This is recorded on
+    every event that may trigger a CREDIT_CARD_FORM classification attempt,
+    after checking for ESB and deduping by URL.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.TimeSinceLastReportAtLimit" units="ms"
     expires_after="2026-02-22">
   <owner>andysjlim@chromium.org</owner>

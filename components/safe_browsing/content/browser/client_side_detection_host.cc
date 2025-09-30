@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -42,6 +43,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/security_interstitials/core/unsafe_resource_locator.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -61,6 +63,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
+#include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -914,14 +917,36 @@ void ClientSideDetectionHost::OnFieldTypesDetermined(
     return;
   }
 
-  // If the form is a credit card form, then trigger pre-classification.
+  // If the form is not a credit card form, then do not trigger
+  // pre-classification.
   if (auto it = manager.form_structures().find(formId);
-      it != manager.form_structures().end()) {
-    if (it->second.get()->GetFormTypes().contains(
-            autofill::FormType::kCreditCardForm)) {
-      MaybeStartPreClassification(csd_type);
-    }
+      it != manager.form_structures().end() &&
+      !it->second.get()->GetFormTypes().contains(
+          autofill::FormType::kCreditCardForm)) {
+    return;
   }
+
+  // Report metric that breaks down preclassification volume by site engagement
+  // level. This is reported before any preemptive filtering below to provide
+  // full telemetry.
+  site_engagement::SiteEngagementService* site_engagement_service =
+      site_engagement::SiteEngagementService::Get(
+          web_contents()->GetBrowserContext());
+  if (site_engagement_service) {
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.SiteEngagement.CreditCardForm",
+        site_engagement_service->GetEngagementLevel(current_url_));
+  }
+
+  // Early exit from starting preclassification if site engagement is high
+  // (user has visited this same site a lot before).
+  if (site_engagement_service &&
+      static_cast<int>(site_engagement_service->GetEngagementLevel(
+          current_url_)) > kCsdCreditCardFormMaxSiteEngagement.Get()) {
+    return;
+  }
+
+  MaybeStartPreClassification(csd_type);
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {
