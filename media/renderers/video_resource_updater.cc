@@ -1,12 +1,6 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/renderers/video_resource_updater.h"
 
 #include <stddef.h>
@@ -652,7 +646,7 @@ bool VideoResourceUpdater::ReallocateUploadPixels(size_t needed_size,
                                                   size_t plane) {
   // Free the existing data first so that the memory can be reused, if
   // possible. Note that the new array is purposely not initialized.
-  upload_pixels_[plane].reset();
+  upload_pixels_[plane] = PlaneData();
   uint8_t* pixel_mem = nullptr;
   // Fail if we can't support the required memory to upload pixels.
   if (!base::UncheckedMalloc(needed_size,
@@ -661,8 +655,9 @@ bool VideoResourceUpdater::ReallocateUploadPixels(size_t needed_size,
                    "upload pixels";
     return false;
   }
-  upload_pixels_[plane].reset(pixel_mem);
-  upload_pixels_size_[plane] = needed_size;
+  // SAFETY: We've just allocated this memory with size `needed_size`.
+  upload_pixels_[plane] =
+      UNSAFE_BUFFERS(PlaneData::FromOwningPointer(pixel_mem, needed_size));
   return true;
 }
 
@@ -960,7 +955,7 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
     source_pixels = video_frame->data(VideoFrame::Plane::kARGB);
   } else {
     size_t needed_size = bytes_per_row * video_frame->coded_size().height();
-    if (upload_pixels_size_[0] < needed_size) {
+    if (upload_pixels_[0].size() < needed_size) {
       if (!ReallocateUploadPixels(needed_size, /*plane=*/0)) {
         // Fail here if memory reallocation fails.
         return false;
@@ -970,9 +965,11 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
     // PCVR writes to origin, so offset upload pixels by start since
     // we upload frames in coded size and pass on the visible rect to
     // the compositor. Note: It'd save a few bytes not to do this...
-    auto* dest_ptr = upload_pixels_[0].get() +
-                     video_frame->visible_rect().y() * bytes_per_row +
-                     video_frame->visible_rect().x() * sizeof(uint32_t);
+    auto* dest_ptr =
+        upload_pixels_[0]
+            .subspan(video_frame->visible_rect().y() * bytes_per_row +
+                     video_frame->visible_rect().x() * sizeof(uint32_t))
+            .data();
     // Alpha can be premul for videos that can be delegated/overlaid.
     bool premultiply_alpha =
         hardware_resource->shared_image()->alpha_type() == kPremul_SkAlphaType
@@ -985,7 +982,7 @@ bool VideoResourceUpdater::WriteRGBPixelsToTexture(
             ? kRGBA_F16_SkColorType
             : kN32_SkColorType,
         premultiply_alpha);
-    source_pixels = upload_pixels_[0].get();
+    source_pixels = upload_pixels_[0].data();
   }
 
   // Copy pixels into texture.
@@ -1081,7 +1078,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
       // Avoid malloc for each frame/plane if possible.
       const size_t needed_size =
           upload_image_stride * resource_size_pixels.height();
-      if (upload_pixels_size_[plane_index] < needed_size) {
+      if (upload_pixels_[plane_index].size() < needed_size) {
         if (!ReallocateUploadPixels(needed_size, plane_index)) {
           // Fail here if memory reallocation fails.
           return false;
@@ -1101,7 +1098,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
             reinterpret_cast<const uint16_t*>(
                 video_frame->data(frame_planes[plane_index])),
             video_stride_bytes,
-            reinterpret_cast<uint16_t*>(upload_pixels_[plane_index].get()),
+            reinterpret_cast<uint16_t*>(upload_pixels_[plane_index].data()),
             upload_image_stride, libyuv_multiplier,
             resource_size_pixels.width(), resource_size_pixels.height());
       } else if (needs_bit_downshifting) {
@@ -1111,7 +1108,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
         libyuv::Convert16To8Plane(
             reinterpret_cast<const uint16_t*>(
                 video_frame->data(frame_planes[plane_index])),
-            video_stride_bytes / 2, upload_pixels_[plane_index].get(),
+            video_stride_bytes / 2, upload_pixels_[plane_index].data(),
             upload_image_stride, scale, bytes_per_row,
             resource_size_pixels.height());
       } else if (needs_bit_upshifting) {
@@ -1120,14 +1117,14 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
             reinterpret_cast<const uint16_t*>(
                 video_frame->data(frame_planes[plane_index])),
             video_stride_bytes / 2,
-            reinterpret_cast<uint16_t*>(upload_pixels_[plane_index].get()),
+            reinterpret_cast<uint16_t*>(upload_pixels_[plane_index].data()),
             upload_image_stride / 2, resource_size_pixels.width(),
             resource_size_pixels.height(), bits_per_channel);
       } else {
         NOTREACHED();
       }
 
-      pixels = upload_pixels_[plane_index].get();
+      pixels = upload_pixels_[plane_index].data();
       pixels_stride_in_bytes = upload_image_stride;
     }
 

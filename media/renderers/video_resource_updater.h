@@ -13,6 +13,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -218,10 +219,8 @@ class MEDIA_EXPORT VideoResourceUpdater
   uint32_t next_plane_resource_id_ = 1;
 
   // Temporary pixel buffers when converting between formats.
-  std::array<std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter>,
-             SkYUVAInfo::kMaxPlanes>
-      upload_pixels_ = {};
-  std::array<size_t, SkYUVAInfo::kMaxPlanes> upload_pixels_size_ = {};
+  using PlaneData = base::HeapArray<uint8_t, base::UncheckedFreeDeleter>;
+  std::array<PlaneData, SkYUVAInfo::kMaxPlanes> upload_pixels_ = {};
 
   VideoFrameResourceType frame_resource_type_;
 
