@@ -260,6 +260,11 @@ ci.builder(
                 # crbug.com/870673
                 experiment_percentage = 100,
             ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
         },
     ),
     # Too flaky. See crbug.com/876224 for more details.
