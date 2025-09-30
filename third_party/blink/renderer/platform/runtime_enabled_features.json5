@@ -1330,10 +1330,6 @@
       status: "stable",
     },
     {
-      name: "CSSExponentialFunctions",
-      status: "stable",
-    },
-    {
       name: "CSSFallbackContainerQueries",
       status: "experimental",
     },
