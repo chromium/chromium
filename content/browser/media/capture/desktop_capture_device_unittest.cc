@@ -377,10 +377,7 @@ TEST_F(DesktopCaptureDeviceTest, Capture) {
 // Test that screen capturer behaves correctly if the source frame size changes
 // but the caller cannot cope with variable resolution output.
 TEST_F(DesktopCaptureDeviceTest, ScreenResolutionChangeConstantResolution) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
-
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::make_unique<FakeScreenCapturer>());
 
   FormatChecker format_checker(gfx::Size(kTestFrameWidth1, kTestFrameHeight1),
                                gfx::Size(kTestFrameWidth1, kTestFrameHeight1));
@@ -424,10 +421,7 @@ TEST_F(DesktopCaptureDeviceTest, ScreenResolutionChangeConstantResolution) {
 // where the video frames sent the the client vary in resolution but maintain
 // the same aspect ratio.
 TEST_F(DesktopCaptureDeviceTest, ScreenResolutionChangeFixedAspectRatio) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
-
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::make_unique<FakeScreenCapturer>());
 
   FormatChecker format_checker(gfx::Size(888, 500), gfx::Size(532, 300));
   base::WaitableEvent done_event(
@@ -473,10 +467,7 @@ TEST_F(DesktopCaptureDeviceTest, ScreenResolutionChangeFixedAspectRatio) {
 // Test that screen capturer behaves correctly if the source frame size changes
 // and the caller can cope with variable resolution output.
 TEST_F(DesktopCaptureDeviceTest, ScreenResolutionChangeVariableResolution) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
-
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::make_unique<FakeScreenCapturer>());
 
   FormatChecker format_checker(gfx::Size(kTestFrameWidth1, kTestFrameHeight1),
                                gfx::Size(kTestFrameWidth2, kTestFrameHeight2));
@@ -522,10 +513,9 @@ TEST_F(DesktopCaptureDeviceTest, ScreenResolutionChangeVariableResolution) {
 
 // This test verifies that an unpacked frame is converted to a packed frame.
 TEST_F(DesktopCaptureDeviceTest, UnpackedFrame) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
+  auto mock_capturer = std::make_unique<FakeScreenCapturer>();
   mock_capturer->set_generate_cropped_frames(true);
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::move(mock_capturer));
 
   media::VideoCaptureFormat format;
   base::WaitableEvent done_event(
@@ -572,10 +562,9 @@ TEST_F(DesktopCaptureDeviceTest, UnpackedFrame) {
 
 // The test verifies that a bottom-to-top frame is converted to top-to-bottom.
 TEST_F(DesktopCaptureDeviceTest, InvertedFrame) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
+  auto mock_capturer = std::make_unique<FakeScreenCapturer>();
   mock_capturer->set_generate_inverted_frames(true);
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::move(mock_capturer));
 
   media::VideoCaptureFormat format;
   base::WaitableEvent done_event(
@@ -627,10 +616,7 @@ TEST_F(DesktopCaptureDeviceTest, InvertedFrame) {
 // This test verifies that calling RequestRefreshFrame() on the screen capturer
 // before AllocateAndStart() does not provide any refresh frame.
 TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameBeforeStart) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
-
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::make_unique<FakeScreenCapturer>());
 
   std::unique_ptr<media::MockVideoCaptureDeviceClient> client(
       CreateMockVideoCaptureDeviceClient());
@@ -647,10 +633,7 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameBeforeStart) {
 // after StopAndDeAllocate() does not result in any refresh frame even if one
 // frame has been captured before StopAndDeAllocate() was called.
 TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameAfterStop) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
-
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::make_unique<FakeScreenCapturer>());
 
   base::WaitableEvent done_event(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -688,9 +671,7 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameAfterStop) {
 // captured and sent to the client. The content should not be the same as for
 // the first default frame.
 TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameSendsExtraFrame) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::make_unique<FakeScreenCapturer>());
 
   FormatChecker format_checker(gfx::Size(kTestFrameWidth1, kTestFrameHeight1),
                                gfx::Size(kTestFrameWidth1, kTestFrameHeight1));
@@ -738,11 +719,11 @@ TEST_F(DesktopCaptureDeviceTest, RequestRefreshFrameSendsExtraFrame) {
 // frame.
 TEST_F(DesktopCaptureDeviceTest,
        OnlyCapturedFramesWithUpdatedRegionsAreForwardedToTheClient) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
+  auto capturer = std::make_unique<FakeScreenCapturer>();
+  FakeScreenCapturer* mock_capturer = capturer.get();
   // Marks captured frame #2, #4, etc. (first frame is #1) as not updated.
   mock_capturer->set_generate_non_updated_frames(true, 2);
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::move(capturer));
 
   base::WaitableEvent done_event(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -782,11 +763,11 @@ TEST_F(DesktopCaptureDeviceTest,
 // client gets a new frame when explicitly asking for it.
 TEST_F(DesktopCaptureDeviceTest,
        RequestRefreshFrameSendsFrameEvenIfNoRegionsAreUpdated) {
-  FakeScreenCapturer* mock_capturer = new FakeScreenCapturer();
+  auto capturer = std::make_unique<FakeScreenCapturer>();
+  FakeScreenCapturer* mock_capturer = capturer.get();
   // Marks captured frame #2, #4, etc. (first frame is #1) as not updated.
   mock_capturer->set_generate_non_updated_frames(true, 2);
-  CreateScreenCaptureDevice(
-      std::unique_ptr<webrtc::DesktopCapturer>(mock_capturer));
+  CreateScreenCaptureDevice(std::move(capturer));
 
   base::WaitableEvent done_event(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
