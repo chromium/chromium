@@ -13,6 +13,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import static org.chromium.ui.base.DeviceFormFactor.PHONE;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -35,6 +37,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -277,6 +280,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testTitleAndUrlClick() {
         // Clicking on the title or the URL expands/shrinks both of them.
         assertFalse(
@@ -324,6 +328,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testEllipsizedText_longTitle_isExpandable() {
         setupForCollapsedState(/* longTitle= */ true, /* longUrl= */ false);
 
@@ -334,6 +339,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testNonEllipsizedText_isNotExpandable() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -349,6 +355,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testAccessibility() {
         setupForCollapsedState(/* longTitle= */ true, /* longUrl= */ false);
         ThreadUtils.runOnUiThreadBlocking(mHeaderTextView::callOnClick);
@@ -379,6 +386,7 @@ public class ContextMenuHeaderViewTest {
 
     @Test
     @SmallTest
+    @Restriction(PHONE)
     public void testPerformAccessibilityAction() {
         setupForCollapsedState(/* longTitle= */ true, /* longUrl= */ false);
 
