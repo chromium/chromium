@@ -243,22 +243,9 @@ void PageStabilityMonitor::MoveToState(State new_state) {
           [](base::OnceClosure callback, base::TimeTicks unused_deadline) {
             std::move(callback).Run();
           },
-          MoveToStateClosure(State::kWaitForVisualStateRequest)));
+          MoveToStateClosure(State::kMaybeDelayCallback)));
       render_frame()->GetWebFrame()->PostIdleTask(
           FROM_HERE, main_thread_idle_callback_.callback());
-      break;
-    }
-    case State::kWaitForVisualStateRequest: {
-      WebFrameWidget* widget = render_frame()->GetWebFrame()->FrameWidget();
-      if (!widget->InsertVisualStateRequest(
-              MoveToStateClosure(State::kMaybeDelayCallback))) {
-        journal_entry_->EndEntry(
-            JournalDetailsBuilder()
-                .AddError("Failed to wait for new frame presentation due to no "
-                          "compositor.")
-                .Build());
-        MoveToState(State::kMaybeDelayCallback);
-      }
       break;
     }
     case State::kTimeoutGlobal: {
@@ -421,15 +408,8 @@ void PageStabilityMonitor::DCheckStateTransition(State old_state,
               State::kTimeoutGlobal,
               State::kRenderFrameGoingAway}},
           {State::kWaitForMainThreadIdle, {
-              State::kWaitForVisualStateRequest,
-              State::kPaintStabilityReached,
-              State::kTimeoutMainThread,
-              State::kTimeoutGlobal,
-              State::kRenderFrameGoingAway}},
-          {State::kWaitForVisualStateRequest, {
-              State::kPaintStabilityReached,
               State::kMaybeDelayCallback,
-              State::kInvokeCallback,
+              State::kPaintStabilityReached,
               State::kTimeoutMainThread,
               State::kTimeoutGlobal,
               State::kRenderFrameGoingAway}},

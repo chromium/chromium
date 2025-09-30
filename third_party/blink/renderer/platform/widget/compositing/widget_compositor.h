@@ -55,11 +55,6 @@ class PLATFORM_EXPORT WidgetCompositor
   // mojom::WidgetCompositor:
   void VisualStateRequest(VisualStateRequestCallback callback) override;
 
-  // The Mojo method above expects to be called on the compositor thread. Main
-  // thread clients should use this method instead. The given callback is
-  // invoked on the main thread.
-  void MainThreadVisualStateRequest(VisualStateRequestCallback callback);
-
   virtual cc::LayerTreeHost* LayerTreeHost() const;
 
  protected:

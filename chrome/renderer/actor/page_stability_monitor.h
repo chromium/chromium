@@ -82,10 +82,6 @@ class PageStabilityMonitor : public content::RenderFrameObserver,
     // Wait until the main thread is settled.
     kWaitForMainThreadIdle,
 
-    // Wait until a new frame has been submitted to and presented by the display
-    // compositor.
-    kWaitForVisualStateRequest,
-
     // Timeout states - these just log and and move to invoke callback state.
     kTimeoutGlobal,
     kTimeoutMainThread,
