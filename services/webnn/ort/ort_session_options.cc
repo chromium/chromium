@@ -22,14 +22,15 @@ namespace {
 // Execution Provider selection delegate function that selects EPs based on
 // WebNN device type.
 // TODO(crbug.com/425487285): Select EPs based on WebNN power preference.
-OrtStatus* EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
-                                     size_t num_devices,
-                                     const OrtKeyValuePairs* model_metadata,
-                                     const OrtKeyValuePairs* runtime_metadata,
-                                     const OrtEpDevice** selected,
-                                     size_t max_selected,
-                                     size_t* num_selected,
-                                     void* state) {
+OrtStatus* ORT_API_CALL
+EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
+                          size_t num_devices,
+                          const OrtKeyValuePairs* model_metadata,
+                          const OrtKeyValuePairs* runtime_metadata,
+                          const OrtEpDevice** selected,
+                          size_t max_selected,
+                          size_t* num_selected,
+                          void* state) {
   // Early return if no devices available.
   if (num_devices == 0) {
     *num_selected = 0;

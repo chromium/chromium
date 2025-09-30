@@ -12,13 +12,14 @@ import shutil
 # The ONNX Runtime headers needed in Chromium
 onnxruntime_headers = [
     "onnxruntime_c_api.h",
+    "onnxruntime_ep_c_api.h",
     "onnxruntime_session_options_config_keys.h",
 ]
 
 # The target revision of ONNX Runtime
-revision = "f217402897f40ebba457e2421bc0a4702771968e"
+revision = "be835efc56aca19b8e810538ec93c8e150e0fc61"
 # These headers are extracted from a git repository and versioned by revision
-version = "v1.22.0"
+version = "v1.23.0"
 
 base_url = "https://raw.githubusercontent.com/microsoft/onnxruntime"
 onnxruntime_headers_path = ["include", "onnxruntime", "core", "session"]

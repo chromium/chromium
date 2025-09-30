@@ -1,8 +1,8 @@
 Name: Headers for ONNX Runtime C/C++ APIs
 Short Name: onnxruntime_headers
 URL: https://github.com/microsoft/onnxruntime
-Version: v1.22.0
-Revision: f217402897f40ebba457e2421bc0a4702771968e
+Version: v1.23.0
+Revision: be835efc56aca19b8e810538ec93c8e150e0fc61
 Update Mechanism: Manual
 License: MIT
 License File: src/LICENSE
