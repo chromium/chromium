@@ -5,12 +5,12 @@ as stack-based classes and namespaces. As a result, all front-end Bling files
 should be .mm files, as we expect eventually they will contain C++ code or
 language features.
 
-## Use ObjCCast<T> and ObjcCCastStrict<T>
+## Use ObjCCast<T> and ObjCCastStrict<T>
 
 As the C++ style guide tells you, we never use C casts and prefer
 `static_cast<T>` and `dynamic_cast<T>`. However, for Objective-C casts we have
 two specific casts: `base::apple::ObjCCast<T>arg` is similar to `dynamic_cast<T>`,
-and `ObjcCCastStrict` `DCHECKs` against that class.
+and `ObjCCastStrict` `DCHECKs` against that class.
 
 ## Blocks
 
