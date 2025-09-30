@@ -119,6 +119,11 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Returns the account's refresh token used for testing purposes.
   std::string GetRefreshTokenForTest(const CoreAccountId& account_id) const;
 
+  // The use of the IssueToken endpoint for fetching access tokens is gated by
+  // the presence of official Google Chrome API keys.
+  // This function removes the official API keys check for testing.
+  static void SetIgnoreNonOfficialApiKeysForTesting();
+
  private:
   friend class MutableProfileOAuth2TokenServiceDelegateTest;
 

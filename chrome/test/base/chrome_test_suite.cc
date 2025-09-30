@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/common/constants.h"
 #include "media/base/media.h"
@@ -97,6 +98,9 @@ void ChromeTestSuite::Initialize() {
   // Ignore this requiement for unit and browser tests to make sure that the
   // DICE feature gets the right test coverage.
   AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting();
+  // Some features in //components/signin only work in builds with official
+  // Chrome API keys. Ignore this requirement to get a better test coverage.
+  signin::SetIgnoreNonOfficialApiKeys();
 
 #if BUILDFLAG(IS_MAC)
   // Look in the framework bundle for resources.
