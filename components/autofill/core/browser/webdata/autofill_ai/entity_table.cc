@@ -399,6 +399,14 @@ bool EntityTable::RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
          transaction.Commit();
 }
 
+bool EntityTable::EntityInstanceExists(
+    const EntityInstance::EntityId& guid) const {
+  sql::Statement s;
+  return SelectByGuid(db(), s, entities::kTableName, {entities::kGuid},
+                      *guid) &&
+         s.Succeeded();
+}
+
 std::map<EntityInstance::EntityId,
          std::map<std::string, std::vector<EntityTable::AttributeRecord>>>
 EntityTable::LoadAttributes() const {

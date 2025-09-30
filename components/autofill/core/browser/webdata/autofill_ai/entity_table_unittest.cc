@@ -222,5 +222,35 @@ TEST_F(EntityTableTest, GetEntityInstancesSkipsEmptyInstances) {
   EXPECT_THAT(table().GetEntityInstances(), ElementsAre(dl));
 }
 
+// Tests the EntityInstanceExists method.
+TEST_F(EntityTableTest, EntityInstanceExists) {
+  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance dl = test::GetDriversLicenseEntityInstance();
+
+  // Initially, no entity should exist.
+  EXPECT_FALSE(table().EntityInstanceExists(pp.guid()));
+  EXPECT_FALSE(table().EntityInstanceExists(dl.guid()));
+
+  // After adding an entity, it should exist.
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(pp));
+  EXPECT_TRUE(table().EntityInstanceExists(pp.guid()));
+  EXPECT_FALSE(table().EntityInstanceExists(dl.guid()));
+
+  // After adding another entity, both should exist.
+  ASSERT_TRUE(table().AddOrUpdateEntityInstance(dl));
+  EXPECT_TRUE(table().EntityInstanceExists(pp.guid()));
+  EXPECT_TRUE(table().EntityInstanceExists(dl.guid()));
+
+  // After removing an entity, it should no longer exist.
+  ASSERT_TRUE(table().RemoveEntityInstance(pp.guid()));
+  EXPECT_FALSE(table().EntityInstanceExists(pp.guid()));
+  EXPECT_TRUE(table().EntityInstanceExists(dl.guid()));
+
+  // After removing the other entity, neither should exist.
+  ASSERT_TRUE(table().RemoveEntityInstance(dl.guid()));
+  EXPECT_FALSE(table().EntityInstanceExists(pp.guid()));
+  EXPECT_FALSE(table().EntityInstanceExists(dl.guid()));
+}
+
 }  // namespace
 }  // namespace autofill

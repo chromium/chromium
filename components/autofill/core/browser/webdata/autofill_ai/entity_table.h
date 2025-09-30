@@ -97,6 +97,10 @@ class EntityTable : public WebDatabaseTable {
   bool RemoveEntityInstancesModifiedBetween(base::Time delete_begin,
                                             base::Time delete_end);
 
+  // Returns true if an entity instance with the given `guid` exists in the
+  // database.
+  bool EntityInstanceExists(const EntityInstance::EntityId& guid) const;
+
   // Returns the valid entity instances; ignores invalid instances.
   //
   // An instance is valid only if all the following is true:
