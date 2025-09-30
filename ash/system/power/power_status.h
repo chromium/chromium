@@ -31,8 +31,9 @@ namespace ash {
 
 struct BatteryColorTemplate {
   bool operator==(const BatteryColorTemplate& other) const {
-    bool foreground_colors_match = foreground_color == other.foreground_color;
-    bool badge_colors_match = badge_color == other.badge_color;
+    const bool foreground_colors_match =
+        foreground_color == other.foreground_color;
+    const bool badge_colors_match = badge_color == other.badge_color;
 
     return foreground_colors_match && badge_colors_match;
   }
