@@ -1,10 +1,6 @@
 {
     "chromium.android": {
         "android-10-x86-rel": {
-            "chrome_public_test_apk": {
-                "shards": 103,
-                "try_builder": "android-x86-rel"
-            },
             "webview_trichrome_cts_tests full_mode": {
                 "shards": 3,
                 "try_builder": "android-x86-rel"
