@@ -378,6 +378,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderCoordinator.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderMediator.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderProperties.java",
+  "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderTextView.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderViewBinder.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuHelper.java",
   "java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemViewBinder.java",

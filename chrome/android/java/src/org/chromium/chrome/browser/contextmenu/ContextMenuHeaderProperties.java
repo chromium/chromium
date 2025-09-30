@@ -63,6 +63,9 @@ class ContextMenuHeaderProperties {
     public static final WritableIntPropertyKey OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL =
             new WritableIntPropertyKey();
 
+    public static final PropertyModel.WritableBooleanPropertyKey IS_EXPANDED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         TITLE,
         TITLE_MAX_LINES,
@@ -78,6 +81,7 @@ class ContextMenuHeaderProperties {
         MONOGRAM_SIZE_PIXEL,
         OVERRIDE_HEADER_IMAGE_MAX_SIZE_PIXEL,
         OVERRIDE_HEADER_CIRCLE_BG_SIZE_PIXEL,
-        OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL
+        OVERRIDE_HEADER_CIRCLE_BG_MARGIN_PIXEL,
+        IS_EXPANDED
     };
 }

@@ -44,58 +44,10 @@ found in the LICENSE file.
             android:src="@color/thumbnail_placeholder_on_primary_bg" />
     </FrameLayout>
 
-    <LinearLayout
+    <include
         android:id="@+id/title_and_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center_vertical"
-        android:paddingTop="@dimen/context_menu_header_vertical_padding"
-        android:paddingBottom="@dimen/context_menu_bottom_padding">
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/menu_header_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-            app:leading="@dimen/text_size_small_leading" />
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/menu_header_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:textDirection="ltr"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            app:leading="@dimen/text_size_small_leading" />
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/menu_header_secondary_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:textDirection="ltr"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            app:leading="@dimen/text_size_small_leading"
-            android:visibility="gone" />
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/menu_header_tertiary_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:textDirection="ltr"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            app:leading="@dimen/text_size_small_leading"
-            android:visibility="gone" />
-    </LinearLayout>
+        layout="@layout/context_menu_header_text"/>
 </LinearLayout>

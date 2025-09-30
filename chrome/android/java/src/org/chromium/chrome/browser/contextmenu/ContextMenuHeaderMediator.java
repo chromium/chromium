@@ -134,10 +134,12 @@ class ContextMenuHeaderMediator implements View.OnClickListener {
             if (isTertiaryUrlPresent) {
                 mModel.set(ContextMenuHeaderProperties.TERTIARY_URL_MAX_LINES, Integer.MAX_VALUE);
             }
+            mModel.set(ContextMenuHeaderProperties.IS_EXPANDED, true);
             return;
         }
 
         // 3. Handle the "collapse" action. This logic distributes a total of 2 or 3 lines.
+        mModel.set(ContextMenuHeaderProperties.IS_EXPANDED, false);
 
         // Case A: No secondary/tertiary URLs. Distribute 2 lines between Title and URL.
         if (!isSecondaryUrlPresent) {
