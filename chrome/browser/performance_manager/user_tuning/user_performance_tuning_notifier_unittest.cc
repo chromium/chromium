@@ -41,27 +41,11 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
     int memory_percent_threshold_reached_count_ = 0;
   };
 
-  class TestProcessMetricsDecorator : public ProcessMetricsDecorator {
-   public:
-    void RequestProcessesMemoryMetrics(
-        bool immediate_request,
-        ProcessMemoryDumpCallback callback) override {
-      if (immediate_request) {
-        ++request_immediate_metrics_count_;
-      }
-      ProcessMetricsDecorator::RequestProcessesMemoryMetrics(
-          immediate_request, std::move(callback));
-    }
-
-    int request_immediate_metrics_count_ = 0;
-  };
-
   void SetUp() override {
     GraphTestHarness::SetUp();
 
-    auto decorator = std::make_unique<TestProcessMetricsDecorator>();
-    decorator_ = decorator.get();
-    graph()->PassToGraph(std::move(decorator));
+    graph()->PassToGraph(
+        std::make_unique<performance_manager::ProcessMetricsDecorator>());
 
     auto receiver = std::make_unique<TestReceiver>();
     receiver_ = receiver.get();
@@ -72,7 +56,6 @@ class UserPerformanceTuningNotifierTest : public GraphTestHarness {
     graph()->PassToGraph(std::move(notifier));
   }
 
-  raw_ptr<TestProcessMetricsDecorator> decorator_;
   raw_ptr<TestReceiver> receiver_;
 };
 
