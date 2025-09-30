@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/aggregated_journal.h"
-#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom.h"
@@ -30,6 +29,10 @@ class Profile;
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace page_content_annotations {
+struct FetchPageContextResult;
+}  // namespace page_content_annotations
 
 namespace actor {
 namespace ui {
