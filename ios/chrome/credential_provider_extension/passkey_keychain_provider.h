@@ -12,7 +12,6 @@
 #import "base/functional/callback_forward.h"
 
 @class GCRSSOFolsomService;
-@class UIViewController;
 
 // Class to manage passkey vault keys.
 class PasskeyKeychainProvider {

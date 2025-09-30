@@ -12,9 +12,6 @@
 @class PasskeyRequestDetails;
 @protocol Credential;
 
-typedef void (^FetchSecurityDomainSecretCompletionBlock)(
-    NSArray<NSData*>* security_domain_secrets);
-
 // A handler to allow children to communicate selected credentials back to the
 // parent. This is essentially a wrapper for
 // `ASCredentialProviderExtensionContext` to force all calls through the parent.

@@ -7,7 +7,11 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
-#import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
+
+@protocol Credential;
+
+typedef void (^FetchSecurityDomainSecretCompletionBlock)(
+    NSArray<NSData*>* security_domain_secrets);
 
 // Delegate for the PasskeyKeychainProviderBridge.
 @protocol PasskeyKeychainProviderBridgeDelegate

@@ -4,9 +4,12 @@
 
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider_bridge.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/containers/to_vector.h"
 #import "base/functional/callback.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
-#import "ios/chrome/credential_provider_extension/passkey_util.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 
 typedef void (^CheckEnrolledCompletionBlock)(BOOL is_enrolled, NSError* error);
 typedef void (^ErrorCompletionBlock)(NSError* error);
@@ -30,13 +33,16 @@ NSArray<NSData*>* GetSecurityDomainSecret(
 // Returns whether there's at least one valid key in the keys array.
 bool ContainsValidKey(const PasskeyKeychainProvider::SharedKeyList keys,
                       id<Credential> credential) {
-  NSArray<NSData*>* security_domain_secrets = GetSecurityDomainSecret(keys);
+  for (NSData* security_domain_secret in GetSecurityDomainSecret(keys)) {
+    sync_pb::WebauthnCredentialSpecifics_Encrypted credential_secrets;
+    if (webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
+            base::ToVector(base::apple::NSDataToSpan(security_domain_secret)),
+            PasskeyFromCredential(credential), &credential_secrets)) {
+      return true;
+    }
+  }
 
-  // DecryptCredentialSecrets will succeed if and only if there's at least one
-  // valid key.
-  std::optional<sync_pb::WebauthnCredentialSpecifics_Encrypted> encrypted =
-      DecryptCredentialSecrets(credential, security_domain_secrets);
-  return encrypted.has_value();
+  return false;
 }
 
 }  // namespace
