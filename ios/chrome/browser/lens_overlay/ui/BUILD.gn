@@ -89,6 +89,7 @@ source_set("view_controller") {
   ]
   deps = [
     ":accessibility_identifier_constants",
+    ":panel",
     ":protocols",
     "//base",
     "//components/strings",
@@ -114,6 +115,22 @@ source_set("view_controller") {
     "//ios/public/provider/chrome/browser/font:font_api",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("panel") {
+  sources = [
+    "lens_overlay_panel.h",
+    "lens_overlay_panel.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/components/ui_util",
     "//url",
   ]
   frameworks = [ "UIKit.framework" ]

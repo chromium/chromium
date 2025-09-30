@@ -7,6 +7,7 @@
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_panel.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -23,101 +24,11 @@ const CGFloat kSidePanelSelectionPadding = 24.0;
 // The duration of the side panel appear and dissapear animations.
 const CGFloat kSidePannelAnimationDuration = 0.4;
 
-// The width of the border outline that surrounds the results page.
-const CGFloat kSidePannelOutlineBorderWidth = 1.0;
-
-// The corner radius of the outline that surrounds the results page.
-const CGFloat kSidePannelOutlineCornerRadius = 13.0;
-
-// The lateral inset ammount of the border outlining the results page.
-const CGFloat kSidePannelOutlineLateralInset = 8.0;
-
-// The bottom inset ammount of the border outlining the results page.
-const CGFloat kSidePannelOutlineBottomInset = 8.0;
-
 // The corner radius of the selection UI when presented in the side panel
 // presentation.
 const CGFloat kSelectionUICornerRadius = 13.0;
 
 }  // namespace
-
-@interface LensOverlaySidePanel : UIViewController
-
-// Creates a new instance wrapping the given content view controller.
-- (instancetype)initWithContent:(UIViewController*)contentViewController;
-
-@end
-
-@implementation LensOverlaySidePanel {
-  // The content view being presented in the side panel.
-  // It is not intended for the ovelay to own the UI it presents.
-  __weak UIViewController* _contentViewController;
-
-  // The outline border of the results page.
-  UIView* _borderView;
-}
-
-- (instancetype)initWithContent:(UIViewController*)contentViewController {
-  self = [super init];
-  if (self) {
-    _contentViewController = contentViewController;
-  }
-
-  return self;
-}
-
-- (void)viewDidLoad {
-  [super viewDidLoad];
-  // To ensure the elements within this side panel adapt properly to its limited
-  // width, explicitly set its horizontal size class to compact.
-  self.traitOverrides.horizontalSizeClass = UIUserInterfaceSizeClassCompact;
-  _borderView = [self createBorderView];
-  [self.view addSubview:_borderView];
-  AddSameConstraintsWithInsets(_borderView, self.view,
-                               [self insetsForInnerOutline]);
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-
-  if (_contentViewController) {
-    [self addChildViewController:_contentViewController];
-    _contentViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_borderView addSubview:_contentViewController.view];
-    [_contentViewController didMoveToParentViewController:self];
-
-    AddSameConstraints(_contentViewController.view, _borderView);
-  }
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-  [_contentViewController removeFromParentViewController];
-  [_contentViewController.view removeFromSuperview];
-  [super viewWillDisappear:animated];
-}
-
-#pragma mark - Private
-
-// The ammount of insets for the outline relative to the bounds.
-- (NSDirectionalEdgeInsets)insetsForInnerOutline {
-  return NSDirectionalEdgeInsetsMake(0, kSidePannelOutlineLateralInset,
-                                     kSidePannelOutlineBottomInset,
-                                     kSidePannelOutlineLateralInset);
-}
-
-// Creates a new border outline view.
-- (UIView*)createBorderView {
-  UIView* borderView = [[UIView alloc] init];
-  borderView.translatesAutoresizingMaskIntoConstraints = NO;
-  borderView.layer.borderWidth = kSidePannelOutlineBorderWidth;
-  borderView.layer.borderColor = [UIColor colorNamed:kGrey200Color].CGColor;
-  borderView.layer.cornerRadius = kSidePannelOutlineCornerRadius;
-  borderView.clipsToBounds = YES;
-
-  return borderView;
-}
-
-@end
 
 @interface LensOverlayContainerViewController ()
 
@@ -136,7 +47,7 @@ const CGFloat kSelectionUICornerRadius = 13.0;
   // accept many interactions, but we do this to be extra safe.
   UIView* _selectionInteractionBlockingView;
   // The side panel container for the results page.
-  LensOverlaySidePanel* _sidePanel;
+  LensOverlayPanel* _sidePanel;
   // Layout guide separating the selection UI and results in the side panel.
   UILayoutGuide* _splitViewLayoutGuide;
   // The constraint controlling the display of the side panel.
@@ -264,7 +175,8 @@ const CGFloat kSelectionUICornerRadius = 13.0;
 - (void)presentViewControllerInSidePanel:(UIViewController*)viewController
                                 animated:(BOOL)animated
                               completion:(ProceduralBlock)completion {
-  _sidePanel = [[LensOverlaySidePanel alloc] initWithContent:viewController];
+  _sidePanel = [[LensOverlayPanel alloc] initWithContent:viewController
+                                            insetContent:YES];
   _sidePanel.view.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_sidePanel];
   [self.view addSubview:_sidePanel.view];
