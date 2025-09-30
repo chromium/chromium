@@ -387,6 +387,9 @@ v8::Local<v8::Context> AuctionV8Helper::CreateContext(
   auto result =
       context->Global()->Delete(context, CreateStringFromLiteral("Date"));
   DCHECK(!result.IsNothing());
+  auto result2 =
+      context->Global()->Delete(context, CreateStringFromLiteral("Temporal"));
+  DCHECK(!result2.IsNothing());
   return context;
 }
 
