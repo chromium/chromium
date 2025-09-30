@@ -744,6 +744,8 @@ extern const char kGlicWarmingName[];
 extern const char kGlicWarmingDescription[];
 extern const char kGlicFreWarmingName[];
 extern const char kGlicFreWarmingDescription[];
+extern const char kGlicEntrypointVariationsName[];
+extern const char kGlicEntrypointVariationsDescription[];
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];

@@ -10049,6 +10049,7 @@ from previous Chrome versions.
   <int value="-1473537658" label="DeprecateLowUsageCodecs:disabled"/>
   <int value="-1473345665" label="AndroidDesktopDensity:disabled"/>
   <int value="-1473136627" label="enable-web-payments"/>
+  <int value="-1473042537" label="GlicEntrypointVariations:disabled"/>
   <int value="-1472825316" label="ContextualSearchLongpressResolve:enabled"/>
   <int value="-1472171434" label="HistoryPageHistorySyncPromo:disabled"/>
   <int value="-1471353813" label="AddToHomescreenIPH:disabled"/>
@@ -20031,6 +20032,7 @@ from previous Chrome versions.
   <int value="2081154375" label="AssistantKeyRemapping:disabled"/>
   <int value="2081852489" label="GeolocationElement:enabled"/>
   <int value="2082210271" label="AndroidTabGroupStableIds:enabled"/>
+  <int value="2083728915" label="GlicEntrypointVariations:enabled"/>
   <int value="2084477383" label="CrostiniDiskResizing:enabled"/>
   <int value="2084638930"
       label="AutofillEnforceMinRequiredFieldsForUpload:enabled"/>
