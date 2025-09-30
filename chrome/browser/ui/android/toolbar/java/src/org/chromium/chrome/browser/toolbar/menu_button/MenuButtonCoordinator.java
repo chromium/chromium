@@ -215,6 +215,7 @@ public class MenuButtonCoordinator extends ToolbarChildButton {
     /**
      * @return Whether the menu button is present and visible.
      */
+    @Override
     public boolean isVisible() {
         if (mVisibilityDelegate != null) {
             return mVisibilityDelegate.isMenuButtonVisible();

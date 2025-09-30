@@ -181,6 +181,7 @@ public class BackButtonCoordinator extends ToolbarChildButton {
      *
      * @return a boolean indicating whether view is visible or not.
      */
+    @Override
     public boolean isVisible() {
         return mMediator.isVisible();
     }

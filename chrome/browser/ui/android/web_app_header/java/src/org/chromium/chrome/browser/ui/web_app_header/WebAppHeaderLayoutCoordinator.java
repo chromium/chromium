@@ -252,7 +252,7 @@ public class WebAppHeaderLayoutCoordinator
     @VisibleForTesting
     List<Rect> collectControlPositions() {
         final var areas = new ArrayList<Rect>();
-        if (mReloadButtonCoordinator != null && mReloadButtonCoordinator.isVisibile()) {
+        if (mReloadButtonCoordinator != null && mReloadButtonCoordinator.isVisible()) {
             areas.add(mReloadButtonCoordinator.getHitRect());
         }
 

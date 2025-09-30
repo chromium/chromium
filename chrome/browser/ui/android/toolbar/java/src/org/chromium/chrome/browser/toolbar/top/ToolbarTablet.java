@@ -577,6 +577,12 @@ public class ToolbarTablet extends ToolbarLayout {
         }
 
         @Override
+        public boolean isVisible() {
+            return mToolbarView.getPaddingStart() == mHorizontalPadding
+                    && mToolbarView.getPaddingEnd() == mHorizontalPadding;
+        }
+
+        @Override
         public int updateVisibility(int availableWidth) {
             assert availableWidth >= 0;
             int paddingWidth = Math.min(availableWidth, 2 * mHorizontalPadding);
@@ -593,6 +599,11 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     private class LocationBarMinWidthConsumer implements ToolbarWidthConsumer {
+        @Override
+        public boolean isVisible() {
+            return true;
+        }
+
         @Override
         public int updateVisibility(int availableWidth) {
             assert isToolbarTabletResizeRefactorEnabled();
@@ -611,6 +622,11 @@ public class ToolbarTablet extends ToolbarLayout {
     }
 
     private class OptionalButtonToolbarWidthConsumer implements ToolbarWidthConsumer {
+        @Override
+        public boolean isVisible() {
+            return mOptionalButton != null && mOptionalButton.getVisibility() == View.VISIBLE;
+        }
+
         @Override
         public int updateVisibility(int availableWidth) {
             assert isToolbarTabletResizeRefactorEnabled();

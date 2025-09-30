@@ -16,6 +16,9 @@ import java.util.Collection;
  */
 @NullMarked
 public interface ToolbarWidthConsumer {
+    /** Whether the width consumer has allocated width on the toolbar and is currently visible. */
+    boolean isVisible();
+
     /**
      * Takes in the remaining width available in the toolbar for displaying toolbar components. This
      * ToolbarChild will display itself using the available width, if appropriate, returning the

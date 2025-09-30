@@ -130,6 +130,11 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
     }
 
     @Override
+    public boolean isVisible() {
+        return getVisibility() == View.VISIBLE;
+    }
+
+    @Override
     public int getVisibility() {
         return mHomeButton.getVisibility();
     }

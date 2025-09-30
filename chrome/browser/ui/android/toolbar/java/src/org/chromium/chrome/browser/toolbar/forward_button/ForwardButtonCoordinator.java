@@ -115,6 +115,11 @@ public class ForwardButtonCoordinator extends ToolbarChildButton {
     }
 
     @Override
+    public boolean isVisible() {
+        return mImageButton.getVisibility() == View.VISIBLE;
+    }
+
+    @Override
     public void setVisibility(boolean visible) {
         mImageButton.setVisibility(visible ? View.VISIBLE : View.GONE);
     }

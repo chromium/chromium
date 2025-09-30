@@ -68,6 +68,11 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild {
         setVisibility(mVisible);
     }
 
+    @Override
+    public boolean isVisible() {
+        return mIncognitoIndicator != null && mIncognitoIndicator.getVisibility() == View.VISIBLE;
+    }
+
     /**
      * Updates the visibility of the incognito indicator.
      *

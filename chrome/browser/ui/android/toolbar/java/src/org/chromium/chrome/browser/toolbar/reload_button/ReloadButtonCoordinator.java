@@ -155,7 +155,8 @@ public class ReloadButtonCoordinator extends ToolbarChildButton {
      *
      * @return a Boolean indicating whether view is visible or not.
      */
-    public boolean isVisibile() {
+    @Override
+    public boolean isVisible() {
         return mMediator.isVisible();
     }
 

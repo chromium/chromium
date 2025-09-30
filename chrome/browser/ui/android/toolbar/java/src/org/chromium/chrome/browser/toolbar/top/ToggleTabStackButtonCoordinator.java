@@ -219,6 +219,11 @@ public class ToggleTabStackButtonCoordinator extends ToolbarChildButton {
         mToggleTabStackButton.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
+    @Override
+    public boolean isVisible() {
+        return mToggleTabStackButton.getVisibility() == View.VISIBLE;
+    }
+
     /** Get container view for drawing, accessibility traversal and animations. */
     public View getContainerView() {
         return mToggleTabStackButton;
