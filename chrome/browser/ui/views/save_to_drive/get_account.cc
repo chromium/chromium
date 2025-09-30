@@ -13,16 +13,19 @@
 
 namespace save_to_drive {
 
+AccountChooser::AccountChooser() = default;
+AccountChooser::~AccountChooser() = default;
+
 void AccountChooser::GetAccount(
     content::WebContents* web_contents,
     base::OnceCallback<void(std::optional<AccountInfo>)>
         on_account_chosen_callback) {
-  AccountChooserController* account_chooser_controller =
-      AccountChooserController::GetOrCreateForWebContents(
-          web_contents,
-          IdentityManagerFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())));
-  account_chooser_controller->GetAccount(std::move(on_account_chosen_callback));
+  account_chooser_controller_ = std::make_unique<AccountChooserController>(
+      web_contents,
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())));
+  account_chooser_controller_->GetAccount(
+      std::move(on_account_chosen_callback));
 }
 
 }  // namespace save_to_drive

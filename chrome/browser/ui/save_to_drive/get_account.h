@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SAVE_TO_DRIVE_GET_ACCOUNT_H_
 #define CHROME_BROWSER_UI_SAVE_TO_DRIVE_GET_ACCOUNT_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/callback_forward.h"
@@ -16,13 +17,14 @@ class WebContents;
 struct AccountInfo;
 
 namespace save_to_drive {
+class AccountChooserController;
 
 class AccountChooser {
  public:
-  AccountChooser() = default;
+  AccountChooser();
   AccountChooser(const AccountChooser&) = delete;
   AccountChooser& operator=(const AccountChooser&) = delete;
-  virtual ~AccountChooser() = default;
+  virtual ~AccountChooser();
 
   // Launches AccountChooser flow and calls `on_account_chosen_callback` once an
   // account has been chosen. If the account chooser is canceled, the callback
@@ -30,6 +32,9 @@ class AccountChooser {
   virtual void GetAccount(content::WebContents* web_contents,
                           base::OnceCallback<void(std::optional<AccountInfo>)>
                               on_account_chosen_callback);
+
+ private:
+  std::unique_ptr<AccountChooserController> account_chooser_controller_;
 };
 
 }  // namespace save_to_drive

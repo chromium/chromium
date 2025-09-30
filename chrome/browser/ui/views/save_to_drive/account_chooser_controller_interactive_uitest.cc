@@ -225,6 +225,10 @@ class AccountChooserControllerInteractiveUiTest
                  SetRefreshTokenForPrimaryAccount());
   }
 
+  auto DestroyAccountChooserController() {
+    return Do([this]() { account_chooser_controller_.reset(); });
+  }
+
  protected:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     IdentityTestEnvironmentProfileAdaptor::
@@ -422,6 +426,20 @@ IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
                   MakePrimaryAccountAvailableWithValidRefreshToken(
                       account, &persisted_primary_account),
                   WaitForShow(AccountChooserView::kTopViewId));
+}
+
+// Steps:
+// 1. Call GetAccount with one account.
+// 2. Destroy the account chooser controller.
+IN_PROC_BROWSER_TEST_F(AccountChooserControllerInteractiveUiTest,
+                       DestroyAccountChooserController) {
+  AccountInfo account = GetTestAccount("pothos", "test.com", /*gaia_id=*/1);
+  RunTestSequence(CreateAccountChooserController(),
+                  MakeAccountAvailable(account),
+                  GetAccount(/*on_account_chosen_callback=*/base::DoNothing()),
+                  WaitForShow(AccountChooserView::kTopViewId),
+                  DestroyAccountChooserController(),
+                  WaitForHide(AccountChooserView::kTopViewId));
 }
 
 }  // namespace

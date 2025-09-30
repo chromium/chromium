@@ -86,13 +86,10 @@ class AccountChooserController::AddAccountPopupObserver
 // AccountChooserController //
 //////////////////////////////
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AccountChooserController);
-
 AccountChooserController::AccountChooserController(
     content::WebContents* web_contents,
     signin::IdentityManager* identity_manager)
-    : WebContentsUserData<AccountChooserController>(*web_contents),
-      tab_(tabs::TabInterface::MaybeGetFromContents(web_contents)),
+    : tab_(tabs::TabInterface::MaybeGetFromContents(web_contents)),
       identity_manager_(identity_manager),
       add_account_popup_observer_(
           std::make_unique<AddAccountPopupObserver>(this)) {}
@@ -179,6 +176,9 @@ void AccountChooserController::ShowAccountChooserDialog(
       tab_->GetTabFeatures()->tab_dialog_manager()->CreateAndShowDialog(
           account_chooser_dialog_delegate_.get(),
           std::make_unique<tabs::TabDialogManager::Params>());
+  account_chooser_widget_->MakeCloseSynchronous(
+      base::BindOnce(&AccountChooserController::OnWidgetCancelledFlow,
+                     base::Unretained(this)));
 }
 
 void AccountChooserController::ShowAddAccountDialog() {
@@ -309,6 +309,11 @@ void AccountChooserController::CloseAddAccountPopup() {
 void AccountChooserController::CloseDialogs() {
   CloseAddAccountPopup();
   CloseWidget();
+}
+
+void AccountChooserController::OnWidgetCancelledFlow(
+    views::Widget::ClosedReason reason) {
+  OnFlowCancelled();
 }
 
 }  // namespace save_to_drive
