@@ -48,6 +48,10 @@ public class TabUsageTrackerTest {
     private static final String NUMBER_OF_TABS_USED = "Android.ActivityStop.NumberOfTabsUsed";
     private static final String PERCENTAGE_OF_TABS_USED =
             "Android.ActivityStop.PercentageOfTabsUsed";
+    private static final String NUMBER_OF_PINNED_TABS_USED_HISTOGRAM =
+            "Android.ActivityStop.NumberOfPinnedTabsUsed";
+    private static final String PERCENTAGE_OF_PINNED_TABS_USED_HISTOGRAM =
+            "Android.ActivityStop.PercentageOfPinnedTabsUsed";
 
     private TabUsageTracker mTabUsageTracker;
 
@@ -119,6 +123,114 @@ public class TabUsageTrackerTest {
 
     @Test
     @SmallTest
+    public void testOnStop_RecordsHistogram_NoInitialPinnedTabs() {
+        // Arrange
+        mTabUsageTracker.onResumeWithNative();
+        Tab tab1 = getMockedTab(1, false);
+        Tab tab2 = getMockedTab(2, true);
+
+        // Act: Create 2 tabs (1 pinned), select 1 pinned tab and call onStop.
+        TabModelSelectorTabModelObserver observer =
+                mTabUsageTracker.getTabModelSelectorTabModelObserverForTests();
+        observer.didAddTab(
+                tab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
+        observer.didAddTab(
+                tab2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
+        observer.didSelectTab(tab2, TabLaunchType.FROM_CHROME_UI, 0);
+
+        mTabUsageTracker.onStopWithNative();
+
+        // Assert
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting(NUMBER_OF_TABS_USED, 1));
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting(PERCENTAGE_OF_TABS_USED, 50));
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NUMBER_OF_PINNED_TABS_USED_HISTOGRAM, 1));
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PERCENTAGE_OF_PINNED_TABS_USED_HISTOGRAM, 100));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnStop_RecordsHistogram_HasInitialPinnedTabs() {
+        // Arrange
+        Tab tab1 = getMockedTab(1, true);
+        Tab selectedTab = getMockedTab(3, true);
+        // Start with 5 existing tabs, 2 pinned tabs and 1 selected pinned tab.
+        Mockito.when(mTabModelSelector.getTotalTabCount()).thenReturn(5);
+        Mockito.when(mTabModelSelector.getTotalPinnedTabCount()).thenReturn(2);
+        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(selectedTab);
+        mTabUsageTracker.onResumeWithNative();
+
+        // Act: Create 1 pinned tab, select 1 pinned tab and call onStop.
+        TabModelSelectorTabModelObserver observer =
+                mTabUsageTracker.getTabModelSelectorTabModelObserverForTests();
+        observer.didAddTab(
+                tab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
+        observer.didSelectTab(tab1, TabLaunchType.FROM_CHROME_UI, 3);
+
+        mTabUsageTracker.onStopWithNative();
+
+        // Assert that number of tabs used is 2 and percentage is 2/6 * 100 = 33
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting(NUMBER_OF_TABS_USED, 2));
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting(PERCENTAGE_OF_TABS_USED, 33));
+        // Assert that number of pinned tabs used is 2 and percentage is 2/3 * 100 = 67
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NUMBER_OF_PINNED_TABS_USED_HISTOGRAM, 2));
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PERCENTAGE_OF_PINNED_TABS_USED_HISTOGRAM, 67));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnStop_RecordsHistogram_NoPinnedTabsUsed() {
+        // Arrange
+        Tab tab1 = getMockedTab(1, false);
+        Tab selectedTab = getMockedTab(3, false);
+        // Start with 5 existing tabs, 2 pinned tabs and 1 selected tab.
+        Mockito.when(mTabModelSelector.getTotalTabCount()).thenReturn(5);
+        Mockito.when(mTabModelSelector.getTotalPinnedTabCount()).thenReturn(2);
+        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(selectedTab);
+        mTabUsageTracker.onResumeWithNative();
+
+        // Act: Create 1 tab, select 1 tab and call onStop.
+        TabModelSelectorTabModelObserver observer =
+                mTabUsageTracker.getTabModelSelectorTabModelObserverForTests();
+        observer.didAddTab(
+                tab1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
+        observer.didSelectTab(tab1, TabLaunchType.FROM_CHROME_UI, 3);
+
+        mTabUsageTracker.onStopWithNative();
+
+        // Assert that number of tabs used is 2 and percentage is 2/6 * 100 = 33
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting(NUMBER_OF_TABS_USED, 2));
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramValueCountForTesting(PERCENTAGE_OF_TABS_USED, 33));
+        // Assert that number of pinned tabs used is 0 and percentage is 0
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        NUMBER_OF_PINNED_TABS_USED_HISTOGRAM, 0));
+        Assert.assertEquals(
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PERCENTAGE_OF_PINNED_TABS_USED_HISTOGRAM, 0));
+    }
+
+    @Test
+    @SmallTest
     public void testOnStop_CalledBeforeOnResume_DoesNotRecordHistogram() {
         mTabUsageTracker.onStopWithNative();
 
@@ -136,9 +248,14 @@ public class TabUsageTrackerTest {
         Mockito.verify(mDispatcher).unregister(mTabUsageTracker);
     }
 
-    private Tab getMockedTab(int id) {
+    private Tab getMockedTab(int id, boolean isPinned) {
         Tab tab = Mockito.mock(Tab.class);
         Mockito.when(tab.getId()).thenReturn(id);
+        Mockito.when(tab.getIsPinned()).thenReturn(isPinned);
         return tab;
+    }
+
+    private Tab getMockedTab(int id) {
+        return getMockedTab(id, false);
     }
 }

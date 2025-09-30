@@ -146,6 +146,9 @@ public interface TabModelSelector {
     /** Get total tab count across all tab models */
     int getTotalTabCount();
 
+    /** Get total pinned tab count across all tab models */
+    int getTotalPinnedTabCount();
+
     /**
      * Search all TabModels for a tab with the specified id.
      *

@@ -368,6 +368,15 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
+    public int getTotalPinnedTabCount() {
+        int count = 0;
+        for (int i = 0; i < getModels().size(); i++) {
+            count += mTabModelInternals.get(i).getPinnedTabsCount();
+        }
+        return count;
+    }
+
+    @Override
     public void addObserver(TabModelSelectorObserver observer) {
         if (!mObservers.hasObserver(observer)) mObservers.addObserver(observer);
     }
