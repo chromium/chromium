@@ -30,6 +30,7 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -574,6 +575,8 @@ public class TabStripTest {
     @LargeTest
     @Feature({"TabStrip"})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testCloseLastIncognitoTab() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse(
@@ -612,6 +615,8 @@ public class TabStripTest {
     @LargeTest
     @Feature({"TabStrip"})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testCloseAllIncognitoTabsFromTabMenu() {
         // 1. Create two incognito tabs
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -676,6 +681,8 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testTabSelectionViewDoesNotBreakModelSwitch() {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertFalse(
@@ -1183,6 +1190,8 @@ public class TabStripTest {
     @LargeTest
     @Feature({"TabStrip"})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHoverOnTabStrip_switchTabModel() throws Exception {
         // Open regular tabs.
         ChromeTabUtils.newTabsFromMenu(

@@ -26,6 +26,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -176,6 +177,8 @@ public class TabSwitcherSearchRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    // TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHubSearchLoupe_Tablet_Incognito() throws IOException {
         List<String> urlsToOpen = Arrays.asList("/chrome/test/data/android/navigate/one.html");
         IncognitoTabSwitcherStation tabSwitcher =

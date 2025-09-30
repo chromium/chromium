@@ -69,11 +69,13 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 // TODO(crbug.com/419289558): Re-enable color surface feature flags
+// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
 @Features.DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
-    ChromeFeatureList.ANDROID_THEME_MODULE
+    ChromeFeatureList.ANDROID_THEME_MODULE,
+    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
 })
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
