@@ -75,6 +75,7 @@ TEST(ParseTlsCertificateBinding, InvalidSigAlg) {
   EXPECT_FALSE(jws.empty());
   auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "header parsing error: unsupported alg");
 }
 
 // Test failure when the JWS header isn't a JSON object.
@@ -84,7 +85,9 @@ TEST(ParseTlsCertificateBinding, JwsHeaderNotObject) {
   base::Base64UrlEncode(header, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &jws);
   jws += "..";
-  EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "header parsing error: JSON not a dict");
 }
 
 // Test failure when the JWS header isn't JSON.
@@ -94,14 +97,18 @@ TEST(ParseTlsCertificateBinding, JwsHeaderNotJson) {
   base::Base64UrlEncode(header, base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &jws);
   jws += "..";
-  EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "header parsing error: JSON parsing error");
 }
 
 // Test failure when the JWS header isn't valid base64url.
 TEST(ParseTlsCertificateBinding, JwsHeaderNotBase64) {
   // the header is encoded as "A", which is too short to be base64url.
   std::string jws = "A..";
-  EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "base64 decoding header error");
 }
 
 // Test failure when the JWS payload is non-empty.
@@ -110,14 +117,18 @@ TEST(ParseTlsCertificateBinding, JwsPayloadNonEmpty) {
   // Make a JWS consisting of a valid header, a payload (base64url-encoded as
   // "AAAA") and an empty signature.
   std::string jws = header_b64 + ".AAAA.";
-  EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "payload is non-empty");
 }
 
 // Test failure when the JWS signature is not valid base64url.
 TEST(ParseTlsCertificateBinding, JwsSignatureNotBase64) {
   std::string header_b64 = TwoQwacCertBindingBuilder().GetHeader();
   std::string jws = header_b64 + "..A";
-  EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "base64 decoding signature error");
 }
 
 // Test failure when the JWS consists of 2 components instead of 3.
@@ -125,61 +136,77 @@ TEST(ParseTlsCertificateBinding, JwsHas2Components) {
   std::string header_b64 = TwoQwacCertBindingBuilder().GetHeader();
   std::string jws = header_b64 + ".AAAA";
   EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "wrong number of components");
 }
 
 // Test failure when the JWS consists of 4 components instead of 3.
 TEST(ParseTlsCertificateBinding, JwsHas4Components) {
   std::string header_b64 = TwoQwacCertBindingBuilder().GetHeader();
   std::string jws = header_b64 + "..AAAA.AAAA";
-  EXPECT_FALSE(TwoQwacCertBinding::Parse(jws).has_value());
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
+  ASSERT_FALSE(cert_binding.has_value());
+  EXPECT_EQ(cert_binding.error(), "wrong number of components");
 }
 
 TEST(ParseTlsCertificateBinding, InvalidFields) {
   const struct {
     std::string header_key;
     base::Value value;
+    std::string expected_error;
   } kTests[] = {
       {
           // "alg" expects a string
           "alg",
           base::Value(1),
+          "alg missing or not a string",
       },
       {
           // "alg" expects a supported signature algorithm from the IANA
           // registry. "none" is in the registry but we will never support it.
           "alg",
           base::Value("none"),
+          "unsupported alg",
       },
       {
           // "cty" expects a string
           "cty",
           base::Value(1),
+          "cty missing or not a string",
       },
       {
           // "cty" expects a specific value for its string
           "cty",
           base::Value("TLS-Certificate-Binding-v2"),
+          "unsupported cty",
       },
       {
           // "x5t#S256" expects a string
           "x5t#S256",
           base::Value(1),
+          // The "x5t#S256" is ignored if it is a string, otherwise it hits the
+          // unexpected members failure case.
+          "header has unexpected members",
       },
       {
           // "x5c" expects a list
           "x5c",
           base::Value("wrong type"),
+          "x5c missing or not a list",
       },
       {
           // "x5c" expects strings in its list
           "x5c",
           base::Value(base::ListValue().Append(1)),
+          "x5c element not a string",
       },
       {
           // "x5c" expects base64 strings in its list. Test with a base64url
           // (but not regular base64) string.
           "x5c",
           base::Value(base::ListValue().Append("M-_A")),
+          "x5c element base64 decode error",
       },
       {
           // "x5c" expects the base64 strings in its list to be valid X.509
@@ -187,6 +214,7 @@ TEST(ParseTlsCertificateBinding, InvalidFields) {
           // truncated X.509 certificate.
           "x5c",
           base::Value(base::ListValue().Append("MIID")),
+          "x5c cert parsing error",
       },
       {
           // "iat" expects an int (when used for 2-QWACs). "iat" more generally
@@ -194,32 +222,42 @@ TEST(ParseTlsCertificateBinding, InvalidFields) {
           // so explicitly check that doubles are rejected.
           "iat",
           base::Value(1.0),
+          // The "iat" is ignored if it is an integer, otherwise it hits the
+          // unexpected members failure case.
+          "header has unexpected members",
       },
       {
           // "exp" expects a numeric value
           "exp",
           base::Value("wrong type"),
+          // The "exp" is ignored if it is an integer, otherwise it hits the
+          // unexpected members failure case.
+          "header has unexpected members",
       },
       {
           // "crit", if present, can only contain "sigD"
           "crit",
           base::Value(base::ListValue().Append("sigD").Append("x5c")),
+          "crit contains non sigD element(s)",
       },
       {
           // "crit" expects a list
           "crit",
           base::Value("wrong type"),
+          "crit not a list",
       },
       {
           // "sigD" expects an object
           "sigD",
           base::Value(base::ListValue()),
+          "sigD missing or not a dict",
       },
       {
           // The 2-QWAC TLS Certificate Binding JAdES profile only allows
           // specific fields in the JWS header, and "x5u" is not one of them.
           "x5u",
           base::Value("X.509 URL"),
+          "header has unexpected members",
       },
   };
 
@@ -231,6 +269,8 @@ TEST(ParseTlsCertificateBinding, InvalidFields) {
     std::string jws = binding_builder.GetJWS();
     auto cert_binding = TwoQwacCertBinding::Parse(jws);
     ASSERT_FALSE(cert_binding.has_value());
+    EXPECT_EQ(cert_binding.error(),
+              "header parsing error: " + test.expected_error);
   }
 }
 
@@ -239,6 +279,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
     std::string name;
     base::RepeatingCallback<void(base::DictValue*)> header_func;
     bool valid;
+    std::string expected_error;  // Ignored if valid.
   } kTests[] = {
       {
           "wrong mId",
@@ -246,18 +287,21 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("mId", "http://uri.etsi.org/19182/ObjectIdByURI");
           }),
           false,
+          "sigD: invalid mId",
       },
       {
           "wrong mId type",
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("mId", 1); }),
           false,
+          "sigD: mId missing or not a string",
       },
       {
           "wrong pars type",
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("pars", 1); }),
           false,
+          "sigD: pars missing or not a list",
       },
       {
           "SHA-256 supported",
@@ -282,12 +326,14 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("hashM", "SHA1"); }),
           false,
+          "sigD: unsupported hashM",
       },
       {
           "wrong hashM type",
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("hashM", 1); }),
           false,
+          "sigD: hashM missing or not a string",
       },
       {
           "wrong type in pars list",
@@ -297,6 +343,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("hashV", base::ListValue().Append("fakehash"));
           }),
           false,
+          "sigD: pars element not a string",
       },
       {
           "disallowed base64 padding in hashV",
@@ -307,6 +354,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("hashV", base::ListValue().Append("fakehashAA=="));
           }),
           false,
+          "sigD: hashV element base64 decode error",
       },
       {
           "bad base64url encoding in hashV",
@@ -318,6 +366,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("hashV", base::ListValue().Append("fakehash1"));
           }),
           false,
+          "sigD: hashV element base64 decode error",
       },
       {
           "wrong type in hashV list",
@@ -327,12 +376,14 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("hashV", base::ListValue().Append(1));
           }),
           false,
+          "sigD: hashV element not a string",
       },
       {
           "wrong hashV type",
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("hashV", 1); }),
           false,
+          "sigD: hashV missing or not a list",
       },
       {
           "correct ctys type",
@@ -349,6 +400,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("ctys", "wrong type"); }),
           false,
+          "sigD: ctys not a list",
       },
       {
           "wrong type inside ctys list",
@@ -359,6 +411,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("ctys", base::ListValue().Append(1));
           }),
           false,
+          "sigD: ctys element not a string",
       },
       {
           "pars length mismatch",
@@ -369,6 +422,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("ctys", base::ListValue().Append("content type"));
           }),
           false,
+          "sigD: hashV count doesn't match pars count",
       },
       {
           "hashV length mismatch",
@@ -380,6 +434,7 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
             sig_d->Set("ctys", base::ListValue().Append("content type"));
           }),
           false,
+          "sigD: hashV count doesn't match pars count",
       },
       {
           "ctys length mismatch",
@@ -392,12 +447,14 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
                                    .Append("content type"));
           }),
           false,
+          "sigD: ctys count doesn't match pars count",
       },
       {
           "unknown member in sigD",
           base::BindRepeating(
               [](base::DictValue* sig_d) { sig_d->Set("spURI", "URL"); }),
           false,
+          "sigD has unexpected members",
       },
   };
 
@@ -411,6 +468,10 @@ TEST(ParseTlsCertificateBinding, SigDHeaderParam) {
     std::string jws = binding_builder.GetJWS();
     auto cert_binding = TwoQwacCertBinding::Parse(jws);
     EXPECT_EQ(cert_binding.has_value(), test.valid);
+    if (!cert_binding.has_value()) {
+      EXPECT_EQ(cert_binding.error(),
+                "header parsing error: " + test.expected_error);
+    }
   }
 }
 
@@ -420,8 +481,7 @@ TEST(VerifyTwoQwacCertBinding, ValidSignatureRS256) {
   binding_builder.SetJwsSigAlg(JwsSigAlg::kRsaPkcs1Sha256);
   std::string jws = binding_builder.GetJWS();
 
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
   // Check that the JWS header has "alg": "RS256"
   EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kRsaPkcs1Sha256);
@@ -434,8 +494,7 @@ TEST(VerifyTwoQwacCertBinding, ValidSignaturePS256) {
   binding_builder.SetJwsSigAlg(JwsSigAlg::kRsaPssSha256);
   std::string jws = binding_builder.GetJWS();
 
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
   // Check that the JWS header has "alg": "PS256"
   EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kRsaPssSha256);
@@ -448,8 +507,7 @@ TEST(VerifyTwoQwacCertBinding, ValidSignatureES256) {
   binding_builder.SetJwsSigAlg(JwsSigAlg::kEcdsaP256Sha256);
   std::string jws = binding_builder.GetJWS();
 
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
   // Check that the JWS header has "alg": "ES256"
   EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kEcdsaP256Sha256);
@@ -469,8 +527,7 @@ TEST(VerifyTwoQwacCertBinding, InvalidEcdsaCurve) {
 
   std::string jws = binding_builder.GetJWS();
 
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
   // Check that the JWS header has "alg": "ES256"
   EXPECT_EQ(cert_binding->header().sig_alg, JwsSigAlg::kEcdsaP256Sha256);
@@ -483,7 +540,7 @@ TEST(VerifyTwoQwacCertBinding, InvalidSignature) {
 
   // Build a JWS with an invalid signature, and check that the signature
   // is invalid.
-  std::optional<TwoQwacCertBinding> cert_binding_bad_sig =
+  auto cert_binding_bad_sig =
       TwoQwacCertBinding::Parse(binding_builder.GetJWSWithInvalidSignature());
   ASSERT_TRUE(cert_binding_bad_sig.has_value());
   EXPECT_FALSE(cert_binding_bad_sig->VerifySignature());
@@ -495,8 +552,7 @@ TEST(TwoQwacCertBinding, BoundCertPresent) {
   TwoQwacCertBindingBuilder binding_builder;
   binding_builder.SetBoundCerts({bound_cert});
   std::string jws = binding_builder.GetJWS();
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
 
   EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert)));
@@ -510,8 +566,7 @@ TEST(TwoQwacCertBinding, MultipleBoundCerts) {
   TwoQwacCertBindingBuilder binding_builder;
   binding_builder.SetBoundCerts({bound_cert1, bound_cert2});
   std::string jws = binding_builder.GetJWS();
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
 
   EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert1)));
@@ -524,8 +579,7 @@ TEST(TwoQwacCertBinding, UnboundCertNotFound) {
   TwoQwacCertBindingBuilder binding_builder;
   binding_builder.SetBoundCerts({bound_cert});
   std::string jws = binding_builder.GetJWS();
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
 
   auto [leaf2, root2] = net::CertBuilder::CreateSimpleChain2();
@@ -540,8 +594,7 @@ TEST(TwoQwacCertBinding, BoundCertPresentSha384) {
   binding_builder.SetBoundCerts({bound_cert});
   binding_builder.SetHashAlg(crypto::hash::kSha384);
   std::string jws = binding_builder.GetJWS();
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
 
   EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert)));
@@ -554,8 +607,7 @@ TEST(TwoQwacCertBinding, BoundCertPresentSha512) {
   binding_builder.SetBoundCerts({bound_cert});
   binding_builder.SetHashAlg(crypto::hash::kSha512);
   std::string jws = binding_builder.GetJWS();
-  std::optional<TwoQwacCertBinding> cert_binding =
-      TwoQwacCertBinding::Parse(jws);
+  auto cert_binding = TwoQwacCertBinding::Parse(jws);
   ASSERT_TRUE(cert_binding.has_value());
 
   EXPECT_TRUE(cert_binding->BindsTlsCert(base::as_byte_span(bound_cert)));

@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
@@ -1666,13 +1667,18 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 namespace {
 void NetLog2QwacBindingError(const NetLogWithSource& net_log,
-                             std::string_view message) {
+                             std::string_view message,
+                             std::string_view details = {}) {
   net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC_2QWAC_BINDING, [&] {
     base::Value::Dict dict;
     // Including a net_error will cause the netlog-viewer to display this event
     // as an error.
     dict.Set("net_error", ERR_FAILED);
-    dict.Set("error_description", message);
+    if (details.empty()) {
+      dict.Set("error_description", message);
+    } else {
+      dict.Set("error_description", base::StrCat({message, ": ", details}));
+    }
     return dict;
   });
 }
@@ -1700,7 +1706,8 @@ scoped_refptr<X509Certificate> CertVerifyProcBuiltin::Verify2QwacBinding(
   auto parsed_binding = TwoQwacCertBinding::Parse(binding);
   if (!parsed_binding.has_value()) {
     HistogramVerify2QwacResult(Verify2QwacBindingResult::kBindingParsingError);
-    NetLog2QwacBindingError(net_log, "binding parsing error");
+    NetLog2QwacBindingError(net_log, "binding parsing error",
+                            parsed_binding.error());
     return nullptr;
   }
   if (!parsed_binding->VerifySignature()) {

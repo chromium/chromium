@@ -2941,7 +2941,7 @@ TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestBindingFailsParsing) {
 
   TwoQwacCertBindingBuilder binding_builder;
   binding_builder.SetBoundCerts({tls_leaf->GetDER()});
-  std::string jws = "invalid" + binding_builder.GetJWS();
+  std::string jws = "invalid:" + binding_builder.GetJWS();
 
   InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
   AddMockEutlRoot(binding_builder.GetRootBuilder()->GetCertBuffer());
@@ -2961,7 +2961,7 @@ TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestBindingFailsParsing) {
   ASSERT_EQ(1U, end_events.size());
   auto& event = end_events[0];
   EXPECT_EQ(ERR_FAILED, event.params.FindInt("net_error"));
-  EXPECT_EQ("binding parsing error",
+  EXPECT_EQ("binding parsing error: base64 decoding header error",
             base::optional_ref(event.params.FindString("error_description")));
 }
 

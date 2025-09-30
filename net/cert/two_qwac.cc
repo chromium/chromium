@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_split.h"
+#include "base/types/expected.h"
 #include "crypto/evp.h"
 #include "crypto/signature_verifier.h"
 #include "net/cert/asn1_util.h"
@@ -25,7 +26,7 @@ Jades2QwacHeader::~Jades2QwacHeader() = default;
 
 namespace {
 
-std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
+base::expected<Jades2QwacHeader, std::string> ParseJades2QwacHeader(
     std::string_view header_string) {
   Jades2QwacHeader parsed_header;
   // The header of a JWS is a JSON-encoded object (RFC 7515, section 4).
@@ -38,8 +39,11 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // a valid JSON object.
   std::optional<base::Value> header_value =
       base::JSONReader::Read(header_string, base::JSON_PARSE_RFC);
-  if (!header_value.has_value() || !header_value->is_dict()) {
-    return std::nullopt;
+  if (!header_value.has_value()) {
+    return base::unexpected("JSON parsing error");
+  }
+  if (!header_value->is_dict()) {
+    return base::unexpected("JSON not a dict");
   }
   // RFC 7515 section 5.2 (signature verification) step 4: If using the JWS
   // compact serialization (which we are), let the JOSE Header (the header
@@ -79,7 +83,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // and supported by crypto::SignatureVerifier.
   std::string* alg = header.FindString("alg");
   if (!alg) {
-    return std::nullopt;
+    return base::unexpected("alg missing or not a string");
   } else if (*alg == "RS256") {
     parsed_header.sig_alg = JwsSigAlg::kRsaPkcs1Sha256;
   } else if (*alg == "PS256") {
@@ -87,7 +91,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   } else if (*alg == "ES256") {
     parsed_header.sig_alg = JwsSigAlg::kEcdsaP256Sha256;
   } else {
-    return std::nullopt;
+    return base::unexpected("unsupported alg");
   }
   header.Remove("alg");
 
@@ -103,8 +107,11 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // ETSI TS 119 411-5 V2.1.1 requires the "cty" parameter to be
   // "TLS-Certificate-Binding-v1".
   std::string* cty = header.FindString("cty");
-  if (!cty || *cty != "TLS-Certificate-Binding-v1") {
-    return std::nullopt;
+  if (!cty) {
+    return base::unexpected("cty missing or not a string");
+  }
+  if (*cty != "TLS-Certificate-Binding-v1") {
+    return base::unexpected("unsupported cty");
   }
   header.Remove("cty");
 
@@ -121,7 +128,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // "x5c" (X.509 Certificate Chain) header - RFC 7515 section 4.1.6
   base::ListValue* x5c_list = header.FindList("x5c");
   if (!x5c_list) {
-    return std::nullopt;
+    return base::unexpected("x5c missing or not a list");
   }
 
   size_t i = 0;
@@ -132,11 +139,11 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
     // "Each string in the array is a base64-encoded (not base64url-encoded) DER
     // PKIX certificate value."
     if (!cert_value.is_string()) {
-      return std::nullopt;
+      return base::unexpected("x5c element not a string");
     }
     auto cert_bytes = base::Base64Decode(cert_value.GetString());
     if (!cert_bytes.has_value()) {
-      return std::nullopt;
+      return base::unexpected("x5c element base64 decode error");
     }
     auto buf = x509_util::CreateCryptoBuffer(*cert_bytes);
     if (i == 0) {
@@ -149,7 +156,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   parsed_header.two_qwac_cert = X509Certificate::CreateFromBuffer(
       std::move(leaf), std::move(intermediates));
   if (!parsed_header.two_qwac_cert) {
-    return std::nullopt;
+    return base::unexpected("x5c cert parsing error");
   }
   header.Remove("x5c");
 
@@ -187,14 +194,17 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // JSON object and is required to be present.
   base::DictValue* sig_d = header.FindDict("sigD");
   if (!sig_d) {
-    return std::nullopt;
+    return base::unexpected("sigD missing or not a dict");
   }
 
   // The sigD header must have a "mId" (mechanism ID) of
   // "http://uri.etsi.org/19182/ObjectIdByURIHash". (ETSI TS 119 411-5 Annex B.)
   std::string* m_id = sig_d->FindString("mId");
-  if (!m_id || *m_id != "http://uri.etsi.org/19182/ObjectIdByURIHash") {
-    return std::nullopt;
+  if (!m_id) {
+    return base::unexpected("sigD: mId missing or not a string");
+  }
+  if (*m_id != "http://uri.etsi.org/19182/ObjectIdByURIHash") {
+    return base::unexpected("sigD: invalid mId");
   }
   sig_d->Remove("mId");
 
@@ -203,12 +213,12 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // "hashV". (ETSI 119 182-1 clause 5.2.8.)
   const base::ListValue* pars = sig_d->FindList("pars");
   if (!pars) {
-    return std::nullopt;
+    return base::unexpected("sigD: pars missing or not a list");
   }
   size_t bound_cert_count = pars->size();
   for (const base::Value& par : *pars) {
     if (!par.is_string()) {
-      return std::nullopt;
+      return base::unexpected("sigD: pars element not a string");
     }
   }
   sig_d->Remove("pars");
@@ -219,7 +229,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // S384, and S512 be supported.
   std::string* hash_m = sig_d->FindString("hashM");
   if (!hash_m) {
-    return std::nullopt;
+    return base::unexpected("sigD: hashM missing or not a string");
   }
   if (*hash_m == "S256") {
     parsed_header.hash_alg = crypto::hash::kSha256;
@@ -229,7 +239,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
     parsed_header.hash_alg = crypto::hash::kSha512;
   } else {
     // Unsupported hashing algorithm.
-    return std::nullopt;
+    return base::unexpected("sigD: unsupported hashM");
   }
   sig_d->Remove("hashM");
 
@@ -240,16 +250,16 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // computed directly over the data object.)
   const base::ListValue* hash_v = sig_d->FindList("hashV");
   if (!hash_v) {
-    return std::nullopt;
+    return base::unexpected("sigD: hashV missing or not a list");
   }
   if (hash_v->size() != bound_cert_count) {
-    return std::nullopt;
+    return base::unexpected("sigD: hashV count doesn't match pars count");
   }
   parsed_header.bound_cert_hashes.reserve(bound_cert_count);
   for (const base::Value& hash_value : *hash_v) {
     const std::string* hash_b64url = hash_value.GetIfString();
     if (!hash_b64url) {
-      return std::nullopt;
+      return base::unexpected("sigD: hashV element not a string");
     }
     // ETSI TS 119 182-1 fails to specify the definition of "base64url-encoded".
     // Given that other uses of base64url encoding come from the JWS spec, and
@@ -258,7 +268,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
     auto hash = base::Base64UrlDecode(
         *hash_b64url, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
     if (!hash.has_value()) {
-      return std::nullopt;
+      return base::unexpected("sigD: hashV element base64 decode error");
     }
     parsed_header.bound_cert_hashes.emplace_back(std::move(*hash));
   }
@@ -278,23 +288,23 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   const base::ListValue* ctys = sig_d->FindList("ctys");
   if (ctys) {
     if (ctys->size() != bound_cert_count) {
-      return std::nullopt;
+      return base::unexpected("sigD: ctys count doesn't match pars count");
     }
     for (const base::Value& cty_value : *ctys) {
       if (!cty_value.is_string()) {
-        return std::nullopt;
+        return base::unexpected("sigD: ctys element not a string");
       }
     }
   } else if (sig_d->contains("ctys")) {
     // check that there isn't a "ctys" of the wrong type
-    return std::nullopt;
+    return base::unexpected("sigD: ctys not a list");
   }
   sig_d->Remove("ctys");
 
   // sigD has no other members than the aforementioned "mId", "pars", "hashM",
   // "hashV", and "ctys". (ETSI TS 119 182-1 clause 5.2.8.)
   if (!sig_d->empty()) {
-    return std::nullopt;
+    return base::unexpected("sigD has unexpected members");
   }
   header.Remove("sigD");
 
@@ -311,11 +321,11 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   const auto* crit_value = header.Find("crit");
   if (crit_value) {
     if (!crit_value->is_list()) {
-      return std::nullopt;
+      return base::unexpected("crit not a list");
     }
     const auto& crit_list = crit_value->GetList();
     if (crit_list.size() != 1 || !crit_list.contains("sigD")) {
-      return std::nullopt;
+      return base::unexpected("crit contains non sigD element(s)");
     }
   }
   header.Remove("crit");
@@ -325,7 +335,7 @@ std::optional<Jades2QwacHeader> ParseJades2QwacHeader(
   // to support. This implementation rejects a JWS header that contains unknown
   // fields.
   if (!header.empty()) {
-    return std::nullopt;
+    return base::unexpected("header has unexpected members");
   }
 
   return parsed_header;
@@ -343,7 +353,7 @@ TwoQwacCertBinding::TwoQwacCertBinding(const TwoQwacCertBinding& other) =
 TwoQwacCertBinding::TwoQwacCertBinding(TwoQwacCertBinding&& other) = default;
 TwoQwacCertBinding::~TwoQwacCertBinding() = default;
 
-std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
+base::expected<TwoQwacCertBinding, std::string> TwoQwacCertBinding::Parse(
     std::string_view jws) {
   // ETSI TS 119 411-5 V2.1.1 Annex B: The JAdES signatures shall be serialized
   // using JWS Compact Serialization as specified in IETF RFC 7515.
@@ -358,7 +368,7 @@ std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
       jws, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (jws_components.size() != 3) {
     // Reject a JWS that does not consist of 3 components.
-    return std::nullopt;
+    return base::unexpected("wrong number of components");
   }
   std::string_view header_b64 = jws_components[0];
   std::string_view payload_b64 = jws_components[1];
@@ -374,21 +384,21 @@ std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
   if (!base::Base64UrlDecode(header_b64,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &header_string)) {
-    return std::nullopt;
+    return base::unexpected("base64 decoding header error");
   }
   // RFC 7515 section 5.2 (signature verification) step 7: base64url-decode the
   // encoded representation of the JWS Signature.
   std::optional<std::vector<uint8_t>> signature = base::Base64UrlDecode(
       signature_b64, base::Base64UrlDecodePolicy::DISALLOW_PADDING);
   if (!signature.has_value()) {
-    return std::nullopt;
+    return base::unexpected("base64 decoding signature error");
   }
 
   // Parse the JWS/JAdES header. This function will perform steps 3-5 of RFC
   // 7515 section 5.2 (signature verification).
   auto header = ParseJades2QwacHeader(header_string);
   if (!header.has_value()) {
-    return std::nullopt;
+    return base::unexpected("header parsing error: " + header.error());
   }
 
   // ETSI TS 119 411-5 V2.1.1 Annex B specifies a "sigD" header parameter. This
@@ -403,7 +413,7 @@ std::optional<TwoQwacCertBinding> TwoQwacCertBinding::Parse(
   // the empty payload, checking that the encoded representation is empty is
   // sufficient to decode and check that the JWS Payload is empty.
   if (!payload_b64.empty()) {
-    return std::nullopt;
+    return base::unexpected("payload is non-empty");
   }
 
   return TwoQwacCertBinding(*header, std::string(header_b64), *signature);
