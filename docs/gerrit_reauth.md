@@ -90,6 +90,23 @@ git cl creds-check --global
 
 Please follow the prompts from the tool and resolve any issues.
 
+### Linux: security keys access
+
+Check depot_tools can access your security keys by running:
+
+```
+luci-auth-fido2-plugin --list-devices
+```
+
+If the above command lists your security keys, you’re good to go.
+
+If not, you need to configure your Linux system to grant access to security
+keys.
+
+The configuration steps vary by Linux distributions. We recommend following
+[Yubico’s guide](https://support.yubico.com/hc/en-us/articles/360013708900-Troubleshooting-using-your-YubiKey-with-Linux)
+, which we confirmed to be working on Ubuntu 24.04 LTS Desktop.
+
 ## Performing ReAuth
 
 You can ReAuth with a locally attached security key, or over an SSH or remote
@@ -104,7 +121,9 @@ This is for completing ReAuth when you're using a machine with a locally
 attached security key.
 
 First, make sure you have the [latest depot_tools](#latest-depot_tools) and
-have [set up Git to access Gerrit](#git-config-for-gerrit).
+have [set up Git to access Gerrit](#git-config-for-gerrit). If you're using
+Linux, make sure
+[depot_tools can access your security keys](#linux_security-keys-access).
 
 Then, check if you're already logged in (this is likely if you have already
 logged in with depot_tools):
@@ -145,6 +164,10 @@ This is for completing ReAuth when:
 First, make sure you have the [latest depot_tools](#latest-depot_tools)
 installed on **both local and remote** machines.
 
+If you're using a Linux local machine (i.e. the machine you inserts security
+keys into), make sure
+[depot_tools can access your security keys](#linux_security-keys-access).
+
 Then, make sure you have
 [set up Git to access](#git-config-for-gerrit).
 
@@ -164,33 +187,10 @@ git credential-luci login
 
 Then, refer to the instructions for your SSH / remote desktop workflow below.
 
-#### Linux Client Prerequisites {#linux-client-prerequisites}
-
-You need to do some manual configuration to make your security keys available
-to depot_tools (or the remote desktop application of your choice).
-
-On most distributions, you need to set up udev rules and/or install some
-dependencies.
-
-- The exact instructions depend on your Linux distribution.
-- You can follow
-  [Yubico’s guide](https://support.yubico.com/hc/en-us/articles/360013708900-Troubleshooting-using-your-YubiKey-with-Linux)
-  here, which we confirmed to be working on Ubuntu 24 Desktop.
-
-After you finished the setup, you can check depot_tools can access your security
-keys by running:
-
-```
-luci-auth-fido2-plugin --list-devices
-```
-
-If the above command lists your security keys, you’re good to go.
-
 #### I’m using a Linux / Mac client, I want to SSH into Linux
 
-If you’re using a Linux client, ensure you’ve completed
-["Linux Client Prerequisites"](#linux-client-prerequisites) and made your
-security keys available to applications.
+If you’re using a Linux client, please check and make sure
+[depot_tools can access your security keys](#linux_security-keys-access).
 
 Then, on the local machine, set the security key plugin with
 \`GOOGLE_AUTHN_WEBAUTHN_PLUGIN\` environment variable, then use
