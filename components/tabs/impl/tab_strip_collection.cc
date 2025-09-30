@@ -416,8 +416,29 @@ void TabStripCollection::CreateSplit(
   }
 
   // Insert split back into the parent.
-  AddCollectionMapping(split.get());
+  SplitTabCollection* split_collection_ptr = split.get();
+  AddCollectionMapping(split_collection_ptr);
   parent_collection->AddCollection(std::move(split), dst_index);
+
+  // First notify that the collection was added.
+  TabCollectionNodes handles_added_split_collection;
+  handles_added_split_collection.push_back(split_collection_ptr->GetHandle());
+  std::pair<tabs::TabCollection*, int> insertion_details_split_collection =
+      std::pair<tabs::TabCollection*, int>(parent_collection, dst_index);
+  parent_collection->NotifyOnChildrenAdded(
+      GetPassKey(), handles_added_split_collection,
+      insertion_details_split_collection, this);
+
+  // Second notify the tabs were added to split.
+  TabCollectionNodes handles_added_tabs;
+  std::pair<tabs::TabCollection*, int> insertion_details_tabs =
+      std::pair<tabs::TabCollection*, int>(split_collection_ptr, 0);
+  for (TabInterface* tab : tabs) {
+    handles_added_tabs.push_back(tab->GetHandle());
+  }
+
+  split_collection_ptr->NotifyOnChildrenAdded(GetPassKey(), handles_added_tabs,
+                                              insertion_details_tabs, this);
 }
 
 void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {

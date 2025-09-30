@@ -263,4 +263,75 @@ TEST_F(TabCollectionObserverTest, OnTabCollectionAttached) {
                                     false, group_id);
 }
 
+TEST_F(TabCollectionObserverTest, OnSplitCreated) {
+  tabs::TabStripCollection* collection = GetTabstripCollection();
+
+  // Create 5 tabs
+  for (int i = 0; i < 5; i++) {
+    std::unique_ptr<MockTabInterface> tab = CreateMockTab();
+    EXPECT_CALL(*tab, GetParentCollection(testing::_))
+        .WillRepeatedly(testing::Return(collection->unpinned_collection()));
+    collection->AddTabRecursive(std::move(tab), 0, std::nullopt, false);
+  }
+
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+
+  std::vector<TabInterface*> tabs_to_split = {
+      collection->GetTabAtIndexRecursive(2),
+      collection->GetTabAtIndexRecursive(3)};
+  MockTabCollectionObserver& observer = GetObserver();
+
+  // First Notification: The Split Collection is added to the parent
+  const tabs::TabCollectionObserver::Position expected_split_position = {
+      .parent_handle = collection->unpinned_collection()->GetHandle(),
+      .index = 2ul,
+  };
+
+  tabs::TabCollectionHandle new_split_handle;
+
+  EXPECT_CALL(
+      observer,
+      OnChildrenAdded(
+          testing::AllOf(
+              testing::Field(
+                  &TabCollectionObserver::Position::parent_handle,
+                  testing::Eq(expected_split_position.parent_handle)),
+              testing::Field(&TabCollectionObserver::Position::index,
+                             testing::Eq(expected_split_position.index))),
+          testing::SizeIs(1)))
+      .WillOnce(
+          testing::Invoke([&](const TabCollectionObserver::Position& position,
+                              const TabCollectionNodes& handles) {
+            // Save the handle of the newly added split collection for the next
+            // expectation.
+            new_split_handle =
+                std::get<tabs::TabCollection::Handle>(handles[0]);
+            EXPECT_EQ(new_split_handle.Get()->type(),
+                      TabCollection::Type::SPLIT);
+          }))
+      .RetiresOnSaturation();
+
+  // Second Notification: Tabs are added to the split collection.
+  TabCollectionNodes expected_tab_handles;
+  expected_tab_handles.push_back(
+      collection->GetTabAtIndexRecursive(2)->GetHandle());
+  expected_tab_handles.push_back(
+      collection->GetTabAtIndexRecursive(3)->GetHandle());
+
+  EXPECT_CALL(
+      observer,
+      OnChildrenAdded(
+          testing::AllOf(
+              testing::Field(&TabCollectionObserver::Position::parent_handle,
+                             testing::Eq(testing::ByRef(new_split_handle))),
+              testing::Field(&TabCollectionObserver::Position::index,
+                             testing::Eq(0ul))),
+          testing::Eq(expected_tab_handles)))
+      .Times(1);
+
+  collection->CreateSplit(split_id, tabs_to_split,
+                          split_tabs::SplitTabVisualData(
+                              split_tabs::SplitTabLayout::kVertical, 0.5));
+}
+
 }  // namespace tabs
