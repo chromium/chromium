@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.Module.FetchDataFailedDurationMs.{ModuleType}"
-    units="ms" expires_after="2025-11-26">
+    units="ms" expires_after="2026-05-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutDurationMs.{ModuleType}"
-    units="ms" expires_after="2025-11-26">
+    units="ms" expires_after="2026-05-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Module.FetchDataTimeoutTypeV2"
-    enum="ModuleType" expires_after="2025-11-26">
+    enum="ModuleType" expires_after="2026-05-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Module.ProfileReadyDelayMs"
-    units="ms" expires_after="2025-11-26">
+    units="ms" expires_after="2026-05-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.NotScrollable" units="count"
-    expires_after="2025-11-26">
+    expires_after="2026-05-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.NewTabPage.Scrollable.{ScrollState}"
-    units="count" expires_after="2025-11-09">
+    units="count" expires_after="2026-05-26">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MagicStack.Clank.SingleTab.SeeMoreLinkClicked" enum="Boolean"
-    expires_after="2025-11-26">
+    expires_after="2026-05-26">
   <owner>hanxi@google.com</owner>
   <owner>huangs@google.com</owner>
   <summary>
