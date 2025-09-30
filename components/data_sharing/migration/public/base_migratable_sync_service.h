@@ -1,0 +1,46 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_DATA_SHARING_MIGRATION_PUBLIC_BASE_MIGRATABLE_SYNC_SERVICE_H_
+#define COMPONENTS_DATA_SHARING_MIGRATION_PUBLIC_BASE_MIGRATABLE_SYNC_SERVICE_H_
+
+#include <memory>
+
+#include "base/component_export.h"
+#include "base/memory/weak_ptr.hh"
+#include "components/data_sharing/migration/public/migratable_sync_service.h"
+
+namespace data_sharing {
+
+class MigratableBridgeMediator;
+class ShareablePrivateBridge;
+class ShareableSharedBridge;
+
+// A reusable base class for MigratableSyncService implementations. It handles
+// owning the bridges and the mediator and forwarding the migration commands.
+class COMPONENT_EXPORT(DATA_SHARING_MIGRATION) BaseMigratableSyncService
+    : public MigratableSyncService {
+ public:
+  BaseMigratableSyncService(
+      std::unique_ptr<ShareablePrivateBridge> private_bridge,
+      std::unique_ptr<ShareableSharedBridge> shared_bridge,
+      std::unique_ptr<MigratableBridgeMediator> mediator);
+  ~BaseMigratableSyncService() override;
+
+  // MigratableSyncService implementation:
+  void StageMigration(const base::Uuid& context_id) override;
+  void CommitMigration(const base::Uuid& context_id) override;
+  bool IsPromotionReady() const override;
+
+ private:
+  std::unique_ptr<ShareablePrivateBridge> private_bridge_;
+  std::unique_ptr<ShareableSharedBridge> shared_bridge_;
+  std::unique_ptr<MigratableBridgeMediator> mediator_;
+
+  base::WeakPtrFactory<BaseMigratableSyncService> weak_ptr_factory_{this};
+};
+
+}  // namespace data_sharing
+
+#endif  // COMPONENTS_DATA_SHARING_MIGRATION_PUBLIC_BASE_MIGRATABLE_SYNC_SERVICE_H_

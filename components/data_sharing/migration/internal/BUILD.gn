@@ -10,6 +10,7 @@ proto_library("migration_state_proto") {
 
 source_set("internal") {
   sources = [
+    "base_migratable_sync_service.cc",
     "migratable_sync_service_coordinator_impl.cc",
     "migratable_sync_service_coordinator_impl.h",
   ]

@@ -6,6 +6,7 @@ import("//build/config/compiler/sdk_version.gni")
 
 source_set("public") {
   sources = [
+    "base_migratable_sync_service.h",
     "context_id.h",
     "migratable_bridge_mediator.h",
     "migratable_sync_service.h",

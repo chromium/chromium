@@ -1,0 +1,44 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/data_sharing/migration/public/base_migratable_sync_service.h"
+
+#include <utility>
+
+#include "base/notimplemented.h"
+#include "base/uuid.h"
+#include "components/data_sharing/migration/public/migratable_bridge_mediator.h"
+#include "components/data_sharing/migration/public/shareable_private_bridge.h"
+#include "components/data_sharing/migration/public/shareable_shared_bridge.h"
+
+namespace data_sharing {
+
+BaseMigratableSyncService::BaseMigratableSyncService(
+    std::unique_ptr<ShareablePrivateBridge> private_bridge,
+    std::unique_ptr<ShareableSharedBridge> shared_bridge,
+    std::unique_ptr<MigratableBridgeMediator> mediator)
+    : private_bridge_(std::move(private_bridge)),
+      shared_bridge_(std::move(shared_bridge)),
+      mediator_(std::move(mediator)) {}
+
+BaseMigratableSyncService::~BaseMigratableSyncService() = default;
+
+void BaseMigratableSyncService::StageMigration(const base::Uuid& context_id) {
+  if (mediator_) {
+    mediator_->StageMigration(context_id);
+  }
+}
+
+void BaseMigratableSyncService::CommitMigration(const base::Uuid& context_id) {
+  if (mediator_) {
+    mediator_->CommitMigration(context_id);
+  }
+}
+
+bool BaseMigratableSyncService::IsPromotionReady() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+}  // namespace data_sharing
