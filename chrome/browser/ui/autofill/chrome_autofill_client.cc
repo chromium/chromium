@@ -1008,7 +1008,32 @@ void ChromeAutofillClient::TriggerAutofillAiFillingJourneySurvey(
     hats_service->LaunchDelayedSurveyForWebContents(
         kHatsSurveyTriggerAutofillAiFilling, web_contents(),
         /*timeout_ms=*/5000,
-        {{"User accepted suggestion", suggestion_accepted}}, {},
+        {{"User accepted suggestion", suggestion_accepted}},
+        /*product_specific_string_data=*/{},
+        HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
+        base::DoNothing(), trigger_id);
+  }
+#endif
+}
+
+void ChromeAutofillClient::TriggerAutofillAiSavePromptSurvey(
+    bool prompt_accepted) {
+#if !BUILDFLAG(IS_ANDROID)
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  CHECK(hats_service);
+
+  const std::string trigger_id =
+      prompt_accepted
+          ? features::kAutofillAiSavePromptSurveyAcceptedTriggerId.Get()
+          : features::kAutofillAiSavePromptSurveyDeclinedTriggerId.Get();
+  if (!trigger_id.empty()) {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        kHatsSurveyTriggerAutofillAiSavePrompt, web_contents(),
+        /*timeout_ms=*/5000,
+        /*product_specific_bits_data=*/{}, /*product_specific_string_data=*/{},
         HatsService::NavigationBehavior::ALLOW_ANY, base::DoNothing(),
         base::DoNothing(), trigger_id);
   }

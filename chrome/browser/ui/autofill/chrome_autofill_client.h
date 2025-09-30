@@ -194,6 +194,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void TriggerDeclinedSaveAddressReasonSurvey() final;
   void TriggerAutofillAiFillingJourneySurvey(bool suggestion_accepted,
                                              EntityType entity_type) final;
+  void TriggerAutofillAiSavePromptSurvey(bool prompt_accepted) final;
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutofillPaymentMethodsEnabled() const final;

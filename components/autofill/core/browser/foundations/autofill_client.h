@@ -598,6 +598,9 @@ class AutofillClient {
   virtual void TriggerAutofillAiFillingJourneySurvey(bool suggestion_accepted,
                                                      EntityType entity_type);
 
+  // Triggers a survey after the user sees an Autofill AI save prompt.
+  virtual void TriggerAutofillAiSavePromptSurvey(bool prompt_accepted);
+
   // Returns true if either Profile or CreditCard Autofill is enabled.
   virtual bool IsAutofillEnabled() const = 0;
 

@@ -233,6 +233,10 @@ void AutofillClient::TriggerAutofillAiFillingJourneySurvey(
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::TriggerAutofillAiSavePromptSurvey(bool prompt_accepted) {
+  NOTIMPLEMENTED();
+}
+
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator() {
   return nullptr;
