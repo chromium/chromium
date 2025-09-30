@@ -74,12 +74,18 @@ public class SiteSettings extends BaseSiteSettingsFragment
     }
 
     private void configurePreferences() {
+        // TODO(crbug.com/439911511): Remove the divider directly form the layout.
+        if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
+            Preference divider = findPreference("divider");
+            if (divider != null) {
+                getPreferenceScreen().removePreference(divider);
+            }
+        }
+
         if (getSiteSettingsDelegate().shouldShowTrackingProtectionUi()) {
-            Preference thirdPartyCookiesPref =
-                    findPreference(Type.THIRD_PARTY_COOKIES);
+            Preference thirdPartyCookiesPref = findPreference(Type.THIRD_PARTY_COOKIES);
             thirdPartyCookiesPref.setVisible(false);
-            Preference trackingProtectionPref =
-                    findPreference(Type.TRACKING_PROTECTION);
+            Preference trackingProtectionPref = findPreference(Type.TRACKING_PROTECTION);
             trackingProtectionPref.setVisible(true);
         }
 

@@ -462,6 +462,13 @@ public class AllSiteSettings extends BaseSiteSettingsFragment
     private void addPreferencesFromXml() {
         if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
             SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences_v2);
+            // TODO(crbug.com/439911511): Remove the divider directly form the layout.
+            if (getSiteSettingsDelegate().isSettingsContainmentEnabled()) {
+                Preference divider = findPreference("clear_browsing_divider");
+                if (divider != null) {
+                    getPreferenceScreen().removePreference(divider);
+                }
+            }
             ChromeBasePreference clearBrowsingDataLink = findPreference(PREF_CLEAR_BROWSING_DATA);
             assertNonNull(clearBrowsingDataLink);
             if (!getSiteSettingsDelegate().canLaunchClearBrowsingDataDialog()) {
