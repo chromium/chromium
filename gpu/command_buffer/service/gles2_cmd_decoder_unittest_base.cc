@@ -2270,17 +2270,6 @@ void GLES2DecoderWithShaderTestBase::SetUp() {
   SetupDefaultProgram();
 }
 
-void GLES2DecoderTestBase::DoInitializeDiscardableTextureCHROMIUM(
-    GLuint texture_id) {
-  scoped_refptr<gpu::Buffer> buffer =
-      command_buffer_service_->GetTransferBuffer(shared_memory_id_);
-  ClientDiscardableHandle handle(buffer, 0, shared_memory_id_);
-
-  cmds::InitializeDiscardableTextureCHROMIUM cmd;
-  cmd.Init(texture_id, shared_memory_id_, 0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-}
-
 void GLES2DecoderTestBase::DoUnlockDiscardableTextureCHROMIUM(
     GLuint texture_id) {
   cmds::UnlockDiscardableTextureCHROMIUM cmd;
@@ -2571,19 +2560,6 @@ void GLES2DecoderPassthroughTestBase::DoGetIntegerv(GLenum pname,
       GetSharedMemoryAs<cmds::GetIntegerv::Result*>();
   DCHECK(static_cast<size_t>(cmd_result->GetNumResults()) >= num_results);
   std::copy(cmd_result->GetData(), cmd_result->GetData() + num_results, result);
-}
-
-void GLES2DecoderPassthroughTestBase::DoInitializeDiscardableTextureCHROMIUM(
-    GLuint client_id) {
-  int32_t shmem_id = 0;
-  scoped_refptr<gpu::Buffer> buffer =
-      command_buffer_service_->CreateTransferBufferHelper(sizeof(uint32_t),
-                                                          &shmem_id);
-  ClientDiscardableHandle handle(buffer, 0, shmem_id);
-
-  cmds::InitializeDiscardableTextureCHROMIUM cmd;
-  cmd.Init(client_id, shmem_id, 0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
 
 void GLES2DecoderPassthroughTestBase::DoUnlockDiscardableTextureCHROMIUM(

@@ -14804,54 +14804,6 @@ static_assert(offsetof(GetFragDataIndexEXT, index_shm_id) == 12,
 static_assert(offsetof(GetFragDataIndexEXT, index_shm_offset) == 16,
               "offset of GetFragDataIndexEXT index_shm_offset should be 16");
 
-struct InitializeDiscardableTextureCHROMIUM {
-  typedef InitializeDiscardableTextureCHROMIUM ValueType;
-  static const CommandId kCmdId = kInitializeDiscardableTextureCHROMIUM;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLuint _texture_id, uint32_t _shm_id, uint32_t _shm_offset) {
-    SetHeader();
-    texture_id = _texture_id;
-    shm_id = _shm_id;
-    shm_offset = _shm_offset;
-  }
-
-  void* Set(void* cmd,
-            GLuint _texture_id,
-            uint32_t _shm_id,
-            uint32_t _shm_offset) {
-    static_cast<ValueType*>(cmd)->Init(_texture_id, _shm_id, _shm_offset);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t texture_id;
-  uint32_t shm_id;
-  uint32_t shm_offset;
-};
-
-static_assert(sizeof(InitializeDiscardableTextureCHROMIUM) == 16,
-              "size of InitializeDiscardableTextureCHROMIUM should be 16");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, header) == 0,
-    "offset of InitializeDiscardableTextureCHROMIUM header should be 0");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, texture_id) == 4,
-    "offset of InitializeDiscardableTextureCHROMIUM texture_id should be 4");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, shm_id) == 8,
-    "offset of InitializeDiscardableTextureCHROMIUM shm_id should be 8");
-static_assert(
-    offsetof(InitializeDiscardableTextureCHROMIUM, shm_offset) == 12,
-    "offset of InitializeDiscardableTextureCHROMIUM shm_offset should be 12");
-
 struct UnlockDiscardableTextureCHROMIUM {
   typedef UnlockDiscardableTextureCHROMIUM ValueType;
   static const CommandId kCmdId = kUnlockDiscardableTextureCHROMIUM;

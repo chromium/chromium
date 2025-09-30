@@ -1579,9 +1579,6 @@ void GL_APIENTRY GLES2BindFragDataLocationEXT(GLuint program,
 GLint GL_APIENTRY GLES2GetFragDataIndexEXT(GLuint program, const char* name) {
   return gles2::GetGLContext()->GetFragDataIndexEXT(program, name);
 }
-void GL_APIENTRY GLES2InitializeDiscardableTextureCHROMIUM(GLuint texture_id) {
-  gles2::GetGLContext()->InitializeDiscardableTextureCHROMIUM(texture_id);
-}
 void GL_APIENTRY GLES2UnlockDiscardableTextureCHROMIUM(GLuint texture_id) {
   gles2::GetGLContext()->UnlockDiscardableTextureCHROMIUM(texture_id);
 }
@@ -3062,11 +3059,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glGetFragDataIndexEXT",
         reinterpret_cast<GLES2FunctionPointer>(glGetFragDataIndexEXT),
-    },
-    {
-        "glInitializeDiscardableTextureCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(
-            glInitializeDiscardableTextureCHROMIUM),
     },
     {
         "glUnlockDiscardableTextureCHROMIUM",

@@ -340,8 +340,6 @@
   GLES2_GET_FUN(BindFragDataLocationIndexedEXT)
 #define glBindFragDataLocationEXT GLES2_GET_FUN(BindFragDataLocationEXT)
 #define glGetFragDataIndexEXT GLES2_GET_FUN(GetFragDataIndexEXT)
-#define glInitializeDiscardableTextureCHROMIUM \
-  GLES2_GET_FUN(InitializeDiscardableTextureCHROMIUM)
 #define glUnlockDiscardableTextureCHROMIUM \
   GLES2_GET_FUN(UnlockDiscardableTextureCHROMIUM)
 #define glLockDiscardableTextureCHROMIUM \

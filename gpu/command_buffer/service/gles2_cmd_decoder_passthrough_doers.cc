@@ -4941,25 +4941,6 @@ error::Error GLES2DecoderPassthroughImpl::DoMaxShaderCompilerThreadsKHR(
   return error::kNoError;
 }
 
-error::Error
-GLES2DecoderPassthroughImpl::DoInitializeDiscardableTextureCHROMIUM(
-    GLuint texture_id,
-    ServiceDiscardableHandle&& discardable_handle) {
-  scoped_refptr<TexturePassthrough> texture_passthrough;
-  if (!resources_->texture_object_map.GetServiceID(texture_id,
-                                                   &texture_passthrough) ||
-      texture_passthrough == nullptr) {
-    InsertError(GL_INVALID_VALUE, "Invalid texture ID");
-    return error::kNoError;
-  }
-
-  group_->passthrough_discardable_manager()->InitializeTexture(
-      texture_id, group_.get(), texture_passthrough->estimated_size(),
-      std::move(discardable_handle));
-
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::DoLockDiscardableTextureCHROMIUM(
     GLuint texture_id) {
   if (!group_->passthrough_discardable_manager()->LockTexture(texture_id,

@@ -2989,16 +2989,6 @@ void GetFragDataIndexEXT(GLuint program,
   }
 }
 
-void InitializeDiscardableTextureCHROMIUM(GLuint texture_id,
-                                          uint32_t shm_id,
-                                          uint32_t shm_offset) {
-  gles2::cmds::InitializeDiscardableTextureCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::InitializeDiscardableTextureCHROMIUM>();
-  if (c) {
-    c->Init(texture_id, shm_id, shm_offset);
-  }
-}
-
 void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) {
   gles2::cmds::UnlockDiscardableTextureCHROMIUM* c =
       GetCmdSpace<gles2::cmds::UnlockDiscardableTextureCHROMIUM>();

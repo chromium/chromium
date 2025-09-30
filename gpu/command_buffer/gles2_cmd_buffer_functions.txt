@@ -342,7 +342,6 @@ GL_APICALL void         GL_APIENTRY glBindFragDataLocationEXT (GLidProgram progr
 GL_APICALL GLint        GL_APIENTRY glGetFragDataIndexEXT (GLidProgram program, const char* name);
 
 // Extension CHROMIUM_discardable_textures
-GL_APICALL void         GL_APIENTRY glInitializeDiscardableTextureCHROMIUM (GLuint texture_id);
 GL_APICALL void         GL_APIENTRY glUnlockDiscardableTextureCHROMIUM (GLuint texture_id);
 GL_APICALL bool         GL_APIENTRY glLockDiscardableTextureCHROMIUM (GLuint texture_id);
 

@@ -3813,14 +3813,6 @@ TEST_F(GLES2ImplementationManualInitTest, FailInitOnTransferBufferFail) {
   EXPECT_FALSE(Initialize(init_options));
 }
 
-TEST_F(GLES2ImplementationTest, DiscardableTextureDoubleInitError) {
-  const GLuint texture_id = 1;
-  gl_->InitializeDiscardableTextureCHROMIUM(texture_id);
-  EXPECT_EQ(GL_NO_ERROR, CheckError());
-  gl_->InitializeDiscardableTextureCHROMIUM(texture_id);
-  EXPECT_EQ(GL_INVALID_VALUE, CheckError());
-}
-
 TEST_F(GLES2ImplementationTest, DiscardableTextureLockError) {
   const GLuint texture_id = 1;
   EXPECT_FALSE(gl_->LockDiscardableTextureCHROMIUM(texture_id));

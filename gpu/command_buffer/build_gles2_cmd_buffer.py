@@ -3814,14 +3814,6 @@ _FUNCTION_INFO = {
     'extension': 'CHROMIUM_lose_context',
     'trace_level': 1,
   },
-  'InitializeDiscardableTextureCHROMIUM': {
-    'type': 'Custom',
-    'cmd_args': 'GLuint texture_id, uint32_t shm_id, '
-                'uint32_t shm_offset',
-    'impl_func': False,
-    'client_test': False,
-    'extension': True,
-  },
   'UnlockDiscardableTextureCHROMIUM': {
     'type': 'Custom',
     'cmd_args': 'GLuint texture_id',
