@@ -8803,27 +8803,6 @@
             ]
         }
     ],
-    "DevToolsAiSubmenuPrompts": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DevToolsAiSubmenuPrompts"
-                    ],
-                    "disable_features": [
-                        "DevToolsAiDebugWithAi"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeviceBoundSessionCredentials": [
         {
             "platforms": [
