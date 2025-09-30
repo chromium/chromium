@@ -1764,9 +1764,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records when a permission request was preignored because it will be shown as
     a quiet chip.
-
-    Warning: this histogram was expired from 2025-11-15 to 2024-06-27; data may
-    be missing.
   </summary>
 </histogram>
 
