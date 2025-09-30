@@ -51,8 +51,12 @@ class TestResultsFetcher:
         https://www.chromium.org/developers/the-json-test-results-format
     """
 
+
+    # Matches either:
+    # ://\:blink_web_tests!webtest::accessibility#option-removed-from-shadow-dom-crash.html
+    # ninja://:blink_web_tests/accessibility/option-removed-from-shadow-dom-crash.html
     _test_id_pattern = re.compile(
-        r'ninja://\S+_(web_tests|wpt(|_\w+))/(?P<name>\S+)')
+        r'(ninja)?://\S+_(web_tests|wpt(|_\w+))(/|\S+::)(?P<name>\S+)')
 
     def __init__(self, web, luci_auth):
         self.web = web
@@ -117,7 +121,8 @@ class TestResultsFetcher:
                 test_result['testId'])
             if not test_id_match:
                 continue
-            test_results_by_name[test_id_match['name']].append(test_result)
+            test_results_by_name[test_id_match['name'].replace(
+                '#', '/')].append(test_result)
         return test_results_by_name
 
     def _group_artifacts_by_test_run(self, artifacts):
