@@ -15,14 +15,14 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/switches.h"
@@ -31,6 +31,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/quota/special_storage_policy.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::Extension;
 using extensions::ExtensionBuilder;
@@ -134,8 +136,9 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
       std::string read_write_permission) {
     scoped_refptr<const Extension> extension = LoadExtensionWithCapabilities(
         MakeJSONList("https://foo.example.com/*"), read_write_permission);
-    content::RenderFrameHost* rfh_tab = ui_test_utils::NavigateToURL(
-        browser(), GetTestURLFor("foo.example.com"));
+    content::WebContents* contents = GetActiveWebContents();
+    ASSERT_TRUE(NavigateToURL(contents, GetTestURLFor("foo.example.com")));
+    content::RenderFrameHost* rfh_tab = contents->GetPrimaryMainFrame();
     content::WebContents::FromRenderFrameHost(rfh_tab)->Focus();
   }
 
