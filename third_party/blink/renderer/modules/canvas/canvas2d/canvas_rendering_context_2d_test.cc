@@ -350,7 +350,6 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
   }
 
   void LoseContext(bool wait_for_context_lost_callback = true) {
-    EXPECT_FALSE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     if (wait_for_context_lost_callback) {
       CanvasElement().addEventListener(
@@ -363,8 +362,6 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     if (wait_for_context_lost_callback) {
       run_loop.Run();
     }
-    EXPECT_TRUE(Context2D()->IsContextLost());
-    EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
   }
 
   // Run a callback in a task and wait for that task to finish. This is needed
@@ -1879,10 +1876,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Lose the GPU context.
   LoseContext();
+  EXPECT_TRUE(Context2D()->IsContextLost());
+  EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
 
   // Wait for context to be restored.
   {
-    EXPECT_TRUE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     CanvasElement().addEventListener(
         event_type_names::kContextrestored,
@@ -1908,10 +1906,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 
   LoseContext();
+  EXPECT_TRUE(Context2D()->IsContextLost());
+  EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
 
   // Context restoration will fail, wait for the context to give up.
   {
-    EXPECT_TRUE(Context2D()->IsContextLost());
     base::RunLoop run_loop;
     Context2D()->SetRestoreFailedCallbackForTesting(run_loop.QuitClosure());
     task_environment_.FastForwardBy(
@@ -2284,7 +2283,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CanvasElement().addEventListener(
       event_type_names::kContextrestored,
       MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+  EXPECT_FALSE(Context2D()->IsContextLost());
   LoseContext(false);
+  EXPECT_TRUE(Context2D()->IsContextLost());
+  EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
 
   WaitForHibernation();
   EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
