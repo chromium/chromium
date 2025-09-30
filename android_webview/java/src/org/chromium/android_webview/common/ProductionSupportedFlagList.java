@@ -1093,10 +1093,6 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.BACKGROUND_NOT_PERCEPTIBLE_BINDING,
                 "Enable boosting the importance of renderers without boosting their CPU priority."),
         Flag.baseFeature(
-                "CleanupToBeNormalTermination",
-                "Process terminated by RenderProcessHost::Cleanup() is marked as "
-                        + "normal_termination."),
-        Flag.baseFeature(
                 "KeepChildProcessAfterIPCReset",
                 "When enabled, child process will not terminate itself when IPC is reset."),
         Flag.baseFeature(

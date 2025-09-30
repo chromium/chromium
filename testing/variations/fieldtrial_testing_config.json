@@ -6263,22 +6263,6 @@
             ]
         }
     ],
-    "CleanupToBeNormalTermination": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250728",
-                    "enable_features": [
-                        "CleanupToBeNormalTermination"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClearBrowsingDataAndroidSurvey": [
         {
             "platforms": [
