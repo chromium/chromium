@@ -645,4 +645,52 @@ TEST_F(AndroidStateTransferHandlerTest, DownEventUsesDownTimeAsEventTime) {
   handler_.OnMotionEvent(std::move(down_event), kRootCompositorFrameSinkId);
 }
 
+// Touch events seen by Browser: TouchDown1, TouchUp1, TouchDown2.
+// In such a scenario it's possible that Browser requests for transfer of
+// sequence with TouchDown1 but by the time system server handled transfer
+// request a new sequence with TouchDown2 was transferred, and Browser wouldn't
+// have enough information to tell which sequence was transferred.
+// In such scenarios Browser sends a state for each touch down it sees until
+// cancel. Make sure Seqeunce2 is not dropped in such scenarios due to
+// mismatching state.
+TEST_F(AndroidStateTransferHandlerTest,
+       SystemTransfersFollowupSequenceIsNotDropped) {
+  base::TimeTicks event_time = base::TimeTicks::Now() - base::Milliseconds(100);
+  jlong down_time_ms = event_time.ToUptimeMillis();
+  base::TimeTicks down_time = base::TimeTicks::FromUptimeMillis(down_time_ms);
+
+  {
+    auto state = input::mojom::TouchTransferState::New();
+    state->down_time_ms = down_time;
+    state->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+    handler_.StateOnTouchTransfer(std::move(state),
+                                  mock_rir_support_.GetWeakPtr());
+  }
+  EXPECT_EQ(handler_.GetPendingTransferredStatesSizeForTesting(), 1u);
+
+  // Create an ACTION_DOWN event later than the last state sent to system.
+  down_time += base::Milliseconds(8);
+  event_time = down_time + base::Milliseconds(8);
+  base::android::ScopedInputEvent down_event =
+      GetInputEvent(down_time.ToUptimeMillis(), event_time.ToUptimeMillis(),
+                    kAndroidActionDown, /*x=*/100, /*y*/ 100);
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _)).Times(0);
+  handler_.OnMotionEvent(std::move(down_event), kRootCompositorFrameSinkId);
+  EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 1u);
+  // States with down time older than current event are dropped.
+  EXPECT_EQ(handler_.GetPendingTransferredStatesSizeForTesting(), 0u);
+
+  EXPECT_CALL(mock_rir_support_, OnTouchEvent(_, _)).Times(1);
+  {
+    auto state = input::mojom::TouchTransferState::New();
+    state->down_time_ms = down_time;
+    state->root_widget_frame_sink_id = kRootWidgetFrameSinkId;
+    handler_.StateOnTouchTransfer(std::move(state),
+                                  mock_rir_support_.GetWeakPtr());
+  }
+  EXPECT_EQ(handler_.GetEventsBufferSizeForTesting(), 0u);
+  EXPECT_EQ(handler_.GetPendingTransferredStatesSizeForTesting(), 0u);
+}
+
 }  // namespace viz
