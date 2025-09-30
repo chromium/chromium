@@ -6,6 +6,7 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("gamepad") {
   sources = [
+    "dom_window_gamepad.h",
     "gamepad.cc",
     "gamepad.h",
     "gamepad_button.cc",

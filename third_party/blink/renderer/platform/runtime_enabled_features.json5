@@ -2576,6 +2576,10 @@
       public: true,
     },
     {
+      name: "GamepadWindowEventHandlers",
+      status: "experimental",
+    },
+    {
       // Tracking bug for the implementation: https://crbug.com/430204832
       name: "GeolocationElement",
       status: "experimental",

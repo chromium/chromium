@@ -161,6 +161,8 @@ PASS oldChildWindow.onended is newChildWindow.onended
 PASS oldChildWindow.onerror is newChildWindow.onerror
 PASS oldChildWindow.onfocus is newChildWindow.onfocus
 PASS oldChildWindow.onformdata is newChildWindow.onformdata
+PASS oldChildWindow.ongamepadconnected is newChildWindow.ongamepadconnected
+PASS oldChildWindow.ongamepaddisconnected is newChildWindow.ongamepaddisconnected
 PASS oldChildWindow.ongotpointercapture is newChildWindow.ongotpointercapture
 PASS oldChildWindow.onhashchange is newChildWindow.onhashchange
 PASS oldChildWindow.oninput is newChildWindow.oninput
