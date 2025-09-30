@@ -14,7 +14,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/browser/process_allocation_context.h"
 #include "content/public/browser/site_instance_process_assignment.h"
 #include "content/public/browser/site_instance_process_creation_client.h"
 #include "content/public/browser/storage_partition_config.h"

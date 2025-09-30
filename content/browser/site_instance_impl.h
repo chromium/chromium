@@ -31,6 +31,7 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class BrowserContext;
+struct ProcessAllocationContext;
 class SiteInstanceGroup;
 class StoragePartitionConfig;
 class StoragePartitionImpl;
