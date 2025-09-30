@@ -6109,11 +6109,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "ios-deprecate-feed-header",
-    "owners": [ "ginnyhuang@chromium.org", "bling-pandamonium@google.com" ],
-    "expiry_milestone": 139
-  },
-  {
     "name": "ios-docking-promo",
     "owners": ["bwwilliams@google.com", "bling-pandamonium@google.com"],
     "expiry_milestone": 135

@@ -478,13 +478,6 @@ const char kPersistentDefaultBrowserPromoDescription[] =
     "backgrounding the app so the instructions remain visible when coming "
     "back.";
 
-const char kDeprecateFeedHeaderExperimentName[] =
-    "Deprecate feed header toggle experiment";
-const char kDeprecateFeedHeaderExperimentDescription[] =
-    "When enabled, the feed header toggle would be removed, and users will use "
-    "other ways to access the following feed. New tab page elements will also "
-    "be repositioned according to the variation chosen.";
-
 const char kDetectMainThreadFreezeName[] = "Detect freeze in the main thread.";
 const char kDetectMainThreadFreezeDescription[] =
     "A crash report will be uploaded if the main thread is frozen more than "

@@ -275,9 +275,6 @@ extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
 extern const char kPersistentDefaultBrowserPromoName[];
 extern const char kPersistentDefaultBrowserPromoDescription[];
 
-extern const char kDeprecateFeedHeaderExperimentName[];
-extern const char kDeprecateFeedHeaderExperimentDescription[];
-
 extern const char kDetectMainThreadFreezeName[];
 extern const char kDetectMainThreadFreezeDescription[];
 

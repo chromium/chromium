@@ -1146,34 +1146,6 @@ const FeatureEntry::FeatureVariation kFullscreenScrollThresholdVariations[] = {
     {"20px", kFullscreenScrollThreshold20,
      std::size(kFullscreenScrollThreshold20), nullptr}};
 
-const FeatureEntry::FeatureParam
-    kDeprecateFeedHeaderVariationRemoveFeedLabel[] = {
-        {kDeprecateFeedHeaderParameterRemoveLabel, "true"}};
-const FeatureEntry::FeatureParam
-    kDeprecateFeedHeaderVariationAbovePlusMoreSpacing[] = {
-        {kDeprecateFeedHeaderParameterRemoveLabel, "true"},
-        {kDeprecateFeedHeaderParameterTopPadding, "28.5"},
-        {kDeprecateFeedHeaderParameterSearchFieldTopMargin, "30"},
-        {kDeprecateFeedHeaderParameterHeaderBottomPadding, "3"},
-        {kDeprecateFeedHeaderParameterSpaceBetweenModules, "16"}};
-const FeatureEntry::FeatureParam
-    kDeprecateFeedHeaderVariationAbovePlusEnlargeElements[] = {
-        {kDeprecateFeedHeaderParameterRemoveLabel, "true"},
-        {kDeprecateFeedHeaderParameterTopPadding, "21.5"},
-        {kDeprecateFeedHeaderParameterSearchFieldTopMargin, "32"},
-        {kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox, "true"}};
-
-const FeatureEntry::FeatureVariation kDeprecateFeedHeaderVariations[] = {
-    {" (remove feed label)", kDeprecateFeedHeaderVariationRemoveFeedLabel,
-     std::size(kDeprecateFeedHeaderVariationRemoveFeedLabel), nullptr},
-    {" (also add more spacing)",
-     kDeprecateFeedHeaderVariationAbovePlusMoreSpacing,
-     std::size(kDeprecateFeedHeaderVariationAbovePlusMoreSpacing), nullptr},
-    {" (and enlarge doodle too)",
-     kDeprecateFeedHeaderVariationAbovePlusEnlargeElements,
-     std::size(kDeprecateFeedHeaderVariationAbovePlusEnlargeElements),
-     nullptr}};
-
 const FeatureEntry::FeatureParam kAnimatedDBPInFREWithActionButtons[] = {
     {first_run::kAnimatedDefaultBrowserPromoInFREExperimentType, "0"}};
 const FeatureEntry::FeatureParam kAnimatedDBPInFREWithShowMeHow[] = {
@@ -2443,13 +2415,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kFullscreenTransitionSpeed,
                                     kFullscreenTransitionVariations,
                                     "IOSFullscreenTransitionSpeed")},
-    {"ios-deprecate-feed-header",
-     flag_descriptions::kDeprecateFeedHeaderExperimentName,
-     flag_descriptions::kDeprecateFeedHeaderExperimentDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kDeprecateFeedHeader,
-                                    kDeprecateFeedHeaderVariations,
-                                    "IOSDeprecateFeedHeader")},
     {"refactor-toolbars-size", flag_descriptions::kRefactorToolbarsSizeName,
      flag_descriptions::kRefactorToolbarsSizeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kRefactorToolbarsSize)},
