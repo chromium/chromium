@@ -107,12 +107,6 @@ class TabModel final : public TabInterface,
   // mechanisms.
   TabCollection* GetParentCollectionForTesting() { return parent_collection_; }
 
-  // Called by TabStripModel when a tab is going to be backgrounded (any
-  // operation that makes the tab no longer visible, including removal from the
-  // TabStripModel). Not called if TabStripModel is being destroyed.
-  // TODO(crbug.com/445414702): Audit uses of this method.
-  void WillEnterBackground(base::PassKey<TabStripModel>);
-
   // Called by TabStripModel when a tab is going to be hidden. Not called if
   // TabStripModel is being destroyed.
   void WillBecomeHidden(base::PassKey<TabStripModel>);

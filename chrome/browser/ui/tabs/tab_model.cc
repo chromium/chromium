@@ -182,11 +182,6 @@ void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
   group_changed_callback_list_.Notify(this, group_);
 }
 
-void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
-  will_deactivate_callback_list_.Notify(this);
-  will_become_hidden_callback_list_.Notify(this);
-}
-
 void TabModel::WillBecomeHidden(base::PassKey<TabStripModel>) {
   will_become_hidden_callback_list_.Notify(this);
 }

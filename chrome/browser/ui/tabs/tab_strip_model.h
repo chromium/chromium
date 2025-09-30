@@ -1356,6 +1356,8 @@ class TabStripModel {
   // view then it cannot be activated if the other tab is blocked.
   bool CanActivateTabAt(int index);
 
+  void NotifyForegroundTabsWillEnterBackground();
+
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
   std::unique_ptr<tabs::TabStripCollection> contents_data_;

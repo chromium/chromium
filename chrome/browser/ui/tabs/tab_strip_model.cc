@@ -405,11 +405,14 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabWithReasonAt(
                                       "selecting at least one tab before "
                                       "trying to detach web contents.";
   tabs::TabModel* active_tab_model = GetTabModelAtIndex(active_index());
+  tabs::TabModel* tab_model = GetTabModelAtIndex(index);
   if (index == active_index() && !closing_all_) {
-    active_tab_model->WillEnterBackground(base::PassKey<TabStripModel>());
+    tab_model->WillDeactivate(base::PassKey<TabStripModel>());
   }
-  GetTabModelAtIndex(index)->WillDetach(base::PassKey<TabStripModel>(),
-                                        tab_detach_reason);
+  if (tab_model->IsVisible()) {
+    tab_model->WillBecomeHidden(base::PassKey<TabStripModel>());
+  }
+  tab_model->WillDetach(base::PassKey<TabStripModel>(), tab_detach_reason);
 
   DetachNotifications notifications(active_tab_model, selection_model());
   auto dt = DetachTabImpl(index, index,
@@ -595,9 +598,13 @@ TabStripModelChange::Remove TabStripModel::ProcessTabsForDetach(
        index >= static_cast<int>(tab_indices.start()); index--) {
     tabs::TabModel* tab = GetTabModelAtIndex(index);
 
-    // If the tab is active, notify it that it's going to the background:
+    // If the tab is active, notify it that it's going to be deactivated:
     if (tab == active_tab_model) {
-      active_tab_model->WillEnterBackground(base::PassKey<TabStripModel>());
+      tab->WillDeactivate(base::PassKey<TabStripModel>());
+    }
+    // If the tab is visible, notify it that it's going to be hidden:
+    if (tab->IsVisible()) {
+      tab->WillBecomeHidden(base::PassKey<TabStripModel>());
     }
 
     // Tell the tab it’s being detached (inserted into another window).
@@ -3367,10 +3374,7 @@ int TabStripModel::InsertTabAtImpl(
   // If there's already an active tab, and the new tab will become active, send
   // a notification.
   if (active_tab_model && active && !closing_all_) {
-    for (tabs::TabInterface* foreground_tab : GetForegroundTabs()) {
-      static_cast<tabs::TabModel*>(foreground_tab)
-          ->WillEnterBackground(base::PassKey<TabStripModel>());
-    }
+    NotifyForegroundTabsWillEnterBackground();
   }
 
   // Have to get the active contents before we monkey with the contents
@@ -3479,13 +3483,15 @@ bool TabStripModel::CloseWebContentses(
 
   for (WebContents* contents : items) {
     const int index = GetIndexOfWebContents(contents);
+    tabs::TabModel* tab_model = GetTabModelAtIndex(index);
     if (index == active_index() && !closing_all_) {
-      GetTabModelAtIndex(active_index())
-          ->WillEnterBackground(base::PassKey<TabStripModel>());
+      tab_model->WillDeactivate(base::PassKey<TabStripModel>());
     }
-    GetTabModelAtIndex(index)->WillDetach(
-        base::PassKey<TabStripModel>(),
-        tabs::TabInterface::DetachReason::kDelete);
+    if (tab_model->IsVisible() && !closing_all_) {
+      tab_model->WillBecomeHidden(base::PassKey<TabStripModel>());
+    }
+    tab_model->WillDetach(base::PassKey<TabStripModel>(),
+                          tabs::TabInterface::DetachReason::kDelete);
   }
 
   // We only try the fast shutdown path if the whole browser process is *not*
@@ -3572,29 +3578,15 @@ TabStripSelectionChange TabStripModel::SetSelection(
   if (selection_model().active().has_value() &&
       new_model.active().has_value() &&
       selection_model().active().value() != new_model.active().value()) {
-    if (GetActiveTab()->GetSplit() !=
-        GetSplitForTab(new_model.active().value())) {
-      // When not switching between two splits, the active tab is deactivated
-      // and all foreground tabs become hidden.
-      for (tabs::TabInterface* tab : GetForegroundTabs()) {
-        if (tab->IsActivated()) {
-          static_cast<tabs::TabModel*>(GetActiveTab())
-              ->WillDeactivate(base::PassKey<TabStripModel>());
-        }
-        static_cast<tabs::TabModel*>(tab)->WillBecomeHidden(
-            base::PassKey<TabStripModel>());
-      }
-
-    } else if (GetActiveTab()->IsSplit()) {
+    if (GetActiveTab()->IsSplit() &&
+        GetActiveTab()->GetSplit() ==
+            GetSplitForTab(new_model.active().value())) {
       // When switching between two tabs in a split, neither enters the
       // background but one becomes deactivated.
       static_cast<tabs::TabModel*>(GetActiveTab())
           ->WillDeactivate(base::PassKey<TabStripModel>());
     } else {
-      // For a non-split tab, just mark the active tab as entering the
-      // background.
-      static_cast<tabs::TabModel*>(GetActiveTab())
-          ->WillEnterBackground(base::PassKey<TabStripModel>());
+      NotifyForegroundTabsWillEnterBackground();
     }
   }
 
@@ -3997,7 +3989,11 @@ void TabStripModel::UpdateTabInSplitImpl(tabs::TabInterface* split_tab,
 
     // The `split_tab` will be replaced in the split so notify observers that it
     // will be moving to the background.
-    static_cast<tabs::TabModel*>(split_tab)->WillEnterBackground(
+    if (split_tab->IsActivated()) {
+      static_cast<tabs::TabModel*>(split_tab)->WillDeactivate(
+          base::PassKey<TabStripModel>());
+    }
+    static_cast<tabs::TabModel*>(split_tab)->WillBecomeHidden(
         base::PassKey<TabStripModel>());
 
     // Move the split index first so the group is not possibly destroyed at the
@@ -5192,6 +5188,17 @@ bool TabStripModel::CanActivateTabAt(int index) {
   }
 
   return true;
+}
+
+void TabStripModel::NotifyForegroundTabsWillEnterBackground() {
+  for (tabs::TabInterface* tab : GetForegroundTabs()) {
+    if (tab->IsActivated()) {
+      static_cast<tabs::TabModel*>(GetActiveTab())
+          ->WillDeactivate(base::PassKey<TabStripModel>());
+    }
+    static_cast<tabs::TabModel*>(tab)->WillBecomeHidden(
+        base::PassKey<TabStripModel>());
+  }
 }
 
 TabStripModel::ScopedTabStripModalUIImpl::ScopedTabStripModalUIImpl(
