@@ -332,53 +332,6 @@ NTSTATUS CopyData(void* destination, const void* source, size_t bytes) {
   return ret;
 }
 
-NTSTATUS CopyNameAndAttributes(
-    const OBJECT_ATTRIBUTES* in_object,
-    std::unique_ptr<wchar_t, NtAllocDeleter>* out_name,
-    size_t* out_name_len,
-    uint32_t* attributes) {
-  if (!InitHeap())
-    return STATUS_NO_MEMORY;
-
-  DCHECK_NT(out_name);
-  DCHECK_NT(out_name_len);
-  NTSTATUS ret = STATUS_UNSUCCESSFUL;
-  __try {
-    do {
-      if (in_object->RootDirectory != nullptr)
-        break;
-      if (!in_object->ObjectName)
-        break;
-      if (!in_object->ObjectName->Buffer)
-        break;
-
-      size_t size = in_object->ObjectName->Length / sizeof(wchar_t);
-      out_name->reset(new (NT_ALLOC) wchar_t[size + 1]);
-      if (!*out_name)
-        break;
-
-      ret = CopyData(out_name->get(), in_object->ObjectName->Buffer,
-                     size * sizeof(wchar_t));
-      if (!NT_SUCCESS(ret))
-        break;
-
-      *out_name_len = size;
-      out_name->get()[size] = L'\0';
-      if (attributes)
-        *attributes = in_object->Attributes;
-
-      ret = STATUS_SUCCESS;
-    } while (false);
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-    ret = (NTSTATUS)GetExceptionCode();
-  }
-
-  if (!NT_SUCCESS(ret) && *out_name)
-    out_name->reset(nullptr);
-
-  return ret;
-}
-
 NTSTATUS GetProcessId(HANDLE process, DWORD* process_id) {
   PROCESS_BASIC_INFORMATION proc_info;
   ULONG bytes_returned;

@@ -21,6 +21,7 @@
 #include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
 #include "sandbox/win/src/target_services.h"
+#include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 
@@ -48,6 +49,29 @@ bool ShouldAskBroker(IpcTag ipc_tag,
   uint32_t open_only_int = open_only;
   params[OpenFile::OPENONLY] = ParamPickerMake(open_only_int);
   return QueryBroker(ipc_tag, params.GetBase());
+}
+
+bool ValidateObjectAttributes(const OBJECT_ATTRIBUTES* in_object,
+                              std::wstring_view& name,
+                              uint32_t& attributes) {
+  __try {
+    if (in_object->RootDirectory != nullptr || !in_object->ObjectName ||
+        !in_object->ObjectName->Buffer) {
+      return false;
+    }
+
+    name = {in_object->ObjectName->Buffer,
+            in_object->ObjectName->Length / sizeof(wchar_t)};
+    // We don't support embedded NUL characters. This also acts as a test for
+    // the string buffer memory being valid.
+    if (ContainsNulCharacter(name)) {
+      return false;
+    }
+    attributes = in_object->Attributes;
+    return true;
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+  }
+  return false;
 }
 }  // namespace
 
@@ -95,16 +119,13 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
       break;
     }
 
-    std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    size_t name_len;
+    std::wstring_view name;
     uint32_t attributes;
-    NTSTATUS ret =
-        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
-    if (!NT_SUCCESS(ret) || !name || !name_len) {
+
+    if (!ValidateObjectAttributes(object_attributes, name, attributes)) {
       break;
     }
-    std::wstring_view name_view(name.get(), name_len);
-    if (!ShouldAskBroker(IpcTag::NTCREATEFILE, name_view, desired_access,
+    if (!ShouldAskBroker(IpcTag::NTCREATEFILE, name, desired_access,
                          disposition == FILE_OPEN)) {
       break;
     }
@@ -113,9 +134,9 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
     CrossCallReturn answer = {0};
     // The following call must match in the parameters with
     // FilesystemDispatcher::ProcessNtCreateFile.
-    ResultCode code = CrossCall(ipc, IpcTag::NTCREATEFILE, name_view,
-                                attributes, desired_access, file_attributes,
-                                sharing, disposition, options, &answer);
+    ResultCode code =
+        CrossCall(ipc, IpcTag::NTCREATEFILE, name, attributes, desired_access,
+                  file_attributes, sharing, disposition, options, &answer);
     if (SBOX_ALL_OK != code) {
       break;
     }
@@ -165,21 +186,18 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
     if (!memory)
       break;
 
-    std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    size_t name_len;
+    std::wstring_view name;
     uint32_t attributes;
-    NTSTATUS ret =
-        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
-    if (!NT_SUCCESS(ret) || !name || !name_len)
+    if (!ValidateObjectAttributes(object_attributes, name, attributes)) {
       break;
-    std::wstring_view name_view(name.get(), name_len);
-    if (!ShouldAskBroker(IpcTag::NTOPENFILE, name_view, desired_access, true)) {
+    }
+    if (!ShouldAskBroker(IpcTag::NTOPENFILE, name, desired_access, true)) {
       break;
     }
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTOPENFILE, name_view, attributes,
+    ResultCode code = CrossCall(ipc, IpcTag::NTOPENFILE, name, attributes,
                                 desired_access, sharing, options, &answer);
     if (SBOX_ALL_OK != code)
       break;
@@ -222,15 +240,12 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
     if (!memory)
       break;
 
-    std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    size_t name_len;
+    std::wstring_view name;
     uint32_t attributes;
-    NTSTATUS ret =
-        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
-    if (!NT_SUCCESS(ret) || !name || !name_len)
+    if (!ValidateObjectAttributes(object_attributes, name, attributes)) {
       break;
-    std::wstring_view name_view(name.get(), name_len);
-    if (!ShouldAskBroker(IpcTag::NTQUERYATTRIBUTESFILE, name_view)) {
+    }
+    if (!ShouldAskBroker(IpcTag::NTQUERYATTRIBUTESFILE, name)) {
       break;
     }
 
@@ -238,7 +253,7 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
                                  sizeof(FILE_BASIC_INFORMATION));
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE, name_view,
+    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE, name,
                                 attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
@@ -274,15 +289,12 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
     if (!memory)
       break;
 
-    std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    size_t name_len;
+    std::wstring_view name;
     uint32_t attributes;
-    NTSTATUS ret =
-        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
-    if (!NT_SUCCESS(ret) || !name || !name_len)
+    if (!ValidateObjectAttributes(object_attributes, name, attributes)) {
       break;
-    std::wstring_view name_view(name.get(), name_len);
-    if (!ShouldAskBroker(IpcTag::NTQUERYFULLATTRIBUTESFILE, name_view)) {
+    }
+    if (!ShouldAskBroker(IpcTag::NTQUERYFULLATTRIBUTESFILE, name)) {
       break;
     }
 
@@ -290,8 +302,8 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
                                  sizeof(FILE_NETWORK_OPEN_INFORMATION));
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYFULLATTRIBUTESFILE,
-                                name_view, attributes, file_info, &answer);
+    ResultCode code = CrossCall(ipc, IpcTag::NTQUERYFULLATTRIBUTESFILE, name,
+                                attributes, file_info, &answer);
 
     if (SBOX_ALL_OK != code)
       break;
@@ -332,30 +344,21 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
 
     FILE_RENAME_INFORMATION* file_rename_info =
         reinterpret_cast<FILE_RENAME_INFORMATION*>(file_info);
-    OBJECT_ATTRIBUTES object_attributes;
-    UNICODE_STRING object_name;
-    InitializeObjectAttributes(&object_attributes, &object_name, 0, nullptr,
-                               nullptr);
-
+    std::wstring_view name;
     __try {
       if (!IsSupportedRenameCall(file_rename_info, length, file_info_class))
         break;
 
-      object_attributes.RootDirectory = file_rename_info->RootDirectory;
-      object_name.Buffer = file_rename_info->FileName;
-      object_name.Length = object_name.MaximumLength =
-          static_cast<USHORT>(file_rename_info->FileNameLength);
+      name = {file_rename_info->FileName,
+              file_rename_info->FileNameLength / sizeof(wchar_t)};
+      if (ContainsNulCharacter(name)) {
+        break;
+      }
     } __except (EXCEPTION_EXECUTE_HANDLER) {
       break;
     }
 
-    std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    size_t name_len;
-    NTSTATUS ret = CopyNameAndAttributes(&object_attributes, &name, &name_len);
-    if (!NT_SUCCESS(ret) || !name || !name_len)
-      break;
-    std::wstring_view name_view(name.get(), name_len);
-    if (!ShouldAskBroker(IpcTag::NTSETINFO_RENAME, name_view)) {
+    if (!ShouldAskBroker(IpcTag::NTSETINFO_RENAME, name)) {
       break;
     }
 
