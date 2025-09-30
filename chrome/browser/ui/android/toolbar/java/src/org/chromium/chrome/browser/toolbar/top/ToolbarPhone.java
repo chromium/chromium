@@ -225,6 +225,7 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mIsHomepageNonNtp;
 
     private @Nullable Runnable mLayoutUpdater;
+    private @Nullable Runnable mDefaultSearchEngineChangedRunnable;
 
     /** The vertical inset of the location bar background. */
     private int mLocationBarBackgroundVerticalInset;
@@ -416,8 +417,8 @@ public class ToolbarPhone extends ToolbarLayout
     public void destroy() {
         cancelAnimations();
         Handler handler = getHandler();
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
+        if (handler != null && mDefaultSearchEngineChangedRunnable != null) {
+            handler.removeCallbacks(mDefaultSearchEngineChangedRunnable);
         }
 
         getToolbarDataProvider().removeToolbarDataProviderObserver(this);
@@ -2259,11 +2260,12 @@ public class ToolbarPhone extends ToolbarLayout
         //                it notifies the listeners that it has changed its state.
         Handler handler = getHandler();
         if (handler == null) return;
-        handler.post(
+        mDefaultSearchEngineChangedRunnable =
                 () -> {
                     updateVisualsForLocationBarState();
                     updateNtpAnimationState();
-                });
+                };
+        handler.post(mDefaultSearchEngineChangedRunnable);
     }
 
     @Override
