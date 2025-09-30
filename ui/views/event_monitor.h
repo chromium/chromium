@@ -32,8 +32,7 @@ class VIEWS_EXPORT EventMonitor {
       gfx::NativeWindow context,
       const std::set<ui::EventType>& types);
 
-  // Create an instance for monitoring events on a specific window and all its
-  // children/descendants.
+  // Create an instance for monitoring events on a specific window.
   // The EventMonitor instance must be destroyed before |target_window|.
   static std::unique_ptr<EventMonitor> CreateWindowMonitor(
       ui::EventObserver* event_observer,

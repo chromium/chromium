@@ -204,27 +204,6 @@ TEST_P(EventMonitorTest, TwoMonitors) {
   EXPECT_TRUE(deleter->DidDelete());
 }
 
-TEST_P(EventMonitorTest, ShouldReceiveEventsFromChildWidgets) {
-  Widget* child_widget = CreateChildNativeWidgetWithParent(widget_);
-  child_widget->SetSize(gfx::Size(50, 50));
-  child_widget->Show();
-
-  Widget* grandchild_widget = CreateChildNativeWidgetWithParent(child_widget);
-  grandchild_widget->SetSize(gfx::Size(25, 25));
-  grandchild_widget->Show();
-
-  std::unique_ptr<EventMonitor> monitor(EventMonitor::CreateWindowMonitor(
-      &observer_, widget_->GetNativeWindow(), {ui::EventType::kMousePressed}));
-
-  generator_->SetTargetWindow(grandchild_widget->GetNativeWindow());
-  generator_->ClickLeftButton();
-  EXPECT_EQ(1u, observer_.observed_event_count());
-
-  monitor.reset();
-  grandchild_widget->CloseNow();
-  child_widget->CloseNow();
-}
-
 INSTANTIATE_TEST_SUITE_P(,
                          EventMonitorTest,
                          testing::Values(Implementation::kRegular

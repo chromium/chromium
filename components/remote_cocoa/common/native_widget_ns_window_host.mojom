@@ -112,12 +112,10 @@ interface NativeWidgetNSWindowHost {
 
   // Called when the NSEvent monitor observes an event. If `event_handled` is
   // true, then do not continue dispatching the event.
-  // The `target_is_this_window_or_descendant` parameter is set to true if the
-  // event target was equal to the NSWindow this NativeWidgetNSWindowHost
-  // represents, or one of its descendant windows (e.g, a child NSWindow).
+  // The `target_is_this_window` parameter is set to true if the event target
+  // was equal to the NSWindow this NativeWidgetNSWindowHost represents.
   [Sync]
-  DispatchMonitorEvent(ui.mojom.Event event,
-                       bool target_is_this_window_or_descendant) =>
+  DispatchMonitorEvent(ui.mojom.Event event, bool target_is_this_window) =>
       (bool event_handled);
 
   // Synchronously return in  |has_menu_controller| whether or not a menu
