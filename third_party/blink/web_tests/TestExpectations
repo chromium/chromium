@@ -1812,6 +1812,7 @@ crbug.com/619978 fast/css/giant-stylesheet-crash.html [ Crash Failure Pass Timeo
 
 # XSLT related failures and virtual suite tests that break
 crbug.com/501659 fast/xsl/xslt-missing-namespace-in-xslt.xml [ Failure ]
+crbug.com/446393388 fast/dom/StyleSheet/stylesheet-move-between-documents-crash.html [ Pass Failure ]
 crbug.com/421650040 [ Win10.20h2 ] external/wpt/fetch/metadata/xslt.https.sub.html [ Timeout ]
 crbug.com/435623334 virtual/xslt-disabled/external/wpt/dom/xslt/encoding-single-chunk.html [ Failure ]
 crbug.com/435623334 virtual/xslt-disabled/external/wpt/dom/xslt/sort.html [ Failure ]
