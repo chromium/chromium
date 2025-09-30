@@ -950,7 +950,7 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
 </histogram>
 
 <histogram name="Search.DefaultSearchEngineMirrored" enum="Boolean"
-    expires_after="2025-11-10">
+    expires_after="2026-05-10">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
