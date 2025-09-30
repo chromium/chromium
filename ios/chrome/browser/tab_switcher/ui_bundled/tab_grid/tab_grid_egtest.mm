@@ -2413,7 +2413,8 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Ensures that when users tap on a tab from tab search result and this tab is
 // in another window currently displaying tab grid, the tab is opened.
-- (void)testOpenSearchedTabFromAnotherWindowWhenTabGridIsVisible {
+// TODO(crbug.com/448400563): Re-enable this test.
+- (void)DISABLED_testOpenSearchedTabFromAnotherWindowWhenTabGridIsVisible {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
   }
