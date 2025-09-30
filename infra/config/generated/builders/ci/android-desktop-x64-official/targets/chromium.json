@@ -1,7 +1,0 @@
-{
-  "android-desktop-x64-official": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  }
-}

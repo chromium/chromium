@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "fuchsia-x64-cast-receiver-rel",
-              "project": "chromium"
+              "project": "chromium-m142"
             },
             "builder_spec": {
               "builder_group": "chromium.fuchsia",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "fuchsia-x64-cast-receiver-rel",
-          "project": "chromium"
+          "project": "chromium-m142"
         }
       ],
       "retry_without_patch": false,

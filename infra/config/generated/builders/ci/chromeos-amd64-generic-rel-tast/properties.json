@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-amd64-generic-rel",
-              "project": "chromium"
+              "project": "chromium-m142"
             },
             "builder_spec": {
               "builder_group": "chromium.chromiumos",
@@ -42,7 +42,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "chromeos-amd64-generic-rel-tast",
-              "project": "chromium"
+              "project": "chromium-m142"
             },
             "builder_spec": {
               "builder_group": "chromium.chromiumos",
@@ -72,7 +72,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "chromeos-amd64-generic-rel",
-                "project": "chromium"
+                "project": "chromium-m142"
               }
             }
           }
@@ -82,7 +82,7 @@
         {
           "bucket": "ci",
           "builder": "chromeos-amd64-generic-rel-tast",
-          "project": "chromium"
+          "project": "chromium-m142"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -104,10 +104,10 @@
   },
   "builder_group": "chromium.chromiumos",
   "gardener_rotations": [
-    "chromiumos"
+    "chrome_browser_release"
   ],
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromiumos"
+    "chrome_browser_release"
   ]
 }

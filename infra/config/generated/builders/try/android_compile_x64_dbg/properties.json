@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android x64 Builder All Targets (dbg)",
-              "project": "chromium"
+              "project": "chromium-m142"
             },
             "builder_spec": {
               "builder_group": "chromium.android",
@@ -42,7 +42,7 @@
         {
           "bucket": "ci",
           "builder": "Android x64 Builder All Targets (dbg)",
-          "project": "chromium"
+          "project": "chromium-m142"
         }
       ],
       "is_compile_only": true,

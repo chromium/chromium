@@ -14,7 +14,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux ASan LSan Builder",
-              "project": "chromium"
+              "project": "chromium-m142"
             },
             "builder_spec": {
               "builder_group": "chromium.memory",
@@ -38,7 +38,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux ASan LSan Tests (1)",
-              "project": "chromium"
+              "project": "chromium-m142"
             },
             "builder_spec": {
               "builder_group": "chromium.memory",
@@ -59,7 +59,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux ASan LSan Builder",
-                "project": "chromium"
+                "project": "chromium-m142"
               }
             }
           }
@@ -69,14 +69,14 @@
         {
           "bucket": "ci",
           "builder": "Linux ASan LSan Builder",
-          "project": "chromium"
+          "project": "chromium-m142"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Linux ASan LSan Tests (1)",
-          "project": "chromium"
+          "project": "chromium-m142"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_asan_rel_ng/targets"

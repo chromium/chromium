@@ -10,7 +10,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "android-cronet-arm-dbg",
-              "project": "chromium"
+              "project": "chromium-m142"
             },
             "builder_spec": {
               "builder_group": "chromium.android",
@@ -43,7 +43,7 @@
         {
           "bucket": "ci",
           "builder": "android-cronet-arm-dbg",
-          "project": "chromium"
+          "project": "chromium-m142"
         }
       ],
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-cronet-arm-dbg/targets"
