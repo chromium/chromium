@@ -779,18 +779,16 @@ DrawingBuffer::ExportLowLatencyCanvasResource() {
   // Swap chain must be presented before resource is exported.
   ResolveAndPresentSwapChainIfNeeded();
 
-  scoped_refptr<ColorBuffer> color_buffer = back_color_buffer_;
-
   if (contents_changed_) {
-    // Restart SharedImage access on the SharedImage to ensure a write fence is
+    // Restart SharedImage access on the back buffer to ensure a write fence is
     // generated on it to guarantee display reads this frame completely.
     // Display may still read parts of subsequent frames, which is okay.
-    color_buffer->EndAccess();
-    color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
+    back_color_buffer_->EndAccess();
+    back_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   }
 
   return ExternalCanvasResource::Create(
-      color_buffer->shared_image, gpu::SyncToken(),
+      back_color_buffer_->shared_image, gpu::SyncToken(),
       viz::TransferableResource::ResourceSource::kDrawingBuffer, hdr_metadata_,
       viz::ReleaseCallback(), context_provider_->GetWeakPtr());
 }
