@@ -968,6 +968,13 @@
       status: "stable",
     },
     {
+      // Set currentTarget to null after dispatch for EventTarget.
+      // This was added in M142 and can be removed after M144.
+      // https://issues.chromium.org/issues/346766786
+      name: "ClearCurrentTargetAfterDispatch",
+      status: "stable",
+    },
+    {
       // Allows top-level sites to restrict collection of high-entropy UA client
       // hints (from 3Ps, or itself) via the getHighEntropyValues API.
       // crbug.com/385161047

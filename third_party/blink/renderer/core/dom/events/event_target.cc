@@ -870,6 +870,9 @@ DispatchEventResult EventTarget::DispatchEventInternal(Event& event) {
   event.SetCurrentTarget(this);
   event.SetEventPhase(Event::PhaseType::kAtTarget);
   DispatchEventResult dispatch_result = FireEventListeners(event);
+  if (RuntimeEnabledFeatures::ClearCurrentTargetAfterDispatchEnabled()) {
+    event.SetCurrentTarget(nullptr);
+  }
   event.SetEventPhase(Event::PhaseType::kNone);
   return dispatch_result;
 }
