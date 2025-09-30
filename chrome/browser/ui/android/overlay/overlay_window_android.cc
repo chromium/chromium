@@ -252,6 +252,12 @@ void OverlayWindowAndroid::HangUp(JNIEnv* env) {
   controller_->HangUp();
 }
 
+void OverlayWindowAndroid::Hide(JNIEnv* env) {
+  // Hides the window without pausing the video, effectively moving the playback
+  // to the background.
+  Hide();
+}
+
 void OverlayWindowAndroid::CompositorViewCreated(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& compositor_view) {
@@ -301,16 +307,12 @@ void OverlayWindowAndroid::OnBackToTab(JNIEnv* env) {
 }
 
 void OverlayWindowAndroid::OnQuickDismissal(JNIEnv* env) {
-  auto* web_contents = controller_->GetWebContents();
-  if (!web_contents) {
-    return;
-  }
-
-  auto* helper = AutoPictureInPictureTabHelper::FromWebContents(web_contents);
   // Verify that the dismissal is for an auto-PiP session, not a user-initiated
   // one, before triggering the embargo logic.
-  if (helper && helper->IsInAutoPictureInPicture()) {
-    helper->OnQuickDismissal();
+  if (IsInAutoPictureInPicture()) {
+    AutoPictureInPictureTabHelper::FromWebContents(
+        controller_->GetWebContents())
+        ->OnQuickDismissal();
   }
 }
 
@@ -351,6 +353,16 @@ bool OverlayWindowAndroid::IsActive() const {
 
 bool OverlayWindowAndroid::IsVisible() const {
   return true;
+}
+
+bool OverlayWindowAndroid::IsInAutoPictureInPicture() const {
+  auto* web_contents = controller_->GetWebContents();
+  if (!web_contents) {
+    return false;
+  }
+
+  auto* helper = AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  return helper && helper->IsInAutoPictureInPicture();
 }
 
 gfx::Rect OverlayWindowAndroid::GetBounds() {
@@ -428,6 +440,17 @@ void OverlayWindowAndroid::SetNextTrackButtonVisibility(bool is_visible) {
 void OverlayWindowAndroid::SetPreviousTrackButtonVisibility(bool is_visible) {
   MaybeUpdateVisibleAction(
       media_session::mojom::MediaSessionAction::kPreviousTrack, is_visible);
+}
+
+void OverlayWindowAndroid::SetHidePictureInPictureButtonVisibility(
+    bool is_visible) {
+  // The hide button is only shown for auto-PiP sessions. The controller
+  // provides `is_visible` as a hint based on play/pause visibility, but we make
+  // the final decision here based on the auto-PiP state.
+  bool should_show_hide_button = is_visible && IsInAutoPictureInPicture();
+  MaybeUpdateVisibleAction(
+      media_session::mojom::MediaSessionAction::kExitPictureInPicture,
+      should_show_hide_button);
 }
 
 void OverlayWindowAndroid::SetToggleMicrophoneButtonVisibility(

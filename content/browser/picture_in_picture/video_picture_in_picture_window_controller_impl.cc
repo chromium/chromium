@@ -471,6 +471,7 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
     return;
 
   UpdatePlayPauseButtonVisibility();
+  UpdateHidePictureInPictureButtonVisibility();
   window_->SetSkipAdButtonVisibility(media_session_action_skip_ad_handled_);
   window_->SetNextTrackButtonVisibility(
       media_session_action_next_track_handled_);
@@ -628,9 +629,25 @@ void VideoPictureInPictureWindowControllerImpl::
   if (!window_)
     return;
 
-  window_->SetPlayPauseButtonVisibility((media_session_action_pause_handled_ &&
-                                         media_session_action_play_handled_) ||
-                                        always_show_play_pause_button_);
+  window_->SetPlayPauseButtonVisibility(ShouldShowPlayPauseButton());
+}
+
+bool VideoPictureInPictureWindowControllerImpl::ShouldShowPlayPauseButton() {
+  return (media_session_action_pause_handled_ &&
+          media_session_action_play_handled_) ||
+         always_show_play_pause_button_;
+}
+
+void VideoPictureInPictureWindowControllerImpl::
+    UpdateHidePictureInPictureButtonVisibility() {
+  if (!window_) {
+    return;
+  }
+
+  // The button's visibility is tied to the play/pause button. The final
+  // decision to show the button is delegated to the platform-specific window
+  // implementation.
+  window_->SetHidePictureInPictureButtonVisibility(ShouldShowPlayPauseButton());
 }
 
 void VideoPictureInPictureWindowControllerImpl::

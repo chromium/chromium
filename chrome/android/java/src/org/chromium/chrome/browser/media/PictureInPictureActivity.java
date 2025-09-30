@@ -126,6 +126,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
     private @Nullable Handler mQuickDismissalHandler;
     private @Nullable Runnable mQuickDismissalRunnable;
 
+    private @Nullable Integer mMaxActionsForTesting;
+
     /** A helper class for managing media action buttons in PictureInPicture window. */
     @VisibleForTesting
     class MediaActionButtonsManager {
@@ -144,6 +146,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         @VisibleForTesting final RemoteAction mNextSlide;
 
         @VisibleForTesting final RemoteAction mHangUp;
+
+        @VisibleForTesting final RemoteAction mHide;
 
         @VisibleForTesting final ToggleRemoteAction mMicrophone;
 
@@ -234,6 +238,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                             R.drawable.ic_call_end_white_24dp,
                             R.string.accessibility_hang_up,
                             /* controlState= */ null);
+            mHide =
+                    createRemoteAction(
+                            requestCode++,
+                            MediaSessionAction.EXIT_PICTURE_IN_PICTURE,
+                            R.drawable.ic_headphones_24dp,
+                            R.string.accessibility_go_to_background,
+                            /* controlState= */ null);
             mMicrophone =
                     new ToggleRemoteAction(
                             createRemoteAction(
@@ -271,6 +282,15 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         @SuppressLint("NewApi")
         ArrayList<RemoteAction> getActionsForPictureInPictureParams() {
             ArrayList<RemoteAction> actions = new ArrayList<>();
+
+            // The presence of EXIT_PICTURE_IN_PICTURE in the visible actions list controls the
+            // visibility of the "hide" button, which dismisses PiP without pausing the video.
+            final boolean shouldShowHide =
+                    ChromeFeatureList.isEnabled(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
+                            && mVisibleActions.contains(MediaSessionAction.EXIT_PICTURE_IN_PICTURE);
+            if (shouldShowHide) {
+                actions.add(mHide);
+            }
 
             final boolean shouldShowPreviousNextTrack =
                     mVisibleActions.contains(MediaSessionAction.PREVIOUS_TRACK)
@@ -324,6 +344,24 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
 
             if (mVisibleActions.contains(MediaSessionAction.HANG_UP)) {
                 actions.add(mHangUp);
+            }
+
+            // Trim action list if it is larger than the max number of actions.
+            if (ChromeFeatureList.isEnabled(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)) {
+                int maxActions = 3;
+                if (mMaxActionsForTesting != null) {
+                    maxActions = mMaxActionsForTesting;
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    maxActions = PictureInPictureActivity.this.getMaxNumPictureInPictureActions();
+                }
+                // Remove lower-priority actions, start with previous track.
+                if (actions.size() > maxActions && actions.contains(mPreviousTrack)) {
+                    actions.remove(mPreviousTrack);
+                }
+                // If actions still exceeds the limit, remove previous slide.
+                if (actions.size() > maxActions && actions.contains(mPreviousSlide)) {
+                    actions.remove(mPreviousSlide);
+                }
             }
 
             // Insert a disabled placeholder remote action with transparent icon if action list is
@@ -471,6 +509,13 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
                     return;
                 case MediaSessionAction.HANG_UP:
                     PictureInPictureActivityJni.get().hangUp(mNativeOverlayWindowAndroid);
+                    return;
+                case MediaSessionAction.EXIT_PICTURE_IN_PICTURE:
+                    if (ChromeFeatureList.isEnabled(
+                            MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)) {
+                        PictureInPictureActivityJni.get().hide(mNativeOverlayWindowAndroid);
+                        // TODO(crbug.com/421606013): record action usage metrics.
+                    }
                     return;
                 default:
                     return;
@@ -725,12 +770,14 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
             mQuickDismissalRunnable = null;
 
             // If this was a quick dismissal, notify the native side. We must check that the
-            // native window still exists, as this cleanup path can be called after the native
+            // native window still exists, as this cleanup path can be called after the native0
             // side has been destroyed.
             if (mNativeOverlayWindowAndroid != 0) {
                 PictureInPictureActivityJni.get().onQuickDismissal(mNativeOverlayWindowAndroid);
             }
         }
+        // TODO(crbug.com/421606013): if pip closed by the hide button, call native to increase the
+        // embargo counter.
 
         if (!closeByNative && mNativeOverlayWindowAndroid != 0) {
             PictureInPictureActivityJni.get().destroyStartedByJava(mNativeOverlayWindowAndroid);
@@ -918,6 +965,22 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         }
     }
 
+    public void triggerHideActionForTesting() {
+        try {
+            mMediaActionsButtonsManager.mHide.getActionIntent().send();
+        } catch (PendingIntent.CanceledException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setMaxNumActionsForTesting(int maxActions) {
+        mMaxActionsForTesting = maxActions;
+    }
+
+    public ArrayList<RemoteAction> getActionsForTesting() {
+        return mMediaActionsButtonsManager.getActionsForPictureInPictureParams();
+    }
+
     @NativeMethods
     public interface Natives {
         long onActivityStart(
@@ -942,6 +1005,8 @@ public class PictureInPictureActivity extends AsyncInitializationActivity {
         void toggleCamera(long nativeOverlayWindowAndroid, boolean toggleOn);
 
         void hangUp(long nativeOverlayWindowAndroid);
+
+        void hide(long nativeOverlayWindowAndroid);
 
         void compositorViewCreated(long nativeOverlayWindowAndroid, CompositorView compositorView);
 

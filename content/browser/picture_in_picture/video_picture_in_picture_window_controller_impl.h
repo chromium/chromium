@@ -173,10 +173,16 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   // the system or by the browser.
   void CloseInternal(bool should_pause_video);
 
-  // Allow play/pause button to be visible if Media Session actions "play" and
+  // Shows or hides the play/pause button.
+  void UpdatePlayPauseButtonVisibility();
+
+  // Play/pause button should be visible if Media Session actions "play" and
   // "pause" are both handled by the website or if
   // always_hide_play_pause_button_ is false.
-  void UpdatePlayPauseButtonVisibility();
+  bool ShouldShowPlayPauseButton();
+
+  // Shows or hides the button for hiding the picture-in-picture window.
+  void UpdateHidePictureInPictureButtonVisibility();
 
   // Returns the web_contents() as a WebContentsImpl*.
   WebContentsImpl* GetWebContentsImpl();

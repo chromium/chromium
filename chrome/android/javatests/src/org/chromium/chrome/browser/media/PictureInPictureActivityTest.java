@@ -45,6 +45,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -55,6 +56,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.overlay_window.PlaybackState;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
+import org.chromium.media.MediaFeatures;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.ui.test.util.DeviceRestriction;
 
@@ -203,11 +205,11 @@ public class PictureInPictureActivityTest {
         activity.setPlaybackState(PlaybackState.PAUSED);
         ArrayList<RemoteAction> actions = manager.getActionsForPictureInPictureParams();
         Assert.assertEquals(1, actions.size());
-        Assert.assertEquals(actions.get(0), manager.mPlay);
+        Assert.assertEquals(manager.mPlay, actions.get(0));
 
         activity.setPlaybackState(PlaybackState.PLAYING);
         actions = manager.getActionsForPictureInPictureParams();
-        Assert.assertEquals(actions.get(0), manager.mPause);
+        Assert.assertEquals(manager.mPause, actions.get(0));
 
         // Both next track and previous track button should be visible when only one of them is
         // enabled. The one that is not handled should be visible and disabled.
@@ -215,8 +217,8 @@ public class PictureInPictureActivityTest {
                 new int[] {MediaSessionAction.PLAY, MediaSessionAction.PREVIOUS_TRACK});
         actions = manager.getActionsForPictureInPictureParams();
         Assert.assertEquals(3, actions.size());
-        Assert.assertEquals(actions.get(0), manager.mPreviousTrack);
-        Assert.assertEquals(actions.get(2), manager.mNextTrack);
+        Assert.assertEquals(manager.mPreviousTrack, actions.get(0));
+        Assert.assertEquals(manager.mNextTrack, actions.get(2));
         Assert.assertTrue(actions.get(0).isEnabled());
         Assert.assertFalse(actions.get(2).isEnabled());
 
@@ -226,8 +228,8 @@ public class PictureInPictureActivityTest {
                 new int[] {MediaSessionAction.PLAY, MediaSessionAction.PREVIOUS_SLIDE});
         actions = manager.getActionsForPictureInPictureParams();
         Assert.assertEquals(3, actions.size());
-        Assert.assertEquals(actions.get(0), manager.mPreviousSlide);
-        Assert.assertEquals(actions.get(2), manager.mNextSlide);
+        Assert.assertEquals(manager.mPreviousSlide, actions.get(0));
+        Assert.assertEquals(manager.mNextSlide, actions.get(2));
         Assert.assertTrue(actions.get(0).isEnabled());
         Assert.assertFalse(actions.get(2).isEnabled());
 
@@ -303,6 +305,82 @@ public class PictureInPictureActivityTest {
         manager.mPreviousSlide.getActionIntent().send();
         verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .previousSlide(eq(NATIVE_OVERLAY));
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @EnableFeatures(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
+    public void testMediaActionHide() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        PictureInPictureActivity.MediaActionButtonsManager manager =
+                activity.mMediaActionsButtonsManager;
+
+        activity.updateVisibleActions(new int[] {MediaSessionAction.EXIT_PICTURE_IN_PICTURE});
+        manager.mHide.getActionIntent().send();
+        verify(mNativeMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .hide(eq(NATIVE_OVERLAY));
+
+        testExitOn(activity, () -> activity.close());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @EnableFeatures(MediaFeatures.AUTO_PICTURE_IN_PICTURE_ANDROID)
+    public void testActionTrimmingPriority() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        activity.setMaxNumActionsForTesting(3);
+        PictureInPictureActivity.MediaActionButtonsManager manager =
+                activity.mMediaActionsButtonsManager;
+
+        // With 3 actions available, no trimming should happen.
+        activity.updateVisibleActions(
+                new int[] {
+                    MediaSessionAction.EXIT_PICTURE_IN_PICTURE,
+                    MediaSessionAction.PREVIOUS_TRACK,
+                    MediaSessionAction.NEXT_TRACK
+                });
+        ArrayList<RemoteAction> actions = manager.getActionsForPictureInPictureParams();
+        Assert.assertEquals("All 3 actions should be visible", 3, actions.size());
+        Assert.assertEquals(manager.mHide, actions.get(0));
+        Assert.assertEquals(manager.mPreviousTrack, actions.get(1));
+        Assert.assertEquals(manager.mNextTrack, actions.get(2));
+
+        // With 4 actions, Previous Track should be trimmed.
+        activity.updateVisibleActions(
+                new int[] {
+                    MediaSessionAction.EXIT_PICTURE_IN_PICTURE,
+                    MediaSessionAction.PREVIOUS_TRACK,
+                    MediaSessionAction.PLAY,
+                    MediaSessionAction.NEXT_TRACK
+                });
+        activity.setPlaybackState(PlaybackState.PLAYING);
+        actions = manager.getActionsForPictureInPictureParams();
+        Assert.assertEquals("Should be trimmed to 3 actions", 3, actions.size());
+        Assert.assertEquals(manager.mHide, actions.get(0));
+        Assert.assertEquals(manager.mPause, actions.get(1)); // PLAYING state means Pause is shown
+        Assert.assertEquals(manager.mNextTrack, actions.get(2));
+        Assert.assertFalse(actions.contains(manager.mPreviousTrack));
+
+        // With 5 actions, Previous Track and Previous Slide should be trimmed.
+        activity.updateVisibleActions(
+                new int[] {
+                    MediaSessionAction.EXIT_PICTURE_IN_PICTURE,
+                    MediaSessionAction.PREVIOUS_TRACK,
+                    MediaSessionAction.PREVIOUS_SLIDE,
+                    MediaSessionAction.NEXT_SLIDE,
+                    MediaSessionAction.NEXT_TRACK
+                });
+        actions = manager.getActionsForPictureInPictureParams();
+        Assert.assertEquals("Should be trimmed to 3 actions", 3, actions.size());
+        Assert.assertEquals(manager.mHide, actions.get(0));
+        Assert.assertEquals(manager.mNextTrack, actions.get(1));
+        Assert.assertEquals(manager.mNextSlide, actions.get(2));
+        Assert.assertFalse(actions.contains(manager.mPreviousTrack));
+        Assert.assertFalse(actions.contains(manager.mPreviousSlide));
 
         testExitOn(activity, () -> activity.close());
     }

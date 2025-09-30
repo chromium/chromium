@@ -47,6 +47,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void ToggleMicrophone(JNIEnv* env, bool toggleOn);
   void ToggleCamera(JNIEnv* env, bool toggleOn);
   void HangUp(JNIEnv* env);
+  void Hide(JNIEnv* env);
   void CompositorViewCreated(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& compositor_view);
@@ -77,6 +78,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetPreviousTrackButtonVisibility(bool is_visible) override;
   void SetMicrophoneMuted(bool muted) override;
   void SetCameraState(bool turned_on) override;
+  void SetHidePictureInPictureButtonVisibility(bool is_visible) override;
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override;
   void SetToggleCameraButtonVisibility(bool is_visible) override;
   void SetHangUpButtonVisibility(bool is_visible) override;
@@ -101,6 +103,8 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
       const media_session::mojom::MediaSessionAction& action,
       bool is_visible);
   void CloseInternal();
+
+  bool IsInAutoPictureInPicture() const;
 
   base::UnguessableToken token_{base::UnguessableToken::Create()};
 

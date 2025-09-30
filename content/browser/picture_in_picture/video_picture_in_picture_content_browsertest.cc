@@ -68,6 +68,7 @@ class TestVideoOverlayWindow : public VideoOverlayWindow {
     next_track_button_visible_ = is_visible;
   }
   void SetPreviousTrackButtonVisibility(bool is_visible) override {}
+  void SetHidePictureInPictureButtonVisibility(bool is_visible) override {}
   void SetMicrophoneMuted(bool muted) override {}
   void SetCameraState(bool turned_on) override {}
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}

@@ -62,6 +62,7 @@ class VideoOverlayWindow {
   virtual void SetSkipAdButtonVisibility(bool is_visible) = 0;
   virtual void SetNextTrackButtonVisibility(bool is_visible) = 0;
   virtual void SetPreviousTrackButtonVisibility(bool is_visible) = 0;
+  virtual void SetHidePictureInPictureButtonVisibility(bool is_visible) = 0;
   virtual void SetMicrophoneMuted(bool muted) = 0;
   virtual void SetCameraState(bool turned_on) = 0;
   virtual void SetToggleMicrophoneButtonVisibility(bool is_visible) = 0;

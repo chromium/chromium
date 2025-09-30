@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.picture_in_picture;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -13,6 +14,7 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 import static org.chromium.ui.test.util.DeviceRestriction.RESTRICTION_TYPE_NON_AUTO;
 
 import android.app.Activity;
+import android.app.RemoteAction;
 import android.content.res.Configuration;
 import android.os.Build.VERSION_CODES;
 
@@ -125,6 +127,79 @@ public class AutoPictureInPictureTabHelperTest {
         switchToTab(originalTab);
         AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
                 webContents, false, "Did not exit auto-PiP after tab shown.");
+    }
+
+    @Test
+    @MediumTest
+    public void testHideAutoPip() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        assertTrue(
+                "Page should have registered for auto-pip.",
+                AutoPictureInPictureTabHelperTestUtils.hasAutoPictureInPictureBeenRegistered(
+                        webContents));
+
+        Tab originalTab = mPage.getTab();
+        Tab newTab = createNewTabInBackground(originalTab);
+
+        fulfillVideoPlaybackConditions(webContents);
+        switchToTab(newTab);
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, true, "Did not enter auto-PiP after tab hidden.");
+
+        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
+        assertNotNull("PictureInPictureActivity not found.", pipActivity);
+        CriteriaHelper.pollUiThread(pipActivity::isInPictureInPictureMode);
+
+        // Simulate clicking the hide button.
+        ThreadUtils.runOnUiThreadBlocking(pipActivity::triggerHideActionForTesting);
+
+        // Wait for the PictureInPictureActivity to be destroyed.
+        CriteriaHelper.pollUiThread(pipActivity::isDestroyed);
+
+        // Now that the activity is gone, verify the C++ state.
+        AutoPictureInPictureTabHelperTestUtils.waitForAutoPictureInPictureState(
+                webContents, false, "Did not exit auto-PiP after hide.");
+
+        // Verify we are still on the new tab.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(
+                            "Should still be on the new tab.",
+                            newTab.getId(),
+                            mActivity.getTabModelSelector().getCurrentTab().getId());
+                });
+
+        // Verify that the video is still playing.
+        switchToTab(originalTab);
+        assertFalse(
+                "Video should still be playing.", DOMUtils.isMediaPaused(webContents, VIDEO_ID));
+    }
+
+    @Test
+    @MediumTest
+    public void testManualPipDoesNotHaveHideAction() throws TimeoutException {
+        WebContents webContents = loadUrlAndInitializeForTest(AUTO_PIP_VIDEO_PAGE);
+        fulfillVideoPlaybackConditions(webContents);
+
+        // Manually open PiP by simulating a click on the PiP button.
+        DOMUtils.clickNodeWithJavaScript(webContents, PIP_BUTTON_ID);
+        AutoPictureInPictureTabHelperTestUtils.waitForPictureInPictureVideoState(
+                webContents, true, "Did not enter PiP after manual request.");
+
+        PictureInPictureActivity pipActivity = getPictureInPictureActivity();
+        assertNotNull("PictureInPictureActivity not found.", pipActivity);
+        CriteriaHelper.pollUiThread(pipActivity::isInPictureInPictureMode);
+
+        // Verify that the "Hide" action is not present for manually entered PiP.
+        for (RemoteAction action : pipActivity.getActionsForTesting()) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        assertNotEquals(
+                                "Hide action should not be present for manual PiP.",
+                                action.getTitle(),
+                                mActivity.getString(R.string.accessibility_go_to_background));
+                    });
+        }
     }
 
     @Test

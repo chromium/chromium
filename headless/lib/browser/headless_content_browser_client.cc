@@ -103,6 +103,7 @@ class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
   void SetSkipAdButtonVisibility(bool is_visible) override {}
   void SetNextTrackButtonVisibility(bool is_visible) override {}
   void SetPreviousTrackButtonVisibility(bool is_visible) override {}
+  void SetHidePictureInPictureButtonVisibility(bool is_visible) override {}
   void SetMicrophoneMuted(bool muted) override {}
   void SetCameraState(bool turned_on) override {}
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override {}
