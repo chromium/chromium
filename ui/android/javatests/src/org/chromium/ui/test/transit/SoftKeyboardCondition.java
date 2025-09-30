@@ -9,7 +9,7 @@ import android.view.View;
 
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
-import org.chromium.ui.KeyboardUtils;
+import org.chromium.base.ui.KeyboardUtils;
 
 import java.util.function.Supplier;
 
