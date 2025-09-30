@@ -2293,6 +2293,8 @@ chromium-metrics-reviews@google.com.
   <int value="1396" label="CacheEncryptionEnabled"/>
   <int value="1397" label="SilentPrintingEnabled"/>
   <int value="1398" label="PreferSlowCiphers"/>
+  <int value="1399" label="DeveloperToolsAvailabilityAllowlist"/>
+  <int value="1400" label="DeveloperToolsAvailabilityBlocklist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

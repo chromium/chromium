@@ -565,6 +565,12 @@ void DevToolsWindow::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kDevToolsGoogleDeveloperProgramProfileAvailability,
       /* enabled */ 0);
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+  registry->RegisterListPref(prefs::kDeveloperToolsAvailabilityAllowlist);
+  registry->RegisterListPref(prefs::kDeveloperToolsAvailabilityBlocklist);
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
 
 // static

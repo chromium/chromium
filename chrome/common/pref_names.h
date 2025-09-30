@@ -2499,6 +2499,14 @@ inline constexpr char kDevToolsAdbKey[] = "devtools.adb_key";
 // Defines administrator-set availability of developer tools.
 inline constexpr char kDevToolsAvailability[] = "devtools.availability";
 
+// List of developer tools availability allowlist.
+inline constexpr char kDeveloperToolsAvailabilityAllowlist[] =
+    "devtools.availability_allowlist";
+
+// List of developer tools availability blocklist.
+inline constexpr char kDeveloperToolsAvailabilityBlocklist[] =
+    "devtools.availability_blocklist";
+
 // This is a timestamp, milliseconds after epoch, of when devtools was last
 // opened.
 inline constexpr char kDevToolsLastOpenTimestamp[] =

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "devtools.availability_allowlist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "example.com"
+        ]
+      ]
+    }
+  }
+]

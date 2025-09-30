@@ -1978,6 +1978,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kAutomatedPasswordChangeSettings,
     optimization_guide::prefs::kAutomatedPasswordChangeEnterprisePolicyAllowed,
     base::Value::Type::INTEGER },
+  { key::kDeveloperToolsAvailabilityAllowlist,
+    prefs::kDeveloperToolsAvailabilityAllowlist,
+    base::Value::Type::LIST },
+  { key::kDeveloperToolsAvailabilityBlocklist,
+    prefs::kDeveloperToolsAvailabilityBlocklist,
+    base::Value::Type::LIST },
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
         // || BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -2431,7 +2437,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kNTPFooterManagementNoticeEnabled,
     prefs::kNTPFooterManagementNoticeEnabled,
     base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   { key::kAIModeSettings,
     omnibox::kAIModeSettings,
     base::Value::Type::INTEGER },
