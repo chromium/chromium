@@ -2662,7 +2662,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                     mTipsPromoCoordinator =
                             new TipsPromoCoordinator(
                                     this, mRootUiCoordinator.getBottomSheetController());
-                    mTipsPromoCoordinator.showBottomSheet();
+                    mTipsPromoCoordinator.showBottomSheet(fromTipsNotifications);
                 }
                 break;
             case TabOpenType.OPEN_NEW_INCOGNITO_TAB:

@@ -1,0 +1,36 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.notifications.tips;
+
+import android.view.View;
+import android.widget.TextView;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+
+/** Binds the tips promo bottom sheet properties to the view. */
+@NullMarked
+public class TipsPromoViewBinder {
+    /**
+     * Binds PropertyKeys to View properties for the tips promo bottom sheet.
+     *
+     * @param model The PropertyModel for the View.
+     * @param view The View to be bound.
+     * @param key The key that's being bound.
+     */
+    public static void bind(PropertyModel model, View view, PropertyKey key) {
+        if (key == TipsPromoProperties.FEATURE_TIP_PROMO_DATA) {
+            FeatureTipPromoData promoData = model.get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA);
+
+            TextView mainPageTitleView = view.findViewById(R.id.main_page_title_text);
+            mainPageTitleView.setText(promoData.mainPageTitle);
+            TextView mainPageDescriptionView = view.findViewById(R.id.main_page_description_text);
+            mainPageDescriptionView.setText(promoData.mainPageDescription);
+        }
+    }
+}

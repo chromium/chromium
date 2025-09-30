@@ -13,16 +13,23 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
+import org.chromium.chrome.browser.notifications.tips.TipsPromoProperties.FeatureTipPromoData;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator to manage the promo for the Tips Notifications feature. */
 @NullMarked
 public class TipsPromoCoordinator {
     public static final int INVALID_TIPS_NOTIFICATION_FEATURE_TYPE = -1;
 
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final TipsPromoSheetContent mSheetContent;
+    private final PropertyModel mPropertyModel;
+    private final PropertyModelChangeProcessor mChangeProcessor;
 
     /**
      * Constructor.
@@ -31,19 +38,33 @@ public class TipsPromoCoordinator {
      * @param bottomSheetController The system {@link BottomSheetController}.
      */
     public TipsPromoCoordinator(Context context, BottomSheetController bottomSheetController) {
+        mContext = context;
         mBottomSheetController = bottomSheetController;
 
         View contentView =
                 LayoutInflater.from(context)
                         .inflate(R.layout.tips_promo_bottom_sheet, /* root= */ null);
         mSheetContent = new TipsPromoSheetContent(contentView);
+
+        mPropertyModel = TipsPromoProperties.createDefaultModel();
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel, contentView, TipsPromoViewBinder::bind);
     }
 
     /** Cleans up resources. */
-    public void destroy() {}
+    public void destroy() {
+        mChangeProcessor.destroy();
+    }
 
-    /** Shows the promo. The caller is responsible for all eligibility checks. */
-    public void showBottomSheet() {
+    /**
+     * Shows the promo. The caller is responsible for all eligibility checks.
+     *
+     * @param featureType The {@link TipsNotificationsFeatureType} to show.
+     */
+    public void showBottomSheet(@TipsNotificationsFeatureType int featureType) {
+        FeatureTipPromoData data = TipsUtils.getFeatureTipPromoDataForType(mContext, featureType);
+        mPropertyModel.set(TipsPromoProperties.FEATURE_TIP_PROMO_DATA, data);
         mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
     }
 

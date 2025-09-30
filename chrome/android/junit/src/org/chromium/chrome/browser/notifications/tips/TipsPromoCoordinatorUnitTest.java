@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -55,7 +56,7 @@ public class TipsPromoCoordinatorUnitTest {
     @SmallTest
     @Test
     public void testShowBottomSheet() {
-        mTipsPromoCoordinator.showBottomSheet();
+        mTipsPromoCoordinator.showBottomSheet(TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
     }
 }

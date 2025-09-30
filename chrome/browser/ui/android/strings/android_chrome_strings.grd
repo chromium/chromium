@@ -7062,6 +7062,30 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_NEGATIVE_BUTTON_TEXT" desc="Button text for the Tips Promo bottom sheet to go to an education page on the tip feature usage.">
         Show me how
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_ESB" desc="Title of the Enhanced Safe Browsing feature tip main page promo. [CHAR_LIMIT=32]">
+        Get Chrome\u2019s strongest security
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_ESB" desc="Description of the Enhanced Safe Browsing feature tip main page promo.">
+        Add an extra layer of protection against online threats with enhanced protection
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_QUICK_DELETE" desc="Title of the Quick Delete feature tip main page promo. [CHAR_LIMIT=32]">
+        Quickly delete your browsing data
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_QUICK_DELETE" desc="Description of the Quick Delete feature tip main page promo.">
+        You can delete some or all of your history, cookies, site data, and more
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_LENS" desc="Title of the Google Lens feature tip main page promo. [CHAR_LIMIT=32]">
+        Search with Google Lens
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_LENS" desc="Description of the Google Lens feature tip main page promo.">
+        Shop, translate, and identify what you see using your camera and photo gallery
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_BOTTOM_OMNIBOX" desc="Title of the Bottom Omnibox feature tip main page promo. [CHAR_LIMIT=32]">
+        Choose your address bar position
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_BOTTOM_OMNIBOX" desc="Description of the Bottom Omnibox feature tip main page promo.">
+        Switch the position of your address bar to the top of bottom for a customaized browsing experience
+      </message>
     </messages>
   </release>
 </grit>

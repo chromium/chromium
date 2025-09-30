@@ -443,4 +443,8 @@ found in the LICENSE file.
     <dimen name="symbol_padding">2dp</dimen>
     <dimen name="zoom_percentage_padding">8dp</dimen>
     <dimen name="zoom_percentage_width">56dp</dimen>
+
+    <!-- Tips Notifications dimensions -->
+    <dimen name="tips_notifications_bottom_sheet_horizontal_margin">24dp</dimen>
+    <dimen name="tips_notifications_bottom_sheet_button_padding">4dp</dimen>
 </resources>
