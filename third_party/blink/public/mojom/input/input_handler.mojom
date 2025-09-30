@@ -184,6 +184,7 @@ struct DidOverscrollParams {
   gfx.mojom.Vector2dF current_fling_velocity;
   gfx.mojom.PointF causal_event_viewport_point;
   cc.mojom.OverscrollBehavior overscroll_behavior;
+  blink.mojom.GestureDevice source_device;
 };
 
 // A struct wrapper for the TouchAction enumeration because

@@ -4,6 +4,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
@@ -285,7 +286,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
             gfx::Vector2dF(0, 50), gfx::Vector2dF(0, 50), gfx::Vector2dF(),
-            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+            gfx::PointF(100, 100), cc::OverscrollBehavior(),
+            blink::WebGestureDevice::kTouchscreen)));
 
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
@@ -302,7 +304,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
             gfx::Vector2dF(0, 70), gfx::Vector2dF(0, 20), gfx::Vector2dF(),
-            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+            gfx::PointF(100, 100), cc::OverscrollBehavior(),
+            blink::WebGestureDevice::kTouchscreen)));
 
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,
@@ -328,7 +331,8 @@ TEST_F(RootScrollerTest, BrowserControlsAndOverscroll) {
     EXPECT_TRUE(
         widget->last_overscroll()->Equals(mojom::blink::DidOverscrollParams(
             gfx::Vector2dF(0, 30), gfx::Vector2dF(0, 30), gfx::Vector2dF(),
-            gfx::PointF(100, 100), cc::OverscrollBehavior())));
+            gfx::PointF(100, 100), cc::OverscrollBehavior(),
+            blink::WebGestureDevice::kTouchscreen)));
 
     EXPECT_FLOAT_EQ(maximum_scroll, container->scrollTop());
     EXPECT_FLOAT_EQ(0,

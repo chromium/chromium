@@ -202,7 +202,8 @@ void OverscrollControllerAndroid::OnOverscrolled(
 
   if (refresh_effect_) {
     refresh_effect_->OnOverscrolled(params.overscroll_behavior,
-                                    params.accumulated_overscroll);
+                                    params.accumulated_overscroll,
+                                    params.source_device);
     bool refresh_effect_active = refresh_effect_->IsActive();
     is_handling_sequence_ |= refresh_effect_active;
 

@@ -6,6 +6,7 @@
 #define UI_EVENTS_BLINK_DID_OVERSCROLL_PARAMS_H_
 
 #include "cc/input/overscroll_behavior.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -17,6 +18,7 @@ struct DidOverscrollParams {
   gfx::Vector2dF current_fling_velocity;
   gfx::PointF causal_event_viewport_point;
   cc::OverscrollBehavior overscroll_behavior;
+  blink::WebGestureDevice source_device;
 };
 
 }  // namespace ui

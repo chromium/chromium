@@ -2532,7 +2532,7 @@ void RenderWidgetHostImpl::DidOverscroll(
     ui::DidOverscrollParams overscroll_params = {
         params->accumulated_overscroll, params->latest_overscroll_delta,
         params->current_fling_velocity, params->causal_event_viewport_point,
-        params->overscroll_behavior};
+        params->overscroll_behavior,    params->source_device};
     view_->DidOverscroll(overscroll_params);
   }
 }

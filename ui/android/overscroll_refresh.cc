@@ -74,7 +74,8 @@ void OverscrollRefresh::OnScrollEnd(const gfx::Vector2dF& scroll_velocity) {
 }
 
 void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
-                                       gfx::Vector2dF accumulated_overscroll) {
+                                       gfx::Vector2dF accumulated_overscroll,
+                                       blink::WebGestureDevice source_device) {
   // `accumulated_overscroll` is in the opposite direction of the scroll_deltas
   // sent to the renderer.
   MaybeDisableScrollConsumption(-accumulated_overscroll);
@@ -102,6 +103,8 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
   } else if (in_x_direction &&
              (scroll_begin_x_ < edge_width_ ||
               viewport_width_ - scroll_begin_x_ < edge_width_)) {
+    DCHECK(source_device == blink::WebGestureDevice::kTouchpad ||
+           source_device == blink::WebGestureDevice::kTouchscreen);
     // Swipe-to-navigate. Check overscroll-behavior-x
     if (behavior.x != cc::OverscrollBehavior::Type::kAuto) {
       Reset();

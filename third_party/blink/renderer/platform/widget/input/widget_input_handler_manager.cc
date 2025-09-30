@@ -87,7 +87,7 @@ mojom::blink::DidOverscrollParamsPtr ToDidOverscrollParams(
       overscroll_params->latest_overscroll_delta,
       overscroll_params->current_fling_velocity,
       overscroll_params->causal_event_viewport_point,
-      overscroll_params->overscroll_behavior);
+      overscroll_params->overscroll_behavior, overscroll_params->source_device);
 }
 
 void CallCallback(

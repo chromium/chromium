@@ -17,6 +17,7 @@
 #include "cc/input/snap_fling_controller.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -103,6 +104,7 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
     gfx::Vector2dF current_fling_velocity;
     gfx::PointF causal_event_viewport_point;
     cc::OverscrollBehavior overscroll_behavior;
+    blink::WebGestureDevice source_device;
   };
 
   // Result codes returned to the client indicating the status of handling the
@@ -310,7 +312,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
   // Used to send overscroll messages to the browser. It bundles the overscroll
   // params with with event ack.
   void HandleOverscroll(const gfx::PointF& causal_event_viewport_point,
-                        const cc::InputHandlerScrollResult& scroll_result);
+                        const cc::InputHandlerScrollResult& scroll_result,
+                        const blink::WebGestureDevice source_device);
 
   // Update the elastic overscroll controller with |gesture_event|.
   void HandleScrollElasticityOverscroll(

@@ -76,7 +76,8 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
     EXPECT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
     EXPECT_FALSE(effect.IsActive());
     EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
-    effect.OnOverscrolled(ob, -scroll_delta);
+    effect.OnOverscrolled(ob, -scroll_delta,
+                          blink::WebGestureDevice::kTouchscreen);
     EXPECT_EQ(started, GetAndResetPullStarted());
     EXPECT_EQ(!started, GetAndResetPullReset());
   }
@@ -107,7 +108,8 @@ TEST_F(OverscrollRefreshTest, TriggerPullToRefresh) {
   EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
 
   // The unconsumed, overscrolling scroll will trigger the effect.
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_up);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_up,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_TRUE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_TRUE(GetAndResetPullStarted());
@@ -150,7 +152,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialYOffsetIsNotZero) {
   ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -174,7 +177,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfOverflowYHidden) {
   ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -198,7 +202,8 @@ TEST_F(OverscrollRefreshTest,
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -218,7 +223,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollDownward) {
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
 
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -236,11 +242,13 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollOrTouchConsumed) {
   // Consumption of the initial touchmove or scroll should prevent future
   // activation.
   effect.Reset();
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -255,7 +263,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfFlungDownward) {
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
   ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   ASSERT_TRUE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   ASSERT_TRUE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullStarted());
 
@@ -271,7 +280,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfReleasedWithoutActivation) {
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
   ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   ASSERT_TRUE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   ASSERT_TRUE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullStarted());
 
@@ -288,7 +298,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfReset) {
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
   ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   ASSERT_TRUE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   ASSERT_TRUE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullStarted());
 
@@ -323,7 +334,8 @@ TEST_F(OverscrollRefreshTest, TriggerPullFromBottomEdge) {
   EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
 
   // The unconsumed, overscrolling scroll will trigger the effect.
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_down);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_down,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_TRUE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_TRUE(GetAndResetPullStarted());
@@ -366,7 +378,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollNotFromBottom) {
   ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -500)));
@@ -392,7 +405,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfContentSizeEqualsToViewport) {
   ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta,
+                        blink::WebGestureDevice::kTouchscreen);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -500)));

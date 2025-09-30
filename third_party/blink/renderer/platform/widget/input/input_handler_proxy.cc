@@ -1273,7 +1273,8 @@ InputHandlerProxy::HandleGestureScrollUpdate(
         scroll_data->set_unused_delta_y(scroll_result.unused_scroll_delta.y());
       });
 
-  HandleOverscroll(gesture_event.PositionInWidget(), scroll_result);
+  HandleOverscroll(gesture_event.PositionInWidget(), scroll_result,
+                   gesture_event.SourceDevice());
 
   if (elastic_overscroll_controller_)
     HandleScrollElasticityOverscroll(gesture_event, scroll_result);
@@ -1871,7 +1872,8 @@ void InputHandlerProxy::FlushQueuedEventsForTesting() {
 
 void InputHandlerProxy::HandleOverscroll(
     const gfx::PointF& causal_event_viewport_point,
-    const cc::InputHandlerScrollResult& scroll_result) {
+    const cc::InputHandlerScrollResult& scroll_result,
+    const blink::WebGestureDevice source_device) {
   DCHECK(client_);
   if (!scroll_result.did_overscroll_root)
     return;
@@ -1888,6 +1890,7 @@ void InputHandlerProxy::HandleOverscroll(
       causal_event_viewport_point;
   current_overscroll_params_->overscroll_behavior =
       scroll_result.overscroll_behavior;
+  current_overscroll_params_->source_device = source_device;
   return;
 }
 

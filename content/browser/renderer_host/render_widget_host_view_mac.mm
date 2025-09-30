@@ -1471,7 +1471,7 @@ void RenderWidgetHostViewMac::DidOverscroll(
   ns_view_->DidOverscroll(blink::mojom::DidOverscrollParams::New(
       params.accumulated_overscroll, params.latest_overscroll_delta,
       params.current_fling_velocity, params.causal_event_viewport_point,
-      params.overscroll_behavior));
+      params.overscroll_behavior, params.source_device));
 }
 
 std::unique_ptr<SyntheticGestureTarget>
