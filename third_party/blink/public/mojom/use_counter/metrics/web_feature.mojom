@@ -2202,7 +2202,7 @@ enum WebFeature {
   kV8XRSession_End_Method = 2911,
   kV8XRWebGLLayer_Constructor = 2912,
   kFetchKeepalive = 2913,
-  kCSSTransitionCancelledByRemovingStyle = 2914,
+  kOBSOLETE_CSSTransitionCancelledByRemovingStyle = 2914,
   kV8RTCRtpSender_SetStreams_Method = 2915,
   kCookieNoSameSite = 2916,
   kCookieInsecureAndSameSiteNone = 2917,

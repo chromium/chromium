@@ -2530,19 +2530,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
           active_transition_iter->value;
       if (ComputedValuesEqual(property, after_change_style,
                               *running_transition->to)) {
-        if (!state.transition_data) {
-          if (!running_transition->animation->FinishedInternal()) {
-            UseCounter::Count(
-                state.animating_element.GetDocument(),
-                WebFeature::kCSSTransitionCancelledByRemovingStyle);
-          }
-          if (RuntimeEnabledFeatures::
-                  CSSTransitionNoneRunningTransitionsFixEnabled()) {
-            return;
-          }
-        } else {
-          return;
-        }
+        return;
       }
       state.update.CancelTransition(property);
       DCHECK(!state.animating_element.GetElementAnimations() ||

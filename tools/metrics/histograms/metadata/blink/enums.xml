@@ -3296,7 +3296,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2911" label="V8XRSession_End_Method"/>
   <int value="2912" label="V8XRWebGLLayer_Constructor"/>
   <int value="2913" label="FetchKeepalive"/>
-  <int value="2914" label="CSSTransitionCancelledByRemovingStyle"/>
+  <int value="2914" label="OBSOLETE_CSSTransitionCancelledByRemovingStyle"/>
   <int value="2915" label="V8RTCRtpSender_SetStreams_Method"/>
   <int value="2916" label="CookieNoSameSite"/>
   <int value="2917" label="CookieInsecureAndSameSiteNone"/>
