@@ -559,6 +559,40 @@ TEST_F(AccountNameEmailStoreTest, AutofillSyncToggleOnAfterHardRemove) {
             features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get());
 }
 
+// Tests that the kAccountNameEmail profile will be recreated even if the stored
+// hash matches the account info, if the actual profile has outdated data.
+// It is a regression for the following bug:
+// If there were two devices A,B and the account info got updated on the
+// device A, the profile will correctly be recreated there, however since
+// the hash of the account info is synced, the device B will download the
+// updated hash and detect that its stored hash already matches the account info
+// and thus won't update the profile.
+TEST_F(AccountNameEmailStoreTest,
+       ProfileRecreatedIfNameUpdatedOnDifferentDevice) {
+  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
+  ASSERT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(Property(&AutofillProfile::record_type,
+                           AutofillProfile::RecordType::kAccountNameEmail)));
+
+  AccountInfo info = GetPrimaryAccountInfo();
+  info.full_name = kTestName2;
+
+  // Set the hash pref to the updated value before the actual autofill profile
+  // data changes.
+  pref_service().SetString(
+      prefs::kAutofillNameAndEmailProfileSignature,
+      test_api(&account_name_email_store()).HashAccountInfo(info));
+
+  // Try recreating the profile.
+  OnAccountUpdated(info);
+
+  EXPECT_THAT(
+      address_data_manager().GetProfiles(),
+      ElementsAre(IsCorrectAccountNameEmail(base::UTF8ToUTF16(info.full_name),
+                                            base::UTF8ToUTF16(info.email))));
+}
+
 }  // namespace
 
 }  // namespace autofill

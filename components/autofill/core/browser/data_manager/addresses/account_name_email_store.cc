@@ -9,6 +9,7 @@
 #include "base/hash/hash.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/base/consent_level.h"
@@ -23,6 +24,14 @@ namespace autofill {
 namespace {
 
 constexpr std::string_view kSeparator = "|";
+
+// Returns true if `profile` has the same full name and email address as `info`,
+// false otherwise.
+bool AutofillProfileMatchesAccountInfo(const AutofillProfile& profile,
+                                       const AccountInfo& info) {
+  return profile.GetRawInfo(NAME_FULL) == base::UTF8ToUTF16(info.full_name) &&
+         profile.GetRawInfo(EMAIL_ADDRESS) == base::UTF8ToUTF16(info.email);
+}
 
 }  // namespace
 
@@ -186,9 +195,10 @@ void AccountNameEmailStore::UpdateOrCreateAccountNameEmail(
       address_data_manager_->GetProfilesByRecordType(
           AutofillProfile::RecordType::kAccountNameEmail);
   const bool account_name_email_exists = !account_name_email_profiles.empty();
-  if (!hashes_different && account_name_email_exists) {
-    // Hashes are the same and the kAccountNameEmail profile exists.
-    // This function was called as a side effect of the other, unrelated flow.
+  if (account_name_email_exists && AutofillProfileMatchesAccountInfo(
+                                       *account_name_email_profiles[0], info)) {
+    // A valid kAccountNameEmail profile already exists. This function was
+    // called as a side effect of the other, unrelated flow.
     return;
   }
 
