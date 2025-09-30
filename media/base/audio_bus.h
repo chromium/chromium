@@ -66,9 +66,6 @@ class MEDIA_EXPORT AudioBus {
                                               void* data);
   static std::unique_ptr<AudioBus> WrapMemory(const AudioParameters& params,
                                               void* data);
-  static std::unique_ptr<const AudioBus> WrapReadOnlyMemory(int channels,
-                                                            int frames,
-                                                            const void* data);
   static std::unique_ptr<const AudioBus> WrapReadOnlyMemory(
       const AudioParameters& params,
       const void* data);
