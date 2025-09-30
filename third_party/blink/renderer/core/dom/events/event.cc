@@ -360,19 +360,17 @@ HeapVector<Member<EventTarget>> Event::composedPath(
     }
     NOTREACHED();
   }
+  LocalDOMWindow* window = current_target_->ToLocalDOMWindow();
+  if (window && event_path_ && !event_path_->IsEmpty()) {
+    return HeapVector<Member<EventTarget>>(event_path_->TopNodeEventContext()
+                                               .GetTreeScopeEventContext()
+                                               .EnsureEventPath(*event_path_));
+  }
 
-  if (LocalDOMWindow* window = current_target_->ToLocalDOMWindow()) {
-    if (event_path_ && !event_path_->IsEmpty()) {
-      return HeapVector<Member<EventTarget>>(
-          event_path_->TopNodeEventContext()
-              .GetTreeScopeEventContext()
-              .EnsureEventPath(*event_path_));
-    }
-    if (RuntimeEnabledFeatures::ComposedPathEmptyAfterDispatchEnabled() &&
-        !IsBeingDispatched()) {
-      return HeapVector<Member<EventTarget>>();
-    }
-    return HeapVector<Member<EventTarget>>(1, window);
+  if (RuntimeEnabledFeatures::ComposedPathReturnTargetBeingDispatchedEnabled()
+          ? IsBeingDispatched()
+          : !!window) {
+    return HeapVector<Member<EventTarget>>(1, current_target_);
   }
 
   return HeapVector<Member<EventTarget>>();

@@ -1031,11 +1031,12 @@
       status: "stable",
     },
     {
-      // Return an empty list from composedPath() when the event
-      // path is empty.
+      // Return the current target from composedPath() while
+      // dispatching.
       // This was added in M142 and can be removed after M144.
       // https://issues.chromium.org/issues/444932649
-      name: "ComposedPathEmptyAfterDispatch",
+      // https://issues.chromium.org/issues/346766786
+      name: "ComposedPathReturnTargetBeingDispatched",
       status: "stable",
     },
     {
