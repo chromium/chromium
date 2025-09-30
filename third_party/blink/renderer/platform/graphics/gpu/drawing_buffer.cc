@@ -81,13 +81,6 @@ namespace blink {
 
 namespace {
 
-// Note: The swapchain implementation of low-latency WebGL is actually *used*
-// only on Windows but it's *compiled* on all platforms, so the feature must
-// also be defined on al platforms even though it also will be used only on
-// Windows.
-BASE_FEATURE(kUseSingleSIForLowLatencyWebGLOnWindows,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
@@ -786,17 +779,12 @@ DrawingBuffer::ExportLowLatencyCanvasResource() {
   // Swap chain must be presented before resource is exported.
   ResolveAndPresentSwapChainIfNeeded();
 
-  bool using_two_si_swap_chain_impl =
-      using_swap_chain_ &&
-      !base::FeatureList::IsEnabled(kUseSingleSIForLowLatencyWebGLOnWindows);
-  scoped_refptr<ColorBuffer> color_buffer =
-      using_two_si_swap_chain_impl ? front_color_buffer_ : back_color_buffer_;
+  scoped_refptr<ColorBuffer> color_buffer = back_color_buffer_;
 
-  if (contents_changed_ && !using_two_si_swap_chain_impl) {
-    // Restart SharedImage access on the single SharedImage to ensure a write
-    // fence is generated on the shared image to guarantee display reads this
-    // frame completely. Display may still read parts of subsequent frames,
-    // which is okay.
+  if (contents_changed_) {
+    // Restart SharedImage access on the SharedImage to ensure a write fence is
+    // generated on it to guarantee display reads this frame completely.
+    // Display may still read parts of subsequent frames, which is okay.
     color_buffer->EndAccess();
     color_buffer->BeginAccess(gpu::SyncToken(), /*readonly=*/false);
   }
@@ -1900,45 +1888,6 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
 
   ScopedStateRestorer scoped_state_restorer(this);
   ResolveIfNeeded(kDiscardAllowed);
-
-  bool using_two_si_swap_chain_impl =
-      using_swap_chain_ &&
-      !base::FeatureList::IsEnabled(kUseSingleSIForLowLatencyWebGLOnWindows);
-  if (!using_two_si_swap_chain_impl) {
-    return;
-  }
-
-  CopyStagingTextureToBackColorBufferIfNeeded();
-  gpu::SyncToken sync_token = back_color_buffer_->EndAccess();
-
-  auto* sii = ContextProvider()->SharedImageInterface();
-  sii->PresentSwapChain(sync_token,
-                        back_color_buffer_->shared_image->mailbox());
-
-  back_color_buffer_->BeginAccess(sii->GenUnverifiedSyncToken(),
-                                  /*readonly=*/false);
-
-  // If a multisample fbo is used it already preserves the previous contents.
-  if (preserve_drawing_buffer_ == kPreserve && !WantExplicitResolve()) {
-    // If premultiply alpha is false rendering results are in
-    // |staging_texture_|.
-    GLenum dest_texture_target =
-        staging_texture_ ? GL_TEXTURE_2D
-                         : back_color_buffer_->shared_image->GetTextureTarget();
-    GLuint dest_texture_id =
-        staging_texture_ ? staging_texture_ : back_color_buffer_->texture_id();
-    front_color_buffer_->BeginAccess(gpu::SyncToken(), /*readonly=*/true);
-
-    gl_->CopySubTextureCHROMIUM(front_color_buffer_->texture_id(), 0,
-                                dest_texture_target, dest_texture_id, 0, 0, 0,
-                                0, 0, size_.width(), size_.height(), GL_FALSE,
-                                GL_FALSE, GL_FALSE);
-    front_color_buffer_->EndAccess();
-  }
-  contents_changed_ = false;
-  if (preserve_drawing_buffer_ == kDiscard) {
-    SetBufferClearNeeded(true);
-  }
 }
 
 scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
@@ -1955,8 +1904,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   gpu::SharedImageInterface* sii = ContextProvider()->SharedImageInterface();
 
   scoped_refptr<gpu::ClientSharedImage> back_buffer_shared_image;
-  // Set only when using swap chains.
-  scoped_refptr<gpu::ClientSharedImage> front_buffer_shared_image;
   GLenum texture_target = GL_TEXTURE_2D;
 
   // The SharedImages created here are read to and written from by WebGL. They
@@ -1993,19 +1940,10 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   if (using_swap_chain_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-    if (base::FeatureList::IsEnabled(kUseSingleSIForLowLatencyWebGLOnWindows)) {
-      back_buffer_shared_image = sii->CreateSharedImage(
-          {color_buffer_format_, size, color_space_, origin,
-           back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
-          gpu::kNullSurfaceHandle);
-    } else {
-      gpu::SharedImageInterface::SwapChainSharedImages shared_images =
-          sii->CreateSwapChain(color_buffer_format_, size, color_space_, origin,
-                               back_buffer_alpha_type, usage,
-                               "WebGLDrawingBuffer");
-      back_buffer_shared_image = std::move(shared_images.back_buffer);
-      front_buffer_shared_image = std::move(shared_images.front_buffer);
-    }
+    back_buffer_shared_image = sii->CreateSharedImage(
+        {color_buffer_format_, size, color_space_, origin,
+         back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
+        gpu::kNullSurfaceHandle);
   } else {
     // First see if creating a SharedImage that can be used as an overlay is
     // feasible.
@@ -2078,17 +2016,6 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     // SharedImages do not support sRGB texture formats, so a staging texture is
     // always needed for them.
     staging_texture_needed_ = true;
-  }
-
-  if (front_buffer_shared_image) {
-    DCHECK(using_swap_chain_ && !base::FeatureList::IsEnabled(
-                                    kUseSingleSIForLowLatencyWebGLOnWindows));
-    // Import frontbuffer of swap chain into GL.
-    std::unique_ptr<gpu::SharedImageTexture> si_texture =
-        front_buffer_shared_image->CreateGLTexture(gl_);
-    front_color_buffer_ = base::MakeRefCounted<ColorBuffer>(
-        weak_factory_.GetWeakPtr(), std::move(front_buffer_shared_image),
-        std::move(si_texture));
   }
 
   // Import the backbuffer of swap chain or allocated SharedImage into GL.
