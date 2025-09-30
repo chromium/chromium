@@ -7,8 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import <utility>
+
 #import "base/functional/callback.h"
 #import "base/ios/block_types.h"
+#import "base/time/time.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/app/change_profile_continuation.h"
@@ -44,6 +47,10 @@ class IdentityManager;
 
 using UnsyncedDataForSignoutOrProfileSwitchingCallback =
     base::OnceCallback<void(syncer::DataTypeSet data_type_set)>;
+
+inline constexpr std::pair<base::TimeDelta, base::TimeDelta> kPromoTriggerRange(
+    base::Days(53),
+    base::Days(68));
 
 // Represents a request to sign-out.
 class ProfileSignoutRequest {

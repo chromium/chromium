@@ -73,7 +73,9 @@ constexpr base::TimeDelta kShowSigninUpgradePromoMaxDelay =
 // The duration between two signin upgrade promo trigger is randomly chosen
 // between [53..68) days.
 base::TimeDelta DurationBetweenPromoTriggers() {
-  return base::RandTimeDelta(base::Days(53), base::Days(68));
+  using signin::kPromoTriggerRange;
+  return base::RandTimeDelta(kPromoTriggerRange.first,
+                             kPromoTriggerRange.second);
 }
 
 // Initiate synchronously the change to `profile`, then run `continuation`
@@ -253,15 +255,24 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
 
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   base::Time next_show_time = local_state->GetTime(prefs::kNextSSORecallTime);
-  // We just store the next show time for now to ramp up clients for the
-  // experiment later. See crbug.com/408962000.
+  bool use_date =
+      base::FeatureList::IsEnabled(switches::kFullscreenSignInPromoUseDate);
   if (next_show_time.is_null()) {
     local_state->SetTime(prefs::kNextSSORecallTime,
                          base::Time::Now() + DurationBetweenPromoTriggers());
+    // Don't show if `kNextSSORecallTime` was never recorded.
+    if (use_date) {
+      return false;
+    }
+  }
+  if (use_date && next_show_time > base::Time::Now()) {
+    return false;
   }
 
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   // Show the promo at most every two major versions.
+  // TODO(crbug.com/408962000): Remove this key and all code related after
+  // `kFullscreenSignInPromoUseDate` is launched.
   NSString* version_string =
       [defaults stringForKey:kDisplayedSSORecallForMajorVersionKey];
   const base::Version version_shown(base::SysNSStringToUTF8(version_string));
@@ -271,11 +282,14 @@ bool ShouldPresentUserSigninUpgrade(ProfileIOS* profile,
   if (!version_shown.IsValid()) {
     [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                  forKey:kDisplayedSSORecallForMajorVersionKey];
-    return false;
+    if (!use_date) {
+      return false;
+    }
   }
 
   // Wait 2 major releases to show the sign-in promo.
-  if (current_version.components()[0] - version_shown.components()[0] < 2) {
+  if (!use_date &&
+      current_version.components()[0] - version_shown.components()[0] < 2) {
     return false;
   }
 
@@ -353,6 +367,8 @@ void RecordUpgradePromoSigninStarted(
   PrefService* local_state = GetApplicationContext()->GetLocalState();
   local_state->SetTime(prefs::kNextSSORecallTime,
                        base::Time::Now() + DurationBetweenPromoTriggers());
+  // TODO(crbug.com/408962000): Remove this key and all code related after
+  // `kFullscreenSignInPromoUseDate` is launched.
   [defaults setObject:base::SysUTF8ToNSString(current_version.GetString())
                forKey:kDisplayedSSORecallForMajorVersionKey];
   std::vector<AccountInfo> account_infos =
