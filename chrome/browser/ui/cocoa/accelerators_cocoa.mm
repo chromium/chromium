@@ -114,6 +114,8 @@ const struct AcceleratorMapping {
      ui::VKEY_I},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {IDC_TAB_SEARCH, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::VKEY_A},
+    {IDC_CREATE_NEW_TAB_GROUP, ui::EF_CONTROL_DOWN | ui::EF_COMMAND_DOWN,
+     ui::VKEY_P},
 };
 
 ui::Accelerator AcceleratorForCloseWindow() {
