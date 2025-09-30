@@ -346,7 +346,18 @@ def main() -> None:
         elif args.command == 'update':
             _run_command([gemini_cmd, 'extensions', 'update', extension])
         elif args.command == 'remove':
-            _run_command([gemini_cmd, 'extensions', 'uninstall', extension])
+            if '_' in extension:
+                # gemini rejects extension names with _ in them so if they're
+                # already installed we need to delete them directly
+                try:
+                    shutil.rmtree(get_global_extension_dir() / extension)
+                except OSError as e:
+                    print(f"Error removing extension '{extension}': {e}",
+                          file=sys.stderr)
+                    sys.exit(1)
+            else:
+                _run_command(
+                    [gemini_cmd, 'extensions', 'uninstall', extension])
 
 
 if __name__ == '__main__':
