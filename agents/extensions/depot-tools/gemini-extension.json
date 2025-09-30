@@ -1,5 +1,5 @@
 {
-  "name": "depot_tools",
+  "name": "depot-tools",
   "version": "1.0.0",
   "mcpServers": {
     "depot_tools": {
