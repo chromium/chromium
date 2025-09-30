@@ -72,6 +72,7 @@
 #include "chrome/browser/ui/webui/settings/protocol_handlers_handler.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
 #include "chrome/browser/ui/webui/settings/safety_hub_handler.h"
+#include "chrome/browser/ui/webui/settings/saved_info_handler.h"
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_localized_strings_provider.h"
@@ -258,6 +259,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(
       std::make_unique<SecurityKeysBioEnrollmentHandler>());
   AddSettingsPageUIHandler(std::make_unique<PasswordManagerHandler>());
+  AddSettingsPageUIHandler(std::make_unique<SavedInfoHandler>(profile));
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   AddSettingsPageUIHandler(std::make_unique<PasskeysHandler>());
 #endif
