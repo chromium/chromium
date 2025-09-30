@@ -9,6 +9,9 @@ source_set("public") {
     "context_id.h",
     "migratable_sync_service.h",
     "migratable_sync_service_coordinator.h",
+    "shareable_private_bridge.h",
+    "shareable_shared_bridge.h",
+    "sync_entity_identifier.h",
   ]
 
   deps = [ "//base" ]
