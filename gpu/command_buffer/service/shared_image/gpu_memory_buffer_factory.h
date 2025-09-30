@@ -10,6 +10,7 @@
 
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -48,12 +49,13 @@ class GPU_GLES2_EXPORT GpuMemoryBufferFactory {
       gfx::BufferUsage usage) = 0;
 #endif
 
+#if BUILDFLAG(IS_WIN)
   // Fills |shared_memory| with the contents of the provided |buffer_handle|.
-  // Returns whether the operation succeeded. Default implementation returns
-  // false.
+  // Returns whether the operation succeeded.
   virtual bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion shared_memory);
+      base::UnsafeSharedMemoryRegion shared_memory) = 0;
+#endif
 };
 
 }  // namespace gpu

@@ -46,10 +46,4 @@ GpuMemoryBufferFactory::CreateNativeType(
 #endif
 }
 
-bool GpuMemoryBufferFactory::FillSharedMemoryRegionWithBufferContents(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion shared_memory) {
-  return false;
-}
-
 }  // namespace gpu

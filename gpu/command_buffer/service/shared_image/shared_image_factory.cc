@@ -720,10 +720,14 @@ SharedImageFactory::CreateNativeGpuMemoryBufferHandle(
 bool SharedImageFactory::CopyNativeBufferToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {
+#if BUILDFLAG(IS_WIN)
   auto* gmb_factory = shared_image_manager_->gpu_memory_buffer_factory();
   CHECK(gmb_factory);
   return gmb_factory->FillSharedMemoryRegionWithBufferContents(
       std::move(buffer_handle), std::move(shared_memory));
+#else
+  return false;
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)
