@@ -10,6 +10,7 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.ApplicationTestUtils.finishActivity;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.AUTOFILL_SUGGESTION;
 import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.CREDMAN_CONDITIONAL_UI_REENTRY;
+import static org.chromium.chrome.browser.keyboard_accessory.AccessoryAction.GENERATE_PASSWORD_AUTOMATIC;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.app.Activity;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.AutofillBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.DismissBarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -228,22 +230,11 @@ public class KeyboardAccessoryChipViewRenderTest {
                         .setSuggestionType(SuggestionType.AUTOCOMPLETE_ENTRY)
                         .build();
 
-        AutofillSuggestion generatePasswordEntry =
-                new AutofillSuggestion.Builder()
-                        .setLabel("Generate password")
-                        .setSubLabel("")
-                        .setSuggestionType(SuggestionType.GENERATE_PASSWORD_ENTRY)
-                        // Mimic the icon, the original PWM icon is white by default and not visible
-                        // in the generated screenshots.
-                        .setIconId(R.drawable.ic_logo_googleg_24dp)
-                        .build();
-
         return List.of(
                 addressSuggestion,
                 loyaltyCardSuggestion,
                 homeAndWorkSuggestion,
-                autocompleteSuggestion,
-                generatePasswordEntry);
+                autocompleteSuggestion);
     }
 
     private ChipView createChipViewFromSuggestion(AutofillSuggestion suggestion) {
@@ -283,12 +274,53 @@ public class KeyboardAccessoryChipViewRenderTest {
         return chipView;
     }
 
+    private View createGeneratePassword() {
+        Action generatePasswordAction = new Action(GENERATE_PASSWORD_AUTOMATIC, unused -> {});
+        // TODO: crbug.com/385172647 - Use generics parameters once 2 line chips are rolled out.
+        BarItemViewHolder viewHolder =
+                KeyboardAccessoryViewBinder.create(
+                        mKeyboardAccessoryView,
+                        mUiConfiguration,
+                        mContentView,
+                        BarItem.Type.ACTION_BUTTON);
+        View view = viewHolder.itemView;
+        viewHolder.bind(
+                new BarItem(
+                        BarItem.Type.ACTION_BUTTON,
+                        generatePasswordAction,
+                        org.chromium.chrome.browser.keyboard_accessory.R.string
+                                .password_generation_accessory_button),
+                view);
+        view.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        return view;
+    }
+
+    private View createDismissButton() {
+        // TODO: crbug.com/385172647 - Use generics parameters once 2 line chips are rolled out.
+        BarItemViewHolder viewHolder =
+                KeyboardAccessoryViewBinder.create(
+                        mKeyboardAccessoryView,
+                        mUiConfiguration,
+                        mContentView,
+                        BarItem.Type.DISMISS_CHIP);
+        View view = viewHolder.itemView;
+        viewHolder.bind(new DismissBarItem(() -> {}), view);
+        view.setLayoutParams(
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        return view;
+    }
+
     private List<View> createKeyboardAccessoryItemsToRender() {
         List<View> items = new ArrayList<>();
         for (AutofillSuggestion suggestion : createSuggestionsToRender()) {
             items.add(createChipViewFromSuggestion(suggestion));
         }
         items.add(createCredmanEntry());
+        items.add(createGeneratePassword());
+        items.add(createDismissButton());
         return items;
     }
 
