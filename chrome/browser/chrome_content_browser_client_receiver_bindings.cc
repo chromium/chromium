@@ -573,12 +573,14 @@ void ChromeContentBrowserClient::
   // TODO(secure-embed): restrict access to SecureEmbedHost. Maybe move to
   // PopulateChromeWebUIFrameBindersPartsDesktop().
   associated_registry.AddInterface<secure_embed::mojom::SecureEmbedHost>(
-    base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-          secure_embed::mojom::SecureEmbedHost> receiver) {
-        secure_embed::SecureEmbedHost::BindSecureEmbedHost(render_frame_host, std::move(receiver));
-      }, &render_frame_host));
+      base::BindRepeating(
+          [](content::RenderFrameHost* render_frame_host,
+             mojo::PendingAssociatedReceiver<
+                 secure_embed::mojom::SecureEmbedHost> receiver) {
+            secure_embed::SecureEmbedHost::BindSecureEmbedHost(
+                render_frame_host, std::move(receiver));
+          },
+          &render_frame_host));
 #endif  // BUILDFLAG(ENABLE_SECURE_EMBED)
 #if BUILDFLAG(ENABLE_PRINTING)
   associated_registry.AddInterface<printing::mojom::PrintManagerHost>(

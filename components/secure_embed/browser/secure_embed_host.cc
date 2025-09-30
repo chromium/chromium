@@ -9,9 +9,9 @@
 namespace secure_embed {
 
 void SecureEmbedHost::BindSecureEmbedHost(
-  content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-          secure_embed::mojom::SecureEmbedHost> receiver) {
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingAssociatedReceiver<secure_embed::mojom::SecureEmbedHost>
+        receiver) {
   LOG(ERROR) << "BindSecureEmbedHost() called";
 }
 

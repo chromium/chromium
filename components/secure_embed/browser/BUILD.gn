@@ -18,15 +18,9 @@ source_set("browser_tests") {
 }
 
 component("browser") {
-  public = [
-    "secure_embed_host.h",
-  ]
+  public = [ "secure_embed_host.h" ]
 
-  sources = [
-    "secure_embed_host.cc",
-  ]
+  sources = [ "secure_embed_host.cc" ]
 
-  public_deps = [
-    "//components/secure_embed/common:mojom"
-  ]
+  public_deps = [ "//components/secure_embed/common:mojom" ]
 }

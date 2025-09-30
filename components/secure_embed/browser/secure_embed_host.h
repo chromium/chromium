@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
 #define COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
 
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace content {
 class RenderFrameHost;
@@ -17,10 +17,9 @@ namespace secure_embed {
 class SecureEmbedHost {
  public:
   static void BindSecureEmbedHost(
-    content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-          secure_embed::mojom::SecureEmbedHost> receiver
-  );
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingAssociatedReceiver<secure_embed::mojom::SecureEmbedHost>
+          receiver);
 };
 
 }  // namespace secure_embed

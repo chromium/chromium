@@ -8134,9 +8134,7 @@ static_library("browser") {
   }
 
   if (enable_secure_embed) {
-    deps += [
-      "//components/secure_embed/browser",
-    ]
+    deps += [ "//components/secure_embed/browser" ]
   }
 
   if (enable_service_discovery) {
