@@ -83,6 +83,7 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       should_capture_full_screenshot_func: Callable[[browser_module.Browser],
                                                     bool] | None = None,
       requires_fullscreen_os_screenshot_func: Callable[[], bool] | None = None,
+      known_flaky_output_test: bool = False,
       **kwargs):
     # Video tests can result in non-hermetic test behavior due to overlays, so
     # do a full refresh after each one. See crbug.com/1484212.
@@ -120,6 +121,12 @@ class PixelTestPage(sghitb.SkiaGoldHeartbeatTestCase):
       requires_fullscreen_os_screenshot_func = (
           DoNotRequireFullscreenOsScreenshot)
     self.RequiresFullScreenOSScreenshot = requires_fullscreen_os_screenshot_func
+    # Some tests are known to produce flaky output that cannot be handled with
+    # inexact matching without relaxing comparison parameters so much that
+    # regressions could make it in. Such tests are allowed to potentially run
+    # multiple times so that inexact matching with stricter parameters can
+    # match.
+    self.known_flaky_output_test = known_flaky_output_test
 
 # pytype: disable=signature-mismatch
 
@@ -1843,23 +1850,32 @@ class PixelTestPages():
     # Run the tests on CI for a while to see how stable they are with
     # fuzzy matching enabled.
     grace_period_end = date(2025, 12, 1)
+    # These tests are known to produce flaky output that cannot be consistently
+    # handled by inexact matching without relaxing inexact matching parameters
+    # to the point of letting basically any image through. This is mostly
+    # caused by rendered content shifting by a fraction of a pixel, which causes
+    # a large number of differences along edges. See b/434910221 for more
+    # information.
     return [
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=359',
                       f'{base_name}_MeetEffectsCatOnHead',
                       crop_action=standard_crop,
                       browser_args=video_args,
                       matching_algorithm=meet_sample_area_matching,
-                      grace_period_end=grace_period_end),
+                      grace_period_end=grace_period_end,
+                      known_flaky_output_test=True),
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=539',
                       f'{base_name}_MeetEffectsRainbowWig',
                       crop_action=standard_crop,
                       browser_args=video_args,
                       matching_algorithm=meet_sample_area_matching,
-                      grace_period_end=grace_period_end),
+                      grace_period_end=grace_period_end,
+                      known_flaky_output_test=True),
         PixelTestPage('meet_effects/meet-gpu-tests/index.html?effectId=530',
                       f'{base_name}_MeetEffectsTruckerHat',
                       crop_action=standard_crop,
                       browser_args=video_args,
                       matching_algorithm=meet_sample_area_matching,
-                      grace_period_end=grace_period_end),
+                      grace_period_end=grace_period_end,
+                      known_flaky_output_test=True),
     ]

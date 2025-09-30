@@ -17,6 +17,7 @@ from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
+from gpu_tests import skia_gold_integration_test_base
 from gpu_tests.util import host_information
 from gpu_tests.util import screenshot_utils
 
@@ -27,6 +28,8 @@ SCROLLBAR_WIDTH = 10
 
 DEFAULT_SCREENSHOT_TIMEOUT = 5
 SLOW_SCREENSHOT_MULTIPLIER = 4
+
+MAX_FLAKY_OUTPUT_TEST_TRIES = 3
 
 
 class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
@@ -127,15 +130,30 @@ class PixelIntegrationTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
     # check before running each test case that it can run in the current
     # browser instance.
     self.RestartBrowserIfNecessaryWithArgs(test_case.browser_args)
-    tab_data = sghitb.TabData(self.tab,
-                              self.__class__.websocket_server,
-                              is_default_tab=True)
-    self.NavigateTo(test_path, tab_data)
 
-    loop_state = sghitb.LoopState()
-    for action in test_case.test_actions:
-      action.Run(test_case, tab_data, loop_state, self)
-    self._RunSkiaGoldBasedPixelTest(test_case)
+    attempt = 1
+    while True:
+      tab_data = sghitb.TabData(self.tab,
+                                self.__class__.websocket_server,
+                                is_default_tab=True)
+      self.NavigateTo(test_path, tab_data)
+
+      loop_state = sghitb.LoopState()
+      for action in test_case.test_actions:
+        action.Run(test_case, tab_data, loop_state, self)
+      try:
+        self._RunSkiaGoldBasedPixelTest(test_case)
+        break
+      except skia_gold_integration_test_base.GoldComparisonFailure:
+        if (test_case.known_flaky_output_test
+            and attempt <= MAX_FLAKY_OUTPUT_TEST_TRIES):
+          logging.warning(
+              'Known flaky output test %s failed on attempt %d, retrying',
+              test_case.name, attempt)
+          attempt += 1
+          continue
+        raise
+
 
   def _OnAfterTest(self, args: ct.TestArgs) -> None:
     """Conditionally restarts the browser after the test is finished.

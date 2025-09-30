@@ -34,6 +34,13 @@ TEST_DATA_DIRS = [
 SKIA_GOLD_CORPUS = 'chrome-gpu'
 
 
+class GoldComparisonFailure(Exception):
+  """Raised when goldctl returns a non-zero exit code.
+
+  Typically indicative of a comparison failure.
+  """
+
+
 class _ImageParameters():
   def __init__(self):
     # Parameters for cloud storage reference images.
@@ -518,7 +525,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
           'Given unhandled SkiaGoldSession StatusCode %s with error %s', status,
           error)
     if self._ShouldReportGoldFailure(test_case):
-      raise Exception(
+      raise GoldComparisonFailure(
           'goldctl command returned non-zero exit code, see above for details. '
           'This probably just means that the test produced an image that has '
           'not been triaged as positive.')
