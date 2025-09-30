@@ -29,7 +29,10 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
     return true;
   }
 
-  void PullUpdate(float x_delta, float y_delta) override { delta_ += y_delta; }
+  void PullUpdate(float x_delta, float y_delta) override {
+    x_delta_ += x_delta;
+    y_delta_ += y_delta;
+  }
 
   void PullRelease(bool allow_refresh) override {
     released_ = true;
@@ -44,9 +47,17 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
     return result;
   }
 
-  float GetAndResetPullDelta() {
-    float result = delta_;
-    delta_ = 0;
+  float GetAndResetPullDeltaX() {
+    float result = x_delta_;
+    x_delta_ = 0;
+    y_delta_ = 0;
+    return result;
+  }
+
+  float GetAndResetPullDeltaY() {
+    float result = y_delta_;
+    x_delta_ = 0;
+    y_delta_ = 0;
     return result;
   }
 
@@ -83,7 +94,8 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
   }
 
  private:
-  float delta_ = 0;
+  float x_delta_ = 0;
+  float y_delta_ = 0;
   bool started_ = false;
   bool released_ = false;
   bool reset_ = false;
@@ -116,12 +128,12 @@ TEST_F(OverscrollRefreshTest, TriggerPullToRefresh) {
 
   // Further scrolls will be consumed.
   EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 50)));
-  EXPECT_EQ(50.f, GetAndResetPullDelta());
+  EXPECT_EQ(50.f, GetAndResetPullDeltaY());
   EXPECT_TRUE(effect.IsActive());
 
   // Even scrolls in the down direction should be consumed.
   EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -50)));
-  EXPECT_EQ(-50.f, GetAndResetPullDelta());
+  EXPECT_EQ(-50.f, GetAndResetPullDeltaY());
   EXPECT_TRUE(effect.IsActive());
 
   // Ending the scroll while beyond the threshold should trigger a refresh.
@@ -133,7 +145,7 @@ TEST_F(OverscrollRefreshTest, TriggerPullToRefresh) {
   EXPECT_TRUE(GetAndResetRefreshAllowed());
 }
 
-TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialYOffsetIsNotZero) {
+TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfInitialYOffsetIsNotZero) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
 
   // A positive y scroll offset at the start of scroll will prevent activation,
@@ -162,7 +174,7 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialYOffsetIsNotZero) {
   EXPECT_FALSE(GetAndResetPullReleased());
 }
 
-TEST_F(OverscrollRefreshTest, NotTriggeredIfOverflowYHidden) {
+TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfOverflowYHidden) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
 
   // overflow-y:hidden at the start of scroll will prevent activation.
@@ -188,7 +200,7 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfOverflowYHidden) {
 }
 
 TEST_F(OverscrollRefreshTest,
-       NotTriggeredIfOverflowYHiddenNoUpdateBeforeOverscroll) {
+       RefreshNotTriggeredIfOverflowYHiddenNoUpdateBeforeOverscroll) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
 
   // overflow-y:hidden at the start of scroll will prevent activation.
@@ -212,7 +224,7 @@ TEST_F(OverscrollRefreshTest,
   EXPECT_FALSE(GetAndResetPullReleased());
 }
 
-TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollDownward) {
+TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfInitialScrollDownward) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
 
@@ -232,7 +244,8 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollDownward) {
   EXPECT_FALSE(GetAndResetPullReleased());
 }
 
-TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollOrTouchConsumed) {
+TEST_F(OverscrollRefreshTest,
+       RefreshNotTriggeredIfInitialScrollOrTouchConsumed) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
@@ -257,7 +270,7 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollOrTouchConsumed) {
   EXPECT_FALSE(GetAndResetPullReleased());
 }
 
-TEST_F(OverscrollRefreshTest, NotTriggeredIfFlungDownward) {
+TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfFlungDownward) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
@@ -274,7 +287,7 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfFlungDownward) {
   EXPECT_FALSE(GetAndResetRefreshAllowed());
 }
 
-TEST_F(OverscrollRefreshTest, NotTriggeredIfReleasedWithoutActivation) {
+TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfReleasedWithoutActivation) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
@@ -292,7 +305,7 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfReleasedWithoutActivation) {
   EXPECT_FALSE(GetAndResetRefreshAllowed());
 }
 
-TEST_F(OverscrollRefreshTest, NotTriggeredIfReset) {
+TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfReset) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
   gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
@@ -342,12 +355,12 @@ TEST_F(OverscrollRefreshTest, TriggerPullFromBottomEdge) {
 
   // Further scrolls will be consumed.
   EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -50)));
-  EXPECT_EQ(-50.f, GetAndResetPullDelta());
+  EXPECT_EQ(-50.f, GetAndResetPullDeltaY());
   EXPECT_TRUE(effect.IsActive());
 
   // Even scrolls in the different direction should be consumed.
   EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 50)));
-  EXPECT_EQ(50.f, GetAndResetPullDelta());
+  EXPECT_EQ(50.f, GetAndResetPullDeltaY());
   EXPECT_TRUE(effect.IsActive());
 
   // Ending the scroll while beyond the threshold should trigger a refresh.
@@ -429,6 +442,49 @@ TEST_F(OverscrollRefreshTest, OverscrollBehaviorYNonePreventsTriggerStart) {
   auto ob = cc::OverscrollBehavior();
   ob.y = cc::OverscrollBehavior::Type::kNone;
   TestOverscrollBehavior(ob, gfx::Vector2dF(0, 10), false);
+}
+
+TEST_F(OverscrollRefreshTest, TriggerSwipeToNavigate) {
+  OverscrollRefresh effect(this, kDefaultEdgeWidth);
+
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+
+  effect.OnScrollBegin(kStartPos);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+
+  // The initial scroll should not be consumed, as it should first be offered
+  // to content.
+  gfx::Vector2dF scroll_right(10, 00);
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(scroll_right));
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+
+  // The unconsumed, overscrolling scroll will trigger the effect.
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_right,
+                        blink::WebGestureDevice::kTouchscreen);
+  EXPECT_TRUE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  EXPECT_TRUE(GetAndResetPullStarted());
+
+  // Further right scrolls will be consumed.
+  EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(50, 0)));
+  EXPECT_EQ(50.f, GetAndResetPullDeltaX());
+  EXPECT_TRUE(effect.IsActive());
+
+  // Even scrolls in the left direction should be consumed.
+  EXPECT_TRUE(effect.WillHandleScrollUpdate(gfx::Vector2dF(-50, 0)));
+  EXPECT_EQ(-50.f, GetAndResetPullDeltaX());
+  EXPECT_TRUE(effect.IsActive());
+
+  // Ending the scroll while beyond the threshold should trigger a refresh.
+  gfx::Vector2dF zero_velocity;
+  EXPECT_FALSE(GetAndResetPullReleased());
+  effect.OnScrollEnd(zero_velocity);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(GetAndResetPullReleased());
+  EXPECT_TRUE(GetAndResetRefreshAllowed());
 }
 
 TEST_F(OverscrollRefreshTest, OverscrollBehaviorXAutoTriggersStart) {
