@@ -305,11 +305,10 @@ message MediaControlAction {
     SeekMediaAction seek = 5;
   }
 
-  // The document which controls the media session.
-  DocumentIdentifier document_identifier = 1 [features = { field_presence: EXPLICIT }];
-
-  // The id of the tab which contains the document.
+  // The id of the tab which contains the media session.
   int32 tab_id = 2 [features = { field_presence: EXPLICIT }];
+
+  reserved 1;
 }
 
 // All of the actions that can be taken.

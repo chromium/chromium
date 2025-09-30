@@ -215,8 +215,8 @@ message AnnotatedPageContent {
   // The interaction information for the page--the subtree represented by the
   // AnnotatedPageContent. This is for top-level interactions, such as the mouse
   // position and focused element, for which there can only be one unique value
-  // for the entire page. Includes interaction information for the main frame
-  // and embedded iframes.
+  // for the entire page.
+  // Currently this is only tracked for the main frame.
   PageInteractionInfo page_interaction_info = 4 [features = { field_presence: EXPLICIT }];
 
   // The rect of the viewport for the tab. i.e., screenshot dimensions.
@@ -845,8 +845,9 @@ message TableRowData {
 
 // Represents the interaction information for the page. This is for top-level
 // interactions, such as the mouse position and focused element, for which
-// there can only be one unique value. Includes interaction information for
-// the main frame and embedded iframes.
+// there can only be one unique value.
+// Currently this is only tracked for the main frame. The IDs correspond to the
+// DOM node IDs of the content nodes in the main frame.
 // Next ID: 4
 message PageInteractionInfo {
   // The content node ID of the content node that is currently focused.
