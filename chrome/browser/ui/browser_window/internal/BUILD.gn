@@ -164,6 +164,7 @@ if (is_android) {
     ]
     deps = [
       "//base:base_java",
+      "//base:flagged_apis_java",
       "//base:log_java",
       "//base:tasks_java",
       "//base:time_utils_java",
@@ -173,6 +174,7 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/ui/browser_window/public/android:java",
+      "//chrome/browser/util:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/jni_zero:jni_zero_java",
@@ -206,6 +208,7 @@ if (is_android) {
       "//base:activity_state_java",
       "//base:base_java_test_support_uncommon",
       "//base:base_junit_test_support",
+      "//base:flagged_apis_java",
       "//base:tasks_java",
       "//base:time_utils_java",
       "//build/android:build_java",

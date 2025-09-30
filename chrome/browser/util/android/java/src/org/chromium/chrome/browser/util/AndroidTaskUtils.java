@@ -18,6 +18,7 @@ import android.util.Pair;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -218,5 +219,6 @@ public class AndroidTaskUtils {
 
     public static void setAppTaskForTesting(@Nullable AppTask task) {
         sAppTaskForTesting = task;
+        ResettersForTesting.register(() -> sAppTaskForTesting = null);
     }
 }

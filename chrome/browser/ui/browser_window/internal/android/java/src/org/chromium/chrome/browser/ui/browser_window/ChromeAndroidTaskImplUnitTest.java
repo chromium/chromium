@@ -9,7 +9,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -19,13 +21,10 @@ import static org.mockito.Mockito.when;
 import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.graphics.Rect;
 import android.os.Build;
-import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
@@ -681,22 +680,19 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.R)
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void maximize_maximizeToMaximizedBounds() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var mockActivityWindowAndroid =
-                chromeAndroidTaskWithMockDeps
-                        .mActivityWindowAndroidMocks
-                        .mMockActivityWindowAndroid;
-        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
         var mockWindowManager =
                 chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockWindowManager;
+        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
 
         // Mock isInMultiWindowMode() to return true.
         when(mockActivity.isInMultiWindowMode()).thenReturn(true);
@@ -717,18 +713,11 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.maximize();
 
         // Assert.
-        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mockActivity).startActivity(intentCaptor.capture(), bundleCaptor.capture());
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
 
-        var capturedIntent = intentCaptor.getValue();
-        assertEquals(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP,
-                capturedIntent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        var capturedBundle = bundleCaptor.getValue();
-        Rect capturedBounds = capturedBundle.getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
-        assertEquals(maximizedBounds, capturedBounds);
+        var capturedBounds = boundsCaptor.getValue();
+        assertEquals("Not moving to target bound", maximizedBounds, capturedBounds);
     }
 
     @Test
@@ -775,44 +764,38 @@ public class ChromeAndroidTaskImplUnitTest {
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.R)
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void setBounds_setsNewBounds() {
         // Arrange.
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
                         /* taskId= */ 1);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var mockActivity = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks.mMockActivity;
         var newBounds = new Rect(10, 20, 800, 600);
 
         // Act.
         chromeAndroidTask.setBounds(newBounds);
 
         // Assert.
-        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mockActivity).startActivity(intentCaptor.capture(), bundleCaptor.capture());
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
 
-        var capturedIntent = intentCaptor.getValue();
-        assertEquals(
-                Intent.FLAG_ACTIVITY_CLEAR_TOP,
-                capturedIntent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        var capturedBundle = bundleCaptor.getValue();
-        Rect capturedBounds = capturedBundle.getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
-        assertEquals(newBounds, capturedBounds);
+        var capturedBounds = boundsCaptor.getValue();
+        assertEquals("Not moving to target bound", newBounds, capturedBounds);
     }
 
     @Test
-    @Config(sdk = Build.VERSION_CODES.R)
+    @Config(sdk = Build.VERSION_CODES.BAKLAVA)
     @SuppressLint("NewApi" /* @Config already specifies the required SDK */)
     public void restore_restoresToPreviousBounds() {
         // Arrange
         int taskId = 1;
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(taskId);
+        var apiDelegate = chromeAndroidTaskWithMockDeps.mMockAconfigFlaggedApiDelegate;
         var chromeAndroidTask =
                 (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
         var mockActivityWindowAndroid =
@@ -871,13 +854,10 @@ public class ChromeAndroidTaskImplUnitTest {
         chromeAndroidTask.restore();
 
         // Assert
-        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
-        var bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mockActivity, times(2))
-                .startActivity(intentCaptor.capture(), bundleCaptor.capture());
+        var boundsCaptor = ArgumentCaptor.forClass(Rect.class);
+        verify(apiDelegate, times(2)).moveTaskTo(any(), anyInt(), boundsCaptor.capture());
 
-        var capturedBundle = bundleCaptor.getValue();
-        Rect capturedBounds = capturedBundle.getParcelable(ActivityOptions.KEY_LAUNCH_BOUNDS);
-        assertEquals(restoredBounds, capturedBounds);
+        var capturedBounds = boundsCaptor.getValue();
+        assertEquals("Not moving to target bound", restoredBounds, capturedBounds);
     }
 }

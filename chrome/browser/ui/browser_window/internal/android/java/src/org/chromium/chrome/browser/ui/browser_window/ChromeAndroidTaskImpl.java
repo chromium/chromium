@@ -8,9 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.ActivityOptions;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
@@ -26,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
@@ -41,7 +40,9 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 
 import java.lang.ref.WeakReference;
@@ -473,7 +474,7 @@ final class ChromeAndroidTaskImpl
                 mRestoredBounds = getBoundsInternalLocked();
             }
             Rect maximizedBounds = getMaximizedBounds(activity.getWindowManager());
-            setBoundsInternalLocked(activity, maximizedBounds);
+            setBoundsInternalLocked(activity, activityWindowAndroid.getDisplay(), maximizedBounds);
         }
     }
 
@@ -503,7 +504,7 @@ final class ChromeAndroidTaskImpl
             if (activityWindowAndroid == null) return;
             Activity activity = activityWindowAndroid.getActivity().get();
             if (activity == null || mRestoredBounds == null) return;
-            setBoundsInternalLocked(activity, mRestoredBounds);
+            setBoundsInternalLocked(activity, activityWindowAndroid.getDisplay(), mRestoredBounds);
         }
     }
 
@@ -515,7 +516,7 @@ final class ChromeAndroidTaskImpl
             if (activityWindowAndroid == null) return;
             Activity activity = activityWindowAndroid.getActivity().get();
             if (activity == null) return;
-            setBoundsInternalLocked(activity, bounds);
+            setBoundsInternalLocked(activity, activityWindowAndroid.getDisplay(), bounds);
         }
     }
 
@@ -744,16 +745,25 @@ final class ChromeAndroidTaskImpl
     }
 
     @GuardedBy("mActivityWindowAndroidLock")
-    private void setBoundsInternalLocked(Activity activity, Rect bounds) {
-        ActivityOptions options = ActivityOptions.makeBasic();
-        options.setLaunchBounds(bounds);
-        Intent intent = new Intent(activity, activity.getClass());
-        // TODO(crbug.com/437982549): Replace with new Task API if available.
-        // When maximize()/setBounds() is called while another activity is on top, Chrome is brought
-        // to the foreground. Subsequently, if a back gesture is triggered, FLAG_ACTIVITY_CLEAR_TOP
-        // prevents the other activity from being brought back to the top of the stack.
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        activity.startActivity(intent, options.toBundle());
+    private void setBoundsInternalLocked(Activity activity, DisplayAndroid display, Rect bounds) {
+        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) {
+            Log.w(TAG, "Unable to set bounds: AconfigFlaggedApiDelegate isn't available");
+            return;
+        }
+
+        var appTask = AndroidTaskUtils.getAppTaskFromId(activity, activity.getTaskId());
+        if (appTask == null) return;
+        var displayId = display.getDisplayId();
+        ActivityManager activityManager =
+                (ActivityManager) activity.getSystemService(Context.ACTIVITY_SERVICE);
+
+        if (!aconfigFlaggedApiDelegate.isTaskMoveAllowedOnDisplay(activityManager, displayId)) {
+            Log.w(TAG, "Unable to set bounds: not allowed on display");
+            return;
+        }
+
+        aconfigFlaggedApiDelegate.moveTaskTo(appTask, displayId, bounds);
     }
 
     @GuardedBy("mActivityWindowAndroidLock")
@@ -780,7 +790,6 @@ final class ChromeAndroidTaskImpl
                 0, insets.top, fullscreenBounds.right, fullscreenBounds.bottom - insets.bottom);
     }
 
-    @VisibleForTesting
     @Nullable Rect getRestoredBoundsForTesting() {
         synchronized (mActivityWindowAndroidLock) {
             return mRestoredBounds;

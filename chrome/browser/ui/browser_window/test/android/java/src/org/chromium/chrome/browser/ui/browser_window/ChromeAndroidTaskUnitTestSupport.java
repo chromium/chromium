@@ -12,10 +12,12 @@ import static org.mockito.Mockito.withSettings;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.graphics.Rect;
 import android.view.WindowManager;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -23,7 +25,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.WindowShowState;
 
@@ -57,6 +61,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
         public final ActivityWindowAndroidMocks mActivityWindowAndroidMocks;
         public final Profile mMockProfile;
         public final TabModel mMockTabModel;
+        public final AppTask mMockAppTask;
+        public final AconfigFlaggedApiDelegate mMockAconfigFlaggedApiDelegate;
 
         /**
          * Mock {@link AndroidBrowserWindow.Natives}.
@@ -72,11 +78,15 @@ public final class ChromeAndroidTaskUnitTestSupport {
                 ActivityWindowAndroidMocks activityWindowAndroidMocks,
                 Profile mockProfile,
                 TabModel mockTabModel,
+                AppTask appTask,
+                AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate,
                 AndroidBrowserWindow.@Nullable Natives mockAndroidBrowserWindowNatives) {
             mChromeAndroidTask = chromeAndroidTask;
             mActivityWindowAndroidMocks = activityWindowAndroidMocks;
             mMockProfile = mockProfile;
             mMockTabModel = mockTabModel;
+            mMockAppTask = appTask;
+            mMockAconfigFlaggedApiDelegate = aconfigFlaggedApiDelegate;
             mMockAndroidBrowserWindowNatives = mockAndroidBrowserWindowNatives;
         }
     }
@@ -136,12 +146,19 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         BrowserWindowType.NORMAL,
                         activityWindowAndroidMocks.mMockActivityWindowAndroid,
                         tabModel);
+        var mockAppTask = mock(AppTask.class);
+        AndroidTaskUtils.setAppTaskForTesting(mockAppTask);
+        var mockApiDelegate = mock(AconfigFlaggedApiDelegate.class);
+        AconfigFlaggedApiDelegate.setInstanceForTesting(mockApiDelegate);
+        when(mockApiDelegate.isTaskMoveAllowedOnDisplay(any(), anyInt())).thenReturn(true);
 
         return new ChromeAndroidTaskWithMockDeps(
                 chromeAndroidTask,
                 activityWindowAndroidMocks,
                 profile,
                 tabModel,
+                mockAppTask,
+                mockApiDelegate,
                 mockAndroidBrowserWindowNatives);
     }
 
@@ -164,6 +181,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var mockActivityLifecycleDispatcher = mock(ActivityLifecycleDispatcher.class);
         var mockWindowManager = mock(WindowManager.class);
         var mockActivityManager = mock(ActivityManager.class);
+        var mockDisplay = mock(DisplayAndroid.class);
         var mockInsetObserver = mock(InsetObserver.class);
 
         when(mockActivity.getTaskId()).thenReturn(taskId);
@@ -173,6 +191,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(((ActivityLifecycleDispatcherProvider) mockActivity).getLifecycleDispatcher())
                 .thenReturn(mockActivityLifecycleDispatcher);
         when(mockActivityWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mockActivity));
+        when(mockActivityWindowAndroid.getDisplay()).thenReturn(mockDisplay);
         when(mockActivityWindowAndroid.getInsetObserver()).thenReturn(mockInsetObserver);
 
         var mocks =
