@@ -258,6 +258,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.SaveToDrive.FileSize" units="KB"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the size of the file being saved to Drive from the PDF viewer.
+    Recorded when an upload completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.PrimaryAccountSelectionStatus"
+    enum="PDFSaveToDrivePrimaryAccountSelectionStatus"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records which account was used for Save to Drive from the PDF viewer
+    relative to the primary account. Recorded when an upload completes
+    successfully.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.UploadError" enum="PdfSaveToDriveErrorType"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the error type when a Save to Drive upload fails from the PDF
+    viewer. Recorded when an upload fails.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.UploadLatency" units="ms"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Tracks the time from when a Save to Drive upload is started to when it
+    completes successfully.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SaveToDrive.UploadStatus" enum="PdfSaveToDriveStatus"
+    expires_after="2026-09-26">
+  <owner>faizur@google.com</owner>
+  <owner>clarkbrian@chromium.org</owner>
+  <summary>
+    Records the status of a Save to Drive upload from the PDF viewer, and
+    important intermediate steps. Recorded when status changes.
+  </summary>
+</histogram>
+
 <histogram name="PDF.SearchifyAddedText" enum="Boolean"
     expires_after="2026-06-30">
   <owner>rhalavati@chromium.org</owner>

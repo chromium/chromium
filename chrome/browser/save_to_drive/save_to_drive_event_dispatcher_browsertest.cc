@@ -4,11 +4,13 @@
 
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/save_to_drive/save_to_drive_recorder.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,6 +31,17 @@ namespace {
 namespace pdf_api = extensions::api::pdf_viewer_private;
 using ::testing::StrictMock;
 }  // namespace
+
+class MockSaveToDriveRecorder : public SaveToDriveRecorder {
+ public:
+  MockSaveToDriveRecorder() : SaveToDriveRecorder(nullptr) {}
+  ~MockSaveToDriveRecorder() override = default;
+
+  MOCK_METHOD(void,
+              Record,
+              (const pdf_api::SaveToDriveProgress& progress),
+              (override));
+};
 
 class MockTimeRemainingCalculator : public TimeRemainingCalculator {
  public:
@@ -66,12 +79,19 @@ class SaveToDriveEventDispatcherBrowserTest
     auto time_remaining_calculator =
         std::make_unique<StrictMock<MockTimeRemainingCalculator>>();
     time_remaining_calculator_ = time_remaining_calculator.get();
+
+    auto save_to_drive_recorder =
+        std::make_unique<StrictMock<MockSaveToDriveRecorder>>();
+    save_to_drive_recorder_ = save_to_drive_recorder.get();
+
     dispatcher_ = SaveToDriveEventDispatcher::CreateForTesting(
-        extension_frame, std::move(time_remaining_calculator));
+        extension_frame, std::move(time_remaining_calculator),
+        std::move(save_to_drive_recorder));
     ASSERT_TRUE(dispatcher_);
   }
 
   void TearDownOnMainThread() override {
+    save_to_drive_recorder_ = nullptr;
     time_remaining_calculator_ = nullptr;
     dispatcher_.reset();
     PDFExtensionTestBase::TearDownOnMainThread();
@@ -80,10 +100,12 @@ class SaveToDriveEventDispatcherBrowserTest
  protected:
   std::unique_ptr<SaveToDriveEventDispatcher> dispatcher_;
   raw_ptr<StrictMock<MockTimeRemainingCalculator>> time_remaining_calculator_;
+  raw_ptr<StrictMock<MockSaveToDriveRecorder>> save_to_drive_recorder_;
 };
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest, Notify) {
   EXPECT_CALL(*time_remaining_calculator_, CalculateTimeRemainingText);
+  EXPECT_CALL(*save_to_drive_recorder_, Record);
 
   auto create_progress = []() {
     pdf_api::SaveToDriveProgress progress;
@@ -125,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
                        GetFileMetadataStringForUploadInProgress) {
   EXPECT_CALL(*time_remaining_calculator_, CalculateTimeRemainingText)
       .WillOnce(testing::Return(u"PLACEHOLDER"));
-
+  EXPECT_CALL(*save_to_drive_recorder_, Record);
   pdf_api::SaveToDriveProgress progress;
   progress.status = pdf_api::SaveToDriveStatus::kUploadInProgress;
   progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
@@ -147,6 +169,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
                        GetFileMetadataStringForUploadCompleted) {
+  EXPECT_CALL(*save_to_drive_recorder_, Record);
   pdf_api::SaveToDriveProgress progress;
   progress.status = pdf_api::SaveToDriveStatus::kUploadCompleted;
   progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;
@@ -168,6 +191,7 @@ IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SaveToDriveEventDispatcherBrowserTest,
                        GetFileMetadataStringForUploadNotStarted) {
+  EXPECT_CALL(*save_to_drive_recorder_, Record);
   pdf_api::SaveToDriveProgress progress;
   progress.status = pdf_api::SaveToDriveStatus::kNotStarted;
   progress.error_type = pdf_api::SaveToDriveErrorType::kNoError;

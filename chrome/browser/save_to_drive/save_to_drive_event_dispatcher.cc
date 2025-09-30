@@ -9,6 +9,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/download/status_text_builder_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/save_to_drive/save_to_drive_recorder.h"
 #include "chrome/browser/save_to_drive/save_to_drive_utils.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/common/extensions/api/pdf_viewer_private.h"
@@ -34,21 +36,24 @@ std::unique_ptr<SaveToDriveEventDispatcher> SaveToDriveEventDispatcher::Create(
   }
   return base::WrapUnique(new SaveToDriveEventDispatcher(
       render_frame_host, stream->stream_url(),
-      std::make_unique<TimeRemainingCalculator>()));
+      std::make_unique<TimeRemainingCalculator>(),
+      std::make_unique<SaveToDriveRecorder>(Profile::FromBrowserContext(
+          render_frame_host->GetBrowserContext()))));
 }
 
 // static
 std::unique_ptr<SaveToDriveEventDispatcher>
 SaveToDriveEventDispatcher::CreateForTesting(
     content::RenderFrameHost* render_frame_host,
-    std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator) {
+    std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator,
+    std::unique_ptr<SaveToDriveRecorder> recorder) {
   auto stream = GetStreamWeakPtr(render_frame_host);
   if (!stream || stream->stream_url().spec().empty()) {
     return nullptr;
   }
-  return base::WrapUnique(
-      new SaveToDriveEventDispatcher(render_frame_host, stream->stream_url(),
-                                     std::move(time_remaining_calculator)));
+  return base::WrapUnique(new SaveToDriveEventDispatcher(
+      render_frame_host, stream->stream_url(),
+      std::move(time_remaining_calculator), std::move(recorder)));
 }
 
 SaveToDriveEventDispatcher::~SaveToDriveEventDispatcher() = default;
@@ -86,6 +91,7 @@ void SaveToDriveEventDispatcher::Notify(
   CHECK_NE(progress.error_type,
            extensions::api::pdf_viewer_private::SaveToDriveErrorType::kNone);
   CHECK_NE(progress.status, SaveToDriveStatus::kNone);
+  recorder_->Record(progress);
   progress.file_metadata = GetFileMetadataString(progress);
   base::Value::List args;
   args.Append(stream_url_.spec());
@@ -102,9 +108,11 @@ void SaveToDriveEventDispatcher::Notify(
 SaveToDriveEventDispatcher::SaveToDriveEventDispatcher(
     content::RenderFrameHost* render_frame_host,
     const GURL& stream_url,
-    std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator)
+    std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator,
+    std::unique_ptr<SaveToDriveRecorder> recorder)
     : browser_context_(render_frame_host->GetBrowserContext()),
       stream_url_(stream_url),
-      time_remaining_calculator_(std::move(time_remaining_calculator)) {}
+      time_remaining_calculator_(std::move(time_remaining_calculator)),
+      recorder_(std::move(recorder)) {}
 
 }  // namespace save_to_drive

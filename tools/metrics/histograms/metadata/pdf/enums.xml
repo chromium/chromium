@@ -259,6 +259,49 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="selectAll"/>
 </enum>
 
+<enum name="PdfSaveToDriveErrorType">
+<!-- This must be kept current with SaveToDriveErrorType in
+     tools/typescript/definitions/pdf_viewer_private.d.ts and chrome/common/extensions/api/pdf_viewer_private.idl. -->
+
+  <int value="0" label="No error"/>
+  <int value="1" label="Unknown error"/>
+  <int value="2" label="Quota exceeded"/>
+  <int value="3" label="Offline"/>
+  <int value="4" label="OAuth error"/>
+  <int value="5" label="Account chooser cancelled"/>
+  <int value="6" label="Parent folder selection failed"/>
+</enum>
+
+<!-- LINT.IfChange(PDFSaveToDrivePrimaryAccountSelectionStatus) -->
+
+<enum name="PDFSaveToDrivePrimaryAccountSelectionStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Primary account selected"/>
+  <int value="2" label="Primary account not selected"/>
+  <int value="3" label="No primary account"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/save_to_drive/save_to_drive_recorder.cc:PDFSaveToDrivePrimaryAccountSelectionStatus) -->
+
+<enum name="PdfSaveToDriveStatus">
+<!-- This must be kept current with SaveToDriveStatus in
+     tools/typescript/definitions/pdf_viewer_private.d.ts and chrome/common/extensions/api/pdf_viewer_private.idl. -->
+
+  <int value="0" label="Not started"/>
+  <int value="1" label="Initiated"/>
+  <int value="2" label="Account chooser shown"/>
+  <int value="3" label="Account selected"/>
+  <int value="4" label="Account add selected"/>
+  <int value="5" label="Account added"/>
+  <int value="6" label="Fetch OAuth"/>
+  <int value="7" label="Fetch parent folder"/>
+  <int value="8" label="Upload started"/>
+  <int value="9" label="Upload in progress"/>
+  <int value="10" label="Upload completed"/>
+  <int value="11" label="Upload retried"/>
+  <int value="12" label="Upload failed"/>
+</enum>
+
 <enum name="PDFVersion">
   <int value="0" label="Unknown"/>
   <int value="1" label="PDF 1.0"/>

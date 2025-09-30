@@ -20,6 +20,7 @@
 #include "chrome/browser/save_to_drive/multipart_drive_uploader.h"
 #include "chrome/browser/save_to_drive/resumable_drive_uploader.h"
 #include "chrome/browser/save_to_drive/save_to_drive_event_dispatcher.h"
+#include "chrome/browser/save_to_drive/save_to_drive_recorder.h"
 #include "chrome/browser/save_to_drive/time_remaining_calculator.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
@@ -73,7 +74,8 @@ class MockSaveToDriveEventDispatcher : public SaveToDriveEventDispatcher {
       std::unique_ptr<TimeRemainingCalculator> time_remaining_calculator)
       : SaveToDriveEventDispatcher(render_frame_host,
                                    stream_url,
-                                   std::move(time_remaining_calculator)) {}
+                                   std::move(time_remaining_calculator),
+                                   nullptr) {}
   ~MockSaveToDriveEventDispatcher() override = default;
 
   MOCK_METHOD(void, Notify, (SaveToDriveProgress progress), (const, override));

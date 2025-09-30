@@ -21,8 +21,10 @@ declare global {
       }
 
       // <if expr="enable_pdf_save_to_drive">
-      // Keep in sync with the values for enum SaveToDriveErrorType in
-      // chrome/common/extensions/api/pdf_viewer_private.idl.
+      // Keep in sync with the values for enum `SaveToDriveErrorType` in
+      // chrome/common/extensions/api/pdf_viewer_private.idl and
+      // `PdfSaveToDriveErrorType` in
+      // tools/metrics/histograms/metadata/pdf/enums.xml.
       export enum SaveToDriveErrorType {
         NO_ERROR = 'NO_ERROR',
         UNKNOWN_ERROR = 'UNKNOWN_ERROR',
@@ -33,8 +35,10 @@ declare global {
         PARENT_FOLDER_SELECTION_FAILED = 'PARENT_FOLDER_SELECTION_FAILED',
       }
 
-      // Keep in sync with the values for enum SaveToDriveStatus in
-      // chrome/common/extensions/api/pdf_viewer_private.idl.
+      // Keep in sync with the values for enum `SaveToDriveStatus` in
+      // chrome/common/extensions/api/pdf_viewer_private.idl and
+      // `PdfSaveToDriveStatus` in
+      // tools/metrics/histograms/metadata/pdf/enums.xml.
       export enum SaveToDriveStatus {
         NOT_STARTED = 'NOT_STARTED',
         INITIATED = 'INITATED',

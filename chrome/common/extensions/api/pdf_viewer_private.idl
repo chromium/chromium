@@ -16,7 +16,9 @@ namespace pdfViewerPrivate {
   };
 
   // Enumeration of save to drive error types. Must match `SaveToDriveErrorType`
-  // in tools/typescript/definitions/pdf_viewer_private.d.ts.
+  // in tools/typescript/definitions/pdf_viewer_private.d.ts and
+  // `PdfSaveToDriveErrorType` in
+  // tools/metrics/histograms/metadata/pdf/enums.xml.
   enum SaveToDriveErrorType {
     NO_ERROR,
     UNKNOWN_ERROR,
@@ -28,7 +30,9 @@ namespace pdfViewerPrivate {
   };
 
   // Enumeration of save to drive status. Must match `SaveToDriveStatus` in
-  // tools/typescript/definitions/pdf_viewer_private.d.ts.
+  // tools/typescript/definitions/pdf_viewer_private.d.ts and
+  // `PdfSaveToDriveStatus` in
+  // tools/metrics/histograms/metadata/pdf/enums.xml.
   enum SaveToDriveStatus {
     NOT_STARTED,
     INITIATED,
