@@ -435,7 +435,8 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
 // Tests that launching and then causing a crash the host results in a crashed
 // notification.
 // TODO(crbug.com/40868150): Times out on Android tests.
-#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_WIN) && !defined(NDEBUG))
 #define MAYBE_LaunchAndCrash DISABLED_LaunchAndCrash
 #else
 #define MAYBE_LaunchAndCrash LaunchAndCrash
