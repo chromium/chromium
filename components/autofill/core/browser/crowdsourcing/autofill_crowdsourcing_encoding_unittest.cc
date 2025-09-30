@@ -67,6 +67,7 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Not;
+using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::ResultOf;
@@ -4094,6 +4095,66 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseRunAutofillAiModel) {
       response_string, {&form_structure},
       test::GetEncodedSignatures({&form_structure}), nullptr);
   EXPECT_TRUE(form_structure.may_run_autofill_ai_model());
+}
+
+// Tests that valid format strings are accepted and invalid ones are ignored.
+TEST_F(AutofillCrowdsourcingEncoding, ParseFormatString) {
+  base::test::ScopedFeatureList features{features::kAutofillAiWithDataSchema};
+  FormData form_data;
+  form_data.set_url(GURL("https://foo.com"));
+  form_data.set_fields(
+      {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
+       CreateTestFormField("Driver's license number", "dl_number", "",
+                           FormControlType::kInputText),
+       CreateTestFormField("Passport number", "passport_number", "",
+                           FormControlType::kInputText, "")});
+
+  FormStructure form(form_data);
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
+      GeoIpCountryCode(""), LanguageCode(""), form.ToFormData(), nullptr);
+  regex_predictions.ApplyTo(form.fields());
+  form.RationalizeAndAssignSections(GeoIpCountryCode(""), LanguageCode(""),
+                                    nullptr);
+
+  auto add_autofill_ai_prediction =
+      [](const FormFieldData& field, FieldType field_type,
+         FormatString_Type format_string_type,
+         std::string_view format_string_value,
+         AutofillQueryResponse_FormSuggestion* form_suggestion) {
+        AutofillQueryResponse_FormSuggestion_FieldSuggestion* field_suggestion =
+            form_suggestion->add_field_suggestions();
+        field_suggestion->set_field_signature(
+            *CalculateFieldSignatureForField(field));
+        AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction*
+            prediction = field_suggestion->add_predictions();
+        prediction->set_type(field_type);
+        prediction->set_source(FieldPrediction::SOURCE_AUTOFILL_AI);
+        field_suggestion->mutable_format_string()->set_format_string(
+            format_string_value);
+        field_suggestion->mutable_format_string()->set_type(format_string_type);
+      };
+
+  // Setup the query response.
+  AutofillQueryResponse response;
+  auto* form_suggestion = response.add_form_suggestions();
+  add_autofill_ai_prediction(form_data.fields()[1], DRIVERS_LICENSE_NUMBER,
+                             FormatString_Type_AFFIX, "-4", form_suggestion);
+  add_autofill_ai_prediction(form_data.fields()[2], PASSPORT_NUMBER,
+                             FormatString_Type_AFFIX, "asd", form_suggestion);
+
+  // Parse the response.
+  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr);
+  ASSERT_EQ(form.field_count(), 3U);
+
+  EXPECT_THAT(form.field(1)->Type().GetTypes(),
+              ElementsAre(DRIVERS_LICENSE_NUMBER));
+  EXPECT_THAT(form.field(1)->format_string(),
+              Optional(AutofillFormatString(u"-4", FormatString_Type_AFFIX)));
+  EXPECT_THAT(form.field(2)->Type().GetTypes(), ElementsAre(PASSPORT_NUMBER));
+  EXPECT_EQ(form.field(2)->format_string(), std::nullopt);
 }
 
 }  // namespace

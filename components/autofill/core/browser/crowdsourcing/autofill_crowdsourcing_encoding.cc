@@ -80,6 +80,19 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
   return result;
 }
 
+[[nodiscard]] bool IsValidFormatString(FormatString_Type type,
+                                       std::u16string_view value) {
+  switch (type) {
+    case FormatString_Type_DATE:
+      return data_util::IsValidDateFormat(value);
+    case FormatString_Type_AFFIX:
+      return data_util::IsValidAffixFormat(value);
+    case FormatString_Type_FLIGHT_NUMBER:
+      return data_util::IsValidFlightNumberFormat(value);
+  }
+  return false;
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Merges manual and server type predictions.
 //
@@ -468,17 +481,7 @@ void EncodeFormFieldsForUpload(
 
     if (field_options) {
       for (const auto& [type, string] : field_options->format_strings) {
-        DCHECK([&]() {
-          switch (type) {
-            case FormatString_Type_AFFIX:
-              return data_util::IsValidAffixFormat(string);
-            case FormatString_Type_DATE:
-              return data_util::IsValidDateFormat(string);
-            case FormatString_Type_FLIGHT_NUMBER:
-              return data_util::IsValidFlightNumberFormat(string);
-          }
-          return false;
-        }());
+        DCHECK(IsValidFormatString(type, string));
         auto* added_format_string = added_field->add_format_string();
         added_format_string->set_type(type);
         added_format_string->set_format_string(base::UTF16ToUTF8(string));
@@ -1054,17 +1057,14 @@ void ProcessServerPredictionsQueryResponse(
             field_suggestion->password_requirements());
       }
       if (field_suggestion->has_format_string()) {
-        switch (field_suggestion->format_string().type()) {
-          case FormatString_Type_AFFIX:
-          case FormatString_Type_DATE:
-          case FormatString_Type_FLIGHT_NUMBER:
-            field->set_format_string_unless_overruled(
-                AutofillFormatString(
-                    base::UTF8ToUTF16(
-                        field_suggestion->format_string().format_string()),
-                    field_suggestion->format_string().type()),
-                AutofillFormatStringSource::kServer);
-            break;
+        std::u16string format_string_value = base::UTF8ToUTF16(
+            field_suggestion->format_string().format_string());
+        if (IsValidFormatString(field_suggestion->format_string().type(),
+                                format_string_value)) {
+          field->set_format_string_unless_overruled(
+              AutofillFormatString(format_string_value,
+                                   field_suggestion->format_string().type()),
+              AutofillFormatStringSource::kServer);
         }
       }
       ++field_rank_map[field->GetFieldSignature()];
