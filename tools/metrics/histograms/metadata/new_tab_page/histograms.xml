@@ -258,6 +258,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Composebox.ActiveTabsCountOnContextMenuOpen"
+    units="count" expires_after="2026-06-10">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the total number of active tabs a user has at the time in which they
+    open the context menu. This metric is recorded regardless of whether or not
+    a query was issued with the tab.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Composebox.ConfigParseSuccess" enum="Boolean"
     expires_after="2026-06-17">
   <owner>mahmadi@google.com</owner>
@@ -268,6 +280,17 @@ chromium-metrics-reviews@google.com.
     NTP load) and the configuration proto feature parameter is set to a
     non-empty value. This metric records whether the config proto was
     successfully parsed from the base64-encoded string.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Composebox.DuplicateTabTitlesShownCount"
+    units="count" expires_after="2026-06-10">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded during each session and records whether or not there are tabs shown
+    in the context menu UI that have duplicate titles.
   </summary>
 </histogram>
 
@@ -503,6 +526,18 @@ chromium-metrics-reviews@google.com.
     Tracks the number of queries submitted per session. Multiple queries may be
     submitted when the AIM page is opened in a new tab or window and the
     composebox remains open. Recorded at the end of the session.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Composebox.TabContextAdded" units="count"
+    expires_after="2026-06-10">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Tracks the total number of times a tab is added as context through the
+    composebox context menu. This metric is recorded regardless of whether or
+    not a query was issued with the tab.
   </summary>
 </histogram>
 
