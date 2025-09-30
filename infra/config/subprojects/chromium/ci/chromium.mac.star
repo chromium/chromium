@@ -609,11 +609,6 @@ ci.thin_tester(
                 remove_mixins = "mac_15_vm_optional",
             ),
             # TODO(crbug.com/436628295): test fails on VM
-            "content_browsertests": targets.per_test_modification(
-                mixins = "mac_15_arm64",
-                remove_mixins = "mac_15_vm_optional",
-            ),
-            # TODO(crbug.com/436628295): test fails on VM
             "headless_shell_wpt_tests": targets.per_test_modification(
                 mixins = "mac_15_arm64",
                 remove_mixins = "mac_15_vm_optional",
