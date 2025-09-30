@@ -15559,6 +15559,19 @@
                     "name": "Enabled",
                     "enable_features": [
                         "MemoryCacheIntelligentPruning"
+                    ],
+                    "disable_features": [
+                        "MemoryCacheStrongReferenceExtensions"
+                    ]
+                },
+                {
+                    "name": "Enabled_StrongRefImage",
+                    "params": {
+                        "image": "true"
+                    },
+                    "enable_features": [
+                        "MemoryCacheIntelligentPruning",
+                        "MemoryCacheStrongReferenceExtensions"
                     ]
                 }
             ]
