@@ -503,23 +503,18 @@ class AutofillManager
   std::unique_ptr<autofill_metrics::FormInteractionsUkmLogger>
   CreateFormInteractionsUkmLogger();
 
+  // If `kAutofillSynchronousAfterParsing` is disabled:
   // Returns a callback that runs `callback` on the main thread after all
   // ongoing async parsing operations have finished.
+  //
+  // If `kAutofillSynchronousAfterParsing` is enabled (default behavior):
+  // Just returns callback; enforces no asynchronicity.
+  //
+  // TODO(crbug.com/448144129): Remove once `kAutofillSynchronousAfterParsing`
+  // can be cleaned up.
   template <typename... Args>
-  base::OnceCallback<void(Args...)> AfterParsingFinishes(
-      base::OnceCallback<void(Args...)> callback) {
-    return base::BindOnce(
-        [](base::WeakPtr<AutofillManager> self,
-           base::OnceCallback<void(Args...)> callback, Args... args) {
-          if (self) {
-            self->parsing_task_runner_->PostTaskAndReply(
-                FROM_HERE, base::DoNothing(),
-                base::BindOnce(std::move(callback),
-                               std::forward<Args>(args)...));
-          }
-        },
-        GetWeakPtr(), std::move(callback));
-  }
+  base::OnceCallback<void(Args...)> AfterParsingFinishesDeprecated(
+      base::OnceCallback<void(Args...)> callback);
 
   // Provides driver-level context to the shared code of the component.
   // `*driver_` owns this object.

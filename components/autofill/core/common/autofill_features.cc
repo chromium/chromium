@@ -516,6 +516,13 @@ BASE_FEATURE(kAutofillSupportLastNamePrefix, base::FEATURE_DISABLED_BY_DEFAULT);
 // TODO(crbug.com/369503318): Clean up when launched.
 BASE_FEATURE(kAutofillSupportSplitZipCode, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch: If true, AutofillManager::AfterParsingFinishesDeprecated()
+// becomes the identity function. That is, it does not delay the callback until
+// after parsing has finished.
+// TODO(crbug.com/448144129): Clean up after M144 branch point (Dec 1, 2025).
+BASE_FEATURE(kAutofillSynchronousAfterParsing,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables extended zip code validation
 // and new zip code merging logic.
 // TODO(crbug.com/434140055): Clean up when launched.

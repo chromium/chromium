@@ -123,6 +123,12 @@ std::unique_ptr<content::NavigationSimulator> NavigateAndKeepLoading(
   return navigation;
 }
 
+void WaitUntilHighConfidenceAllowlistCheckDone() {
+  base::StatisticsRecorder::HistogramWaiter(
+      "SBClientPhishing.MatchHighConfidenceAllowlist")
+      .Wait();
+}
+
 }  // namespace
 
 namespace safe_browsing {
@@ -2283,6 +2289,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   auto form_data = autofill::test::CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true);
   autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
   // The feature to send CSP pings is enabled, but the host is included in the
@@ -2330,6 +2337,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   auto form_data = autofill::test::CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true);
   autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
   // The feature to send CSP pings is enabled, but because the sample rate
@@ -2377,6 +2385,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   auto form_data = autofill::test::CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true);
   autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
   // Pre-classification should have proceeded to classification.

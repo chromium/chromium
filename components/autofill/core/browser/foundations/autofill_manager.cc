@@ -187,7 +187,8 @@ void AutofillManager::OnLanguageDetermined(
 
   // Wait for ongoing parsing operations to finish, so `form_structures_` is
   // up to date.
-  AfterParsingFinishes(base::BindOnce([](base::WeakPtr<AutofillManager> self) {
+  AfterParsingFinishesDeprecated(base::BindOnce([](base::WeakPtr<
+                                                    AutofillManager> self) {
     if (!self) {
       return;
     }
@@ -308,7 +309,7 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
     // server response is processed, to ensure server predictions are not lost.
     client().GetCrowdsourcingManager().StartQueryRequest(
         queryable_forms, driver().GetIsolationInfo(),
-        AfterParsingFinishes(base::BindOnce(
+        AfterParsingFinishesDeprecated(base::BindOnce(
             &AutofillManager::OnLoadedServerPredictions, GetWeakPtr())));
   }
 }
@@ -865,6 +866,28 @@ void AutofillManager::RunMlModels(
       std::move(context));
 }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+// TODO(crbug.com/448144129): Remove once `kAutofillSynchronousAfterParsing`
+// can be cleaned up.
+template <typename... Args>
+base::OnceCallback<void(Args...)>
+AutofillManager::AfterParsingFinishesDeprecated(
+    base::OnceCallback<void(Args...)> callback) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSynchronousAfterParsing)) {
+    return callback;
+  }
+  return base::BindOnce(
+      [](base::WeakPtr<AutofillManager> self,
+         base::OnceCallback<void(Args...)> callback, Args... args) {
+        if (self) {
+          self->parsing_task_runner_->PostTaskAndReply(
+              FROM_HERE, base::DoNothing(),
+              base::BindOnce(std::move(callback), std::forward<Args>(args)...));
+        }
+      },
+      GetWeakPtr(), std::move(callback));
+}
 
 void AutofillManager::OnLoadedServerPredictions(
     std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
