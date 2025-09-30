@@ -2355,8 +2355,7 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
     ua_override.ua_string_override =
         embedder_support::BuildUserAgentFromOSAndProduct(
             kOsOverrideForTabletSite, product);
-    ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata(
-        g_browser_process->local_state());
+    ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata();
     ua_override.ua_metadata_override->mobile = true;
     ua_override.ua_metadata_override->form_factors = {blink::kTabletFormFactor};
     ua_override.ua_metadata_override->platform =

@@ -667,11 +667,6 @@ std::string GetPlatformForUAMetadata() {
 }
 
 blink::UserAgentMetadata GetUserAgentMetadata(bool only_low_entropy_ch) {
-  return GetUserAgentMetadata(nullptr, only_low_entropy_ch);
-}
-
-blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
-                                              bool only_low_entropy_ch) {
   blink::UserAgentMetadata metadata;
 
   // Low entropy client hints.

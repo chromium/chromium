@@ -17,6 +17,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reduce_accept_language_utils.h"
@@ -273,7 +274,7 @@ void PerformNetworkContextPrefetch(Profile* profile,
   // TODO(crbug.com/342445996): Make it const once the blink::UserAgentMetadata
   // methods have been made const.
   blink::UserAgentMetadata ua_metadata =
-      embedder_support::GetUserAgentMetadata(g_browser_process->local_state());
+      embedder_support::GetUserAgentMetadata();
 
   // When generating the User-Agent header, we need to take into account user
   // agent reduction enterprise policy. Nothing is ever simple. This code

@@ -9,9 +9,10 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "components/prefs/pref_service.h"
 #include "third_party/blink/public/common/user_agent/user_agent_brand_version_type.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+
+class PrefService;
 
 namespace blink {
 struct UserAgentMetadata;
@@ -49,20 +50,9 @@ std::string GetUserAgent(
     UserAgentReductionEnterprisePolicyState user_agent_reduction =
         UserAgentReductionEnterprisePolicyState::kDefault);
 
-// Returns UserAgentMetadata per the default policy. This override is currently
-// used in fuchsia and headless_shell, where the enterprise policy is not
-// relevant.
-// `only_low_entropy_ch` indicates whether only populate the low entropy client
-// hints, the default is false.
+// Return UserAgentMetadata, `only_low_entropy_ch` indicates whether only
+// populate the low entropy client hints.
 blink::UserAgentMetadata GetUserAgentMetadata(bool only_low_entropy_ch = false);
-
-// Return UserAgentMetadata, potentially overridden by policy.
-// Note that this override is likely to be removed once an enterprise
-// escape hatch is no longer needed. See https://crbug.com/1261908.
-// `only_low_entropy_ch` indicates whether only populate the low entropy client
-// hints.
-blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* local_state,
-                                              bool only_low_entropy_ch = false);
 
 // Returns a list of form-factors compliant with
 // https://wicg.github.io/ua-client-hints/#sec-ch-ua-form-factors.

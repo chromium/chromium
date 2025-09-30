@@ -7355,8 +7355,7 @@ std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
 
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return embedder_support::GetUserAgentMetadata(
-      g_browser_process->local_state());
+  return embedder_support::GetUserAgentMetadata();
 }
 
 std::optional<gfx::ImageSkia> ChromeContentBrowserClient::GetProductLogo() {

@@ -90,7 +90,7 @@ std::string HeadlessBrowser::GetProductNameAndVersion() {
 
 /// static
 blink::UserAgentMetadata HeadlessBrowser::GetUserAgentMetadata() {
-  auto metadata = embedder_support::GetUserAgentMetadata(nullptr);
+  auto metadata = embedder_support::GetUserAgentMetadata();
   // Skip override brand version information if components' API returns a blank
   // UserAgentMetadata.
   if (metadata == blink::UserAgentMetadata()) {

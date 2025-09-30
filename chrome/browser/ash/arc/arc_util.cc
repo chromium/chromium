@@ -856,8 +856,7 @@ std::unique_ptr<content::WebContents> CreateArcCustomTabWebContents(
       embedder_support::BuildUserAgentFromOSAndProduct(kOsOverrideForTabletSite,
                                                        product);
 
-  ua_override.ua_metadata_override =
-      embedder_support::GetUserAgentMetadata(g_browser_process->local_state());
+  ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata();
   ua_override.ua_metadata_override->platform = "Android";
   ua_override.ua_metadata_override->platform_version = "9";
   ua_override.ua_metadata_override->model = "Chrome tablet";

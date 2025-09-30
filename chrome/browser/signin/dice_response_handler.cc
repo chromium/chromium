@@ -185,8 +185,7 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
   // generated.
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(
       authorization_code_,
-      embedder_support::GetUserAgentMetadata(g_browser_process->local_state())
-          .SerializeBrandFullVersionList(),
+      embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList(),
       binding_registration_token_);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),

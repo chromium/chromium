@@ -150,7 +150,7 @@ bool ClientHints::IsJavaScriptAllowed(const GURL& url,
 }
 
 blink::UserAgentMetadata ClientHints::GetUserAgentMetadata() {
-  return embedder_support::GetUserAgentMetadata(pref_service_);
+  return embedder_support::GetUserAgentMetadata();
 }
 
 void ClientHints::PersistClientHints(
