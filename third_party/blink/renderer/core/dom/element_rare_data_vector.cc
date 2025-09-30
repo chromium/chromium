@@ -528,15 +528,37 @@ AnchorElementObserver* ElementRareDataVector::GetAnchorElementObserver() const {
       GetField(FieldId::kAnchorElementObserver));
 }
 
+bool ElementRareDataVector::HasCustomElementRegistrySet() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  return fields_.HasField(FieldId::kCustomElementRegistry);
+}
+
 CustomElementRegistry* ElementRareDataVector::GetCustomElementRegistry() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  DCHECK(HasCustomElementRegistrySet());
   return static_cast<CustomElementRegistry*>(
-      GetField(FieldId::kCustomElementRegistry));
+      fields_.GetField(FieldId::kCustomElementRegistry).Get());
 }
 
 void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* registry) {
-  // An element's custom element registry should only be set once.
-  CHECK_EQ(GetField(FieldId::kCustomElementRegistry), nullptr);
-  SetField(FieldId::kCustomElementRegistry, registry);
+  // An element's custom element registry should only be set once unless the
+  // registry is a global registry and can be reset during cross document node
+  // adoption.
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  DCHECK(!GetField(FieldId::kCustomElementRegistry) ||
+         static_cast<CustomElementRegistry*>(
+             GetField(FieldId::kCustomElementRegistry))
+             ->IsGlobalRegistry());
+  // We intentionally don't use ElementRareDataVector::SetField because it will
+  // erase the field if we set null to the field. However, when we want an
+  // element to have null registry explicitly, we want to keep the existence of
+  // field while setting it to null.
+  fields_.SetField(FieldId::kCustomElementRegistry, registry);
+}
+
+void ElementRareDataVector::ClearCustomElementRegistry() {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  fields_.EraseField(FieldId::kCustomElementRegistry);
 }
 
 ElementAnimationTriggerData* ElementRareDataVector::AnimationTriggerData() {

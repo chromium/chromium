@@ -1,42 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Adoption with explicit global registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
-[FAIL] Adoption with explicit global registry into a scoped registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with global registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with explicit global registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with global registry into a scoped registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with explicit global registry into a scoped registry
-  assert_equals: expected object "[object CustomElementRegistry]" but got object "[object CustomElementRegistry]"
-[FAIL] Adoption with explicit global registry (null registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption with explicit global registry into a scoped registry (null registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with global registry (null registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with explicit global registry (null registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with global registry into a scoped registry (null registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with explicit global registry into a scoped registry (null registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption with global registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption with explicit global registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption with global registry into a scoped registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption with explicit global registry into a scoped registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with global registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with explicit global registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with global registry into a scoped registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
-[FAIL] Adoption including shadow root with explicit global registry into a scoped registry (scoped registry target)
-  assert_equals: expected null but got object "[object CustomElementRegistry]"
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.

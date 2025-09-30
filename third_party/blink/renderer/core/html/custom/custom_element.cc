@@ -199,7 +199,10 @@ HTMLElement* CustomElement::CreateFailedElement(
 
   auto* element = MakeGarbageCollected<HTMLUnknownElement>(tag_name, document);
   element->SetCustomElementState(CustomElementState::kFailed);
-  element->SetCustomElementRegistry(registry);
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      registry) {
+    element->SetCustomElementRegistry(registry);
+  }
   return element;
 }
 

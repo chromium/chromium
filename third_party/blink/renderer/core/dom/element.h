@@ -1455,7 +1455,15 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Scoped Custom Elements
   CustomElementRegistry* customElementRegistry() const;
-  void SetCustomElementRegistry(CustomElementRegistry*);
+  // When it comes to storing an element's custom element registry, we have an
+  // optimization where if the registry to be set is the same as element's tree
+  // scope's registry, we don't store it in the element itself and rely on tree
+  // scope to find the registry to save memory. In the scenario of cross scope
+  // adoption, we can set explicitly_set to true to force the registry storage
+  // so we can retain knowledge of the prior registry even when the scope is
+  // changed.
+  void SetCustomElementRegistry(CustomElementRegistry*,
+                                bool explicitly_set = false);
 
   // https://dom.spec.whatwg.org/#concept-element-is-value
   void SetIsValue(const AtomicString&);

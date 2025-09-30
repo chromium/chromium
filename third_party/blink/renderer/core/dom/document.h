@@ -2260,6 +2260,12 @@ class CORE_EXPORT Document : public ContainerNode,
   // WidgetCreationObserver implementation
   void OnLocalRootWidgetCreated() override;
 
+  // https://dom.spec.whatwg.org/#effective-global-custom-element-registry
+  // A document's effective global custom element registry is its own registry
+  // if the registry is global, otherwise the effective global registry is
+  // nullptr.
+  CustomElementRegistry* EffectiveGlobalCustomElementRegistry() const;
+
  protected:
   void ClearXMLVersion() { xml_version_ = String(); }
 

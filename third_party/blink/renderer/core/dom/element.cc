@@ -6628,16 +6628,27 @@ CustomElementRegistry* Element::customElementRegistry() const {
   // we'll take the naive approach and assume an element using its tree
   // scope's registry if not explicitly set.
   if (const ElementRareDataVector* data = GetElementRareData()) {
-    if (auto* registry = data->GetCustomElementRegistry()) {
-      return registry;
+    if (data->HasCustomElementRegistrySet()) {
+      return data->GetCustomElementRegistry();
     }
   }
 
   return GetTreeScope().customElementRegistry();
 }
 
-void Element::SetCustomElementRegistry(CustomElementRegistry* registry) {
-  EnsureElementRareData().SetCustomElementRegistry(registry);
+void Element::SetCustomElementRegistry(CustomElementRegistry* registry,
+                                       bool explicitly_set) {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  // If the registry is the same as the tree scope's registry, we typically
+  // can clear the registry field in rare data and have the registry implicitly
+  // inferred to save memory. We can disable this optimization behavior by
+  // "explicitly_set" flag so we can ensure the registry is retained in
+  // scenarios like cross document/scope adoption.
+  if (registry == GetTreeScope().customElementRegistry() && !explicitly_set) {
+    EnsureElementRareData().ClearCustomElementRegistry();
+  } else {
+    EnsureElementRareData().SetCustomElementRegistry(registry);
+  }
 }
 
 void Element::SetIsValue(const AtomicString& is_value) {

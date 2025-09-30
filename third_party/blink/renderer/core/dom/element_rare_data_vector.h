@@ -325,8 +325,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   AnchorElementObserver& EnsureAnchorElementObserver(Element*);
   AnchorElementObserver* GetAnchorElementObserver() const;
 
+  bool HasCustomElementRegistrySet() const;
   CustomElementRegistry* GetCustomElementRegistry() const;
   void SetCustomElementRegistry(CustomElementRegistry* registry);
+  void ClearCustomElementRegistry();
 
   ElementAnimationTriggerData* AnimationTriggerData();
   ElementAnimationTriggerData& EnsureAnimationTriggerData();
