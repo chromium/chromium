@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/zip.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -403,12 +404,12 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       GetFrame(IndexVector{2, 2}),    GetFrame(IndexVector{2, 2, 0}),
       GetFrame(IndexVector{2, 2, 1}), GetFrame(IndexVector{3})};
 
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", values[i], true);
+  for (const auto [frame, value] : base::zip(frames, values)) {
+    AddInputFieldToFrame(frame, "text", value, true);
+  }
 
-  for (size_t i = 0; i < frames.size(); ++i) {
-    content::TextInputManagerValueObserver observer(active_contents(),
-                                                    values[i]);
+  for (const auto& value : values) {
+    content::TextInputManagerValueObserver observer(active_contents(), value);
     SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, false, false, false);
     observer.Wait();
@@ -427,8 +428,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderFrameHost*> frames{GetFrame(IndexVector{0}),
                                                 GetFrame(IndexVector{1})};
 
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", values[i], true);
+  for (const auto [frame, value] : base::zip(frames, values)) {
+    AddInputFieldToFrame(frame, "text", value, true);
+  }
 
   // Tab into both inputs and make sure we correctly receive their
   // TextInputState. For the second tab two IPCs arrive: one from the first
@@ -438,9 +440,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   ViewTextInputTypeObserver view_type_observer(
       active_contents(), frames[0]->GetView(), ui::TEXT_INPUT_TYPE_NONE);
 
-  for (size_t i = 0; i < frames.size(); ++i) {
-    content::TextInputManagerValueObserver observer(active_contents(),
-                                                    values[i]);
+  for (const auto& value : values) {
+    content::TextInputManagerValueObserver observer(active_contents(), value);
     SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
                      ui::VKEY_TAB, false, false, false, false);
     observer.Wait();
@@ -507,8 +508,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderFrameHost*> frames{GetFrame(IndexVector{0}),
                                                 GetFrame(IndexVector{1})};
 
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", "", true);
+  for (const auto& frame : frames) {
+    AddInputFieldToFrame(frame, "text", "", true);
+  }
 
   // Press tab key to focus the <input> in the first frame.
   content::TextInputManagerTypeObserver type_observer_text_a(
@@ -661,8 +663,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   for (auto* frame : frames)
     views.push_back(frame->GetView());
   std::vector<std::string> values{"a", "ab", "ac", "aca", "acb", "acd"};
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", values[i], true);
+  for (const auto [frame, value] : base::zip(frames, values)) {
+    AddInputFieldToFrame(frame, "text", value, true);
+  }
 
   content::WebContents* web_contents = active_contents();
 
@@ -711,8 +714,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderWidgetHostView*> views;
   for (auto* frame : frames)
     views.push_back(frame->GetView());
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", "text", true);
+  for (const auto& frame : frames) {
+    AddInputFieldToFrame(frame, "text", "text", true);
+  }
 
   content::WebContents* web_contents = active_contents();
 
@@ -758,8 +762,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderWidgetHostView*> views;
   for (auto* frame : frames)
     views.push_back(frame->GetView());
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", values[i], true);
+  for (const auto [frame, value] : base::zip(frames, values)) {
+    AddInputFieldToFrame(frame, "text", value, true);
+  }
 
   content::WebContents* web_contents = active_contents();
 
@@ -782,13 +787,13 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       };
 
   size_t count = 2;
-  for (size_t i = 0; i < views.size(); ++i) {
+  for (const auto [value, view] : base::zip(values, views)) {
     // First focus the <input>.
-    send_tab_and_wait_for_value(values[i]);
+    send_tab_and_wait_for_value(value);
 
     // Send a sequence of |count| 'E' keys and wait until the view receives a
     // selection change update for a text of the corresponding size, |count|.
-    send_keys_select_all_wait_for_selection_change(views[i], count++);
+    send_keys_select_all_wait_for_selection_change(view, count++);
   }
 }
 
@@ -809,8 +814,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderFrameHost*> frames{
       GetFrame(IndexVector{}), GetFrame(IndexVector{0}),
       GetFrame(IndexVector{1}), GetFrame(IndexVector{1, 0})};
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", "", true);
+  for (const auto& frame : frames) {
+    AddInputFieldToFrame(frame, "text", "", true);
+  }
 
   std::vector<std::string> sample_text{"main", "child_b", "child_c", "child_a"};
   ASSERT_EQ(frames.size(), sample_text.size());
@@ -863,8 +869,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderWidgetHostView*> views;
   for (auto* frame : frames)
     views.push_back(frame->GetView());
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", "", true);
+  for (const auto& frame : frames) {
+    AddInputFieldToFrame(frame, "text", "", true);
+  }
 
   content::WebContents* web_contents = active_contents();
 
@@ -902,8 +909,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderFrameHost*> frames{
       GetFrame(IndexVector{}), GetFrame(IndexVector{0}),
       GetFrame(IndexVector{1}), GetFrame(IndexVector{1, 0})};
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", "some text", true);
+  for (const auto& frame : frames) {
+    AddInputFieldToFrame(frame, "text", "some text", true);
+  }
 
   // Focus the <input> in |frame| and return if RenderFrameHost thinks there is
   // a focused editable element in it.
@@ -948,8 +956,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderFrameHost*> frames{
       GetFrame(IndexVector{}), GetFrame(IndexVector{0}),
       GetFrame(IndexVector{1}), GetFrame(IndexVector{1, 0})};
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", "some text", true);
+  for (const auto& frame : frames) {
+    AddInputFieldToFrame(frame, "text", "some text", true);
+  }
 
   auto focus_frame = [](content::RenderFrameHost* frame) {
     EXPECT_TRUE(ExecJs(frame, "window.focus();"));
@@ -989,8 +998,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   std::vector<content::RenderFrameHost*> frames{
       GetFrame(IndexVector{}), GetFrame(IndexVector{0}),
       GetFrame(IndexVector{1}), GetFrame(IndexVector{1, 0})};
-  for (size_t i = 0; i < frames.size(); ++i)
-    AddInputFieldToFrame(frames[i], "text", "some text", true);
+  for (const auto& frame : frames) {
+    AddInputFieldToFrame(frame, "text", "some text", true);
+  }
 
   auto focus_frame_and_input = [](content::RenderFrameHost* frame) {
     EXPECT_TRUE(ExecJs(frame,
@@ -1276,18 +1286,18 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   // For each frame, add <input>, set its value to expected word, select it, ask
   // for dictionary and verify the word returned from renderer matches.
-  for (size_t i = 0; i < frames.size(); ++i) {
-    AddInputFieldToFrame(frames[i], "text", expected_words[i].c_str(), true);
+  for (const auto [frame, expected_word] : base::zip(frames, expected_words)) {
+    AddInputFieldToFrame(frame, "text", expected_word.c_str(), true);
     // Focusing the <input> automatically selects the text.
-    ASSERT_TRUE(ExecJs(frames[i], "document.querySelector('input').focus();"));
+    ASSERT_TRUE(ExecJs(frame, "document.querySelector('input').focus();"));
     ShowDefinitionForWordObserver word_lookup_observer(active_contents());
     // Request for the dictionary lookup and intercept the word on its way back.
     // The request is always on the tab's view which is a
     // RenderWidgetHostViewMac.
     content::AskForLookUpDictionaryForRange(
         active_contents()->GetRenderWidgetHostView(),
-        gfx::Range(0, expected_words[i].size()));
-    EXPECT_EQ(expected_words[i], word_lookup_observer.WaitForWordLookUp());
+        gfx::Range(0, expected_word.size()));
+    EXPECT_EQ(expected_word, word_lookup_observer.WaitForWordLookUp());
   }
 }
 
