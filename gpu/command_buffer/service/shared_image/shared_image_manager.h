@@ -157,7 +157,7 @@ class GPU_GLES2_EXPORT SharedImageManager
     return display_context_on_another_thread_;
   }
 
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
   GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
     return gpu_memory_buffer_factory_.get();
   }
@@ -203,7 +203,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   bool supports_overlays_on_ozone_ = false;
 #endif
 
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
   std::unique_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 #endif
 

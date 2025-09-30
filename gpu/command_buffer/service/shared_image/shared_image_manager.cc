@@ -250,7 +250,7 @@ SharedImageManager::SharedImageManager(
       dxgi_shared_handle_manager_(
           base::MakeRefCounted<DXGISharedHandleManager>())
 #endif
-#if !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_APPLE)
       ,
       gpu_memory_buffer_factory_(
           gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider,
