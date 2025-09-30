@@ -360,15 +360,6 @@ void MigrateBooleanPrefFromLocalStatePrefsToProfilePrefs(
                      GetApplicationContext()->GetLocalState());
 }
 
-// Helper function migrating the `bool` preference from Profile prefs to
-// LocalState prefs.
-void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateBooleanPref(pref_name, GetApplicationContext()->GetLocalState(),
-                     profile_pref_service);
-}
-
 // Helper function migrating the `Value::Dict` preference from LocalState prefs
 // to Profile prefs.
 void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
@@ -1157,10 +1148,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 09/2024.
-  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
-      password_manager::prefs::kCredentialProviderEnabledOnStartup, prefs);
 
   // Added 09/2024.
   if (IsIosQuickDeleteEnabled()) {

@@ -40,31 +40,6 @@ class BrowserPrefsTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable pref_service_;
 };
 
-// Check that the migration of a pref from profile prefService to
-// localState prefService is performed correctly.
-TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
-  // Simulate registering a value different from default in profile prefService.
-  pref_service_.SetBoolean(
-      password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
-
-  EXPECT_EQ(pref_service_.GetBoolean(
-                password_manager::prefs::kCredentialProviderEnabledOnStartup),
-            true);
-  EXPECT_EQ(local_state()->GetBoolean(
-                password_manager::prefs::kCredentialProviderEnabledOnStartup),
-            false);
-
-  MigrateObsoleteProfilePrefs(&pref_service_);
-
-  // Verify that the prefs were migrated successfully.
-  EXPECT_EQ(pref_service_.GetBoolean(
-                password_manager::prefs::kCredentialProviderEnabledOnStartup),
-            false);
-  EXPECT_EQ(local_state()->GetBoolean(
-                password_manager::prefs::kCredentialProviderEnabledOnStartup),
-            true);
-}
-
 // Check that the migration of a pref from localState prefService to
 // profile prefService is performed correctly.
 TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
