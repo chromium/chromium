@@ -110,6 +110,36 @@
         <h2>Reporting Events</h2>
         <div class="content">
           <p id="reporting-events"></p>
+          <table id="reporting-events-table" class="expandable-events" hidden>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Event Type</th>
+                <th>Profile</th>
+                <th>Device</th>
+                <th>Successfully Uploaded</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+          <template id="resultRowTemplate">
+            <tr class="main-row">
+              <td class="time-cell"></td>
+              <td class="event-type-cell"></td>
+              <td class="profile-cell"></td>
+              <td class="device-cell"></td>
+              <td class="success-cell"></td>
+              <td class="expander-cell">
+                <span class="expander" role="button" tabindex="0"></span>
+                <button class="copy-button">Copy</button>
+              </td>
+            </tr>
+            <tr class="details-row">
+              <td class="details-cell" colspan="6"></td>
+            </tr>
+          </template>
         </div>
       </div>
 <if expr="not is_android">

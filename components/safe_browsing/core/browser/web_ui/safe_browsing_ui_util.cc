@@ -10,6 +10,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/common/proto/csd.to_value.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.to_value.h"
@@ -512,8 +513,18 @@ base::Value::Dict SerializeUploadEventsRequest(
                              upload_events_request));
 #endif
   message.Set("response", result.Clone());
+
   base::Value::Dict wrapper;
   wrapper.Set("message", SerializeJson(message));
+  auto& event = upload_events_request.events()[0];
+  wrapper.Set("timeMillis",
+              event.time().seconds() * 1000 + event.time().nanos() / 1000000.0);
+  wrapper.Set("event_type",
+              enterprise_connectors::GetEventName(event.event_case()));
+  wrapper.Set("profile", upload_events_request.has_profile());
+  wrapper.Set("device", upload_events_request.has_device());
+  wrapper.Set("success",
+              result.FindBool("uploaded_successfully").value_or(false));
   return wrapper;
 }
 

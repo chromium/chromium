@@ -23,4 +23,11 @@ std::string GetPayloadSizeUmaMetricName(EventCase event_case) {
                      : base::StrCat({kUnknownUmaMetricName, "UploadSize"});
 }
 
+std::string GetEventName(EventCase event_case) {
+  const std::string_view* event_name =
+      base::FindOrNull(kEventCaseToEventNameMap, event_case);
+
+  return event_name ? std::string(*event_name) : std::string("UNKNOWN");
+}
+
 }  // namespace enterprise_connectors

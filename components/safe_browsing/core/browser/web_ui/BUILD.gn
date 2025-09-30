@@ -18,6 +18,7 @@ source_set("util") {
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:connectors_proto_extras",
     "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core:constants",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:hit_report",

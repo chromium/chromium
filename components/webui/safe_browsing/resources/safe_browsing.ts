@@ -17,6 +17,14 @@ interface ReportingResult {
   message: string;
   time: string;
 }
+interface RealtimeReportingResult {
+  message: string;
+  timeMillis: number;
+  event_type: string;
+  profile: boolean;
+  device: boolean;
+  success: boolean;
+}
 interface DeepScanResult {
   request: string;
   request_time: string;
@@ -207,13 +215,14 @@ function initialize() {
   });
 
   sendWithPromise('getReportingEvents', [])
-      .then((reportingEvents: ReportingResult[]) => {
+      .then((reportingEvents: RealtimeReportingResult[]) => {
         reportingEvents.forEach(function(reportingEvent) {
           addReportingEvent(reportingEvent);
         });
       });
   addWebUiListener(
-      'reporting-events-update', function(reportingEvent: ReportingResult) {
+      'reporting-events-update',
+      function(reportingEvent: RealtimeReportingResult) {
         addReportingEvent(reportingEvent);
       });
 
@@ -531,10 +540,63 @@ function addLogMessage(result: ReportingResult) {
   appendChildWithInnerText(logDiv, eventFormatted);
 }
 
-function addReportingEvent(result: ReportingResult) {
-  const logDiv = $('reporting-events');
-  const eventFormatted = result.message;
-  appendChildWithInnerText(logDiv, eventFormatted);
+function addReportingEvent(result: RealtimeReportingResult) {
+  // If the event doesn't have a timestamp, fall back to the old display format.
+  if (!result.timeMillis) {
+    const logDiv = $('reporting-events');
+    const eventFormatted = result.message;
+    appendChildWithInnerText(logDiv, eventFormatted);
+    return;
+  }
+
+  const table = $<HTMLTableElement>('reporting-events-table')!;
+  // Unhide the table if it's the first event.
+  if (table.hidden) {
+    table.hidden = false;
+  }
+
+  const tableBody = table.querySelector('tbody')!;
+  const template = $<HTMLTemplateElement>('resultRowTemplate')!;
+
+  // Clone the new row and insert it into the table
+  const reportingEventRow =
+      template.content.cloneNode(true) as DocumentFragment;
+  const mainRow = reportingEventRow.querySelector('.main-row')!;
+  const detailsRow = reportingEventRow.querySelector('.details-row')!;
+
+  mainRow.querySelector('.time-cell')!.textContent =
+      new Date(result.timeMillis).toLocaleString();
+  mainRow.querySelector('.event-type-cell')!.textContent = result.event_type;
+  mainRow.querySelector('.profile-cell')!.textContent =
+      result.profile ? 'Yes' : 'No';
+  mainRow.querySelector('.device-cell')!.textContent =
+      result.device ? 'Yes' : 'No';
+  mainRow.querySelector('.success-cell')!.textContent =
+      result.success ? 'Yes' : 'No';
+  detailsRow.querySelector('.details-cell')!.textContent = result.message;
+
+  const expander = mainRow.querySelector('.expander')!;
+  const copyButton = mainRow.querySelector('.copy-button')!;
+
+  // Add click listener to copy the message.
+  copyButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(result.message).then(() => {
+      const originalText = copyButton.textContent;
+      copyButton.textContent = 'Copied!';
+      setTimeout(() => {
+        copyButton.textContent = originalText;
+      }, 2000);
+    });
+  });
+
+  // Add click listener to toggle the details row.
+  expander.addEventListener('click', () => {
+    expander.classList.toggle('expanded');
+    detailsRow.classList.toggle('visible');
+  });
+
+  tableBody.appendChild(reportingEventRow);
 }
 
 function appendChildWithInnerText(logDiv: Element|null, text: string) {
