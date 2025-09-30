@@ -1843,7 +1843,8 @@ void AppMenuModel::Build() {
           : IDS_NEW_TAB,
       kNewTabRefreshIcon);
 
-  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          features::kCreateNewTabGroupAppMenuTopLevel)) {
     AddItemWithStringIdAndVectorIcon(this, IDC_CREATE_NEW_TAB_GROUP_TOP_LEVEL,
                                      IDS_CREATE_NEW_TAB_GROUP,
                                      kCreateNewTabGroupIcon);
