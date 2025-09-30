@@ -10,11 +10,4 @@ MockMemoryConsumer::MockMemoryConsumer() = default;
 
 MockMemoryConsumer::~MockMemoryConsumer() = default;
 
-RegisteredMockMemoryConsumer::RegisteredMockMemoryConsumer(
-    std::string_view consumer_id,
-    MemoryConsumerTraits traits)
-    : registration_(consumer_id, traits, this) {}
-
-RegisteredMockMemoryConsumer::~RegisteredMockMemoryConsumer() = default;
-
 }  // namespace base
