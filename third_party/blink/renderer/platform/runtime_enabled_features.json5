@@ -2993,6 +2993,14 @@
       }
     },
     {
+      // Makes light dismiss for popovers and dialogs use the click event
+      // instead of pointerdown and pointerup in order to fix light dismiss
+      // bugs for touch inputs.
+      // https://issues.chromium.org/issues/408010435
+      name: "LightDismissFromClick",
+      status: "experimental",
+    },
+    {
       name: "LimitThirdPartyCookies",
       origin_trial_feature_name: "LimitThirdPartyCookies",
       status: "experimental",

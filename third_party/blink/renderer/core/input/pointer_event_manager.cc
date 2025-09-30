@@ -179,6 +179,21 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   }
 
   if (Node* target_node = target->ToNode()) {
+    if (RuntimeEnabledFeatures::LightDismissFromClickEnabled()) {
+      if (event_type == event_type_names::kPointerdown) {
+        pointer_event_factory_->SetPointerDownTarget(
+            pointer_event->pointerId(),
+            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                target_node, pointer_event->clientX(),
+                pointer_event->clientY()));
+      } else if (event_type == event_type_names::kPointerup) {
+        pointer_event_factory_->SetPointerUpTarget(
+            pointer_event->pointerId(),
+            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                target_node, pointer_event->clientX(),
+                pointer_event->clientY()));
+      }
+    }
     if (event_type == event_type_names::kPointerdown ||
         event_type == event_type_names::kPointerup) {
       // Per spec, run the popover light dismiss actions first, which will take
@@ -1450,6 +1465,20 @@ PointerId PointerEventManager::GetPointerIdForTouchGesture(
 
 Element* PointerEventManager::CurrentTouchDownElement() {
   return touch_event_manager_->CurrentTouchDownElement();
+}
+
+PointerEventFactory::PointerTarget* PointerEventManager::GetPointerDownTarget(
+    PointerId pointer_id) const {
+  return pointer_event_factory_->GetPointerDownTarget(pointer_id);
+}
+
+PointerEventFactory::PointerTarget* PointerEventManager::GetPointerUpTarget(
+    PointerId pointer_id) const {
+  return pointer_event_factory_->GetPointerUpTarget(pointer_id);
+}
+
+void PointerEventManager::RemovePointerTargets(PointerId pointer_id) {
+  pointer_event_factory_->RemovePointerTargets(pointer_id);
 }
 
 }  // namespace blink

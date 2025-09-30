@@ -776,6 +776,43 @@ PointerId PointerEventFactory::GetNextAvailablePointerid() {
   return current_id_++;
 }
 
+void PointerEventFactory::SetPointerDownTarget(PointerId pointer_id,
+                                               PointerTarget* pointer_target) {
+  PointerAttributes* attributes =
+      pointer_id_to_attributes_
+          .insert(pointer_id, MakeGarbageCollected<PointerAttributes>())
+          .stored_value->value;
+  attributes->pointer_down_target = pointer_target;
+  // Clear pointer_up_target to prevent the pointerup target from a previous
+  // click from being erroneously saved and used for the next light dismiss.
+  attributes->pointer_up_target = nullptr;
+}
+
+void PointerEventFactory::SetPointerUpTarget(PointerId pointer_id,
+                                             PointerTarget* pointer_target) {
+  PointerAttributes* attributes =
+      pointer_id_to_attributes_
+          .insert(pointer_id, MakeGarbageCollected<PointerAttributes>())
+          .stored_value->value;
+  attributes->pointer_up_target = pointer_target;
+}
+
+PointerEventFactory::PointerTarget* PointerEventFactory::GetPointerDownTarget(
+    PointerId pointer_id) const {
+  if (auto* attributes = GetPointerAttributesForId(pointer_id)) {
+    return attributes->pointer_down_target;
+  }
+  return nullptr;
+}
+
+PointerEventFactory::PointerTarget* PointerEventFactory::GetPointerUpTarget(
+    PointerId pointer_id) const {
+  if (auto* attributes = GetPointerAttributesForId(pointer_id)) {
+    return attributes->pointer_up_target;
+  }
+  return nullptr;
+}
+
 PointerEventFactory::PointerAttributes*
 PointerEventFactory::GetPointerAttributesForId(PointerId pointer_id) const {
   auto it = pointer_id_to_attributes_.find(pointer_id);
@@ -794,11 +831,23 @@ PointerEventFactory::GetPointerAttributesForId(PointerId pointer_id) const {
   return it->value;
 }
 
+void PointerEventFactory::RemovePointerTargets(PointerId pointer_id) {
+  auto it = pointer_id_to_attributes_.find(pointer_id);
+  if (it == pointer_id_to_attributes_.end()) {
+    return;
+  }
+  it->value->pointer_down_target = nullptr;
+  it->value->pointer_up_target = nullptr;
+}
+
 void PointerEventFactory::Trace(Visitor* visitor) const {
   visitor->Trace(pointer_id_to_attributes_);
   visitor->Trace(recently_removed_pointers_);
 }
 
-void PointerEventFactory::PointerAttributes::Trace(Visitor* visitor) const {}
+void PointerEventFactory::PointerAttributes::Trace(Visitor* visitor) const {
+  visitor->Trace(pointer_down_target);
+  visitor->Trace(pointer_up_target);
+}
 
 }  // namespace blink

@@ -11,8 +11,10 @@
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 
 namespace {
@@ -22,9 +24,9 @@ const int32_t kBrowserDeviceId1 = 1;
 
 namespace blink {
 
-class PointerEventFactoryTest : public testing::Test {
+class PointerEventFactoryTestBase {
  protected:
-  void SetUp() override;
+  void SetUpPointerEventFactoryTest();
   PointerEvent* CreateAndCheckPointerCancel(WebPointerProperties::PointerType,
                                             int raw_id,
                                             int unique_id,
@@ -130,14 +132,14 @@ class PointerEventFactoryTest : public testing::Test {
   int mapped_id_start_;
 };
 
-void PointerEventFactoryTest::SetUp() {
+void PointerEventFactoryTestBase::SetUpPointerEventFactoryTest() {
   expected_mouse_id_ = 1;
   mapped_id_start_ = 2;
   pointer_event_factory_ =
       WrapPersistent(MakeGarbageCollected<PointerEventFactory>());
 }
 
-PointerEvent* PointerEventFactoryTest::CreateAndCheckPointerCancel(
+PointerEvent* PointerEventFactoryTestBase::CreateAndCheckPointerCancel(
     WebPointerProperties::PointerType pointer_type,
     int raw_id,
     int unique_id,
@@ -158,7 +160,7 @@ PointerEvent* PointerEventFactoryTest::CreateAndCheckPointerCancel(
   return pointer_event;
 }
 
-void PointerEventFactoryTest::CreateAndCheckPointerTransitionEvent(
+void PointerEventFactoryTestBase::CreateAndCheckPointerTransitionEvent(
     PointerEvent* pointer_event,
     const AtomicString& type) {
   PointerEvent* clone_pointer_event =
@@ -175,7 +177,7 @@ void PointerEventFactoryTest::CreateAndCheckPointerTransitionEvent(
   EXPECT_EQ(clone_pointer_event->metaKey(), pointer_event->metaKey());
 }
 
-void PointerEventFactoryTest::CheckNonHoveringPointers(
+void PointerEventFactoryTestBase::CheckNonHoveringPointers(
     const HashSet<int>& expected_pointers) {
   Vector<int> pointers =
       pointer_event_factory_->GetPointerIdsOfNonHoveringPointers();
@@ -184,6 +186,13 @@ void PointerEventFactoryTest::CheckNonHoveringPointers(
     EXPECT_TRUE(base::Contains(expected_pointers, p));
   }
 }
+
+class PointerEventFactoryTest : public PointerEventFactoryTestBase,
+                                public testing::Test {
+  void SetUp() override {
+    PointerEventFactoryTestBase::SetUpPointerEventFactoryTest();
+  }
+};
 
 TEST_F(PointerEventFactoryTest, MousePointer) {
   EXPECT_TRUE(pointer_event_factory_->IsActive(expected_mouse_id_));
@@ -817,4 +826,76 @@ TEST_F(PointerEventFactoryDeviceIdTest, PersistentDeviceIdUseCounterUpdated) {
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kV8PointerEvent_PersistentDeviceId_AttributeGetter));
 }
+
+class PointerEventFactoryPageTest : public PointerEventFactoryTestBase,
+                                    public PageTestBase {
+  void SetUp() override {
+    PageTestBase::SetUp();
+    PointerEventFactoryTestBase::SetUpPointerEventFactoryTest();
+  }
+};
+
+TEST_F(PointerEventFactoryPageTest, PointerTargets) {
+  PointerId pointer_id = mapped_id_start_;
+  CreateAndCheckWebPointerEvent(WebPointerProperties::PointerType::kTouch, 0,
+                                pointer_id,
+                                /*isprimary=*/true, /*hovering=*/false);
+
+  EXPECT_TRUE(pointer_event_factory_->IsActive(pointer_id));
+  EXPECT_TRUE(pointer_event_factory_->IsActiveButtonsState(pointer_id));
+  EXPECT_EQ(pointer_event_factory_->GetPointerType(pointer_id),
+            WebPointerProperties::PointerType::kTouch);
+  EXPECT_EQ(pointer_event_factory_->GetPointerDownTarget(pointer_id), nullptr);
+  EXPECT_EQ(pointer_event_factory_->GetPointerUpTarget(pointer_id), nullptr);
+
+  HTMLDivElement* down_div =
+      MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  PointerEventFactory::PointerTarget* down_target =
+      MakeGarbageCollected<PointerEventFactory::PointerTarget>(down_div, 12,
+                                                               34);
+  HTMLDivElement* up_div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  PointerEventFactory::PointerTarget* up_target =
+      MakeGarbageCollected<PointerEventFactory::PointerTarget>(up_div, 56, 78);
+
+  pointer_event_factory_->SetPointerDownTarget(pointer_id, down_target);
+
+  EXPECT_TRUE(pointer_event_factory_->IsActive(pointer_id));
+  EXPECT_TRUE(pointer_event_factory_->IsActiveButtonsState(pointer_id));
+  EXPECT_EQ(pointer_event_factory_->GetPointerType(pointer_id),
+            WebPointerProperties::PointerType::kTouch);
+  EXPECT_EQ(pointer_event_factory_->GetPointerDownTarget(pointer_id),
+            down_target);
+  EXPECT_EQ(pointer_event_factory_->GetPointerUpTarget(pointer_id), nullptr);
+
+  pointer_event_factory_->SetPointerUpTarget(pointer_id, up_target);
+
+  EXPECT_TRUE(pointer_event_factory_->IsActive(pointer_id));
+  EXPECT_TRUE(pointer_event_factory_->IsActiveButtonsState(pointer_id));
+  EXPECT_EQ(pointer_event_factory_->GetPointerType(pointer_id),
+            WebPointerProperties::PointerType::kTouch);
+  EXPECT_EQ(pointer_event_factory_->GetPointerDownTarget(pointer_id),
+            down_target);
+  EXPECT_EQ(pointer_event_factory_->GetPointerUpTarget(pointer_id), up_target);
+
+  pointer_event_factory_->SetPointerDownTarget(pointer_id, down_target);
+
+  EXPECT_TRUE(pointer_event_factory_->IsActive(pointer_id));
+  EXPECT_TRUE(pointer_event_factory_->IsActiveButtonsState(pointer_id));
+  EXPECT_EQ(pointer_event_factory_->GetPointerType(pointer_id),
+            WebPointerProperties::PointerType::kTouch);
+  EXPECT_EQ(pointer_event_factory_->GetPointerDownTarget(pointer_id),
+            down_target);
+  EXPECT_EQ(pointer_event_factory_->GetPointerUpTarget(pointer_id), nullptr);
+
+  pointer_event_factory_->SetPointerUpTarget(pointer_id, up_target);
+  pointer_event_factory_->RemovePointerTargets(pointer_id);
+
+  EXPECT_TRUE(pointer_event_factory_->IsActive(pointer_id));
+  EXPECT_TRUE(pointer_event_factory_->IsActiveButtonsState(pointer_id));
+  EXPECT_EQ(pointer_event_factory_->GetPointerType(pointer_id),
+            WebPointerProperties::PointerType::kTouch);
+  EXPECT_EQ(pointer_event_factory_->GetPointerDownTarget(pointer_id), nullptr);
+  EXPECT_EQ(pointer_event_factory_->GetPointerUpTarget(pointer_id), nullptr);
+}
+
 }  // namespace blink

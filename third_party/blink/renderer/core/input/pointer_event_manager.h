@@ -122,6 +122,12 @@ class CORE_EXPORT PointerEventManager final
 
   Element* CurrentTouchDownElement();
 
+  PointerEventFactory::PointerTarget* GetPointerDownTarget(
+      PointerId pointer_id) const;
+  PointerEventFactory::PointerTarget* GetPointerUpTarget(
+      PointerId pointer_id) const;
+  void RemovePointerTargets(PointerId pointer_id);
+
  private:
   // We use int64_t to cover the whole range for PointerId with no
   // deleted hash value.

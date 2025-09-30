@@ -13,6 +13,7 @@
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -112,6 +113,27 @@ class CORE_EXPORT PointerEventFactory
                        const gfx::PointF& position_in_screen,
                        WebInputEvent::Type event_type);
 
+  struct PointerTarget : public GarbageCollected<PointerTarget> {
+    PointerTarget(Node* node, double client_x, double client_y)
+        : node(node), client_x(client_x), client_y(client_y) {}
+    WeakMember<Node> node;
+    double client_x;
+    double client_y;
+
+    void Trace(Visitor* visitor) const { visitor->Trace(node); }
+  };
+
+  // The pointerdown and pointerup targets get cleared via RemovePointerTargets
+  // when the click event gets dispatched. RemovePointerTargets doesn't get
+  // called if the click event is not dispatched. Calling SetPointerDownTarget
+  // clears the pointerup target to prevent the element from a previous click
+  // from being used.
+  void SetPointerDownTarget(PointerId, PointerTarget*);
+  void SetPointerUpTarget(PointerId, PointerTarget*);
+  PointerTarget* GetPointerDownTarget(PointerId) const;
+  PointerTarget* GetPointerUpTarget(PointerId) const;
+  void RemovePointerTargets(PointerId);
+
   void Trace(Visitor*) const;
 
  private:
@@ -175,6 +197,8 @@ class CORE_EXPORT PointerEventFactory
     uint32_t unique_touch_event_id = 0;
     std::optional<gfx::PointF> last_position;
     std::optional<gfx::PointF> last_rawupdate_position;
+    Member<PointerTarget> pointer_down_target;
+    Member<PointerTarget> pointer_up_target;
 
     PointerAttributes() = default;
     PointerAttributes(IncomingId incoming_id,
