@@ -25,6 +25,9 @@ void TestNewWindowDelegate::NewWindowForDetachingTab(
 void TestNewWindowDelegate::OpenUrl(const GURL& url,
                                     OpenUrlFrom from,
                                     Disposition disposition) {}
+void TestNewWindowDelegate::OpenOSSettingsPage(
+    const user_manager::User& user,
+    const OpenSettingsPageParams& params) {}
 void TestNewWindowDelegate::OpenCalculator() {}
 void TestNewWindowDelegate::OpenFileManager() {}
 void TestNewWindowDelegate::OpenDownloadsFolder() {}

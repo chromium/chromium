@@ -78,6 +78,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/new_window",
     "//chrome/test:test_support",
     "//url",
   ]

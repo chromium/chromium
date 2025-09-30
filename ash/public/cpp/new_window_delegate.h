@@ -8,7 +8,9 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/functional/bind.h"
+#include "ui/display/types/display_constants.h"
 
 class GURL;
 
@@ -18,6 +20,10 @@ class Window;
 
 namespace base {
 class FilePath;
+}
+
+namespace user_manager {
+class User;
 }
 
 namespace ui {
@@ -84,6 +90,15 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   virtual void OpenUrl(const GURL& url,
                        OpenUrlFrom from,
                        Disposition disposition) = 0;
+
+  struct OpenSettingsPageParams {
+    std::string_view sub_page = "";
+    std::optional<chromeos::settings::mojom::Setting> settings_id;
+    int64_t display_id = display::kInvalidDisplayId;
+  };
+  // Opens the OS settings page.
+  virtual void OpenOSSettingsPage(const user_manager::User& user,
+                                  const OpenSettingsPageParams& params) = 0;
 
   // Invoked when an accelerator (calculator key) is used to open calculator.
   virtual void OpenCalculator() = 0;

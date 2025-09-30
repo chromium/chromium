@@ -33,7 +33,6 @@ include_rules = [
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/managed_ui.h",
   "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/singleton_tabs.h",
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/webui/access_code_cast",
@@ -50,5 +49,7 @@ specific_include_rules = {
   "system_tray_client_impl_(browser|unit)test\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
+    "+chrome/browser/ui/ash/new_window/chrome_new_window_client.h",
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
   ],
 }

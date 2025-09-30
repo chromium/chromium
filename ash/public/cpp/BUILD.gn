@@ -472,6 +472,7 @@ component("cpp") {
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/personalization_app/mojom:mojom_shared_cpp_sources",
     "//ash/webui/personalization_app/proto",
+    "//ash/webui/settings/public/constants",
     "//base",
     "//chromeos/ash/components/audio/public/mojom",
     "//chromeos/ash/components/login/auth",
