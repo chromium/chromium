@@ -310,6 +310,12 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
         !this.isSignInState_(HistorySignInState.SIGNED_IN_SYNCING_TABS);
   }
 
+  protected isSignInStatePending_(): boolean {
+    return this.isSignInState_(
+               HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS) ||
+        this.isSignInState_(HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS);
+  }
+
   /**
    * Decide whether or not should display no synced tabs message.
    */

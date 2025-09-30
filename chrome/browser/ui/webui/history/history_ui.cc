@@ -99,10 +99,12 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"turnOnSyncPromoDesc", IDS_HISTORY_TURN_ON_SYNC_PROMO_DESC},
       {"turnOnSyncHistoryPromo", IDS_HISTORY_SYNC_HISTORY_PROMO},
       {"syncHistoryPromoBodySignedOut",
-        IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT},
+       IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_SIGNED_OUT},
       {"syncHistoryPromoBodyPendingSignIn",
        IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_PENDING_SIGN_IN},
-  };
+      {"syncHistoryPromoBodyPendingSignInSyncHistoryOn",
+       IDS_RECENT_TABS_SYNC_HISTORY_PROMO_BODY_PENDING_SIGN_IN_SYNC_HISTORY_ON},
+      {"verifyItsYou", IDS_VERIFY_IT_IS_YOU}};
   source->AddLocalizedStrings(kStrings);
 
   source->AddLocalizedString("turnOnSyncHistoryButton",

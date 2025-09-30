@@ -107,7 +107,7 @@ history-synced-device-card {
   line-height: 24px;
 }
 
-#avatar {
+.avatar {
   /** The user avatar may be transparent, add a background */
   background-color: var(--md-background-color);
   border: solid var(--md-background-color);

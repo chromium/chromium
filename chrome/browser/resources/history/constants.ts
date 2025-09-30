@@ -20,6 +20,8 @@ export enum HistorySignInState {
   WEB_ONLY_SIGNED_IN = 1,
   SIGNED_IN_NOT_SYNCING_TABS = 2,
   SIGNED_IN_SYNCING_TABS = 3,
+  SIGN_IN_PENDING_NOT_SYNCING_TABS = 4,
+  SIGN_IN_PENDING_SYNCING_TABS = 5,
 }
 // LINT.ThenChange(/chrome/browser/ui/webui/history/history_sign_in_state_watcher.h:HistorySignInState)
 

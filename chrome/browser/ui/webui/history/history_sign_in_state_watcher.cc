@@ -28,8 +28,14 @@ HistorySignInState GetHistorySignInState(
       case signin_util::SignedInState::kWebOnlySignedIn:
         return HistorySignInState::kWebOnlySignedIn;
 
-      case signin_util::SignedInState::kSignedIn:
       case signin_util::SignedInState::kSignInPending:
+        return sync_service &&
+                       sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kTabs)
+                   ? HistorySignInState::kSignInPendingSyncingTabs
+                   : HistorySignInState::kSignInPendingNotSyncingTabs;
+
+      case signin_util::SignedInState::kSignedIn:
       case signin_util::SignedInState::kSyncing:
       case signin_util::SignedInState::kSyncPaused:
         return sync_service &&

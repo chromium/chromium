@@ -406,6 +406,51 @@ suite('<history-sync-optin>', function() {
     assertTrue(isChildVisible(element, '#profile-icon'));
   });
 
+  test('check elements in pending signin without tabs sync state', async () => {
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGN_IN_PENDING_NOT_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+
+    // The other states promo elements should not be visible.
+    assertFalse(isChildVisible(element, '#signed-out-sync-history-promo-desc'));
+    assertFalse(isChildVisible(element, '#signed-in-sync-history-promo-desc'));
+    assertFalse(isChildVisible(element, '#verify-its-you-button'));
+    assertFalse(isChildVisible(
+        element, '#sign-in-pending-sync-history-promo-desc-sync-history-on'));
+
+    // The promo elements for SIGN_IN_PENDING_NOT_SYNCING_TABS state are
+    // shown correctly.
+    assertTrue(isChildVisible(element, '#sign-in-pending-avatar'));
+    assertTrue(
+        isChildVisible(element, '#sign-in-pending-sync-history-promo-desc'));
+    assertTrue(isChildVisible(element, '#sync-history-button'));
+  });
+
+  test('check elements in pending signin with tabs sync state', async () => {
+    element.configureSignInForTest({
+      signInState: HistorySignInState.SIGN_IN_PENDING_SYNCING_TABS,
+      signInAllowed: true,
+      guestSession: false,
+    });
+    await microtasksFinished();
+
+    // The other states promo elements should not be visible.
+    assertFalse(isChildVisible(element, '#sync-history-button'));
+    assertFalse(
+        isChildVisible(element, '#sign-in-pending-sync-history-promo-desc'));
+
+    // The promo elements for SIGN_IN_PENDING_SYNCING_TABS state are
+    // shown correctly.
+    assertTrue(isChildVisible(element, '#sign-in-pending-avatar'));
+    assertTrue(isChildVisible(
+        element, '#sign-in-pending-sync-history-promo-desc-sync-history-on'));
+    assertTrue(isChildVisible(element, '#verify-its-you-button'));
+  });
+
+
   test('initializes account info', async () => {
     await testService.handler.whenCalled('requestAccountInfo');
     await microtasksFinished();
