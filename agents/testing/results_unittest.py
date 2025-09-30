@@ -1,3 +1,4 @@
+#!/usr/bin/env vpython3
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -88,6 +89,23 @@ class ReportResultTest(unittest.TestCase):
         mock_client.Post.assert_called_once_with(
             test_id='some_test.yaml',
             status=result_types.PASS,
+            duration=1230,
+            test_log='log',
+            test_file='//some_test.yaml',
+        )
+
+    def test_report_result_failure(self):
+        mock_client = unittest.mock.Mock(spec=result_sink.ResultSinkClient)
+        test_result = results.TestResult(
+            test_file=CHROMIUM_SRC / 'some_test.yaml',
+            success=False,
+            duration=1.23,
+            test_log='log',
+        )
+        results.report_result(mock_client, test_result)
+        mock_client.Post.assert_called_once_with(
+            test_id='some_test.yaml',
+            status=result_types.FAIL,
             duration=1230,
             test_log='log',
             test_file='//some_test.yaml',
@@ -239,6 +257,14 @@ class ResultThreadTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, 'Test Error'):
             thread.maybe_reraise_fatal_exception()
+
+    def test_no_fatal_exception(self):
+        thread = self._create_result_thread()
+        thread.start()
+        # Should be a no-op.
+        thread.maybe_reraise_fatal_exception()
+        thread.shutdown()
+        thread.join(1)
 
     def test_print_output_on_success_true(self):
         self.print_output_on_success = True

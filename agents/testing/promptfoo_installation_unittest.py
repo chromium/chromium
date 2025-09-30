@@ -41,6 +41,23 @@ class FromNpmPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
                       check=True),
         ])
 
+    def test_setup_no_version(self):
+        """Tests that setup uses latest when no version is provided."""
+        self.fs.create_dir('/tmp/promptfoo')
+        installation = promptfoo_installation.FromNpmPromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo'), None)
+        installation.setup()
+
+        self.mock_run.assert_has_calls([
+            mock.call(['npm', 'init', '-y'],
+                      cwd=pathlib.Path('/tmp/promptfoo'),
+                      check=True),
+            mock.call(['npm', 'install', 'promptfoo@latest'],
+                      cwd=pathlib.Path('/tmp/promptfoo'),
+                      check=True),
+        ])
+
+
     def test_installed_true(self):
         """Tests that installed is true when the executable exists."""
         self.fs.create_file('/tmp/promptfoo/node_modules/.bin/promptfoo')
@@ -70,6 +87,33 @@ class FromNpmPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
 
+    def test_run_no_cwd(self):
+        """Tests that run defaults cwd to None."""
+        self.fs.create_file('/tmp/promptfoo/node_modules/.bin/promptfoo')
+        installation = promptfoo_installation.FromNpmPromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo'), 'latest')
+        installation.run(['eval', '-c', 'config.yaml'])
+        executable = '/tmp/promptfoo/node_modules/.bin/promptfoo'
+        self.mock_run.assert_called_once_with(
+            [str(pathlib.Path(executable)), 'eval', '-c', 'config.yaml'],
+            cwd=None,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+
+    def test_run_failure(self):
+        """Tests that run returns the CompletedProcess on failure."""
+        self.fs.create_file('/tmp/promptfoo/node_modules/.bin/promptfoo')
+        installation = promptfoo_installation.FromNpmPromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo'), 'latest')
+        self.mock_run.return_value = subprocess.CompletedProcess(
+            args=['/tmp/promptfoo/node_modules/.bin/promptfoo', 'eval'],
+            returncode=1,
+            stdout='error')
+        result = installation.run(['eval'])
+        self.assertEqual(result, self.mock_run.return_value)
+
     def test_cleanup(self):
         """Tests that cleanup removes the installation directory."""
         self.fs.create_dir('/tmp/promptfoo')
@@ -77,6 +121,13 @@ class FromNpmPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
             pathlib.Path('/tmp/promptfoo'), 'latest')
         installation.cleanup()
         self.assertFalse(pathlib.Path('/tmp/promptfoo').exists())
+
+    def test_cleanup_not_exists(self):
+        """Tests that cleanup does not error if the directory is gone."""
+        installation = promptfoo_installation.FromNpmPromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo_nonexistent'), 'latest')
+        installation.cleanup()
+
 
 
 class FromSourcePromptfooInstallationUnittest(fake_filesystem_unittest.TestCase
@@ -113,6 +164,29 @@ class FromSourcePromptfooInstallationUnittest(fake_filesystem_unittest.TestCase
                       cwd=pathlib.Path('/tmp/promptfoo')),
         ])
 
+    def test_setup_no_revision(self):
+        """Tests that setup does not checkout when no revision is provided."""
+        self.fs.create_dir('/tmp/promptfoo')
+        installation = promptfoo_installation.FromSourcePromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo'), None)
+        installation.setup()
+
+        self.mock_run.assert_has_calls([
+            mock.call([
+                'git', 'clone', 'https://github.com/promptfoo/promptfoo',
+                pathlib.Path('/tmp/promptfoo')
+            ],
+                      check=True),
+            mock.call(['npm', 'install'],
+                      check=True,
+                      cwd=pathlib.Path('/tmp/promptfoo')),
+            mock.call(['npm', 'run', 'build'],
+                      check=True,
+                      cwd=pathlib.Path('/tmp/promptfoo')),
+        ])
+        for call in self.mock_run.call_args_list:
+            self.assertNotIn('checkout', call.args[0])
+
     def test_installed_true(self):
         """Tests that installed is true when .git directory exists."""
         self.fs.create_dir('/tmp/promptfoo/.git')
@@ -142,6 +216,33 @@ class FromSourcePromptfooInstallationUnittest(fake_filesystem_unittest.TestCase
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT)
 
+    def test_run_no_cwd(self):
+        """Tests that run defaults cwd to None."""
+        self.fs.create_dir('/tmp/promptfoo')
+        installation = promptfoo_installation.FromSourcePromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo'), 'main')
+        installation.run(['eval', '-c', 'config.yaml'])
+        main_js = '/tmp/promptfoo/dist/src/main.js'
+        self.mock_run.assert_called_once_with(
+            [str(pathlib.Path(main_js)), 'eval', '-c', 'config.yaml'],
+            cwd=None,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+
+    def test_run_failure(self):
+        """Tests that run returns the CompletedProcess on failure."""
+        self.fs.create_dir('/tmp/promptfoo')
+        installation = promptfoo_installation.FromSourcePromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo'), 'main')
+        self.mock_run.return_value = subprocess.CompletedProcess(
+            args=['/tmp/promptfoo/dist/src/main.js', 'eval'],
+            returncode=1,
+            stdout='error')
+        result = installation.run(['eval'])
+        self.assertEqual(result, self.mock_run.return_value)
+
     def test_cleanup(self):
         """Tests that cleanup removes the installation directory."""
         self.fs.create_dir('/tmp/promptfoo')
@@ -149,6 +250,13 @@ class FromSourcePromptfooInstallationUnittest(fake_filesystem_unittest.TestCase
             pathlib.Path('/tmp/promptfoo'), 'main')
         installation.cleanup()
         self.assertFalse(pathlib.Path('/tmp/promptfoo').exists())
+
+    def test_cleanup_not_exists(self):
+        """Tests that cleanup does not error if the directory is gone."""
+        installation = promptfoo_installation.FromSourcePromptfooInstallation(
+            pathlib.Path('/tmp/promptfoo_nonexistent'), 'main')
+        installation.cleanup()
+
 
 
 class PreinstalledPromptfooInstallationUnittest(
@@ -297,6 +405,22 @@ class SetupPromptfooUnittest(fake_filesystem_unittest.TestCase):
         mock_src_instance.setup.assert_called_once()
         mock_npm_instance.cleanup.assert_not_called()
         mock_npm_instance.setup.assert_not_called()
+
+    def test_use_npm_with_version_and_revision(self):
+        """Tests that npm is used when a version and revision are provided."""
+        self.fs.create_dir('/tmp/promptfoo')
+        mock_npm_instance = self.mock_npm_install.return_value
+        mock_src_instance = self.mock_src_install.return_value
+        promptfoo_installation.setup_promptfoo(pathlib.Path('/tmp/promptfoo'),
+                                               'my-rev', '0.42.0')
+        self.mock_npm_install.assert_called_once_with(
+            pathlib.Path('/tmp/promptfoo'), '0.42.0')
+        self.mock_src_install.assert_called_once_with(
+            pathlib.Path('/tmp/promptfoo'), 'my-rev')
+        mock_npm_instance.cleanup.assert_called_once()
+        mock_npm_instance.setup.assert_called_once()
+        mock_src_instance.cleanup.assert_not_called()
+        mock_src_instance.setup.assert_not_called()
 
 
 if __name__ == '__main__':

@@ -411,6 +411,35 @@ class PerformChromiumSetupUnittest(unittest.TestCase):
         mock_build_chromium.assert_called_once_with(pathlib.Path('/root/src'))
 
 
+class FetchSandboxImageUnittest(unittest.TestCase):
+    """Unit tests for the `_fetch_sandbox_image` function."""
+
+    @mock.patch('subprocess.run')
+    def test_fetch_sandbox_image_success(self, mock_subprocess_run):
+        """Tests that _fetch_sandbox_image returns true on success."""
+        mock_subprocess_run.return_value = subprocess.CompletedProcess(
+            args=['gemini', '--sandbox', 'no-op'],
+            returncode=0,
+            stdout='',
+        )
+        with self.assertLogs(level='INFO') as cm:
+            result = eval_prompts._fetch_sandbox_image()
+            self.assertTrue(result)
+            self.assertIn('Pre-fetching sandbox image', cm.output[0])
+
+    @mock.patch('subprocess.run')
+    def test_fetch_sandbox_image_failure(self, mock_subprocess_run):
+        """Tests that _fetch_sandbox_image returns false on failure."""
+        error = subprocess.CalledProcessError(returncode=1, cmd='gemini')
+        error.stdout = 'mocked output'
+        mock_subprocess_run.side_effect = error
+        with self.assertLogs(level='ERROR') as cm:
+            result = eval_prompts._fetch_sandbox_image()
+            self.assertFalse(result)
+            self.assertIn('Failed to pre-fetch sandbox image', cm.output[0])
+            self.assertIn('mocked output', cm.output[0])
+
+
 class RunPromptEvalTestsUnittest(unittest.TestCase):
     """Unit tests for the `_run_prompt_eval_tests` function."""
 

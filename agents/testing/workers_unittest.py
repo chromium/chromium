@@ -6,6 +6,7 @@
 
 import pathlib
 import queue
+import shutil
 import subprocess
 import time
 import unittest
@@ -89,6 +90,27 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
                 pathlib.Path('/tmp/workdir'),
             ],
             stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+
+    def test_enter_verbose(self):
+        """Tests that verbose logging is enabled when verbose is true."""
+        self.mock_check_btrfs.return_value = False
+        workdir = workers.WorkDir('workdir',
+                                  pathlib.Path('/tmp/src'),
+                                  clean=False,
+                                  verbose=True,
+                                  force=False)
+        with workdir as w:
+            self.assertEqual(w, workdir)
+
+        self.mock_check_call.assert_called_once_with(
+            [
+                'gclient-new-workdir.py',
+                pathlib.Path('/tmp/src'),
+                pathlib.Path('/tmp/workdir'),
+            ],
+            stdout=None,  # Output surfaced instead of going to DEVNULL.
             stderr=subprocess.STDOUT,
         )
 
@@ -179,6 +201,32 @@ class WorkDirUnittest(fake_filesystem_unittest.TestCase):
 
         self.mock_call.assert_not_called()
         self.mock_rmtree.assert_not_called()
+
+
+    def test_exit_clean_btrfs_fallback(self):
+        """Tests that shutil is used when btrfs subvolume delete fails."""
+        self.mock_check_btrfs.return_value = True
+        self.mock_call.return_value = 1
+        workdir = workers.WorkDir('workdir',
+                                  pathlib.Path('/tmp/src'),
+                                  clean=True,
+                                  verbose=False,
+                                  force=False)
+        with workdir:
+            pass
+
+        self.mock_call.assert_called_once_with(
+            [
+                'sudo',
+                'btrfs',
+                'subvolume',
+                'delete',
+                pathlib.Path('/tmp/workdir'),
+            ],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+        )
+        self.mock_rmtree.assert_called_once_with(pathlib.Path('/tmp/workdir'))
 
 
 class WorkerThreadUnittest(unittest.TestCase):
@@ -301,6 +349,12 @@ class WorkerThreadUnittest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Test Error'):
             worker.maybe_reraise_fatal_exception()
 
+    def test_no_fatal_exception(self):
+        """Tests that no exception is raised when there is no fatal error."""
+        worker = self._create_and_run_worker([])
+        # Should be a no-op.
+        worker.maybe_reraise_fatal_exception()
+
     def test_sandbox_and_verbose(self):
         """Tests that sandbox and verbose flags are passed to promptfoo."""
         self.worker_options.sandbox = True
@@ -312,6 +366,9 @@ class WorkerThreadUnittest(unittest.TestCase):
         self.assertIn('--var', command)
         self.assertIn('sandbox=True', command)
         self.assertIn('verbose=True', command)
+        self.assertIn(f'console_width={shutil.get_terminal_size().columns}',
+                      command)
+
 
     def test_gemini_cli_bin(self):
         """Tests that gemini_cli_bin is passed to promptfoo."""
@@ -474,6 +531,21 @@ class WorkerPoolUnittest(unittest.TestCase):
         self.assertEqual(mock_workers.join.call_count, 2)
         mock_result.join.assert_called_once()
 
+    def test_shutdown_blocking_timeout(self):
+        """Tests that shutdown_blocking logs an error on timeout."""
+        pool = workers.WorkerPool(
+            num_workers=1,
+            promptfoo=self.mock_promptfoo,
+            worker_options=self.worker_options,
+            print_output_on_success=False,
+        )
+        self.mock_worker_thread.return_value.join.side_effect = None
+        self.mock_worker_thread.return_value.is_alive.return_value = True
+        with self.assertLogs(level='ERROR') as cm:
+            pool.shutdown_blocking(0.01)
+            self.assertIn('Failed to gracefully shut down thread',
+                          cm.output[0])
+
     def test_wait_for_all_queued_tests_with_multiple_workers(self):
         """Tests that the pool waits for all tests with multiple workers."""
         self.mock_atomic_counter.return_value.get.side_effect = [0, 0, 1, 1, 2]
@@ -523,6 +595,19 @@ class WorkerPoolUnittest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Result Error'):
             pool.wait_for_all_queued_tests()
         pool.shutdown_blocking(1)
+
+    def test_del(self):
+        """Tests that the destructor calls shutdown_blocking."""
+        pool = workers.WorkerPool(
+            num_workers=1,
+            promptfoo=self.mock_promptfoo,
+            worker_options=self.worker_options,
+            print_output_on_success=False,
+        )
+        shutdown_mock = mock.Mock()
+        pool.shutdown_blocking = shutdown_mock
+        del pool
+        shutdown_mock.assert_called_once_with(2)
 
 
 if __name__ == '__main__':
