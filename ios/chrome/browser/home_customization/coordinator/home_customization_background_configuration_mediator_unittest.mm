@@ -737,7 +737,9 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   [mediator_
       fetchBackgroundCustomizationUserUploadedImage:base::SysUTF8ToNSString(
                                                         image_path.value())
-                                         completion:^(UIImage* image) {
+                                         completion:^(
+                                             UIImage* image,
+                                             UserUploadedImageError error) {
                                            actual_image = image;
                                            run_loop_ptr->Quit();
                                          }];

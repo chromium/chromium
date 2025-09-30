@@ -7,7 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "url/gurl.h"
+
+using UserUploadImageCompletion = void (^)(UIImage*, UserUploadedImageError);
 
 @protocol BackgroundCustomizationConfiguration;
 
@@ -31,7 +34,8 @@
 // collection view cell when it becomes visible.
 - (void)fetchBackgroundCustomizationUserUploadedImage:(NSString*)imagePath
                                            completion:
-                                               (void (^)(UIImage*))completion;
+                                               (UserUploadImageCompletion)
+                                                   completion;
 
 // Applies the given background configuration to the NTP.
 // This method updates the background based on the provided configuration.

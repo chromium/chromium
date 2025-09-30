@@ -306,7 +306,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 - (void)fetchBackgroundCustomizationUserUploadedImage:(NSString*)imagePath
                                            completion:
-                                               (void (^)(UIImage*))completion {
+                                               (UserUploadImageCompletion)
+                                                   completion {
   DCHECK(imagePath.length > 0);
   CHECK(_userUploadedImageManager);
 

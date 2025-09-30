@@ -173,8 +173,14 @@ enum class UserUploadedImageError : NSInteger {
   // Failed to convert the image to JPEG.
   kFailedToConvertToJPEG,
 
+  // Failed to read the image data from its file path.
+  kFailedToReadFile,
+
+  // Failed to create a UIImage from the loaded data.
+  kFailedToCreateImageFromData,
+
   // Must be last.
-  kMaxValue = kFailedToConvertToJPEG,
+  kMaxValue = kFailedToCreateImageFromData,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSUserUploadedImageError)
 

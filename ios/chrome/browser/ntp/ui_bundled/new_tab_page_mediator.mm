@@ -735,12 +735,17 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       __weak __typeof(self) weakSelf = self;
       _userUploadedImageManager->LoadUserUploadedImage(
           base::FilePath(userBackground.image_path),
-          base::BindOnce(^(UIImage* image) {
+          base::BindOnce(^(UIImage* image, UserUploadedImageError error) {
             [weakSelf handleUserUploadedImage:image
                            framingCoordinates:framingCoordinates];
             [traitAccessor setBoolForNewTabPageImageBackgroundTrait:YES];
             [traitAccessor
                 setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+            if (!image) {
+              base::UmaHistogramEnumeration("IOS.HomeCustomization.Background."
+                                            "Ntp.ImageUserUploadedFetchError",
+                                            error);
+            }
           }));
       if (initialLoad) {
         base::UmaHistogramEnumeration(
