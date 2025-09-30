@@ -110,6 +110,13 @@ class TouchToFillPaymentMethodViewBridge {
     }
 
     @CalledByNative
+    private void showErrorScreen(
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String description) {
+        mComponent.showErrorScreen(title, description);
+    }
+
+    @CalledByNative
     private void hideSheet() {
         mComponent.hideSheet();
     }

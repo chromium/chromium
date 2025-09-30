@@ -126,6 +126,14 @@ class TouchToFillPaymentMethodControllerBridge
         }
     }
 
+    @Override
+    public void onErrorOkPressed() {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .onErrorOkPressed(mNativeTouchToFillPaymentMethodViewController);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(
@@ -150,5 +158,7 @@ class TouchToFillPaymentMethodControllerBridge
         void loyaltyCardSuggestionSelected(
                 long nativeTouchToFillPaymentMethodViewController,
                 @JniType("LoyaltyCard") LoyaltyCard loyaltyCardNumber);
+
+        void onErrorOkPressed(long nativeTouchToFillPaymentMethodViewController);
     }
 }

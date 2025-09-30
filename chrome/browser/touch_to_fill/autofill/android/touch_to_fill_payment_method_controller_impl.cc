@@ -181,6 +181,29 @@ bool TouchToFillPaymentMethodControllerImpl::ShowBnplIssuers(
   return true;
 }
 
+bool TouchToFillPaymentMethodControllerImpl::ShowErrorScreen(
+    std::unique_ptr<TouchToFillPaymentMethodView> view,
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    const std::u16string& title,
+    const std::u16string& description) {
+  if (view) {
+    // If there is a view already being shown, reset it and use the new provided
+    // view.
+    if (view_) {
+      ResetJavaObject();
+    }
+    view_ = std::move(view);
+  }
+
+  if (!view_ || !view_->ShowErrorScreen(this, title, description)) {
+    ResetJavaObject();
+    return false;
+  }
+
+  delegate_ = delegate;
+  return true;
+}
+
 void TouchToFillPaymentMethodControllerImpl::Hide() {
   if (view_) {
     view_->Hide();
@@ -227,6 +250,8 @@ void TouchToFillPaymentMethodControllerImpl::OnDismissed(
   delegate_.reset();
   ResetJavaObject();
   keyboard_suppressor_.Unsuppress();
+  // TODO(crbug.com/430575808): Run callback `on_bnpl_flow_dismissed_by_user_`
+  // if provided by an ongoing BNPL UI flow.
 }
 
 void TouchToFillPaymentMethodControllerImpl::ScanCreditCard(JNIEnv* env) {
@@ -272,6 +297,14 @@ void TouchToFillPaymentMethodControllerImpl::LoyaltyCardSuggestionSelected(
     const LoyaltyCard& loyalty_card) {
   if (delegate_) {
     delegate_->LoyaltyCardSuggestionSelected(loyalty_card);
+  }
+}
+
+void TouchToFillPaymentMethodControllerImpl::OnErrorOkPressed(JNIEnv* env) {
+  if (delegate_) {
+    delegate_->OnErrorOkPressed();
+  } else {
+    Hide();
   }
 }
 

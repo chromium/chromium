@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_H_
 
+#include <string>
+
 #include "base/containers/span.h"
 
 namespace autofill {
@@ -38,6 +40,10 @@ class TouchToFillPaymentMethodView {
       TouchToFillPaymentMethodViewController* controller) = 0;
   virtual bool ShowBnplIssuers(
       base::span<const BnplIssuer> bnpl_issuers_to_suggest) = 0;
+  virtual bool ShowErrorScreen(
+      TouchToFillPaymentMethodViewController* controller,
+      const std::u16string& title,
+      const std::u16string& description) = 0;
   virtual void Hide() = 0;
 };
 

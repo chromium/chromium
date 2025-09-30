@@ -30,6 +30,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties.ERROR_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FOCUSED_VIEW_ID_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_CALLBACK;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.FooterProperties.OPEN_MANAGEMENT_UI_TITLE_ID;
@@ -38,6 +39,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.SUBTITLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.HeaderProperties.TITLE_STRING;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_NICKNAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.IBAN_VALUE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.IbanProperties.ON_IBAN_CLICK_ACTION;
@@ -332,23 +334,27 @@ class TouchToFillPaymentMethodViewBinder {
 
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param view The {@link View} of the header to update.
      * @param key The {@link PropertyKey} which changed.
      */
     static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
+        ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
+        TextView sheetHeaderTitle = view.findViewById(R.id.touch_to_fill_sheet_title);
+        TextView sheetHeaderSubtitle = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
+
         if (propertyKey == IMAGE_DRAWABLE_ID) {
-            ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
             sheetHeaderImage.setImageDrawable(
                     AppCompatResources.getDrawable(
                             view.getContext(), model.get(IMAGE_DRAWABLE_ID)));
         } else if (propertyKey == TITLE_ID) {
-            TextView sheetHeaderTitle = view.findViewById(R.id.touch_to_fill_sheet_title);
             sheetHeaderTitle.setText(view.getContext().getString(model.get(TITLE_ID)));
         } else if (propertyKey == SUBTITLE_ID) {
-            TextView sheetHeaderTitle = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
-            sheetHeaderTitle.setVisibility(View.VISIBLE);
-            sheetHeaderTitle.setText(view.getContext().getString(model.get(SUBTITLE_ID)));
+            sheetHeaderSubtitle.setVisibility(View.VISIBLE);
+            sheetHeaderSubtitle.setText(view.getContext().getString(model.get(SUBTITLE_ID)));
+        } else if (propertyKey == TITLE_STRING) {
+            sheetHeaderTitle.setText(model.get(TITLE_STRING));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -578,6 +584,35 @@ class TouchToFillPaymentMethodViewBinder {
         if (propertyKey == PROGRESS_CONTENT_DESCRIPTION_ID) {
             progressSpinner.setContentDescription(
                     view.getContext().getString(model.get(PROGRESS_CONTENT_DESCRIPTION_ID)));
+        } else {
+            assert false : "Unhandled update to property:" + propertyKey;
+        }
+    }
+
+    /**
+     * Factory used to create a new error description item inside the ListView inside the
+     * TouchToFillPaymentMethodView.
+     *
+     * @param parent The parent {@link ViewGroup} of the new item.
+     * @return A new {@link View} for the error description item.
+     */
+    static View createErrorDescriptionView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.touch_to_fill_error_description_sheet_item, parent, false);
+    }
+
+    /**
+     * Called whenever a property in the given model changes. It updates the given view accordingly.
+     *
+     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
+     * @param view The {@link View} of the error description to update.
+     * @param propertyKey The {@link PropertyKey} which changed.
+     */
+    static void bindErrorDescriptionView(PropertyModel model, View view, PropertyKey propertyKey) {
+        if (propertyKey == ERROR_DESCRIPTION_STRING) {
+            TextView errorDescriptionTextView =
+                    view.findViewById(R.id.touch_to_fill_error_description);
+            errorDescriptionTextView.setText(model.get(ERROR_DESCRIPTION_STRING));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

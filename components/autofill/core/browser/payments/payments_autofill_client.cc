@@ -267,6 +267,12 @@ bool PaymentsAutofillClient::ShowTouchToFillBnplIssuers(
   return false;
 }
 
+bool PaymentsAutofillClient::ShowTouchToFillError(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    const AutofillErrorDialogContext& context) {
+  return false;
+}
+
 void PaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 const PaymentsDataManager& PaymentsAutofillClient::GetPaymentsDataManager()

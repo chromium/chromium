@@ -69,6 +69,9 @@ class TouchToFillPaymentMethodProperties {
 
         // The screen displaying all available BNPL issuers.
         int BNPL_ISSUER_SELECTION_SCREEN = 3;
+
+        // The screen displaying the error message and "OK" button.
+        int ERROR_SCREEN = 4;
     }
 
     @interface ItemType {
@@ -87,8 +90,8 @@ class TouchToFillPaymentMethodProperties {
         // An item which displays all user's loyalty cards upon click.
         int ALL_LOYALTY_CARDS = 4;
 
-        // A "Continue" button, which is shown when there is only one payment
-        // method available.
+        // A section containing a clickable button.
+        // TODO(crbug.com/430575808): Rename "FILL_BUTTON" to "BUTTON" to reflect its new use cases.
         int FILL_BUTTON = 5;
 
         // A button that redirects the user to the Wallet settings in Chrome.
@@ -111,6 +114,9 @@ class TouchToFillPaymentMethodProperties {
 
         // A section containing the BNPL issuer data.
         int BNPL_ISSUER = 12;
+
+        // A section containing the error description.
+        int ERROR_DESCRIPTION = 13;
     }
 
     /** Metadata associated with a card's image. */
@@ -297,8 +303,12 @@ class TouchToFillPaymentMethodProperties {
                 new PropertyModel.ReadableIntPropertyKey("title_id");
         static final PropertyModel.ReadableIntPropertyKey SUBTITLE_ID =
                 new PropertyModel.ReadableIntPropertyKey("subtitle_id");
+        static final PropertyModel.ReadableObjectPropertyKey<String> TITLE_STRING =
+                new PropertyModel.ReadableObjectPropertyKey<>("title_string");
 
-        static final PropertyKey[] ALL_KEYS = {IMAGE_DRAWABLE_ID, TITLE_ID, SUBTITLE_ID};
+        static final PropertyKey[] ALL_KEYS = {
+            IMAGE_DRAWABLE_ID, TITLE_ID, SUBTITLE_ID, TITLE_STRING
+        };
 
         private HeaderProperties() {}
     }
@@ -318,6 +328,16 @@ class TouchToFillPaymentMethodProperties {
         };
 
         private BnplSelectionProgressHeaderProperties() {}
+    }
+
+    /** Properties for an error description entry in the TouchToFill sheet for payments. */
+    static class ErrorDescriptionProperties {
+        static final PropertyModel.ReadableObjectPropertyKey<String> ERROR_DESCRIPTION_STRING =
+                new PropertyModel.ReadableObjectPropertyKey<>("error_description_string");
+
+        static final PropertyKey[] ALL_KEYS = {ERROR_DESCRIPTION_STRING};
+
+        private ErrorDescriptionProperties() {}
     }
 
     /**

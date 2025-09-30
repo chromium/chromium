@@ -5,6 +5,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_delegate_android_impl.h"
@@ -67,6 +68,11 @@ class MockTouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView
   MOCK_METHOD(bool,
               ShowBnplIssuers,
               (base::span<const BnplIssuer> bnpl_issuers_to_suggest));
+  MOCK_METHOD(bool,
+              ShowErrorScreen,
+              (TouchToFillPaymentMethodViewController * controller,
+               const std::u16string& title,
+               const std::u16string& description));
   MOCK_METHOD(void, Hide, ());
 };
 
@@ -411,6 +417,81 @@ TEST_F(TouchToFillPaymentMethodControllerTest,
   OnBeforeAskForValuesToFill();
   payment_method_controller().ShowBnplIssuers(ttf_delegate().GetWeakPointer(),
                                               bnpl_issuers_);
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest, ShowErrorScreenOnNewView) {
+  const std::u16string title = u"Error Title";
+  const std::u16string description = u"Error Description";
+
+  EXPECT_CALL(*mock_view_,
+              ShowErrorScreen(&payment_method_controller(), title, description))
+      .WillOnce(Return(true));
+
+  OnBeforeAskForValuesToFill();
+  EXPECT_TRUE(payment_method_controller().ShowErrorScreen(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), title,
+      description));
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowErrorScreenOnPreexistingView) {
+  const std::u16string title = u"Error Title";
+  const std::u16string description = u"Error Description";
+
+  EXPECT_CALL(*mock_view_,
+              ShowPaymentMethods(&payment_method_controller(),
+                                 ElementsAreArray(suggestions_),
+                                 /*should_show_scan_credit_card=*/true))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_view_,
+              ShowErrorScreen(&payment_method_controller(), title, description))
+      .WillOnce(Return(true));
+
+  OnBeforeAskForValuesToFill();
+  EXPECT_TRUE(payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_));
+  EXPECT_TRUE(payment_method_controller().ShowErrorScreen(
+      /*view=*/nullptr, ttf_delegate().GetWeakPointer(), title, description));
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowErrorScreenAbortsIfNoViewAvailable) {
+  EXPECT_CALL(*mock_view_, ShowErrorScreen).Times(0);
+
+  OnBeforeAskForValuesToFill();
+  EXPECT_FALSE(payment_method_controller().ShowErrorScreen(
+      /*view=*/nullptr, ttf_delegate().GetWeakPointer(), u"Error Title",
+      u"Error Description"));
+  OnAfterAskForValuesToFill();
+  OnAfterAskForValuesToFill();
+}
+
+TEST_F(TouchToFillPaymentMethodControllerTest,
+       ShowErrorScreenPrefersUsingNewViewOverPreexistingView) {
+  std::unique_ptr<MockTouchToFillPaymentMethodViewImpl> new_mock_view =
+      std::make_unique<MockTouchToFillPaymentMethodViewImpl>();
+  const std::u16string title = u"Error Title";
+  const std::u16string description = u"Error Description";
+
+  EXPECT_CALL(*mock_view_,
+              ShowPaymentMethods(&payment_method_controller(),
+                                 ElementsAreArray(suggestions_),
+                                 /*should_show_scan_credit_card=*/true))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_view_, ShowErrorScreen).Times(0);
+  EXPECT_CALL(*new_mock_view,
+              ShowErrorScreen(&payment_method_controller(), title, description))
+      .WillOnce(Return(true));
+
+  OnBeforeAskForValuesToFill();
+  EXPECT_TRUE(payment_method_controller().ShowPaymentMethods(
+      std::move(mock_view_), ttf_delegate().GetWeakPointer(), suggestions_));
+  EXPECT_TRUE(payment_method_controller().ShowErrorScreen(
+      std::move(new_mock_view), ttf_delegate().GetWeakPointer(), title,
+      description));
   OnAfterAskForValuesToFill();
 }
 

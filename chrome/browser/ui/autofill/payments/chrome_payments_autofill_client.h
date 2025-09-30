@@ -208,6 +208,8 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   bool ShowTouchToFillBnplIssuers(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::BnplIssuer> bnpl_issurs_to_suggest) override;
+  bool ShowTouchToFillError(base::WeakPtr<TouchToFillDelegate> delegate,
+                            const AutofillErrorDialogContext& context) override;
   void HideTouchToFillPaymentMethod() override;
   std::unique_ptr<webauthn::InternalAuthenticator>
   CreateCreditCardInternalAuthenticator(AutofillDriver* driver) override;

@@ -631,6 +631,14 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const BnplIssuer> bnpl_issuers_to_suggest);
 
+  // Shows the BNPL error screen, if possible, returning `true` on success.
+  // Should be called only on Android if the feature is supported by the
+  // platform. If `delegate` is present, it will be notified of events.
+  // `context` will decide what strings are displayed for the title and
+  // description.
+  virtual bool ShowTouchToFillError(base::WeakPtr<TouchToFillDelegate> delegate,
+                                    const AutofillErrorDialogContext& context);
+
   // Hides the Touch To Fill surface for filling payment information if one is
   // currently shown. Should be called only if the feature is supported by the
   // platform.

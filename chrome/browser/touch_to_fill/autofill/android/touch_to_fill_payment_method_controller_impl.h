@@ -62,6 +62,10 @@ class TouchToFillPaymentMethodControllerImpl
   bool ShowBnplIssuers(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const BnplIssuer> bnpl_issuers_to_suggest) override;
+  bool ShowErrorScreen(std::unique_ptr<TouchToFillPaymentMethodView> view,
+                       base::WeakPtr<TouchToFillDelegate> delegate,
+                       const std::u16string& title,
+                       const std::u16string& description) override;
   void Hide() override;
 
   // content::WebContentsObserver:
@@ -87,6 +91,7 @@ class TouchToFillPaymentMethodControllerImpl
   void ServerIbanSuggestionSelected(JNIEnv* env, long instrument_id) override;
   void LoyaltyCardSuggestionSelected(JNIEnv* env,
                                      const LoyaltyCard& loyalty_card) override;
+  void OnErrorOkPressed(JNIEnv* env) override;
   int GetJavaResourceId(int native_resource_id) override;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
   void ResetJavaObject();

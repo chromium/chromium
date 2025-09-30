@@ -17,7 +17,6 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -70,6 +69,13 @@ class MockTouchToFillPaymentMethodController
               (base::WeakPtr<TouchToFillDelegate>,
                base::span<const BnplIssuer>),
               (override));
+  MOCK_METHOD(bool,
+              ShowErrorScreen,
+              (std::unique_ptr<TouchToFillPaymentMethodView> view,
+               base::WeakPtr<TouchToFillDelegate> delegate,
+               const std::u16string& title,
+               const std::u16string& description),
+              (override));
   MOCK_METHOD(void, OnDismissed, (JNIEnv*, bool), (override));
   MOCK_METHOD(void, ScanCreditCard, (JNIEnv*), (override));
   MOCK_METHOD(void, ShowPaymentMethodSettings, (JNIEnv*), (override));
@@ -86,6 +92,7 @@ class MockTouchToFillPaymentMethodController
               LoyaltyCardSuggestionSelected,
               (JNIEnv*, const LoyaltyCard&),
               (override));
+  MOCK_METHOD(void, OnErrorOkPressed, (JNIEnv*), (override));
   MOCK_METHOD(int, GetJavaResourceId, (int), (override));
   MOCK_METHOD(base::android::ScopedJavaLocalRef<jobject>,
               GetJavaObject,

@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_VIEW_IMPL_H_
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace content {
 class WebContents;
@@ -53,6 +54,9 @@ class TouchToFillPaymentMethodViewImpl : public TouchToFillPaymentMethodView {
       TouchToFillPaymentMethodViewController* controller) override;
   bool ShowBnplIssuers(
       base::span<const BnplIssuer> bnpl_issuers_to_suggest) override;
+  bool ShowErrorScreen(TouchToFillPaymentMethodViewController* controller,
+                       const std::u16string& title,
+                       const std::u16string& description) override;
   void Hide() override;
 
   // The corresponding Java TouchToFillPaymentMethodViewBridge.

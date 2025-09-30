@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -408,6 +409,10 @@ void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {
     ttf_payment_method_state_ = TouchToFillState::kWasShown;
     dismissed_by_user_ = dismissed_by_user;
   }
+}
+
+void TouchToFillDelegateAndroidImpl::OnErrorOkPressed() {
+  HideTouchToFill();
 }
 
 void TouchToFillDelegateAndroidImpl::LogTriggerOutcomeMetrics(

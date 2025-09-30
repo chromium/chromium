@@ -72,6 +72,9 @@ interface TouchToFillPaymentMethodComponent {
 
         /** Called when the user clicks the "Manage loyalty cards" button. */
         void openPassesManagementUi();
+
+        /** Called when the user clicks the "OK" button on the error screen. */
+        void onErrorOkPressed();
     }
 
     /**
@@ -133,7 +136,7 @@ interface TouchToFillPaymentMethodComponent {
     void updateBnplPaymentMethod(
             @Nullable Long extractedAmount, boolean isAmountSupportedByAnyIssuer);
 
-    /** Displays a progress screen bottomsheet. */
+    /** Displays a progress screen bottom sheet. */
     void showProgressScreen();
 
     /**
@@ -144,6 +147,14 @@ interface TouchToFillPaymentMethodComponent {
      *     from.
      */
     void showBnplIssuers(List<PersonalDataManager.BnplIssuer> bnplIssuers);
+
+    /**
+     * Displays an error screen bottom sheet.
+     *
+     * @param title The title to be displayed on the error screen.
+     * @param description The description to be displayed on the error screen.
+     */
+    void showErrorScreen(String title, String description);
 
     /** Hides the bottom sheet if shown. */
     void hideSheet();

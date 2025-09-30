@@ -1062,6 +1062,14 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
       true, 1);
 }
 
+TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest, OnErrorOkPressed) {
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(payments_autofill_client(), HideTouchToFillPaymentMethod);
+
+  touch_to_fill_delegate_->OnErrorOkPressed();
+}
+
 class TouchToFillDelegateAndroidImplIbanUnitTest
     : public TouchToFillDelegateAndroidImplUnitTest {
  protected:

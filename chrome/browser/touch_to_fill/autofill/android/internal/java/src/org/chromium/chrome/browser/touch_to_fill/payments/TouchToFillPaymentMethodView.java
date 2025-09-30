@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill.payments;
 
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ALL_LOYALTY_CARDS_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.BNPL_ISSUER_SELECTION_SCREEN;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.ERROR_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.HOME_SCREEN;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ScreenId.PROGRESS_SCREEN;
 
@@ -59,6 +60,7 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 case ItemType.TERMS_LABEL:
                 case ItemType.PROGRESS_ICON:
                 case ItemType.BNPL_SELECTION_PROGRESS_HEADER:
+                case ItemType.ERROR_DESCRIPTION:
                     return true;
                 case ItemType.CREDIT_CARD:
                 case ItemType.IBAN:
@@ -204,6 +206,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 return 2;
             case BNPL_ISSUER_SELECTION_SCREEN:
                 return 3;
+            case ERROR_SCREEN:
+                return 4;
         }
         assert false : "Undefined ScreenId: " + screenId;
         return 0;
@@ -219,6 +223,8 @@ class TouchToFillPaymentMethodView extends TouchToFillViewBase {
                 return R.id.touch_to_fill_progress_screen;
             case BNPL_ISSUER_SELECTION_SCREEN:
                 return R.id.touch_to_fill_bnpl_issuer_selection_screen;
+            case ERROR_SCREEN:
+                return R.id.touch_to_fill_error_screen;
         }
         assert false : "Undefined ScreenId: " + screenId;
         return 0;

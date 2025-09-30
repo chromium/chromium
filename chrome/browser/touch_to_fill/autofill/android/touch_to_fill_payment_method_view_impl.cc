@@ -5,6 +5,7 @@
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 
 #include <algorithm>
+#include <string>
 #include <variant>
 
 #include "base/android/jni_android.h"
@@ -206,6 +207,27 @@ bool TouchToFillPaymentMethodViewImpl::ShowBnplIssuers(
 
   Java_TouchToFillPaymentMethodViewBridge_showBnplIssuers(
       env, java_object_, std::move(issuers_array));
+  return true;
+}
+
+bool TouchToFillPaymentMethodViewImpl::ShowErrorScreen(
+    TouchToFillPaymentMethodViewController* controller,
+    const std::u16string& title,
+    const std::u16string& description) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // If the TTF surface isn't already showing, and a new surface is not ready to
+  // show, return that showing the error screen failed, as the error screen can
+  // not be shown.
+  if (!java_object_ && !IsReadyToShow(controller, env)) {
+    return false;
+  }
+
+  // Use either the old `java_object_` or the new one created in
+  // `IsReadyToShow()` to show the error screen.
+  Java_TouchToFillPaymentMethodViewBridge_showErrorScreen(env, java_object_,
+                                                          title, description);
+
   return true;
 }
 
