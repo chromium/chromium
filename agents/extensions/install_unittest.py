@@ -6,7 +6,7 @@
 """Unit tests for install.py."""
 
 import io
-import pathlib
+from pathlib import Path
 import subprocess
 import unittest
 import unittest.mock
@@ -22,7 +22,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
         """Sets up the test environment."""
         self.setUpPyfakefs(additional_skip_names=['subprocess'])
         self.tmpdir = '/tmp/test'
-        self.project_root = pathlib.Path(self.tmpdir) / 'src'
+        self.project_root = Path(self.tmpdir) / 'src'
         self.fs.create_dir(self.project_root)
 
         self.source_extensions_dir = self.project_root / 'agents' / 'extensions'
@@ -310,7 +310,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
                                                mock_home):
         """Tests that fix skips extensions that already exist for the user."""
         mock_get_project_root.return_value = self.project_root
-        fake_home = pathlib.Path(self.tmpdir) / 'home'
+        fake_home = Path(self.tmpdir) / 'home'
         mock_home.return_value = fake_home
 
         # Set up a user-level extension
@@ -357,8 +357,7 @@ class InstallTest(fake_filesystem_unittest.TestCase):
 
     def test_get_project_root_error(self):
         """Tests the get_project_root function when an error occurs."""
-        with unittest.mock.patch('install.__file__',
-                                 pathlib.Path('invalid/path')):
+        with unittest.mock.patch('install.__file__', Path('invalid/path')):
             with unittest.mock.patch('sys.stderr',
                                      new_callable=io.StringIO) as mock_stderr:
                 project_root = install.get_project_root()
@@ -382,6 +381,25 @@ class InstallTest(fake_filesystem_unittest.TestCase):
     def test_get_gemini_version_called_process_error(self, _mock_run):
         """Test that we return none when there is a process error."""
         self.assertIsNone(install.get_gemini_version())
+
+    # pylint: disable=protected-access
+    @unittest.mock.patch('shutil.which')
+    def test_get_gemini_executable(self, mock_which):
+        """Tests the _get_gemini_executable function."""
+        # Test when gemini is in PATH
+        gemini_in_path = Path('/usr/bin/gemini')
+        mock_which.return_value = str(gemini_in_path)
+        self.assertEqual(install._get_gemini_executable(), str(gemini_in_path))
+
+        # Test when gemini is not in PATH, but fallback exists
+        mock_which.return_value = None
+        fallback_path = Path('/google/bin/releases/gemini-cli/tools/gemini')
+        self.fs.create_file(fallback_path)
+        self.assertEqual(install._get_gemini_executable(), str(fallback_path))
+
+        # Test when gemini is not in PATH and fallback does not exist
+        self.fs.remove(fallback_path)
+        self.assertEqual(install._get_gemini_executable(), 'gemini')
 
 
 if __name__ == '__main__':
