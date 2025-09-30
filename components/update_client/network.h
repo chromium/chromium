@@ -44,27 +44,22 @@ class NetworkFetcher {
   // `current` is the number of bytes received thus far.
   using ProgressCallback = base::RepeatingCallback<void(int64_t current)>;
 
-  // The following two headers carry the ECSDA signature of the POST response,
-  // if signing has been used. Two headers are used for redundancy purposes.
-  // The value of the `X-Cup-Server-Proof` is preferred.
+  // The ECSDA signature of the POST response, if signing has been used. Two
+  // headers are used for redundancy purposes. The value of the
+  // `X-Cup-Server-Proof` is preferred.
   static constexpr char kHeaderEtag[] = "ETag";
   static constexpr char kHeaderXCupServerProof[] = "X-Cup-Server-Proof";
 
-  // The server uses the optional X-Retry-After header to indicate that the
-  // current request should not be attempted again.
-  //
-  // The value of the header is the number of seconds to wait before trying to
-  // do a subsequent update check. Only the values retrieved over HTTPS are
-  // trusted.
+  // Number of seconds to wait before trying to do a subsequent update check.
+  // Only the values retrieved over HTTPS are trusted. The server uses the
+  // optional X-Retry-After header to indicate that the current request should
+  // not be attempted again.
   static constexpr char kHeaderXRetryAfter[] = "X-Retry-After";
 
   // The HTTP cookie headers. These aren't used by the Omaha update protocol but
   // are necessary for other uses of `NetworkFetcher`.
   static constexpr char kHeaderCookie[] = "Cookie";
   static constexpr char kHeaderSetCookie[] = "Set-Cookie";
-
-  NetworkFetcher(const NetworkFetcher&) = delete;
-  NetworkFetcher& operator=(const NetworkFetcher&) = delete;
 
   virtual ~NetworkFetcher() = default;
 
@@ -84,9 +79,6 @@ class NetworkFetcher {
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       DownloadToFileCompleteCallback download_to_file_complete_callback) = 0;
-
- protected:
-  NetworkFetcher() = default;
 };
 
 class NetworkFetcherFactory
@@ -94,12 +86,8 @@ class NetworkFetcherFactory
  public:
   virtual std::unique_ptr<NetworkFetcher> Create() const = 0;
 
-  NetworkFetcherFactory(const NetworkFetcherFactory&) = delete;
-  NetworkFetcherFactory& operator=(const NetworkFetcherFactory&) = delete;
-
  protected:
   friend class base::RefCountedThreadSafe<NetworkFetcherFactory>;
-  NetworkFetcherFactory() = default;
   virtual ~NetworkFetcherFactory() = default;
 };
 
