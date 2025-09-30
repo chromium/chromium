@@ -1,1 +1,3 @@
 file://media/OWNERS
+
+per-file PictureInPictureActivity.java=file://chrome/browser/picture_in_picture/OWNERS
