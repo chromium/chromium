@@ -419,7 +419,7 @@ gCrWebLegacy.fill.webFormElementToFormData = function(
 
   form.name = gCrWebLegacy.form.getFormIdentifier(formElement);
   form.origin = getFrameUrlOrOrigin(frame);
-  form.action = gCrWebLegacy.fill.getCanonicalActionForForm(formElement);
+  form.action = fillUtil.getCanonicalActionForForm(formElement);
 
   // The raw name and id attributes, which may be empty.
   form.name_attribute = formElement.getAttribute('name') || '';

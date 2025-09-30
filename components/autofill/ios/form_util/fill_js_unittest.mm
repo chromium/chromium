@@ -155,7 +155,7 @@ TEST_F(FillJsTest, GetCanonicalActionForForm) {
 
     LoadHtml(html);
     id result = ExecuteJavaScriptInAutofillContentWorld(
-        @"__gCrWeb.fill.getCanonicalActionForForm(document.body.children[0])");
+        @"__gCrWeb.getRegisteredApi('fill_test_api').getFunction('getCanonicalActionForForm')(document.body.children[0])");
     NSString* base_url = base::SysUTF8ToNSString(BaseUrl());
     NSString* expected_action =
         [data.expected_action stringByReplacingOccurrencesOfString:@"baseurl/"

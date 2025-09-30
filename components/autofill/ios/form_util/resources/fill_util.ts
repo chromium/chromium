@@ -490,12 +490,12 @@ function absoluteURL(doc: Document, relativeURL: string): string {
  * function GetCanonicalActionForForm.
  * @return Canonical action.
  */
-gCrWebLegacy.fill.getCanonicalActionForForm = function(
+function getCanonicalActionForForm(
     formElement: HTMLFormElement): string {
   const rawAction = formElement.getAttribute('action') || '';
   const absoluteUrl = absoluteURL(formElement.ownerDocument, rawAction);
   return removeQueryAndReferenceFromURL(absoluteUrl);
-};
+}
 
 declare interface OptionFieldStrings {
     option_values: string[] & {toJSON?: string|null};
@@ -777,4 +777,5 @@ export {
   shouldAutocomplete,
   getAriaLabel,
   getAriaDescription,
+  getCanonicalActionForForm,
 };
