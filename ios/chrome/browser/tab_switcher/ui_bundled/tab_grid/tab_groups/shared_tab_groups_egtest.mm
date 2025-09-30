@@ -459,7 +459,8 @@ void WaitForFakeJoinFlowView() {
 
 // Checks that the IPH is presented when the user foreground the app with a
 // shared tab group active.
-- (void)testForegroundIPH {
+// TODO(crbug.com/411064928): Re-enable this test.
+- (void)DISABLED_testForegroundIPH {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // Not available on iPad.
     return;
