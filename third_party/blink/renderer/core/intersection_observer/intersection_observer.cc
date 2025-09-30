@@ -288,12 +288,10 @@ IntersectionObserver* IntersectionObserver::Create(
     return nullptr;
   }
 
-  if (RuntimeEnabledFeatures::IntersectionObserverScrollMarginEnabled()) {
-    ParseMargin(observer_init->scrollMargin(), params.scroll_margin,
-                exception_state, "scroll");
-    if (exception_state.HadException()) {
-      return nullptr;
-    }
+  ParseMargin(observer_init->scrollMargin(), params.scroll_margin,
+              exception_state, "scroll");
+  if (exception_state.HadException()) {
+    return nullptr;
   }
 
   ParseThresholds(observer_init->threshold(), params.thresholds,

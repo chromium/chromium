@@ -2916,11 +2916,6 @@
       status: "stable",
     },
     {
-      // If enabled, IntersectionObserverScrollMargin will be parsed.
-      name: "IntersectionObserverScrollMargin",
-      status: "stable",
-    },
-    {
       name: "InvertedColors",
       status: "experimental",
     },
