@@ -776,10 +776,10 @@ DrawingBuffer::CreateOrRecycleColorBuffer() {
 
 scoped_refptr<ExternalCanvasResource>
 DrawingBuffer::ExportLowLatencyCanvasResource() {
-  // Swap chain must be presented before resource is exported.
-  ResolveAndPresentSwapChainIfNeeded();
-
   if (contents_changed_) {
+    ScopedStateRestorer scoped_state_restorer(this);
+    ResolveIfNeeded(kDiscardAllowed);
+
     // Restart SharedImage access on the back buffer to ensure a write fence is
     // generated on it to guarantee display reads this frame completely.
     // Display may still read parts of subsequent frames, which is okay.
@@ -1878,14 +1878,6 @@ void DrawingBuffer::ReadBackFramebuffer(
     gl_->DeleteFramebuffers(1, &fbo);
     front_color_buffer_->EndAccess();
   }
-}
-
-void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
-  if (!contents_changed_)
-    return;
-
-  ScopedStateRestorer scoped_state_restorer(this);
-  ResolveIfNeeded(kDiscardAllowed);
 }
 
 scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(

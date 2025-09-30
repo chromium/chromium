@@ -596,9 +596,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // and GPU switch
   bool ReallocateMultisampleRenderbuffer(const gfx::Size&);
 
-  // Presents swap chain if swap chain is being used and contents have changed.
-  void ResolveAndPresentSwapChainIfNeeded();
-
   WebGraphicsSharedImageInterfaceProvider*
   GetSharedImageInterfaceProviderForBitmap();
 
