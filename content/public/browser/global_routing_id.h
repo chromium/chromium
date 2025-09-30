@@ -93,6 +93,19 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 };
 
+inline std::ostream& operator<<(std::ostream& os,
+                                const GlobalRenderFrameHostId& id) {
+  os << "GlobalRenderFrameHostId(" << id.child_id << ", " << id.frame_routing_id
+     << ")";
+  return os;
+}
+
+struct GlobalRenderFrameHostIdHasher {
+  std::size_t operator()(const GlobalRenderFrameHostId& id) const {
+    return base::HashInts(id.child_id, id.frame_routing_id);
+  }
+};
+
 // Similar to GlobalRenderFrameHostId except that it uses FrameTokens instead
 // of routing ids.
 //
@@ -131,17 +144,11 @@ struct CONTENT_EXPORT GlobalRenderFrameHostToken {
 };
 
 inline std::ostream& operator<<(std::ostream& os,
-                                const GlobalRenderFrameHostId& id) {
-  os << "GlobalRenderFrameHostId(" << id.child_id << ", " << id.frame_routing_id
+                                const GlobalRenderFrameHostToken& id) {
+  os << "GlobalRenderFrameHostToken(" << id.child_id << ", " << id.frame_token
      << ")";
   return os;
 }
-
-struct GlobalRenderFrameHostIdHasher {
-  std::size_t operator()(const GlobalRenderFrameHostId& id) const {
-    return base::HashInts(id.child_id, id.frame_routing_id);
-  }
-};
 
 }  // namespace content
 
