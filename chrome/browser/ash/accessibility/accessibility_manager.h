@@ -48,6 +48,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
+class PrefService;
+
 namespace content {
 struct FocusedNodeDetails;
 }  // namespace content
@@ -146,7 +148,7 @@ class AccessibilityManager
 
   // Creates an instance of AccessibilityManager, this should be called once,
   // because only one instance should exist at the same time.
-  static void Initialize();
+  static void Initialize(PrefService* local_state);
   // Deletes the existing instance of AccessibilityManager.
   static void Shutdown();
   // Returns the existing instance. If there is no instance, returns NULL.
@@ -539,7 +541,8 @@ class AccessibilityManager
   void LoadEnhancedNetworkTtsForTest();
 
  protected:
-  AccessibilityManager();
+  // `local_state` must be non-null, and must outlive `this`.
+  explicit AccessibilityManager(PrefService* local_state);
   ~AccessibilityManager() override;
 
  private:
@@ -677,6 +680,8 @@ class AccessibilityManager
   void MaybeLogBrailleDisplayConnectedTime();
 
   bool spoken_feedback_enabled() const { return bool(screen_reader_mode_); }
+
+  const raw_ref<PrefService> local_state_;
 
   // Profile which has the current a11y context.
   raw_ptr<Profile> profile_ = nullptr;
