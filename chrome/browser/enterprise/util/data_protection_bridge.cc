@@ -35,7 +35,8 @@ namespace {
 // CreateDataEndpoint
 std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint(
     RenderFrameHost* render_frame_host) {
-  if (!render_frame_host->GetMainFrame()->GetLastCommittedURL().is_valid()) {
+  if (render_frame_host == nullptr ||
+      !render_frame_host->GetMainFrame()->GetLastCommittedURL().is_valid()) {
     return nullptr;
   }
   return std::make_unique<ui::DataTransferEndpoint>(
