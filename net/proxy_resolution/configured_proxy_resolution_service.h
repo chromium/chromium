@@ -7,16 +7,22 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
@@ -101,11 +107,14 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   // |net_log| is a possibly nullptr destination to send log events to. It must
   // remain alive for the lifetime of this ConfiguredProxyResolutionService.
+  // |enable_pac_runtime_backoff| optionally enables runtime PAC error backoff
+  // (defaults to false; enabled by CreateUsingSystemProxyResolver()).
   ConfiguredProxyResolutionService(
       std::unique_ptr<ProxyConfigService> config_service,
       std::unique_ptr<ProxyResolverFactory> resolver_factory,
       NetLog* net_log,
-      bool quick_check_enabled);
+      bool quick_check_enabled,
+      bool enable_pac_runtime_backoff = false);
 
   ConfiguredProxyResolutionService(const ConfiguredProxyResolutionService&) =
       delete;
@@ -243,6 +252,12 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   bool quick_check_enabled_for_testing() const { return quick_check_enabled_; }
 
+  // Test-only: enable or disable PAC runtime backoff gating. This is enabled
+  // by default only for system resolvers; tests may override it.
+  void set_enable_pac_runtime_backoff_for_testing(bool enabled) {
+    enable_pac_runtime_backoff_ = enabled;
+  }
+
  private:
   friend class ConfiguredProxyResolutionRequest;
   FRIEND_TEST_ALL_PREFIXES(ProxyResolutionServiceTest,
@@ -271,11 +286,15 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   // Resets all the variables associated with the current proxy configuration,
   // and rewinds the current state to |STATE_NONE|. Returns the previous value
-  // of |current_state_|.  If |reset_fetched_config| is true then
+  // of |current_state_|. If |reset_fetched_config| is true then
   // |fetched_config_| will also be reset, otherwise it will be left as-is.
   // Resetting it means that we will have to re-fetch the configuration from
   // the ProxyConfigService later.
-  State ResetProxyConfig(bool reset_fetched_config);
+  // If |reset_pac_retry_state| is false, the PAC runtime backoff throttler is
+  // left unchanged (used when a forced reload was already scheduled by the
+  // throttler itself).
+  State ResetProxyConfig(bool reset_fetched_config,
+                         bool reset_pac_retry_state = true);
 
   // Retrieves the current proxy configuration from the ProxyConfigService, and
   // starts initializing for it.
@@ -409,8 +428,98 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   raw_ptr<ProxyDelegate> proxy_delegate_ = nullptr;
 
-  // Flag used by |SetReady()| to check if |this| has been deleted by a
-  // synchronous callback.
+  // --- PAC runtime failure backoff handling ---
+  // We throttle repeated PAC evaluations after runtime/parse errors to avoid
+  // repeatedly invoking the resolver (e.g., WinHTTP) and re-fetching the PAC
+  // script aggressively. This backoff is separate from the fetch poller
+  // (PacFileDeciderPoller), which already schedules retries for initial fetch
+  // failures.
+  class PacRetryThrottler {
+   public:
+    PacRetryThrottler() = default;
+
+    // Returns whether a retry is currently scheduled.
+    bool IsScheduled() const { return retry_schedule_timer_.IsRunning(); }
+
+    bool IsInBackoffWindow() const {
+      return !next_retry_time_.is_null() &&
+             base::TimeTicks::Now() < next_retry_time_;
+    }
+
+    bool HasFailedDuringCurrentLoad() const {
+      return has_failed_during_current_load_;
+    }
+
+    // Clears throttling and cancels any scheduled retry.
+    void ResetRetryState() {
+      retry_attempt_count_ = 0;
+      has_failed_during_current_load_ = false;
+      retry_schedule_timer_.Stop();
+      next_retry_time_ = base::TimeTicks();
+    }
+
+    // Records a runtime PAC failure and schedules a delayed reload if one
+    // isn't already scheduled for the current resolver load cycle.
+    void OnRuntimeFailure(
+        base::WeakPtr<ConfiguredProxyResolutionService> service);
+    // Timer fires: allow new failures to schedule another retry and request a
+    // config reload via the owning service.
+    void OnRetryScheduleTimerFired();
+
+   private:
+    // Backoff cadence matches documented fetch failure policy; see docs:
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md
+    // 8s -> 32s -> 2m -> 4h (then stay at 4h).
+    base::TimeDelta CalculateRetryDelay() const {
+      static constexpr std::array<base::TimeDelta, 4> kRetryIntervals{
+          base::Seconds(8), base::Seconds(32), base::Minutes(2),
+          base::Hours(4)};
+      size_t idx = std::min(static_cast<size_t>(retry_attempt_count_),
+                            kRetryIntervals.size() - 1);
+      return kRetryIntervals[idx];
+    }
+
+    void IncrementRetryCount() { ++retry_attempt_count_; }
+
+    void MaybeScheduleScriptReloadWithDelay(
+        base::WeakPtr<ConfiguredProxyResolutionService> service);
+
+    int retry_attempt_count_ = 0;                  // Backoff steps applied.
+    bool has_failed_during_current_load_ = false;  // Prevent double-scheduling.
+    base::OneShotTimer retry_schedule_timer_;      // Schedules ForceReload.
+    base::TimeTicks next_retry_time_;
+  };
+
+  // Schedule throttled reload after a PAC runtime/parse error.
+  void HandlePacScriptLoadError();
+  // Reset throttler after a successful PAC evaluation.
+  void ResetPacRetryThrottler();
+  bool ShouldResetPacRetryStateForNextReset();
+  void OnRetryScheduleTimerFired();
+
+  PacRetryThrottler pac_retry_throttler_;
+
+  // When true, the next ResetProxyConfig invocation triggered as part of a
+  // throttled ForceReload should preserve the PAC retry state. Automatically
+  // cleared once consumed.
+  bool preserve_pac_retry_state_for_next_reset_ = false;
+
+  // Enable runtime PAC backoff gating (used for system PAC evaluators, e.g.,
+  // WinHTTP). Disabled by default and set true by
+  // CreateUsingSystemProxyResolver.
+  bool enable_pac_runtime_backoff_ = false;
+
+  // Set during destruction to annotate the synchronous teardown path:
+  // the destructor aborts pending requests, which synchronously invoke
+  // QueryComplete(ERR_ABORTED), followed by QueryDidComplete and
+  // DidFinishResolvingProxy.
+  // When this is true and no current config is set, ERR_ABORTED is mapped to
+  // ERR_MANDATORY_PROXY_CONFIGURATION_FAILED to avoid interpreting teardown
+  // as a successful DIRECT fallback.
+  bool in_destruction_ = false;
+
+  // WeakPtrFactory must be the last member. Used by SetReady() to detect
+  // deletion by synchronous callbacks.
   base::WeakPtrFactory<ConfiguredProxyResolutionService> weak_ptr_factory_{
       this};
 };

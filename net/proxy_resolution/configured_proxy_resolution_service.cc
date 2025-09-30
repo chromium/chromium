@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -816,13 +817,15 @@ ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
     std::unique_ptr<ProxyConfigService> config_service,
     std::unique_ptr<ProxyResolverFactory> resolver_factory,
     NetLog* net_log,
-    bool quick_check_enabled)
+    bool quick_check_enabled,
+    bool enable_pac_runtime_backoff)
     : config_service_(std::move(config_service)),
       resolver_factory_(std::move(resolver_factory)),
       net_log_(net_log),
       stall_proxy_auto_config_delay_(
           base::Milliseconds(kDelayAfterNetworkChangesMs)),
-      quick_check_enabled_(quick_check_enabled) {
+      quick_check_enabled_(quick_check_enabled),
+      enable_pac_runtime_backoff_(enable_pac_runtime_backoff) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddDNSObserver(this);
   config_service_->AddObserver(this);
@@ -841,13 +844,11 @@ ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
     return CreateWithoutProxyResolver(std::move(proxy_config_service), net_log);
   }
 
-  std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
-      std::make_unique<ConfiguredProxyResolutionService>(
-          std::move(proxy_config_service),
-          std::make_unique<ProxyResolverFactoryForSystem>(
-              kDefaultNumPacThreads),
-          net_log, quick_check_enabled);
-  return proxy_resolution_service;
+  return std::make_unique<ConfiguredProxyResolutionService>(
+      std::move(proxy_config_service),
+      std::make_unique<ProxyResolverFactoryForSystem>(kDefaultNumPacThreads),
+      net_log, quick_check_enabled,
+      /*enable_pac_runtime_backoff=*/true);
 }
 
 // static
@@ -1026,8 +1027,23 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
     return permanent_error_;
   }
 
-  if (config_->value().HasAutomaticSettings())
+  // If using automatic settings and we are in a PAC runtime error backoff
+  // window, avoid invoking the resolver. This prevents repeated PAC
+  // evaluations (and re-fetches on some platforms) during the backoff period.
+  if (config_->value().HasAutomaticSettings()) {
+    if (enable_pac_runtime_backoff_ &&
+        (pac_retry_throttler_.IsInBackoffWindow() ||
+         pac_retry_throttler_.HasFailedDuringCurrentLoad())) {
+      if (config_->value().pac_mandatory()) {
+        return ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+      }
+      result->UseDirect();
+      result->set_traffic_annotation(
+          MutableNetworkTrafficAnnotationTag(config_->traffic_annotation()));
+      return OK;
+    }
     return ERR_IO_PENDING;  // Must submit the request to the proxy resolver.
+  }
 
   // Use the manual proxy settings.
   config_->value().proxy_rules().Apply(url, result);
@@ -1039,6 +1055,7 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
 
 ConfiguredProxyResolutionService::~ConfiguredProxyResolutionService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  in_destruction_ = true;
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
   NetworkChangeNotifier::RemoveDNSObserver(this);
   config_service_->RemoveObserver(this);
@@ -1213,38 +1230,61 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
         });
 
     DeprioritizeBadProxyChains(proxy_retry_info_, result, net_log);
+    // If we previously had PAC failures and now we have a successful
+    // resolution while using a PAC resolver, reset the throttler.
+    if (enable_pac_runtime_backoff_ &&
+        !pac_retry_throttler_.HasFailedDuringCurrentLoad()) {
+      ResetPacRetryThrottler();
+    }
   } else {
     net_log.AddEventWithNetErrorCode(
         NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
         result_code);
 
-    bool reset_config = result_code == ERR_PAC_SCRIPT_TERMINATED;
-    if (config_ && !config_->value().pac_mandatory()) {
-      // Fall-back to direct when the proxy resolver fails. This corresponds
-      // with a javascript runtime error in the PAC script.
-      //
-      // This implicit fall-back to direct matches Firefox 3.5 and
-      // Internet Explorer 8. For more information, see:
-      //
-      // http://www.chromium.org/developers/design-documents/proxy-settings-fallback
-      result->UseDirect();
-      result_code = OK;
+    // Preserve the original resolver error for backoff/throttle decisions.
+    const int resolver_error = result_code;
+    bool reset_config = resolver_error == ERR_PAC_SCRIPT_TERMINATED;
 
-      // Allow the proxy delegate to interpose on the resolution decision,
-      // possibly modifying the ProxyInfo.
-      if (proxy_delegate_)
-        proxy_delegate_->OnResolveProxy(url, network_anonymization_key, method,
-                                        proxy_retry_info_, result);
-    } else {
+    // During destruction, treat aborted outstanding requests under automatic
+    // proxy configurations as mandatory failures so callers don't confuse
+    // teardown with a successful DIRECT fallback.
+    //
+    // This can be observed because the service destructor sets
+    // `in_destruction_ = true` and synchronously calls
+    // QueryComplete(ERR_ABORTED) on each pending request. QueryComplete
+    // synchronously calls QueryDidComplete, which in turn calls
+    // DidFinishResolvingProxy on this service before the request removes itself
+    // from `pending_requests_` and runs the user callback.
+    if (resolver_error == ERR_ABORTED && in_destruction_ && !config_) {
       result_code = ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+      net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
+      return result_code;
     }
+
+    if (config_) {
+      if (!config_->value().pac_mandatory()) {
+        // Fall-back to direct for non-mandatory PAC runtime errors or other
+        // resolver failures.
+        result->UseDirect();
+        result_code = OK;
+        if (proxy_delegate_) {
+          proxy_delegate_->OnResolveProxy(url, network_anonymization_key,
+                                          method, proxy_retry_info_, result);
+        }
+      } else {
+        // Mandatory PAC: surface mandatory failure (unless original was a
+        // crash that triggers reset; mapping still needed for callers).
+        result_code = ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+      }
+    }
+
     if (reset_config) {
       ResetProxyConfig(false);
-      // If the ProxyResolver crashed, force it to be re-initialized for the
-      // next request by resetting the proxy config. If there are other pending
-      // requests, trigger the recreation immediately so those requests retry.
       if (pending_requests_.size() > 1)
         ApplyProxyConfigIfAvailable();
+    } else if (enable_pac_runtime_backoff_ &&
+               resolver_error == ERR_PAC_SCRIPT_FAILED) {
+      HandlePacScriptLoadError();
     }
   }
 
@@ -1256,7 +1296,8 @@ void ConfiguredProxyResolutionService::SetPacFileFetchers(
     std::unique_ptr<PacFileFetcher> pac_file_fetcher,
     std::unique_ptr<DhcpPacFileFetcher> dhcp_pac_file_fetcher) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  State previous_state = ResetProxyConfig(false);
+  State previous_state =
+      ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
   pac_file_fetcher_ = std::move(pac_file_fetcher);
   dhcp_pac_file_fetcher_ = std::move(dhcp_pac_file_fetcher);
   if (previous_state != STATE_NONE)
@@ -1310,7 +1351,8 @@ ProxyResolver* ConfiguredProxyResolutionService::GetProxyResolver() const {
 }
 
 ConfiguredProxyResolutionService::State
-ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
+ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config,
+                                                   bool reset_pac_retry_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   State previous_state = current_state_;
 
@@ -1321,6 +1363,12 @@ ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
   SuspendAllPendingRequests();
   resolver_.reset();
   config_ = std::nullopt;
+  if (reset_pac_retry_state) {
+    // Reset throttler on config reset (e.g., effective PAC URL/content changed
+    // or network environment changed). This avoids carrying backoff across
+    // different PAC scripts or configurations.
+    pac_retry_throttler_.ResetRetryState();
+  }
   if (reset_fetched_config)
     fetched_config_ = std::nullopt;
   current_state_ = STATE_NONE;
@@ -1328,9 +1376,69 @@ ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
   return previous_state;
 }
 
+bool ConfiguredProxyResolutionService::ShouldResetPacRetryStateForNextReset() {
+  if (!preserve_pac_retry_state_for_next_reset_) {
+    return true;
+  }
+  preserve_pac_retry_state_for_next_reset_ = false;
+  return false;
+}
+
+void ConfiguredProxyResolutionService::HandlePacScriptLoadError() {
+  // Delegate scheduling to the throttler (clears per-load flag on timer fire
+  // and triggers ForceReloadProxyConfig via WeakPtr).
+  pac_retry_throttler_.OnRuntimeFailure(weak_ptr_factory_.GetWeakPtr());
+}
+
+void ConfiguredProxyResolutionService::ResetPacRetryThrottler() {
+  pac_retry_throttler_.ResetRetryState();
+}
+
+// Scheduling moved into PacRetryThrottler.
+void ConfiguredProxyResolutionService::PacRetryThrottler::OnRuntimeFailure(
+    base::WeakPtr<ConfiguredProxyResolutionService> service) {
+  // Only schedule one backoff per resolver load until a success.
+  if (has_failed_during_current_load_) {
+    return;
+  }
+  has_failed_during_current_load_ = true;
+  MaybeScheduleScriptReloadWithDelay(std::move(service));
+}
+
+void ConfiguredProxyResolutionService::PacRetryThrottler::
+    MaybeScheduleScriptReloadWithDelay(
+        base::WeakPtr<ConfiguredProxyResolutionService> service) {
+  base::TimeDelta delay = CalculateRetryDelay();
+  IncrementRetryCount();
+  next_retry_time_ = base::TimeTicks::Now() + delay;
+
+  // Bind the reload step to the service's WeakPtr so the task naturally
+  // cancels if the service is destructed. The throttler clears its per-load
+  // failure flag when the timer fires, allowing new failures to schedule
+  // another retry.
+  retry_schedule_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(
+          &ConfiguredProxyResolutionService::OnRetryScheduleTimerFired,
+          std::move(service)));
+}
+
+void ConfiguredProxyResolutionService::PacRetryThrottler::
+    OnRetryScheduleTimerFired() {
+  // Clear the failure flag when timer fires to allow new requests/backoffs.
+  has_failed_during_current_load_ = false;
+  next_retry_time_ = base::TimeTicks();
+}
+
+void ConfiguredProxyResolutionService::OnRetryScheduleTimerFired() {
+  pac_retry_throttler_.OnRetryScheduleTimerFired();
+  ForceReloadProxyConfig();
+}
+
 void ConfiguredProxyResolutionService::ForceReloadProxyConfig() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ResetProxyConfig(false);
+  preserve_pac_retry_state_for_next_reset_ = true;
+  ResetProxyConfig(false, /*reset_pac_retry_state=*/false);
   ApplyProxyConfigIfAvailable();
 }
 
@@ -1419,7 +1527,7 @@ bool ConfiguredProxyResolutionService::ApplyPacBypassRules(const GURL& url,
 }
 
 void ConfiguredProxyResolutionService::InitializeUsingLastFetchedConfig() {
-  ResetProxyConfig(false);
+  ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
 
   DCHECK(fetched_config_);
   if (!fetched_config_->value().HasAutomaticSettings()) {
@@ -1455,7 +1563,7 @@ void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
   DCHECK(fetched_config_);
   DCHECK(fetched_config_->value().HasAutomaticSettings());
 
-  ResetProxyConfig(false);
+  ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
 
   current_state_ = STATE_WAITING_FOR_INIT_PROXY_RESOLVER;
 
@@ -1481,7 +1589,8 @@ void ConfiguredProxyResolutionService::OnIPAddressChanged(
   // new connection may be essential for URL requests to work properly. Reset
   // the config to ensure new URL requests are blocked until the potential new
   // proxy configuration is loaded.
-  State previous_state = ResetProxyConfig(false);
+  State previous_state =
+      ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
   if (previous_state != STATE_NONE)
     ApplyProxyConfigIfAvailable();
 }

@@ -420,6 +420,265 @@ JobMap GetCancelledJobsForURLs(const MockAsyncProxyResolver& resolver,
 
 }  // namespace
 
+// When a PAC runtime error occurs (ERR_PAC_SCRIPT_FAILED), subsequent
+// resolutions during the backoff window should not invoke the resolver. For a
+// non-mandatory PAC, they should return DIRECT synchronously.
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       PacRuntimeErrorGatesResolver_NonMandatory) {
+  auto config_service =
+      std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
+
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* factory_ptr = factory.get();
+
+  ConfiguredProxyResolutionService service(std::move(config_service),
+                                           std::move(factory), nullptr,
+                                           /*quick_check_enabled=*/true);
+  service.set_enable_pac_runtime_backoff_for_testing(true);
+
+  GURL url("http://www.example.com/");
+  ProxyInfo info;
+  TestCompletionCallback cb1;
+  std::unique_ptr<ProxyResolutionRequest> req1;
+  int rv =
+      service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(), &info,
+                           cb1.callback(), &req1, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(1u, factory_ptr->pending_requests().size());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  ASSERT_EQ(1u, resolver.pending_jobs().size());
+  EXPECT_EQ(url, resolver.pending_jobs()[0]->url());
+
+  // Fail with a PAC runtime error.
+  resolver.pending_jobs()[0]->CompleteNow(ERR_PAC_SCRIPT_FAILED);
+  EXPECT_THAT(cb1.WaitForResult(), IsOk());
+  EXPECT_TRUE(info.is_direct());
+
+  // Next resolution should be gated and complete synchronously as DIRECT.
+  ProxyInfo info2;
+  TestCompletionCallback cb2;
+  std::unique_ptr<ProxyResolutionRequest> req2;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &info2, cb2.callback(), &req2, NetLogWithSource());
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(info2.is_direct());
+  // No new resolver job should have been started.
+  EXPECT_TRUE(resolver.pending_jobs().empty());
+}
+
+// For a mandatory PAC, gating should return
+// ERR_MANDATORY_PROXY_CONFIGURATION_FAILED during the backoff window and not
+// invoke the resolver again.
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       PacRuntimeErrorGatesResolver_Mandatory) {
+  ProxyConfig config(
+      ProxyConfig::CreateFromCustomPacURL(GURL("http://foopy/proxy.pac")));
+  config.set_pac_mandatory(true);
+  auto config_service = std::make_unique<MockProxyConfigService>(config);
+
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* factory_ptr = factory.get();
+
+  ConfiguredProxyResolutionService service(std::move(config_service),
+                                           std::move(factory), nullptr,
+                                           /*quick_check_enabled=*/true);
+  service.set_enable_pac_runtime_backoff_for_testing(true);
+
+  GURL url("http://www.example.com/");
+  ProxyInfo info;
+  TestCompletionCallback cb1;
+  std::unique_ptr<ProxyResolutionRequest> req1;
+  int rv =
+      service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(), &info,
+                           cb1.callback(), &req1, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(1u, factory_ptr->pending_requests().size());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+
+  ASSERT_EQ(1u, resolver.pending_jobs().size());
+  EXPECT_EQ(url, resolver.pending_jobs()[0]->url());
+
+  // Fail with a PAC runtime error.
+  resolver.pending_jobs()[0]->CompleteNow(ERR_PAC_SCRIPT_FAILED);
+  EXPECT_EQ(ERR_MANDATORY_PROXY_CONFIGURATION_FAILED, cb1.WaitForResult());
+  EXPECT_FALSE(info.is_direct());
+
+  // Next resolution should be gated and return mandatory failure synchronously.
+  ProxyInfo info2;
+  TestCompletionCallback cb2;
+  std::unique_ptr<ProxyResolutionRequest> req2;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &info2, cb2.callback(), &req2, NetLogWithSource());
+  EXPECT_EQ(ERR_MANDATORY_PROXY_CONFIGURATION_FAILED, rv);
+  // No new resolver job should have been started.
+  EXPECT_TRUE(resolver.pending_jobs().empty());
+}
+
+// After the backoff window and a successful PAC evaluation, throttling resets
+// and subsequent resolutions should go through the resolver again.
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       PacRuntimeErrorBackoffResetsOnSuccess) {
+  auto config_service =
+      std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
+
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* factory_ptr = factory.get();
+
+  ConfiguredProxyResolutionService service(std::move(config_service),
+                                           std::move(factory), nullptr,
+                                           /*quick_check_enabled=*/true);
+  service.set_enable_pac_runtime_backoff_for_testing(true);
+
+  GURL url("http://www.example.com/");
+  ProxyInfo info;
+  TestCompletionCallback cb1;
+  std::unique_ptr<ProxyResolutionRequest> req1;
+  int rv =
+      service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(), &info,
+                           cb1.callback(), &req1, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(1u, factory_ptr->pending_requests().size());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_EQ(1u, resolver.pending_jobs().size());
+
+  // First runtime failure triggers throttling.
+  resolver.pending_jobs()[0]->CompleteNow(ERR_PAC_SCRIPT_FAILED);
+  EXPECT_THAT(cb1.WaitForResult(), IsOk());
+
+  // Fast-forward time beyond the initial backoff delay (8s) so a reload can be
+  // scheduled and resolver can be attempted again on next request.
+  FastForwardBy(base::Seconds(9));
+
+  ProxyInfo info2;
+  TestCompletionCallback cb2;
+  std::unique_ptr<ProxyResolutionRequest> req2;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &info2, cb2.callback(), &req2, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  // New resolver job should start.
+  ASSERT_EQ(1u, factory_ptr->pending_requests().size());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_EQ(1u, resolver.pending_jobs().size());
+  resolver.pending_jobs()[0]->results()->UseNamedProxy("ok:8080");
+  resolver.pending_jobs()[0]->CompleteNow(OK);
+  EXPECT_THAT(cb2.WaitForResult(), IsOk());
+
+  // After success, throttler should be reset; a subsequent request should once
+  // again go to the resolver (ERR_IO_PENDING), not be gated.
+  ProxyInfo info3;
+  TestCompletionCallback cb3;
+  std::unique_ptr<ProxyResolutionRequest> req3;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &info3, cb3.callback(), &req3, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+}
+
+// Consecutive PAC runtime failures should progress the backoff delay from the
+// initial 8s to the next tier (32s) rather than restarting at 8s again.
+TEST_F(ConfiguredProxyResolutionServiceTest,
+       PacRuntimeErrorBackoffDelayProgresses) {
+  auto config_service =
+      std::make_unique<MockProxyConfigService>("http://foopy/proxy.pac");
+
+  MockAsyncProxyResolver resolver;
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  auto* factory_ptr = factory.get();
+
+  ConfiguredProxyResolutionService service(std::move(config_service),
+                                           std::move(factory), nullptr,
+                                           /*quick_check_enabled=*/true);
+  service.set_enable_pac_runtime_backoff_for_testing(true);
+
+  const GURL url("http://www.example.com/");
+
+  // First runtime failure triggers the initial 8s backoff window.
+  ProxyInfo info1;
+  TestCompletionCallback cb1;
+  std::unique_ptr<ProxyResolutionRequest> req1;
+  int rv =
+      service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                           &info1, cb1.callback(), &req1, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(1u, factory_ptr->pending_requests().size());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_EQ(1u, resolver.pending_jobs().size());
+  resolver.pending_jobs()[0]->CompleteNow(ERR_PAC_SCRIPT_FAILED);
+  EXPECT_THAT(cb1.WaitForResult(), IsOk());
+  EXPECT_TRUE(info1.is_direct());
+  EXPECT_TRUE(resolver.pending_jobs().empty());
+
+  // Advance past the first backoff interval so the throttler allows another
+  // resolver attempt.
+  FastForwardBy(base::Seconds(9));
+
+  ProxyInfo info2;
+  TestCompletionCallback cb2;
+  std::unique_ptr<ProxyResolutionRequest> req2;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &info2, cb2.callback(), &req2, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(1u, factory_ptr->pending_requests().size());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_EQ(1u, resolver.pending_jobs().size());
+  resolver.pending_jobs()[0]->CompleteNow(ERR_PAC_SCRIPT_FAILED);
+  EXPECT_THAT(cb2.WaitForResult(), IsOk());
+  EXPECT_TRUE(info2.is_direct());
+  EXPECT_TRUE(resolver.pending_jobs().empty());
+
+  // Immediately resolving again should be gated and return DIRECT.
+  ProxyInfo gated_info1;
+  TestCompletionCallback gated_cb1;
+  std::unique_ptr<ProxyResolutionRequest> gated_req1;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &gated_info1, gated_cb1.callback(), &gated_req1,
+                            NetLogWithSource());
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(gated_info1.is_direct());
+  EXPECT_TRUE(resolver.pending_jobs().empty());
+
+  // Before 32s elapse we should still be within the second backoff window and
+  // continue to gate resolver invocations.
+  FastForwardBy(base::Seconds(31));
+
+  ProxyInfo gated_info2;
+  TestCompletionCallback gated_cb2;
+  std::unique_ptr<ProxyResolutionRequest> gated_req2;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &gated_info2, gated_cb2.callback(), &gated_req2,
+                            NetLogWithSource());
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(gated_info2.is_direct());
+  EXPECT_TRUE(resolver.pending_jobs().empty());
+
+  // Once 32s have elapsed the throttler schedules a reload and allows a new
+  // resolver attempt to proceed.
+  FastForwardBy(base::Seconds(1));
+
+  ProxyInfo info3;
+  TestCompletionCallback cb3;
+  std::unique_ptr<ProxyResolutionRequest> req3;
+  rv = service.ResolveProxy(url, std::string(), NetworkAnonymizationKey(),
+                            &info3, cb3.callback(), &req3, NetLogWithSource());
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  ASSERT_EQ(1u, factory_ptr->pending_requests().size());
+  factory_ptr->pending_requests()[0]->CompleteNowWithForwarder(OK, &resolver);
+  ASSERT_EQ(1u, resolver.pending_jobs().size());
+  resolver.pending_jobs()[0]->results()->UseNamedProxy("ok:8080");
+  resolver.pending_jobs()[0]->CompleteNow(OK);
+  EXPECT_THAT(cb3.WaitForResult(), IsOk());
+}
+
 TEST_F(ConfiguredProxyResolutionServiceTest, Direct) {
   auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
   auto* factory_ptr = factory.get();
