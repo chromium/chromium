@@ -5,6 +5,8 @@
 #include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "media/capture/capture_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +31,13 @@ class MockObserver : public PipScreenCaptureCoordinatorImpl::Observer {
 }  // namespace
 
 class PipScreenCaptureCoordinatorImplTest : public testing::Test {
+ public:
+  PipScreenCaptureCoordinatorImplTest() {
+    feature_list_.InitAndEnableFeature(features::kExcludePipFromScreenCapture);
+  }
+
  protected:
+  base::test::ScopedFeatureList feature_list_;
   PipScreenCaptureCoordinatorImpl coordinator_;
 };
 

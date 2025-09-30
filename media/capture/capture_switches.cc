@@ -41,6 +41,8 @@ bool IsMediaFoundationCameraUsageMonitoringEnabled() {
 
 namespace features {
 
+BASE_FEATURE(kExcludePipFromScreenCapture, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kTabCaptureInfobarLinks, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -15952,6 +15952,7 @@ from previous Chrome versions.
   <int value="650168383" label="PulseaudioLoopbackForScreenShare:enabled"/>
   <int value="650334758" label="MediaAppImageMantisRemoveBackground:disabled"/>
   <int value="651286275" label="SearchInSettings:disabled"/>
+  <int value="651381220" label="ExcludePipFromScreenCapture:enabled"/>
   <int value="651421878" label="VideoRotateToFullscreen:enabled"/>
   <int value="651471603" label="MediaFoundationD3D11VideoCapture:enabled"/>
   <int value="651562604" label="RawClipboard:enabled"/>
@@ -20123,6 +20124,7 @@ from previous Chrome versions.
   <int value="2112534003" label="GtsCloseTabAnimation:disabled"/>
   <int value="2112883215" label="AndroidHubV2:enabled"/>
   <int value="2113067450" label="FedCmAutoReauthn:disabled"/>
+  <int value="2113567417" label="ExcludePipFromScreenCapture:disabled"/>
   <int value="2113804526" label="EnableAppShortcutSearch:enabled"/>
   <int value="2114185020" label="CrOSDspBasedNsAllowed:disabled"/>
   <int value="2114221139" label="EnableHostnameSetting:disabled"/>

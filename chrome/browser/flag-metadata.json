@@ -4927,6 +4927,16 @@
     "expiry_milestone": 137
   },
   {
+    "name": "exclude-pip-from-screen-capture",
+    "owners": [
+      "tovep@chromium.org",
+      "agpalak@chromium.org",
+      "ilnik@chromium.org",
+      "kron@chromium.org"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "exo-gamepad-vibration",
     "owners": [ "prabirmsp@chromium.org" ],
     "expiry_milestone": 90

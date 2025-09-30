@@ -25,15 +25,20 @@ class WebContents;
 class CONTENT_EXPORT PipScreenCaptureCoordinator
     : public WebContentsUserData<PipScreenCaptureCoordinator> {
  public:
-  // Retrieves the PipScreenCaptureCoordinator for |web_contents|,
-  // creating one if it does not already exist. The returned pointer
-  // is owned by |web_contents|. |web_contents| must not be null.
+  // Retrieves the PipScreenCaptureCoordinator for |web_contents| if
+  // enabled, creating one if it does not already exist. The returned
+  // pointer is owned by |web_contents|. |web_contents| must not be
+  // null.
+  //
+  // Returns nullptr if ExcludePipFromScreenCapture is disabled.
   static PipScreenCaptureCoordinator* GetOrCreateForWebContents(
       WebContents* web_contents);
-  // Retrieves the PipScreenCaptureCoordinator for
-  // |render_frame_host|, creating one if it does not already
-  // exist. The returned pointer is owned by the associated
+  // Retrieves the PipScreenCaptureCoordinator for |render_frame_host|
+  // if enabled, creating one if it does not already exist. The
+  // returned pointer is owned by the associated
   // web_contents. |render_frame_host| must not be null.
+  //
+  // Returns nullptr if ExcludePipFromScreenCapture is disabled.
   static PipScreenCaptureCoordinator* GetOrCreateForRenderFrameHost(
       RenderFrameHost* render_frame_host);
 

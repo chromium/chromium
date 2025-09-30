@@ -4,8 +4,10 @@
 
 #include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
+#include "media/capture/capture_switches.h"
 
 namespace content {
 
@@ -33,7 +35,9 @@ PipScreenCaptureCoordinator::PipScreenCaptureCoordinator(
     : WebContentsUserData<PipScreenCaptureCoordinator>(*web_contents)
 #if BUILDFLAG(IS_MAC)
       ,
-      impl_(std::make_unique<PipScreenCaptureCoordinatorImpl>())
+      impl_(base::FeatureList::IsEnabled(features::kExcludePipFromScreenCapture)
+                ? std::make_unique<PipScreenCaptureCoordinatorImpl>()
+                : nullptr)
 #endif
 {
 }
@@ -42,13 +46,17 @@ PipScreenCaptureCoordinator::~PipScreenCaptureCoordinator() = default;
 
 void PipScreenCaptureCoordinator::OnPipShown(WebContents& pip_web_contents) {
 #if BUILDFLAG(IS_MAC)
-  impl_->OnPipShown(pip_web_contents);
+  if (impl_) {
+    impl_->OnPipShown(pip_web_contents);
+  }
 #endif
 }
 
 void PipScreenCaptureCoordinator::OnPipClosed() {
 #if BUILDFLAG(IS_MAC)
-  impl_->OnPipClosed();
+  if (impl_) {
+    impl_->OnPipClosed();
+  }
 #endif
 }
 

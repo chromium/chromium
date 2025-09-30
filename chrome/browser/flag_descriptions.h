@@ -1146,6 +1146,9 @@ extern const char kEnableWebAppPredictableAppUpdatingDescription[];
 extern const char kEnableZeroCopyTabCaptureName[];
 extern const char kEnableZeroCopyTabCaptureDescription[];
 
+extern const char kExcludePipFromScreenCaptureName[];
+extern const char kExcludePipFromScreenCaptureDescription[];
+
 extern const char kExperimentalWebAssemblyFeaturesName[];
 extern const char kExperimentalWebAssemblyFeaturesDescription[];
 
