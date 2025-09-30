@@ -5450,9 +5450,6 @@ void GLES2Implementation::DeleteTexturesHelper(GLsizei n,
                "id not created by this context.");
     return;
   }
-  for (GLsizei ii = 0; ii < n; ++ii) {
-    share_group_->discardable_texture_manager()->FreeTexture(textures[ii]);
-  }
   UnbindTexturesHelper(n, textures);
 }
 
