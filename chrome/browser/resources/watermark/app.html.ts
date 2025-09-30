@@ -24,7 +24,7 @@ export function getHtml(this: WatermarkAppElement) {
       <div class="control-row">
         <span>Font size</span>
         <cr-input id="fontSizeInput" class="font-size-input
-            stroked" type="number"
+            stroked" type="number" aria-label="Font size"
             min="1" .value="${this.fontSize_.toString()}"
             @value-changed="${this.onFontSizeChanged_}">
         </cr-input>
@@ -32,7 +32,8 @@ export function getHtml(this: WatermarkAppElement) {
 
       <div class="control-row">
         <span>White outline opacity</span>
-        <cr-slider id="outlineOpacitySlider" min="0" max="100"
+        <cr-slider id="outlineOpacitySlider" aria-label="White outline opacity"
+            min="0" max="100"
             .value="${this.outlineOpacity_}"
             .ticks="${this.opacityTicks_}"
             @cr-slider-value-changed="${this.onOutlineOpacityChanged_}">
@@ -41,7 +42,8 @@ export function getHtml(this: WatermarkAppElement) {
 
       <div class="control-row">
         <span>Dark fill opacity</span>
-        <cr-slider id="fillOpacitySlider" min="0" max="100"
+        <cr-slider id="fillOpacitySlider" aria-label="Dark fill opacity"
+            min="0" max="100"
             .value="${this.fillOpacity_}"
             .ticks="${this.opacityTicks_}"
             @cr-slider-value-changed="${this.onFillOpacityChanged_}">
