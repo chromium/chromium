@@ -75,19 +75,6 @@ void TestContextSupport::CallAllSyncPointCallbacks() {
 void TestContextSupport::SetErrorMessageCallback(
     base::RepeatingCallback<void(const char*, int32_t)> callback) {}
 
-bool TestContextSupport::ThreadSafeShallowLockDiscardableTexture(
-    uint32_t texture_id) {
-  NOTIMPLEMENTED();
-  return false;
-}
-void TestContextSupport::CompleteLockDiscardableTexureOnContextThread(
-    uint32_t texture_id) {}
-bool TestContextSupport::ThreadsafeDiscardableTextureIsDeletedForTracing(
-    uint32_t texture_id) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 base::span<uint8_t> TestContextSupport::MapTransferCacheEntry(
     uint32_t serialized_size) {
   NOTIMPLEMENTED();

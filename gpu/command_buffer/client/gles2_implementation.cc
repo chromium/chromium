@@ -6858,26 +6858,6 @@ void GLES2Implementation::SetErrorMessageCallback(
   error_message_callback_ = std::move(callback);
 }
 
-bool GLES2Implementation::ThreadSafeShallowLockDiscardableTexture(
-    uint32_t texture_id) {
-  ClientDiscardableTextureManager* manager =
-      share_group()->discardable_texture_manager();
-  return manager->TextureIsValid(texture_id) &&
-         manager->LockTexture(texture_id);
-}
-
-void GLES2Implementation::CompleteLockDiscardableTexureOnContextThread(
-    uint32_t texture_id) {
-  helper_->LockDiscardableTextureCHROMIUM(texture_id);
-}
-
-bool GLES2Implementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
-    uint32_t texture_id) {
-  ClientDiscardableTextureManager* manager =
-      share_group()->discardable_texture_manager();
-  return manager->TextureIsDeletedForTracing(texture_id);
-}
-
 base::span<uint8_t> GLES2Implementation::MapTransferCacheEntry(
     uint32_t serialized_size) {
   NOTREACHED();

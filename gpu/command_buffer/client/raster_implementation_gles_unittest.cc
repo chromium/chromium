@@ -152,15 +152,6 @@ class ContextSupportStub : public ContextSupport {
 
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override {}
-  bool ThreadSafeShallowLockDiscardableTexture(uint32_t texture_id) override {
-    return true;
-  }
-  void CompleteLockDiscardableTexureOnContextThread(
-      uint32_t texture_id) override {}
-  bool ThreadsafeDiscardableTextureIsDeletedForTracing(
-      uint32_t texture_id) override {
-    return false;
-  }
   base::span<uint8_t> MapTransferCacheEntry(uint32_t serialized_size) override {
     mapped_transfer_cache_entry_ =
         base::HeapArray<uint8_t>::Uninit(serialized_size);
