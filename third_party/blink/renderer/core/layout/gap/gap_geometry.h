@@ -203,7 +203,14 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
   void SetMainGaps(Vector<MainGap>&& main_gaps) {
     CHECK(!main_gaps.empty());
     main_gaps_ = std::move(main_gaps);
+
+    // The `main_gap_running_index_` should be the first main_gap index that has
+    // cross gaps before it.
     main_gap_running_index_ = 0;
+    while (main_gap_running_index_ < main_gaps_.size() &&
+           !main_gaps_[main_gap_running_index_].HasCrossGapsBefore()) {
+      ++main_gap_running_index_;
+    }
   }
 
   void SetCrossGaps(Vector<CrossGap>&& cross_gaps) {
