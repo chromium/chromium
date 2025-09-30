@@ -11,6 +11,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/scoped_disable_timer_tracking.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -87,17 +88,21 @@
 
 /// Tests that the entry point to import Safari data can be triggered through
 /// Settings.
-/// TODO(crbug.com/447115599): Re-enable when fixed.
-- (void)DISABLED_testShowEntryPointInSettings {
+- (void)testShowEntryPointInSettings {
   if (@available(iOS 18.2, *)) {
+    ScopedDisableTimerTracking disabler;
     /// Clean restart without experimental settings.
     [[AppLaunchManager sharedManager]
         ensureAppLaunchedWithConfiguration:
             [self appConfigurationNoOverrideBehavior]];
     [ChromeEarlGreyUI openSettingsMenu];
-    [ChromeEarlGreyUI
-        tapSettingsMenuButton:grey_accessibilityID(
-                                  kSettingsSafariDataImportSettingsCellId)];
+    [[[EarlGrey selectElementWithMatcher:
+                    grey_allOf(grey_accessibilityID(
+                                   kSettingsSafariDataImportSettingsCellId),
+                               grey_interactable(), nil)]
+           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
+        onElementWithMatcher:grey_accessibilityID(kSettingsTableViewId)]
+        performAction:grey_tap()];
     /// Verify visibility and that the reminder button is not displaying.
     GREYAssertTrue(IsSafariDataImportEntryPointVisible(),
                    @"Safari data import workflow is not displayed.");
