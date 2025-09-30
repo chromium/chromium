@@ -160,6 +160,9 @@
 class GrDirectContext;
 
 namespace blink {
+using event_type_names::kContextlost;
+using event_type_names::kContextrestored;
+
 class ExecutionContext;
 
 namespace {
@@ -273,6 +276,21 @@ void WaitForHibernation() {
 
 }  // namespace
 
+// Helper class to registers an event listener and wait for it to fire.
+class EventWatcher {
+ public:
+  EventWatcher(Element& element, const AtomicString& event_type) {
+    element.addEventListener(
+        event_type,
+        MakeGarbageCollected<CallbackEventListener>(run_loop_.QuitClosure()));
+  }
+  void Wait() { run_loop_.Run(); }
+  bool WasInvoked() { return run_loop_.AnyQuitCalled(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
 //============================================================================
 
 class CanvasRenderingContext2DTestBase : public ::testing::Test,
@@ -349,19 +367,10 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
 
-  void LoseContext(bool wait_for_context_lost_callback = true) {
-    base::RunLoop run_loop;
-    if (wait_for_context_lost_callback) {
-      CanvasElement().addEventListener(
-          event_type_names::kContextlost,
-          MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
-    }
+  void LoseContext() {
     test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
         GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
     test::RunPendingTasks();
-    if (wait_for_context_lost_callback) {
-      run_loop.Run();
-    }
   }
 
   // Run a callback in a task and wait for that task to finish. This is needed
@@ -1875,19 +1884,18 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 
   // Lose the GPU context.
+  EventWatcher lost_event(CanvasElement(), kContextlost);
   LoseContext();
   EXPECT_TRUE(Context2D()->IsContextLost());
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
+  lost_event.Wait();
 
   // Wait for context to be restored.
   {
-    base::RunLoop run_loop;
-    CanvasElement().addEventListener(
-        event_type_names::kContextrestored,
-        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    EventWatcher restored_event(CanvasElement(), kContextrestored);
     task_environment_.FastForwardBy(
         BaseRenderingContext2D::kTryRestoreContextInterval);
-    EXPECT_TRUE(run_loop.AnyQuitCalled());
+    EXPECT_TRUE(restored_event.WasInvoked());
     EXPECT_FALSE(Context2D()->IsContextLost());
     EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
     EXPECT_THAT(Context2D()->GetResourceProviderForTesting(),
@@ -1905,9 +1913,11 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
 
+  EventWatcher lost_event(CanvasElement(), event_type_names::kContextlost);
   LoseContext();
   EXPECT_TRUE(Context2D()->IsContextLost());
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
+  lost_event.Wait();
 
   // Context restoration will fail, wait for the context to give up.
   {
@@ -2279,12 +2289,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(handler->IsHibernating());
 
   // Simulate GPU context loss while the canvas is hibernated.
-  base::RunLoop run_loop;
-  CanvasElement().addEventListener(
-      event_type_names::kContextrestored,
-      MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+  EventWatcher restored_event(CanvasElement(), kContextrestored);
   EXPECT_FALSE(Context2D()->IsContextLost());
-  LoseContext(false);
+  LoseContext();
   EXPECT_TRUE(Context2D()->IsContextLost());
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
 
@@ -2300,7 +2307,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Wait for context to be restored.
   task_environment_.FastForwardBy(
       BaseRenderingContext2D::kTryRestoreContextInterval);
-  run_loop.Run();
+  restored_event.Wait();
   EXPECT_FALSE(Context2D()->IsContextLost());
   EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
   EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), Pointee(IsValid()));
