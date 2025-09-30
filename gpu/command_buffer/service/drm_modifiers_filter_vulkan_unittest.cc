@@ -91,7 +91,14 @@ class DrmModifiersFilterVulkanTest : public testing::Test {
   PFN_vkGetPhysicalDeviceFormatProperties2 cached_vk_fn_;
 };
 
-TEST_F(DrmModifiersFilterVulkanTest, FilterUnsupported) {
+#if defined(ADDRESS_SANITIZER)
+// This test is failing on ASAN due to detected memory leaks.
+// TODO(crbug.com/448392762)
+#define MAYBE_FilterUnsupported DISABLED_FilterUnsupported
+#else
+#define MAYBE_FilterUnsupported FilterUnsupported
+#endif
+TEST_F(DrmModifiersFilterVulkanTest, MAYBE_FilterUnsupported) {
   std::vector<uint64_t> all_modifiers = {kSupportedModifier1,
                                          kUnsupportedModifier};
 
