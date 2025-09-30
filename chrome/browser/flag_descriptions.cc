@@ -6140,13 +6140,6 @@ const char kWindows11MicaTitlebarDescription[] =
     "Use the DWM system-drawn Mica titlebar on Windows 11, version 22H2 (build "
     "22621) and above.";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-const char kLaunchWindowsNativeHostsDirectlyName[] =
-    "Force Native Host Executables to Launch Directly";
-const char kLaunchWindowsNativeHostsDirectlyDescription[] =
-    "Force Native Host executables to launch directly via CreateProcess.";
-#endif  // ENABLE_EXTENSIONS
-
 #if BUILDFLAG(ENABLE_PRINTING)
 const char kPrintWithPostScriptType42FontsName[] =
     "Print with PostScript Type 42 fonts";

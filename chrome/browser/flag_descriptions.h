@@ -3548,11 +3548,6 @@ inline constexpr char kWindowsSystemTracingDescription[] =
     "When enabled, the system tracing service is started along with Chrome's "
     "tracing service (if the system tracing service is registered).";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-extern const char kLaunchWindowsNativeHostsDirectlyName[];
-extern const char kLaunchWindowsNativeHostsDirectlyDescription[];
-#endif  // ENABLE_EXTENSIONS
-
 #if BUILDFLAG(ENABLE_PRINTING)
 extern const char kPrintWithPostScriptType42FontsName[];
 extern const char kPrintWithPostScriptType42FontsDescription[];
