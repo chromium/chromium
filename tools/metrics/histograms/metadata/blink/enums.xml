@@ -98,6 +98,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Ended with fallback to software"/>
   <int value="11" label="Ended with teardown"/>
   <int value="12" label="Aborted because there was no surface"/>
+  <int value="13" label="Ended on canvas reset"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h:CanvasHibernationEvent) -->

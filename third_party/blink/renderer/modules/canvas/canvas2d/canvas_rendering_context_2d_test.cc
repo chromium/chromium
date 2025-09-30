@@ -25,6 +25,7 @@
 #include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -364,6 +365,15 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
     }
     EXPECT_TRUE(Context2D()->IsContextLost());
     EXPECT_THAT(Context2D()->GetResourceProviderForTesting(), IsNull());
+  }
+
+  // Run a callback in a task and wait for that task to finish. This is needed
+  // to run functions drawing in the canvas because these indirectly call
+  // `CanvasRenderingContext::DidDraw` which can't be called outside of a task.
+  void RunInTask(base::OnceCallback<void()> callback) {
+    scheduler::GetSingleThreadTaskRunnerForTesting()->PostTask(
+        FROM_HERE, std::move(callback));
+    test::RunPendingTasks();
   }
 
   test::TaskEnvironment task_environment_{
@@ -2664,6 +2674,65 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
         1);
     EXPECT_FALSE(handler.IsHibernating());
     EXPECT_TRUE(Context2D()->IsCanvas2DResourceProviderValid());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, ResizeEndsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  WaitForHibernation();
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Resize the canvas, resetting it and ending hibernation.
+  {
+    base::HistogramTester histogram_tester;
+    RunInTask(base::BindLambdaForTesting(
+        [this] { CanvasElement().SetSize(gfx::Size(10, 10)); }));
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedOnReset,
+        1);
+    EXPECT_FALSE(handler.IsHibernating());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, ResizeAbortsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+
+  // Resize the canvas before the hibernation task runs. Resizing the canvas
+  // discards the resource provider. There's nothing to hibernate anymore, so
+  // hibernation is cancelled.
+  {
+    base::HistogramTester histogram_tester;
+    RunInTask(base::BindLambdaForTesting(
+        [this] { CanvasElement().SetSize(gfx::Size(10, 10)); }));
+
+    // Run hibernation task. Hibernation aborts since there's no more resources.
+    WaitForHibernation();
+
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedBecauseNoSurface,
+        1);
+    EXPECT_FALSE(handler.IsHibernating());
   }
 }
 

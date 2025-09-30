@@ -22,7 +22,7 @@ namespace blink {
 class CanvasResourceProvider;
 
 inline constexpr char kCanvasHibernationEventHistogramName[] =
-    "Blink.Canvas.HibernationEvents";
+    "Blink.Canvas.HibernationEvents2";
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 
@@ -58,7 +58,8 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     kHibernationEndedWithFallbackToSW = 10,
     kHibernationEndedWithTeardown = 11,
     kHibernationAbortedBecauseNoSurface = 12,
-    kMaxValue = kHibernationAbortedBecauseNoSurface,
+    kHibernationEndedOnReset = 13,
+    kMaxValue = kHibernationEndedOnReset,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:CanvasHibernationEvent)
 

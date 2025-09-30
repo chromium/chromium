@@ -222,7 +222,7 @@ CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
 void CanvasRenderingContext2D::Reset() {
   if (IsHibernating()) {
     CanvasHibernationHandler::ReportHibernationEvent(
-        CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally);
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedOnReset);
     GetHibernationHandler()->Clear();
   }
 

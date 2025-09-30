@@ -385,13 +385,16 @@ chromium-metrics-reviews@google.com.
   <summary>Logs the occurrences of canvas fallback from GPU to CPU.</summary>
 </histogram>
 
-<histogram name="Blink.Canvas.HibernationEvents" enum="CanvasHibernationEvent"
+<histogram name="Blink.Canvas.HibernationEvents2" enum="CanvasHibernationEvent"
     expires_after="2026-02-22">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
     Records the occurrence of events related to 2D canvas GPU resource
     hibernation.
+
+    Replaced Blink.Canvas.HibernationEvents because some hibernation events were
+    incorrectly classified.
   </summary>
 </histogram>
 
