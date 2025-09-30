@@ -188,7 +188,7 @@
 
 /* In the lens side panel searchbox, the typed prefix of the match should
  * have a different color than the rest of the autocomplete suggestion. */
-#contents span:not(.match),
+:host(:not([is-top-chrome-searchbox_])) #contents span:not(.match),
 #ellipsis {
   color: var(--color-searchbox-results-typed-prefix, --color-searchbox-results-foreground);
 }

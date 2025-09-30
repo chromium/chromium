@@ -32,7 +32,7 @@
   --color-searchbox-results-icon-container-background-fallback: var(--color-omnibox-results-background-hovered);
   --color-searchbox-results-icon-focused-outline: var(--color-omnibox-results-focus-indicator);
   --color-searchbox-results-icon-selected: var(--color-omnibox-results-icon-selected);
-  --color-searchbox-results-typed-prefix: var(--color-searchbox-results-url-selected);
+  --color-searchbox-results-typed-prefix: unset;
   --color-searchbox-results-url-selected: var(--color-omnibox-results-url-selected);
   --color-searchbox-results-url: var(--color-omnibox-results-url);
   --color-searchbox-search-icon-background: var(--color-omnibox-results-icon);
