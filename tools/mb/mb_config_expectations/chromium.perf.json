@@ -267,6 +267,18 @@
       "use_remoteexec": true
     }
   },
+  "win-arm64-builder-perf": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "reclient_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_reclient": false,
+      "use_remoteexec": true
+    }
+  },
   "win64-builder-perf": {
     "gn_args": {
       "chrome_pgo_phase": 0,

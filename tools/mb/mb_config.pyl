@@ -97,6 +97,7 @@
       'mac-arm-no-brp-builder-perf': 'official_remoteexec_mac_arm_no_brp_perf',
       'mac-builder-perf': 'official_remoteexec_mac_perf',
       'mac-builder-perf-pgo': 'official_remoteexec_mac_perf_pgo',
+      'win-arm64-builder-perf': 'official_remoteexec_perf_win_cross_arm64',
       'win64-builder-perf': 'official_remoteexec_perf_win_cross',
       'win64-builder-perf-pgo': 'official_remoteexec_perf_pgo',
     },
@@ -112,7 +113,6 @@
       'fuchsia-builder-perf-arm64': 'official_remoteexec_fuchsia_arm64_perf',
       'fuchsia-builder-perf-arm64-pgo': 'official_remoteexec_fuchsia_arm64_perf_pgo',
       'linux-chromium-builder-perf': 'chromium_remoteexec_linux',
-      'win-arm64-builder-perf': 'official_remoteexec_perf_win_cross_arm64',
     },
 
     'chromium.perf.pinpoint': {
