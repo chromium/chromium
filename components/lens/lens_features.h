@@ -992,5 +992,9 @@ extern bool IsLensVideoCitationsEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensUpdatedFeedbackEnabled();
 
+// The timeout for showing the feedback toast in the Lens side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensUpdatedFeedbackToastTimeoutMs();
+
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

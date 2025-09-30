@@ -43,11 +43,18 @@ export class FeedbackToastElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      updatedFeedbackEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   // Whether to render the feedback toast in dark mode.
   protected accessor darkMode: boolean = loadTimeData.getBoolean('darkMode');
+  // Whether to render the updated feedback toast.
+  protected accessor updatedFeedbackEnabled: boolean =
+      loadTimeData.getBoolean('updatedFeedbackEnabled');
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();

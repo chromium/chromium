@@ -281,8 +281,13 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   private postMessageReceiver?: PostMessageReceiver;
   // Whether the feedback toast has been explicitly dismissed by the user.
   private feedbackToastDismissed = false;
+  // Whether the feedback toast has been shown for the current results.
+  private feedbackToastShown = false;
   // The timeout ID for reshowing the feedback toast.
   private feedbackToastReshowTimeoutId = -1;
+  // The timeout ID for showing the feedback toast after an initial delay
+  // after the results are loaded.
+  private feedbackToastShowAfterDelayTimeoutId = -1;
 
   private browserProxy: SidePanelBrowserProxy =
       SidePanelBrowserProxyImpl.getInstance();
@@ -361,6 +366,10 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     this.eventTracker_.add(
         this.$.feedbackToast, 'feedback-toast-dismissed',
         () => this.feedbackToastDismissed = true);
+    this.eventTracker_.add(this.$.composebox, 'composebox-focus-in', () => {
+      this.$.feedbackToast.hide();
+      this.feedbackToastDismissed = true;
+    });
 
     // Start listening to postMessages on the window.
     this.postMessageReceiver = new PostMessageReceiver(
@@ -415,6 +424,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       // focused.
       this.blurSearchbox();
 
+      clearTimeout(this.feedbackToastShowAfterDelayTimeoutId);
       clearTimeout(this.feedbackToastReshowTimeoutId);
       this.$.feedbackToast.hide();
       this.$.messageToast.hide();
@@ -616,15 +626,24 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
     if (!loadTimeData.getBoolean('newFeedbackEnabled')) {
       return;
     }
-
     await this.$.messageToast.hide();
+
+    if (loadTimeData.getBoolean('updatedFeedbackEnabled')) {
+      this.feedbackToastShowAfterDelayTimeoutId = setTimeout(() => {
+        this.feedbackToastShown = true;
+        this.$.feedbackToast.show();
+      }, loadTimeData.getInteger('updatedFeedbackToastTimeoutMs'));
+      return;
+    }
+
+    this.feedbackToastShown = true;
     this.$.feedbackToast.show();
   }
 
   private async showMessageToast(message: string) {
     this.$.feedbackToast.hide();
     await this.showToast(this.$.messageToast, message);
-    if (!this.feedbackToastDismissed) {
+    if (!this.feedbackToastDismissed && this.feedbackToastShown) {
       clearTimeout(this.feedbackToastReshowTimeoutId);
       this.feedbackToastReshowTimeoutId = setTimeout(() => {
         this.showFeedbackToast();
@@ -658,7 +677,7 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
 
   private onHideMessageToastClick() {
     this.$.messageToast.hide();
-    if (!this.feedbackToastDismissed) {
+    if (!this.feedbackToastDismissed && this.feedbackToastShown) {
       clearTimeout(this.feedbackToastReshowTimeoutId);
       this.showFeedbackToast();
     }

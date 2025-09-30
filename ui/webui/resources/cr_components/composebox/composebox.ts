@@ -551,6 +551,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.expanded_ = true;
     this.submitting_ = false;
     this.pageHandler_.focusChanged(true);
+    this.fire('composebox-focus-in');
   }
 
   protected handleComposeboxFocusOut_(e: FocusEvent) {
