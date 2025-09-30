@@ -604,13 +604,9 @@ PhysicalRect AnchorEvaluatorImpl::GetAnchorRect(
     const PhysicalAnchorReference& anchor_reference,
     const ScopedCSSName* position_anchor) const {
   PhysicalRect result;
-  if (anchor_reference.GetLayoutObject() == DefaultAnchor(position_anchor) &&
-      RuntimeEnabledFeatures::CSSAnchorWithTransformsEnabled()) {
+  if (RuntimeEnabledFeatures::CSSAnchorWithTransformsEnabled()) {
     result = anchor_reference.TransformedBoundingRect();
   } else {
-    // TODO(crbug.com/382294252): Do we even need this (with
-    // CSSAnchorWithTransforms)? If the above is safe to do for the default
-    // anchor, it should really be safe for any anchor.
     result = anchor_reference.RectWithoutTransforms();
   }
 
