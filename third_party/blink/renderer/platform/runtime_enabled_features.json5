@@ -4299,10 +4299,6 @@
       status: "test",
     },
     {
-      name: "SchedulerYieldDisallowCrossFrameInheritance",
-      status: "stable",
-    },
-    {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
       // https://github.com/whatwg/html/issues/10854
       // Spec PRs:

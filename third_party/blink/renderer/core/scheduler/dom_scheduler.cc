@@ -208,20 +208,17 @@ SchedulerTaskContext* DOMScheduler::GetSchedulerTaskContextForYield() {
   bool can_use_context = task_context->CanPropagateTo(*GetExecutionContext());
   // Record use counters for non-trival inheritance, i.e. cases where the
   // inheritance can change the scheduling in a meaningful way.
-  if (RuntimeEnabledFeatures::
-          SchedulerYieldDisallowCrossFrameInheritanceEnabled()) {
-    AbortSignal* abort_source = task_context->AbortSource();
-    DOMTaskSignal* priority_source = task_context->PrioritySource();
-    if ((abort_source && abort_source->CanAbort()) ||
-        (priority_source && (!priority_source->HasFixedPriority() ||
-                             priority_source->priority().AsEnum() !=
-                                 V8TaskPriority::Enum::kUserVisible))) {
-      UseCounter::Count(
-          GetExecutionContext(),
-          can_use_context
-              ? WebFeature::kSchedulerYieldNonTrivialInherit
-              : WebFeature::kSchedulerYieldNonTrivialInheritCrossFrameIgnored);
-    }
+  AbortSignal* abort_source = task_context->AbortSource();
+  DOMTaskSignal* priority_source = task_context->PrioritySource();
+  if ((abort_source && abort_source->CanAbort()) ||
+      (priority_source && (!priority_source->HasFixedPriority() ||
+                           priority_source->priority().AsEnum() !=
+                               V8TaskPriority::Enum::kUserVisible))) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        can_use_context
+            ? WebFeature::kSchedulerYieldNonTrivialInherit
+            : WebFeature::kSchedulerYieldNonTrivialInheritCrossFrameIgnored);
   }
   return can_use_context ? task_context : nullptr;
 }
