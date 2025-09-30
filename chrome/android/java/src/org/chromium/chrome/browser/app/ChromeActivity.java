@@ -1104,10 +1104,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // Apply the theme overlay before applying dynamic colors in the super's call. The order
         // ensures the color attributes for dynamic colors are not overridden by the overlay.
         if (ThemeModuleUtils.isEnabled()) {
-            int themeModuleOverlay = ThemeModuleUtils.getProviderInstance().getThemeOverlay();
-            if (themeModuleOverlay != 0) {
-                applySingleThemeOverlay(themeModuleOverlay);
-            }
+            applySingleThemeOverlay(R.style.ThemeOverlay_BrowserUI_ExpressiveUpdate);
         }
 
         if (!HubUtils.isGtsUpdateEnabled()) {

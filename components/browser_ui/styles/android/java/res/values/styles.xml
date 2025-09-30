@@ -110,11 +110,39 @@ found in the LICENSE file.
         <item name="android:indeterminateTint">@macro/default_icon_color_accent1</item>
     </style>
 
+    <!-- TODO(crbug.com/419879223): Move closer to the app menu code once we don't need to apply these using themes. -->
+    <!-- App menu styles. -->
     <!-- Styling for an app menu item row. -->
     <style name="AppMenuItem">
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
         <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
+    </style>
+
+    <!-- Styling for an icon in an app menu icon row. -->
+    <style name="OverflowMenuButton" parent="Widget.Material3Expressive.Button.IconButton.Standard">
+        <!-- Perfect square. -->
+        <item name="android:layout_width">?android:attr/listPreferredItemHeightSmall</item>
+        <item name="android:layout_height">?android:attr/listPreferredItemHeightSmall</item>
+        <!-- Position the button at the center within the wrapper. -->
+        <item name="android:layout_gravity">center</item>
+        <!-- Ensure each button's content block (text + icon) is centered
+        vertically and horizontally within each cell. -->
+        <item name="android:gravity">center</item>
+        <!-- Place each button at the start of its content block (text + icon),
+         which is already centered within its own cell. -->
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
+        <item name="iconSize">24dp</item>
+        <item name="iconTint">@color/default_icon_color_tint_list</item>
+        <item name="iconPadding">0dp</item>
+    </style>
+
+    <!-- Expressive styling for an icon in an app menu icon row. -->
+    <style name="OverflowMenuButton.Expressive" parent="Widget.Material3Expressive.Button.IconButton.Tonal">
+        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small</item>
+        <item name="backgroundTint">@color/tonal_button_bg_list</item>
+        <item name="iconTint">@color/tonal_button_icon_tint_list</item>
     </style>
 
     <!-- Checkbox styles. -->

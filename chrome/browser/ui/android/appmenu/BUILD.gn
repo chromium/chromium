@@ -52,7 +52,6 @@ android_resources("java_resources") {
     "java/res/drawable/menu_action_bar_bg.xml",
     "java/res/values/attrs.xml",
     "java/res/values/ids.xml",
-    "java/res/values/styles.xml",
   ]
   deps = [
     "//components/browser_ui/styles/android:java_resources",

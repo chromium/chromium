@@ -55,7 +55,6 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProviderTest.java",
     "java/src/org/chromium/chrome/browser/theme/SurfaceColorUpdateUtilsUnitTest.java",
-    "java/src/org/chromium/chrome/browser/theme/ThemeModuleUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeUtilsUnitTest.java",
   ]
   deps = [
