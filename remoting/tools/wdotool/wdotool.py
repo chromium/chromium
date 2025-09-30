@@ -145,8 +145,13 @@ class IOLike:
     return self.fd
 
 
-def connect_to_eis(fd: int,
-                   executors: List[Callable[[Devices], None]]) -> None:
+@dataclasses.dataclass
+class Options:
+  executors: list[Callable[[Devices],
+                           None]] = dataclasses.field(default_factory=list)
+
+
+def connect_to_eis(fd: int, options: Options) -> None:
   ctx = ei.Sender.create_for_fd(fd=IOLike(fd), name="ei-debug-events")
   poll = select.poll()
   poll.register(ctx.fd)
@@ -161,13 +166,16 @@ def connect_to_eis(fd: int,
       except Exception as err:
         print(err)
         continue
-      print(e)
+      if options.verbose:
+        print(e)
 
       if event_type == ei.EventType.SEAT_ADDED:
-        print(e.seat)
+        if options.verbose:
+          print(e.seat)
         e.seat.bind(ei.DeviceCapability.all())
       elif event_type == ei.EventType.DEVICE_RESUMED:
-        print(e.device)
+        if options.verbose:
+          print(e.device)
         e.device.start_emulating()
         if ei.DeviceCapability.POINTER in e.device.capabilities:
           devices.pointer_relative = e.device
@@ -180,7 +188,7 @@ def connect_to_eis(fd: int,
         if ei.DeviceCapability.KEYBOARD in e.device.capabilities:
           devices.keyboard = e.device
         if devices.ready():
-          for executor in executors:
+          for executor in options.executors:
             executor(devices)
           return
 
@@ -196,12 +204,6 @@ def scroll_delta(device: ei.Device, y: int) -> None:
   # y is in dips. For a physical device, it would be mm.
   libei.device_scroll_delta(device._cobject, 0, y)  # pylint: disable=protected-access
   device.frame()
-
-
-@dataclasses.dataclass
-class Commands:
-  executors: list[Callable[[Devices],
-                           None]] = dataclasses.field(default_factory=list)
 
 
 class SleepAction(argparse.Action):
@@ -301,8 +303,13 @@ class KeyUpAction(argparse.Action):
 
 
 if __name__ == "__main__":
-  commands = Commands()
+  options = Options()
   parser = argparse.ArgumentParser()
+  parser.add_argument(
+      "-v", "--verbose",
+      action="store_true",
+      help="enable debug output",
+  )
   parser.add_argument(
       "--sleep",
       action=SleepAction,
@@ -376,9 +383,9 @@ if __name__ == "__main__":
       metavar="keycode",
       help="release a key",
   )
-  args = parser.parse_args(namespace=commands)
+  args = parser.parse_args(namespace=options)
 
-  if not commands.executors:
+  if not options.executors:
     parser.error("No commands specified")
 
   try:
@@ -390,6 +397,6 @@ if __name__ == "__main__":
     remote_desktop_session.start()
     stream = screencast_session.record_monitor()
     stream.start()
-    connect_to_eis(eis_fd.take(), commands.executors)
+    connect_to_eis(eis_fd.take(), options)
   except KeyboardInterrupt:
     pass
