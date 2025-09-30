@@ -1796,7 +1796,8 @@ void InputHandlerProxy::DidFinishImplFrame() {
 }
 
 bool InputHandlerProxy::HasQueuedInput() const {
-  return HasQueuedEventsReadyForDispatch(/*frame_aligned=*/true);
+  return HasQueuedEventsReadyForDispatch(/*frame_aligned=*/true,
+                                         base::TimeTicks::Max());
 }
 
 void InputHandlerProxy::SetScrollEventDispatchMode(
@@ -2033,7 +2034,8 @@ void InputHandlerProxy::SetDeferBeginMainFrame(
 void InputHandlerProxy::RequestCallbackAfterEventQueueFlushed(
     base::OnceClosure callback) {
   CHECK(queue_flushed_callback_.is_null());
-  if (HasQueuedEventsReadyForDispatch(/*frame_aligned*/ true)) {
+  if (HasQueuedEventsReadyForDispatch(
+          /*frame_aligned*/ true, /* sample_time */ base::TimeTicks::Max())) {
     queue_flushed_callback_ = std::move(callback);
   } else {
     std::move(callback).Run();
