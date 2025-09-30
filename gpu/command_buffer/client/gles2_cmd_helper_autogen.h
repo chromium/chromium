@@ -2989,22 +2989,6 @@ void GetFragDataIndexEXT(GLuint program,
   }
 }
 
-void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) {
-  gles2::cmds::UnlockDiscardableTextureCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::UnlockDiscardableTextureCHROMIUM>();
-  if (c) {
-    c->Init(texture_id);
-  }
-}
-
-void LockDiscardableTextureCHROMIUM(GLuint texture_id) {
-  gles2::cmds::LockDiscardableTextureCHROMIUM* c =
-      GetCmdSpace<gles2::cmds::LockDiscardableTextureCHROMIUM>();
-  if (c) {
-    c->Init(texture_id);
-  }
-}
-
 void WindowRectanglesEXTImmediate(GLenum mode,
                                   GLsizei count,
                                   const GLint* box) {

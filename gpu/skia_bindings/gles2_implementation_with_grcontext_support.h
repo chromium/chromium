@@ -62,8 +62,6 @@ class GLES2ImplementationWithGrContextSupport
   // internally invoke texture deletion, so they too may affect the texture
   // binding.
   void BindTexture(GLenum target, GLuint texture) override;
-  void UnlockDiscardableTextureCHROMIUM(GLuint texture) override;
-  bool LockDiscardableTextureCHROMIUM(GLuint texture) override;
   void DeleteTextures(GLsizei n, const GLuint* textures) override;
   void ActiveTexture(GLenum texture) override;
 

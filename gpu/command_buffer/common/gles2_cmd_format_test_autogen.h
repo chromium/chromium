@@ -4863,29 +4863,6 @@ TEST_F(GLES2FormatTest, GetFragDataIndexEXT) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, UnlockDiscardableTextureCHROMIUM) {
-  cmds::UnlockDiscardableTextureCHROMIUM& cmd =
-      *GetBufferAs<cmds::UnlockDiscardableTextureCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::UnlockDiscardableTextureCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.texture_id);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
-TEST_F(GLES2FormatTest, LockDiscardableTextureCHROMIUM) {
-  cmds::LockDiscardableTextureCHROMIUM& cmd =
-      *GetBufferAs<cmds::LockDiscardableTextureCHROMIUM>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::LockDiscardableTextureCHROMIUM::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.texture_id);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, WindowRectanglesEXTImmediate) {
   const int kSomeBaseValueToTestWith = 51;
   static GLint data[] = {

@@ -1114,10 +1114,6 @@ void BindFragDataLocationEXT(GLuint program,
 
 GLint GetFragDataIndexEXT(GLuint program, const char* name) override;
 
-void UnlockDiscardableTextureCHROMIUM(GLuint texture_id) override;
-
-bool LockDiscardableTextureCHROMIUM(GLuint texture_id) override;
-
 void WindowRectanglesEXT(GLenum mode, GLsizei count, const GLint* box) override;
 
 GLuint CreateGpuFenceCHROMIUM() override;

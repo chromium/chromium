@@ -2270,19 +2270,6 @@ void GLES2DecoderWithShaderTestBase::SetUp() {
   SetupDefaultProgram();
 }
 
-void GLES2DecoderTestBase::DoUnlockDiscardableTextureCHROMIUM(
-    GLuint texture_id) {
-  cmds::UnlockDiscardableTextureCHROMIUM cmd;
-  cmd.Init(texture_id);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-}
-
-void GLES2DecoderTestBase::DoLockDiscardableTextureCHROMIUM(GLuint texture_id) {
-  cmds::LockDiscardableTextureCHROMIUM cmd;
-  cmd.Init(texture_id);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-}
-
 namespace {
 
 GpuPreferences GenerateGpuPreferencesForPassthroughTests() {
@@ -2560,20 +2547,6 @@ void GLES2DecoderPassthroughTestBase::DoGetIntegerv(GLenum pname,
       GetSharedMemoryAs<cmds::GetIntegerv::Result*>();
   DCHECK(static_cast<size_t>(cmd_result->GetNumResults()) >= num_results);
   std::copy(cmd_result->GetData(), cmd_result->GetData() + num_results, result);
-}
-
-void GLES2DecoderPassthroughTestBase::DoUnlockDiscardableTextureCHROMIUM(
-    GLuint client_id) {
-  cmds::UnlockDiscardableTextureCHROMIUM cmd;
-  cmd.Init(client_id);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-}
-
-void GLES2DecoderPassthroughTestBase::DoLockDiscardableTextureCHROMIUM(
-    GLuint client_id) {
-  cmds::LockDiscardableTextureCHROMIUM cmd;
-  cmd.Init(client_id);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 }
 
 // GCC requires these declarations, but MSVC requires they not be present

@@ -3814,20 +3814,6 @@ _FUNCTION_INFO = {
     'extension': 'CHROMIUM_lose_context',
     'trace_level': 1,
   },
-  'UnlockDiscardableTextureCHROMIUM': {
-    'type': 'Custom',
-    'cmd_args': 'GLuint texture_id',
-    'impl_func': False,
-    'client_test': False,
-    'extension': True,
-  },
-  'LockDiscardableTextureCHROMIUM': {
-    'type': 'Custom',
-    'cmd_args': 'GLuint texture_id',
-    'impl_func': False,
-    'client_test': False,
-    'extension': True,
-  },
   'WindowRectanglesEXT': {
     'type': 'PUTn',
     'count': 4,

@@ -111,17 +111,6 @@ void GLES2ImplementationWithGrContextSupport::BindTexture(GLenum target,
   BaseClass::BindTexture(target, texture);
   ResetGrContextIfNeeded(kTextureBinding_GrGLBackendState);
 }
-void GLES2ImplementationWithGrContextSupport::UnlockDiscardableTextureCHROMIUM(
-    GLuint texture) {
-  BaseClass::UnlockDiscardableTextureCHROMIUM(texture);
-  ResetGrContextIfNeeded(kTextureBinding_GrGLBackendState);
-}
-bool GLES2ImplementationWithGrContextSupport::LockDiscardableTextureCHROMIUM(
-    GLuint texture) {
-  bool result = BaseClass::LockDiscardableTextureCHROMIUM(texture);
-  ResetGrContextIfNeeded(kTextureBinding_GrGLBackendState);
-  return result;
-}
 void GLES2ImplementationWithGrContextSupport::DeleteTextures(
     GLsizei n,
     const GLuint* textures) {

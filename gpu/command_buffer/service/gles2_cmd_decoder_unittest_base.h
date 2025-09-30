@@ -531,10 +531,6 @@ class GLES2DecoderTestBase : public ::testing::TestWithParam<bool>,
   void AddExpectationsForBindVertexArrayOES();
   void AddExpectationsForRestoreAttribState(GLuint attrib);
 
-  void DoUnlockDiscardableTextureCHROMIUM(GLuint texture_id);
-  void DoLockDiscardableTextureCHROMIUM(GLuint texture_id);
-  bool IsDiscardableTextureUnlocked(GLuint texture_id);
-
   GLvoid* BufferOffset(unsigned i) { return reinterpret_cast<GLvoid*>(i); }
 
   template <typename Command, typename Result>
@@ -987,9 +983,6 @@ class GLES2DecoderPassthroughTestBase : public testing::Test,
   void DoBindRenderbuffer(GLenum target, GLuint client_id);
 
   void DoGetIntegerv(GLenum pname, GLint* result, size_t num_results);
-
-  void DoUnlockDiscardableTextureCHROMIUM(GLuint client_id);
-  void DoLockDiscardableTextureCHROMIUM(GLuint client_id);
 
   PassthroughDiscardableManager* passthrough_discardable_texture_manager() {
     return &passthrough_discardable_manager_;
