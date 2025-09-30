@@ -4613,8 +4613,8 @@
   },
   {
     "name": "enable-user-link-capturing-scope-extensions-pwa",
-    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 135
+    "owners": [ "dmurph@chromium.org", "pwa-team@google.com", "mek@chromium.org" ],
+    "expiry_milestone": 145
   },
   {
     "name": "enable-user-navigation-capturing-pwa",
