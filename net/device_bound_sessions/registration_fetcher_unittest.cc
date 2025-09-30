@@ -555,7 +555,7 @@ TEST_P(RegistrationTest, NoScopeJson) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kMissingScope);
+  EXPECT_EQ(out_session.error().type, SessionError::kMissingScope);
 }
 
 TEST_P(RegistrationTest, NoSessionIdJson) {
@@ -585,8 +585,7 @@ TEST_P(RegistrationTest, NoSessionIdJson) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidSessionId);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidSessionId);
 }
 
 TEST_P(RegistrationTest, SpecificationNotDictJson) {
@@ -625,7 +624,7 @@ TEST_P(RegistrationTest, SpecificationNotDictJson) {
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
-  EXPECT_EQ(session_error.type, SessionError::ErrorType::kInvalidScopeRule);
+  EXPECT_EQ(session_error.type, SessionError::kInvalidScopeRule);
 }
 
 TEST_P(RegistrationTest, MissingPathDefaults) {
@@ -826,8 +825,7 @@ TEST_P(RegistrationTest, OneSpecTypeInvalid) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidScopeRule);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidScopeRule);
 }
 
 TEST_P(RegistrationTest, InvalidTypeSpecList) {
@@ -903,8 +901,7 @@ TEST_P(RegistrationTest, TypeIsNotCookie) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidCredentials);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidCredentials);
 }
 
 TEST_P(RegistrationTest, TwoTypesCookie_NotCookie) {
@@ -946,8 +943,7 @@ TEST_P(RegistrationTest, TwoTypesCookie_NotCookie) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidCredentials);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidCredentials);
 }
 
 TEST_P(RegistrationTest, TwoTypesNotCookie_Cookie) {
@@ -989,8 +985,7 @@ TEST_P(RegistrationTest, TwoTypesNotCookie_Cookie) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidCredentials);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidCredentials);
 }
 
 TEST_P(RegistrationTest, CredEntryWithoutDict) {
@@ -1026,8 +1021,7 @@ TEST_P(RegistrationTest, CredEntryWithoutDict) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidCredentials);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidCredentials);
 }
 
 TEST_P(RegistrationTest, CredEntryWithoutAttributes) {
@@ -1102,8 +1096,7 @@ TEST_P(RegistrationTest, CredEntryWithEmptyName) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidCredentials);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidCredentials);
 }
 
 TEST_P(RegistrationTest, ReturnTextFile) {
@@ -1123,8 +1116,7 @@ TEST_P(RegistrationTest, ReturnTextFile) {
                                     callback.callback());
   callback.WaitForCall();
   ASSERT_TRUE(callback.outcome().is_error());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kInvalidConfigJson);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kInvalidConfigJson);
 }
 
 TEST_P(RegistrationTest, ReturnInvalidJson) {
@@ -1146,8 +1138,7 @@ TEST_P(RegistrationTest, ReturnInvalidJson) {
                                     callback.callback());
   callback.WaitForCall();
   EXPECT_FALSE(callback.outcome().is_session());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kInvalidConfigJson);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kInvalidConfigJson);
 }
 
 TEST_P(RegistrationTest, ReturnEmptyJson) {
@@ -1169,8 +1160,7 @@ TEST_P(RegistrationTest, ReturnEmptyJson) {
                                     callback.callback());
   callback.WaitForCall();
   EXPECT_FALSE(callback.outcome().is_session());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kInvalidSessionId);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kInvalidSessionId);
 }
 
 TEST_P(RegistrationTest, NetworkErrorServerShutdown) {
@@ -1193,8 +1183,7 @@ TEST_P(RegistrationTest, NetworkErrorServerShutdown) {
   callback.WaitForCall();
 
   EXPECT_FALSE(callback.outcome().is_session());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kNetError);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kNetError);
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.Registration.Network.Result",
       net::ERR_CONNECTION_REFUSED, 1);
@@ -1218,8 +1207,7 @@ TEST_P(RegistrationTest, NetworkErrorInvalidResponse) {
   callback.WaitForCall();
 
   EXPECT_FALSE(callback.outcome().is_session());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kNetError);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kNetError);
 }
 
 TEST_P(RegistrationTest, ServerError407) {
@@ -1241,8 +1229,7 @@ TEST_P(RegistrationTest, ServerError407) {
   callback.WaitForCall();
 
   EXPECT_FALSE(callback.outcome().is_session());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kNetError);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kNetError);
 }
 
 TEST_P(RegistrationTest, ServerError400) {
@@ -1265,7 +1252,7 @@ TEST_P(RegistrationTest, ServerError400) {
 
   EXPECT_FALSE(callback.outcome().is_session());
   EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kPersistentHttpError);
+            SessionError::kPersistentHttpError);
 }
 
 TEST_P(RegistrationTest, ServerError500) {
@@ -1287,8 +1274,7 @@ TEST_P(RegistrationTest, ServerError500) {
   callback.WaitForCall();
 
   EXPECT_FALSE(callback.outcome().is_session());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kTransientHttpError);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kTransientHttpError);
 }
 
 TEST_F(RegistrationTestWithoutOriginTrialFeedback,
@@ -1447,8 +1433,7 @@ TEST_P(RegistrationTest, FailOnSslErrorExpired) {
 
   callback.WaitForCall();
   EXPECT_FALSE(callback.outcome().is_session());
-  EXPECT_EQ(callback.outcome().error().type,
-            SessionError::ErrorType::kNetError);
+  EXPECT_EQ(callback.outcome().error().type, SessionError::kNetError);
 }
 
 const char* GetSessionIdHeaderName() {
@@ -1631,8 +1616,7 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidChallenge);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidChallenge);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -1658,8 +1642,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kPersistentHttpError);
+  EXPECT_EQ(out_session.error().type, SessionError::kPersistentHttpError);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -1691,8 +1674,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidChallenge);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidChallenge);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -1826,7 +1808,7 @@ TEST_P(RegistrationTest, ContinueFalse) {
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   const SessionError& error = out_session.error();
-  EXPECT_EQ(error.type, SessionError::ErrorType::kServerRequestedTermination);
+  EXPECT_EQ(error.type, SessionError::kServerRequestedTermination);
 }
 
 TEST_P(RegistrationTest, RetriesOnKeyFailure) {
@@ -1909,7 +1891,7 @@ TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
 
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kSigningError);
+  EXPECT_EQ(out_session.error().type, SessionError::kSigningError);
 }
 
 TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
@@ -1949,7 +1931,7 @@ TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
 
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kSigningError);
+  EXPECT_EQ(out_session.error().type, SessionError::kSigningError);
 }
 
 TEST_P(RegistrationTest, NetLogRegistrationResultLogged) {
@@ -2035,7 +2017,7 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
-  EXPECT_EQ(session_error.type, SessionError::ErrorType::kTooManyChallenges);
+  EXPECT_EQ(session_error.type, SessionError::kTooManyChallenges);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -2073,7 +2055,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
-  EXPECT_EQ(session_error.type, SessionError::ErrorType::kTooManyChallenges);
+  EXPECT_EQ(session_error.type, SessionError::kTooManyChallenges);
 }
 
 TEST_P(RegistrationTest, RefreshWithNewSessionIdFails) {
@@ -2102,7 +2084,7 @@ TEST_P(RegistrationTest, RefreshWithNewSessionIdFails) {
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
-  EXPECT_EQ(session_error.type, SessionError::ErrorType::kMismatchedSessionId);
+  EXPECT_EQ(session_error.type, SessionError::kMismatchedSessionId);
 }
 
 TEST_P(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
@@ -2151,8 +2133,7 @@ TEST_P(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   const SessionError& session_error = out_session.error();
-  EXPECT_EQ(session_error.type,
-            SessionError::ErrorType::kInvalidRefreshInitiators);
+  EXPECT_EQ(session_error.type, SessionError::kInvalidRefreshInitiators);
 }
 
 TEST_F(RegistrationTestWithoutOriginTrialFeedback, IncludeSiteDefaultFalse) {
@@ -2239,8 +2220,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, MissingIncludeSiteFails) {
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kInvalidScopeIncludeSite);
+  EXPECT_EQ(out_session.error().type, SessionError::kInvalidScopeIncludeSite);
 }
 
 TEST_P(RegistrationTest, ShutdownDuringRequest) {
@@ -2412,9 +2392,8 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(
-      out_session.error().type,
-      SessionError::ErrorType::kSubdomainRegistrationWellKnownUnavailable);
+  EXPECT_EQ(out_session.error().type,
+            SessionError::kSubdomainRegistrationWellKnownUnavailable);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -2444,7 +2423,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kSubdomainRegistrationWellKnownMalformed);
+            SessionError::kSubdomainRegistrationWellKnownMalformed);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -2475,7 +2454,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kSubdomainRegistrationWellKnownMalformed);
+            SessionError::kSubdomainRegistrationWellKnownMalformed);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -2508,7 +2487,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
   EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kSubdomainRegistrationUnauthorized);
+            SessionError::kSubdomainRegistrationUnauthorized);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -2626,7 +2605,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderHasProvider) {
 
   ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kSessionProviderWellKnownMalformed);
+            SessionError::kSessionProviderWellKnownMalformed);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderUnvailable) {
@@ -2654,7 +2633,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderUnvailable) {
 
   ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kSessionProviderWellKnownUnavailable);
+            SessionError::kSessionProviderWellKnownUnavailable);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderUnauthorized) {
@@ -2685,7 +2664,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedProviderUnauthorized) {
 
   ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kFederatedNotAuthorized);
+            SessionError::kFederatedNotAuthorized);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingUnavailable) {
@@ -2713,7 +2692,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingUnavailable) {
 
   ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kRelyingPartyWellKnownUnavailable);
+            SessionError::kRelyingPartyWellKnownUnavailable);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingHasRelying) {
@@ -2745,7 +2724,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingHasRelying) {
 
   ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kRelyingPartyWellKnownMalformed);
+            SessionError::kRelyingPartyWellKnownMalformed);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingNotAuthorized) {
@@ -2776,7 +2755,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedRelyingNotAuthorized) {
 
   ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kFederatedNotAuthorized);
+            SessionError::kFederatedNotAuthorized);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedTooManyRelying) {
@@ -2813,7 +2792,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, FederatedTooManyRelying) {
       FetchWithFederatedKey(param, key, server_.GetURL("provider.a.test", "/"));
   ASSERT_TRUE(session_or_error.is_error());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kTooManyRelyingOriginLabels);
+            SessionError::kTooManyRelyingOriginLabels);
 }
 
 TEST_F(RegistrationTestWithOriginTrialFeedback,
@@ -2945,8 +2924,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   callback.WaitForCall();
   const RegistrationResult& out_session = callback.outcome();
   ASSERT_TRUE(out_session.is_error());
-  EXPECT_EQ(out_session.error().type,
-            SessionError::ErrorType::kBoundCookieSetForbidden);
+  EXPECT_EQ(out_session.error().type, SessionError::kBoundCookieSetForbidden);
 }
 
 class RegistrationTokenHelperTest : public testing::Test {

@@ -58,6 +58,8 @@ struct NET_EXPORT SessionError {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
 
+  using enum ErrorType;
+
   explicit SessionError(ErrorType type);
   ~SessionError();
 

@@ -381,7 +381,7 @@ ScopedTestRegistrationFetcher::CreateWithTermination(
   return ScopedTestRegistrationFetcher(base::BindRepeating(
       [](const std::string& session_id, const std::string& refresh_url_string) {
         return RegistrationResult(
-            SessionError{SessionError::ErrorType::kServerRequestedTermination});
+            SessionError{SessionError::kServerRequestedTermination});
       },
       std::string(session_id), std::string(refresh_url_string)));
 }

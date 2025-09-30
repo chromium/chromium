@@ -16,8 +16,6 @@ SessionError::SessionError(SessionError&&) noexcept = default;
 SessionError& SessionError::operator=(SessionError&&) noexcept = default;
 
 std::optional<DeletionReason> SessionError::GetDeletionReason() const {
-  using enum ErrorType;
-
   switch (type) {
     case kSuccess:
       return std::nullopt;
@@ -67,8 +65,6 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
 }
 
 bool SessionError::IsServerError() const {
-  using enum ErrorType;
-
   switch (type) {
     case kSuccess:
     case kKeyError:

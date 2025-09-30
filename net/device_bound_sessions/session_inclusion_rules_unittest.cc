@@ -177,7 +177,7 @@ TEST_F(SessionInclusionRulesTest, IncludeSiteAttemptedButNotAllowed) {
       subdomain_origin, params, GURL("https://some.site.test/refresh"));
   ASSERT_FALSE(rules_or_error.has_value());
   EXPECT_EQ(rules_or_error.error().type,
-            SessionError::ErrorType::kInvalidScopeIncludeSite);
+            SessionError::kInvalidScopeIncludeSite);
 }
 
 TEST_F(SessionInclusionRulesTest, IncludeSite) {

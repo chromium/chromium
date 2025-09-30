@@ -200,7 +200,7 @@ SessionServiceImpl::GetFederatedProviderSessionIfValid(
   GURL provider_url = *registration_params.provider_url();
   if (!provider_url.is_valid() || url::Origin::Create(provider_url).opaque()) {
     return base::unexpected(
-        SessionError(SessionError::ErrorType::kInvalidFederatedSessionUrl));
+        SessionError(SessionError::kInvalidFederatedSessionUrl));
   }
 
   SessionKey provider_key{SchemefulSite(provider_url),
@@ -210,12 +210,12 @@ SessionServiceImpl::GetFederatedProviderSessionIfValid(
   if (!provider_session) {
     // Provider session not found, fail the registration.
     return base::unexpected(
-        SessionError(SessionError::ErrorType::kInvalidFederatedSession));
+        SessionError(SessionError::kInvalidFederatedSession));
   }
 
   if (url::Origin::Create(provider_url) != provider_session->origin()) {
     return base::unexpected(
-        SessionError(SessionError::ErrorType::kInvalidFederatedSession));
+        SessionError(SessionError::kInvalidFederatedSession));
   }
 
   unexportable_keys::ServiceErrorOr<
@@ -223,22 +223,20 @@ SessionServiceImpl::GetFederatedProviderSessionIfValid(
       algorithm =
           key_service_->GetAlgorithm(*provider_session->unexportable_key_id());
   if (!algorithm.has_value()) {
-    return base::unexpected(
-        SessionError(SessionError::ErrorType::kInvalidFederatedKey));
+    return base::unexpected(SessionError(SessionError::kInvalidFederatedKey));
   }
 
   unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> pub_key =
       key_service_->GetSubjectPublicKeyInfo(
           *provider_session->unexportable_key_id());
   if (!pub_key.has_value()) {
-    return base::unexpected(
-        SessionError(SessionError::ErrorType::kInvalidFederatedKey));
+    return base::unexpected(SessionError(SessionError::kInvalidFederatedKey));
   }
 
   std::string thumbprint = CreateJwkThumbprint(*algorithm, *pub_key);
   if (thumbprint != *registration_params.provider_key()) {
     return base::unexpected(
-        SessionError(SessionError::ErrorType::kFederatedKeyThumbprintMismatch));
+        SessionError(SessionError::kFederatedKeyThumbprintMismatch));
   }
 
   return provider_session;
@@ -649,7 +647,7 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
     return registration_result.error().type;
   } else if (registration_result.is_no_session_config_change()) {
     // No config changes is not allowed at registration.
-    return SessionError::ErrorType::kInvalidConfigJson;
+    return SessionError::kInvalidConfigJson;
   }
 
   std::unique_ptr<Session> session = registration_result.TakeSession();
@@ -658,7 +656,7 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
   NotifySessionAccess(on_access_callback, SessionAccess::AccessType::kCreation,
                       SessionKey{site, session->id()}, *session);
   AddSession(site, std::move(session));
-  return SessionError::ErrorType::kSuccess;
+  return SessionError::kSuccess;
 }
 
 SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
@@ -696,7 +694,7 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
   }
 
   return registration_result.is_error() ? registration_result.error().type
-                                        : SessionError::ErrorType::kSuccess;
+                                        : SessionError::kSuccess;
 }
 
 void SessionServiceImpl::OnSessionKeyRestored(

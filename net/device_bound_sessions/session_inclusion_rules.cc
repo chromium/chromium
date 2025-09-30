@@ -97,7 +97,7 @@ SessionInclusionRules::Create(const url::Origin& origin,
 
   if (scope_params.include_site && !rules.may_include_site_) {
     return base::unexpected(
-        SessionError{SessionError::ErrorType::kInvalidScopeIncludeSite});
+        SessionError{SessionError::kInvalidScopeIncludeSite});
   }
 
   rules.SetIncludeSite(scope_params.include_site);
@@ -108,8 +108,7 @@ SessionInclusionRules::Create(const url::Origin& origin,
             ? SessionInclusionRules::InclusionResult::kExclude
             : SessionInclusionRules::InclusionResult::kInclude;
     if (!rules.AddUrlRuleIfValid(inclusion_result, spec.domain, spec.path)) {
-      return base::unexpected(
-          SessionError{SessionError::ErrorType::kInvalidScopeRule});
+      return base::unexpected(SessionError{SessionError::kInvalidScopeRule});
     }
   }
 

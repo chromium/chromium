@@ -129,8 +129,7 @@ TEST_F(SessionTest, InvalidServiceRefreshUrl) {
   params.refresh_url = "http://?not-a-valid=url";
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
-  EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kInvalidRefreshUrl);
+  EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidRefreshUrl);
 }
 
 TEST_F(SessionTest, InvalidScopeOrigin) {
@@ -138,8 +137,7 @@ TEST_F(SessionTest, InvalidScopeOrigin) {
   params.scope.origin = "hello world";
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
-  EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kInvalidScopeOrigin);
+  EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidScopeOrigin);
 }
 
 TEST_F(SessionTestWithOriginTrialFeedback, InvalidScopeOriginWithPath) {
@@ -147,8 +145,7 @@ TEST_F(SessionTestWithOriginTrialFeedback, InvalidScopeOriginWithPath) {
   params.scope.origin = "https://example.test/path";
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
-  EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kInvalidScopeOrigin);
+  EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidScopeOrigin);
 }
 
 // This test should be deleted once kDeviceBoundSessionsOriginTrialFeedback is
@@ -166,8 +163,7 @@ TEST_F(SessionTestWithOriginTrialFeedback,
   params.scope.origin = "https://example.test/";
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
-  EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kInvalidScopeOrigin);
+  EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidScopeOrigin);
 }
 
 // This test should be deleted once kDeviceBoundSessionsOriginTrialFeedback is
@@ -186,7 +182,7 @@ TEST_F(SessionTest, ScopeOriginSameSiteMismatch) {
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kScopeOriginSameSiteMismatch);
+            SessionError::kScopeOriginSameSiteMismatch);
 }
 
 TEST_F(SessionTest, ScopeOriginPrivateRegistryChildDomainSameSiteMismatch) {
@@ -200,7 +196,7 @@ TEST_F(SessionTest, ScopeOriginPrivateRegistryChildDomainSameSiteMismatch) {
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kScopeOriginSameSiteMismatch);
+            SessionError::kScopeOriginSameSiteMismatch);
 }
 
 TEST_F(SessionTest, SameSiteMismatchRefreshUrl) {
@@ -209,7 +205,7 @@ TEST_F(SessionTest, SameSiteMismatchRefreshUrl) {
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kRefreshUrlSameSiteMismatch);
+            SessionError::kRefreshUrlSameSiteMismatch);
 }
 
 TEST_F(SessionTest, NonSecureUrl) {
@@ -221,8 +217,7 @@ TEST_F(SessionTest, NonSecureUrl) {
     params.scope.origin = "http://example.test";
     auto session_or_error = Session::CreateIfValid(params);
     ASSERT_FALSE(session_or_error.has_value());
-    EXPECT_EQ(session_or_error.error().type,
-              SessionError::ErrorType::kInvalidRefreshUrl);
+    EXPECT_EQ(session_or_error.error().type, SessionError::kInvalidRefreshUrl);
   }
 
   // But localhost is okay.
@@ -255,7 +250,7 @@ TEST_F(SessionTest, CreateOriginScopedWithSessionRules) {
       {SessionParams::Scope::Specification::Type::kExclude,
        "subdomain.example.test", "/index.html"});
   EXPECT_EQ(Session::CreateIfValid(params).error().type,
-            SessionError::ErrorType::kInvalidScopeRule);
+            SessionError::kInvalidScopeRule);
 }
 
 TEST_F(SessionTest, CreateWithInvalidCredential) {
@@ -265,14 +260,14 @@ TEST_F(SessionTest, CreateWithInvalidCredential) {
       "test_cookie",
       /*attributes=*/"Domain=some-other-domain.test"}};
   EXPECT_EQ(Session::CreateIfValid(params).error().type,
-            SessionError::ErrorType::kInvalidCredentials);
+            SessionError::kInvalidCredentials);
 
   // Try to create a cookie with no name.
   params.credentials = {
       SessionParams::Credential{"",
                                 /*attributes=*/"Domain=example.test"}};
   EXPECT_EQ(Session::CreateIfValid(params).error().type,
-            SessionError::ErrorType::kInvalidCredentials);
+            SessionError::kInvalidCredentials);
 }
 
 TEST_F(SessionTest, ToFromProto) {
@@ -1024,7 +1019,7 @@ TEST_F(SessionTest, InvalidRefreshInitiators) {
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_FALSE(session_or_error.has_value());
   EXPECT_EQ(session_or_error.error().type,
-            SessionError::ErrorType::kInvalidRefreshInitiators);
+            SessionError::kInvalidRefreshInitiators);
 }
 
 }  // namespace

@@ -249,7 +249,7 @@ TEST_F(SessionServiceImplTest, RegisterNoId) {
 
 TEST_F(SessionServiceImplTest, RegisterNullFetcher) {
   auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
-      SessionError::ErrorType::kNetError, kRefreshUrlString);
+      SessionError::kNetError, kRefreshUrlString);
   auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
       kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
       kChallenge,
@@ -676,7 +676,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_FatalError) {
 
   // Set up a null fetcher for failure refresh.
   auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
-      SessionError::ErrorType::kPersistentHttpError, kRefreshUrlString);
+      SessionError::kPersistentHttpError, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
       future_2.GetCallback());
@@ -724,7 +724,7 @@ TEST_F(SessionServiceImplTest, TestDeferWithRequestContinue_NonFatalError) {
 
   // Set up a null fetcher for failure refresh.
   auto scoped_null_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
-      SessionError::ErrorType::kNetError, kRefreshUrlString);
+      SessionError::kNetError, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
       future.GetCallback());
@@ -772,7 +772,7 @@ TEST_F(SessionServiceImplTest, RefreshWithNewSessionId) {
   // Set up the fetcher for a failed refresh due to a new session ID
   // which doesn't equal to the refreshing one.
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
-      SessionError::ErrorType::kInvalidSessionId, kRefreshUrlString);
+      SessionError::kInvalidSessionId, kRefreshUrlString);
   service().DeferRequestForRefresh(
       request.get(), SessionService::DeferralParams(Session::Id(kSessionId)),
       future.GetCallback());
@@ -992,7 +992,7 @@ TEST_F(SessionServiceImplNoRefreshQuotaTest, SessionRefreshQuotaDisabled) {
 TEST_F(SessionServiceImplTest, SessionBackoff) {
   AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
-      SessionError::ErrorType::kTransientHttpError, kRefreshUrlString);
+      SessionError::kTransientHttpError, kRefreshUrlString);
 
   net::TestDelegate delegate;
   std::unique_ptr<URLRequest> request =
@@ -1294,9 +1294,8 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       {SchemefulSite(GURL("https://rp.com")), Session::Id("RelyingSession")});
   EXPECT_EQ(relying_session, nullptr);
 
-  histograms.ExpectUniqueSample(
-      "Net.DeviceBoundSessions.RegistrationResult",
-      SessionError::ErrorType::kInvalidFederatedSessionUrl, 1);
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kInvalidFederatedSessionUrl, 1);
 }
 
 TEST_F(SessionServiceImplTestWithFederatedSessions,
@@ -1319,9 +1318,8 @@ TEST_F(SessionServiceImplTestWithFederatedSessions,
       {SchemefulSite(GURL("https://rp.com")), Session::Id("RelyingSession")});
   EXPECT_EQ(relying_session, nullptr);
 
-  histograms.ExpectUniqueSample(
-      "Net.DeviceBoundSessions.RegistrationResult",
-      SessionError::ErrorType::kInvalidFederatedSessionUrl, 1);
+  histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
+                                SessionError::kInvalidFederatedSessionUrl, 1);
 }
 
 TEST_F(SessionServiceImplTestWithoutFederatedSessions,
@@ -1396,7 +1394,7 @@ TEST_F(SessionServiceImplTest, EmptyResponseOnRegistration) {
   EXPECT_FALSE(maybe_deferral);
 
   histograms.ExpectUniqueSample("Net.DeviceBoundSessions.RegistrationResult",
-                                SessionError::ErrorType::kInvalidConfigJson, 1);
+                                SessionError::kInvalidConfigJson, 1);
 }
 
 TEST_F(SessionServiceImplTest, EmptyResponseOnRefresh) {
