@@ -5,9 +5,10 @@
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {Container, Tab, TabCreatedContainer} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
-import type {OnDataChangedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
+import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
+import type {TabStripObserver} from '/tab_strip_api/tab_strip_observer.js';
 
 import type {ContentRegion} from './content_region.js';
 import type {TabStrip} from './tab_strip.js';
@@ -21,7 +22,7 @@ export interface TabStripControllerDelegate {
   activeTabUpdated: (tabData: Tab) => void;
 }
 
-export class TabStripController {
+export class TabStripController implements TabStripObserver {
   private readonly tabStripControllerDelegate_: TabStripControllerDelegate;
   private readonly tabStripService_: TabStripServiceRemote;
   private readonly tabStripObservation_: TabStripObservation;
@@ -33,11 +34,10 @@ export class TabStripController {
       tabStrip: TabStrip, contentRegion: ContentRegion) {
     this.tabStripControllerDelegate_ = tabStripControllerDelegate;
     this.tabStripService_ = TabStripService.getRemote();
-    this.tabStripObservation_ = new TabStripObservation();
+    this.tabStripObservation_ = new TabStripObservation(this);
     this.tabStrip_ = tabStrip;
     this.contentRegion_ = contentRegion;
 
-    this.registerTabChangeCallbacks_();
     this.loadTabStripModel_();
   }
 
@@ -74,29 +74,6 @@ export class TabStripController {
   }
 
   // Private methods:
-  private registerTabChangeCallbacks_() {
-    // TODO(webium): implement these callbacks.
-    // this.tabStripObservation_.showContextMenu.addListener(
-    //     () => this.onShowContextMenu_());
-    this.tabStripObservation_.onTabsCreated.addListener(
-        this.onTabsCreated_.bind(this));
-    // this.tabStripObservation_.tabMoved.addListener(
-    //    this.onTabMoved_.bind(this));
-    this.tabStripObservation_.onTabsClosed.addListener(
-        this.onTabsClosed_.bind(this));
-    this.tabStripObservation_.onDataChanged.addListener(
-        this.onDataChanged_.bind(this));
-    // this.tabStripObservation_.tabReplaced.addListener(
-    //    this.onTabReplaced_.bind(this));
-    // this.tabStripObservation_.tabCloseCancelled.addListener(
-    //     this.onTabCloseCancelled_.bind(this));
-    // this.tabStripObservation_.tabGroupStateChanged.addListener(
-    //    this.onTabGroupStateChanged_.bind(this));
-    // this.tabStripObservation_.tabGroupClosed.addListener(
-    //     this.onTabGroupClosed_.bind(this));
-    // this.tabStripObservation_.tabGroupMoved.addListener(
-    //     this.onTabGroupMoved_.bind(this));
-  }
 
   private async loadTabStripModel_() {
     const tabSnapshot = await this.tabStripService_.getTabs();
@@ -128,21 +105,28 @@ export class TabStripController {
     this.tabStripControllerDelegate_.refreshLayout();
   }
 
-  // tab_strip::mojom::Page implementation:
-  private onTabsCreated_(tabsCreatedEvent: OnTabsCreatedEvent) {
+  // TabStripObserver impl:
+  onTabsCreated(tabsCreatedEvent: OnTabsCreatedEvent) {
     const tabsCreated: TabCreatedContainer[] = tabsCreatedEvent.tabs;
     tabsCreated.forEach((container) => {
       this.addTab_(container.tab);
     });
   }
 
+  onTabsClosed(tabsClosedEvent: OnTabsClosedEvent) {
+    const tabsClosed = tabsClosedEvent.tabs;
+    tabsClosed.forEach((tabId: NodeId) => {
+      this.tabStrip_.removeTab(tabId);
+      this.contentRegion_.removeTab(tabId);
+    });
+  }
   /* TODO(webium): get this working.
   private onTabGroupStateChanged_(tabId: NodeId, _: number, groupId?: NodeId) {
     this.tabStrip_.setTabGroupForTab_(tabId, groupId);
   }
   */
 
-  private onDataChanged_(onDataChangedEvent: OnDataChangedEvent) {
+  onDataChanged(onDataChangedEvent: OnDataChangedEvent) {
     const data = onDataChangedEvent.data;
     if (data.tab) {
       const tab = data.tab;
@@ -161,11 +145,7 @@ export class TabStripController {
     }
   }
 
-  private onTabsClosed_(tabsClosedEvent: OnTabsClosedEvent) {
-    const tabsClosed = tabsClosedEvent.tabs;
-    tabsClosed.forEach((tabId: NodeId) => {
-      this.tabStrip_.removeTab(tabId);
-      this.contentRegion_.removeTab(tabId);
-    });
-  }
+  onCollectionCreated(_onCollectionCreated: OnCollectionCreatedEvent) {}
+
+  onNodeMoved(_onNodeMoved: OnNodeMovedEvent) {}
 }

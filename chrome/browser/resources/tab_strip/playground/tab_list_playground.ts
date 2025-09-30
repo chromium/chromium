@@ -12,6 +12,7 @@ import type {Container, Data, SplitTab, Tab, TabCreatedContainer, TabGroup} from
 import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnTabsClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId, Position} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 import {TabStripObservation} from '/tab_strip_api/tab_strip_observation.js';
+import type {TabStripObserver} from '/tab_strip_api/tab_strip_observer.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {Color as TabGroupColor} from '../tab_group_types.mojom-webui.js';
@@ -22,7 +23,8 @@ import {SplitTabElement} from './split_tab_playground.js';
 import {TabGroupElement} from './tab_group_playground.js';
 import {TabElement} from './tab_playground.js';
 
-export class TabListPlaygroundElement extends CustomElement {
+export class TabListPlaygroundElement extends CustomElement implements
+    TabStripObserver {
   animationPromises: Promise<void>;
   private pinnedTabsElement_: HTMLElement;
   private unpinnedTabsElement_: HTMLElement;
@@ -39,7 +41,7 @@ export class TabListPlaygroundElement extends CustomElement {
     this.pinnedTabsElement_ = this.getRequiredElement('#pinnedTabs');
     this.unpinnedTabsElement_ = this.getRequiredElement('#unpinnedTabs');
     this.tabStripService_ = TabStripService.getRemote();
-    this.tabStripObservation_ = new TabStripObservation();
+    this.tabStripObservation_ = new TabStripObservation(this);
   }
 
   getIndexOfTab(tabElement: TabElement): number {
@@ -61,17 +63,6 @@ export class TabListPlaygroundElement extends CustomElement {
 
   connectedCallback() {
     this.fetchAndUpdateTabs_();
-
-    this.tabStripObservation_.onTabsCreated.addListener(
-        this.onTabsCreated_.bind(this));
-    this.tabStripObservation_.onTabsClosed.addListener(
-        this.onTabsClosed_.bind(this));
-    this.tabStripObservation_.onDataChanged.addListener(
-        this.onDataChanged_.bind(this));
-    this.tabStripObservation_.onNodeMoved.addListener(
-        this.onNodeMoved_.bind(this));
-    this.tabStripObservation_.onCollectionCreated.addListener(
-        this.onCollectionCreated_.bind(this));
   }
 
   private addAnimationPromise_(promise: Promise<void>) {
@@ -130,7 +121,7 @@ export class TabListPlaygroundElement extends CustomElement {
     }
   }
 
-  private onTabsCreated_(tabsCreatedEvent: OnTabsCreatedEvent) {
+  onTabsCreated(tabsCreatedEvent: OnTabsCreatedEvent) {
     const tabsCreated: TabCreatedContainer[] = tabsCreatedEvent.tabs;
     tabsCreated.forEach((container) => {
       const tab = container.tab;
@@ -141,7 +132,7 @@ export class TabListPlaygroundElement extends CustomElement {
     });
   }
 
-  private onTabsClosed_(onTabsClosedEvent: OnTabsClosedEvent) {
+  onTabsClosed(onTabsClosedEvent: OnTabsClosedEvent) {
     const tabsClosed = onTabsClosedEvent.tabs;
     tabsClosed.forEach((tabId: NodeId) => {
       const element = this.findNodeElement_(tabId);
@@ -151,7 +142,7 @@ export class TabListPlaygroundElement extends CustomElement {
     });
   }
 
-  private onDataChanged_(onDataChangedEvent: OnDataChangedEvent) {
+  onDataChanged(onDataChangedEvent: OnDataChangedEvent) {
     const data = onDataChangedEvent.data;
     if (data.tab) {
       const tab = data.tab;
@@ -168,7 +159,7 @@ export class TabListPlaygroundElement extends CustomElement {
     }
   }
 
-  private onNodeMoved_(event: OnNodeMovedEvent) {
+  onNodeMoved(event: OnNodeMovedEvent) {
     const element = this.findNodeElement_(event.id);
     if (!element) {
       console.error('Moved element not found:', event.id);
@@ -183,7 +174,7 @@ export class TabListPlaygroundElement extends CustomElement {
     this.placeElement_(element, event.to.index, false, parentId);
   }
 
-  private onCollectionCreated_(event: OnCollectionCreatedEvent) {
+  onCollectionCreated(event: OnCollectionCreatedEvent) {
     if (event.data.splitTab) {
       this.createSplitTabElement_(event.data.splitTab);
     } else if (event.data.tabGroup) {

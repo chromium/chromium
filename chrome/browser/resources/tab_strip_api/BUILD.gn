@@ -16,7 +16,10 @@ build_webui("build") {
 
   webui_context_type = "trusted"
 
-  ts_files = [ "tab_strip_observation.ts" ]
+  ts_files = [
+    "tab_strip_observer.ts",
+    "tab_strip_observation.ts",
+  ]
 
   ts_composite = true
 
