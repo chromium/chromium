@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
@@ -49,7 +50,8 @@ class EduClassifierModelHandlerTest : public testing::Test {
   void SetUp() override {
     model_provider_ = std::make_unique<EduClassifierModelProvider>();
     model_handler_ = std::make_unique<EduClassifierModelHandler>(
-        model_provider_.get(), task_environment_.GetMainThreadTaskRunner());
+        model_provider_.get(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
   }
 
   void TearDown() override {
