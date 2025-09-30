@@ -88,7 +88,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
     return false;
   }
 
-  memcpy(params_buffer.data(), &pic_params, sizeof(pic_params));
+  params_buffer.data().copy_prefix_from(base::byte_span_from_ref(pic_params));
 
   // Buffer #2 - Slice control data.
   const auto tile_size = sizeof(DXVA_Tile_AV1) * tile_buffers.size();
@@ -98,7 +98,7 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
     return false;
   }
 
-  auto* tiles = reinterpret_cast<DXVA_Tile_AV1*>(tile_buffer.data());
+  auto* tiles = reinterpret_cast<DXVA_Tile_AV1*>(tile_buffer.data().data());
 
   // Buffer #3 - Tile buffer bitstream data.
   const size_t bitstream_size = std::accumulate(

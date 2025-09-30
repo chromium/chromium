@@ -138,7 +138,7 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
         return false;
       }
 
-      memcpy(buffer.data(), slice_info_bytes_.data(), slice_info_bytes_.size());
+      buffer.data().copy_prefix_from(slice_info_bytes_);
       slice_info_bytes_.clear();
 
       if (!buffer.Commit()) {

@@ -1,12 +1,6 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/windows/scoped_d3d_buffers.h"
 
 #include <algorithm>
@@ -38,7 +32,9 @@ size_t ScopedSequenceD3DInputBuffer::BytesAvailable() const {
 
 size_t ScopedSequenceD3DInputBuffer::Write(base::span<const uint8_t> source) {
   size_t bytes_to_write = std::min(source.size(), BytesAvailable());
-  memcpy(buffer_->data() + offset_, source.data(), bytes_to_write);
+  buffer_->data()
+      .subspan(offset_, bytes_to_write)
+      .copy_from(source.first(bytes_to_write));
   offset_ += bytes_to_write;
   return bytes_to_write;
 }

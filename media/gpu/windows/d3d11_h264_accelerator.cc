@@ -302,7 +302,7 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
       return H264DecoderStatus::kFail;
     }
 
-    memcpy(params_buffer.data(), &pic_param, sizeof(pic_param));
+    params_buffer.data().copy_prefix_from(base::byte_span_from_ref(pic_param));
 
     if (!params_buffer.Commit()) {
       return H264DecoderStatus::kFail;
@@ -359,7 +359,8 @@ H264DecoderStatus D3D11H264Accelerator::SubmitSlice(
       return H264DecoderStatus::kFail;
     }
 
-    memcpy(iq_matrix_buffer.data(), &iq_matrix, sizeof(iq_matrix));
+    iq_matrix_buffer.data().copy_prefix_from(
+        base::byte_span_from_ref(iq_matrix));
 
     if (!iq_matrix_buffer.Commit()) {
       return H264DecoderStatus::kFail;

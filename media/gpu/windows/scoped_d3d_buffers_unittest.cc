@@ -48,7 +48,7 @@ TEST_F(ScopedD3DBufferTest, D3DInputBuffer) {
 TEST_F(ScopedD3DBufferTest, ScopedRandomAccessD3DInputBuffer) {
   ScopedRandomAccessD3DInputBuffer buffer(
       std::unique_ptr<ScopedD3DBuffer>(new MemoryBuffer(size_)));
-  EXPECT_NE(buffer.data(), nullptr);
+  EXPECT_FALSE(buffer.data().empty());
   EXPECT_TRUE(buffer.Commit());
 }
 

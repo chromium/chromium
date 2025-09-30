@@ -544,9 +544,8 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
 
     std::visit(
         [&](const auto& param) {
-          base::span<uint8_t>(params_buffer.data(), pic_params_size)
-              .copy_from(base::span<const uint8_t>(
-                  reinterpret_cast<const uint8_t*>(&param), pic_params_size));
+          params_buffer.data().copy_prefix_from(
+              base::byte_span_from_ref(param).first(pic_params_size));
         },
         pic_param);
 
@@ -653,7 +652,8 @@ H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
       return H265DecoderStatus::kFail;
     }
 
-    memcpy(iq_matrix_buffer.data(), &iq_matrix, sizeof(iq_matrix));
+    iq_matrix_buffer.data().copy_prefix_from(
+        base::byte_span_from_ref(iq_matrix));
 
     if (!iq_matrix_buffer.Commit()) {
       return H265DecoderStatus::kFail;
