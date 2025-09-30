@@ -715,18 +715,6 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsInRange) {
   EXPECT_THAT(results[0], MatchesVisitInfo(test_visit_rows[3]));
 }
 
-TEST_F(VisitDatabaseTest, GetAllURLIDsForTransition) {
-  std::vector<VisitRow> test_visit_rows = GetTestVisitRows();
-
-  for (size_t i = 0; i < test_visit_rows.size(); ++i) {
-    EXPECT_TRUE(AddVisit(&test_visit_rows[i], SOURCE_BROWSED));
-  }
-  std::vector<URLID> url_ids;
-  GetAllURLIDsForTransition(ui::PAGE_TRANSITION_TYPED, &url_ids);
-  EXPECT_EQ(1U, url_ids.size());
-  EXPECT_EQ(test_visit_rows[0].url_id, url_ids[0]);
-}
-
 TEST_F(VisitDatabaseTest, VisitSource) {
   // Add visits.
   VisitRow visit_info1(111, Time::Now(), 0, ui::PAGE_TRANSITION_LINK, 0, false,

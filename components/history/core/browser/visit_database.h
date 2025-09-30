@@ -153,11 +153,6 @@ class VisitDatabase {
                             int max_results,
                             VisitVector* visits);
 
-  // Looks up URLIDs for all visits with specified transition. Returns true on
-  // success and false otherwise.
-  bool GetAllURLIDsForTransition(ui::PageTransition transition,
-                                 std::vector<URLID>* urls);
-
   // Looks up all the app IDs found in the database entries. Returns a struct
   // containing the list of the IDs.
   GetAllAppIdsResult GetAllAppIds();

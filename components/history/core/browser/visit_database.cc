@@ -776,22 +776,6 @@ bool VisitDatabase::GetSomeForeignVisits(VisitID max_visit_id,
   return FillVisitVector(statement, visits);
 }
 
-bool VisitDatabase::GetAllURLIDsForTransition(ui::PageTransition transition,
-                                              std::vector<URLID>* urls) {
-  DCHECK(urls);
-  urls->clear();
-  sql::Statement statement(
-      GetDB().GetUniqueStatement("SELECT DISTINCT url FROM visits "
-                                 "WHERE (transition & ?) == ?"));
-  statement.BindInt64(0, ui::PAGE_TRANSITION_CORE_MASK);
-  statement.BindInt64(1, transition);
-
-  while (statement.Step()) {
-    urls->push_back(statement.ColumnInt64(0));
-  }
-  return statement.Succeeded();
-}
-
 GetAllAppIdsResult VisitDatabase::GetAllAppIds() {
   sql::Statement statement(GetDB().GetUniqueStatement(
       "SELECT DISTINCT app_id FROM visits "
