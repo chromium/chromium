@@ -247,7 +247,9 @@ bool GlicFocusedBrowserManager::IsBrowserStateValid(
     BrowserWindowInterface* browser_interface) {
   ui::BaseWindow* window = browser_interface->GetWindow();
   return !window->IsMinimized() && window->IsVisible() &&
-         browser_interface->capabilities()->IsVisibleOnScreen();
+         // Disable this check for some tests. See crbug.com/447705905.
+         (g_testing_mode ||
+          browser_interface->capabilities()->IsVisibleOnScreen());
 }
 
 GlicFocusedBrowserManager::FocusedBrowserState::FocusedBrowserState() = default;
