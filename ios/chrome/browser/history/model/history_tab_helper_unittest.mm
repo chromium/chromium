@@ -10,6 +10,8 @@
 #import "base/run_loop.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/bind.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/history/core/browser/features.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -360,4 +362,65 @@ TEST_F(HistoryTabHelperTest, CreateAddPageArgsPopulatesResponseCodeCategory) {
 
   EXPECT_EQ(args_404.response_code_category,
             history::VisitResponseCodeCategory::k404);
+}
+
+// Tests that a 404 is recorded if history::kVisitedLinksOn404 is enabled.
+TEST_F(HistoryTabHelperTest, DidFinishNavigationFlagEnabledRecords404) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  const GURL url("https://url.com");
+
+  HistoryTabHelper* helper = HistoryTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(helper);
+
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(true);
+  navigation_context.SetResponseHeaders(
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 404 Not Found\r\n\r\n"));
+
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  navigation_manager_->SetLastCommittedItem(item.get());
+
+  // Navigate to `url`.
+  item->SetURL(url);
+  item->SetTimestamp(base::Time::Now());
+  navigation_context.SetUrl(url);
+  static_cast<web::WebStateObserver*>(helper)->DidFinishNavigation(
+      &web_state_, &navigation_context);
+
+  // Make sure the visit was recorded.
+  QueryURLAndVisits(url);
+  EXPECT_EQ(url, latest_row_result_.url());
+}
+
+// Tests that a 404 is not recorded if history::kVisitedLinksOn404 is
+// disabled .
+TEST_F(HistoryTabHelperTest, DidFinishNavigationFlagDisabledDoesNotRecord404) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(history::kVisitedLinksOn404);
+
+  const GURL url("https://url.com");
+
+  HistoryTabHelper* helper = HistoryTabHelper::FromWebState(&web_state_);
+  ASSERT_TRUE(helper);
+
+  web::FakeNavigationContext navigation_context;
+  navigation_context.SetHasCommitted(true);
+  navigation_context.SetResponseHeaders(
+      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 404 Not Found\r\n\r\n"));
+
+  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+  navigation_manager_->SetLastCommittedItem(item.get());
+
+  // Navigate to `url`.
+  item->SetURL(url);
+  item->SetTimestamp(base::Time::Now());
+  navigation_context.SetUrl(url);
+  static_cast<web::WebStateObserver*>(helper)->DidFinishNavigation(
+      &web_state_, &navigation_context);
+
+  // Make sure the visit was not recorded.
+  QueryURLAndVisits(url);
+  EXPECT_NE(url, latest_row_result_.url());
 }
