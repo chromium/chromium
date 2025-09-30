@@ -22,6 +22,7 @@
 #include "chrome/renderer/actor/click_tool.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -70,13 +71,13 @@ struct KeyInfo {
 
 // Function to provide access to the key info map.
 // Initialization happens thread-safely on the first call.
-const std::unordered_map<char, KeyInfo>& GetKeyInfoMap() {
+const absl::flat_hash_map<char, KeyInfo>& GetKeyInfoMap() {
   // TODO(crbug.com/402082693): This map is a temporary solution in converting
   // between dom code and key code. We should find a central solution to this
   // that aligns with ui/events/keycodes/ data and functions.
-  static const base::NoDestructor<std::unordered_map<char, KeyInfo>>
+  static const base::NoDestructor<absl::flat_hash_map<char, KeyInfo>>
       key_info_map([] {
-        std::unordered_map<char, KeyInfo> map_data = {
+        absl::flat_hash_map<char, KeyInfo> map_data = {
             {' ', {ui::VKEY_SPACE, "Space"}},
             {')', {ui::VKEY_0, "Digit0", u'0'}},
             {'!', {ui::VKEY_1, "Digit1", u'1'}},
@@ -195,7 +196,7 @@ std::optional<TypeTool::KeyParams> TypeTool::GetKeyParamsForChar(char c) const {
     params.dom_code = base::StrCat({"Digit", {c}});
   } else {
     // Symbols and Punctuation (US QWERTY layout assumed)
-    const std::unordered_map<char, KeyInfo>& key_info_map = GetKeyInfoMap();
+    const absl::flat_hash_map<char, KeyInfo>& key_info_map = GetKeyInfoMap();
     auto it = key_info_map.find(c);
     if (it == key_info_map.end()) {
       ACTOR_LOG() << "Character cannot be mapped directly to key event: " << c;
