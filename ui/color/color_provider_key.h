@@ -6,11 +6,12 @@
 #define UI_COLOR_COLOR_PROVIDER_KEY_H_
 
 #include <optional>
+#include <tuple>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/system_theme.h"
 
