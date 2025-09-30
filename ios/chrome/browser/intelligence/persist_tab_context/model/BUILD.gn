@@ -3,11 +3,17 @@
 # found in the LICENSE file.
 
 source_set("model") {
-  public = [ "persist_tab_context_browser_agent.h" ]
-  sources = [ "persist_tab_context_browser_agent.mm" ]
+  sources = [
+    "persist_tab_context_browser_agent.h",
+    "persist_tab_context_browser_agent.mm",
+    "persist_tab_context_state_agent.h",
+    "persist_tab_context_state_agent.mm",
+  ]
   deps = [
     "//base",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",

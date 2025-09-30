@@ -5,12 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PERSIST_TAB_CONTEXT_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PERSIST_TAB_CONTEXT_BROWSER_AGENT_H_
 
-#include "base/scoped_observation.h"
-#include "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
-#include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#include "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
-#include "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/scoped_observation.h"
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/persist_tab_context_state_agent.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
+#import "ios/web/public/web_state_observer.h"
+
+namespace web {
+class WebState;
+}  // namespace web
 
 @class PersistTabContextStateObserver;
 
@@ -46,6 +50,11 @@ class PersistTabContextBrowserAgent
 
   explicit PersistTabContextBrowserAgent(Browser* browser);
 
+  // Called whenever scene activation level changed. This is explicitly used to
+  // capture the event where a tab is hidden due to the app being backgrounded,
+  // in which case the page context should be retrieved.
+  void OnSceneActivationLevelChanged(SceneActivationLevel level);
+
   // Private callback for PageContextWrapper.
   void OnPageContextExtracted(const std::string& webstate_unique_id,
                               PageContextWrapperCallbackResponse response);
@@ -56,6 +65,11 @@ class PersistTabContextBrowserAgent
   // Manages this object as an observer of `web_state_`.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
+
+  // The service's PersistTabContextStateAgent. The state agent is used to
+  // observe scene state changes such as the application being backgrounded, in
+  // which case the last tab's page context should be saved to storage.
+  __strong PersistTabContextStateAgent* persist_tab_context_state_agent_;
 
   base::WeakPtrFactory<PersistTabContextBrowserAgent> weak_factory_{this};
 };
