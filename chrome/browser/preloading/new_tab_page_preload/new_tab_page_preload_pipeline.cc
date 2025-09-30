@@ -68,6 +68,12 @@ void NewTabPagePreloadPipeline::StartPrefetch(
       content::PreloadingData::GetSameURLMatcher(url_),
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 
+  if (IsSearchUrl(web_contents, url_)) {
+    attempt->SetEligibility(ToPreloadingEligibility(
+        ChromePreloadingEligibility::KDisallowSearchUrl));
+    return;
+  }
+
   prefetch_handle_ = web_contents.StartPrefetch(
       url_, /*use_prefetch_proxy=*/false, kNewTabPageMetricSuffix,
       blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
