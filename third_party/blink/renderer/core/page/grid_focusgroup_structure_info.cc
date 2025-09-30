@@ -21,7 +21,7 @@ AutomaticGridFocusgroupStructureInfo::AutomaticGridFocusgroupStructureInfo(
     LayoutObject* root)
     : table_(root) {
   DCHECK(Table());
-  DCHECK(Flags() & FocusgroupFlags::kGrid);
+  DCHECK_EQ(Behavior(), FocusgroupBehavior::kGrid);
 }
 
 void AutomaticGridFocusgroupStructureInfo::Trace(Visitor* visitor) const {
@@ -37,8 +37,8 @@ Element* AutomaticGridFocusgroupStructureInfo::Root() {
   return DynamicTo<Element>(table_->GetNode());
 }
 
-FocusgroupFlags AutomaticGridFocusgroupStructureInfo::Flags() {
-  return Root()->GetFocusgroupFlags();
+FocusgroupBehavior AutomaticGridFocusgroupStructureInfo::Behavior() {
+  return Root()->GetFocusgroupData().behavior;
 }
 
 unsigned AutomaticGridFocusgroupStructureInfo::ColumnCount() {

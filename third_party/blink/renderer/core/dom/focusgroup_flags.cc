@@ -21,21 +21,21 @@
 
 namespace blink::focusgroup {
 
-FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element) {
+FocusgroupData FindNearestFocusgroupAncestorData(const Element* element) {
   Element* ancestor = FlatTreeTraversal::ParentElement(*element);
   while (ancestor) {
-    FocusgroupFlags ancestor_flags = ancestor->GetFocusgroupFlags();
+    FocusgroupData ancestor_data = ancestor->GetFocusgroupData();
     // When this is true, we found the focusgroup to extend.
-    if (ancestor_flags != FocusgroupFlags::kNone) {
-      return ancestor_flags;
+    if (IsActualFocusgroup(ancestor_data)) {
+      return ancestor_data;
     }
     ancestor = FlatTreeTraversal::ParentElement(*ancestor);
   }
-  return FocusgroupFlags::kNone;
+  return {};
 }
 
-FocusgroupFlags ParseFocusgroup(const Element* element,
-                                const AtomicString& input) {
+FocusgroupData ParseFocusgroup(const Element* element,
+                               const AtomicString& input) {
   DCHECK(element);
   ExecutionContext* context = element->GetExecutionContext();
   DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
@@ -45,28 +45,136 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
   // 1. Parse the input.
   bool has_inline = false;
   bool has_block = false;
-  bool has_grid = false;
   bool has_wrap = false;
   bool has_row_wrap = false;
   bool has_col_wrap = false;
   bool has_flow = false;
   bool has_row_flow = false;
   bool has_col_flow = false;
-  bool has_opt_out = false;
   bool has_no_memory = false;
   StringBuilder invalid_tokens;
 
   SpaceSplitString tokens(input);
+
+  // Check if first token is a behavior token
+  if (tokens.size() == 0) {
+    element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
+                                             ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "Focusgroup attribute requires a behavior token as the first value."));
+    return {};
+  }
+
+  // Validate that first token is a behavior token
+  AtomicString first_token = tokens[0].LowerASCII();
+  bool first_token_is_behavior =
+      (first_token == "toolbar" || first_token == "tablist" ||
+       first_token == "radiogroup" || first_token == "listbox" ||
+       first_token == "menu" || first_token == "menubar" ||
+       first_token == "grid" || first_token == "none");
+
+  if (!first_token_is_behavior) {
+    element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            StrCat({"Focusgroup attribute requires a behavior token (toolbar, "
+                    "tablist, radiogroup, listbox, menu, menubar, grid, none) "
+                    "as the first value. Found: '",
+                    first_token, "'."})));
+    return {};
+  }
+
+  FocusgroupData data;
   for (unsigned i = 0; i < tokens.size(); i++) {
     AtomicString lowercase_token = tokens[i].LowerASCII();
-    if (lowercase_token == "inline") {
-      has_inline = true;
-    } else if (lowercase_token == "block") {
-      has_block = true;
+    if (lowercase_token == "toolbar") {
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kToolbar;
+    } else if (lowercase_token == "tablist") {
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kTablist;
+    } else if (lowercase_token == "radiogroup") {
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kRadiogroup;
+    } else if (lowercase_token == "listbox") {
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kListbox;
+    } else if (lowercase_token == "menu") {
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kMenu;
+    } else if (lowercase_token == "menubar") {
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kMenubar;
     } else if (lowercase_token == "grid" &&
                RuntimeEnabledFeatures::FocusgroupGridEnabled(
                    element->GetExecutionContext())) {
-      has_grid = true;
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kGrid;
+    } else if (lowercase_token == "none") {
+      if (data.behavior != FocusgroupBehavior::kNoBehavior) {
+        element->GetDocument().AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kOther,
+                mojom::blink::ConsoleMessageLevel::kError,
+                "Focusgroup attribute can only specify one behavior token."));
+        return {};
+      }
+      data.behavior = FocusgroupBehavior::kOptOut;
+    } else if (lowercase_token == "inline") {
+      has_inline = true;
+    } else if (lowercase_token == "block") {
+      has_block = true;
     } else if (lowercase_token == "wrap") {
       has_wrap = true;
     } else if (lowercase_token == "row-wrap") {
@@ -79,8 +187,6 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       has_row_flow = true;
     } else if (lowercase_token == "col-flow") {
       has_col_flow = true;
-    } else if (lowercase_token == "none") {
-      has_opt_out = true;
     } else if (lowercase_token == "no-memory") {
       has_no_memory = true;
     } else {
@@ -102,14 +208,20 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
                     invalid_tokens.ReleaseString()})));
   }
 
-  FocusgroupFlags flags = FocusgroupFlags::kNone;
+  // Check if any behavior was specified (required)
+  if (data.behavior == FocusgroupBehavior::kNoBehavior) {
+    element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kError,
+            "Focusgroup attribute requires a behavior token."));
+    return {};
+  }
 
   // Opt-out short-circuits all other semantics. If combined with any other
   // recognized token emit a console message and ignore the others.
-  if (has_opt_out) {
-    if (has_inline || has_block || has_grid || has_wrap || has_row_wrap ||
-        has_col_wrap || has_flow || has_row_flow || has_col_flow ||
-        has_no_memory) {
+  if (data.behavior == FocusgroupBehavior::kOptOut) {
+    if (data.flags != FocusgroupFlags::kNone) {
       element->GetDocument().AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kOther,
@@ -117,19 +229,17 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
               "Focusgroup attribute value 'none' cannot be combined with other"
               " focusgroup attribute values; all others ignored."));
     }
-    flags = FocusgroupFlags::kOptOut;
-    return flags;
+    // Return early for opt-out behavior - no additional flags needed
+    return data;
   }
 
   // 2. Apply the grid focusgroup logic:
   //     * 'grid' can only be set on an HTML table element.
-  //     * The grid-related wrap/flown can only be set on a grid focusgroup.
-  if (has_grid) {
-    flags |= FocusgroupFlags::kGrid;
-
+  //     * The grid-related wrap/flow can only be set on a grid focusgroup.
+  if (data.behavior == FocusgroupBehavior::kGrid) {
     // Set the wrap/flow flags, if specified.
     if (has_wrap) {
-      flags |= FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock;
+      data.flags |= FocusgroupFlags::kWrapInline | FocusgroupFlags::kWrapBlock;
       if (has_row_wrap) {
         element->GetDocument().AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
@@ -148,9 +258,9 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       }
     } else {
       if (has_row_wrap)
-        flags |= FocusgroupFlags::kWrapInline;
+        data.flags |= FocusgroupFlags::kWrapInline;
       if (has_col_wrap)
-        flags |= FocusgroupFlags::kWrapBlock;
+        data.flags |= FocusgroupFlags::kWrapBlock;
 
       if (has_row_wrap && has_col_wrap) {
         element->GetDocument().AddConsoleMessage(
@@ -163,8 +273,8 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     }
 
     if (has_flow) {
-      if (flags & FocusgroupFlags::kWrapInline ||
-          flags & FocusgroupFlags::kWrapBlock) {
+      if (data.flags & FocusgroupFlags::kWrapInline ||
+          data.flags & FocusgroupFlags::kWrapBlock) {
         element->GetDocument().AddConsoleMessage(MakeGarbageCollected<
                                                  ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther,
@@ -172,7 +282,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
             "Focusgroup attribute value 'flow' present, but focusgroup already "
             "set to wrap in at least one axis."));
       } else {
-        flags |= FocusgroupFlags::kRowFlow | FocusgroupFlags::kColFlow;
+        data.flags |= FocusgroupFlags::kRowFlow | FocusgroupFlags::kColFlow;
         if (has_row_flow) {
           element->GetDocument().AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
@@ -192,7 +302,7 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
       }
     } else {
       if (has_row_flow) {
-        if (flags & FocusgroupFlags::kWrapInline) {
+        if (data.flags & FocusgroupFlags::kWrapInline) {
           element->GetDocument().AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
                   mojom::blink::ConsoleMessageSource::kOther,
@@ -200,11 +310,11 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
                   "Focusgroup attribute value 'row-flow' present, but "
                   "focusgroup already wraps in the row axis."));
         } else {
-          flags |= FocusgroupFlags::kRowFlow;
+          data.flags |= FocusgroupFlags::kRowFlow;
         }
       }
       if (has_col_flow) {
-        if (flags & FocusgroupFlags::kWrapBlock) {
+        if (data.flags & FocusgroupFlags::kWrapBlock) {
           element->GetDocument().AddConsoleMessage(
               MakeGarbageCollected<ConsoleMessage>(
                   mojom::blink::ConsoleMessageSource::kOther,
@@ -212,11 +322,11 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
                   "Focusgroup attribute value 'col-flow' present, but "
                   "focusgroup already wraps in the column axis."));
         } else {
-          flags |= FocusgroupFlags::kColFlow;
+          data.flags |= FocusgroupFlags::kColFlow;
         }
       }
-      if (flags & FocusgroupFlags::kRowFlow &&
-          flags & FocusgroupFlags::kColFlow) {
+      if (data.flags & FocusgroupFlags::kRowFlow &&
+          data.flags & FocusgroupFlags::kColFlow) {
         element->GetDocument().AddConsoleMessage(
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::blink::ConsoleMessageSource::kOther,
@@ -245,9 +355,9 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
     }
 
     if (has_no_memory) {
-      flags |= FocusgroupFlags::kNoMemory;
+      data.flags |= FocusgroupFlags::kNoMemory;
     }
-    return flags;
+    return data;
   }
 
   // At this point, we are necessarily in a linear focusgroup. Any grid
@@ -294,18 +404,18 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
             "on linear focusgroups."));
   }
 
-  // 4. Set the axis supported on that focusgroup.
+  // 4. Set the axis supported on that linear focusgroup.
   if (has_inline) {
-    flags |= FocusgroupFlags::kInline;
+    data.flags |= FocusgroupFlags::kInline;
   }
   if (has_block) {
-    flags |= FocusgroupFlags::kBlock;
+    data.flags |= FocusgroupFlags::kBlock;
   }
 
-  // When no axis is specified, it means that the focusgroup should handle
-  // both.
+  // When no axis is specified for linear focusgroups, it means that the
+  // focusgroup should handle both.
   if (!has_inline && !has_block) {
-    flags |= FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
+    data.flags |= FocusgroupFlags::kInline | FocusgroupFlags::kBlock;
   }
 
   if (has_inline && has_block) {
@@ -317,43 +427,78 @@ FocusgroupFlags ParseFocusgroup(const Element* element,
         "are redundant (this is the default behavior) and can be omitted."));
   }
 
-  // 6. Determine in what axis a focusgroup should wrap. This needs to be
+  // 6. Determine in what axis a linear focusgroup should wrap. This needs to be
   // performed once the supported axes are final.
   if (has_wrap) {
-    if (flags & FocusgroupFlags::kInline) {
-      flags |= FocusgroupFlags::kWrapInline;
+    if (data.flags & FocusgroupFlags::kInline) {
+      data.flags |= FocusgroupFlags::kWrapInline;
     }
-    if (flags & FocusgroupFlags::kBlock) {
-      flags |= FocusgroupFlags::kWrapBlock;
+    if (data.flags & FocusgroupFlags::kBlock) {
+      data.flags |= FocusgroupFlags::kWrapBlock;
     }
   }
 
   if (has_no_memory) {
-    flags |= FocusgroupFlags::kNoMemory;
+    data.flags |= FocusgroupFlags::kNoMemory;
   }
-  return flags;
+  return data;
+}
+
+String FocusgroupDataToStringForTesting(const FocusgroupData& data) {
+  StringBuilder builder;
+  builder.Append("FocusgroupData(");
+  switch (data.behavior) {
+    case FocusgroupBehavior::kToolbar:
+      builder.Append("Toolbar");
+      break;
+    case FocusgroupBehavior::kTablist:
+      builder.Append("Tablist");
+      break;
+    case FocusgroupBehavior::kRadiogroup:
+      builder.Append("Radiogroup");
+      break;
+    case FocusgroupBehavior::kListbox:
+      builder.Append("Listbox");
+      break;
+    case FocusgroupBehavior::kMenu:
+      builder.Append("Menu");
+      break;
+    case FocusgroupBehavior::kMenubar:
+      builder.Append("Menubar");
+      break;
+    case FocusgroupBehavior::kGrid:
+      builder.Append("Grid");
+      break;
+    case FocusgroupBehavior::kOptOut:
+      builder.Append("OptOut)");
+      return builder.ToString();
+    case FocusgroupBehavior::kNoBehavior:
+      builder.Append("None)");
+      return builder.ToString();
+  }
+
+  builder.Append(':');
+  builder.Append(FocusgroupFlagsToStringForTesting(data.flags));
+  builder.Append(')');
+  return builder.ToString();
 }
 
 String FocusgroupFlagsToStringForTesting(FocusgroupFlags flags) {
-  if (flags == FocusgroupFlags::kNone) {
-    return String("FocusgroupFlags(None)");
-  }
   Vector<const char*> names;
-  names.ReserveInitialCapacity(8);
+  names.ReserveInitialCapacity(9);
   auto append_flag_name_if_set = [&](FocusgroupFlags flag, const char* name) {
     if (flags & flag) {
       names.push_back(name);
     }
   };
-  append_flag_name_if_set(FocusgroupFlags::kExtend, "Extend");
+
+  // Modifier flags only.
   append_flag_name_if_set(FocusgroupFlags::kInline, "Inline");
   append_flag_name_if_set(FocusgroupFlags::kBlock, "Block");
-  append_flag_name_if_set(FocusgroupFlags::kGrid, "Grid");
   append_flag_name_if_set(FocusgroupFlags::kWrapInline, "WrapInline");
   append_flag_name_if_set(FocusgroupFlags::kWrapBlock, "WrapBlock");
   append_flag_name_if_set(FocusgroupFlags::kRowFlow, "RowFlow");
   append_flag_name_if_set(FocusgroupFlags::kColFlow, "ColFlow");
-  append_flag_name_if_set(FocusgroupFlags::kOptOut, "OptOut");
   append_flag_name_if_set(FocusgroupFlags::kNoMemory, "NoMemory");
   StringBuilder builder;
   builder.Append("FocusgroupFlags(");
@@ -367,14 +512,15 @@ String FocusgroupFlagsToStringForTesting(FocusgroupFlags flags) {
   return builder.ToString();
 }
 
-bool IsActualFocusgroup(FocusgroupFlags flags) {
+bool IsActualFocusgroup(const FocusgroupData& data) {
   // OptOut is a mutually exclusive state used to explicitly disable focusgroup
   // behavior for a subtree. The parser guarantees that if kOptOut is set no
   // other semantic flags are present. This DCHECK defends against accidental
   // combinations.
-  DCHECK(!(flags & FocusgroupFlags::kOptOut) ||
-         (flags == FocusgroupFlags::kOptOut));
-  return flags != FocusgroupFlags::kNone && !(flags & FocusgroupFlags::kOptOut);
+  DCHECK(!(data.behavior == FocusgroupBehavior::kOptOut) ||
+         (data.flags == FocusgroupFlags::kNone));
+  return data.behavior != FocusgroupBehavior::kNoBehavior &&
+         data.behavior != FocusgroupBehavior::kOptOut;
 }
 
 }  // namespace blink::focusgroup

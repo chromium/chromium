@@ -4066,7 +4066,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   SetIsCanvasOrInCanvasSubtree(false);
 
   if (ElementRareDataVector* data = GetElementRareData()) {
-    data->ClearFocusgroupFlags();
+    data->ClearFocusgroupData();
     data->ClearRestyleFlags();
 
     if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
@@ -10490,7 +10490,7 @@ inline void Element::UpdateFocusgroup(const AtomicString& input) {
     shadow_root->SetHasFocusgroupAttributeOnDescendant(true);
   }
 
-  EnsureElementRareData().SetFocusgroupFlags(
+  EnsureElementRareData().SetFocusgroupData(
       focusgroup::ParseFocusgroup(this, input));
 }
 
@@ -10507,7 +10507,8 @@ void Element::UpdateFocusgroupInShadowRootIfNeeded() {
   Element* ancestor = this;
   bool has_focusgroup_ancestor = false;
   while (ancestor) {
-    if (ancestor->GetFocusgroupFlags() != FocusgroupFlags::kNone) {
+    if (ancestor->GetFocusgroupData().behavior !=
+        FocusgroupBehavior::kNoBehavior) {
       has_focusgroup_ancestor = true;
       break;
     }
@@ -11900,15 +11901,15 @@ bool Element::IsInertRoot() const {
   return FastHasAttribute(html_names::kInertAttr) && IsHTMLElement();
 }
 
-FocusgroupFlags Element::GetFocusgroupFlags() const {
+FocusgroupData Element::GetFocusgroupData() const {
   ExecutionContext* context = GetExecutionContext();
   if (!RuntimeEnabledFeatures::FocusgroupEnabled(context)) {
-    return FocusgroupFlags::kNone;
+    return {};
   }
   if (const ElementRareDataVector* data = GetElementRareData()) {
-    return data->GetFocusgroupFlags();
+    return data->GetFocusgroupData();
   }
-  return FocusgroupFlags::kNone;
+  return {};
 }
 
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {

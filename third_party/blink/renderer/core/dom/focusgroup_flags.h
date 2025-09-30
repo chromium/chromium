@@ -18,37 +18,45 @@ class Element;
 
 namespace focusgroup {
 
-enum FocusgroupFlags : uint16_t {
+// Mutually exclusive behavior tokens (first token must be one of these).
+// These define the semantic role and behavior of the focusgroup.
+enum class FocusgroupBehavior : uint8_t {
+  kNoBehavior,  // No behavior specified / sentinel.
+  kToolbar,
+  kTablist,
+  kRadiogroup,
+  kListbox,
+  kMenu,
+  kMenubar,
+  // Grid behavior gated on FocusgroupGrid runtime feature.
+  kGrid,
+  // Explicit opt-out (standalone, cannot be combined with any modifiers).
+  kOptOut,
+};
+
+enum FocusgroupFlags : uint8_t {
   kNone = 0,  // No focusgroup behavior (default / sentinel).
 
   // Primary navigation axis:
   kInline = 1 << 0,  // Constrain directional focus navigation to inline axis.
   kBlock = 1 << 1,   // Constrain directional focus navigation to block axis.
 
-  // Signals 2D navigation intent. Behavior gated on FocusgroupGrid
-  // runtime feature.
-  kGrid = 1 << 2,
-
   // Boundary wrap behaviors (both set for non-grid wrap):
   kWrapInline =
-      1 << 3,  // Wrap at inline edge (continue from opposite inline edge).
+      1 << 2,  // Wrap at inline edge (continue from opposite inline edge).
   kWrapBlock =
-      1 << 4,  // Wrap at block edge (continue from opposite block edge).
+      1 << 3,  // Wrap at block edge (continue from opposite block edge).
 
   // Flow ordering hints (Grid only):
-  kRowFlow = 1 << 5,  // Row-major traversal preference.
-  kColFlow = 1 << 6,  // Column-major traversal preference.
-
-  // Explicit opt-out for descendants of a focusgroup that do not wish to
-  // participate:
-  kOptOut = 1 << 7,
+  kRowFlow = 1 << 4,  // Row-major traversal preference.
+  kColFlow = 1 << 5,  // Column-major traversal preference.
 
   // Memory behavior override disables history-based focus restoration:
-  kNoMemory = 1 << 8,
+  kNoMemory = 1 << 6,
 
   // Deprecated. Will be removed when opt-out behavior is implemented.
   // Placed last for easy identification; its bit may be recycled after removal.
-  kExtend = 1 << 9,
+  kExtend = 1 << 7,
 };
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
@@ -75,20 +83,28 @@ inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
   return static_cast<FocusgroupFlags>(~base::to_underlying(flags));
 }
 
-FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element);
-FocusgroupFlags ParseFocusgroup(const Element* element,
-                                const AtomicString& input);
+struct FocusgroupData {
+  FocusgroupBehavior behavior = FocusgroupBehavior::kNoBehavior;
+  FocusgroupFlags flags = FocusgroupFlags::kNone;
+};
+
+FocusgroupData FindNearestFocusgroupAncestorData(const Element* element);
+FocusgroupData ParseFocusgroup(const Element* element,
+                               const AtomicString& input);
 
 // Exported helper for tests and logging to obtain a string form.
+CORE_EXPORT String FocusgroupDataToStringForTesting(const FocusgroupData& data);
 CORE_EXPORT String FocusgroupFlagsToStringForTesting(FocusgroupFlags flags);
 
-// Returns true if the parsed flags represent an actual focusgroup (i.e. not
+// Returns true if the parsed data represents an actual focusgroup (i.e. not
 // the empty sentinel and not explicitly opted out via kOptOut).
-CORE_EXPORT bool IsActualFocusgroup(FocusgroupFlags flags);
+CORE_EXPORT bool IsActualFocusgroup(const FocusgroupData& data);
 }  // namespace focusgroup
 
 // The "::blink" prefix is to avoid false-positive of audit_non_blink_usages.py.
 using FocusgroupFlags = ::blink::focusgroup::FocusgroupFlags;
+using FocusgroupBehavior = ::blink::focusgroup::FocusgroupBehavior;
+using FocusgroupData = ::blink::focusgroup::FocusgroupData;
 
 }  // namespace blink
 

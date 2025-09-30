@@ -1709,7 +1709,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // HTMLButtonElement::IsInertRoot is removed.
   virtual bool IsInertRoot() const;
 
-  FocusgroupFlags GetFocusgroupFlags() const;
+  FocusgroupData GetFocusgroupData() const;
 
   bool checkVisibility(CheckVisibilityOptions* options) const;
 
