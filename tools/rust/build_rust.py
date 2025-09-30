@@ -756,10 +756,10 @@ def main():
     args, rest = parser.parse_known_args()
 
     if args.entire_toolchain:
-      args.build_bindgen = True
-      args.build_vet = True
-      args.build_crubit = True
-      args.gnrt_stdlib = True
+        args.build_bindgen = True
+        args.build_vet = True
+        args.build_crubit = True
+        args.gnrt_stdlib = True
 
     if sys.platform == 'win32':
         if args.sh:
@@ -948,6 +948,7 @@ def main():
               'w',
               encoding='utf-8') as log:
         if args.build_bindgen:
+            print('Building bindgen...')
             build_cmd = [
                 sys.executable,
                 os.path.join(THIS_DIR, 'build_bindgen.py')
@@ -955,6 +956,7 @@ def main():
             TeeCmd(build_cmd, log)
 
         if args.build_vet:
+            print('Building vet...')
             build_cmd = [
                 sys.executable,
                 os.path.join(THIS_DIR, 'build_vet.py')
@@ -962,6 +964,7 @@ def main():
             TeeCmd(build_cmd, log)
 
         if args.build_crubit:
+            print('Building crubit...')
             build_cmd = [
                 sys.executable,
                 os.path.join(THIS_DIR, 'build_crubit.py')
@@ -972,7 +975,9 @@ def main():
             TeeCmd(build_cmd, log, fail_hard=False)
 
         if args.gnrt_stdlib:
+            print('Building gnrt...')
             InstallRustBetaSysroot(checkout_revision, [RustTargetTriple()])
+            print('Beta sysroot installed.')
             build_cmd = [
                 sys.executable,
                 os.path.join(THIS_DIR, 'gnrt_stdlib.py'), '--skip-prep'
