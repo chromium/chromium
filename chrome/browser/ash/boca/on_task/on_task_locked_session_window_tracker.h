@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
@@ -23,8 +24,10 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 namespace ash::boca {
 class BocaWindowObserver;
@@ -119,7 +122,6 @@ class LockedSessionWindowTracker : public KeyedService,
   void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   // BrowserListObserver Implementation
-  void OnBrowserClosing(Browser* browser) override;
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserSetLastActive(Browser* browser) override;
 
@@ -130,6 +132,9 @@ class LockedSessionWindowTracker : public KeyedService,
   // ImmersiveModeController::Observer:
   void OnImmersiveRevealStarted() override;
   void OnImmersiveModeControllerDestroyed() override;
+
+  // Callback for browser closed events.
+  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
   void MaybeCloseWebContents(base::WeakPtr<content::WebContents> weak_tab_ptr);
   void MaybeCloseBrowser(base::WeakPtr<Browser> weak_browser_ptr);
@@ -148,6 +153,11 @@ class LockedSessionWindowTracker : public KeyedService,
   base::ScopedObservation<ImmersiveModeController, LockedSessionWindowTracker>
       immersive_mode_controller_observation_{this};
   base::ObserverList<ash::boca::BocaWindowObserver> observers_;
+
+  // Map to track browser close callback subscriptions.
+  absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
+                      base::CallbackListSubscription>
+      browser_close_subscriptions_;
 
   base::WeakPtrFactory<LockedSessionWindowTracker> weak_pointer_factory_{this};
 };

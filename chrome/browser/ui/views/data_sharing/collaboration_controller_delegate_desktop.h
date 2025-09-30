@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DATA_SHARING_COLLABORATION_CONTROLLER_DELEGATE_DESKTOP_H_
 #define CHROME_BROWSER_UI_VIEWS_DATA_SHARING_COLLABORATION_CONTROLLER_DELEGATE_DESKTOP_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -15,6 +16,7 @@
 #include "components/tab_groups/tab_group_id.h"
 
 class Browser;
+class BrowserWindowInterface;
 
 namespace views {
 class Widget;
@@ -72,8 +74,8 @@ class CollaborationControllerDelegateDesktop
   virtual collaboration::ServiceStatus GetServiceStatus();
 
  private:
-  // BrowserListObserver:
-  void OnBrowserClosing(Browser* browser) override;
+  // Called when browser closed via RegisterBrowserDidClose callback.
+  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
   void OnManageDialogClosing(
       ResultCallback result,
@@ -120,6 +122,9 @@ class CollaborationControllerDelegateDesktop
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observer_{this};
+
+  // Subscription for browser closed callback.
+  base::CallbackListSubscription browser_close_subscription_;
 
   base::WeakPtrFactory<CollaborationControllerDelegateDesktop>
       weak_ptr_factory_{this};

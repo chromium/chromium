@@ -8,13 +8,16 @@
 #include <memory>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 class ShelfModel;
 }
 
+class BrowserWindowInterface;
 class ShelfContextMenu;
 
 // Shelf item delegate for a browser shortcut; only one such item should exist.
@@ -59,12 +62,19 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserClosing(Browser* browser) override;
+
+  // Callback for browser closed events.
+  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
   raw_ptr<ash::ShelfModel> shelf_model_;
 
   // The cached browser windows and tab indices shown in an application menu.
   std::vector<std::pair<Browser*, size_t>> app_menu_items_;
+
+  // Map to track browser close callback subscriptions.
+  absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
+                      base::CallbackListSubscription>
+      browser_close_subscriptions_;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 };

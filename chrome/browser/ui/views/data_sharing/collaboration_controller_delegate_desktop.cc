@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/signin/promos/signin_promo_tab_helper.h"
@@ -152,6 +153,14 @@ CollaborationControllerDelegateDesktop::CollaborationControllerDelegateDesktop(
           collaboration::CollaborationServiceFactory::GetForProfile(
               browser_->GetProfile())) {
   browser_list_observer_.Observe(BrowserList::GetInstance());
+
+  // Register for browser closed callback.
+  if (browser_) {
+    browser_close_subscription_ =
+        browser_->RegisterBrowserDidClose(base::BindRepeating(
+            &CollaborationControllerDelegateDesktop::OnBrowserDidClose,
+            base::Unretained(this)));
+  }
 }
 
 CollaborationControllerDelegateDesktop::
@@ -353,15 +362,13 @@ CollaborationControllerDelegateDesktop::GetServiceStatus() {
   return collaboration_service_->GetServiceStatus();
 }
 
-void CollaborationControllerDelegateDesktop::OnBrowserClosing(
-    Browser* browser) {
+void CollaborationControllerDelegateDesktop::OnBrowserDidClose(
+    BrowserWindowInterface* browser_window_interface) {
   // When the current browser is closing, cancel the flow because we can't show
   // any UI on the current browser.
-  if (browser_ == browser) {
-    MaybeCloseDialogs();
-    browser_ = nullptr;
-    ExitFlow();
-  }
+  MaybeCloseDialogs();
+  browser_ = nullptr;
+  ExitFlow();
 }
 
 void CollaborationControllerDelegateDesktop::OnManageDialogClosing(

@@ -31,7 +31,6 @@ class PinnedTabService : public BrowserListObserver,
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserClosing(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
 
   // TabStripModelObserver:
@@ -39,6 +38,7 @@ class PinnedTabService : public BrowserListObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   // Writes the pinned tabs for |profile_|, but only if a new tab or browser
   // window has been added since the last time the method was called.

@@ -127,6 +127,7 @@ class BrowserList {
 
   // Notifies the observers when browser close was started. This may be called
   // more than once for a particular browser.
+  // DEPRECATED: Use BrowserWindowInterface::RegisterBrowserDidClose instead.
   static void NotifyBrowserCloseStarted(Browser* browser);
 
   // Closes all browsers for |profile| across all desktops.

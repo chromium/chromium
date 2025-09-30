@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -1234,6 +1235,12 @@ void CloudOpenTask::ShowDialog(
   gfx::NativeWindow modal_parent =
       files_app_browser_ ? files_app_browser_->GetNativeWindow() : nullptr;
 
+  if (files_app_browser_) {
+    files_app_close_subscription_ =
+        files_app_browser_->GetBrowser().RegisterBrowserDidClose(
+            base::BindRepeating(&CloudOpenTask::OnBrowserDidClose,
+                                base::Unretained(this)));
+  }
   if (!modal_parent) {
     need_new_files_app_ = true;
     DCHECK(!pending_dialog_);
@@ -1293,18 +1300,20 @@ void CloudOpenTask::OnBrowserAdded(Browser* browser) {
   }
   need_new_files_app_ = false;
   files_app_browser_ = BrowserController::GetInstance()->GetDelegate(browser);
+
+  files_app_close_subscription_ =
+      browser->RegisterBrowserDidClose(base::BindRepeating(
+          &CloudOpenTask::OnBrowserDidClose, base::Unretained(this)));
   pending_dialog_->ShowSystemDialog(files_app_browser_->GetNativeWindow());
   // The dialog is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   pending_dialog_ = nullptr;
 }
 
-void CloudOpenTask::OnBrowserClosing(Browser* browser) {
-  if (BrowserController::GetInstance()->GetDelegate(browser) ==
-      files_app_browser_) {
-    // The Files app that the dialog is modal to is closed. This will close the
-    // dialog with an empty user response.
-    files_app_closed_ = true;
-  }
+void CloudOpenTask::OnBrowserDidClose(
+    BrowserWindowInterface* browser_window_interface) {
+  // The Files app that the dialog is modal to is closed. This will close the
+  // dialog with an empty user response.
+  files_app_closed_ = true;
 }
 
 // Receive user's setup dialog response and acts accordingly. `user_response` is

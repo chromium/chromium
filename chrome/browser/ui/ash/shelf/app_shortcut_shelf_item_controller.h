@@ -11,9 +11,11 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -21,6 +23,7 @@ class WebContents;
 }
 
 class Browser;
+class BrowserWindowInterface;
 class ShelfContextMenu;
 
 // Item controller for an app shortcut.
@@ -70,7 +73,10 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
 
  private:
   // BrowserListObserver:
-  void OnBrowserClosing(Browser* browser) override;
+  void OnBrowserAdded(Browser* browser) override;
+
+  // Callback for browser closed events.
+  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
   // |filter_predicate| is used to filter out the app webcontents and app
   // browsers results based on their corresponding windows.
@@ -111,6 +117,11 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
       app_menu_web_contents_;
   std::vector<raw_ptr<Browser, VectorExperimental>> app_menu_browsers_;
   bool app_menu_cached_by_browsers_ = false;
+
+  // Map to track browser close callback subscriptions.
+  absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
+                      base::CallbackListSubscription>
+      browser_close_subscriptions_;
 
   std::unique_ptr<ShelfContextMenu> context_menu_;
 };
