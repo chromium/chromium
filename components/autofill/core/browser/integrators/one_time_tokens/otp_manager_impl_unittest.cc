@@ -7,6 +7,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -93,7 +94,8 @@ class OtpManagerImplTest : public testing::Test,
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   MockSmsOtpBackend sms_otp_backend_;
 };
@@ -277,6 +279,48 @@ TEST_F(OtpManagerImplTest, GetOtpSuggestions_EmptyOtpIsNotStored) {
   otp_manager.GetOtpSuggestions(future.GetCallback());
 
   EXPECT_TRUE(future.Get().empty());
+}
+
+// Tests that `GetOtpSuggestions` filters out expired OTPs.
+TEST_F(OtpManagerImplTest, GetOtpSuggestions_FiltersExpiredOtps) {
+  OtpManagerImpl otp_manager(&autofill_manager(), &sms_otp_backend_);
+
+  // Prepare the reply from the SMS backend.
+  one_time_tokens::OtpFetchReply reply = one_time_tokens::OtpFetchReply(
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    "123456",
+                                    task_environment_.GetMockClock()->Now()),
+      /*request_complete=*/true);
+  base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+      sms_backend_callback;
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtp)
+      .WillOnce(
+          [&](base::OnceCallback<void(const one_time_tokens::OtpFetchReply&)>
+                  callback) { sms_backend_callback = std::move(callback); });
+
+  // Observing an OTP field is supposed to trigger an SMS OTP request.
+  AddFormWithOtpField();
+
+  // Request suggestions. The future should not be ready yet, as the SMS
+  // backend has not responded.
+  base::test::TestFuture<const std::vector<std::string>> future1;
+  otp_manager.GetOtpSuggestions(future1.GetCallback());
+  EXPECT_FALSE(future1.IsReady());
+
+  // Now, let the SMS backend respond.
+  std::move(sms_backend_callback).Run(reply);
+
+  // The future should now be ready, and contain the fresh OTP.
+  ASSERT_EQ(future1.Get().size(), 1u);
+  EXPECT_EQ(future1.Get()[0], reply.otp_value->value());
+
+  // Advance the clock by 6 minutes to make the OTP expire.
+  task_environment_.AdvanceClock(base::Minutes(6));
+
+  // Verify that the OTP is now expired and not returned.
+  base::test::TestFuture<const std::vector<std::string>> future2;
+  otp_manager.GetOtpSuggestions(future2.GetCallback());
+  EXPECT_TRUE(future2.Get().empty());
 }
 
 }  // namespace autofill

@@ -20,6 +20,15 @@ std::vector<std::string> OtpsToSuggestionStrings(
     const std::vector<one_time_tokens::OneTimeToken>& otp_values) {
   return base::ToVector(otp_values, &one_time_tokens::OneTimeToken::value);
 }
+
+// Filters out OTPs that are older than 5 minutes.
+void FilterExpiredOtps(std::vector<one_time_tokens::OneTimeToken>& otps) {
+  const base::Time five_minutes_ago = base::Time::Now() - base::Minutes(5);
+  std::erase_if(otps, [five_minutes_ago](const auto& otp) {
+    return otp.on_device_arrival_time() < five_minutes_ago;
+  });
+}
+
 }  // namespace
 
 OtpManagerImpl::OtpManagerImpl(BrowserAutofillManager* owner,
@@ -48,6 +57,7 @@ OtpManagerImpl::~OtpManagerImpl() = default;
 void OtpManagerImpl::GetOtpSuggestions(
     OtpManagerImpl::GetOtpSuggestionsCallback callback) {
   if (!sms_otp_retrieval_in_progress_) {
+    FilterExpiredOtps(otp_suggestions_);
     std::move(callback).Run(OtpsToSuggestionStrings(otp_suggestions_));
   } else {
     last_pending_get_suggestions_callback_ = std::move(callback);

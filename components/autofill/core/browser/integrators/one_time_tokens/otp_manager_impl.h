@@ -68,7 +68,6 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   bool sms_otp_retrieval_in_progress_ = false;
 
   // Fetched OTP values. Most recent entry last.
-  // TODO(crbug.com/415273270) Expire old tokens after some time.
   std::vector<one_time_tokens::OneTimeToken> otp_suggestions_;
 
   // Only the last call from the UI to generate suggestions is retained as such
