@@ -243,7 +243,8 @@ GpuServiceImpl::GpuServiceImpl(
       // outlives the DawnContextProvider.
       std::unique_ptr<dawn::platform::CachingInterface> caching_interface;
       if (features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
-        caching_interface = std::make_unique<gpu::GpuPersistentCache>();
+        caching_interface =
+            std::make_unique<gpu::GpuPersistentCache>("GraphiteDawn");
       } else {
         auto cache_blob_callback = base::BindRepeating(
             [](GpuServiceImpl* self, const std::string& key,

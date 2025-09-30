@@ -8,6 +8,7 @@
 #include <dawn/platform/DawnPlatform.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
@@ -26,7 +27,7 @@ namespace gpu {
 class GPU_GLES2_EXPORT GpuPersistentCache
     : public dawn::platform::CachingInterface {
  public:
-  GpuPersistentCache();
+  explicit GpuPersistentCache(std::string_view cache_prefix);
   ~GpuPersistentCache() override;
 
   GpuPersistentCache(const GpuPersistentCache&) = delete;
@@ -47,6 +48,11 @@ class GPU_GLES2_EXPORT GpuPersistentCache
                  size_t value_size) override;
 
  private:
+  std::string GetHistogramName(std::string_view metric) const;
+
+  // Prefix to prepend to UMA histogram's name. e.g GraphiteDawn, WebGPU
+  const std::string cache_prefix_;
+
   base::Lock lock_;
   std::unique_ptr<persistent_cache::PersistentCache> persistent_cache_
       GUARDED_BY(lock_);

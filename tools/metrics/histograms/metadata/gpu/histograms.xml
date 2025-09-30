@@ -1261,6 +1261,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.Load"
+    units="microseconds" expires_after="2026-03-22">
+  <owner>lehoangquyen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Time it takes in gpu::GpuPersistentCache::LoadData (only when it is ready).
+    Recorded only for clients that support high-resolution clocks.
+  </summary>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
+<histogram
+    name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.{LoadStore}.CacheAvailable"
+    enum="Boolean" expires_after="2026-03-22">
+  <owner>lehoangquyen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Whether the gpu::GpuPersistentCache is ready when {LoadStore}Data() is
+    called.
+  </summary>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="LoadStore">
+    <variant name="Load"/>
+    <variant name="Store"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.Presentation.FrameHandlesAnimationOrInteraction"
     enum="FrameHandlingType" expires_after="2026-03-15">
   <owner>magchen@chromium.org</owner>
