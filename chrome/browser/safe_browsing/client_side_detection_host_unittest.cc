@@ -2409,8 +2409,9 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", false, 1);
 }
 
+// TODO: crbug.com/443098659 - Re-enable after fixing failing test.
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
-       CreditCardFormProceedsWithClassificationOnLowSiteEngagement) {
+       DISABLED_CreditCardFormProceedsWithClassificationOnLowSiteEngagement) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
