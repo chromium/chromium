@@ -263,6 +263,7 @@
       "contexts": ["webui"],
       "matches": [
         "chrome://add-supervision/*",
+        "chrome://contextual-tasks/*",
         "chrome://extensions/*",
         "chrome://glic/*",
         "chrome://glic-fre/*",
@@ -389,6 +390,7 @@
       "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://certificate-manager/*",
       "chrome://compare/*",
+      "chrome://contextual-tasks/*",
       "chrome://customize-chrome-side-panel.top-chrome/*",
       "chrome://shopping-insights-side-panel.top-chrome/*",
       "chrome://eche-app/*",
@@ -895,6 +897,7 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
       "chrome://graduation/*",
@@ -940,6 +943,7 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
       "chrome://graduation/*",
@@ -983,6 +987,7 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://graduation/*",
       "chrome://home/*",

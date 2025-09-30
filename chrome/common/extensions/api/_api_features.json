@@ -225,6 +225,7 @@
     "matches": [
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
+      "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
       "chrome://graduation/*",

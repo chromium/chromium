@@ -1,0 +1,31 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module contextual_tasks.mojom;
+
+import "url/mojom/url.mojom";
+
+// The interface that defines the webui (typescript/renderer) to browser process
+// communication channel. This is primarily used to notify the browser of user
+// actions on the page (e.g. UI changes or requests for new data).
+interface PageHandler {
+  // Provides a URL for an AI thread (e.g. with Gemini or search AI mode) to
+  // the WebUI to load in the hosted webview element.
+  GetThreadUrl() => (url.mojom.Url url);
+};
+
+// The interface that defines the browser process to webui (typescript/renderer)
+// communication channel. This is primarily used to notify the page if something
+// changes on the browser side (e.g. the data model) not directly caused by an
+// interation on the page.
+interface Page {
+  // TODO(445841345): Add browser-to-page functionality.
+};
+
+// Used to bootstrip bi-directional communication between the browser and webui.
+interface PageHandlerFactory {
+  CreatePageHandler(
+      pending_remote<Page> page,
+      pending_receiver<PageHandler> page_handler);
+};

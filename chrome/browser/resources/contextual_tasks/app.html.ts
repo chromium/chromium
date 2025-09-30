@@ -9,9 +9,10 @@ import type {ContextualTasksAppElement} from './app.js';
 // clang-format off
 export function getHtml(this: ContextualTasksAppElement) {
   return html`<!--_html_template_start_-->
-  <div>
+  <div id="toolbar">
     Contextual Tasks UI
   </div>
+  <webview id="threadFrame" src="${this.threadUrl_}"></webview>
   <!--_html_template_end_-->`;
 }
 // clang-format on

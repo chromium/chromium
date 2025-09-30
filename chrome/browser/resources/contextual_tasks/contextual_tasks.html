@@ -4,9 +4,21 @@
     <meta charset="utf-8">
     <title>Contextual Tasks</title>
     <style>
-      body {
+      html, body {
+        height: 100%;
         padding: 0;
         margin: 0;
+        width: 100%;
+      }
+
+      body {
+        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+      }
+
+      contextual-tasks-app {
+        flex-grow: 1;
       }
     </style>
   </head>

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
-
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
+#include "chrome/browser/chrome_browser_interface_binders_webui_parts.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
@@ -82,6 +83,7 @@
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/mojom/shopping_service.mojom.h"  // nogncheck crbug.com/1125897
+#include "components/contextual_tasks/public/features.h"
 #include "components/data_sharing/public/features.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -540,6 +542,11 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   }
   RegisterWebUIControllerInterfaceBinder<::app_home::mojom::PageHandlerFactory,
                                          webapps::AppHomeUI>(map);
+
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    RegisterWebUIControllerInterfaceBinder<
+        contextual_tasks::mojom::PageHandlerFactory, ContextualTasksUI>(map);
+  }
 #endif
 }
 

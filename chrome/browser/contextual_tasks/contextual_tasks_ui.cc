@@ -20,9 +20,28 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(), kContextualTasksUiHost);
   webui::SetupWebUIDataSource(source, kContextualTasksResources,
                               IDR_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_HTML);
+
+  // TODO(447633840): This is a placeholder URL until the real page is ready.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ChildSrc,
+      "child-src 'self' https://google.com;");
 }
 
 ContextualTasksUI::~ContextualTasksUI() = default;
+
+void ContextualTasksUI::CreatePageHandler(
+    mojo::PendingRemote<contextual_tasks::mojom::Page> page,
+    mojo::PendingReceiver<contextual_tasks::mojom::PageHandler> page_handler) {
+  page_handler_ = std::make_unique<ContextualTasksPageHandler>(
+      std::move(page), std::move(page_handler));
+}
+
+void ContextualTasksUI::BindInterface(
+    mojo::PendingReceiver<contextual_tasks::mojom::PageHandlerFactory>
+        pending_receiver) {
+  factory_receiver_.reset();
+  factory_receiver_.Bind(std::move(pending_receiver));
+}
 
 bool ContextualTasksUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

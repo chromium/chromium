@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 source_set("contextual_tasks") {
   sources = [
     "contextual_tasks_context_controller_factory.cc",
@@ -60,11 +62,14 @@ source_set("internal") {
 if (!is_android) {
   source_set("ui") {
     sources = [
+      "contextual_tasks_page_handler.cc",
+      "contextual_tasks_page_handler.h",
       "contextual_tasks_ui.cc",
       "contextual_tasks_ui.h",
     ]
 
     public_deps = [
+      ":mojo_bindings",
       "//content/public/browser",
       "//content/public/common",
       "//ui/webui",
@@ -75,6 +80,15 @@ if (!is_android) {
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/ui/webui",
       "//components/contextual_tasks/public:feature_list",
+    ]
+  }
+
+  mojom("mojo_bindings") {
+    sources = [ "contextual_tasks.mojom" ]
+    webui_module_path = "/"
+    public_deps = [
+      "//mojo/public/mojom/base",
+      "//url/mojom:url_mojom_gurl",
     ]
   }
 }
