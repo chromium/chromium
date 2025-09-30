@@ -10,7 +10,7 @@ import android.util.AttributeSet;
 import androidx.preference.Preference;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 
 /**
  * A base class for preferences that contain a group of radio buttons and need to be individually
@@ -19,7 +19,7 @@ import org.chromium.components.browser_ui.widget.containment.CustomStyledContain
  */
 @NullMarked
 public abstract class ContainedRadioButtonGroupPreference extends Preference
-        implements CustomStyledContainer {
+        implements ContainmentItem {
 
     public ContainedRadioButtonGroupPreference(Context context, AttributeSet attrs) {
         super(context, attrs);

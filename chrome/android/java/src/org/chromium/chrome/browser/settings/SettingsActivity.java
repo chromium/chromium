@@ -62,11 +62,11 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
-import org.chromium.components.browser_ui.settings.SettingsItemBackgroundDecoration;
-import org.chromium.components.browser_ui.settings.SettingsStylingController;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
@@ -153,8 +153,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     private static final String MAIN_FRAGMENT_TAG = "settings_main";
     public static final String MULTI_COLUMN_FRAGMENT_TAG = "multi_column_settings";
 
-    private final Map<Fragment, SettingsItemBackgroundDecoration> mItemDecorations =
-            new HashMap<>();
+    private final Map<Fragment, ContainmentItemDecoration> mItemDecorations = new HashMap<>();
 
     // True if multiple-column Fragment is activated. Both the window width and the feature flag
     // condition should be met.
@@ -416,12 +415,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         fragment.getListView()
                 .post(
                         () -> {
-                            SettingsStylingController controller =
-                                    new SettingsStylingController(SettingsActivity.this);
-                            SettingsItemBackgroundDecoration itemDecoration =
+                            ContainmentItemController controller =
+                                    new ContainmentItemController(SettingsActivity.this);
+                            ContainmentItemDecoration itemDecoration =
                                     mItemDecorations.get(fragment);
                             if (itemDecoration == null) {
-                                itemDecoration = new SettingsItemBackgroundDecoration(controller);
+                                itemDecoration = new ContainmentItemDecoration(controller);
                                 mItemDecorations.put(fragment, itemDecoration);
                                 fragment.getListView().addItemDecoration(itemDecoration);
                             }

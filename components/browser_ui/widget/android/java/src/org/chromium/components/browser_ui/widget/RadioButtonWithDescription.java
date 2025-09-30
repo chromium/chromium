@@ -25,8 +25,8 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -66,7 +66,7 @@ import java.util.List;
  */
 @NullMarked
 public class RadioButtonWithDescription extends RelativeLayout
-        implements OnClickListener, CustomStyledContainer {
+        implements OnClickListener, ContainmentItem {
     private final int mBackgroundStyle;
 
     /** Interface to listen to radio button changes. */
@@ -108,9 +108,9 @@ public class RadioButtonWithDescription extends RelativeLayout
 
         if (attrs != null) applyAttributes(attrs);
 
-        ContainmentUiUtils.ContainmentAttributes parsedAttrs =
+        ContainmentUiUtils.ContainmentAttributes containmentAttributes =
                 parseContainmentAttributes(context, attrs);
-        mBackgroundStyle = parsedAttrs.backgroundStyle;
+        mBackgroundStyle = containmentAttributes.backgroundStyle;
 
         setMinimumHeight(getResources().getDimensionPixelSize(R.dimen.min_touch_target_size));
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.settings;
+package org.chromium.components.browser_ui.widget.containment;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -21,9 +21,9 @@ import java.util.ArrayList;
  * items.
  */
 @NullMarked
-public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoration {
-    private final SettingsStylingController mStylingController;
-    private @Nullable ArrayList<SettingsContainerStyle> mPreferenceStyles;
+public class ContainmentItemDecoration extends RecyclerView.ItemDecoration {
+    private final ContainmentItemController mStylingController;
+    private @Nullable ArrayList<ContainerStyle> mPreferenceStyles;
 
     /**
      * A flag to ensure that the background update logic in {@link #onDraw(Canvas, RecyclerView,
@@ -35,9 +35,9 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
     /**
      * Constructor for the item decoration.
      *
-     * @param stylingController The {@link SettingsStylingController} for styling the child views.
+     * @param stylingController The {@link ContainmentItemController} for styling the child views.
      */
-    public SettingsItemBackgroundDecoration(SettingsStylingController stylingController) {
+    public ContainmentItemDecoration(ContainmentItemController stylingController) {
         mStylingController = stylingController;
         mUpdateBackgrounds = true;
     }
@@ -47,7 +47,7 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
      *
      * @param preferenceStyles The new list of preference styles.
      */
-    public void updatePreferenceStyles(ArrayList<SettingsContainerStyle> preferenceStyles) {
+    public void updatePreferenceStyles(ArrayList<ContainerStyle> preferenceStyles) {
         mPreferenceStyles = preferenceStyles;
         mUpdateBackgrounds = true;
     }
@@ -68,7 +68,7 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
             return;
         }
 
-        SettingsViewStyler.applyMargins(view, mPreferenceStyles.get(position));
+        ContainmentViewStyler.applyMargins(view, mPreferenceStyles.get(position));
     }
 
     @Override
@@ -82,8 +82,8 @@ public class SettingsItemBackgroundDecoration extends RecyclerView.ItemDecoratio
             if (position == RecyclerView.NO_POSITION || position >= mPreferenceStyles.size()) {
                 continue;
             }
-            SettingsViewStyler.applyBackgroundStyle(childView, mPreferenceStyles.get(position));
-            SettingsViewStyler.styleChildViews(childView, mStylingController);
+            ContainmentViewStyler.applyBackgroundStyle(childView, mPreferenceStyles.get(position));
+            ContainmentViewStyler.styleChildViews(childView, mStylingController);
         }
         mUpdateBackgrounds = false;
         super.onDraw(c, parent, state);

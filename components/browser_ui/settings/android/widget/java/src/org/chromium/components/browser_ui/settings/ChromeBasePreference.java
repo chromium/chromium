@@ -19,8 +19,8 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 /**
  * A preference that supports some Chrome-specific customizations:
@@ -35,7 +35,7 @@ import org.chromium.components.browser_ui.widget.containment.CustomStyledContain
  * ColorStateList is set, only the default color will be used.
  */
 @NullMarked
-public class ChromeBasePreference extends Preference implements CustomStyledContainer {
+public class ChromeBasePreference extends Preference implements ContainmentItem {
     private final @Nullable ColorStateList mIconTint;
     private final int mBackgroundStyle;
     private final int mBackgroundColor;

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.settings;
+package org.chromium.components.browser_ui.widget.containment;
 
 import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
-import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
 
 import android.content.Context;
 import android.view.View;
@@ -16,8 +16,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.BackgroundStyle;
+import org.chromium.components.browser_ui.widget.R;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem.BackgroundStyle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ import java.util.List;
 /**
  * Controller that assigns styling to items in a settings screen.
  *
- * <p>This controller is responsible for generating {@link SettingsContainerStyle} objects for both
- * {@link Preference} items and generic {@link View}s.
+ * <p>This controller is responsible for generating {@link ContainerStyle} objects for both {@link
+ * Preference} items and generic {@link View}s.
  *
  * <p>The core logic is based on the concept of a "styling section," which is a contiguous block of
  * standard items. Special items that require custom styling (see {@link
@@ -42,10 +42,7 @@ import java.util.List;
  * own styling values are prioritized over the controller's defaults.
  */
 @NullMarked
-public class SettingsStylingController {
-    // TODO (crbug.com/433576895): Rename to ContainmentItemController
-    // TODO (crbug.com/433576895): Move the styling logic to
-    // chromium/components/browser_ui/widget/containment
+public class ContainmentItemController {
     private final float mDefaultRadius;
     private final float mInnerRadius;
     private final int mDefaultVerticalMargin;
@@ -58,7 +55,7 @@ public class SettingsStylingController {
      *
      * @param context The context to get the resources from.
      */
-    public SettingsStylingController(@NonNull Context context) {
+    public ContainmentItemController(@NonNull Context context) {
         mDefaultRadius =
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_default);
@@ -77,15 +74,15 @@ public class SettingsStylingController {
     }
 
     /**
-     * Generates a list of {@link SettingsContainerStyle} for the given preferences. The style for
-     * each preference is determined by its position within a "styling section."
+     * Generates a list of {@link ContainerStyle} for the given preferences. The style for each
+     * preference is determined by its position within a "styling section."
      *
      * @param visiblePreferences The list of visible preferences on the screen.
-     * @return A list of {@link SettingsContainerStyle} objects.
+     * @return A list of {@link ContainerStyle} objects.
      */
-    public ArrayList<SettingsContainerStyle> generatePreferenceStyles(
+    public ArrayList<ContainerStyle> generatePreferenceStyles(
             ArrayList<Preference> visiblePreferences) {
-        ArrayList<SettingsContainerStyle> preferenceStyles = new ArrayList<>();
+        ArrayList<ContainerStyle> preferenceStyles = new ArrayList<>();
         for (int i = 0; i < visiblePreferences.size(); i++) {
             preferenceStyles.add(getPreferenceStyleForPosition(visiblePreferences, i));
         }
@@ -93,13 +90,13 @@ public class SettingsStylingController {
     }
 
     /**
-     * Generates a list of {@link SettingsContainerStyle} objects for the given views.
+     * Generates a list of {@link ContainerStyle} objects for the given views.
      *
      * @param views The list of views to generate styles for.
-     * @return A list of {@link SettingsContainerStyle} objects.
+     * @return A list of {@link ContainerStyle} objects.
      */
-    public ArrayList<SettingsContainerStyle> generateViewStyles(List<View> views) {
-        ArrayList<SettingsContainerStyle> styles = new ArrayList<>();
+    public ArrayList<ContainerStyle> generateViewStyles(List<View> views) {
+        ArrayList<ContainerStyle> styles = new ArrayList<>();
         for (int i = 0; i < views.size(); i++) {
             styles.add(getViewStyleForPosition(views, i));
         }
@@ -111,17 +108,17 @@ public class SettingsStylingController {
      *
      * @param visiblePreferences The list of all visible preferences.
      * @param position The position of the current preference in the list.
-     * @return The {@link SettingsContainerStyle} for the preference.
+     * @return The {@link ContainerStyle} for the preference.
      */
-    private @NonNull SettingsContainerStyle getPreferenceStyleForPosition(
+    private @NonNull ContainerStyle getPreferenceStyleForPosition(
             ArrayList<Preference> visiblePreferences, int position) {
         Preference currentPref = visiblePreferences.get(position);
 
         if (isCustomStyledPreference(currentPref)) {
             if (currentPref instanceof PreferenceCategory) {
-                return SettingsContainerStyle.EMPTY;
+                return ContainerStyle.EMPTY;
             }
-            return getStyleForCustomContainer((CustomStyledContainer) currentPref);
+            return getStyleForCustomContainer((ContainmentItem) currentPref);
         }
 
         // For standard items, styling is determined by their position within a section.
@@ -146,7 +143,7 @@ public class SettingsStylingController {
      * @return Whether the preference has custom styling.
      */
     private boolean isCustomStyledPreference(Preference preference) {
-        if (preference instanceof CustomStyledContainer customStyledPreference) {
+        if (preference instanceof ContainmentItem customStyledPreference) {
             return customStyledPreference.getCustomBackgroundStyle() != BackgroundStyle.STANDARD;
         }
         return preference instanceof PreferenceCategory;
@@ -157,13 +154,13 @@ public class SettingsStylingController {
      *
      * @param views The list of all views to be styled.
      * @param position The position of the current view in the list.
-     * @return The {@link SettingsContainerStyle} for the view.
+     * @return The {@link ContainerStyle} for the view.
      */
-    private SettingsContainerStyle getViewStyleForPosition(List<View> views, int position) {
+    private ContainerStyle getViewStyleForPosition(List<View> views, int position) {
         View view = views.get(position);
 
         if (isCustomStyledView(view)) {
-            return getStyleForCustomContainer((CustomStyledContainer) view);
+            return getStyleForCustomContainer((ContainmentItem) view);
         }
 
         // For standard items, styling is determined by their position within a section.
@@ -182,21 +179,21 @@ public class SettingsStylingController {
      * @return Whether the view has custom styling.
      */
     private boolean isCustomStyledView(View view) {
-        if (view instanceof CustomStyledContainer customStyledPreference) {
+        if (view instanceof ContainmentItem customStyledPreference) {
             return customStyledPreference.getCustomBackgroundStyle() != BackgroundStyle.STANDARD;
         }
         return false;
     }
 
     /**
-     * Creates a {@link SettingsContainerStyle} for a {@link CustomStyledContainer}. This method
-     * respects the custom values provided by the container, falling back to controller defaults if
-     * they are not provided.
+     * Creates a {@link ContainerStyle} for a {@link ContainmentItem}. This method respects the
+     * custom values provided by the container, falling back to controller defaults if they are not
+     * provided.
      *
      * @param container The container to generate a style for.
-     * @return The {@link SettingsContainerStyle} for the container.
+     * @return The {@link ContainerStyle} for the container.
      */
-    private SettingsContainerStyle getStyleForCustomContainer(CustomStyledContainer container) {
+    private ContainerStyle getStyleForCustomContainer(ContainmentItem container) {
         if (container.getCustomBackgroundStyle() == BackgroundStyle.CARD) {
             int topMargin = container.getCustomTopMargin();
             if (topMargin == DEFAULT_MARGIN) topMargin = mDefaultVerticalMargin;
@@ -214,7 +211,7 @@ public class SettingsStylingController {
             int backgroundColor = container.getCustomBackgroundColor();
             if (backgroundColor == DEFAULT_COLOR) backgroundColor = mDefaultBackgroundColor;
 
-            return new SettingsContainerStyle.Builder()
+            return new ContainerStyle.Builder()
                     .setTopRadius(mDefaultRadius)
                     .setBottomRadius(mDefaultRadius)
                     .setTopMargin(topMargin)
@@ -224,18 +221,18 @@ public class SettingsStylingController {
                     .build();
         }
 
-        return SettingsContainerStyle.EMPTY;
+        return ContainerStyle.EMPTY;
     }
 
     /**
-     * Creates a default {@link SettingsContainerStyle} for a standard item. The style is determined
-     * by whether the item is at the top or bottom of a styling section.
+     * Creates a default {@link ContainerStyle} for a standard item. The style is determined by
+     * whether the item is at the top or bottom of a styling section.
      *
      * @param isTop Whether the item is at the top of a section.
      * @param isBottom Whether the item is at the bottom of a section.
-     * @return The {@link SettingsContainerStyle} for the item.
+     * @return The {@link ContainerStyle} for the item.
      */
-    private SettingsContainerStyle createBuilderWithDefaultStyle(boolean isTop, boolean isBottom) {
+    private ContainerStyle createBuilderWithDefaultStyle(boolean isTop, boolean isBottom) {
         float topRadius = mDefaultRadius;
         float bottomRadius = mDefaultRadius;
         int bottomMargin = mDefaultVerticalMargin;
@@ -254,7 +251,7 @@ public class SettingsStylingController {
             bottomRadius = mInnerRadius;
         }
 
-        return new SettingsContainerStyle.Builder()
+        return new ContainerStyle.Builder()
                 .setTopRadius(topRadius)
                 .setBottomRadius(bottomRadius)
                 .setTopMargin(mDefaultVerticalMargin)

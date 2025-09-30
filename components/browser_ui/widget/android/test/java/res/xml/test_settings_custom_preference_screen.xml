@@ -19,7 +19,7 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="preference_top"
-        android:title="Preference at thetop" />
+        android:title="Preference at the top" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="preference_middle"

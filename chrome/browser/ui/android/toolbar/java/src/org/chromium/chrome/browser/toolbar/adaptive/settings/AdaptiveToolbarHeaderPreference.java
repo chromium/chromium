@@ -17,11 +17,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 
-/** Fragment that allows the user to configure toolbar shorcut preferences. */
+/** Fragment that allows the user to configure toolbar shortcut preferences. */
 @NullMarked
-public class AdaptiveToolbarHeaderPreference extends Preference implements CustomStyledContainer {
+public class AdaptiveToolbarHeaderPreference extends Preference implements ContainmentItem {
     public AdaptiveToolbarHeaderPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Inflating from XML.

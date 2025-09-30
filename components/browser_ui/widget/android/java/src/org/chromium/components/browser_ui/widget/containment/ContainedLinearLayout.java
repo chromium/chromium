@@ -16,11 +16,11 @@ import androidx.annotation.Nullable;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * A LinearLayout that can be contained in a setting page. It will be styled by the {@link
- * org.chromium.components.browser_ui.settings.SettingsStylingController}.
+ * A LinearLayout that can be styled by the {@link
+ * org.chromium.components.browser_ui.widget.containment.ContainmentItemController}.
  */
 @NullMarked
-public class ContainedLinearLayout extends LinearLayout implements CustomStyledContainer {
+public class ContainedLinearLayout extends LinearLayout implements ContainmentItem {
     private final @BackgroundStyle int mBackgroundStyle;
     private final @ColorInt int mCustomBackgroundColor;
 

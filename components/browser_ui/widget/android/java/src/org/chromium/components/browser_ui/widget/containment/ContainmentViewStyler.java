@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.settings;
+package org.chromium.components.browser_ui.widget.containment;
 
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -10,23 +10,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /** A utility class for applying styles to views in settings. */
 @NullMarked
-class SettingsViewStyler {
+class ContainmentViewStyler {
 
     /**
      * Applies the specified background style to the given view.
      *
      * @param view The view to apply the background to.
-     * @param style The {@link SettingsContainerStyle} to apply.
+     * @param style The {@link ContainerStyle} to apply.
      */
-    static void applyBackgroundStyle(View view, SettingsContainerStyle style) {
-        if (style == SettingsContainerStyle.EMPTY) {
+    static void applyBackgroundStyle(View view, ContainerStyle style) {
+        if (style == ContainerStyle.EMPTY) {
             view.setBackground(null);
             return;
         }
@@ -39,10 +38,10 @@ class SettingsViewStyler {
      * Applies the specified margins to the given view.
      *
      * @param view The view to apply the margins to.
-     * @param style The {@link SettingsContainerStyle} to apply.
+     * @param style The {@link ContainerStyle} to apply.
      */
-    static void applyMargins(View view, SettingsContainerStyle style) {
-        if (style == SettingsContainerStyle.EMPTY) return;
+    static void applyMargins(View view, ContainerStyle style) {
+        if (style == ContainerStyle.EMPTY) return;
 
         ViewGroup.MarginLayoutParams layoutParams =
                 (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -80,15 +79,15 @@ class SettingsViewStyler {
      * Traverses the view hierarchy of a root view and applies styling to designated views.
      *
      * @param rootView The root view to traverse for styling.
-     * @param controller The {@link SettingsStylingController} to use for generating styles.
+     * @param controller The {@link ContainmentItemController} to use for generating styles.
      */
-    static void styleChildViews(View rootView, SettingsStylingController controller) {
+    static void styleChildViews(View rootView, ContainmentItemController controller) {
         List<View> views = new ArrayList<>();
         recursivelyFindStyledViews(rootView, views);
 
         if (views.isEmpty()) return;
 
-        ArrayList<SettingsContainerStyle> styles = controller.generateViewStyles(views);
+        ArrayList<ContainerStyle> styles = controller.generateViewStyles(views);
 
         for (int i = 0; i < views.size(); i++) {
             applyBackgroundStyle(views.get(i), styles.get(i));
@@ -97,9 +96,9 @@ class SettingsViewStyler {
     }
 
     private static void recursivelyFindStyledViews(View current, List<View> list) {
-        // We are looking for views that implement CustomStyledContainer, which are the
+        // We are looking for views that implement ContainmentItem, which are the
         // user-perceptible items in a preference that need to be individually styled.
-        if (current instanceof CustomStyledContainer && current.getVisibility() == View.VISIBLE) {
+        if (current instanceof ContainmentItem && current.getVisibility() == View.VISIBLE) {
             list.add(current);
             return;
         }

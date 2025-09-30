@@ -25,7 +25,7 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText.OnTextChangeListener;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,7 +37,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 @NullMarked
 public final class RadioButtonGroupHomepagePreference extends ContainedRadioButtonGroupPreference
-        implements RadioGroup.OnCheckedChangeListener, OnTextChangeListener, CustomStyledContainer {
+        implements RadioGroup.OnCheckedChangeListener, OnTextChangeListener, ContainmentItem {
     /** A data structure which holds the displayed value and the status for this preference. */
     static class PreferenceValues {
         /** The option that is checked in {@link RadioButtonGroupHomepagePreference}. */

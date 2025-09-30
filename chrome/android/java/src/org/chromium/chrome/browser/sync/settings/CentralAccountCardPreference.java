@@ -20,13 +20,13 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 /** A dedicated preference for the account settings top avatar. */
 @NullMarked
 public class CentralAccountCardPreference extends Preference
-        implements ProfileDataCache.Observer, CustomStyledContainer {
+        implements ProfileDataCache.Observer, ContainmentItem {
     private CoreAccountInfo mAccountInfo;
     private ProfileDataCache mProfileDataCache;
 

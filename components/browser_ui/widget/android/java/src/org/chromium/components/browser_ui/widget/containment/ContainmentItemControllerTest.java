@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.settings;
+package org.chromium.components.browser_ui.widget.containment;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertSame;
 
 import static org.chromium.components.browser_ui.styles.ChromeColors.getSettingsContainerBackgroundColor;
-import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
 
 import android.content.Context;
 import android.view.View;
@@ -26,17 +26,20 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.settings.test.R;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.BackgroundStyle;
+import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
+import org.chromium.components.browser_ui.settings.ChromeBasePreference;
+import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem.BackgroundStyle;
+import org.chromium.components.browser_ui.widget.test.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Tests for {@link SettingsStylingController}. */
+/** Tests for {@link ContainmentItemController}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class SettingsStylingControllerTest {
+public class ContainmentItemControllerTest {
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
@@ -53,17 +56,17 @@ public class SettingsStylingControllerTest {
     private static final int CUSTOM_HORIZONTAL_MARGIN = 50;
 
     private Context mContext;
-    private SettingsStylingController mController;
+    private ContainmentItemController mController;
     private PreferenceScreen mPreferenceScreen;
     private ArrayList<Preference> mVisiblePreferences;
-    private ArrayList<SettingsContainerStyle> mPreferenceStyles;
+    private ArrayList<ContainerStyle> mPreferenceStyles;
 
     @Before
     public void setUp() {
         mSettingsRule.launchPreference(PlaceholderSettingsForTest.class);
         mContext = mSettingsRule.getActivity();
         mPreferenceScreen = mSettingsRule.getPreferenceScreen();
-        mController = new SettingsStylingController(mContext);
+        mController = new ContainmentItemController(mContext);
         mDefaultRadius =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.settings_item_rounded_corner_radius_default);
@@ -104,22 +107,21 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testPreferenceCategoryStyle() {
-        SettingsContainerStyle preferenceCategoryStyle = getPreferenceStyle("preference_category");
-        assertSame(SettingsContainerStyle.EMPTY, preferenceCategoryStyle);
+        ContainerStyle preferenceCategoryStyle = getPreferenceStyle("preference_category");
+        assertSame(ContainerStyle.EMPTY, preferenceCategoryStyle);
     }
 
     @Test
     @SmallTest
     public void testTextMessagePreferenceStyle() {
-        SettingsContainerStyle textMessagePreferencestyle =
-                getPreferenceStyle("text_message_preference");
-        assertSame(SettingsContainerStyle.EMPTY, textMessagePreferencestyle);
+        ContainerStyle textMessagePreferencestyle = getPreferenceStyle("text_message_preference");
+        assertSame(ContainerStyle.EMPTY, textMessagePreferencestyle);
     }
 
     @Test
     @SmallTest
     public void testContainerStyle_PreferenceTop() {
-        SettingsContainerStyle preferenceTopStyle = getPreferenceStyle("preference_top");
+        ContainerStyle preferenceTopStyle = getPreferenceStyle("preference_top");
         assertEquals(mDefaultRadius, preferenceTopStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, preferenceTopStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, preferenceTopStyle.getTopMargin());
@@ -129,7 +131,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testContainerStyle_PreferenceMiddle() {
-        SettingsContainerStyle preferenceMiddleStyle = getPreferenceStyle("preference_middle");
+        ContainerStyle preferenceMiddleStyle = getPreferenceStyle("preference_middle");
         assertEquals(mInnerRadius, preferenceMiddleStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, preferenceMiddleStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, preferenceMiddleStyle.getTopMargin());
@@ -139,7 +141,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testContainerStyle_PreferenceBottom() {
-        SettingsContainerStyle preferenceBottomStyle = getPreferenceStyle("preference_bottom");
+        ContainerStyle preferenceBottomStyle = getPreferenceStyle("preference_bottom");
         assertEquals(mInnerRadius, preferenceBottomStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, preferenceBottomStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, preferenceBottomStyle.getTopMargin());
@@ -150,7 +152,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCardBackgroundStyle() {
-        SettingsContainerStyle styleCard = getPreferenceStyle("preference_card");
+        ContainerStyle styleCard = getPreferenceStyle("preference_card");
         assertEquals(mDefaultRadius, styleCard.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleCard.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, styleCard.getTopMargin());
@@ -161,7 +163,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomColorBackgroundStyle() {
-        SettingsContainerStyle styleCustomColor = getPreferenceStyle("preference_color");
+        ContainerStyle styleCustomColor = getPreferenceStyle("preference_color");
         assertEquals(mDefaultRadius, styleCustomColor.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleCustomColor.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, styleCustomColor.getTopMargin());
@@ -174,7 +176,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testStandardBackgroundStyle() {
-        SettingsContainerStyle styleStandard = getPreferenceStyle("preference_standard");
+        ContainerStyle styleStandard = getPreferenceStyle("preference_standard");
         assertEquals(mDefaultRadius, styleStandard.getTopRadius(), 0);
         assertEquals(mDefaultRadius, styleStandard.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, styleStandard.getTopMargin());
@@ -185,14 +187,14 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testNoneBackgroundStyle() {
-        SettingsContainerStyle styleNone = getPreferenceStyle("preference_none");
-        assertSame(SettingsContainerStyle.EMPTY, styleNone);
+        ContainerStyle styleNone = getPreferenceStyle("preference_none");
+        assertSame(ContainerStyle.EMPTY, styleNone);
     }
 
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithCustomMargins() {
-        SettingsContainerStyle customMarginPreferenceStyle =
+        ContainerStyle customMarginPreferenceStyle =
                 getPreferenceStyle("preference_with_custom_margins");
         assertEquals(CUSTOM_TOP_MARGIN, customMarginPreferenceStyle.getTopMargin());
         assertEquals(CUSTOM_BOTTOM_MARGIN, customMarginPreferenceStyle.getBottomMargin());
@@ -202,7 +204,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithTopMarginOnly() {
-        SettingsContainerStyle topMarginOnlyPreferenceStyle =
+        ContainerStyle topMarginOnlyPreferenceStyle =
                 getPreferenceStyle("preference_with_top_margin_only");
         assertEquals(CUSTOM_TOP_MARGIN, topMarginOnlyPreferenceStyle.getTopMargin());
         assertEquals(
@@ -214,7 +216,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithBottomMarginOnly() {
-        SettingsContainerStyle bottomMarginOnlyPreferenceStyle =
+        ContainerStyle bottomMarginOnlyPreferenceStyle =
                 getPreferenceStyle("preference_with_bottom_margin_only");
         assertEquals(mVerticalMargin, bottomMarginOnlyPreferenceStyle.getTopMargin());
         assertEquals(CUSTOM_BOTTOM_MARGIN, bottomMarginOnlyPreferenceStyle.getBottomMargin());
@@ -224,7 +226,7 @@ public class SettingsStylingControllerTest {
     @Test
     @SmallTest
     public void testCustomStyledPreference_WithBottomAndHorizontalMargin() {
-        SettingsContainerStyle bottomAndHorizontalMarginsPreferenceStyle =
+        ContainerStyle bottomAndHorizontalMarginsPreferenceStyle =
                 getPreferenceStyle("preference_with_bottom_and_horizontal_margins");
         assertEquals(mVerticalMargin, bottomAndHorizontalMarginsPreferenceStyle.getTopMargin());
         assertEquals(
@@ -238,20 +240,20 @@ public class SettingsStylingControllerTest {
     @SmallTest
     public void testGenerateViewStyles_Layout() {
         List<View> views = List.of(new View(mContext), new View(mContext), new View(mContext));
-        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+        ArrayList<ContainerStyle> viewStyles = mController.generateViewStyles(views);
 
         // Top view style
-        SettingsContainerStyle topStyle = viewStyles.get(0);
+        ContainerStyle topStyle = viewStyles.get(0);
         assertEquals(mDefaultRadius, topStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, topStyle.getBottomRadius(), 0);
 
         // Middle view style
-        SettingsContainerStyle middleStyle = viewStyles.get(1);
+        ContainerStyle middleStyle = viewStyles.get(1);
         assertEquals(mInnerRadius, middleStyle.getTopRadius(), 0);
         assertEquals(mInnerRadius, middleStyle.getBottomRadius(), 0);
 
         // Bottom view style
-        SettingsContainerStyle bottomStyle = viewStyles.get(2);
+        ContainerStyle bottomStyle = viewStyles.get(2);
         assertEquals(mInnerRadius, bottomStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, bottomStyle.getBottomRadius(), 0);
     }
@@ -264,9 +266,9 @@ public class SettingsStylingControllerTest {
                         new CustomView(mContext, BackgroundStyle.NONE),
                         new View(mContext),
                         new CustomView(mContext, BackgroundStyle.NONE));
-        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+        ArrayList<ContainerStyle> viewStyles = mController.generateViewStyles(views);
 
-        SettingsContainerStyle standaloneStyle = viewStyles.get(1);
+        ContainerStyle standaloneStyle = viewStyles.get(1);
         assertEquals(mDefaultRadius, standaloneStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, standaloneStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin + mSectionBottomMargin, standaloneStyle.getBottomMargin());
@@ -276,18 +278,18 @@ public class SettingsStylingControllerTest {
     @SmallTest
     public void testGenerateViewStyles_CustomNone() {
         List<View> views = List.of(new CustomView(mContext, BackgroundStyle.NONE));
-        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+        ArrayList<ContainerStyle> viewStyles = mController.generateViewStyles(views);
 
-        assertSame(SettingsContainerStyle.EMPTY, viewStyles.get(0));
+        assertSame(ContainerStyle.EMPTY, viewStyles.get(0));
     }
 
     @Test
     @SmallTest
     public void testGenerateViewStyles_CustomCard() {
         List<View> views = List.of(new CustomView(mContext, BackgroundStyle.CARD));
-        ArrayList<SettingsContainerStyle> viewStyles = mController.generateViewStyles(views);
+        ArrayList<ContainerStyle> viewStyles = mController.generateViewStyles(views);
 
-        SettingsContainerStyle cardStyle = viewStyles.get(0);
+        ContainerStyle cardStyle = viewStyles.get(0);
         assertEquals(mDefaultRadius, cardStyle.getTopRadius(), 0);
         assertEquals(mDefaultRadius, cardStyle.getBottomRadius(), 0);
         assertEquals(mVerticalMargin, cardStyle.getTopMargin());
@@ -375,7 +377,7 @@ public class SettingsStylingControllerTest {
         mPreferenceScreen.addPreference(bottomAndHorizontalMarginsPreference);
     }
 
-    private SettingsContainerStyle getPreferenceStyle(String key) {
+    private ContainerStyle getPreferenceStyle(String key) {
         Preference preference = mPreferenceScreen.findPreference(key);
         int preferenceIndex = mVisiblePreferences.indexOf(preference);
         assertNotEquals(
@@ -383,7 +385,7 @@ public class SettingsStylingControllerTest {
         return mPreferenceStyles.get(preferenceIndex);
     }
 
-    private static class CustomView extends View implements CustomStyledContainer {
+    private static class CustomView extends View implements ContainmentItem {
         private final @BackgroundStyle int mStyle;
 
         CustomView(Context context, @BackgroundStyle int style) {

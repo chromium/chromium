@@ -13,8 +13,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /** An interface for container that should have custom background styling applied to them. */
 @NullMarked
-public interface CustomStyledContainer {
-    // TODO (crbug.com/433576895): Rename to ContainmentItem
+public interface ContainmentItem {
     int DEFAULT_MARGIN = -1;
     int DEFAULT_COLOR = -1;
     float DEFAULT_RADIUS = -1f;

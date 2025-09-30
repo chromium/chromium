@@ -132,7 +132,7 @@ found in the LICENSE file.
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="CustomStyledContainer">
+    <declare-styleable name="ContainmentItem">
         <!-- LINT.IfChange-->
         <!-- The background style for the preference -->
         <attr name="backgroundStyle" format="enum">
@@ -140,7 +140,7 @@ found in the LICENSE file.
             <enum name="card" value="1" />
             <enum name="none" value="2" />
         </attr>
-        <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/containment/CustomStyledContainer.java) -->
+        <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/containment/ContainmentItem.java) -->
         <!-- The background color for the preference. -->
         <attr name="backgroundColor" format="color|reference" />
     </declare-styleable>

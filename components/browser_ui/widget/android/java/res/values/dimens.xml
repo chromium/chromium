@@ -53,6 +53,14 @@ found in the LICENSE file.
     <dimen name="radio_button_with_description_and_aux_button_aux_button_length"
         tools:ignore="UnusedResources">61dp</dimen>
 
+    <!-- Settings -->
+    <dimen name="settings_item_rounded_corner_radius_default">16dp</dimen>
+    <dimen name="settings_item_rounded_corner_radius_inner">4dp</dimen>
+    <dimen name="settings_item_horizontal_margin">16dp</dimen>
+    <dimen name="settings_item_vertical_margin">1dp</dimen>
+    <dimen name="settings_section_bottom_margin">8dp</dimen>
+    <dimen name="settings_item_vertical_padding">16dp</dimen>
+
     <!-- Drag-Reorderable List dimensions -->
     <dimen name="list_item_dragged_elevation">6dp</dimen>
 

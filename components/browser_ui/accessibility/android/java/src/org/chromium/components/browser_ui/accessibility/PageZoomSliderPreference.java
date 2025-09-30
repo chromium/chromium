@@ -18,11 +18,11 @@ import com.google.android.material.slider.Slider;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 
 /** Custom preference for the page zoom section of Accessibility Settings. */
 @NullMarked
-public class PageZoomSliderPreference extends PageZoomPreference implements CustomStyledContainer {
+public class PageZoomSliderPreference extends PageZoomPreference implements ContainmentItem {
     private @Nullable Slider mSlider;
     private @Nullable Slider mTextSizeContrastSlider;
 

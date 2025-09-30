@@ -22,13 +22,12 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
-import org.chromium.components.browser_ui.widget.containment.CustomStyledContainer;
 
 /** A Chrome switch preference that supports managed preferences. */
 @NullMarked
-public class ChromeSwitchPreference extends SwitchPreferenceCompat
-        implements CustomStyledContainer {
+public class ChromeSwitchPreference extends SwitchPreferenceCompat implements ContainmentItem {
     private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
 
     /** The View for this preference. */

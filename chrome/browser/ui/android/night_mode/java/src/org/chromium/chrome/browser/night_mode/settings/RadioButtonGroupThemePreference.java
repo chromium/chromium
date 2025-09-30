@@ -115,9 +115,7 @@ public class RadioButtonGroupThemePreference extends ContainedRadioButtonGroupPr
             int verticalPadding =
                     getContext()
                             .getResources()
-                            .getDimensionPixelSize(
-                                    org.chromium.components.browser_ui.settings.R.dimen
-                                            .settings_item_vertical_padding);
+                            .getDimensionPixelSize(R.dimen.settings_item_vertical_padding);
             for (RadioButtonWithDescription button : mButtons) {
                 button.setPadding(
                         button.getPaddingLeft(),

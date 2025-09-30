@@ -24,16 +24,14 @@ public class ContainmentUiUtils {
      */
     public static ContainmentAttributes parseContainmentAttributes(
             Context context, @Nullable AttributeSet attrs) {
-        TypedArray a =
-                context.obtainStyledAttributes(attrs, R.styleable.CustomStyledContainer, 0, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ContainmentItem, 0, 0);
         int backgroundStyle =
                 a.getInt(
-                        R.styleable.CustomStyledContainer_backgroundStyle,
-                        CustomStyledContainer.BackgroundStyle.STANDARD);
+                        R.styleable.ContainmentItem_backgroundStyle,
+                        ContainmentItem.BackgroundStyle.STANDARD);
         int backgroundColor =
                 a.getColor(
-                        R.styleable.CustomStyledContainer_backgroundColor,
-                        CustomStyledContainer.DEFAULT_COLOR);
+                        R.styleable.ContainmentItem_backgroundColor, ContainmentItem.DEFAULT_COLOR);
         a.recycle();
         return new ContainmentAttributes(backgroundStyle, backgroundColor);
     }

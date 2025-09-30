@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.settings;
+package org.chromium.components.browser_ui.widget.containment;
 
-import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_COLOR;
-import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_MARGIN;
-import static org.chromium.components.browser_ui.widget.containment.CustomStyledContainer.DEFAULT_RADIUS;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_COLOR;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_MARGIN;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentItem.DEFAULT_RADIUS;
 
 import org.chromium.build.annotations.NullMarked;
 
 /** A class that holds the styling information for a settings container. */
 @NullMarked
-public class SettingsContainerStyle {
+public class ContainerStyle {
     private final float mTopRadius;
     private final float mBottomRadius;
     private final int mTopMargin;
@@ -21,9 +21,9 @@ public class SettingsContainerStyle {
     private final int mBackgroundColor;
 
     /** A container with no background. */
-    public static final SettingsContainerStyle EMPTY = new Builder().build();
+    public static final ContainerStyle EMPTY = new Builder().build();
 
-    private SettingsContainerStyle(Builder builder) {
+    private ContainerStyle(Builder builder) {
         mTopRadius = builder.mTopRadius;
         mBottomRadius = builder.mBottomRadius;
         mTopMargin = builder.mTopMargin;
@@ -32,7 +32,7 @@ public class SettingsContainerStyle {
         mBackgroundColor = builder.mBackgroundColor;
     }
 
-    /** Builder for creating a {@link SettingsContainerStyle}. */
+    /** Builder for creating a {@link ContainerStyle}. */
     public static class Builder {
         private float mTopRadius = DEFAULT_RADIUS;
         private float mBottomRadius = DEFAULT_RADIUS;
@@ -71,8 +71,8 @@ public class SettingsContainerStyle {
             return this;
         }
 
-        public SettingsContainerStyle build() {
-            return new SettingsContainerStyle(this);
+        public ContainerStyle build() {
+            return new ContainerStyle(this);
         }
     }
 
