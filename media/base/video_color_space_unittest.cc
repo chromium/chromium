@@ -64,4 +64,21 @@ TEST(VideoColorSpaceTest, UnknownVideoToSRGB) {
   EXPECT_GT(tmp.z(), tmp.y());
 }
 
+TEST(VideoColorSpaceTest, IsHDR) {
+  VideoColorSpace video_cs = VideoColorSpace::REC709();
+  EXPECT_FALSE(video_cs.IsHDR());
+
+  VideoColorSpace video_cs_smpte2084 = VideoColorSpace(
+      VideoColorSpace::PrimaryID::BT2020,
+      VideoColorSpace::TransferID::SMPTEST2084,
+      VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
+  EXPECT_TRUE(video_cs_smpte2084.IsHDR());
+
+  VideoColorSpace video_cs_arib_std_b67 = VideoColorSpace(
+      VideoColorSpace::PrimaryID::BT2020,
+      VideoColorSpace::TransferID::ARIB_STD_B67,
+      VideoColorSpace::MatrixID::BT2020_NCL, gfx::ColorSpace::RangeID::LIMITED);
+  EXPECT_TRUE(video_cs_arib_std_b67.IsHDR());
+}
+
 }  // namespace media

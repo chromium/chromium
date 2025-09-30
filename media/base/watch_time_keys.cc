@@ -196,6 +196,10 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioVideoBackgroundAc;
     case WatchTimeKey::kAudioVideoBackgroundEmbeddedExperience:
       return kWatchTimeAudioVideoBackgroundEmbeddedExperience;
+    case WatchTimeKey::kAudioVideoHdrAll:
+      return kWatchTimeAudioVideoHdrAll;
+    case WatchTimeKey::kAudioVideoHdrEme:
+      return kWatchTimeAudioVideoHdrEme;
     case WatchTimeKey::kAudioVideoMutedAll:
       return kWatchTimeAudioVideoMutedAll;
     case WatchTimeKey::kAudioVideoMutedMse:
@@ -218,6 +222,8 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
     case WatchTimeKey::kAudioDisplayFullscreen:
     case WatchTimeKey::kAudioDisplayInline:
     case WatchTimeKey::kAudioDisplayPictureInPicture:
+    case WatchTimeKey::kAudioVideoSdrAll:
+    case WatchTimeKey::kAudioVideoSdrEme:
     case WatchTimeKey::kAudioVideoMutedBattery:
     case WatchTimeKey::kAudioVideoMutedAc:
     case WatchTimeKey::kAudioVideoMutedEmbeddedExperience:

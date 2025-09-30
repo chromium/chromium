@@ -81,6 +81,15 @@ constexpr gfx::Size kSizeJustRight = gfx::Size(201, 201);
         .RetiresOnSaturation();                                            \
   } while (0)
 
+#define EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(key, value)                  \
+  do {                                                                    \
+    if (!has_video_ || !has_audio_)                                       \
+      break;                                                              \
+    EXPECT_CALL(*this,                                                    \
+                OnWatchTimeUpdate(WatchTimeKey::kAudioVideo##key, value)) \
+        .RetiresOnSaturation();                                           \
+  } while (0)
+
 #define EXPECT_WATCH_TIME_FINALIZED() \
   EXPECT_CALL(*this, OnWatchTimeFinalized()).RetiresOnSaturation();
 
@@ -223,6 +232,10 @@ class WatchTimeReporterTest
             case WatchTimeKey::kVideoBackgroundEmbeddedExperience:
             case WatchTimeKey::kAudioVideoMediaFoundationAll:
             case WatchTimeKey::kAudioVideoMediaFoundationEme:
+            case WatchTimeKey::kAudioVideoHdrAll:
+            case WatchTimeKey::kAudioVideoHdrEme:
+            case WatchTimeKey::kAudioVideoSdrAll:
+            case WatchTimeKey::kAudioVideoSdrEme:
               // These keys do not support partial finalization.
               FAIL();
           };
@@ -570,6 +583,7 @@ class WatchTimeReporterTest
       EXPECT_WATCH_TIME(DisplayFullscreen, kWatchTime1);
     else
       EXPECT_WATCH_TIME(DisplayInline, kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime1);
 
     CycleReportingTimer();
 
@@ -604,6 +618,7 @@ class WatchTimeReporterTest
       EXPECT_WATCH_TIME(DisplayFullscreen, kExpectedDisplayWatchTime);
     else
       EXPECT_WATCH_TIME(DisplayInline, kExpectedDisplayWatchTime);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kExpectedWatchTime);
 
     // Special case when testing battery watch time.
     if (TestFlags & kTransitionPowerWatchTime) {
@@ -625,6 +640,7 @@ class WatchTimeReporterTest
         EXPECT_WATCH_TIME(Ac, kWatchTime4 - kWatchTime2);
       else
         EXPECT_WATCH_TIME(Battery, kWatchTime4 - kWatchTime2);
+      EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime4);
     } else if (TestFlags & kTransitionControlsWatchTime) {
       ASSERT_TRUE(TestFlags & kAccumulationContinuesAfterTest)
           << "kTransitionControlsWatchTime tests must be done with "
@@ -644,6 +660,7 @@ class WatchTimeReporterTest
         EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime4 - kWatchTime2);
       else
         EXPECT_WATCH_TIME(NativeControlsOn, kWatchTime4 - kWatchTime2);
+      EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime4);
     } else if (TestFlags & kTransitionDisplayWatchTime) {
       ASSERT_TRUE(TestFlags & kAccumulationContinuesAfterTest)
           << "kTransitionDisplayWatchTime tests must be done with "
@@ -664,6 +681,7 @@ class WatchTimeReporterTest
       } else {
         EXPECT_WATCH_TIME(DisplayFullscreen, kWatchTime4 - kWatchTime2);
       }
+      EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime4);
     }
 
     EXPECT_WATCH_TIME_FINALIZED();
@@ -786,6 +804,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBasic) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
   CycleReportingTimer();
 
   wtr_->OnUnderflow();
@@ -798,6 +818,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterBasic) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeLate);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeLate);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeLate);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeLate);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeLate);
   EXPECT_CALL(*this, OnUnderflowUpdate(2));
   EXPECT_CALL(*this, OnUnderflowDurationUpdate(1, kUnderflowDuration));
   CycleReportingTimer();
@@ -841,6 +863,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
   CycleReportingTimer();
 
   wtr_->OnUnderflow();
@@ -853,6 +877,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterStatsOffsetCorrectly) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeLate);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeLate);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeLate);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeLate);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeLate);
   EXPECT_CALL(*this, OnUnderflowUpdate(2));
   EXPECT_CALL(*this, OnUnderflowDurationUpdate(1, kUnderflowDuration));
   CycleReportingTimer();
@@ -907,6 +933,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflow) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeFirst);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeFirst);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeFirst);
   CycleReportingTimer();
 
   wtr_->OnUnderflow();
@@ -927,6 +955,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflow) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
   EXPECT_WATCH_TIME_FINALIZED();
 
   // Since we're using a mute event above, we'll have some muted watch time.
@@ -979,6 +1009,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowSpansFinalize) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeFirst);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeFirst);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeFirst);
   CycleReportingTimer();
 
   wtr_->OnUnderflow();
@@ -990,6 +1022,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowSpansFinalize) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
   EXPECT_WATCH_TIME_FINALIZED();
 
   // Since we're using a mute event above, we'll have some muted watch time.
@@ -1044,6 +1078,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowTooLong) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeFirst);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeFirst);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeFirst);
   CycleReportingTimer();
 
   wtr_->OnUnderflow();
@@ -1059,6 +1095,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterUnderflowTooLong) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
   EXPECT_WATCH_TIME_FINALIZED();
 
   // Since we're using a mute event above, we'll have some muted watch time.
@@ -1108,6 +1146,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeFirst);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeFirst);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeFirst);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeFirst);
   EXPECT_CALL(*this, OnUnderflowUpdate(1));
   wtr_->OnUnderflow();
   CycleReportingTimer();
@@ -1118,6 +1158,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNoUnderflowDoubleReport) {
   EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
 
   // This cycle should not report another underflow.
   CycleReportingTimer();
@@ -1259,6 +1301,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHidden) {
   EXPECT_WATCH_TIME(Mse, kExpectedForegroundWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kExpectedForegroundWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kExpectedForegroundWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kExpectedForegroundWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kExpectedForegroundWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
 }
 
@@ -1336,6 +1380,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHiddenBackground) {
   EXPECT_WATCH_TIME(Mse, kExpectedForegroundWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kExpectedForegroundWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kExpectedForegroundWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kExpectedForegroundWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kExpectedForegroundWatchTime);
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();
@@ -1574,6 +1620,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     EXPECT_WATCH_TIME(Mse, kWatchTime1);
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime1);
     EXPECT_WATCH_TIME(DisplayInline, kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime1);
     EXPECT_CONTROLS_WATCH_TIME_FINALIZED();
     EXPECT_POWER_WATCH_TIME_FINALIZED();
     CycleReportingTimer();
@@ -1585,6 +1633,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     EXPECT_WATCH_TIME(DisplayInline, kWatchTime2);
     EXPECT_WATCH_TIME(NativeControlsOn, kWatchTime2 - kWatchTime1);
     EXPECT_WATCH_TIME(Battery, kWatchTime2 - kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime2);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime2);
     EXPECT_WATCH_TIME_FINALIZED();
     CycleReportingTimer();
 
@@ -1612,6 +1662,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     EXPECT_WATCH_TIME(Mse, kWatchTime1);
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime1);
     EXPECT_WATCH_TIME(DisplayInline, kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime1);
     EXPECT_DISPLAY_WATCH_TIME_FINALIZED();
     EXPECT_POWER_WATCH_TIME_FINALIZED();
     CycleReportingTimer();
@@ -1623,6 +1675,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime2);
     EXPECT_WATCH_TIME(DisplayFullscreen, kWatchTime2 - kWatchTime1);
     EXPECT_WATCH_TIME(Battery, kWatchTime2 - kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime2);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime2);
     EXPECT_WATCH_TIME_FINALIZED();
     CycleReportingTimer();
 
@@ -1652,6 +1706,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     EXPECT_WATCH_TIME(Mse, kWatchTime1);
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime1);
     EXPECT_WATCH_TIME(DisplayInline, kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime1);
     EXPECT_CONTROLS_WATCH_TIME_FINALIZED();
     EXPECT_POWER_WATCH_TIME_FINALIZED();
     EXPECT_DISPLAY_WATCH_TIME_FINALIZED();
@@ -1664,6 +1720,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     EXPECT_WATCH_TIME(DisplayPictureInPicture, kWatchTime2 - kWatchTime1);
     EXPECT_WATCH_TIME(NativeControlsOn, kWatchTime2 - kWatchTime1);
     EXPECT_WATCH_TIME(Battery, kWatchTime2 - kWatchTime1);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime2);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime2);
     EXPECT_WATCH_TIME_FINALIZED();
     CycleReportingTimer();
 
@@ -1689,6 +1747,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterNonZeroStart) {
   EXPECT_WATCH_TIME(Mse, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime);
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();
@@ -1710,6 +1770,8 @@ TEST_P(WatchTimeReporterTest, SeekFinalizes) {
   EXPECT_WATCH_TIME(Mse, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_->OnSeeking();
 }
@@ -1730,6 +1792,8 @@ TEST_P(WatchTimeReporterTest, SeekOnlyClearedByPlaying) {
   EXPECT_WATCH_TIME(Mse, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_->OnSeeking();
   EXPECT_FALSE(IsMonitoring());
@@ -1768,6 +1832,8 @@ TEST_P(WatchTimeReporterTest, SeekFinalizeDoesNotTramplePreviousFinalize) {
   EXPECT_WATCH_TIME(Mse, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_->OnPaused();
   wtr_->OnSeeking();
@@ -1790,6 +1856,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterFinalizeOnDestruction) {
   EXPECT_WATCH_TIME(Mse, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
 }
 
@@ -1809,6 +1877,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Src, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 
@@ -1824,6 +1893,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Mse, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 
@@ -1840,6 +1910,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Src, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 
@@ -1856,6 +1928,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Src, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 
@@ -1872,6 +1945,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Src, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOn, kWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 
@@ -1889,6 +1963,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Src, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kWatchTime);
   EXPECT_WATCH_TIME(DisplayFullscreen, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 
@@ -1906,6 +1981,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Src, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOn, kWatchTime);
   EXPECT_WATCH_TIME(DisplayPictureInPicture, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 
@@ -1924,6 +2000,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
   EXPECT_WATCH_TIME(Src, kWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOn, kWatchTime);
   EXPECT_WATCH_TIME(DisplayPictureInPicture, kWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTime);
   EXPECT_WATCH_TIME_FINALIZED();
   wtr_.reset();
 }
@@ -2169,6 +2246,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundation) {
     EXPECT_WATCH_TIME(Ac, kWatchTimeEarly);
     EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kWatchTimeEarly);
 
     EXPECT_TRUE(IsMonitoring());
 
@@ -2197,6 +2276,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundationNoEme) {
     EXPECT_WATCH_TIME(Ac, kWatchTimeEarly);
     EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
     EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kWatchTimeEarly);
 
     EXPECT_TRUE(IsMonitoring());
 
@@ -2204,6 +2284,65 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMediaFoundationNoEme) {
   }
 }
 
+// Tests HDR related Keys given no EME.
+TEST_P(WatchTimeReporterTest, WatchTimeReporterHdrAll) {
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(5);
+
+  // Will include only audio and only video testing when the related keys are
+  // added.
+  if (has_audio_ && has_video_) {
+    EXPECT_CALL(*this, GetCurrentMediaTime())
+        .WillOnce(testing::Return(base::TimeDelta()))
+        .WillRepeatedly(testing::Return(kWatchTimeEarly));
+    Initialize(true, false, kSizeJustRight);
+
+    wtr_->OnHdrChanged(true);
+    wtr_->OnPlaying();
+
+    // Check the following keys are used.
+    EXPECT_WATCH_TIME(All, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Ac, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrAll, kWatchTimeEarly);
+
+    EXPECT_TRUE(IsMonitoring());
+
+    EXPECT_WATCH_TIME_FINALIZED();
+  }
+}
+
+// Tests HDR related Keys being used and given to recorder.
+TEST_P(WatchTimeReporterTest, WatchTimeReporterHdrEme) {
+  constexpr base::TimeDelta kWatchTimeEarly = base::Seconds(5);
+
+  // Will include only audio and only video testing when the related keys are
+  // added.
+  if (has_audio_ && has_video_) {
+    EXPECT_CALL(*this, GetCurrentMediaTime())
+        .WillOnce(testing::Return(base::TimeDelta()))
+        .WillRepeatedly(testing::Return(kWatchTimeEarly));
+    Initialize(true, true, kSizeJustRight);
+
+    wtr_->OnHdrChanged(true);
+    wtr_->OnPlaying();
+
+    // Check the following keys are used.
+    EXPECT_WATCH_TIME(All, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Mse, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Eme, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(Ac, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(DisplayInline, kWatchTimeEarly);
+    EXPECT_WATCH_TIME(NativeControlsOff, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrAll, kWatchTimeEarly);
+    EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(HdrEme, kWatchTimeEarly);
+
+    EXPECT_TRUE(IsMonitoring());
+
+    EXPECT_WATCH_TIME_FINALIZED();
+  }
+}
 class MutedWatchTimeReporterTest : public WatchTimeReporterTest {};
 
 TEST_P(MutedWatchTimeReporterTest, MutedHysteresis) {
@@ -2287,6 +2426,8 @@ TEST_P(MutedWatchTimeReporterTest, MuteUnmute) {
   EXPECT_WATCH_TIME(Mse, kExpectedUnmutedWatchTime);
   EXPECT_WATCH_TIME(NativeControlsOff, kExpectedUnmutedWatchTime);
   EXPECT_WATCH_TIME(DisplayInline, kExpectedUnmutedWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrAll, kExpectedUnmutedWatchTime);
+  EXPECT_WATCH_TIME_IF_AUDIO_VIDEO_HDR(SdrEme, kExpectedUnmutedWatchTime);
   CycleReportingTimer();
 
   EXPECT_WATCH_TIME_FINALIZED();

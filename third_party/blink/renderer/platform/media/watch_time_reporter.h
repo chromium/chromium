@@ -156,6 +156,9 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // of times during playback.
   void OnDurationChanged(base::TimeDelta duration);
 
+  // Updates whether HDR is enabled for the video.
+  void OnHdrChanged(bool is_hdr);
+
  private:
   friend class WatchTimeReporterTest;
 
@@ -206,6 +209,9 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   CreateDisplayTypeComponent();
   media::WatchTimeKey GetDisplayTypeKey(
       WebMediaPlayer::DisplayType display_type);
+  std::unique_ptr<WatchTimeComponent<bool>> CreateHdrComponent(bool is_eme);
+  media::WatchTimeKey GetHdrAllKey(bool is_hdr);
+  media::WatchTimeKey GetHdrEmeKey(bool is_hdr);
 
   // Initialized during construction.
   const media::mojom::blink::PlaybackPropertiesPtr properties_;
@@ -259,6 +265,8 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
       display_type_component_;
   std::unique_ptr<WatchTimeComponent<bool>> controls_component_;
+  std::unique_ptr<WatchTimeComponent<bool>> hdr_all_component_;
+  std::unique_ptr<WatchTimeComponent<bool>> hdr_eme_component_;
 
   // Special case reporter for handling background video watch time. Configured
   // as an audio only WatchTimeReporter with |is_background_| set to true.

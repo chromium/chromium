@@ -114,6 +114,12 @@ WatchTimeReporter::WatchTimeReporter(
     if (properties_->has_video || properties_->has_audio) {
       display_type_component_ = CreateDisplayTypeComponent();
     }
+    if (properties_->has_video && properties_->has_audio && !is_muted_) {
+      hdr_all_component_ = CreateHdrComponent(false);
+      if (properties_->is_eme) {
+        hdr_eme_component_ = CreateHdrComponent(true);
+      }
+    }
   }
 
   // If this is a sub-reporter we're done.
@@ -389,6 +395,25 @@ void WatchTimeReporter::OnDisplayTypeChanged(
   }
 }
 
+void WatchTimeReporter::OnHdrChanged(bool is_hdr) {
+  bool restart_timer_for_hysteresis = false;
+  if (hdr_all_component_ &&
+      HandlePropertyChange<bool>(is_hdr, reporting_timer_.IsRunning(),
+                                 hdr_all_component_.get()) ==
+          PropertyAction::kFinalizeRequired) {
+    restart_timer_for_hysteresis = true;
+  }
+  if (hdr_eme_component_ &&
+      HandlePropertyChange<bool>(is_hdr, reporting_timer_.IsRunning(),
+                                 hdr_eme_component_.get()) ==
+          PropertyAction::kFinalizeRequired) {
+    restart_timer_for_hysteresis = true;
+  }
+  if (restart_timer_for_hysteresis) {
+    RestartTimerForHysteresis();
+  }
+}
+
 bool WatchTimeReporter::ShouldReportWatchTime() const {
   // Report listen time or watch time for videos of sufficient size.
   return properties_->has_video
@@ -441,6 +466,12 @@ void WatchTimeReporter::MaybeStartReportingTimer(
     controls_component_->OnReportingStarted(start_timestamp);
   if (display_type_component_)
     display_type_component_->OnReportingStarted(start_timestamp);
+  if (hdr_all_component_) {
+    hdr_all_component_->OnReportingStarted(start_timestamp);
+  }
+  if (hdr_eme_component_) {
+    hdr_eme_component_->OnReportingStarted(start_timestamp);
+  }
 
   reporting_timer_.Start(FROM_HERE, reporting_interval_, this,
                          &WatchTimeReporter::UpdateWatchTime);
@@ -545,6 +576,12 @@ void WatchTimeReporter::RecordWatchTime() {
     display_type_component_->RecordWatchTime(current_timestamp);
   if (controls_component_)
     controls_component_->RecordWatchTime(current_timestamp);
+  if (hdr_all_component_) {
+    hdr_all_component_->RecordWatchTime(current_timestamp);
+  }
+  if (hdr_eme_component_) {
+    hdr_eme_component_->RecordWatchTime(current_timestamp);
+  }
 }
 
 void WatchTimeReporter::UpdateWatchTime() {
@@ -560,6 +597,12 @@ void WatchTimeReporter::UpdateWatchTime() {
   }
   if (controls_component_ && controls_component_->NeedsFinalize())
     controls_component_->Finalize(&keys_to_finalize);
+  if (hdr_all_component_ && hdr_all_component_->NeedsFinalize()) {
+    hdr_all_component_->Finalize(&keys_to_finalize);
+  }
+  if (hdr_eme_component_ && hdr_eme_component_->NeedsFinalize()) {
+    hdr_eme_component_->Finalize(&keys_to_finalize);
+  }
 
   // Then finalize the base component.
   if (!base_component_->NeedsFinalize()) {
@@ -735,5 +778,34 @@ media::WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(
 }
 
 #undef DISPLAY_TYPE_KEY
+
+#define HDR_KEY(is_eme, is_hdr)                              \
+  is_hdr ? (is_eme ? media::WatchTimeKey::kAudioVideoHdrEme  \
+                   : media::WatchTimeKey::kAudioVideoHdrAll) \
+         : (is_eme ? media::WatchTimeKey::kAudioVideoSdrEme  \
+                   : media::WatchTimeKey::kAudioVideoSdrAll)
+
+std::unique_ptr<WatchTimeComponent<bool>> WatchTimeReporter::CreateHdrComponent(
+    bool is_eme) {
+  Vector<media::WatchTimeKey> keys_to_finalize{HDR_KEY(is_eme, true),
+                                               HDR_KEY(is_eme, false)};
+
+  return std::make_unique<WatchTimeComponent<bool>>(
+      false, std::move(keys_to_finalize),
+      base::BindRepeating(is_eme ? &WatchTimeReporter::GetHdrEmeKey
+                                 : &WatchTimeReporter::GetHdrAllKey,
+                          base::Unretained(this)),
+      get_media_time_cb_, recorder_.get());
+}
+
+media::WatchTimeKey WatchTimeReporter::GetHdrAllKey(bool is_hdr) {
+  return HDR_KEY(false, is_hdr);
+}
+
+media::WatchTimeKey WatchTimeReporter::GetHdrEmeKey(bool is_hdr) {
+  return HDR_KEY(true, is_hdr);
+}
+
+#undef HDR_KEY
 
 }  // namespace blink

@@ -2480,6 +2480,9 @@ void WebMediaPlayerImpl::OnVideoConfigChange(
       pipeline_metadata_.video_decoder_config.codec() != config.codec();
   const bool codec_profile_change =
       pipeline_metadata_.video_decoder_config.profile() != config.profile();
+  const bool hdr_change =
+      pipeline_metadata_.video_decoder_config.color_space_info().IsHDR() !=
+      config.color_space_info().IsHDR();
 
   pipeline_metadata_.video_decoder_config = config;
 
@@ -2491,8 +2494,14 @@ void WebMediaPlayerImpl::OnVideoConfigChange(
         pipeline_metadata_.video_decoder_config.codec());
   }
 
-  if (codec_change || codec_profile_change)
+  if (hdr_change) {
+    watch_time_reporter_->OnHdrChanged(
+        pipeline_metadata_.video_decoder_config.color_space_info().IsHDR());
+  }
+
+  if (codec_change || codec_profile_change) {
     UpdateSecondaryProperties();
+  }
 
   if (video_decode_stats_reporter_ && codec_profile_change)
     CreateVideoDecodeStatsReporter();
@@ -3471,6 +3480,8 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
       frame_->GetTaskRunner(TaskType::kInternalMedia));
   watch_time_reporter_->OnVolumeChange(volume_);
   watch_time_reporter_->OnDurationChanged(GetPipelineMediaDuration());
+  watch_time_reporter_->OnHdrChanged(
+      pipeline_metadata_.video_decoder_config.color_space_info().IsHDR());
 
   if (delegate_->IsPageHidden()) {
     watch_time_reporter_->OnHidden();
