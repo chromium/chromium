@@ -228,12 +228,7 @@ public class NtpCustomizationUtilsUnitTest {
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_wrongImageType() {
         NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.DEFAULT);
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
-
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.IMAGE_FROM_DISK);
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
-
-        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.CHROME_THEME);
+        NtpCustomizationUtils.setCustomizedPrimaryColor(Color.RED);
         assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
     }
 
@@ -255,6 +250,16 @@ public class NtpCustomizationUtilsUnitTest {
 
         assertEquals(
                 Color.RED, (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_colorSetWithImage() {
+        NtpCustomizationUtils.setNtpBackgroundImageType(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        NtpCustomizationUtils.setCustomizedPrimaryColor(Color.BLUE);
+
+        assertEquals(
+                Color.BLUE, (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor());
     }
 
     @Test

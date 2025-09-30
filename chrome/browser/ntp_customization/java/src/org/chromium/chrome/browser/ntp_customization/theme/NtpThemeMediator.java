@@ -186,7 +186,7 @@ public class NtpThemeMediator {
 
         @NtpBackgroundImageType
         int currentBackgroundType = mNtpCustomizationConfigManager.getBackgroundImageType();
-        if (currentBackgroundType == NtpBackgroundImageType.CHROME_COLOR) {
+        if (currentBackgroundType != NtpBackgroundImageType.DEFAULT) {
             // We need to update the app's theme when a customized background color is removed.
             mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor= */ true);
         }

@@ -18,9 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.R;
@@ -41,7 +43,7 @@ public class UploadImagePreviewCoordinator {
      * @param bitmap The bitmap to be previewed.
      */
     public UploadImagePreviewCoordinator(
-            Activity activity, Bitmap bitmap, Runnable dismissBottomSheetRunnable) {
+            Activity activity, Bitmap bitmap, Callback<Boolean> onBottomSheetClickedCallback) {
         mPreviewPropertyModel = new PropertyModel(PREVIEW_KEYS);
         View contentView =
                 LayoutInflater.from(activity)
@@ -63,21 +65,13 @@ public class UploadImagePreviewCoordinator {
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_SAVE_CLICK_LISTENER,
                 v -> {
-                    Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
-                    Matrix landscapeMatrix = mCropImageView.getLandscapeMatrix();
-                    NtpCustomizationConfigManager.getInstance()
-                            .onBackgroundChanged(
-                                    bitmap,
-                                    new BackgroundImageInfo(portraitMatrix, landscapeMatrix));
-
-                    dismissBottomSheetRunnable.run();
-                    dialog.dismiss();
+                    onSaveButtonClicked(bitmap, onBottomSheetClickedCallback, dialog);
                 });
 
         mPreviewPropertyModel.set(
                 NtpThemeProperty.PREVIEW_CANCEL_CLICK_LISTENER,
                 v -> {
-                    dismissBottomSheetRunnable.run();
+                    onBottomSheetClickedCallback.onResult(false);
                     dialog.dismiss();
                 });
 
@@ -127,5 +121,26 @@ public class UploadImagePreviewCoordinator {
                         saveButton, model.get(PREVIEW_SET_WINDOW_INSETS_LISTENER));
             }
         }
+    }
+
+    /**
+     * Called when the save button is clicked.
+     *
+     * @param bitmap The selected bitmap.
+     * @param onBottomSheetClickedCallback The callback to be notified when a bottom sheet button is
+     *     clicked.
+     * @param dialog The current preview dialog.
+     */
+    @VisibleForTesting
+    void onSaveButtonClicked(
+            Bitmap bitmap, Callback<Boolean> onBottomSheetClickedCallback, ChromeDialog dialog) {
+        Matrix portraitMatrix = mCropImageView.getPortraitMatrix();
+        Matrix landscapeMatrix = mCropImageView.getLandscapeMatrix();
+        NtpCustomizationConfigManager.getInstance()
+                .onBackgroundChanged(
+                        bitmap, new BackgroundImageInfo(portraitMatrix, landscapeMatrix));
+
+        onBottomSheetClickedCallback.onResult(true);
+        dialog.dismiss();
     }
 }

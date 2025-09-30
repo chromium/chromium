@@ -13,6 +13,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -241,13 +242,13 @@ public class NtpThemeMediatorUnitTest {
         when(mNtpCustomizationConfigManager.getBackgroundImageType())
                 .thenReturn(NtpBackgroundImageType.IMAGE_FROM_DISK);
         mMediator.handleChromeDefaultSectionClick(mView);
-        verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
 
         // Verifies the case of background type from chrome-color to default.
         when(mNtpCustomizationConfigManager.getBackgroundImageType())
                 .thenReturn(NtpBackgroundImageType.CHROME_COLOR);
         mMediator.handleChromeDefaultSectionClick(mView);
-        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+        verify(mBottomSheetDelegate, times(2)).onNewColorSelected(eq(true));
     }
 
     private void createMediator(boolean shouldShowAlone) {

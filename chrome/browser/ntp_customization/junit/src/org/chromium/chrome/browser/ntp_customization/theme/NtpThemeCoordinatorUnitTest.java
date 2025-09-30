@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -75,5 +78,20 @@ public class NtpThemeCoordinatorUnitTest {
         mCoordinator.setNtpThemeBottomSheetViewForTesting(ntpThemeBottomSheetView);
         mCoordinator.destroy();
         verify(ntpThemeBottomSheetView).destroy();
+    }
+
+    @Test
+    public void testOnPreviewClosed() {
+        boolean isImageSelected = false;
+        mCoordinator.onPreviewClosed(isImageSelected);
+
+        verify(mBottomSheetDelegate, never()).onNewColorSelected(anyBoolean());
+        verify(mDismissBottomSheet).run();
+
+        isImageSelected = true;
+        mCoordinator.onPreviewClosed(isImageSelected);
+
+        verify(mBottomSheetDelegate).onNewColorSelected(eq(true));
+        verify(mDismissBottomSheet, times(2)).run();
     }
 }

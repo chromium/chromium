@@ -31,6 +31,8 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import com.google.android.material.color.DynamicColorsOptions;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -187,7 +189,7 @@ public class NtpCustomizationUtils {
     /** Returns the customized primary color if set, null otherwise. */
     public @Nullable static @ColorInt Integer getPrimaryColorFromCustomizedThemeColor() {
         if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
-                || (getNtpBackgroundImageType() != NtpBackgroundImageType.CHROME_COLOR)) {
+                || (getNtpBackgroundImageType() == NtpBackgroundImageType.DEFAULT)) {
             return null;
         }
 
@@ -196,6 +198,14 @@ public class NtpCustomizationUtils {
         if (color == NtpCustomizationConfigManager.COLOR_NOT_SET) return null;
 
         return color;
+    }
+
+    // Gets the content based primary color for a bitmap.
+    public @Nullable static @ColorInt Integer getContentBasedSeedColor(Bitmap bitmap) {
+        DynamicColorsOptions.Builder builder = new DynamicColorsOptions.Builder();
+        builder.setContentBasedSource(bitmap);
+        DynamicColorsOptions dynamicColorsOptions = builder.build();
+        return dynamicColorsOptions.getContentBasedSeedColor();
     }
 
     // Launch a new activity in the same task with the given uri as a CCT.

@@ -211,6 +211,12 @@ public class NtpCustomizationConfigManager {
 
         NtpCustomizationUtils.updateBackgroundImageMatrices(backgroundImageInfo);
         NtpCustomizationUtils.updateBackgroundImageFile(bitmap);
+
+        // Picks the primary color for the bitmap and saves it to the SharedPreference.
+        @ColorInt Integer primaryColor = NtpCustomizationUtils.getContentBasedSeedColor(bitmap);
+        if (primaryColor != null) {
+            NtpCustomizationUtils.setCustomizedPrimaryColor(primaryColor.intValue());
+        }
     }
 
     /**

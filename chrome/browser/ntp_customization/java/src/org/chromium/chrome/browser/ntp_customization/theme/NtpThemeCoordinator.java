@@ -14,6 +14,7 @@ import android.support.annotation.IntDef;
 import android.view.LayoutInflater;
 
 import androidx.activity.ComponentActivity;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -51,6 +52,7 @@ public class NtpThemeCoordinator {
     }
 
     private final Context mContext;
+    private final BottomSheetDelegate mBottomSheetDelegate;
     private final Runnable mDismissBottomSheetRunnable;
     private NtpThemeMediator mMediator;
     private NtpThemeBottomSheetView mNtpThemeBottomSheetView;
@@ -62,6 +64,7 @@ public class NtpThemeCoordinator {
             Profile profile,
             Runnable dismissBottomSheet) {
         mContext = context;
+        mBottomSheetDelegate = delegate;
         mDismissBottomSheetRunnable = dismissBottomSheet;
         mNtpThemeBottomSheetView =
                 (NtpThemeBottomSheetView)
@@ -114,7 +117,7 @@ public class NtpThemeCoordinator {
 
         mUploadPreviewCoordinator =
                 new UploadImagePreviewCoordinator(
-                        (Activity) mContext, bitmap, mDismissBottomSheetRunnable);
+                        (Activity) mContext, bitmap, this::onPreviewClosed);
     }
 
     public void destroy() {
@@ -123,6 +126,14 @@ public class NtpThemeCoordinator {
         if (mUploadPreviewCoordinator != null) {
             mUploadPreviewCoordinator.destroy();
         }
+    }
+
+    @VisibleForTesting
+    void onPreviewClosed(boolean isImageSelected) {
+        if (isImageSelected) {
+            mBottomSheetDelegate.onNewColorSelected(/* isDifferentColor */ true);
+        }
+        mDismissBottomSheetRunnable.run();
     }
 
     NtpThemeMediator getMediatorForTesting() {

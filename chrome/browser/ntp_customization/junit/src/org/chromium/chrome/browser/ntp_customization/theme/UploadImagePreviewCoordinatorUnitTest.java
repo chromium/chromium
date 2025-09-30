@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -27,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowDialog;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
@@ -41,7 +43,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Runnable mDismissRunnable;
+    @Mock private Callback<Boolean> mOnClickedCallback;
 
     private Dialog mDialog;
     private UploadImagePreviewCoordinator mUploadImagePreviewCoordinator;
@@ -55,7 +57,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         mUploadImagePreviewCoordinator =
-                new UploadImagePreviewCoordinator(activity, bitmap, mDismissRunnable);
+                new UploadImagePreviewCoordinator(activity, bitmap, mOnClickedCallback);
         mDialog = ShadowDialog.getLatestDialog();
         View contentView = mDialog.findViewById(android.R.id.content);
         mSaveButton = contentView.findViewById(R.id.save_button);
@@ -101,8 +103,8 @@ public class UploadImagePreviewCoordinatorUnitTest {
                 "The landscape matrix should have been saved.",
                 NtpCustomizationUtils.readNtpBackgroundImageMatrices().landscapeMatrix);
 
-        // Verify the dismiss callback was invoked.
-        verify(mDismissRunnable).run();
+        // Verify the on clicked callback was invoked.
+        verify(mOnClickedCallback).onResult(eq(true));
 
         // Verify the dialog was dismissed.
         assertFalse("Dialog should be dismissed after clicking save.", mDialog.isShowing());
@@ -112,8 +114,8 @@ public class UploadImagePreviewCoordinatorUnitTest {
     public void testClickCancelButton() {
         mCancelButton.performClick();
 
-        // Verify the dismiss callback was invoked.
-        verify(mDismissRunnable).run();
+        // Verify the on clicked callback was invoked.
+        verify(mOnClickedCallback).onResult(eq(false));
         assertFalse(
                 "The background image file should not have been saved.",
                 NtpCustomizationUtils.getBackgroundImageFile().exists());
