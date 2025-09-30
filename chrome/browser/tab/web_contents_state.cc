@@ -45,27 +45,6 @@ using content::BrowserContext;
 using content::NavigationController;
 using content::WebContents;
 
-WebContentsStateByteBuffer::WebContentsStateByteBuffer(
-    base::android::ScopedJavaLocalRef<jobject> web_contents_byte_buffer_result,
-    int saved_state_version)
-    : state_version(saved_state_version) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  java_buffer.Reset(web_contents_byte_buffer_result);
-  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer);
-}
-
-WebContentsStateByteBuffer::WebContentsStateByteBuffer(
-    base::raw_span<const uint8_t> raw_data,
-    int saved_state_version)
-    : backing_buffer(raw_data), state_version(saved_state_version) {}
-
-WebContentsStateByteBuffer::~WebContentsStateByteBuffer() = default;
-
-WebContentsStateByteBuffer& WebContentsStateByteBuffer::operator=(
-    WebContentsStateByteBuffer&& other) noexcept = default;
-WebContentsStateByteBuffer::WebContentsStateByteBuffer(
-    WebContentsStateByteBuffer&& other) noexcept = default;
-
 namespace {
 
 ScopedJavaLocalRef<jobject> CreateByteBufferDirect(JNIEnv* env, int size) {
@@ -133,6 +112,7 @@ ScopedJavaLocalRef<jobject> WriteSerializedNavigationsAsByteBuffer(
 std::vector<sessions::SerializedNavigationEntry> SerializeNavigations(
     const std::vector<content::NavigationEntry*>& navigations) {
   std::vector<sessions::SerializedNavigationEntry> serialized;
+  serialized.reserve(navigations.size());
   for (size_t i = 0; i < navigations.size(); ++i) {
     serialized.push_back(
         sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
@@ -187,6 +167,41 @@ std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
 
 }  // namespace
 
+WebContentsStateByteBuffer::WebContentsStateByteBuffer(
+    base::android::ScopedJavaLocalRef<jobject> web_contents_byte_buffer_result,
+    int saved_state_version)
+    : state_version(saved_state_version) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  java_buffer.Reset(web_contents_byte_buffer_result);
+  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer);
+}
+
+WebContentsStateByteBuffer::WebContentsStateByteBuffer(
+    base::raw_span<const uint8_t> raw_data,
+    int saved_state_version)
+    : backing_buffer(raw_data), state_version(saved_state_version) {}
+
+WebContentsStateByteBuffer::~WebContentsStateByteBuffer() = default;
+
+WebContentsStateByteBuffer& WebContentsStateByteBuffer::operator=(
+    WebContentsStateByteBuffer&& other) noexcept = default;
+WebContentsStateByteBuffer::WebContentsStateByteBuffer(
+    WebContentsStateByteBuffer&& other) noexcept = default;
+
+WebContentsStateUnpacked::WebContentsStateUnpacked(
+    bool is_off_the_record,
+    int current_entry_index,
+    std::vector<sessions::SerializedNavigationEntry> navigations)
+    : is_off_the_record_(is_off_the_record),
+      current_entry_index_(current_entry_index),
+      navigations_(std::move(navigations)) {}
+WebContentsStateUnpacked::~WebContentsStateUnpacked() = default;
+
+ScopedJavaLocalRef<jobject> WebContentsStateUnpacked::Pack(JNIEnv* env) const {
+  return WriteSerializedNavigationsAsByteBuffer(
+      env, is_off_the_record_, navigations_, current_entry_index_);
+}
+
 ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
     JNIEnv* env,
     content::WebContents* web_contents) {
@@ -213,6 +228,23 @@ ScopedJavaLocalRef<jobject> WebContentsState::GetContentsStateAsByteBuffer(
       controller.GetLastCommittedEntryIndex());
 }
 
+std::unique_ptr<WebContentsStateUnpacked> WebContentsState::Unpack(
+    base::span<const uint8_t> buffer,
+    int saved_state_version) {
+  bool is_off_the_record;
+  int current_entry_index;
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  bool success = WebContentsState::ExtractNavigationEntries(
+      buffer, saved_state_version, &is_off_the_record, &current_entry_index,
+      &navigations);
+  if (!success) {
+    return nullptr;
+  }
+
+  return std::make_unique<WebContentsStateUnpacked>(
+      is_off_the_record, current_entry_index, std::move(navigations));
+}
+
 ScopedJavaLocalRef<jobject>
 WebContentsState::DeleteNavigationEntriesFromByteBuffer(
     JNIEnv* env,
@@ -230,6 +262,10 @@ WebContentsState::DeleteNavigationEntriesFromByteBuffer(
   }
 
   std::vector<sessions::SerializedNavigationEntry> new_navigations;
+  // This reservation assumes that the number of deleted navigations is low
+  // compared to the number of navigations. This may not always be true, but
+  // it should never use more memory than the input buffer.
+  new_navigations.reserve(navigations.size());
   int deleted_navigations = 0;
   for (auto& navigation : navigations) {
     if (current_entry_index != navigation.index() &&
@@ -381,6 +417,7 @@ bool WebContentsState::ExtractNavigationEntries(
   }
 
   // `saved_state_version` == 2 and greater.
+  navigations->reserve(entry_count);
   for (int i = 0; i < entry_count; ++i) {
     // Read each SerializedNavigationEntry as a separate pickle to avoid
     // optional reads of one tab bleeding into the next tab's data.
@@ -482,6 +519,9 @@ ScopedJavaLocalRef<jobject> WebContentsState::AppendPendingNavigation(
   }
 
   std::vector<sessions::SerializedNavigationEntry> new_navigations;
+  // Reserve space for up to the current entry index (which is 0 indexed so a +1
+  // is needed) + an additional entry for the pending navigation.
+  new_navigations.reserve(current_entry_index + 2);
   for (int i = 0; i <= current_entry_index; i++) {
     new_navigations.push_back(std::move(navigations[i]));
   }
