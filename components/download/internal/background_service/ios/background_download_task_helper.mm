@@ -272,13 +272,11 @@ void CreateNSURLSession(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
   std::string identifier =
       base::StringPrintf("%s-%d", download::kBackgroundDownloadIdentifierPrefix,
                          base::RandInt(0, kIdentifierSuffix));
+  // TODO(crbug.com/40190949): Using a foreground rather than background session
+  // is a temporary fix to circumvent issues with background downloads reported
+  // as crashes.
   NSURLSessionConfiguration* configuration =
-      base::FeatureList::IsEnabled(
-          download::kDownloadServiceForegroundSessionIOSFeature)
-          ? [NSURLSessionConfiguration defaultSessionConfiguration]
-          : [NSURLSessionConfiguration
-                backgroundSessionConfigurationWithIdentifier:
-                    base::SysUTF8ToNSString(identifier)];
+      [NSURLSessionConfiguration defaultSessionConfiguration];
   configuration.sessionSendsLaunchEvents = YES;
   // TODO(qinmin): Check if we need 2 sessions here, since discretionary
   // value may be different.

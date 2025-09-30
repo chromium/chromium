@@ -3395,11 +3395,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "enable-download-service-foreground-session",
-    "owners": [ "rajendrant@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "enable-doze-mode-power-scheduler",
     "owners": ["yichenz@chromium.org", "cros-sw-perf@google.com"],
     "expiry_milestone": 145
