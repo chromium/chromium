@@ -14,9 +14,14 @@ class AndroidAutofillProviderTestApi {
   explicit AndroidAutofillProviderTestApi(AndroidAutofillProvider* provider)
       : provider_(*provider) {}
 
-  const FormDataAndroid* form() && { return provider_->form_.get(); }
+  const FormDataAndroid* form() && {
+    return provider_->session_state_ ? provider_->session_state_->form.get()
+                                     : nullptr;
+  }
   const FieldGlobalId last_focused_field_id() && {
-    return provider_->current_field_.id;
+    return provider_->session_state_
+               ? provider_->session_state_->current_field.id
+               : FieldGlobalId{};
   }
 
   TouchToFillKeyboardSuppressor& keyboard_suppressor() {
