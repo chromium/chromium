@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "base/compiler_specific.h"
@@ -71,7 +72,7 @@ class AttributeInstance final {
   // instance, formatted according to the given `app_locale`.
   //
   // For more control over the return value, see GetInfo().
-  std::u16string GetCompleteInfo(const std::string& app_locale) const {
+  std::u16string GetCompleteInfo(std::string_view app_locale) const {
     return GetInfo(type_.field_type(), app_locale, std::nullopt);
   }
 
@@ -94,7 +95,7 @@ class AttributeInstance final {
   // grammar of format strings.
   std::u16string GetInfo(
       FieldType field_type,
-      const std::string& app_locale,
+      std::string_view app_locale,
       base::optional_ref<const AutofillFormatString> format_string) const;
 
   // Same as `GetInfo` but returns the value as stored with no formatting
@@ -126,7 +127,7 @@ class AttributeInstance final {
   // See AutofillField::format_string() for the grammar of format strings.
   void SetInfo(FieldType field_type,
                const std::u16string& value,
-               const std::string& app_locale,
+               std::string_view app_locale,
                base::optional_ref<const AutofillFormatString> format_string,
                VerificationStatus status);
 

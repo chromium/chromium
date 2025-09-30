@@ -125,7 +125,7 @@ AttributeInstance::~AttributeInstance() = default;
 
 std::u16string AttributeInstance::GetInfo(
     FieldType field_type,
-    const std::string& app_locale,
+    std::string_view app_locale,
     base::optional_ref<const AutofillFormatString> format_string) const {
   field_type = GetNormalizedFieldType(field_type);
   return std::visit(
@@ -187,7 +187,7 @@ VerificationStatus AttributeInstance::GetVerificationStatus(
 void AttributeInstance::SetInfo(
     FieldType field_type,
     const std::u16string& value,
-    const std::string& app_locale,
+    std::string_view app_locale,
     base::optional_ref<const AutofillFormatString> format_string,
     VerificationStatus status) {
   field_type = GetNormalizedFieldType(field_type);
