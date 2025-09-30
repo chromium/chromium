@@ -1,7 +1,18 @@
 # Gerrit ReAuth
 
-*** promo
-Googlers: See [go/gerrit-reauth](http://go/gerrit-reauth) for more information.
+*** note
+**Googlers:**
+
+If you use your @google.com account, or a @chromium.org account linked to your
+@google.com account: You already ReAuth during your daily `gcert`, no further
+action is required. Feel free to stop reading now.
+
+Otherwise, follow this guide to ReAuth locally or remotely.
+
+If you aren't sure if your account is linked, follow
+[the steps here](http://go/chromium-account-support#how-can-i-check-if-my-gerrit-accounts-are-linked).
+
+For more information, see [go/gerrit-reauth](http://go/gerrit-reauth).
 ***
 
 [TOC]
