@@ -67,7 +67,9 @@ class CORE_EXPORT MasonryRunningPositions {
 
   // Update all the running positions for the tracks within the given `span` to
   // have the inputted `new_running_position`. `new_running_position` is the
-  // new running position of all the tracks the item is placed across.
+  // new running position of all the tracks the item is placed across. The new
+  // running position accounts for the gap between items if the user has
+  // specified one.
   //
   // `max_running_position_for_span` should only be used in the case of
   // dense-packing, and it is the current maximum running position of the tracks

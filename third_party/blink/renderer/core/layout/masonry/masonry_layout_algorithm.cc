@@ -366,7 +366,10 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
     if (is_dense_packing) {
       LayoutUnit updated_item_start_offset =
           running_positions.GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
-              start_offset, masonry_item, fragment_size, track_collection);
+              start_offset, masonry_item,
+              /*item_stacking_axis_contribution=*/fragment_size +
+                  stacking_axis_gap,
+              track_collection);
 
       // If we have a valid offset for the item in the stacking axis, it means
       // we found an earlier track opening for the item.

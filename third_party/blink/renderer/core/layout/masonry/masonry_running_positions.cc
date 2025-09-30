@@ -291,12 +291,18 @@ void MasonryRunningPositions::CalculateAndCacheTrackSizes(
   // The number of lines should be one more than the number of tracks.
   CHECK_EQ(line_positions.size(), track_collection_sizes_.size() + 1);
 
-  // TODO(celestepan): Account for gutter size when calculating track sizes.
-  //
+  const auto track_collection_size = track_collection_sizes_.size();
+  const auto track_collection_gutter_size = track_collection.GutterSize();
+
   // `line_positions` contains the offset of each line; the space between the
   // adjacent lines is equivalent to the size of the tracks.
-  for (wtf_size_t i = 0; i < track_collection_sizes_.size(); ++i) {
-    track_collection_sizes_[i] = line_positions[i + 1] - line_positions[i];
+  for (wtf_size_t i = 0; i < track_collection_size; ++i) {
+    LayoutUnit track_size = line_positions[i + 1] - line_positions[i];
+    // There is no gutter after the last track.
+    if (i < track_collection_size - 1) {
+      track_size -= track_collection_gutter_size;
+    }
+    track_collection_sizes_[i] = track_size;
   }
 }
 
