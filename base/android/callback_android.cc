@@ -36,8 +36,7 @@ void RunLongCallbackAndroid(const JavaRef<jobject>& callback, int64_t arg) {
 }
 
 void RunTimeCallbackAndroid(const JavaRef<jobject>& callback, base::Time time) {
-  Java_Helper_onTimeResultFromNative(AttachCurrentThread(), callback,
-                                     time.InMillisecondsSinceUnixEpoch());
+  RunLongCallbackAndroid(callback, time.InMillisecondsSinceUnixEpoch());
 }
 
 void RunStringCallbackAndroid(const JavaRef<jobject>& callback,
