@@ -13,15 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
 class Browser;
 class Profile;
-
-namespace ash {
-class BrowserDelegate;
-}
 
 namespace ash::boca {
 
@@ -29,7 +26,7 @@ namespace ash::boca {
 class ASH_EXPORT LockedQuizSessionManager : public KeyedService {
  public:
   using CreateWindowCompletionCallback =
-      base::OnceCallback<void(ash::BrowserDelegate*)>;
+      base::OnceCallback<void(const SessionID&)>;
 
   explicit LockedQuizSessionManager(content::BrowserContext* context);
   LockedQuizSessionManager(const LockedQuizSessionManager&) = delete;

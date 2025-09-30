@@ -37,14 +37,9 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserWindowInterface;
 class GURL;
+class SessionID;
 class SkBitmap;
 class TabStripModel;
-
-#if BUILDFLAG(IS_CHROMEOS)
-namespace ash {
-class BrowserDelegate;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace base {
 class TaskRunner;
@@ -204,7 +199,7 @@ class WindowsCreateFunction : public ExtensionFunction {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS)
-  void OnWindowCreatedAsynchronously(ash::BrowserDelegate* browser_delegate);
+  void OnWindowCreatedAsynchronously(const SessionID& session_id);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 class WindowsUpdateFunction : public ExtensionFunction {

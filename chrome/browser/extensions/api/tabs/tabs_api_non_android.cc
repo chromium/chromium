@@ -131,7 +131,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ash/boca/on_task/locked_quiz_session_manager_factory.h"
-#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -660,14 +659,16 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
 
 #if BUILDFLAG(IS_CHROMEOS)
 void WindowsCreateFunction::OnWindowCreatedAsynchronously(
-    ash::BrowserDelegate* browser_delegate) {
-  if (!browser_delegate) {
+    const SessionID& session_id) {
+  BrowserWindowInterface* const browser =
+      BrowserWindowInterface::FromSessionID(session_id);
+  if (!browser) {
     RespondWithError(ExtensionTabUtil::kBrowserWindowNotAllowed);
     return;
   }
   Respond(WithArguments(ExtensionTabUtil::CreateWindowValueForExtension(
-      browser_delegate->GetBrowser(), extension(),
-      WindowController::kPopulateTabs, source_context_type())));
+      *browser, extension(), WindowController::kPopulateTabs,
+      source_context_type())));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
