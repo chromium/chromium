@@ -48,7 +48,8 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 public class ContextMenuHeaderViewTest {
     private static final String SHORT_TITLE_STRING = "Some Very Cool Title";
     private static final String LONG_TITLE_STRING =
-            "Some Very Cool Title Which Will Definitely Need To Be Ellipsized";
+            "Some Very Cool Title Which Will Definitely Need To Be Ellipsized"
+                + " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
     private static final String SHORT_URL_STRING = "www.website.com";
     private static final String LONG_URL_STRING =
             "www.website.com/ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz123456789";
