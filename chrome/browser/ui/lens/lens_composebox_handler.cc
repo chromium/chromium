@@ -78,6 +78,11 @@ void LensComposeboxHandler::SetDeepSearchMode(bool enabled) {
   // in Lens.
 }
 
+void LensComposeboxHandler::SetCreateImageMode(bool enabled) {
+  // Ignore, intentionally unimplemented for Lens. Create image not implemented
+  // in Lens.
+}
+
 void LensComposeboxHandler::HandleLensButtonClick() {
   lens_composebox_controller_->ShowLensSelectionOverlay();
 }

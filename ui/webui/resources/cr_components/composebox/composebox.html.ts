@@ -59,7 +59,10 @@ export function getHtml(this: ComposeboxElement) {
           @refresh-tab-suggestions="${this.refreshTabSuggestions_}"
           @on-file-validation-error="${this.onFileValidationError_}"
           @set-deep-search-mode="${this.setDeepSearchMode_}"
-          ?show-dropdown="${this.showDropdown_}">
+          @set-create-image-mode="${this.setCreateImageMode_}"
+          ?show-dropdown="${this.showDropdown_}"
+          ?inputs-disabled="${this.inputsDisabled_}"
+          ?show-context-menu-description="${this.showContextMenuDescription_}">
         <ntp-composebox-dropdown
             id="matches"
             part="dropdown"
