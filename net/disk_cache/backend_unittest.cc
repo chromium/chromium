@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -4306,13 +4307,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
             simple_cache_impl_->index()->init_method());
 }
 
-// TODO(crbug.com/430656242): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SimpleCacheNegMaxSize DISABLED_SimpleCacheNegMaxSize
-#else
-#define MAYBE_SimpleCacheNegMaxSize SimpleCacheNegMaxSize
-#endif
-TEST_F(DiskCacheBackendTest, MAYBE_SimpleCacheNegMaxSize) {
+TEST_F(DiskCacheBackendTest, SimpleCacheNegMaxSize) {
   SetCacheType(net::GENERATED_BYTE_CODE_CACHE);
 
   SetMaxSize(-1);
@@ -4345,6 +4340,9 @@ TEST_F(DiskCacheBackendTest, MAYBE_SimpleCacheNegMaxSize) {
         field_trial_params);
 
     InitCache();
+
+    // Wait for tasks on which the init depend to have executed.
+    base::ThreadPoolInstance::Get()->FlushForTesting();
 
     uint64_t max_size_scaled = simple_cache_impl_->index()->max_size();
     uint64_t max_file_size_scaled = simple_cache_impl_->MaxFileSize();
