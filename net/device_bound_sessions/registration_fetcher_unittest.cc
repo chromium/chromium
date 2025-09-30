@@ -147,9 +147,9 @@ class TestRegistrationCallback {
   base::OnceClosure closure_;
 };
 
-class RegistrationTest : public TestWithTaskEnvironment {
+class RegistrationTestBase : public TestWithTaskEnvironment {
  protected:
-  RegistrationTest()
+  RegistrationTestBase()
       : server_(test_server::EmbeddedTestServer::TYPE_HTTPS),
         unexportable_key_service_(task_manager_),
         host_resolver_(
@@ -241,7 +241,21 @@ class RegistrationTest : public TestWithTaskEnvironment {
   scoped_refptr<net::RuleBasedHostResolverProc> host_resolver_;
 };
 
-class RegistrationTestWithOriginTrialFeedback : public RegistrationTest {
+class RegistrationTest : public RegistrationTestBase,
+                         public testing::WithParamInterface<bool> {
+ protected:
+  RegistrationTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kDeviceBoundSessions,
+        {{features::kDeviceBoundSessionsOriginTrialFeedback.name,
+          GetParam() ? "true" : "false"}});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+INSTANTIATE_TEST_SUITE_P(All, RegistrationTest, testing::Bool());
+
+class RegistrationTestWithOriginTrialFeedback : public RegistrationTestBase {
  protected:
   RegistrationTestWithOriginTrialFeedback() {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -252,7 +266,7 @@ class RegistrationTestWithOriginTrialFeedback : public RegistrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class RegistrationTestWithoutOriginTrialFeedback : public RegistrationTest {
+class RegistrationTestWithoutOriginTrialFeedback : public RegistrationTestBase {
  protected:
   RegistrationTestWithoutOriginTrialFeedback() {
     feature_list_.InitAndEnableFeatureWithParameters(
@@ -470,7 +484,7 @@ std::optional<std::string> GetRequestChallenge(
   return *challenge;
 }
 
-TEST_F(RegistrationTest, BasicSuccess) {
+TEST_P(RegistrationTest, BasicSuccess) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
@@ -513,7 +527,7 @@ TEST_F(RegistrationTest, BasicSuccess) {
       "Net.DeviceBoundSessions.Registration.Network.Result", HTTP_OK, 1);
 }
 
-TEST_F(RegistrationTest, NoScopeJson) {
+TEST_P(RegistrationTest, NoScopeJson) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -544,7 +558,7 @@ TEST_F(RegistrationTest, NoScopeJson) {
   EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kMissingScope);
 }
 
-TEST_F(RegistrationTest, NoSessionIdJson) {
+TEST_P(RegistrationTest, NoSessionIdJson) {
   constexpr char kTestingJson[] =
       R"({
   "credentials": [{
@@ -575,7 +589,7 @@ TEST_F(RegistrationTest, NoSessionIdJson) {
             SessionError::ErrorType::kInvalidSessionId);
 }
 
-TEST_F(RegistrationTest, SpecificationNotDictJson) {
+TEST_P(RegistrationTest, SpecificationNotDictJson) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -614,7 +628,7 @@ TEST_F(RegistrationTest, SpecificationNotDictJson) {
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kInvalidScopeRule);
 }
 
-TEST_F(RegistrationTest, MissingPathDefaults) {
+TEST_P(RegistrationTest, MissingPathDefaults) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -668,7 +682,7 @@ TEST_F(RegistrationTest, MissingPathDefaults) {
           EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
 }
 
-TEST_F(RegistrationTest, MissingDomainDefaults) {
+TEST_P(RegistrationTest, MissingDomainDefaults) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -722,7 +736,7 @@ TEST_F(RegistrationTest, MissingDomainDefaults) {
           EqualsInclusionRule(proto::RuleType::EXCLUDE, "a.test", "/refresh")));
 }
 
-TEST_F(RegistrationTest, MissingRefreshUrlDefault) {
+TEST_P(RegistrationTest, MissingRefreshUrlDefault) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -768,7 +782,7 @@ TEST_F(RegistrationTest, MissingRefreshUrlDefault) {
   EXPECT_EQ(out_session.session().refresh_url(), GetBaseURL());
 }
 
-TEST_F(RegistrationTest, OneSpecTypeInvalid) {
+TEST_P(RegistrationTest, OneSpecTypeInvalid) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -816,7 +830,7 @@ TEST_F(RegistrationTest, OneSpecTypeInvalid) {
             SessionError::ErrorType::kInvalidScopeRule);
 }
 
-TEST_F(RegistrationTest, InvalidTypeSpecList) {
+TEST_P(RegistrationTest, InvalidTypeSpecList) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -857,7 +871,7 @@ TEST_F(RegistrationTest, InvalidTypeSpecList) {
                                               "a.test", "/refresh")));
 }
 
-TEST_F(RegistrationTest, TypeIsNotCookie) {
+TEST_P(RegistrationTest, TypeIsNotCookie) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -893,7 +907,7 @@ TEST_F(RegistrationTest, TypeIsNotCookie) {
             SessionError::ErrorType::kInvalidCredentials);
 }
 
-TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
+TEST_P(RegistrationTest, TwoTypesCookie_NotCookie) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -936,7 +950,7 @@ TEST_F(RegistrationTest, TwoTypesCookie_NotCookie) {
             SessionError::ErrorType::kInvalidCredentials);
 }
 
-TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
+TEST_P(RegistrationTest, TwoTypesNotCookie_Cookie) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -979,7 +993,7 @@ TEST_F(RegistrationTest, TwoTypesNotCookie_Cookie) {
             SessionError::ErrorType::kInvalidCredentials);
 }
 
-TEST_F(RegistrationTest, CredEntryWithoutDict) {
+TEST_P(RegistrationTest, CredEntryWithoutDict) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -1016,7 +1030,7 @@ TEST_F(RegistrationTest, CredEntryWithoutDict) {
             SessionError::ErrorType::kInvalidCredentials);
 }
 
-TEST_F(RegistrationTest, CredEntryWithoutAttributes) {
+TEST_P(RegistrationTest, CredEntryWithoutAttributes) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -1056,7 +1070,7 @@ TEST_F(RegistrationTest, CredEntryWithoutAttributes) {
   ASSERT_TRUE(out_session.is_session());
 }
 
-TEST_F(RegistrationTest, CredEntryWithEmptyName) {
+TEST_P(RegistrationTest, CredEntryWithEmptyName) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -1092,7 +1106,7 @@ TEST_F(RegistrationTest, CredEntryWithEmptyName) {
             SessionError::ErrorType::kInvalidCredentials);
 }
 
-TEST_F(RegistrationTest, ReturnTextFile) {
+TEST_P(RegistrationTest, ReturnTextFile) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnTextResponse));
   ASSERT_TRUE(server_.Start());
@@ -1113,7 +1127,7 @@ TEST_F(RegistrationTest, ReturnTextFile) {
             SessionError::ErrorType::kInvalidConfigJson);
 }
 
-TEST_F(RegistrationTest, ReturnInvalidJson) {
+TEST_P(RegistrationTest, ReturnInvalidJson) {
   std::string invalid_json = "*{}";
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
@@ -1136,7 +1150,7 @@ TEST_F(RegistrationTest, ReturnInvalidJson) {
             SessionError::ErrorType::kInvalidConfigJson);
 }
 
-TEST_F(RegistrationTest, ReturnEmptyJson) {
+TEST_P(RegistrationTest, ReturnEmptyJson) {
   std::string empty_json = "{}";
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
@@ -1159,7 +1173,7 @@ TEST_F(RegistrationTest, ReturnEmptyJson) {
             SessionError::ErrorType::kInvalidSessionId);
 }
 
-TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
+TEST_P(RegistrationTest, NetworkErrorServerShutdown) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   ASSERT_TRUE(server_.Start());
@@ -1186,7 +1200,7 @@ TEST_F(RegistrationTest, NetworkErrorServerShutdown) {
       net::ERR_CONNECTION_REFUSED, 1);
 }
 
-TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
+TEST_P(RegistrationTest, NetworkErrorInvalidResponse) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(&ReturnInvalidResponse));
   ASSERT_TRUE(server_.Start());
@@ -1208,7 +1222,7 @@ TEST_F(RegistrationTest, NetworkErrorInvalidResponse) {
             SessionError::ErrorType::kNetError);
 }
 
-TEST_F(RegistrationTest, ServerError407) {
+TEST_P(RegistrationTest, ServerError407) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(
       &ReturnResponse, HTTP_PROXY_AUTHENTICATION_REQUIRED, kBasicValidJson));
@@ -1231,7 +1245,7 @@ TEST_F(RegistrationTest, ServerError407) {
             SessionError::ErrorType::kNetError);
 }
 
-TEST_F(RegistrationTest, ServerError400) {
+TEST_P(RegistrationTest, ServerError400) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_BAD_REQUEST, kBasicValidJson));
@@ -1254,7 +1268,7 @@ TEST_F(RegistrationTest, ServerError400) {
             SessionError::ErrorType::kPersistentHttpError);
 }
 
-TEST_F(RegistrationTest, ServerError500) {
+TEST_P(RegistrationTest, ServerError500) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(base::BindRepeating(
       &ReturnResponse, HTTP_INTERNAL_SERVER_ERROR, kBasicValidJson));
@@ -1386,7 +1400,7 @@ std::unique_ptr<test_server::HttpResponse> CheckRedirect(
 }
 
 // Should be allowed: https://a.test -> https://a.test/redirect.
-TEST_F(RegistrationTest, FollowHttpsToHttpsRedirect) {
+TEST_P(RegistrationTest, FollowHttpsToHttpsRedirect) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   bool followed = false;
   server_.RegisterRequestHandler(
@@ -1413,7 +1427,7 @@ TEST_F(RegistrationTest, FollowHttpsToHttpsRedirect) {
   EXPECT_TRUE(callback.outcome().is_session());
 }
 
-TEST_F(RegistrationTest, FailOnSslErrorExpired) {
+TEST_P(RegistrationTest, FailOnSslErrorExpired) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1477,7 +1491,7 @@ Return401ResponseWithInvalidChallenge(const test_server::HttpRequest& request) {
   return response;
 }
 
-TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
+TEST_P(RegistrationTest, BasicSuccessForExistingKey) {
   base::HistogramTester histogram_tester;
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
@@ -1518,7 +1532,7 @@ TEST_F(RegistrationTest, BasicSuccessForExistingKey) {
       "Net.DeviceBoundSessions.Refresh.Network.Result", HTTP_OK, 1);
 }
 
-TEST_F(RegistrationTest, FetchRegistrationWithCachedChallenge) {
+TEST_P(RegistrationTest, FetchRegistrationWithCachedChallenge) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponseForRefreshRequest));
@@ -1787,7 +1801,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   ASSERT_TRUE(out_session.is_session());
 }
 
-TEST_F(RegistrationTest, ContinueFalse) {
+TEST_P(RegistrationTest, ContinueFalse) {
   constexpr char kTestingJson[] =
       R"({
   "session_identifier": "session_id",
@@ -1815,7 +1829,7 @@ TEST_F(RegistrationTest, ContinueFalse) {
   EXPECT_EQ(error.type, SessionError::ErrorType::kServerRequestedTermination);
 }
 
-TEST_F(RegistrationTest, RetriesOnKeyFailure) {
+TEST_P(RegistrationTest, RetriesOnKeyFailure) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1858,7 +1872,7 @@ TEST_F(RegistrationTest, RetriesOnKeyFailure) {
   ASSERT_TRUE(out_session.is_session());
 }
 
-TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
+TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1898,7 +1912,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Refresh) {
   EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kSigningError);
 }
 
-TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
+TEST_P(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1938,7 +1952,7 @@ TEST_F(RegistrationTest, TerminateSessionOnRepeatedFailure_Registration) {
   EXPECT_EQ(out_session.error().type, SessionError::ErrorType::kSigningError);
 }
 
-TEST_F(RegistrationTest, NetLogRegistrationResultLogged) {
+TEST_P(RegistrationTest, NetLogRegistrationResultLogged) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -1963,7 +1977,7 @@ TEST_F(RegistrationTest, NetLogRegistrationResultLogged) {
             1u);
 }
 
-TEST_F(RegistrationTest, NetLogRefreshResultLogged) {
+TEST_P(RegistrationTest, NetLogRefreshResultLogged) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, kBasicValidJson));
@@ -2062,7 +2076,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback,
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kTooManyChallenges);
 }
 
-TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
+TEST_P(RegistrationTest, RefreshWithNewSessionIdFails) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
 
   server_.RegisterRequestHandler(
@@ -2091,7 +2105,7 @@ TEST_F(RegistrationTest, RefreshWithNewSessionIdFails) {
   EXPECT_EQ(session_error.type, SessionError::ErrorType::kMismatchedSessionId);
 }
 
-TEST_F(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
+TEST_P(RegistrationTest, RegistrationWithNonStringRefreshInitiatorsFails) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
 
   constexpr char kNonStringInitiator[] =
@@ -2229,7 +2243,7 @@ TEST_F(RegistrationTestWithOriginTrialFeedback, MissingIncludeSiteFails) {
             SessionError::ErrorType::kInvalidScopeIncludeSite);
 }
 
-TEST_F(RegistrationTest, ShutdownDuringRequest) {
+TEST_P(RegistrationTest, ShutdownDuringRequest) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   base::RunLoop run_loop;
   server_.RegisterRequestHandler(base::BindRepeating(
@@ -2289,7 +2303,7 @@ TEST_F(RegistrationTestWithoutOriginTrialFeedback,
   ASSERT_TRUE(out_session.is_session());
 }
 
-TEST_F(RegistrationTest, EmptyResponse) {
+TEST_P(RegistrationTest, EmptyResponse) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating(&ReturnResponse, HTTP_OK, ""));
@@ -2310,7 +2324,7 @@ TEST_F(RegistrationTest, EmptyResponse) {
   EXPECT_TRUE(out_session.is_no_session_config_change());
 }
 
-TEST_F(RegistrationTest, SetChallengeOnRegistration) {
+TEST_P(RegistrationTest, SetChallengeOnRegistration) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
       base::BindRepeating([](const test_server::HttpRequest& request)

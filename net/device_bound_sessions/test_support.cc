@@ -284,8 +284,10 @@ bool VerifyEs256Jwt(std::string_view jwt) {
   const std::string& payload64 = jwt_sections[1];
   const std::string& signature64 = jwt_sections[2];
 
-  std::string payload, signature;
+  std::string header, payload, signature;
   if (!base::Base64UrlDecode(
+          header64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &header) ||
+      !base::Base64UrlDecode(
           payload64, base::Base64UrlDecodePolicy::DISALLOW_PADDING, &payload) ||
       !base::Base64UrlDecode(signature64,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
@@ -293,14 +295,22 @@ bool VerifyEs256Jwt(std::string_view jwt) {
     return false;
   }
 
-  // Extract the JWK.
+  const std::optional<base::Value::Dict> header_json =
+      base::JSONReader::ReadDict(header, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!header_json) {
+    return false;
+  }
   const std::optional<base::Value::Dict> payload_json =
       base::JSONReader::ReadDict(payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!payload_json) {
     return false;
   }
 
-  const base::Value::Dict* jwk = payload_json->FindDict("key");
+  // Extract the JWK.
+  const base::Value::Dict* jwk =
+      net::features::kDeviceBoundSessionsOriginTrialFeedback.Get()
+          ? header_json->FindDict("jwk")
+          : payload_json->FindDict("key");
   if (!jwk) {
     return false;
   }

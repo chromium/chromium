@@ -31,8 +31,7 @@ extern const char kTestOriginTrialPublicKey[];
 EmbeddedTestServer::HandleRequestCallback GetTestRequestHandler(
     const GURL& base_url);
 
-// Verify the signature of a JWT using the ES256 JWK stored in the "key" claim
-// in its payload.
+// Verify the signature of a JWT using the ES256 JWK stored in it.
 bool VerifyEs256Jwt(std::string_view jwt);
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
