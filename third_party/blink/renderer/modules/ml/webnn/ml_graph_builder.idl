@@ -247,6 +247,11 @@ dictionary MLTriangularOptions : MLOperatorOptions {
     RaisesException
   ] MLOperand constant(MLTensor tensor);
 
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ] MLOperand constant(MLOperandDataType type, MLNumber value);
+
   [RaisesException] MLOperand argMin(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
   [RaisesException] MLOperand argMax(MLOperand input, [EnforceRange] unsigned long axis, optional MLArgMinMaxOptions options = {});
 
