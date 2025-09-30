@@ -6,22 +6,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/apple/foundation_util.h"
-#import "base/auto_reset.h"
+#import "base/check.h"
+#import "base/containers/contains.h"
 #import "base/debug/crash_logging.h"
-#import "base/files/file_path.h"
-#import "base/files/file_util.h"
-#import "base/functional/bind.h"
-#import "base/location.h"
-#import "base/path_service.h"
-#import "base/strings/sys_string_conversions.h"
-#import "base/time/time.h"
-#import "components/upload_list/crash_upload_list.h"
-#import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
-#import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_reporter_url_observer.h"
-#import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -30,15 +20,13 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#import "net/base/apple/url_conversions.h"
 
 // WebStateList Observer that some tabs stats to be sent to the crash server.
 @interface CrashReporterTabStateObserver
     : NSObject <CRWWebStateObserver, WebStateListObserving> {
  @private
-  // Map associating the tab WebStateID to an object describing the current
-  // state of the tab.
-  std::map<web::WebStateID, NSMutableDictionary*> _tabCurrentStateByTabId;
+  // Set of WebStateID for tabs displaying PDF documents.
+  std::set<web::WebStateID> _tabDisplayingPDFSet;
   // The WebStateObserverBridge used to register self as a WebStateObserver
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   // Bridges C++ WebStateListObserver methods to this
@@ -51,20 +39,9 @@
 }
 + (CrashReporterTabStateObserver*)uniqueInstance;
 // Removes the stats for the tab.
-- (void)removeTab:(web::WebState*)tab;
-// Removes the stats for the tab identified by tabId.
-- (void)removeTabId:(web::WebStateID)tabId;
+- (void)removeTab:(web::WebState*)webState;
 // Removes document related information from tabCurrentStateByTabId_.
 - (void)closingDocumentInTab:(web::WebStateID)tabId;
-// Sets a tab `tabId` specific information with key `key` and value `value` in
-// tabCurrentStateByTabId_.
-- (void)setTabInfo:(NSString*)key
-         withValue:(NSString*)value
-          forTabId:(web::WebStateID)tabId;
-// Retrieves the `key` information for tab `tabID`.
-- (id)tabInfo:(NSString*)key forTabId:(web::WebStateID)tabID;
-// Removes the `key` information for tab `tabId`
-- (void)removeTabInfo:(NSString*)key forTabId:(web::WebStateID)tabId;
 // Observes `webState` by this instance of the CrashReporterTabStateObserver.
 - (void)observeWebState:(web::WebState*)webState;
 // Stop Observing `webState` by this instance of the
@@ -77,11 +54,6 @@
 // CrashReporterTabStateObserver.
 - (void)stopObservingWebStateList:(WebStateList*)webStateList;
 @end
-
-namespace {
-// Mime type used for PDF documents.
-NSString* const kDocumentMimeType = @"application/pdf";
-}  // namespace
 
 @implementation CrashReporterTabStateObserver
 
@@ -100,55 +72,16 @@ NSString* const kDocumentMimeType = @"application/pdf";
 }
 
 - (void)closingDocumentInTab:(web::WebStateID)tabId {
-  NSString* mime = base::apple::ObjCCast<NSString>([self tabInfo:@"mime"
-                                                        forTabId:tabId]);
-  if ([kDocumentMimeType isEqualToString:mime]) {
-    crash_keys::SetCurrentTabIsPDF(false);
-  }
-  [self removeTabInfo:@"mime" forTabId:tabId];
-}
-
-- (void)setTabInfo:(NSString*)key
-         withValue:(NSString*)value
-          forTabId:(web::WebStateID)tabId {
-  auto iter = _tabCurrentStateByTabId.find(tabId);
-  if (iter == _tabCurrentStateByTabId.end()) {
-    iter =
-        _tabCurrentStateByTabId
-            .insert(std::make_pair(tabId, [[NSMutableDictionary alloc] init]))
-            .first;
-  }
-  NSMutableDictionary* tabValues = iter->second;
-  [tabValues setObject:value forKey:key];
-}
-
-- (id)tabInfo:(NSString*)key forTabId:(web::WebStateID)tabId {
-  auto iter = _tabCurrentStateByTabId.find(tabId);
-  if (iter == _tabCurrentStateByTabId.end()) {
-    return nil;
-  }
-
-  NSMutableDictionary* tabValues = iter->second;
-  return [tabValues objectForKey:key];
-}
-
-- (void)removeTabInfo:(NSString*)key forTabId:(web::WebStateID)tabId {
-  auto iter = _tabCurrentStateByTabId.find(tabId);
-  if (iter == _tabCurrentStateByTabId.end()) {
+  if (!base::Contains(_tabDisplayingPDFSet, tabId)) {
     return;
   }
 
-  NSMutableDictionary* tabValues = iter->second;
-  [tabValues removeObjectForKey:key];
+  crash_keys::SetCurrentTabIsPDF(false);
+  _tabDisplayingPDFSet.erase(tabId);
 }
 
-- (void)removeTab:(web::WebState*)tab {
-  [self removeTabId:tab->GetUniqueIdentifier()];
-}
-
-- (void)removeTabId:(web::WebStateID)tabId {
-  [self closingDocumentInTab:tabId];
-  _tabCurrentStateByTabId.erase(tabId);
+- (void)removeTab:(web::WebState*)webState {
+  [self closingDocumentInTab:webState->GetUniqueIdentifier()];
 }
 
 - (void)observeWebState:(web::WebState*)webState {
@@ -227,18 +160,22 @@ NSString* const kDocumentMimeType = @"application/pdf";
 
 - (void)webState:(web::WebState*)webState
     didLoadPageWithSuccess:(BOOL)loadSuccess {
-  if (!loadSuccess || webState->GetContentsMimeType() != "application/pdf") {
-    return;
-  }
-  web::WebStateID tabID = webState->GetUniqueIdentifier();
-  NSString* oldMime = base::apple::ObjCCast<NSString>([self tabInfo:@"mime"
-                                                           forTabId:tabID]);
-  if ([kDocumentMimeType isEqualToString:oldMime]) {
+  if (!loadSuccess) {
     return;
   }
 
-  [self setTabInfo:@"mime" withValue:kDocumentMimeType forTabId:tabID];
+  const std::string& mimeType = webState->GetContentsMimeType();
+  if (mimeType != kAdobePortableDocumentFormatMimeType) {
+    return;
+  }
+
+  const web::WebStateID tabId = webState->GetUniqueIdentifier();
+  if (base::Contains(_tabDisplayingPDFSet, tabId)) {
+    return;
+  }
+
   crash_keys::SetCurrentTabIsPDF(true);
+  _tabDisplayingPDFSet.insert(tabId);
 }
 
 @end
