@@ -51,7 +51,18 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       base::OnceCallback<void(const std::string&)> callback) override;
 
   // PaymentsAutofillClient:
+  void ConfirmAccountNameFixFlow(
+      base::OnceCallback<void(const std::u16string&)> callback) override;
+  void ConfirmExpirationDateFixFlow(
+      const CreditCard& card,
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+          callback) override;
+  bool HasCreditCardScanFeature() const override;
+  void ScanCreditCard(CreditCardScanCallback callback) override;
   bool LocalCardSaveIsSupported() override;
+  void ShowSaveCreditCardLocally(const CreditCard& card,
+                                 SaveCreditCardOptions options,
+                                 LocalSaveCardPromptCallback callback) override;
   void ShowSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
@@ -61,32 +72,110 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::optional<OnConfirmationClosedCallback>
           on_confirmation_closed_callback) override;
-  PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
-  void ShowUnmaskPrompt(
-      const CreditCard& card,
-      const CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<CardUnmaskDelegate> delegate) override;
-  void OnUnmaskVerificationResult(
-      payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
-  CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
-  void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
-  PaymentsDataManager& GetPaymentsDataManager() final;
-  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
-      override;
+  void HideSaveCardPrompt() override;
+  void ShowVirtualCardEnrollDialog(
+      const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback) override;
+  void VirtualCardEnrollCompleted(PaymentsRpcResult result) override;
+  void OnCardDataAvailable(
+      const FilledCardInformationBubbleOptions& options) override;
+  void ConfirmSaveIbanLocally(const Iban& iban,
+                              bool should_show_prompt,
+                              SaveIbanPromptCallback callback) override;
+  void ConfirmUploadIbanToCloud(const Iban& iban,
+                                LegalMessageLines legal_message_lines,
+                                bool should_show_prompt,
+                                SaveIbanPromptCallback callback) override;
+  void IbanUploadCompleted(bool iban_saved, bool hit_max_strikes) override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,
       base::OnceClosure cancel_callback) override;
   void CloseAutofillProgressDialog(
       bool show_confirmation_before_closing,
       base::OnceClosure no_interactive_authentication_callback) override;
-
-#if BUILDFLAG(IS_IOS)
+  void ShowCardUnmaskOtpInputDialog(
+      CreditCard::RecordType card_type,
+      const CardUnmaskChallengeOption& challenge_option,
+      base::WeakPtr<OtpUnmaskDelegate> delegate) override;
+  void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
+  void ShowUnmaskAuthenticatorSelectionDialog(
+      const std::vector<CardUnmaskChallengeOption>& challenge_options,
+      base::OnceCallback<void(const std::string&)>
+          confirm_unmask_challenge_option_callback,
+      base::OnceClosure cancel_unmasking_closure) override;
+  void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
+  PaymentsNetworkInterface* GetPaymentsNetworkInterface() override;
+  MultipleRequestPaymentsNetworkInterface*
+  GetMultipleRequestPaymentsNetworkInterface() override;
+  void ShowAutofillErrorDialog(AutofillErrorDialogContext context) override;
+  PaymentsWindowManager* GetPaymentsWindowManager() override;
+  void ShowUnmaskPrompt(
+      const CreditCard& card,
+      const CardUnmaskPromptOptions& card_unmask_prompt_options,
+      base::WeakPtr<CardUnmaskDelegate> delegate) override;
+  void OnUnmaskVerificationResult(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
   std::unique_ptr<AutofillProgressDialogController> ExtractProgressDialogModel()
       override;
   std::unique_ptr<CardUnmaskOtpInputDialogController>
   ExtractOtpInputDialogModel() override;
   CardUnmaskPromptController* GetCardUnmaskPromptModel() override;
-#endif
+  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
+  CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
+  CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
+  CreditCardRiskBasedAuthenticator* GetRiskBasedAuthenticator() override;
+  bool IsRiskBasedAuthEffectivelyAvailable() const override;
+  void ShowMandatoryReauthOptInPrompt(
+      base::OnceClosure accept_mandatory_reauth_callback,
+      base::OnceClosure cancel_mandatory_reauth_callback,
+      base::RepeatingClosure close_mandatory_reauth_callback) override;
+  void ShowMandatoryReauthOptInConfirmation() override;
+  IbanManager* GetIbanManager() override;
+  IbanAccessManager* GetIbanAccessManager() override;
+  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
+  void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
+  AutofillOfferManager* GetAutofillOfferManager() override;
+  void UpdateOfferNotification(
+      const AutofillOfferData& offer,
+      const OfferNotificationOptions& options) override;
+  void DismissOfferNotification() override;
+  bool ShowTouchToFillCreditCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const Suggestion> suggestions) override;
+  bool ShowTouchToFillIban(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::Iban> ibans_to_suggest) override;
+  bool ShowTouchToFillLoyaltyCard(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      std::vector<autofill::LoyaltyCard> loyalty_cards_to_suggest) override;
+  bool UpdateTouchToFillBnplPaymentMethod(
+      std::optional<uint64_t> extracted_amount,
+      bool is_amount_supported_by_any_issuer) override;
+  bool ShowTouchToFillProgress(
+      base::WeakPtr<TouchToFillDelegate> delegate) override;
+  bool ShowTouchToFillBnplIssuers(
+      base::WeakPtr<TouchToFillDelegate> delegate,
+      base::span<const autofill::BnplIssuer> bnpl_issurs_to_suggest) override;
+  bool ShowTouchToFillError(base::WeakPtr<TouchToFillDelegate> delegate,
+                            const AutofillErrorDialogContext& context) override;
+  void HideTouchToFillPaymentMethod() override;
+  PaymentsDataManager& GetPaymentsDataManager() final;
+  payments::MandatoryReauthManager* GetOrCreatePaymentsMandatoryReauthManager()
+      override;
+  payments::SaveAndFillManager* GetSaveAndFillManager() override;
+  void ShowCreditCardLocalSaveAndFillDialog(
+      CardSaveAndFillDialogCallback callback) override;
+  void ShowCreditCardUploadSaveAndFillDialog(
+      const LegalMessageLines& legal_message_lines,
+      CardSaveAndFillDialogCallback callback) override;
+  void ShowCreditCardSaveAndFillPendingDialog() override;
+  void HideCreditCardSaveAndFillDialog() override;
+  bool IsTabModalPopupDeprecated() const override;
+  BnplStrategy* GetBnplStrategy() override;
+  BnplUiDelegate* GetBnplUiDelegate() override;
+
+  // Begin IOSWebViewPaymentsAutofillClient-specific section.
 
  private:
   const raw_ref<autofill::WebViewAutofillClientIOS> client_;

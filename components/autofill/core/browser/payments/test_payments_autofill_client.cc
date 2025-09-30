@@ -55,28 +55,29 @@ void TestPaymentsAutofillClient::LoadRiskData(
   std::move(callback).Run("some risk data");
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void TestPaymentsAutofillClient::ConfirmSaveIbanLocally(
-    const Iban& iban,
-    bool should_show_prompt,
-    payments::PaymentsAutofillClient::SaveIbanPromptCallback callback) {
-  confirm_save_iban_locally_called_ = true;
-  offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+#if BUILDFLAG(IS_ANDROID)
+AutofillSaveCardBottomSheetBridge*
+TestPaymentsAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
+  return nullptr;
 }
+#endif
 
-void TestPaymentsAutofillClient::ConfirmUploadIbanToCloud(
-    const Iban& iban,
-    LegalMessageLines legal_message_lines,
-    bool should_show_prompt,
-    payments::PaymentsAutofillClient::SaveIbanPromptCallback callback) {
-  confirm_upload_iban_to_cloud_called_ = true;
-  legal_message_lines_ = std::move(legal_message_lines);
-  offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
-}
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+void TestPaymentsAutofillClient::ShowWebauthnOfferDialog(
+    WebauthnDialogCallback offer_dialog_callback) {}
+
+void TestPaymentsAutofillClient::ShowWebauthnVerifyPendingDialog(
+    WebauthnDialogCallback verify_pending_dialog_callback) {}
+
+void TestPaymentsAutofillClient::UpdateWebauthnOfferDialogWithError() {}
 
 bool TestPaymentsAutofillClient::CloseWebauthnDialog() {
   return true;
 }
+
+void TestPaymentsAutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
+}
+
 #else   // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 void TestPaymentsAutofillClient::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
@@ -95,19 +96,66 @@ void TestPaymentsAutofillClient::ConfirmExpirationDateFixFlow(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-PaymentsNetworkInterface*
-TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
-  return payments_network_interface_.get();
+bool TestPaymentsAutofillClient::HasCreditCardScanFeature() const {
+  return false;
 }
+
+void TestPaymentsAutofillClient::ScanCreditCard(
+    CreditCardScanCallback callback) {}
 
 bool TestPaymentsAutofillClient::LocalCardSaveIsSupported() {
   return true;
 }
 
-MockMultipleRequestPaymentsNetworkInterface*
-TestPaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
-  return multiple_request_payments_network_interface_.get();
+void TestPaymentsAutofillClient::ShowSaveCreditCardLocally(
+    const CreditCard& card,
+    SaveCreditCardOptions options,
+    LocalSaveCardPromptCallback callback) {}
+
+void TestPaymentsAutofillClient::ShowSaveCreditCardToCloud(
+    const CreditCard& card,
+    const LegalMessageLines& legal_message_lines,
+    SaveCreditCardOptions options,
+    UploadSaveCardPromptCallback callback) {}
+
+void TestPaymentsAutofillClient::CreditCardUploadCompleted(
+    PaymentsRpcResult result,
+    std::optional<OnConfirmationClosedCallback>
+        on_confirmation_closed_callback) {}
+
+void TestPaymentsAutofillClient::HideSaveCardPrompt() {}
+
+void TestPaymentsAutofillClient::ShowVirtualCardEnrollDialog(
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+    base::OnceClosure accept_virtual_card_callback,
+    base::OnceClosure decline_virtual_card_callback) {}
+
+void TestPaymentsAutofillClient::VirtualCardEnrollCompleted(
+    PaymentsRpcResult result) {}
+
+void TestPaymentsAutofillClient::OnCardDataAvailable(
+    const FilledCardInformationBubbleOptions& options) {}
+
+void TestPaymentsAutofillClient::ConfirmSaveIbanLocally(
+    const Iban& iban,
+    bool should_show_prompt,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback callback) {
+  confirm_save_iban_locally_called_ = true;
+  offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
 }
+
+void TestPaymentsAutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    LegalMessageLines legal_message_lines,
+    bool should_show_prompt,
+    payments::PaymentsAutofillClient::SaveIbanPromptCallback callback) {
+  confirm_upload_iban_to_cloud_called_ = true;
+  legal_message_lines_ = std::move(legal_message_lines);
+  offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+}
+
+void TestPaymentsAutofillClient::IbanUploadCompleted(bool iban_saved,
+                                                     bool hit_max_strikes) {}
 
 void TestPaymentsAutofillClient::ShowAutofillProgressDialog(
     AutofillProgressDialogType autofill_progress_dialog_type,
@@ -124,17 +172,41 @@ void TestPaymentsAutofillClient::CloseAutofillProgressDialog(
   }
 }
 
-void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
-    AutofillErrorDialogContext context) {
-  autofill_error_dialog_shown_ = true;
-  autofill_error_dialog_context_ = std::move(context);
-}
-
 void TestPaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
     CreditCard::RecordType card_type,
     const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   show_otp_input_dialog_ = true;
+}
+
+void TestPaymentsAutofillClient::OnUnmaskOtpVerificationResult(
+    OtpUnmaskResult unmask_result) {}
+
+void TestPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {
+  unmask_authenticator_selection_dialog_shown_ = true;
+}
+
+void TestPaymentsAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
+    bool server_success) {}
+
+PaymentsNetworkInterface*
+TestPaymentsAutofillClient::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
+}
+
+MockMultipleRequestPaymentsNetworkInterface*
+TestPaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
+  return multiple_request_payments_network_interface_.get();
+}
+
+void TestPaymentsAutofillClient::ShowAutofillErrorDialog(
+    AutofillErrorDialogContext context) {
+  autofill_error_dialog_shown_ = true;
+  autofill_error_dialog_context_ = std::move(context);
 }
 
 PaymentsWindowManager* TestPaymentsAutofillClient::GetPaymentsWindowManager() {
@@ -144,6 +216,31 @@ PaymentsWindowManager* TestPaymentsAutofillClient::GetPaymentsWindowManager() {
   }
   return payments_window_manager_.get();
 }
+
+void TestPaymentsAutofillClient::ShowUnmaskPrompt(
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate) {}
+
+void TestPaymentsAutofillClient::OnUnmaskVerificationResult(
+    PaymentsRpcResult result) {}
+
+#if BUILDFLAG(IS_IOS)
+std::unique_ptr<AutofillProgressDialogController>
+TestPaymentsAutofillClient::ExtractProgressDialogModel() {
+  return nullptr;
+}
+
+std::unique_ptr<CardUnmaskOtpInputDialogController>
+TestPaymentsAutofillClient::ExtractOtpInputDialogModel() {
+  return nullptr;
+}
+
+CardUnmaskPromptController*
+TestPaymentsAutofillClient::GetCardUnmaskPromptModel() {
+  return nullptr;
+}
+#endif
 
 VirtualCardEnrollmentManager*
 TestPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
@@ -190,11 +287,19 @@ TestPaymentsAutofillClient::GetRiskBasedAuthenticator() {
   return risk_based_authenticator_.get();
 }
 
+bool TestPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable() const {
+  return true;
+}
+
 void TestPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {
   mandatory_reauth_opt_in_prompt_was_shown_ = true;
+}
+
+void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
+  mandatory_reauth_opt_in_prompt_was_reshown_ = true;
 }
 
 MockIbanManager* TestPaymentsAutofillClient::GetIbanManager() {
@@ -214,26 +319,23 @@ MockIbanAccessManager* TestPaymentsAutofillClient::GetIbanAccessManager() {
   return mock_iban_access_manager_.get();
 }
 
-MockSaveAndFillManager* TestPaymentsAutofillClient::GetSaveAndFillManager() {
-  if (!mock_save_and_fill_manager_) {
-    mock_save_and_fill_manager_ =
-        std::make_unique<testing::NiceMock<MockSaveAndFillManager>>();
-  }
-  return mock_save_and_fill_manager_.get();
-}
-
-void TestPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
-  mandatory_reauth_opt_in_prompt_was_reshown_ = true;
-}
-
 MockMerchantPromoCodeManager*
 TestPaymentsAutofillClient::GetMerchantPromoCodeManager() {
   return &mock_merchant_promo_code_manager_;
 }
 
+void TestPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
+}
+
 AutofillOfferManager* TestPaymentsAutofillClient::GetAutofillOfferManager() {
   return autofill_offer_manager_.get();
 }
+
+void TestPaymentsAutofillClient::UpdateOfferNotification(
+    const AutofillOfferData& offer,
+    const OfferNotificationOptions& options) {}
+
+void TestPaymentsAutofillClient::DismissOfferNotification() {}
 
 bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
@@ -241,8 +343,45 @@ bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
   return false;
 }
 
-bool TestPaymentsAutofillClient::IsTabModalPopupDeprecated() const {
-  return is_tab_model_popup_;
+bool TestPaymentsAutofillClient::ShowTouchToFillIban(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const Iban> ibans_to_suggest) {
+  return false;
+}
+
+bool TestPaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
+bool TestPaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
+    std::optional<uint64_t> extracted_amount,
+    bool is_amount_supported_by_any_issuer) {
+  return false;
+}
+
+bool TestPaymentsAutofillClient::ShowTouchToFillProgress(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  return false;
+}
+
+bool TestPaymentsAutofillClient::ShowTouchToFillBnplIssuers(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const BnplIssuer> bnpl_issuers_to_suggest) {
+  return false;
+}
+
+bool TestPaymentsAutofillClient::ShowTouchToFillError(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    const AutofillErrorDialogContext& context) {
+  return false;
+}
+
+void TestPaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
+
+PaymentsDataManager& TestPaymentsAutofillClient::GetPaymentsDataManager() {
+  return client_->GetPersonalDataManager().payments_data_manager();
 }
 
 #if !BUILDFLAG(IS_IOS)
@@ -262,8 +401,44 @@ TestPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return mock_payments_mandatory_reauth_manager_.get();
 }
 
-PaymentsDataManager& TestPaymentsAutofillClient::GetPaymentsDataManager() {
-  return client_->GetPersonalDataManager().payments_data_manager();
+MockSaveAndFillManager* TestPaymentsAutofillClient::GetSaveAndFillManager() {
+  if (!mock_save_and_fill_manager_) {
+    mock_save_and_fill_manager_ =
+        std::make_unique<testing::NiceMock<MockSaveAndFillManager>>();
+  }
+  return mock_save_and_fill_manager_.get();
+}
+
+void TestPaymentsAutofillClient::ShowCreditCardLocalSaveAndFillDialog(
+    CardSaveAndFillDialogCallback callback) {}
+
+void TestPaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
+    const LegalMessageLines& legal_message_lines,
+    CardSaveAndFillDialogCallback callback) {}
+
+void TestPaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {}
+
+void TestPaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
+
+bool TestPaymentsAutofillClient::IsTabModalPopupDeprecated() const {
+  return is_tab_model_popup_;
+}
+
+BnplStrategy* TestPaymentsAutofillClient::GetBnplStrategy() {
+  if (!bnpl_strategy_) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    bnpl_strategy_ = std::make_unique<DesktopBnplStrategy>();
+#elif BUILDFLAG(IS_ANDROID)
+    bnpl_strategy_ = std::make_unique<AndroidBnplStrategy>();
+#else   // BUILDFLAG(IS_IOS)
+    bnpl_strategy_ = nullptr;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  }
+  return bnpl_strategy_.get();
+}
+
+BnplUiDelegate* TestPaymentsAutofillClient::GetBnplUiDelegate() {
+  return bnpl_ui_delegate_.get();
 }
 
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
@@ -272,28 +447,6 @@ bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasShown() {
 
 bool TestPaymentsAutofillClient::GetMandatoryReauthOptInPromptWasReshown() {
   return mandatory_reauth_opt_in_prompt_was_reshown_;
-}
-
-bool TestPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable() const {
-  return true;
-}
-
-void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
-    std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
-  virtual_card_enrollment_manager_ = std::move(vcem);
-}
-
-void TestPaymentsAutofillClient::set_otp_authenticator(
-    std::unique_ptr<CreditCardOtpAuthenticator> authenticator) {
-  otp_authenticator_ = std::move(authenticator);
-}
-
-void TestPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
-    const std::vector<CardUnmaskChallengeOption>& challenge_options,
-    base::OnceCallback<void(const std::string&)>
-        confirm_unmask_challenge_option_callback,
-    base::OnceClosure cancel_unmasking_closure) {
-  unmask_authenticator_selection_dialog_shown_ = true;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -317,27 +470,5 @@ void TestPaymentsAutofillClient::
           }));
 }
 #endif
-
-BnplStrategy* TestPaymentsAutofillClient::GetBnplStrategy() {
-  if (!bnpl_strategy_) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    bnpl_strategy_ = std::make_unique<DesktopBnplStrategy>();
-#elif BUILDFLAG(IS_ANDROID)
-    bnpl_strategy_ = std::make_unique<AndroidBnplStrategy>();
-#else   // BUILDFLAG(IS_IOS)
-    bnpl_strategy_ = nullptr;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  }
-  return bnpl_strategy_.get();
-}
-
-BnplUiDelegate* TestPaymentsAutofillClient::GetBnplUiDelegate() {
-  return bnpl_ui_delegate_.get();
-}
-
-void TestPaymentsAutofillClient::set_bnpl_ui_delegate(
-    std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate) {
-  bnpl_ui_delegate_ = std::move(bnpl_ui_delegate);
-}
 
 }  // namespace autofill::payments

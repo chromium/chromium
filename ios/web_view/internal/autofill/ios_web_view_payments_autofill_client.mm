@@ -47,9 +47,29 @@ void IOSWebViewPaymentsAutofillClient::LoadRiskData(
   [bridge_ loadRiskData:std::move(callback)];
 }
 
+void IOSWebViewPaymentsAutofillClient::ConfirmAccountNameFixFlow(
+    base::OnceCallback<void(const std::u16string&)> callback) {}
+
+void IOSWebViewPaymentsAutofillClient::ConfirmExpirationDateFixFlow(
+    const CreditCard& card,
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+        callback) {}
+
+bool IOSWebViewPaymentsAutofillClient::HasCreditCardScanFeature() const {
+  return false;
+}
+
+void IOSWebViewPaymentsAutofillClient::ScanCreditCard(
+    CreditCardScanCallback callback) {}
+
 bool IOSWebViewPaymentsAutofillClient::LocalCardSaveIsSupported() {
   return false;
 }
+
+void IOSWebViewPaymentsAutofillClient::ShowSaveCreditCardLocally(
+    const CreditCard& card,
+    SaveCreditCardOptions options,
+    LocalSaveCardPromptCallback callback) {}
 
 void IOSWebViewPaymentsAutofillClient::ShowSaveCreditCardToCloud(
     const CreditCard& card,
@@ -72,24 +92,33 @@ void IOSWebViewPaymentsAutofillClient::CreditCardUploadCompleted(
   [bridge_ handleCreditCardUploadCompleted:card_saved];
 }
 
-payments::PaymentsNetworkInterface*
-IOSWebViewPaymentsAutofillClient::GetPaymentsNetworkInterface() {
-  return payments_network_interface_.get();
-}
+void IOSWebViewPaymentsAutofillClient::HideSaveCardPrompt() {}
 
-void IOSWebViewPaymentsAutofillClient::ShowUnmaskPrompt(
-    const CreditCard& card,
-    const CardUnmaskPromptOptions& card_unmask_prompt_options,
-    base::WeakPtr<CardUnmaskDelegate> delegate) {
-  [bridge_ showUnmaskPromptForCard:card
-           cardUnmaskPromptOptions:card_unmask_prompt_options
-                          delegate:delegate];
-}
+void IOSWebViewPaymentsAutofillClient::ShowVirtualCardEnrollDialog(
+    const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
+    base::OnceClosure accept_virtual_card_callback,
+    base::OnceClosure decline_virtual_card_callback) {}
 
-void IOSWebViewPaymentsAutofillClient::OnUnmaskVerificationResult(
-    payments::PaymentsAutofillClient::PaymentsRpcResult result) {
-  [bridge_ didReceiveUnmaskVerificationResult:result];
-}
+void IOSWebViewPaymentsAutofillClient::VirtualCardEnrollCompleted(
+    PaymentsRpcResult result) {}
+
+void IOSWebViewPaymentsAutofillClient::OnCardDataAvailable(
+    const FilledCardInformationBubbleOptions& options) {}
+
+void IOSWebViewPaymentsAutofillClient::ConfirmSaveIbanLocally(
+    const Iban& iban,
+    bool should_show_prompt,
+    SaveIbanPromptCallback callback) {}
+
+void IOSWebViewPaymentsAutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    LegalMessageLines legal_message_lines,
+    bool should_show_prompt,
+    SaveIbanPromptCallback callback) {}
+
+void IOSWebViewPaymentsAutofillClient::IbanUploadCompleted(
+    bool iban_saved,
+    bool hit_max_strikes) {}
 
 void IOSWebViewPaymentsAutofillClient::ShowAutofillProgressDialog(
     autofill::AutofillProgressDialogType autofill_progress_dialog_type,
@@ -109,6 +138,75 @@ void IOSWebViewPaymentsAutofillClient::CloseAutofillProgressDialog(
                                        no_interactive_authentication_callback)];
 }
 
+void IOSWebViewPaymentsAutofillClient::ShowCardUnmaskOtpInputDialog(
+    CreditCard::RecordType card_type,
+    const CardUnmaskChallengeOption& challenge_option,
+    base::WeakPtr<OtpUnmaskDelegate> delegate) {}
+
+void IOSWebViewPaymentsAutofillClient::OnUnmaskOtpVerificationResult(
+    OtpUnmaskResult unmask_result) {}
+
+void IOSWebViewPaymentsAutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
+    const std::vector<CardUnmaskChallengeOption>& challenge_options,
+    base::OnceCallback<void(const std::string&)>
+        confirm_unmask_challenge_option_callback,
+    base::OnceClosure cancel_unmasking_closure) {}
+
+void IOSWebViewPaymentsAutofillClient::
+    DismissUnmaskAuthenticatorSelectionDialog(bool server_success) {}
+
+payments::PaymentsNetworkInterface*
+IOSWebViewPaymentsAutofillClient::GetPaymentsNetworkInterface() {
+  return payments_network_interface_.get();
+}
+
+MultipleRequestPaymentsNetworkInterface*
+IOSWebViewPaymentsAutofillClient::GetMultipleRequestPaymentsNetworkInterface() {
+  return nullptr;
+}
+
+void IOSWebViewPaymentsAutofillClient::ShowAutofillErrorDialog(
+    AutofillErrorDialogContext context) {}
+
+PaymentsWindowManager*
+IOSWebViewPaymentsAutofillClient::GetPaymentsWindowManager() {
+  return nullptr;
+}
+
+void IOSWebViewPaymentsAutofillClient::ShowUnmaskPrompt(
+    const CreditCard& card,
+    const CardUnmaskPromptOptions& card_unmask_prompt_options,
+    base::WeakPtr<CardUnmaskDelegate> delegate) {
+  [bridge_ showUnmaskPromptForCard:card
+           cardUnmaskPromptOptions:card_unmask_prompt_options
+                          delegate:delegate];
+}
+
+void IOSWebViewPaymentsAutofillClient::OnUnmaskVerificationResult(
+    payments::PaymentsAutofillClient::PaymentsRpcResult result) {
+  [bridge_ didReceiveUnmaskVerificationResult:result];
+}
+
+std::unique_ptr<AutofillProgressDialogController>
+IOSWebViewPaymentsAutofillClient::ExtractProgressDialogModel() {
+  return nullptr;
+}
+
+std::unique_ptr<CardUnmaskOtpInputDialogController>
+IOSWebViewPaymentsAutofillClient::ExtractOtpInputDialogModel() {
+  return nullptr;
+}
+
+CardUnmaskPromptController*
+IOSWebViewPaymentsAutofillClient::GetCardUnmaskPromptModel() {
+  return nullptr;
+}
+
+VirtualCardEnrollmentManager*
+IOSWebViewPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
+  return nullptr;
+}
+
 CreditCardCvcAuthenticator&
 IOSWebViewPaymentsAutofillClient::GetCvcAuthenticator() {
   if (!cvc_authenticator_) {
@@ -118,6 +216,41 @@ IOSWebViewPaymentsAutofillClient::GetCvcAuthenticator() {
   return *cvc_authenticator_;
 }
 
+CreditCardOtpAuthenticator*
+IOSWebViewPaymentsAutofillClient::GetOtpAuthenticator() {
+  return nullptr;
+}
+
+CreditCardRiskBasedAuthenticator*
+IOSWebViewPaymentsAutofillClient::GetRiskBasedAuthenticator() {
+  return nullptr;
+}
+
+bool IOSWebViewPaymentsAutofillClient::IsRiskBasedAuthEffectivelyAvailable()
+    const {
+  return false;
+}
+
+void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
+    base::OnceClosure accept_mandatory_reauth_callback,
+    base::OnceClosure cancel_mandatory_reauth_callback,
+    base::RepeatingClosure close_mandatory_reauth_callback) {}
+
+void IOSWebViewPaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {}
+
+IbanManager* IOSWebViewPaymentsAutofillClient::GetIbanManager() {
+  return nullptr;
+}
+
+IbanAccessManager* IOSWebViewPaymentsAutofillClient::GetIbanAccessManager() {
+  return nullptr;
+}
+
+MerchantPromoCodeManager*
+IOSWebViewPaymentsAutofillClient::GetMerchantPromoCodeManager() {
+  return nullptr;
+}
+
 void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
     const GURL& url) {
   web_state_->OpenURL(web::WebState::OpenURLParams(
@@ -125,6 +258,60 @@ void IOSWebViewPaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
       ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
       /*is_renderer_initiated=*/false));
 }
+
+AutofillOfferManager*
+IOSWebViewPaymentsAutofillClient::GetAutofillOfferManager() {
+  return nullptr;
+}
+
+void IOSWebViewPaymentsAutofillClient::UpdateOfferNotification(
+    const AutofillOfferData& offer,
+    const OfferNotificationOptions& options) {}
+
+void IOSWebViewPaymentsAutofillClient::DismissOfferNotification() {}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const Suggestion> suggestions) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillIban(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const Iban> ibans_to_suggest) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillLoyaltyCard(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    std::vector<LoyaltyCard> loyalty_cards_to_suggest) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::UpdateTouchToFillBnplPaymentMethod(
+    std::optional<uint64_t> extracted_amount,
+    bool is_amount_supported_by_any_issuer) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillProgress(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillBnplIssuers(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    base::span<const BnplIssuer> bnpl_issuers_to_suggest) {
+  return false;
+}
+
+bool IOSWebViewPaymentsAutofillClient::ShowTouchToFillError(
+    base::WeakPtr<TouchToFillDelegate> delegate,
+    const AutofillErrorDialogContext& context) {
+  return false;
+}
+
+void IOSWebViewPaymentsAutofillClient::HideTouchToFillPaymentMethod() {}
 
 PaymentsDataManager&
 IOSWebViewPaymentsAutofillClient::GetPaymentsDataManager() {
@@ -140,21 +327,33 @@ IOSWebViewPaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
   return payments_reauth_manager_.get();
 }
 
-#if BUILDFLAG(IS_IOS)
-std::unique_ptr<AutofillProgressDialogController>
-IOSWebViewPaymentsAutofillClient::ExtractProgressDialogModel() {
+payments::SaveAndFillManager*
+IOSWebViewPaymentsAutofillClient::GetSaveAndFillManager() {
   return nullptr;
 }
 
-std::unique_ptr<CardUnmaskOtpInputDialogController>
-IOSWebViewPaymentsAutofillClient::ExtractOtpInputDialogModel() {
+void IOSWebViewPaymentsAutofillClient::ShowCreditCardLocalSaveAndFillDialog(
+    CardSaveAndFillDialogCallback callback) {}
+
+void IOSWebViewPaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
+    const LegalMessageLines& legal_message_lines,
+    CardSaveAndFillDialogCallback callback) {}
+
+void IOSWebViewPaymentsAutofillClient::
+    ShowCreditCardSaveAndFillPendingDialog() {}
+
+void IOSWebViewPaymentsAutofillClient::HideCreditCardSaveAndFillDialog() {}
+
+bool IOSWebViewPaymentsAutofillClient::IsTabModalPopupDeprecated() const {
+  return false;
+}
+
+BnplStrategy* IOSWebViewPaymentsAutofillClient::GetBnplStrategy() {
   return nullptr;
 }
 
-CardUnmaskPromptController*
-IOSWebViewPaymentsAutofillClient::GetCardUnmaskPromptModel() {
+BnplUiDelegate* IOSWebViewPaymentsAutofillClient::GetBnplUiDelegate() {
   return nullptr;
 }
-#endif
 
 }  // namespace autofill::payments
