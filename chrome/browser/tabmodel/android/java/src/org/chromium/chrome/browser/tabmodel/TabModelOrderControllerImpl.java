@@ -35,7 +35,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
         if (type == TabLaunchType.FROM_BROWSER_ACTIONS || type == TabLaunchType.FROM_RECENT_TABS) {
             return TabList.INVALID_TAB_INDEX;
         }
-        if (newTab.getIsPinned()) {
+        if (newTab.getIsPinned() && type != TabLaunchType.FROM_RESTORE) {
             TabModel tabModel = mTabModelSelector.getCurrentModel();
 
             if (type == TabLaunchType.FROM_TAB_LIST_INTERFACE) {
@@ -43,9 +43,10 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                 @Nullable Tab parentTab = tabModel.getTabById(parentId);
                 int index = tabModel.indexOf(parentTab);
                 if (parentTab != null
-                    && index != TabList.INVALID_TAB_INDEX
-                    && parentTab.getIsPinned())
-                return index + 1;
+                        && index != TabList.INVALID_TAB_INDEX
+                        && parentTab.getIsPinned()) {
+                    return index + 1;
+                }
             }
 
             // Use the `position` when its in valid range; otherwise defer to TabModel

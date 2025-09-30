@@ -787,6 +787,7 @@ public class TabModelImplTest {
     @Test
     @SmallTest
     @DisabledTest(message = "crbug.com/447152102")
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
     public void testAddTab_CurrentTabPinned() {
         createTabs(4);
 
@@ -1768,6 +1769,75 @@ public class TabModelImplTest {
 
                     // Cleanup.
                     tabModel.unpinTab(tab2.getId());
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_PINNED_TABS)
+    public void restoreMultiplePinnedTabs_OrderIsPreserved() {
+        createTabs(4); // Creates 5 tabs in total (including the initial one)
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    assertEquals(5, tabModel.getCount());
+
+                    Tab tab1 = tabModel.getTabAt(1);
+                    Tab tab2 = tabModel.getTabAt(2);
+                    Tab tab3 = tabModel.getTabAt(3);
+
+                    tabModel.pinTab(tab1.getId());
+                    tabModel.pinTab(tab2.getId());
+                    tabModel.pinTab(tab3.getId());
+
+                    assertEquals(0, tabModel.indexOf(tab1));
+                    assertEquals(1, tabModel.indexOf(tab2));
+                    assertEquals(2, tabModel.indexOf(tab3));
+
+                    // Remove the pinned tabs
+                    tabModel.getTabRemover().removeTab(tab1, false);
+                    tabModel.getTabRemover().removeTab(tab2, false);
+                    tabModel.getTabRemover().removeTab(tab3, false);
+
+                    assertEquals(2, tabModel.getCount());
+
+                    // Restore the tabs in the same order
+                    tabModel.addTab(
+                            tab1,
+                            0,
+                            TabLaunchType.FROM_RESTORE,
+                            TabCreationState.FROZEN_ON_RESTORE);
+                    tabModel.addTab(
+                            tab2,
+                            1,
+                            TabLaunchType.FROM_RESTORE,
+                            TabCreationState.FROZEN_ON_RESTORE);
+                    tabModel.addTab(
+                            tab3,
+                            2,
+                            TabLaunchType.FROM_RESTORE,
+                            TabCreationState.FROZEN_ON_RESTORE);
+
+                    assertEquals(5, tabModel.getCount());
+                    assertEquals(
+                            "Tab 1 should be restored to its original pinned index.",
+                            0,
+                            tabModel.indexOf(tab1));
+                    assertEquals(
+                            "Tab 2 should be restored to its original pinned index.",
+                            1,
+                            tabModel.indexOf(tab2));
+                    assertEquals(
+                            "Tab 3 should be restored to its original pinned index.",
+                            2,
+                            tabModel.indexOf(tab3));
+
+                    // Cleanup
+                    tabModel.unpinTab(tab1.getId());
+                    tabModel.unpinTab(tab2.getId());
+                    tabModel.unpinTab(tab3.getId());
                 });
     }
 
