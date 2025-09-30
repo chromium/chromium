@@ -4624,20 +4624,19 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
                     FROM_HERE);
 }
 
-class BackForwardCacheBrowserTestReloadHiddenTabsWithActiveCrashedSubframes
+class BackForwardCacheBrowserTestReloadHiddenTabsWithCrashedSubframes
     : public BackForwardCacheBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
     EnableFeatureAndSetParams(features::kReloadHiddenTabsWithCrashedSubframes, "", "");
-    EnableFeatureAndSetParams(features::kReloadHiddenTabsWithActiveCrashedSubframes, "", "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };
 
 // Test that a subframe renderer process crash does not cause a reload if the
 // subframe is in back-forward cache.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestReloadHiddenTabsWithActiveCrashedSubframes,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestReloadHiddenTabsWithCrashedSubframes,
                        ReloadHiddenTabWithCrashedSubframe_BFCached) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(

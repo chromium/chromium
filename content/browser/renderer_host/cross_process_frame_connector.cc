@@ -163,11 +163,8 @@ void CrossProcessFrameConnector::RenderProcessGone() {
     if (current_child_rfh->delegate()->GetVisibility() != Visibility::VISIBLE &&
         visibility_ != blink::mojom::FrameVisibility::kNotRendered &&
         base::FeatureList::IsEnabled(
-            features::kReloadHiddenTabsWithCrashedSubframes) && (
-              !base::FeatureList::IsEnabled(
-                  features::kReloadHiddenTabsWithActiveCrashedSubframes) ||
-              current_child_rfh->IsActive()
-            )) {
+            features::kReloadHiddenTabsWithCrashedSubframes) &&
+        current_child_rfh->IsActive()) {
       frame_proxy_in_parent_renderer_->frame_tree_node()
           ->frame_tree()
           .controller()

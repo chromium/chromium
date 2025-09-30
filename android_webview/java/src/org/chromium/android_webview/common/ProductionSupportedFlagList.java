@@ -1110,10 +1110,6 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.USE_SHARED_REBIND_SERVICE_CONNECTION,
                 "Use a shared service connection to apply service group importance changes."),
         Flag.baseFeature(
-                "ReloadHiddenTabsWithActiveCrashedSubframes",
-                "Restricts reloading of hidden tabs with crashed subframes to only happen for "
-                        + "active subframes."),
-        Flag.baseFeature(
                 "SubframePriorityContribution",
                 "Stops priority contributions from subframes in back-forward cache."),
         Flag.baseFeature(
