@@ -415,9 +415,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
     public static class Preload extends ChromeTabbedActivity {
         private LifecycleRegistry mLifecycleRegistry;
 
-        @UsedByReflection("SplitChromeApplication.java")
-        public Preload() {}
-
         @Override
         public Lifecycle getLifecycle() {
             if (mLifecycleRegistry == null) {
