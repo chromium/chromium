@@ -259,15 +259,13 @@ const char kUserGestureRequiredPolicy[] = "user-gesture-required";
 
 }  // namespace autoplay
 
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+#if BUILDFLAG(USE_V4L2_CODEC)
 // Some (Qualcomm only at the moment) V4L2 video decoders require setting the
 // framerate so that the hardware decoder can scale the clocks efficiently.
 // This provides a mechanism during testing to lock the decoder framerate
 // to a specific value.
 const char kHardwareVideoDecodeFrameRate[] = "hardware-video-decode-framerate";
-#endif
 
-#if BUILDFLAG(USE_V4L2_CODEC)
 // This is needed for V4L2 testing using VISL (virtual driver) on cros VM with
 // arm64-generic-vm. Minigbm buffer allocation is done using dumb driver with
 // vkms.

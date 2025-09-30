@@ -105,12 +105,8 @@ MEDIA_EXPORT extern const char kUserGestureRequiredPolicy[];
 
 }  // namespace autoplay
 
-// TODO(crbug.com/414429305): Restrict this flag to USE_V4L2_CODEC.
-#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
-MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
-#endif
-
 #if BUILDFLAG(USE_V4L2_CODEC)
+MEDIA_EXPORT extern const char kHardwareVideoDecodeFrameRate[];
 MEDIA_EXPORT extern const char kEnablePrimaryNodeAccessForVkmsTesting[];
 #endif
 
