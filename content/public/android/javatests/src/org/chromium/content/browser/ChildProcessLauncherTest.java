@@ -396,7 +396,8 @@ public class ChildProcessLauncherTest {
                 createChildProcessLauncher(
                         badConnectionAllocator,
                         /* setupConnection= */ true,
-                        /* queueIfNoFreeConnection= */ false);
+                        /* queueIfNoFreeConnection= */ false,
+                        ChildBindingState.VISIBLE);
 
         Assert.assertNotNull(processLauncher);
 
@@ -417,7 +418,8 @@ public class ChildProcessLauncherTest {
                 createChildProcessLauncher(
                         mConnectionAllocator,
                         /* setupConnection= */ false,
-                        /* queueIfNoFreeConnection= */ false);
+                        /* queueIfNoFreeConnection= */ false,
+                        ChildBindingState.VISIBLE);
 
         // Verify that the service is bound but not yet set up.
         Assert.assertTrue(mConnectionAllocator.anyConnectionAllocated());
@@ -444,7 +446,8 @@ public class ChildProcessLauncherTest {
                 createChildProcessLauncher(
                         mConnectionAllocator,
                         /* setupConnection= */ true,
-                        /* queueIfNoFreeConnection= */ false);
+                        /* queueIfNoFreeConnection= */ false,
+                        ChildBindingState.VISIBLE);
 
         Assert.assertTrue(mConnectionAllocator.anyConnectionAllocated());
         ChildProcessConnection connection = processLauncher.getConnection();
@@ -477,7 +480,8 @@ public class ChildProcessLauncherTest {
                     createChildProcessLauncher(
                             mConnectionAllocator,
                             /* setupConnection= */ true,
-                            /* queueIfNoFreeConnection= */ true);
+                            /* queueIfNoFreeConnection= */ true,
+                            ChildBindingState.VISIBLE);
             Assert.assertNotNull(launchers[i]);
             connections[i] = launchers[i].getConnection();
         }
@@ -491,7 +495,8 @@ public class ChildProcessLauncherTest {
                 createChildProcessLauncher(
                         mConnectionAllocator,
                         /* setupConnection= */ true,
-                        /* queueIfNoFreeConnection= */ false));
+                        /* queueIfNoFreeConnection= */ false,
+                        ChildBindingState.VISIBLE));
 
         waitForConnectionState(connections[0], CONNECTION_BLOCK_UNTIL_SETUP);
         waitForConnectionState(connections[1], CONNECTION_BLOCK_UNTIL_SETUP);
@@ -508,18 +513,6 @@ public class ChildProcessLauncherTest {
         // should use.
         connections[1].crashServiceForTesting();
         waitUntilLauncherSetup(launchers[3]);
-    }
-
-    // TODO(crbug.com/443652225): Remove this overload and update all callers.
-    private static ChildProcessLauncher createChildProcessLauncher(
-            final ChildConnectionAllocator connectionAllocator,
-            final boolean setupConnection,
-            final boolean queueIfNoFreeConnection) {
-        return createChildProcessLauncher(
-                connectionAllocator,
-                setupConnection,
-                queueIfNoFreeConnection,
-                ChildBindingState.VISIBLE);
     }
 
     private static ChildProcessLauncher createChildProcessLauncher(
