@@ -2877,6 +2877,32 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResizeEndsHibernation) {
   }
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated, ResetEndsHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  RunIdleTasks();
+  EXPECT_TRUE(handler.IsHibernating());
+
+  // Reset the canvas, ending hibernation.
+  {
+    base::HistogramTester histogram_tester;
+    RunInTask(base::BindLambdaForTesting([this] { Context2D()->reset(); }));
+    histogram_tester.ExpectUniqueSample(
+        kCanvasHibernationEventHistogramName,
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedOnReset,
+        1);
+    EXPECT_FALSE(handler.IsHibernating());
+  }
+}
+
 TEST_P(CanvasRenderingContext2DTestAccelerated, ResizeAbortsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
@@ -2906,6 +2932,32 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ResizeAbortsHibernation) {
             kHibernationAbortedBecauseNoSurface,
         1);
     EXPECT_FALSE(handler.IsHibernating());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated, ResetDoesntAbortHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  Context2D()->GetOrCreateCanvas2DResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterModeForCanvas2D(), RasterMode::kGPU);
+  auto& handler = CHECK_DEREF(Context2D()->GetHibernationHandler());
+
+  // Hide the page and run hibernation task.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+
+  // Reset the canvas before the hibernation task runs. Resetting the canvas
+  // clears the canvas, but preserves the resource provider. Hibernation can
+  // proceed normally, with a blank canvas.
+  {
+    base::HistogramTester histogram_tester;
+    RunInTask(base::BindLambdaForTesting([this] { Context2D()->reset(); }));
+
+    // Run hibernation task. Hibernation aborts since there's no more resources.
+    RunIdleTasks();
+
+    EXPECT_TRUE(handler.IsHibernating());
   }
 }
 
