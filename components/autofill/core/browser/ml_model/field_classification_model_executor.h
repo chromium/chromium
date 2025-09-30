@@ -8,7 +8,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/task/task_traits.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/optimization_guide/core/inference/base_model_executor.h"
 
@@ -26,9 +25,6 @@ class FieldClassificationModelExecutor
   ~FieldClassificationModelExecutor() override;
 
  protected:
-  // optimization_guide::TFLiteModelExecutor:
-  base::TaskPriority GetModelLoadingTaskPriority() const override;
-
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(
       const std::vector<TfLiteTensor*>& input_tensors,
