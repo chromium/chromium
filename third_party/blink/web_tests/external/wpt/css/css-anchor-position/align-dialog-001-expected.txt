@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] e.style['align-self'] = "dialog" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['align-items'] = "dialog" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['justify-self'] = "dialog" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['justify-items'] = "dialog" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] Property align-self value 'dialog'
+  assert_true: 'dialog' is a supported value for align-self. expected true got false
+[FAIL] Property align-items value 'dialog'
+  assert_true: 'dialog' is a supported value for align-items. expected true got false
+[FAIL] Property justify-self value 'dialog'
+  assert_true: 'dialog' is a supported value for justify-self. expected true got false
+[FAIL] Property justify-items value 'dialog'
+  assert_true: 'dialog' is a supported value for justify-items. expected true got false
+Harness: the test ran to completion.
+

@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+[FAIL] sanitizer.allowAttribute() with global attributes
+  assert_true: expected true got undefined
+[FAIL] sanitizer.allowAttribute() with global removeAttributes
+  assert_false: expected false got undefined
+[FAIL] sanitizer.allowAttribute() with global attributes and elements
+  assert_true: expected true got undefined
+[FAIL] sanitizer.allowAttribute() with global removeAttributes and elements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.removeAttribute() with global attributes
+  assert_false: expected false got undefined
+[FAIL] sanitizer.removeAttribute() with global removeAttributes
+  assert_true: expected true got undefined
+[FAIL] sanitizer.removeAttribute() with global attributes and elements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.removeAttribute() with global removeAttributes and elements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.removeElement() with global elements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.removeElement() with global removeElements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.replaceElementWithChildren() with global elements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.replaceElementWithChildren() with global removeElements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.allowElement() with global elements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.allowElement() with global removeElements
+  assert_false: expected false got undefined
+[FAIL] sanitizer.allowElement() with global elements and attributes
+  assert_true: expected true got undefined
+[FAIL] sanitizer.allowElement() with global elements and removeAttributes
+  assert_true: expected true got undefined
+Harness: the test ran to completion.
+

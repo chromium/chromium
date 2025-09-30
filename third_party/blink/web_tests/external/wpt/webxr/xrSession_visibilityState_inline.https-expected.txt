@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: undefined is not iterable (cannot read property Symbol(Symbol.iterator))
+[TIMEOUT] Ensures that the XRSession's visibilityState is correctly reported and that the associated visibilitychange event fires for non-immersive sessions. - webgl
+  Test timed out
+[NOTRUN] Ensures that the XRSession's visibilityState is correctly reported and that the associated visibilitychange event fires for non-immersive sessions. - webgl2
+Harness: the test ran to completion.
+
