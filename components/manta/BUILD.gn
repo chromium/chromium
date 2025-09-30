@@ -49,7 +49,10 @@ component("manta") {
       "walrus_provider.cc",
       "walrus_provider.h",
     ]
-    deps += [ "//chromeos/constants" ]
+    deps += [
+      "//chromeos/components/magic_boost/public/cpp",
+      "//chromeos/constants",
+    ]
   }
 }
 

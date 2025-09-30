@@ -93,6 +93,9 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
     kUninitialized,
   };
 
+  // Checks preconditions of HMR and crashes if they are not met.
+  static void AssertPreconditionsOfHelpMeReadOrCrash();
+
   static MagicBoostState* Get();
 
   MagicBoostState();

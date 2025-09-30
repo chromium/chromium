@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version_info/channel.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/base_provider.h"
 #include "components/manta/features.h"
@@ -143,6 +144,8 @@ void MahiProvider::Summarize(const std::string& input,
                              const std::optional<std::string>& context,
                              const std::optional<std::string>& url,
                              MantaGenericCallback done_callback) {
+  chromeos::MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash();
+
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_SUMMARY);
 
@@ -184,6 +187,8 @@ void MahiProvider::Elucidate(const std::string& input,
                              const std::string& title,
                              const std::optional<std::string>& url,
                              MantaGenericCallback done_callback) {
+  chromeos::MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash();
+
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_ELUCIDATION);
 
@@ -233,6 +238,8 @@ void MahiProvider::QuestionAndAnswer(const std::string& original_content,
                                      const std::vector<MahiQAPair> QAHistory,
                                      const std::string& question,
                                      MantaGenericCallback done_callback) {
+  chromeos::MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash();
+
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_READER_Q_AND_A);
 

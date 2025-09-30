@@ -21,6 +21,20 @@ MagicBoostState* MagicBoostState::Get() {
   return g_magic_boost_state;
 }
 
+// Run precondition checks for providing Help Me Read feature. This is using
+// CHECKs internally as we can know which condition has failed from crash
+// report, i.e., instead of returning bool and to CHECK() from caller.
+// static
+void MagicBoostState::AssertPreconditionsOfHelpMeReadOrCrash() {
+  auto* magic_boost_state = Get();
+  CHECK(magic_boost_state);
+  CHECK(magic_boost_state->IsUserEligibleForGenAIFeatures());
+  CHECK(magic_boost_state->magic_boost_enabled().value());
+  CHECK(magic_boost_state->hmr_enabled().value());
+  CHECK_EQ(magic_boost_state->hmr_consent_status().value(),
+           HMRConsentStatus::kApproved);
+}
+
 MagicBoostState::MagicBoostState() {
   CHECK(!g_magic_boost_state);
   g_magic_boost_state = this;
