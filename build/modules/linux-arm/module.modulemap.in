@@ -27,30 +27,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/asm-generic/ioctls.h"
     export *
   }
-  module asm_errno_h {
-    header "$sysroot/arm-linux-gnueabihf/asm/errno.h"
-    export *
-  }
-  module asm_ioctl_h {
-    header "$sysroot/arm-linux-gnueabihf/asm/ioctl.h"
-    export *
-  }
-  module asm_ioctls_h {
-    header "$sysroot/arm-linux-gnueabihf/asm/ioctls.h"
-    export *
-  }
-  module asm_sigcontext_h {
-    header "$sysroot/arm-linux-gnueabihf/asm/sigcontext.h"
-    export *
-  }
-  module asm_unistd_eabi_h {
-    header "$sysroot/arm-linux-gnueabihf/asm/unistd-eabi.h"
-    export *
-  }
-  module asm_unistd_h {
-    header "$sysroot/arm-linux-gnueabihf/asm/unistd.h"
-    export *
-  }
   module endian_h {
     header "$sysroot/endian.h"
     export *
@@ -61,19 +37,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module features_h {
     header "$sysroot/features.h"
-    header "$sysroot/arm-linux-gnueabihf/sys/cdefs.h"
     export *
   }
   module getopt_h {
     header "$sysroot/getopt.h"
-    export *
-  }
-  module gnu_stubs_hard_h {
-    header "$sysroot/arm-linux-gnueabihf/gnu/stubs-hard.h"
-    export *
-  }
-  module gnu_stubs_h {
-    header "$sysroot/arm-linux-gnueabihf/gnu/stubs.h"
     export *
   }
   module linux_errno_h {
@@ -122,30 +89,6 @@ module sys_stage1 [system] [extern_c] {
   }
   module strings_h {
     header "$sysroot/strings.h"
-    export *
-  }
-  module sys_ioctl_h {
-    header "$sysroot/arm-linux-gnueabihf/sys/ioctl.h"
-    export *
-  }
-  module sys_select_h {
-    header "$sysroot/arm-linux-gnueabihf/sys/select.h"
-    export *
-  }
-  module sys_syscall_h {
-    header "$sysroot/arm-linux-gnueabihf/sys/syscall.h"
-    export *
-  }
-  module sys_ttydefaults_h {
-    header "$sysroot/arm-linux-gnueabihf/sys/ttydefaults.h"
-    export *
-  }
-  module sys_types_h {
-    header "$sysroot/arm-linux-gnueabihf/sys/types.h"
-    export *
-  }
-  module sys_ucontext_h {
-    header "$sysroot/arm-linux-gnueabihf/sys/ucontext.h"
     export *
   }
   module syscall_h {

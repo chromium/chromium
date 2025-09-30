@@ -11,10 +11,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/alloca.h"
     export *
   }
-  module asm_generic_bitsperlong_h {
-    header "$sysroot/asm-generic/bitsperlong.h"
-    export *
-  }
   module asm_generic_errno_base_h {
     header "$sysroot/asm-generic/errno-base.h"
     export *
@@ -43,46 +39,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/asm-generic/types.h"
     export *
   }
-  module asm_generic_unistd_h {
-    header "$sysroot/asm-generic/unistd.h"
-    export *
-  }
-  module asm_bitsperlong_h {
-    header "$sysroot/aarch64-linux-gnu/asm/bitsperlong.h"
-    export *
-  }
-  module asm_errno_h {
-    header "$sysroot/aarch64-linux-gnu/asm/errno.h"
-    export *
-  }
-  module asm_ioctl_h {
-    header "$sysroot/aarch64-linux-gnu/asm/ioctl.h"
-    export *
-  }
-  module asm_ioctls_h {
-    header "$sysroot/aarch64-linux-gnu/asm/ioctls.h"
-    export *
-  }
-  module asm_posix_types_h {
-    header "$sysroot/aarch64-linux-gnu/asm/posix_types.h"
-    export *
-  }
-  module asm_sigcontext_h {
-    header "$sysroot/aarch64-linux-gnu/asm/sigcontext.h"
-    export *
-  }
-  module asm_sve_context_h {
-    header "$sysroot/aarch64-linux-gnu/asm/sve_context.h"
-    export *
-  }
-  module asm_types_h {
-    header "$sysroot/aarch64-linux-gnu/asm/types.h"
-    export *
-  }
-  module asm_unistd_h {
-    header "$sysroot/aarch64-linux-gnu/asm/unistd.h"
-    export *
-  }
   module endian_h {
     header "$sysroot/endian.h"
     export *
@@ -93,19 +49,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module features_h {
     header "$sysroot/features.h"
-    header "$sysroot/aarch64-linux-gnu/sys/cdefs.h"
     export *
   }
   module getopt_h {
     header "$sysroot/getopt.h"
-    export *
-  }
-  module gnu_stubs_lp64_h {
-    header "$sysroot/aarch64-linux-gnu/gnu/stubs-lp64.h"
-    export *
-  }
-  module gnu_stubs_h {
-    header "$sysroot/aarch64-linux-gnu/gnu/stubs.h"
     export *
   }
   module linux_errno_h {
@@ -166,42 +113,6 @@ module sys_stage1 [system] [extern_c] {
   }
   module strings_h {
     header "$sysroot/strings.h"
-    export *
-  }
-  module sys_ioctl_h {
-    header "$sysroot/aarch64-linux-gnu/sys/ioctl.h"
-    export *
-  }
-  module sys_procfs_h {
-    header "$sysroot/aarch64-linux-gnu/sys/procfs.h"
-    export *
-  }
-  module sys_select_h {
-    header "$sysroot/aarch64-linux-gnu/sys/select.h"
-    export *
-  }
-  module sys_syscall_h {
-    header "$sysroot/aarch64-linux-gnu/sys/syscall.h"
-    export *
-  }
-  module sys_time_h {
-    header "$sysroot/aarch64-linux-gnu/sys/time.h"
-    export *
-  }
-  module sys_ttydefaults_h {
-    header "$sysroot/aarch64-linux-gnu/sys/ttydefaults.h"
-    export *
-  }
-  module sys_types_h {
-    header "$sysroot/aarch64-linux-gnu/sys/types.h"
-    export *
-  }
-  module sys_ucontext_h {
-    header "$sysroot/aarch64-linux-gnu/sys/ucontext.h"
-    export *
-  }
-  module sys_user_h {
-    header "$sysroot/aarch64-linux-gnu/sys/user.h"
     export *
   }
   module syscall_h {

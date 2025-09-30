@@ -27,26 +27,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/asm-generic/ioctls.h"
     export *
   }
-  module asm_errno_h {
-    header "$sysroot/x86_64-linux-gnu/asm/errno.h"
-    export *
-  }
-  module asm_ioctl_h {
-    header "$sysroot/x86_64-linux-gnu/asm/ioctl.h"
-    export *
-  }
-  module asm_ioctls_h {
-    header "$sysroot/x86_64-linux-gnu/asm/ioctls.h"
-    export *
-  }
-  module asm_unistd_h {
-    header "$sysroot/x86_64-linux-gnu/asm/unistd.h"
-    export *
-  }
-  module asm_unistd_64_h {
-    header "$sysroot/x86_64-linux-gnu/asm/unistd_64.h"
-    export *
-  }
   module endian_h {
     header "$sysroot/endian.h"
     export *
@@ -57,19 +37,10 @@ module sys_stage1 [system] [extern_c] {
   }
   module features_h {
     header "$sysroot/features.h"
-    header "$sysroot/x86_64-linux-gnu/sys/cdefs.h"
     export *
   }
   module getopt_h {
     header "$sysroot/getopt.h"
-    export *
-  }
-  module gnu_stubs_64_h {
-    header "$sysroot/x86_64-linux-gnu/gnu/stubs-64.h"
-    export *
-  }
-  module gnu_stubs_h {
-    header "$sysroot/x86_64-linux-gnu/gnu/stubs.h"
     export *
   }
   module linux_errno_h {
@@ -118,30 +89,6 @@ module sys_stage1 [system] [extern_c] {
   }
   module strings_h {
     header "$sysroot/strings.h"
-    export *
-  }
-  module sys_ioctl_h {
-    header "$sysroot/x86_64-linux-gnu/sys/ioctl.h"
-    export *
-  }
-  module sys_select_h {
-    header "$sysroot/x86_64-linux-gnu/sys/select.h"
-    export *
-  }
-  module sys_syscall_h {
-    header "$sysroot/x86_64-linux-gnu/sys/syscall.h"
-    export *
-  }
-  module sys_ttydefaults_h {
-    header "$sysroot/x86_64-linux-gnu/sys/ttydefaults.h"
-    export *
-  }
-  module sys_types_h {
-    header "$sysroot/x86_64-linux-gnu/sys/types.h"
-    export *
-  }
-  module sys_ucontext_h {
-    header "$sysroot/x86_64-linux-gnu/sys/ucontext.h"
     export *
   }
   module syscall_h {

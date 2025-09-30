@@ -24,10 +24,6 @@ module sys_stage1 [system] [extern_c] {
     header "$sysroot/android/versioning.h"
     export *
   }
-  module asm_generic_bitsperlong_h {
-    header "$sysroot/asm-generic/bitsperlong.h"
-    export *
-  }
   module asm_generic_errno_base_h {
     header "$sysroot/asm-generic/errno-base.h"
     export *
