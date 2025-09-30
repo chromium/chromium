@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ACTIONS_CHROME_ACTION_ID_H_
 
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "ui/actions/action_id.h"
 
