@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -439,6 +440,10 @@ UserConsentView::UserConsentView(
 }
 
 UserConsentView::~UserConsentView() = default;
+
+std::optional<int> UserConsentView::GetMinWidth() const {
+  return kMinWidth;
+}
 
 void UserConsentView::OnFocus() {
   // Unless screen-reader mode is enabled, transfer the focus to an actionable
