@@ -19182,26 +19182,6 @@
             ]
         }
     ],
-    "PrioritizeHttpsResourceRecord": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrioritizeHttpsResourceRecord"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacySandboxActivityTypeStorage": [
         {
             "platforms": [
