@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/client_native_pixmap.h"
@@ -25,17 +26,18 @@
 
 namespace {
 
-// TODO(crbug.com/436930319): Revise the thread-affinity of this class.
-// According to crbug.com/436930319 and crbug.com/436929831, it's unclear if
-// this class is expected to be thread-safe or the callers are not correctly
-// using it.
+// See https://crbug.com/447414768 for the details of the thread-affinity.
+// The instance is created and destroyed on different threads; map and unmap are
+// always called in scope and on the same thread, but the pair of map and unmap
+// can be called multiple times from different threads; it's guaranteed that the
+// destructor is called un-racely after the last unmap.
 class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
  public:
   ~ClientNativePixmapFuchsia() override {
     if (mapping_) {
       // Flush the cache if Unmap is not called before the pixmap is destroyed.
       if (logically_mapped_) {
-        Unmap();
+        UnmapImpl();
       }
 
       zx_status_t status = zx::vmar::root_self()->unmap(
@@ -49,6 +51,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
       delete;
 
   bool Map() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (handle_.planes.empty()) {
       CHECK(!mapping_);
       return false;
@@ -94,19 +97,9 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   }
 
   void Unmap() override {
-    DCHECK(mapping_);
-    DCHECK(logically_mapped_);
-
-    // Flush the CPu cache in case the GPU reads the data directly from RAM.
-    // Keep the mapping to avoid unnecessary overhead when later reusing the
-    // pixmap. The actual unmap happens when the pixmap is destroyed.
-    if (handle_.ram_coherency) {
-      zx_status_t status =
-          zx_cache_flush(mapping_, mapping_size_,
-                         ZX_CACHE_FLUSH_DATA | ZX_CACHE_FLUSH_INVALIDATE);
-      ZX_DCHECK(status == ZX_OK, status) << "zx_cache_flush";
-    }
-    logically_mapped_ = false;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    UnmapImpl();
+    DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
   size_t GetNumberOfPlanes() const override { return handle_.planes.size(); }
@@ -189,7 +182,9 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
  private:
   // Allow being created only by the factory method above.
   explicit ClientNativePixmapFuchsia(gfx::NativePixmapHandle handle)
-      : handle_(std::move(handle)) {}
+      : handle_(std::move(handle)) {
+    DETACH_FROM_SEQUENCE(sequence_checker_);
+  }
 
   // A shortcut to call private constructor.
   static std::unique_ptr<gfx::ClientNativePixmap> CreateUniquePtr(
@@ -198,7 +193,25 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
         new ClientNativePixmapFuchsia(std::move(handle)));
   }
 
+  void UnmapImpl() {
+    DCHECK(mapping_);
+    DCHECK(logically_mapped_);
+
+    // Flush the CPu cache in case the GPU reads the data directly from RAM.
+    // Keep the mapping to avoid unnecessary overhead when later reusing the
+    // pixmap. The actual unmap happens when the pixmap is destroyed.
+    if (handle_.ram_coherency) {
+      zx_status_t status =
+          zx_cache_flush(mapping_, mapping_size_,
+                         ZX_CACHE_FLUSH_DATA | ZX_CACHE_FLUSH_INVALIDATE);
+      ZX_DCHECK(status == ZX_OK, status) << "zx_cache_flush";
+    }
+    logically_mapped_ = false;
+  }
+
   const gfx::NativePixmapHandle handle_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   bool logically_mapped_ = false;
   raw_ptr<uint8_t, AllowPtrArithmetic> mapping_ = nullptr;
