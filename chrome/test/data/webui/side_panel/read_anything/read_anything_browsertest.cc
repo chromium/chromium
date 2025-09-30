@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
@@ -154,11 +156,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudHighlight) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NodeStore) {
-  RunSidePanelTest("side_panel/read_anything/node_store_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ContentController) {
   RunSidePanelTest("side_panel/read_anything/content_controller_test.js",
                    "mocha.run()");
@@ -209,11 +206,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechController) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechControllerContent) {
-  RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechModel) {
   RunSidePanelTest("side_panel/read_anything/speech_model_test.js",
                    "mocha.run()");
@@ -229,6 +221,49 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TextSegmenter) {
                    "mocha.run()");
 }
 
+class ReadAnythingMochaParameterizedTest
+    : public ReadAnythingMochaBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  ReadAnythingMochaParameterizedTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kReadAnythingReadAloud,
+        features::kReadAnythingImagesViaAlgorithm};
+    if (IsTsSegmentationEnabled()) {
+      enabled_features.push_back(
+          features::kReadAnythingReadAloudTSTextSegmentation);
+    }
+    scoped_feature_list_.InitWithFeatures(
+        enabled_features, {features::kReadAnythingReadAloudPhraseHighlighting,
+                           features::kReadAnythingDocsIntegration});
+  }
+
+  bool IsTsSegmentationEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest, NodeStore) {
+  RunSidePanelTest("side_panel/read_anything/node_store_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingMochaParameterizedTest,
+                       SpeechControllerContent) {
+  RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
+                   "mocha.run()");
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ReadAnythingMochaParameterized,
+    ReadAnythingMochaParameterizedTest,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<
+        ReadAnythingMochaParameterizedTest::ParamType>& info) {
+      return info.param ? "WithTsSegmentation" : "WithoutTsSegmentation";
+    });
+
 class ReadAnythingReadAloudTsSegmentationMochaTest
     : public ReadAnythingMochaBrowserTest {
  protected:
@@ -243,23 +278,9 @@ class ReadAnythingReadAloudTsSegmentationMochaTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// NodeStore tests should pass regardless of whether or not the TsSegmentation
-// flag is enabled without any special handling.
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
-                       NodeStore) {
-  RunSidePanelTest("side_panel/read_anything/node_store_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
                        ReadAloudNodeStore) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_node_store_test.js",
-                   "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudTsSegmentationMochaTest,
-                       SpeechController) {
-  RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
                    "mocha.run()");
 }
 
