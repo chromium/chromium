@@ -41,17 +41,6 @@ class PermissionUpdateMessageControllerAndroidTest
         std::move(callback));
   }
 
-  void ShowDownload(base::OnceCallback<void(bool)> callback,
-                    bool expected_enqueue) {
-    if (expected_enqueue)
-      EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
-
-    GetController()->ShowMessageInternal(
-        {}, {}, {}, IDR_ANDORID_MESSAGE_PERMISSION_STORAGE,
-        IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE,
-        IDS_MESSAGE_STORAGE_ACCESS_PERMISSION_TEXT, std::move(callback));
-  }
-
   size_t GetMessageDelegatesSize() {
     return GetController()->message_delegates_.size();
   }
@@ -146,26 +135,6 @@ TEST_F(PermissionUpdateMessageControllerAndroidTest, OnPermissionResult) {
   SetPermissionResultTriggeredSynchronously();
   EXPECT_CALL(mock_permission_update_callback2, Run(false));
   ExpectDismiss(messages::DismissReason::UNKNOWN);
-  OnPermissionGranted(false);
-  EXPECT_EQ(0u, GetMessageDelegatesSize());
-}
-
-TEST_F(PermissionUpdateMessageControllerAndroidTest,
-       OnEnqueuingDuplciatedMessage) {
-  base::MockOnceCallback<void(bool)> mock_permission_update_callback1;
-  base::MockOnceCallback<void(bool)> mock_permission_update_callback2;
-  ShowDownload(mock_permission_update_callback1.Get(), true);
-  EXPECT_EQ(1u, GetMessageDelegatesSize());
-  ShowDownload(mock_permission_update_callback2.Get(), false);
-  EXPECT_EQ(1u, GetMessageDelegatesSize());
-  EXPECT_CALL(mock_permission_update_callback1, Run(false));
-  EXPECT_CALL(mock_permission_update_callback2, Run(false));
-
-  // Message is dismissed first by primary action, and then permission update
-  // callback is invoked. In this case, the dismiss reason should be
-  // PRIMARY_ACTION.
-  ExpectDismiss(messages::DismissReason::PRIMARY_ACTION);
-  DismissedByPrimaryAction();
   OnPermissionGranted(false);
   EXPECT_EQ(0u, GetMessageDelegatesSize());
 }

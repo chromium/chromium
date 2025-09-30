@@ -44,12 +44,6 @@ class PermissionUpdateMessageController
       const std::vector<std::string>& optional_permissions,
       PermissionUpdatedCallback callback);
 
-  void ShowMessage(const std::vector<std::string>& required_android_permissions,
-                   int permission_icon_id,
-                   int permission_msg_title_id,
-                   int permission_msg_description_id,
-                   PermissionUpdatedCallback callback);
-
   ~PermissionUpdateMessageController() override;
 
  private:

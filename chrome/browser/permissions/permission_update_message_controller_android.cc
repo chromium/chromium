@@ -40,20 +40,6 @@ void PermissionUpdateMessageController::ShowMessage(
                       std::get<1>(res), std::get<2>(res), std::move(callback));
 }
 
-void PermissionUpdateMessageController::ShowMessage(
-    const std::vector<std::string>& required_android_permissions,
-    int icon_id,
-    int title_id,
-    int description_id,
-    PermissionUpdatedCallback callback) {
-  std::vector<ContentSettingsType> empty_content_settings_types;
-  std::vector<std::string> empty_optional_android_permissions;
-  ShowMessageInternal(required_android_permissions,
-                      empty_optional_android_permissions,
-                      empty_content_settings_types, icon_id, title_id,
-                      description_id, std::move(callback));
-}
-
 void PermissionUpdateMessageController::ShowMessageInternal(
     const std::vector<std::string>& required_android_permissions,
     const std::vector<std::string>& optional_android_permissions,
@@ -62,15 +48,6 @@ void PermissionUpdateMessageController::ShowMessageInternal(
     int title_id,
     int description_id,
     PermissionUpdatedCallback callback) {
-  for (auto& delegate : message_delegates_) {
-    if (delegate->GetTitleId() == title_id) {
-      // Duplicated messages must be filtered out in permission layer, except
-      // Download.
-      DCHECK(title_id == IDS_MESSAGE_MISSING_STORAGE_ACCESS_PERMISSION_TITLE);
-      delegate->AttachAdditionalCallback(std::move(callback));
-      return;
-    }
-  }
   auto delegate = std::make_unique<PermissionUpdateMessageDelegate>(
       &GetWebContents(), required_android_permissions,
       optional_android_permissions, content_settings_types, icon_id, title_id,
