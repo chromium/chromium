@@ -628,8 +628,8 @@ Element* TreeScope::AdjustedFocusedElement(bool is_pseudo_allowed) const {
     CHECK(scroll_marker->ScrollMarkerGroup());
     // https://drafts.csswg.org/css-overflow-5/#active-element
     element = &scroll_marker->ScrollMarkerGroup()->UltimateOriginatingElement();
-  } else if (pseudo_element) {
-    element = &pseudo_element->UltimateOriginatingElement();
+  } else if (auto* maybe_pseudo = DynamicTo<PseudoElement>(element)) {
+    element = &maybe_pseudo->UltimateOriginatingElement();
   }
 
   CHECK(!element->IsPseudoElement());
