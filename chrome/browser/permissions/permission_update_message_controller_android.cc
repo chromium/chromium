@@ -105,14 +105,14 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
       case IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT:
         DCHECK(content_settings_type == ContentSettingsType::MEDIASTREAM_MIC);
         return std::make_tuple(
-            IDR_ANDORID_MESSAGE_PERMISSION_VIDEOCAM,
+            IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT);
       case IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT:
         DCHECK(content_settings_type ==
                ContentSettingsType::MEDIASTREAM_CAMERA);
         return std::make_tuple(
-            IDR_ANDORID_MESSAGE_PERMISSION_VIDEOCAM,
+            IDR_ANDROID_MESSAGE_PERMISSION_VIDEOCAM,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT);
       default:
@@ -130,11 +130,11 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
                              IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_MICROPHONE_PERMISSION_TEXT);
     case IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT:
-      return std::make_tuple(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
+      return std::make_tuple(IDR_ANDROID_MESSAGE_PERMISSION_CAMERA,
                              IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT);
     case IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT:
-      return std::make_tuple(IDR_ANDORID_MESSAGE_PERMISSION_CAMERA,
+      return std::make_tuple(IDR_ANDROID_MESSAGE_PERMISSION_CAMERA,
                              IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_AR_CAMERA_PERMISSION_TEXT);
     case IDS_MESSAGE_MISSING_XR_PERMISSION_TEXT:
