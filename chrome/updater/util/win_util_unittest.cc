@@ -707,14 +707,22 @@ TEST(WinUtil, AddCurrentUserAllowedAce) {
       L";RPLCRC;;;AU)S:(AU;SAFA;WDWOSDWPCCDCSW;;;WD)",
       GENERIC_ALL, 0);
   ASSERT_TRUE(new_sddl);
-  EXPECT_EQ(
-      *new_sddl,
-      base::StrCat(
-          {L"O:BAG:BAD:(A;;KA;;;SY)(A;;KA;;;BA)(A;;LCRPRC;;;AU)", added_ace,
-           L"(OA;;CCDC;cccccccc-2222-3333-4444-dddddddddddd;;AO)(OA;;CCDC;"
-           L"dddddddd-3333-4444-5555-eeeeeeeeeeee;;PO)(OA;;CCDC;aaaaaaaa-0000-"
-           L"1111-2222-bbbbbbbbbbbb;;AO)(OA;;CCDC;bbbbbbbb-1111-2222-3333-"
-           L"cccccccccccc;;AO)S:(AU;SAFA;CCDCSWWPSDWDWO;;;WD)"}));
+
+  const std::wstring expected_sddl = base::StrCat(
+      {L"O:BAG:BAD:(A;;KA;;;SY)(A;;KA;;;BA)(A;;LCRPRC;;;AU)", added_ace,
+       L"(OA;;CCDC;cccccccc-2222-3333-4444-dddddddddddd;;AO)(OA;;CCDC;"
+       L"dddddddd-3333-4444-5555-eeeeeeeeeeee;;PO)(OA;;CCDC;aaaaaaaa-0000-"
+       L"1111-2222-bbbbbbbbbbbb;;AO)(OA;;CCDC;bbbbbbbb-1111-2222-3333-"
+       L"cccccccccccc;;AO)S:(AU;SAFA;CCDCSWWPSDWDWO;;;WD)"});
+  EXPECT_EQ(*new_sddl, expected_sddl);
+
+  // The SDDL will contain only a single instance of the new ACE, even if
+  // attempts are made to add it multiple times.
+  for (int i = 0; i < 100; ++i) {
+    new_sddl = AddCurrentUserAllowedAce(*new_sddl, GENERIC_ALL, 0);
+    ASSERT_TRUE(new_sddl);
+    EXPECT_EQ(*new_sddl, expected_sddl);
+  }
 }
 
 }  // namespace updater::test
