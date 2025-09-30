@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_COORDINATOR_ASYNC_MEMORY_CONSUMER_REGISTRATION_H_
 #define BASE_MEMORY_COORDINATOR_ASYNC_MEMORY_CONSUMER_REGISTRATION_H_
 
+#include <memory>
 #include <string_view>
 
 #include "base/base_export.h"
@@ -12,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/memory_coordinator/traits.h"
 #include "base/sequence_checker.h"
-#include "base/threading/sequence_bound.h"
 
 namespace base {
 
@@ -24,7 +24,6 @@ class SingleThreadTaskRunner;
 class BASE_EXPORT AsyncMemoryConsumerRegistration {
  public:
   AsyncMemoryConsumerRegistration(
-      scoped_refptr<SingleThreadTaskRunner> main_thread_task_runner,
       std::string_view consumer_id,
       MemoryConsumerTraits traits,
       MemoryConsumer* consumer);
@@ -39,8 +38,13 @@ class BASE_EXPORT AsyncMemoryConsumerRegistration {
   // A pointer to the actual consumer. Must outlive `this`.
   raw_ptr<MemoryConsumer> consumer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Handle to the main thread's task runner. This is cached because it might no
+  // longer be registered at the time this instance is destroyed.
+  scoped_refptr<SingleThreadTaskRunner> main_thread_task_runner_;
+
   // Parts of this class that lives on the main thread.
-  SequenceBound<MainThread> main_thread_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<MainThread> main_thread_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

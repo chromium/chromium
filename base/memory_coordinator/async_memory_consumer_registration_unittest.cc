@@ -15,6 +15,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/threading/sequence_bound.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,14 +25,9 @@ namespace {
 
 class TestAsyncMemoryConsumer : public MemoryConsumer {
  public:
-  explicit TestAsyncMemoryConsumer(
-      scoped_refptr<SingleThreadTaskRunner> main_task_runner,
-      std::string_view consumer_id,
-      MemoryConsumerTraits traits)
-      : async_memory_consumer_registration_(std::move(main_task_runner),
-                                            consumer_id,
-                                            traits,
-                                            this) {}
+  explicit TestAsyncMemoryConsumer(std::string_view consumer_id,
+                                   MemoryConsumerTraits traits)
+      : async_memory_consumer_registration_(consumer_id, traits, this) {}
 
   MOCK_METHOD(void, OnUpdateMemoryLimit, (), (override));
   MOCK_METHOD(void, OnReleaseMemory, (), (override));
@@ -61,10 +57,9 @@ TEST_F(AsyncMemoryConsumerRegistrationTest, RegisterOnAnotherSequence) {
   TestMemoryConsumerRegistry registry;
 
   auto async_task_runner = ThreadPool::CreateSequencedTaskRunner({});
-  auto main_task_runner = SingleThreadTaskRunner::GetCurrentDefault();
 
-  SequenceBound<TestAsyncMemoryConsumer> consumer(
-      async_task_runner, main_task_runner, "consumer", MemoryConsumerTraits{});
+  SequenceBound<TestAsyncMemoryConsumer> consumer(async_task_runner, "consumer",
+                                                  MemoryConsumerTraits{});
 
   ASSERT_TRUE(test::RunUntil([&]() { return registry.size() == 1u; }));
 

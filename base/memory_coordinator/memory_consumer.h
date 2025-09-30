@@ -69,6 +69,7 @@ namespace base {
 //
 class BASE_EXPORT MemoryConsumer {
  public:
+  MemoryConsumer();
   virtual ~MemoryConsumer() = default;
 
   // The memory limit, expressed as a percentage.

@@ -11,6 +11,10 @@ namespace base {
 
 // MemoryConsumer ---------------------------------------------------
 
+MemoryConsumer::MemoryConsumer() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
 void MemoryConsumer::ReleaseMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnReleaseMemory();
