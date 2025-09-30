@@ -104,8 +104,9 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
 
 /// Replace all path separators with `/` and return it as a String. The
 /// resulting path is suitable for use in GN files.
-pub fn normalize_unix_path_separator(path: &Path) -> String {
+pub fn normalize_unix_path_separator(path: impl AsRef<Path>) -> String {
     // `Path`s on windows use `\` separators and we need to use `/` in GN strings.
+    let path = path.as_ref();
     path.iter()
         .map(|comp| comp.to_str().unwrap_or_else(|| panic!("non-UTF-8 in path {path:?}")))
         .join("/")
