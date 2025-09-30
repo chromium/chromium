@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_feature.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_mutator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
@@ -77,6 +80,21 @@ const CGFloat kReaderModeContentStackHorizontalPadding = 16;
 // The vertical padding for the reader mode content stack.
 const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
+// The minimum height for feature rows in the Page Action Menu.
+const CGFloat kFeatureRowHeight = 56;
+
+// The size of icons displayed in feature rows.
+const CGFloat kFeatureRowIconSize = 20;
+
+// The spacing between icon and content in feature rows.
+const CGFloat kFeatureRowContentSpacing = 12;
+
+// The horizontal padding within feature rows.
+const CGFloat kFeatureRowHorizontalPadding = 16;
+
+// The vertical padding within feature rows.
+const CGFloat kFeatureRowVerticalPadding = 12;
+
 }  // namespace
 
 @interface PageActionMenuViewController ()
@@ -87,6 +105,9 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 @end
 
 @implementation PageActionMenuViewController {
+  // Scroll view containing the menu's main content.
+  UIScrollView* _scrollView;
+
   // Stack view containing the menu's main content.
   UIStackView* _contentStackView;
 
@@ -101,84 +122,12 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   [super viewDidLoad];
 
   [self configureCornerRadius];
-
-  // Add blurred background.
-  UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
-  UIVisualEffectView* blurEffectView =
-      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-  blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:blurEffectView];
-  AddSameConstraints(blurEffectView, self.view);
-
+  [self setupBlurredBackground];
   [self setupNavigationBar];
-
-  _contentStackView = [[UIStackView alloc] init];
-  _contentStackView.axis = UILayoutConstraintAxisVertical;
-  _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_contentStackView];
-
-  if ([self.mutator isReaderModeActive]) {
-    UIView* readerModeActiveSection = [self createReaderModeActiveSection];
-    [_contentStackView addArrangedSubview:readerModeActiveSection];
-    [_contentStackView setCustomSpacing:kStackViewMargins
-                              afterView:readerModeActiveSection];
-
-    // Divider
-    UIView* divider = [[UIView alloc] init];
-    divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-    divider.translatesAutoresizingMaskIntoConstraints = NO;
-    [divider.heightAnchor constraintEqualToConstant:1].active = YES;
-    [_contentStackView addArrangedSubview:divider];
-    [_contentStackView setCustomSpacing:kStackViewMargins afterView:divider];
-  }
-
-  // Horizontal stack view for the 2 side-by-side buttons.
-  UIStackView* buttonsStackView = [self createSmallButtonsStackView];
-  [_contentStackView addArrangedSubview:buttonsStackView];
-  [_contentStackView setCustomSpacing:kStackViewMargins
-                            afterView:buttonsStackView];
-
-  // If Reader Mode is available but inactive, we use a 3-button UI. Otherwise,
-  // we just show the `buttonsStackView`, with an additional Reader mode section
-  // (above) if Reader mode is available and active.
-  if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
-    // Adds the large Gemini entry point button.
-    _BWGButton = [self createBWGButton];
-    [_contentStackView addArrangedSubview:_BWGButton];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [_BWGButton.heightAnchor
-          constraintGreaterThanOrEqualToConstant:kLargeButtonHeight],
-    ]];
-  }
-
-  [NSLayoutConstraint activateConstraints:@[
-    // Anchors the menu to the sheet.
-    [_contentStackView.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:kMenuTopPadding],
-    [_contentStackView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kMenuSidePadding],
-    [_contentStackView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kMenuSidePadding],
-
-    // Anchors the height of menu elements.
-    [buttonsStackView.heightAnchor
-        constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
-  ]];
-
-  __weak PageActionMenuViewController* weakSelf = self;
-  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-      @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
-  [self registerForTraitChanges:traits
-                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
-                                  UITraitCollection* previousCollection) {
-                      [weakSelf updateLensAvailability:traitEnvironment
-                                                           .traitCollection];
-                    }];
+  [self setupScrollView];
+  [self setupContent];
+  [self setupConstraints];
+  [self setupTraitChangeHandling];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -655,6 +604,383 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   button.userInteractionEnabled = enabled;
   button.alpha = enabled ? 1.0 : 0.5;
   button.enabled = enabled;
+}
+
+// Generates array of active features to display as rows in the Page Action
+// Menu.
+- (NSArray<PageActionMenuFeature*>*)generateActiveFeatures {
+  NSMutableArray<PageActionMenuFeature*>* features =
+      [[NSMutableArray alloc] init];
+
+  // Translate feature.
+  if ([self.mutator isFeatureAvailable:PageActionMenuTranslate]) {
+    PageActionMenuFeature* translateFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuTranslate
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_TRANSLATE_LABEL)
+                       icon:DefaultSymbolWithPointSize(kTranslateSymbol,
+                                                       kFeatureRowIconSize)
+                 actionType:PageActionMenuButtonAction];
+    translateFeature.subtitle = [self.mutator translateLanguagePair];
+    translateFeature.actionText = l10n_util::GetNSString(
+        IDS_IOS_AI_HUB_TRANSLATE_SHOW_ORIGINAL_BUTTON_LABEL);
+    [features addObject:translateFeature];
+  }
+
+  // Popup blocker feature.
+  if ([self.mutator isFeatureAvailable:PageActionMenuPopupBlocker]) {
+    PageActionMenuFeature* popupFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuPopupBlocker
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_POPUP_BLOCKER_LABEL)
+                       icon:CustomSymbolWithPointSize(kPopupBadgeMinusSymbol,
+                                                      kFeatureRowIconSize)
+                 actionType:PageActionMenuButtonAction];
+
+    NSInteger blockedCount = [self.mutator blockedPopupCount];
+    NSString* countString =
+        [NSString stringWithFormat:@"%ld", (long)blockedCount];
+    popupFeature.subtitle =
+        l10n_util::GetNSStringF(IDS_IOS_AI_HUB_POPUP_BLOCKER_COUNT_SUBTITLE,
+                                base::SysNSStringToUTF16(countString));
+    popupFeature.actionText =
+        l10n_util::GetNSString(IDS_IOS_AI_HUB_POPUP_ALWAYS_SHOW_BUTTON_LABEL);
+    [features addObject:popupFeature];
+  }
+
+  // Camera permission feature.
+  if ([self.mutator isFeatureAvailable:PageActionMenuCameraPermission]) {
+    PageActionMenuFeature* cameraFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuCameraPermission
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_CAMERA_PERMISSION_LABEL)
+                       icon:CustomSymbolWithPointSize(kCameraFillSymbol,
+                                                      kFeatureRowIconSize)
+                 actionType:PageActionMenuToggleAction];
+    cameraFeature.toggleState = YES;
+    [features addObject:cameraFeature];
+  }
+
+  // Microphone permission feature.
+  if ([self.mutator isFeatureAvailable:PageActionMenuMicrophonePermission]) {
+    PageActionMenuFeature* micFeature = [[PageActionMenuFeature alloc]
+        initWithFeatureType:PageActionMenuMicrophonePermission
+                      title:l10n_util::GetNSString(
+                                IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_LABEL)
+                       icon:DefaultSymbolWithPointSize(kMicrophoneFillSymbol,
+                                                       kFeatureRowIconSize)
+                 actionType:PageActionMenuToggleAction];
+    micFeature.toggleState = YES;
+    [features addObject:micFeature];
+  }
+
+  return features;
+}
+
+// Sets up blurred background effect for the Page Action Menu.
+- (void)setupBlurredBackground {
+  UIBlurEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
+  UIVisualEffectView* blurEffectView =
+      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:blurEffectView];
+  AddSameConstraints(blurEffectView, self.view);
+}
+
+// Configures scroll view and content stack view for the menu layout.
+- (void)setupScrollView {
+  _scrollView = [[UIScrollView alloc] init];
+  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrollView.showsVerticalScrollIndicator = NO;
+  [self.view addSubview:_scrollView];
+
+  _contentStackView = [[UIStackView alloc] init];
+  _contentStackView.axis = UILayoutConstraintAxisVertical;
+  _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_scrollView addSubview:_contentStackView];
+}
+
+// Builds the main content sections including Reader Mode and feature rows.
+- (void)setupContent {
+  // Reader mode section.
+  if ([self.mutator isReaderModeActive]) {
+    UIView* originalReaderModeSection = [self createReaderModeActiveSection];
+    [_contentStackView addArrangedSubview:originalReaderModeSection];
+    [_contentStackView setCustomSpacing:kStackViewMargins
+                              afterView:originalReaderModeSection];
+  }
+
+  // Generate feature rows based on availability.
+  if (IsProactiveSuggestionsFrameworkEnabled()) {
+    NSArray<PageActionMenuFeature*>* activeFeatures =
+        [self generateActiveFeatures];
+
+    UIView* lastFeatureView = nil;
+    for (PageActionMenuFeature* feature in activeFeatures) {
+      UIView* featureRowSection = [self createFeatureRowWithData:feature];
+      [_contentStackView addArrangedSubview:featureRowSection];
+      [_contentStackView setCustomSpacing:kStackViewMargins
+                                afterView:featureRowSection];
+      lastFeatureView = featureRowSection;
+    }
+
+    // Add permission explanation if permissions features are shown.
+    if ([self hasPermissionFeatures:activeFeatures]) {
+      UILabel* permissionExplanation = [self createPermissionExplanationLabel];
+      [_contentStackView addArrangedSubview:permissionExplanation];
+      lastFeatureView = permissionExplanation;
+    }
+
+    if (lastFeatureView) {
+      [self addDividerAfterView:lastFeatureView];
+    }
+  }
+  // Horizontal stack view for the 2 side-by-side buttons.
+  UIStackView* buttonsStackView = [self createSmallButtonsStackView];
+  [_contentStackView addArrangedSubview:buttonsStackView];
+  [_contentStackView setCustomSpacing:kStackViewMargins
+                            afterView:buttonsStackView];
+
+  // If Reader Mode is available but inactive, we use a 3-button UI. Otherwise,
+  // we just show the `buttonsStackView`, with an additional Reader mode section
+  // (above) if Reader mode is available and active.
+  if (IsReaderModeAvailable() && ![self.mutator isReaderModeActive]) {
+    // Adds the large Gemini entry point button.
+    _BWGButton = [self createBWGButton];
+    [_contentStackView addArrangedSubview:_BWGButton];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_BWGButton.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kLargeButtonHeight],
+    ]];
+  }
+}
+
+// Sets up Auto Layout constraints for scroll view and content stack.
+- (void)setupConstraints {
+  [NSLayoutConstraint activateConstraints:@[
+    // Scroll view constraints.
+    [_scrollView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
+                       constant:kMenuTopPadding],
+    [_scrollView.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kMenuSidePadding],
+    [_scrollView.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kMenuSidePadding],
+    [_scrollView.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+
+    // Content stack view constraints.
+    [_contentStackView.topAnchor constraintEqualToAnchor:_scrollView.topAnchor],
+    [_contentStackView.leadingAnchor
+        constraintEqualToAnchor:_scrollView.leadingAnchor],
+    [_contentStackView.trailingAnchor
+        constraintEqualToAnchor:_scrollView.trailingAnchor],
+    [_contentStackView.bottomAnchor
+        constraintEqualToAnchor:_scrollView.bottomAnchor],
+    [_contentStackView.widthAnchor
+        constraintEqualToAnchor:_scrollView.widthAnchor],
+  ]];
+}
+
+// Registers for trait collection changes to handle device orientation updates.
+- (void)setupTraitChangeHandling {
+  __weak PageActionMenuViewController* weakSelf = self;
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                  UITraitCollection* previousCollection) {
+                      [weakSelf updateLensAvailability:traitEnvironment
+                                                           .traitCollection];
+                    }];
+}
+
+// Creates UI view for a single feature row based on the provided feature data.
+- (UIView*)createFeatureRowWithData:(PageActionMenuFeature*)feature {
+  UIView* containerView = [[UIView alloc] init];
+  containerView.translatesAutoresizingMaskIntoConstraints = NO;
+  containerView.backgroundColor =
+      [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+          colorWithAlphaComponent:kSmallButtonOpacity];
+  containerView.layer.cornerRadius = kButtonsCornerRadius;
+
+  // Create horizontal stack.
+  UIStackView* stackView = [[UIStackView alloc] init];
+  stackView.axis = UILayoutConstraintAxisHorizontal;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.spacing = kFeatureRowContentSpacing;
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [containerView addSubview:stackView];
+
+  UIImageView* iconView = [[UIImageView alloc] initWithImage:feature.icon];
+  iconView.translatesAutoresizingMaskIntoConstraints = NO;
+  iconView.tintColor = [UIColor colorNamed:kBlue600Color];
+  [stackView addArrangedSubview:iconView];
+
+  UIStackView* labelsStack = [[UIStackView alloc] init];
+  labelsStack.axis = UILayoutConstraintAxisVertical;
+  labelsStack.alignment = UIStackViewAlignmentLeading;
+
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.text = feature.title;
+  titleLabel.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                              UIFontWeightRegular);
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  [labelsStack addArrangedSubview:titleLabel];
+
+  if (feature.subtitle && feature.subtitle.length > 0) {
+    UILabel* subtitleLabel = [[UILabel alloc] init];
+    subtitleLabel.text = feature.subtitle;
+    subtitleLabel.font =
+        PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
+    subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    [labelsStack addArrangedSubview:subtitleLabel];
+  }
+
+  [stackView addArrangedSubview:labelsStack];
+
+  // TODO(crbug.com/447649727):  Add action element based on feature type.
+  switch (feature.actionType) {
+    case PageActionMenuToggleAction: {
+      UISwitch* toggleSwitch = [[UISwitch alloc] init];
+      toggleSwitch.on = feature.toggleState;
+      toggleSwitch.tag = feature.featureType;
+      [toggleSwitch addTarget:self
+                       action:@selector(handleFeatureToggle:)
+             forControlEvents:UIControlEventValueChanged];
+      [stackView addArrangedSubview:toggleSwitch];
+      break;
+    }
+    case PageActionMenuButtonAction: {
+      if (feature.actionText && feature.actionText.length > 0) {
+        UIButton* actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
+        [actionButton setTitle:feature.actionText
+                      forState:UIControlStateNormal];
+        actionButton.titleLabel.font = PreferredFontForTextStyle(
+            UIFontTextStyleSubheadline, UIFontWeightMedium);
+        [actionButton setTitleColor:[UIColor colorNamed:kBlue600Color]
+                           forState:UIControlStateNormal];
+        actionButton.tag = feature.featureType;
+        [actionButton addTarget:self
+                         action:@selector(handleFeatureButton:)
+               forControlEvents:UIControlEventTouchUpInside];
+        [stackView addArrangedSubview:actionButton];
+      }
+      break;
+    }
+    case PageActionMenuSettingsAction:
+      // TODO(crbug.com/447649727):  Implement settings action.
+      break;
+  }
+
+  [NSLayoutConstraint activateConstraints:@[
+    [iconView.widthAnchor constraintEqualToConstant:kFeatureRowIconSize],
+    [iconView.heightAnchor constraintEqualToConstant:kFeatureRowIconSize],
+    [containerView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kFeatureRowHeight],
+
+    [stackView.leadingAnchor
+        constraintEqualToAnchor:containerView.leadingAnchor
+                       constant:kFeatureRowHorizontalPadding],
+    [stackView.trailingAnchor
+        constraintEqualToAnchor:containerView.trailingAnchor
+                       constant:-kFeatureRowHorizontalPadding],
+    [stackView.topAnchor constraintEqualToAnchor:containerView.topAnchor
+                                        constant:kFeatureRowVerticalPadding],
+    [stackView.bottomAnchor
+        constraintEqualToAnchor:containerView.bottomAnchor
+                       constant:-kFeatureRowVerticalPadding],
+  ]];
+
+  [labelsStack setContentHuggingPriority:UILayoutPriorityDefaultLow
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+
+  return containerView;
+}
+
+// Creates explanation label for site-specific permission context.
+- (UILabel*)createPermissionExplanationLabel {
+  CHECK(IsProactiveSuggestionsFrameworkEnabled());
+  UILabel* label = [[UILabel alloc] init];
+  NSString* domain = [self.mutator currentSiteDomain];
+  label.text =
+      l10n_util::GetNSStringF(IDS_IOS_AI_HUB_PERMISSION_SITE_EXPLANATION,
+                              base::SysNSStringToUTF16(domain));
+  label.font =
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  label.numberOfLines = 0;
+  label.textAlignment = NSTextAlignmentCenter;
+  return label;
+}
+
+// Returns true if any features in the array are permission-based features.
+- (BOOL)hasPermissionFeatures:(NSArray<PageActionMenuFeature*>*)features {
+  for (PageActionMenuFeature* feature in features) {
+    if (feature.featureType == PageActionMenuCameraPermission ||
+        feature.featureType == PageActionMenuMicrophonePermission) {
+      return YES;
+    }
+  }
+  return NO;
+}
+
+// Adds horizontal divider line with spacing after the last view in the content
+// stack.
+- (void)addDividerAfterView:(UIView*)view {
+  if (!view) {
+    return;
+  }
+
+  UIView* divider = [[UIView alloc] init];
+  divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  divider.translatesAutoresizingMaskIntoConstraints = NO;
+  [divider.heightAnchor constraintEqualToConstant:1].active = YES;
+  [_contentStackView addArrangedSubview:divider];
+
+  // Set spacing before and after divider.
+  [_contentStackView setCustomSpacing:kStackViewMargins afterView:view];
+  [_contentStackView setCustomSpacing:kStackViewMargins afterView:divider];
+}
+
+// Handles toggle switch changes for permission-based features.
+- (void)handleFeatureToggle:(UISwitch*)toggleSwitch {
+  CHECK(IsProactiveSuggestionsFrameworkEnabled());
+  PageActionMenuFeatureType featureType =
+      (PageActionMenuFeatureType)toggleSwitch.tag;
+
+  switch (featureType) {
+    case PageActionMenuCameraPermission:
+      // TODO(crbug.com/447649727): Handle camera permission toggle.
+      break;
+    case PageActionMenuMicrophonePermission:
+      // TODO(crbug.com/447649727): Handle microphone permission toggle.
+      break;
+    default:
+      break;
+  }
+}
+
+// Handles button taps for action-based features like translate and popup
+// blocker.
+- (void)handleFeatureButton:(UIButton*)button {
+  CHECK(IsProactiveSuggestionsFrameworkEnabled());
+  PageActionMenuFeatureType featureType = (PageActionMenuFeatureType)button.tag;
+
+  switch (featureType) {
+    case PageActionMenuTranslate:
+      // TODO(crbug.com/447649727): Handle translate "Show original" action.
+      break;
+    case PageActionMenuPopupBlocker:
+      // TODO(crbug.com/447649727): Handle popup "Always show" action.
+      break;
+    default:
+      break;
+  }
 }
 
 @end
