@@ -789,6 +789,18 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo,
                                                kTestAsGuestUser)));
 
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3NormalUser,
+    SpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsNormalUser)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3GuestUser,
+    SpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree,
+                                               kTestAsGuestUser)));
+
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, EnableSpokenFeedback) {
   chromevox_test_utils()->EnableChromeVox();
   sm()->Replay();
