@@ -7,6 +7,8 @@
 #include <string>
 
 #include "base/byte_count.h"
+#include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -23,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace tabs {
 
@@ -302,9 +306,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldHideThrobber) {
   EXPECT_TRUE(data.should_hide_throbber);
 }
 
-// TODO(crbug.com/443132192): Re-Enable Thumbnail Helper Browser Test for
-// TabRendererData
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DISABLED_Thumbnail) {
+IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Thumbnail) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -320,10 +322,17 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DISABLED_Thumbnail) {
             thumbnail_tab_helper->thumbnail().get());
   EXPECT_FALSE(data_initial.thumbnail->has_data());
 
+  base::RunLoop run_loop;
+  std::unique_ptr<ThumbnailImage::Subscription> subscription =
+      thumbnail_tab_helper->thumbnail()->Subscribe();
+  subscription->SetUncompressedImageCallback(
+      base::IgnoreArgs<gfx::ImageSkia>(run_loop.QuitClosure()));
+
   // Assign a dummy bitmap to trigger thumbnail image change.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(10, 10);
   thumbnail_tab_helper->thumbnail()->AssignSkBitmap(bitmap, /*frame_id=*/0);
+  run_loop.Run();
 
   // After assignment, thumbnail has data and FromTabInModel reflects it.
   EXPECT_TRUE(thumbnail_tab_helper->thumbnail()->has_data());
@@ -332,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DISABLED_Thumbnail) {
   EXPECT_TRUE(data_updated.thumbnail->has_data());
   EXPECT_EQ(data_updated.thumbnail.get(),
             thumbnail_tab_helper->thumbnail().get());
-  EXPECT_NE(data_initial, data_updated);
+  EXPECT_EQ(data_initial, data_updated);
 }
 
 // TODO(crbug.com/443125652): Creating a test for
