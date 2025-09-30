@@ -299,6 +299,8 @@ const char kGlicActorUiToastName[] = "glic-actor-ui-toast";
 const char kGlicActorUiHandoffButtonName[] = "glic-actor-ui-handoff-button";
 const char kGlicActorUiTabIndicatorName[] = "glic-actor-ui-tab-indicator";
 const char kGlicActorUiBorderGlowName[] = "glic-actor-ui-border-glow";
+const char kGlicActorUiStandaloneBorderGlowName[] =
+    "glic-actor-ui-standalone-border-glow";
 const char kGlicActorUiCompletedTaskExpiryDelaySecondsName[] =
     "glic-actor-completed-task-expiry-delay-seconds";
 
@@ -327,6 +329,10 @@ const base::FeatureParam<bool> kGlicActorUiTabIndicator{
 // Controls whether the actor border glow in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiBorderGlow{
     &kGlicActorUi, kGlicActorUiBorderGlowName, true};
+// Controls whether the actor border glow uses a standalone implementation or a
+// shared implementation with context sharing glow.
+const base::FeatureParam<bool> kGlicActorUiStandaloneBorderGlow{
+    &kGlicActorUi, kGlicActorUiStandaloneBorderGlowName, false};
 // Controls the expiry delay for completed tasks in the actor ui.
 const base::FeatureParam<int> kGlicActorUiCompletedTaskExpiryDelaySeconds{
     &kGlicActorUi, kGlicActorUiCompletedTaskExpiryDelaySecondsName, 10};
