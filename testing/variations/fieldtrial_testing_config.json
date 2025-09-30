@@ -1272,6 +1272,25 @@
             ]
         }
     ],
+    "AnimationTrigger": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250929",
+                    "enable_features": [
+                        "AnimationTrigger"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnnotatedPageContentExtraction": [
         {
             "platforms": [
