@@ -450,7 +450,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
         afterCreate();
         modelList.addObserver(
                 new AccessibilityListObserver(
-                        mMenuHolder.getContentView(), /* headerModelList= */ null, modelList));
+                        mMenuHolder.getContentView(),
+                        /* headerView= */ null,
+                        mMenuHolder.getContentView().findViewById(R.id.tab_group_action_menu_list),
+                        /* headerModelList= */ null,
+                        modelList));
         mMenuHolder.show();
     }
 

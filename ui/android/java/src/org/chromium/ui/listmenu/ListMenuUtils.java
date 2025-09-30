@@ -13,6 +13,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.SystemClock;
 import android.view.View;
@@ -344,6 +345,9 @@ public class ListMenuUtils {
     public static class AccessibilityListObserver implements ListObserver<Void> {
 
         private final View mView;
+        private final @Nullable ListView mHeaderView;
+        private final ListView mContentView;
+        private final Context mContext;
         private final @Nullable ModelList mHeaderModelList;
         private final ModelList mContentModelList;
 
@@ -352,8 +356,15 @@ public class ListMenuUtils {
          * headerModelList and {@param contentModelList}, the are backing models for {@param view}.
          */
         public AccessibilityListObserver(
-                View view, @Nullable ModelList headerModelList, ModelList contentModelList) {
-            mView = view;
+                View parentView,
+                @Nullable ListView headerView,
+                ListView contentView,
+                @Nullable ModelList headerModelList,
+                ModelList contentModelList) {
+            mView = parentView;
+            mHeaderView = headerView;
+            mContentView = contentView;
+            mContext = parentView.getContext();
             mHeaderModelList = headerModelList;
             mContentModelList = contentModelList;
         }
@@ -364,7 +375,7 @@ public class ListMenuUtils {
                 ListObservable<Void> source, int index, int count, @Nullable Void payload) {
             if (index != 0) return; // If the 1st element wasn't changed, the "header" is the same.
             String accessibilityPaneTitle =
-                    mView.getContext().getString(R.string.listmenu_a11y_default_pane_title);
+                    mContext.getString(R.string.listmenu_a11y_default_pane_title);
             Object firstItem = null;
             if (mHeaderModelList != null && !mHeaderModelList.isEmpty()) {
                 firstItem = mHeaderModelList.get(0);
@@ -382,11 +393,16 @@ public class ListMenuUtils {
                     @StringRes int titleId = firstListItem.model.get(TITLE_ID);
                     if (titleId != Resources.ID_NULL) {
                         accessibilityPaneTitle =
-                                mView.getContext().getString(firstListItem.model.get(TITLE_ID));
+                                mContext.getString(firstListItem.model.get(TITLE_ID));
                     }
                 }
             }
             ViewCompat.setAccessibilityPaneTitle(mView, accessibilityPaneTitle);
+            // The method calls below ensure that when we transition to a different submenu, the
+            // keyboard focus goes to the topmost element.
+            mContentView.setSelection(0);
+            if (mHeaderView != null) mHeaderView.setSelection(0);
+            mView.requestFocus();
         }
     }
 }

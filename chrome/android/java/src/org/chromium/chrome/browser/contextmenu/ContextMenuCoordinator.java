@@ -359,7 +359,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mListViews.add(listView);
 
         listItems.addObserver(
-                new AccessibilityListObserver(listView, /* headerModelList= */ null, listItems));
+                new AccessibilityListObserver(
+                        listView,
+                        /* headerView= */ null,
+                        listView,
+                        /* headerModelList= */ null,
+                        listItems));
         mWebContentsObserver =
                 new WebContentsObserver(mWebContents) {
                     @Override

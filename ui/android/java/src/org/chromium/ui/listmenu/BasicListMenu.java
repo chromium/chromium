@@ -173,7 +173,12 @@ public class BasicListMenu implements ListMenu {
         }
 
         AccessibilityListObserver observer =
-                new AccessibilityListObserver(mListMenuLayout, mHeaderModelList, mContentModelList);
+                new AccessibilityListObserver(
+                        mListMenuLayout,
+                        mHeaderListView,
+                        mContentListView,
+                        mHeaderModelList,
+                        mContentModelList);
         mHeaderModelList.addObserver(observer);
         mContentModelList.addObserver(observer);
 
