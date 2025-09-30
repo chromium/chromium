@@ -258,7 +258,7 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
   OnInfoBarAdded(new_infobar);
 }
 
-void InfobarBadgeTabHelper::InfobarManagerObserver::OnManagerWillBeDestroyed(
+void InfobarBadgeTabHelper::InfobarManagerObserver::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
   DCHECK(scoped_observation_.IsObservingSource(manager));
   scoped_observation_.Reset();

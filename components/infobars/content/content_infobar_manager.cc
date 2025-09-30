@@ -55,7 +55,9 @@ ContentInfoBarManager::ContentInfoBarManager(content::WebContents* web_contents)
   }
 }
 
-ContentInfoBarManager::~ContentInfoBarManager() = default;
+ContentInfoBarManager::~ContentInfoBarManager() {
+  ShutDown();
+}
 
 int ContentInfoBarManager::GetActiveEntryID() {
   content::NavigationEntry* active_entry =

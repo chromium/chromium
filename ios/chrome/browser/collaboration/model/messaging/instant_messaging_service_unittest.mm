@@ -107,7 +107,9 @@ class InstantMessagingServiceTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(active_web_state_);
   }
 
-  ~InstantMessagingServiceTest() override = default;
+  ~InstantMessagingServiceTest() override {
+    InfoBarManagerImpl::FromWebState(active_web_state_)->ShutDown();
+  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;

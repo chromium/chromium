@@ -44,8 +44,7 @@ void InfoBarManager::Observer::OnInfoBarRemoved(InfoBar* infobar,
 void InfoBarManager::Observer::OnInfoBarReplaced(InfoBar* old_infobar,
                                                  InfoBar* new_infobar) {}
 
-void InfoBarManager::Observer::OnManagerWillBeDestroyed(
-    InfoBarManager* manager) {}
+void InfoBarManager::Observer::OnManagerShuttingDown(InfoBarManager* manager) {}
 
 // InfoBarManager --------------------------------------------------------------
 
@@ -127,12 +126,14 @@ void InfoBarManager::RemoveObserver(Observer* obs) {
 
 InfoBarManager::InfoBarManager() : infobars_enabled_(!DisableInfoBars()) {}
 
-InfoBarManager::~InfoBarManager() {
+InfoBarManager::~InfoBarManager() = default;
+
+void InfoBarManager::ShutDown() {
   // Destroy all remaining InfoBars.  It's important to not animate here so that
   // we guarantee that we'll delete all delegates before we do anything else.
   RemoveAllInfoBars(false);
   for (Observer& observer : observer_list_) {
-    observer.OnManagerWillBeDestroyed(this);
+    observer.OnManagerShuttingDown(this);
   }
 }
 

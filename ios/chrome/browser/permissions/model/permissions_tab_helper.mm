@@ -126,7 +126,7 @@ void PermissionsTabHelper::OnInfoBarRemoved(infobars::InfoBar* infobar,
   }
 }
 
-void PermissionsTabHelper::OnManagerWillBeDestroyed(
+void PermissionsTabHelper::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
   DCHECK(infobar_manager_scoped_observation_.IsObservingSource(manager));
   infobar_manager_scoped_observation_.Reset();

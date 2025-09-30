@@ -47,7 +47,7 @@ class BlockedPopupTabHelper
 
   // infobars::InfoBarManager::Observer implementation.
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnManagerWillBeDestroyed(
+  void OnManagerShuttingDown(
       infobars::InfoBarManager* infobar_manager) override;
 
   // Encapsulates information about popup.

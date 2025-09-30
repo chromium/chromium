@@ -196,7 +196,7 @@ void BreadcrumbManagerTabHelper::OnInfoBarReplaced(
   }
 }
 
-void BreadcrumbManagerTabHelper::OnManagerWillBeDestroyed(
+void BreadcrumbManagerTabHelper::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
   DCHECK_EQ(infobar_manager_, manager);
   DCHECK(infobar_observation_.IsObservingSource(manager));
