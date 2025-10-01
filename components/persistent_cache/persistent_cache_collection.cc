@@ -91,6 +91,22 @@ void PersistentCacheCollection::DeleteAllFiles() {
   backend_params_manager_->DeleteAllFiles();
 }
 
+std::optional<BackendParams>
+PersistentCacheCollection::ExportReadOnlyBackendParams(
+    const std::string& cache_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return GetOrCreateCache(cache_id)->ExportReadOnlyBackendParams();
+}
+
+std::optional<BackendParams>
+PersistentCacheCollection::ExportReadWriteBackendParams(
+    const std::string& cache_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return GetOrCreateCache(cache_id)->ExportReadWriteBackendParams();
+}
+
 PersistentCache* PersistentCacheCollection::GetOrCreateCache(
     const std::string& cache_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

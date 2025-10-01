@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_BACKEND_H_
 #define COMPONENTS_PERSISTENT_CACHE_BACKEND_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "components/persistent_cache/backend_params.h"
@@ -62,6 +64,14 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) Backend {
   // should be equivalent for reads. Writes should probably not be attempted if
   // not permitted.
   virtual bool IsReadOnly() const = 0;
+
+  // Returns params for an independent read-only connection to the instance, or
+  // nothing in case of error.
+  virtual std::optional<BackendParams> ExportReadOnlyParams() = 0;
+
+  // Returns params for an independent read-write connection to the instance, or
+  // nothing in case of error.
+  virtual std::optional<BackendParams> ExportReadWriteParams() = 0;
 
  protected:
   Backend();

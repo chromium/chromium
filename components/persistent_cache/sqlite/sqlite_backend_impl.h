@@ -40,9 +40,14 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
               EntryMetadata metadata) override;
   BackendType GetType() const override;
   bool IsReadOnly() const override;
+  std::optional<BackendParams> ExportReadOnlyParams() override;
+  std::optional<BackendParams> ExportReadWriteParams() override;
 
  private:
   static SqliteVfsFileSet GetVfsFileSetFromParams(BackendParams backend_params);
+
+  std::optional<BackendParams> ExportParams(bool read_write);
+
   base::FilePath database_path_;
 
   // The set of of `SanboxedFiles` accessible by this backend. This class owns

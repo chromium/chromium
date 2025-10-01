@@ -40,6 +40,14 @@ void PersistentCache::Insert(std::string_view key,
   NOTREACHED();
 }
 
+std::optional<BackendParams> PersistentCache::ExportReadOnlyBackendParams() {
+  NOTREACHED();
+}
+
+std::optional<BackendParams> PersistentCache::ExportReadWriteBackendParams() {
+  NOTREACHED();
+}
+
 Backend* PersistentCache::GetBackendForTesting() {
   NOTREACHED();
 }

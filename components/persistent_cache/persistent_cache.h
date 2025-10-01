@@ -87,6 +87,14 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCache {
               base::span<const uint8_t> content,
               EntryMetadata metadata = EntryMetadata{});
 
+  // Returns params for an independent read-only connection to the instance, or
+  // nothing if its backend is not operating or the params cannot be exported.
+  std::optional<BackendParams> ExportReadOnlyBackendParams();
+
+  // Returns params for an independent read-write connection to the instance, or
+  // nothing if its backend is not operating or the params cannot be exported.
+  std::optional<BackendParams> ExportReadWriteBackendParams();
+
   Backend* GetBackendForTesting();
 
  private:

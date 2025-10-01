@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_PERSISTENT_CACHE_COLLECTION_H_
 #define COMPONENTS_PERSISTENT_CACHE_PERSISTENT_CACHE_COLLECTION_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/containers/lru_cache.h"
 #include "base/sequence_checker.h"
@@ -57,6 +59,18 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) PersistentCacheCollection {
 
   // Deletes all files handled by the backend params manager.
   void DeleteAllFiles();
+
+  // Returns params for an independent read-only connection to the persistent
+  // cache at `cache_id`, or nothing if the cache's backend is not operating or
+  // the params cannot be exported.
+  std::optional<BackendParams> ExportReadOnlyBackendParams(
+      const std::string& cache_id);
+
+  // Returns params for an independent read-write connection to the persistent
+  // cache at `cache_id`, or nothing if the cache's backend is not operating or
+  // the params cannot be exported.
+  std::optional<BackendParams> ExportReadWriteBackendParams(
+      const std::string& cache_id);
 
  private:
   void ReduceFootPrint();

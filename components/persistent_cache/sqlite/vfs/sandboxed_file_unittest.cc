@@ -25,10 +25,11 @@ class SandboxedFileTest : public testing::Test {
   std::unique_ptr<SandboxedFile> CreateEmptyFile(const std::string& file_name) {
     base::WritableSharedMemoryMapping mapped_shared_lock = shared_region_.Map();
 
+    base::FilePath path = temporary_directory_.GetPath().AppendASCII(file_name);
+    base::File file(path, base::File::FLAG_CREATE_ALWAYS |
+                              base::File::FLAG_READ | base::File::FLAG_WRITE);
     return std::make_unique<SandboxedFile>(
-        base::File(temporary_directory_.GetPath().AppendASCII(file_name),
-                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                       base::File::FLAG_WRITE),
+        std::move(file), std::move(path),
         SandboxedFile::AccessRights::kReadWrite, std::move(mapped_shared_lock));
   }
 

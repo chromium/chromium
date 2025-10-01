@@ -6,8 +6,8 @@
 #define COMPONENTS_PERSISTENT_CACHE_BACKEND_PARAMS_H_
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 
 namespace persistent_cache {
@@ -39,6 +39,12 @@ struct COMPONENT_EXPORT(PERSISTENT_CACHE) BackendParams {
   bool db_file_is_writable = false;
   base::File journal_file;
   bool journal_file_is_writable = false;
+
+  // The optional paths to the database and its journal files. Must be provided
+  // when read-only access to read-write files may be exported from a
+  // backend. May be omitted otherwise.
+  base::FilePath db_file_path;
+  base::FilePath journal_file_path;
 
   // A read-write region of memory shared by all processes accessing `db_file`.
   // This memory holds the locking state for the database. Locks held by a

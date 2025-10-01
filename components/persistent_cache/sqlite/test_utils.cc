@@ -13,24 +13,29 @@
 #include "components/persistent_cache/sqlite/vfs/sqlite_database_vfs_file_set.h"
 #include "sql/sandboxed_vfs_file.h"
 
+namespace {
+
+base::File CreateFile(const base::FilePath& file_path) {
+  uint32_t flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+                   base::File::FLAG_WRITE;
+  return base::File(file_path, flags);
+}
+
+}  // namespace
+
 namespace persistent_cache::test_utils {
 
 TestHelper::TestHelper() = default;
 TestHelper::~TestHelper() = default;
 
-base::File TestHelper::CreateFile(base::FilePath directory,
-                                  const std::string& file_name) {
-  uint32_t flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                   base::File::FLAG_WRITE;
-  return base::File(directory.AppendASCII(file_name), flags);
-}
-
 BackendParams TestHelper::CreateBackendFilesAndBuildParams(BackendType type) {
   base::FilePath temporary_subdir = CreateTemporaryDir();
   BackendParams backend_params;
-  backend_params.db_file = CreateFile(temporary_subdir, "FIRST");
+  backend_params.db_file_path = temporary_subdir.AppendASCII("FIRST");
+  backend_params.db_file = CreateFile(backend_params.db_file_path);
   backend_params.db_file_is_writable = true;
-  backend_params.journal_file = CreateFile(temporary_subdir, "SECOND");
+  backend_params.journal_file_path = temporary_subdir.AppendASCII("SECOND");
+  backend_params.journal_file = CreateFile(backend_params.journal_file_path);
   backend_params.journal_file_is_writable = true;
   backend_params.shared_lock =
       base::UnsafeSharedMemoryRegion::Create(sizeof(LockState));
@@ -47,14 +52,18 @@ SqliteVfsFileSet TestHelper::CreateFilesAndBuildVfsFileSet() {
 
   // Note: Specifically give nonsensical names to the files here to examplify
   // that using a vfs allows for their use not through their actual names.
-  base::File db_file = CreateFile(temporary_subdir, "FIRST");
-  base::File journal_file = CreateFile(temporary_subdir, "SECOND");
+  base::FilePath db_file_path = temporary_subdir.AppendASCII("FIRST");
+  base::File db_file = CreateFile(db_file_path);
+  base::FilePath journal_file_path = temporary_subdir.AppendASCII("SECOND");
+  base::File journal_file = CreateFile(journal_file_path);
 
   return SqliteVfsFileSet(
       std::make_unique<SandboxedFile>(std::move(db_file),
+                                      std::move(db_file_path),
                                       SandboxedFile::AccessRights::kReadWrite,
                                       std::move(mapped_shared_lock)),
       std::make_unique<SandboxedFile>(std::move(journal_file),
+                                      std::move(journal_file_path),
                                       SandboxedFile::AccessRights::kReadWrite),
       std::move(shared_lock));
 }

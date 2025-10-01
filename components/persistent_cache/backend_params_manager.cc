@@ -398,18 +398,18 @@ BackendParams BackendParamsManager::CreateParamsSync(
       base::FilePath(base::StrCat({filename, kJournalFile}));
 #endif
 
-  base::FilePath db_file_full_path = directory.Append(db_file_name);
-  params.db_file = base::File(db_file_full_path, flags);
+  params.db_file_path = directory.Append(db_file_name);
+  params.db_file = base::File(params.db_file_path, flags);
   params.db_file_is_writable = writes_supported;
 
-  base::FilePath journal_file_full_path = directory.Append(journal_file_name);
-  params.journal_file = base::File(journal_file_full_path, flags);
+  params.journal_file_path = directory.Append(journal_file_name);
+  params.journal_file = base::File(params.journal_file_path, flags);
   params.journal_file_is_writable = writes_supported;
 
   if (!params.db_file.IsValid() || !params.journal_file.IsValid()) {
     size_t smallest_path_length =
-        std::min(db_file_full_path.value().length(),
-                 journal_file_full_path.value().length());
+        std::min(params.db_file_path.value().length(),
+                 params.journal_file_path.value().length());
     if (smallest_path_length > kMaxFilePathLength) {
       base::UmaHistogramCounts100(
           "PersistentCache.ParamsManager.FilenameCharactersOverLimit",

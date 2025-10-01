@@ -45,7 +45,6 @@ class TestHelper {
   BackendParams CreateBackendFilesAndBuildParams(BackendType type);
 
  private:
-  base::File CreateFile(base::FilePath directory, const std::string& file_name);
   base::FilePath CreateTemporaryDir();
   std::vector<base::ScopedTempDir> scoped_temp_dirs_;
 };

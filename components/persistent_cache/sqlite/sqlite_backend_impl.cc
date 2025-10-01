@@ -5,6 +5,7 @@
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
@@ -39,12 +40,13 @@ SqliteVfsFileSet SqliteBackendImpl::GetVfsFileSetFromParams(
 
   using AccessRights = SandboxedFile::AccessRights;
   std::unique_ptr<SandboxedFile> db_file = std::make_unique<SandboxedFile>(
-      std::move(backend_params.db_file),
+      std::move(backend_params.db_file), std::move(backend_params.db_file_path),
       backend_params.db_file_is_writable ? AccessRights::kReadWrite
                                          : AccessRights::kReadOnly,
       std::move(mapped_shared_lock));
   std::unique_ptr<SandboxedFile> journal_file = std::make_unique<SandboxedFile>(
       std::move(backend_params.journal_file),
+      std::move(backend_params.journal_file_path),
       backend_params.journal_file_is_writable ? AccessRights::kReadWrite
                                               : AccessRights::kReadOnly);
 
@@ -161,6 +163,31 @@ BackendType SqliteBackendImpl::GetType() const {
 
 bool SqliteBackendImpl::IsReadOnly() const {
   return vfs_file_set_.read_only();
+}
+
+std::optional<BackendParams> SqliteBackendImpl::ExportReadOnlyParams() {
+  return ExportParams(/*read_write=*/false);
+}
+
+std::optional<BackendParams> SqliteBackendImpl::ExportReadWriteParams() {
+  return ExportParams(/*read_write=*/true);
+}
+
+std::optional<BackendParams> SqliteBackendImpl::ExportParams(bool read_write) {
+  BackendParams result;
+  result.type = BackendType::kSqlite;
+  std::tie(result.db_file, result.journal_file) =
+      vfs_file_set_.DuplicateFiles(read_write);
+  if (!result.db_file.IsValid() || !result.journal_file.IsValid()) {
+    return std::nullopt;
+  }
+  result.db_file_is_writable = read_write;
+  result.journal_file_is_writable = read_write;
+  result.shared_lock = vfs_file_set_.DuplicateLock();
+  if (!result.shared_lock.IsValid()) {
+    return std::nullopt;
+  }
+  return result;
 }
 
 }  // namespace persistent_cache

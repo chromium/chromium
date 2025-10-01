@@ -41,6 +41,14 @@ class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteVfsFileSet {
 
   bool read_only() const { return read_only_; }
 
+  // Returns handles to the files in the set with either read-write or read-only
+  // access. Either may be an invalid file in case of error.
+  std::array<base::File, 2> DuplicateFiles(bool read_write);
+
+  // Returns a handle to the shared memory region holding the database's shared
+  // lock.
+  base::UnsafeSharedMemoryRegion DuplicateLock();
+
  private:
   base::FilePath GetJournalVirtualFilePath() const;
 

@@ -34,6 +34,14 @@ class MockBackendImpl : public Backend {
               Insert,
               (std::string_view, base::span<const uint8_t>, EntryMetadata),
               (override));
+  MOCK_METHOD(std::optional<BackendParams>,
+              ExportReadOnlyParams,
+              (),
+              (override));
+  MOCK_METHOD(std::optional<BackendParams>,
+              ExportReadWriteParams,
+              (),
+              (override));
 };
 
 }  // namespace persistent_cache
