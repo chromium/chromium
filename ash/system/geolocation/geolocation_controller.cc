@@ -299,11 +299,8 @@ GeolocationController::GetSunRiseSetTime() const {
   if (!midday_today) {
     return base::unexpected(SunRiseSetError::kUnavailable);
   }
-  return base::FeatureList::IsEnabled(features::kUseICUForGetSunRiseSet)
-             ? GetSunriseSunsetICU(*midday_today, geoposition_->latitude,
-                                   geoposition_->longitude)
-             : GetSunriseSunset(*midday_today, geoposition_->latitude,
-                                geoposition_->longitude);
+  return GetSunriseSunset(*midday_today, geoposition_->latitude,
+                          geoposition_->longitude);
 }
 
 void GeolocationController::LoadCachedGeopositionIfNeeded() {

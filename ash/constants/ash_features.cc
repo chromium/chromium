@@ -2148,10 +2148,6 @@ BASE_FEATURE(kLiveCaptionUserMicrophone, base::FEATURE_DISABLED_BY_DEFAULT);
 // ChromeOS.
 BASE_FEATURE(kUseSearchClickForRightClick, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using ICU library to get sunrise/sunset time.
-// TODO(crbug.com/419726206): Remove this before m142 branch cut.
-BASE_FEATURE(kUseICUForGetSunRiseSet, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use the Stork production SM-DS server when fetching pending eSIM profiles.
 BASE_FEATURE(kUseStorkSmdsServerAddress, base::FEATURE_DISABLED_BY_DEFAULT);
 

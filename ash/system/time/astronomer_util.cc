@@ -10,7 +10,6 @@
 
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "third_party/icu/source/i18n/astro.h"
 
 namespace ash {
 namespace {
@@ -161,23 +160,6 @@ GetSunriseSunset(const base::Time& time, double latitude, double longitude) {
     result.sunset += base::Days(1);
   }
   return result;
-}
-
-base::expected<SunRiseSetTime, SunRiseSetError>
-GetSunriseSunsetICU(const base::Time& time, double latitude, double longitude) {
-  icu::CalendarAstronomer astro(longitude, latitude);
-  astro.setTime(time.InMillisecondsFSinceUnixEpoch());
-  const double sun_rise_ms = astro.getSunRiseSet(/*sunrise=*/true);
-  if (sun_rise_ms < 0) {
-    return base::unexpected(SunRiseSetError::kNoSunRiseSet);
-  }
-  const double sun_set_ms = astro.getSunRiseSet(/*sunrise=*/false);
-  if (sun_set_ms < 0) {
-    return base::unexpected(SunRiseSetError::kNoSunRiseSet);
-  }
-  return base::ok(SunRiseSetTime{
-      .sunrise = base::Time::FromMillisecondsSinceUnixEpoch(sun_rise_ms),
-      .sunset = base::Time::FromMillisecondsSinceUnixEpoch(sun_set_ms)});
 }
 
 }  // namespace ash

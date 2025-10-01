@@ -31,11 +31,6 @@ struct SunRiseSetTime {
 ASH_EXPORT base::expected<SunRiseSetTime, SunRiseSetError>
 GetSunriseSunset(const base::Time& time, double latitude, double longitude);
 
-// Deprecated.
-// TODO(crbug.com/419726206): Remove this before m142 branch cut.
-ASH_EXPORT base::expected<SunRiseSetTime, SunRiseSetError>
-GetSunriseSunsetICU(const base::Time& time, double latitude, double longitude);
-
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_TIME_ASTRONOMER_UTIL_H_
