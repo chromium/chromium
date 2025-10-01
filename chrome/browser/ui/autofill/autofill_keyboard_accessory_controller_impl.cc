@@ -57,7 +57,8 @@ constexpr std::u16string_view kWorkAddressManagementUrl =
     u"https://myaccount.google.com/address/"
     u"work?utm_source=chrome&utm_campaign=manage_addresses";
 constexpr std::u16string_view kAccountNameAndEmailManagementUrl =
-    u"https://myaccount.google.com/personal-info";
+    u"https://myaccount.google.com/personal-info"
+    u"?utm_source=chrome-settings&utm_medium=autofill";
 
 std::u16string ExtractPassword(const std::u16string& label) {
   // `label` is never empty since `Suggestion::labels` must contain a password.
