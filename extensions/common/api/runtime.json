@@ -341,6 +341,17 @@
         }
       },
       {
+        "name": "getVersion",
+        "description": "Returns the extension's version as declared in the manifest.",
+        "type": "function",
+        "nocompile": true,
+        "parameters": [],
+        "returns": {
+          "type": "string",
+          "description": "The extension's version."
+        }
+      },
+      {
         "name": "getURL",
         "type": "function",
         "nocompile": true,

@@ -86,6 +86,7 @@ void EmptySetter(v8::Local<v8::Name> name,
 }
 
 constexpr char kGetManifest[] = "runtime.getManifest";
+constexpr char kGetVersion[] = "runtime.getVersion";
 constexpr char kGetURL[] = "runtime.getURL";
 constexpr char kConnect[] = "runtime.connect";
 constexpr char kConnectNative[] = "runtime.connectNative";
@@ -224,6 +225,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
       {&RuntimeHooksDelegate::HandleConnect, kConnect},
       {&RuntimeHooksDelegate::HandleGetURL, kGetURL},
       {&RuntimeHooksDelegate::HandleGetManifest, kGetManifest},
+      {&RuntimeHooksDelegate::HandleGetVersion, kGetVersion},
       {&RuntimeHooksDelegate::HandleConnectNative, kConnectNative},
       {&RuntimeHooksDelegate::HandleSendNativeMessage, kSendNativeMessage},
       {&RuntimeHooksDelegate::HandleGetBackgroundPage, kGetBackgroundPage},
@@ -291,6 +293,20 @@ RequestResult RuntimeHooksDelegate::HandleGetManifest(
   RequestResult result(RequestResult::HANDLED);
   result.return_value = content::V8ValueConverter::Create()->ToV8Value(
       *script_context->extension()->manifest()->value(),
+      script_context->v8_context());
+
+  return result;
+}
+
+RequestResult RuntimeHooksDelegate::HandleGetVersion(
+    ScriptContext* script_context,
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
+  CHECK(script_context->extension());
+
+  RequestResult result(RequestResult::HANDLED);
+  result.return_value = content::V8ValueConverter::Create()->ToV8Value(
+      script_context->extension()->VersionString(),
       script_context->v8_context());
 
   return result;

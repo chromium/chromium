@@ -159,6 +159,20 @@ TEST_F(RuntimeHooksDelegateTest, GetManifest) {
             V8ToString(manifest, context));
 }
 
+TEST_F(RuntimeHooksDelegateTest, GetVersion) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  v8::Local<v8::Function> get_version = FunctionFromString(
+      context, "(function() { return chrome.runtime.getVersion(); })");
+  v8::Local<v8::Value> version =
+      RunFunction(get_version, context, 0, nullptr);
+  ASSERT_FALSE(version.IsEmpty());
+  ASSERT_TRUE(version->IsString());
+  EXPECT_EQ(extension()->VersionString(),
+            V8ToBaseValue(version, context)->GetString());
+}
+
 TEST_F(RuntimeHooksDelegateTest, GetURL) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();

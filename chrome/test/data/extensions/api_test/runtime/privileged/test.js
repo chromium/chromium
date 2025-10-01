@@ -73,4 +73,12 @@ chrome.test.runTests([
     succeed();
   },
 
+  function testGetVersion() {
+    if (!checkIsDefined('getVersion'))
+      return;
+    var version = chrome.runtime.getVersion();
+    assertEq('1', version);
+    succeed();
+  },
+
 ]);

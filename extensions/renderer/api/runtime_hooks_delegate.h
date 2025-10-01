@@ -49,6 +49,9 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
   APIBindingHooks::RequestResult HandleGetManifest(
       ScriptContext* script_context,
       const APISignature::V8ParseResult& parse_result);
+  APIBindingHooks::RequestResult HandleGetVersion(
+      ScriptContext* script_context,
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetURL(
       ScriptContext* script_context,
       const APISignature::V8ParseResult& parse_result);

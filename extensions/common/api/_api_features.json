@@ -583,6 +583,13 @@
       "content_script"
     ]
   },
+  "runtime.getVersion": {
+    "contexts": [
+      "privileged_extension",
+      "unprivileged_extension",
+      "content_script"
+    ]
+  },
   "runtime.connect": [{
     // Everything except WebUI.
     "contexts": [
