@@ -114,9 +114,7 @@ TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnRevamp) {
 TEST_F(ONCTranslatorOncToShillTest,
        TranslateCellularApnRevampOnApnPoliciesOff) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{ash::features::kApnRevamp},
-      /*disabled_features=*/{chromeos::features::kApnPolicies});
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
 
   base::Value::Dict onc_network =
       test_utils::ReadTestDictionary("cellular_apn_policies.onc");
@@ -238,25 +236,6 @@ TEST_F(ONCTranslatorShillToOncTest, TranslateCellularApnRevamp) {
       "shill_cellular_with_state_apn_revamp.json");
   base::Value::Dict expected_onc_network = test_utils::ReadTestDictionary(
       "translation_of_shill_cellular_with_state_apn_revamp.onc");
-
-  base::Value::Dict translation = TranslateShillServiceToONCPart(
-      shill_network, ::onc::ONC_SOURCE_NONE,
-      &chromeos::onc::kNetworkWithStateSignature, /*network_state=*/nullptr);
-
-  EXPECT_TRUE(test_utils::Equals(&expected_onc_network, &translation));
-}
-
-TEST_F(ONCTranslatorShillToOncTest, TranslateCellularApnPolicies) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(/*enabled_features=*/
-                                       {ash::features::kApnRevamp,
-                                        chromeos::features::kApnPolicies},
-                                       /*disabled_features=*/{});
-
-  base::Value::Dict shill_network = test_utils::ReadTestDictionary(
-      "shill_cellular_with_state_apn_policies.json");
-  base::Value::Dict expected_onc_network = test_utils::ReadTestDictionary(
-      "translation_of_shill_cellular_with_state_apn_policies.onc");
 
   base::Value::Dict translation = TranslateShillServiceToONCPart(
       shill_network, ::onc::ONC_SOURCE_NONE,

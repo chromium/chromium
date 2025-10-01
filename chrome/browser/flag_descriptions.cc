@@ -6421,13 +6421,6 @@ const char kAlwaysEnableHdcpDefault[] = "Default";
 const char kAlwaysEnableHdcpType0[] = "Type 0";
 const char kAlwaysEnableHdcpType1[] = "Type 1";
 
-const char kApnPoliciesName[] = "APN Policies";
-const char kApnPoliciesDescription[] =
-    "Enables the ChromeOS APN Policies, which gives admins the ability to set "
-    "APN policies for managed eSIM networks and pSIMs. Note that the 'APN "
-    "Revamp' flag should be enabled as well for this feature to work as "
-    "expected.";
-
 const char kApnRevampName[] = "APN Revamp";
 const char kApnRevampDescription[] =
     "Enables the ChromeOS APN Revamp, which updates cellular network APN "

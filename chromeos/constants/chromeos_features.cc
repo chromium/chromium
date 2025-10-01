@@ -12,9 +12,6 @@
 
 namespace chromeos::features {
 
-// Adds Managed APN Policies support.
-BASE_FEATURE(kApnPolicies, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables smaller battery badge icons to improve legibility of the battery
 // percentage.
 BASE_FEATURE(kBatteryBadgeIcon, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -295,10 +292,6 @@ BASE_FEATURE(kNotebookLmAppShelfPinReset, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables support for protocols handlers registered via web app manifest.
 BASE_FEATURE(kWebAppManifestProtocolHandlerSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsApnPoliciesEnabled() {
-  return base::FeatureList::IsEnabled(kApnPolicies);
-}
 
 bool IsBatteryBadgeIconEnabled() {
   return base::FeatureList::IsEnabled(kBatteryBadgeIcon);

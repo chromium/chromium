@@ -3710,9 +3710,6 @@ extern const char kAlwaysEnableHdcpDefault[];
 extern const char kAlwaysEnableHdcpType0[];
 extern const char kAlwaysEnableHdcpType1[];
 
-extern const char kApnPoliciesName[];
-extern const char kApnPoliciesDescription[];
-
 extern const char kApnRevampName[];
 extern const char kApnRevampDescription[];
 

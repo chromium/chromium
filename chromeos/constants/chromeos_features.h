@@ -17,7 +17,6 @@ namespace features {
 // alongside the definition of their values in the .cc file. If a feature is
 // being rolled out via Finch, add a comment in the .cc file.
 
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) BASE_DECLARE_FEATURE(kApnPolicies);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kBatteryBadgeIcon);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
@@ -128,8 +127,6 @@ BASE_DECLARE_FEATURE(kWebAppManifestProtocolHandlerSupport);
 
 // Keep alphabetized.
 
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsApnPoliciesEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsBatteryBadgeIconEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
