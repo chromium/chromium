@@ -157,7 +157,7 @@ class GPU_GLES2_EXPORT SharedImageManager
     return display_context_on_another_thread_;
   }
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_WIN)
   GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
     return gpu_memory_buffer_factory_.get();
   }
@@ -210,7 +210,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
 #endif
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
 #endif
 

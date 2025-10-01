@@ -20,18 +20,13 @@
 
 namespace gpu {
 
-#if !BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 // static
 std::unique_ptr<GpuMemoryBufferFactory>
 GpuMemoryBufferFactory::CreateNativeType(
     viz::VulkanContextProvider* vulkan_context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> io_runner) {
-#if BUILDFLAG(IS_ANDROID)
-  // Android does not support creating native GMBs (i.e., from
-  // AHardwareBuffers), but the codebase is structured such that it is easier
-  // to create a dummy factory than create no factory.
-  return std::make_unique<GpuMemoryBufferFactory>();
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<GpuMemoryBufferFactoryNativePixmap>(
       vulkan_context_provider);
 #elif BUILDFLAG(IS_WIN)

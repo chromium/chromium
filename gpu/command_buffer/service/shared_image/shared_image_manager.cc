@@ -255,7 +255,7 @@ SharedImageManager::SharedImageManager(
       ,
       vulkan_context_provider_(vulkan_context_provider)
 #endif
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_WIN)
       ,
       gpu_memory_buffer_factory_(
           gpu::GpuMemoryBufferFactory::CreateNativeType(vulkan_context_provider,
