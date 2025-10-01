@@ -1289,6 +1289,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{inloggegevens voor één account}other{inloggegevens voor # accounts}}</translation>
 <translation id="3140646734028448730">Zakelijke dienstverlening</translation>
 <translation id="3141093262818886744">Toch openen</translation>
+<translation id="3141337053413339205">Overschakelen naar dit tabblad.</translation>
 <translation id="3141641372357166056">Geen beslissing over toestemming</translation>
 <translation id="3144458715650412431">Testbeleid is toegepast. Check en reset het op chrome://policy/test. Beheerdersbeleid wordt niet toegepast.</translation>
 <translation id="3145945101586104090">Kan reactie niet decoderen</translation>
@@ -3426,6 +3427,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6671697161687535275">Formuliersuggestie verwijderen uit Chromium?</translation>
 <translation id="6675846980676550611">AR niet toegestaan</translation>
 <translation id="6677351035258626477">Fastfood</translation>
+<translation id="6677738644213083042">Overschakelen naar dit tabblad</translation>
 <translation id="6679354743514146922">Chrome probeert je wachtwoord in te vullen in <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC opgeslagen</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>

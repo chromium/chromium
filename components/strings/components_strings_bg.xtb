@@ -1289,6 +1289,7 @@
 <translation id="3137507986424712703">{COUNT,plural, =0{Няма}=1{данни за вход за 1 профил}other{данни за вход за # профила}}</translation>
 <translation id="3140646734028448730">Бизнес услуги</translation>
 <translation id="3141093262818886744">Отваряне въпреки това</translation>
+<translation id="3141337053413339205">Превключване към този раздел.</translation>
 <translation id="3141641372357166056">Няма решение относно съгласието</translation>
 <translation id="3144458715650412431">Приложени са тестови правила. Можете да ги прегледате и нулирате на адрес chrome://policy/test. Администраторските правила няма да бъдат приложени.</translation>
 <translation id="3145945101586104090">Декодирането на отговора не бе успешно</translation>
@@ -3433,6 +3434,7 @@
 <translation id="6671697161687535275">Предложението за формуляри да се премахне ли от Chromium?</translation>
 <translation id="6675846980676550611">Не е разрешено използването на AR</translation>
 <translation id="6677351035258626477">Бързо хранене</translation>
+<translation id="6677738644213083042">Превключване към този раздел</translation>
 <translation id="6679354743514146922">Браузърът Chrome се опитва да попълни паролата ви за <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">Кодът за проверка е запазен</translation>
 <translation id="6683022854667115063">Слушалки</translation>

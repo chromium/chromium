@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Varaqlar guruhlari yordamida tartibga soling</translation>
 <translation id="2597457036804169544">Saytlar uchun tungi mavzu tatbiq etilmaydi</translation>
 <translation id="2606760465469169465">Avtomatik tekshiruv</translation>
+<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android sozlamalari<ph name="END_LINK1" /> orqali boshqarish
+
+Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
+• “Doim xavfsiz ulanish ishlatilsin” parametri yoniq.
+• “JavaScript optimizer“ parametri oʻchiq. <ph name="BEGIN_LINK2" />Istisno saytlarni boshqarish<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Ko‘rsatilgan saytga JavaScript ishga tushirishga ruxsat berish.</translation>
 <translation id="2626708220538466178">Birlamchi brauzer quyi ekrani yopildi</translation>
 <translation id="2653659639078652383">Yuborish</translation>
@@ -305,6 +310,7 @@
 <translation id="4336566011000459927">Chrome cookie fayllarni bugun yana cheklaydi</translation>
 <translation id="4338831206024587507">Barcha saytlar <ph name="DOMAIN" /> ostida</translation>
 <translation id="4340799661701629185">Saytlarga bildirishnoma yuborishni taqiqlash</translation>
+<translation id="4341577178275615435">Faol kursor rejimini yoqish yoki oʻchirish uchun F7 tugmasidan foydalaning</translation>
 <translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4412683424767388419">Chrome ranglar quyi ekrani yarim hajmda ochildi</translation>
 <translation id="4412992751769744546">Tashqi saytlarga cookie fayllarni saqlashga ruxsat berish</translation>

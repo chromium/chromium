@@ -703,7 +703,6 @@
 <translation id="1473927070149284123">फेरि प्रयास गर्नुहोस् वा म्यानुअल तरिकाले कुनै नेटवर्कमा कनेक्ट गर्नुहोस्</translation>
 <translation id="1474785664565228650">माइक्रोफोनको सेटिङमा गरिएका परिवर्तन लागू गर्न Parallels Desktop बन्द गरेर फेरि खोल्नु पर्ने हुन्छ। अगाडि बढ्नका निम्ति Parallels Desktop बन्द गरेर फेरि खोल्नुहोस्।</translation>
 <translation id="1476088332184200792">प्रतिलिपि गरी तपाईंको डिभाइसमा टाँस्नुहोस्</translation>
-<translation id="1476347941828409626">Chrome का प्रोफाइलहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="1476607407192946488">&amp;भाषा सेटिङहरू</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> का अनुसार तपाईंले आफ्नो स्मार्ट कार्ड इन्सर्ट गरिराख्नु पर्ने हुन्छ।</translation>
 <translation id="1477654881618305065">तपाईंको सङ्गठनले तपाईंलाई यो सामग्री सेयर गर्ने अनुमति दिएको छैन। तपाईंलाई मद्दत चाहिन्छ भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
@@ -3915,7 +3914,6 @@
 <translation id="369736917241079046">लन्चर + लेफ्ट एरो</translation>
 <translation id="3697716475445175867">पछिल्लो पटक खोलिएको</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{तपाईं भविष्यमा यो साइटबाट सूचनाहरू प्राप्त गर्न छाड्न सक्नुहुन्छ।}other{तपाईं भविष्यमा यी साइटबाट सूचनाहरू प्राप्त गर्न छाड्न सक्नुहुन्छ।}}</translation>
-<translation id="3697952514309507634">Chrome का अन्य प्रोफाइलहरू</translation>
 <translation id="3698471669415859717">समीक्षा गर्ने कार्य पूरा भयो</translation>
 <translation id="3699624789011381381">इमेल ठेगाना</translation>
 <translation id="3699755232086000535">Parallels Desktop लाई USB डिभाइसहरू नियन्त्रण गर्न दिनुहोस्।</translation>
@@ -4214,6 +4212,7 @@
 <translation id="3867134342671430205">डिस्प्ले सार्न ड्र्याग गर्नुहोस् वा एरो की प्रयोग गर्नुहोस्</translation>
 <translation id="3867831579565057323">आफ्नो टचस्क्रिन म्याप गर्नुहोस्</translation>
 <translation id="3867944738977021751">प्रमाणपत्र क्षेत्रहरू</translation>
+<translation id="3869564880668247983">सबै ट्याबहरूको समूह बनाउनुहोस्</translation>
 <translation id="3869917919960562512">गलत सूचकांक।</translation>
 <translation id="3870626286046977643">सिस्टम अडियो पनि सेयर गर्नुहोस्</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> चयन रद्द गर्नुहोस्</translation>
@@ -5942,6 +5941,7 @@
 <translation id="5098963855433723436">छुट्टै एपमा खुल्छ</translation>
 <translation id="5100775515702043594">तपाईंका एड्मिनले <ph name="EXTENSION_NAME" /> पिन गर्नुभएको हो</translation>
 <translation id="5101398513835324081">कुनै कारबाही हाल्नुहोस्</translation>
+<translation id="5101683448725092498">आफ्ना सामग्री ब्याकअप गर्नुहोस्</translation>
 <translation id="5101839224773798795">कर्सर रोकिँदा स्वतः क्लिक गर्नुहोस्</translation>
 <translation id="5102244391872941183">लोकेसन प्रयोग गर्ने अनुमति दिइएका एप तथा वेबसाइटका साथै सिस्टमका सेवाहरू तपाईंको डिभाइसको लोकेसन प्रयोग गर्न सक्छन्</translation>
 <translation id="5103311607312269661">डिस्प्लेको चमक बढाउने की</translation>
@@ -6970,6 +6970,7 @@
 <translation id="583756221537636748">केस</translation>
 <translation id="5840680448799937675">फाइलहरू सधैँ अफलाइन सेयर गरिने छ</translation>
 <translation id="5841270259333717135">इथरनेट कन्फिगर गर्नुहोस्</translation>
+<translation id="5841338463993781099">खातामा सेभ गर्ने हो?</translation>
 <translation id="5842497610951477805">ब्लुटुथ सक्षम</translation>
 <translation id="5844284118433003733">तपाईं साइन इन हुनुभएका बेला तपाईंलाई Google का सेवाहरूमा सुरक्षित राख्न (उदाहरणका लागि सुरक्षासम्बन्धी व्यवस्थापछि Gmail मा सुरक्षा बढाउन) यो डेटा तपाईंको Google खातासँग लिंक गरिन्छ।</translation>
 <translation id="5844685625984052392">सङ्केत</translation>
@@ -7823,9 +7824,9 @@
 <translation id="6451861213630784801">तपाईं साइन आउट अवस्थामा हुनुहुन्छ</translation>
 <translation id="6452181791372256707">अस्वीकार</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> पूरा भयो</translation>
-<translation id="6452268285438583507">एक्स्टेन्सनहरू हाल्नुहोस्</translation>
 <translation id="6452961788130242735">नेटवर्कको समस्या वा अनुपयुक्त क्षेत्र</translation>
 <translation id="6453191633103419909">ट्याब/स्क्रिन प्रोजेक्सनको गुणस्तर</translation>
+<translation id="6453687572758515877">सबै ट्याबहरूको समूह बनाउनुहोस्</translation>
 <translation id="6453921811609336127">अर्को इनपुट विधि प्रयोग गर्न <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> थिच्नुहोस्</translation>
 <translation id="6455264371803474013">खास साइटहरूमा</translation>
 <translation id="6455521402703088376">अफ • यो एक्स्टेन्सनको विकासकर्ताले यो एक्स्टेन्सनको प्रकाशन रद्द गरेको हो</translation>
@@ -9758,7 +9759,6 @@
 <translation id="7791436592012979144">उल्टो स्क्रोल गर्ने सुविधा अन गरिएको छ</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7792012425874949788">साइन इन गर्नमा केही समस्या भयो</translation>
-<translation id="7792336732117553384">Chrome का प्रोफाइलहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7792388396321542707">साझा गर्न बन्द गर्नुहोस्</translation>
 <translation id="779308894558717334">हल्का हरियो</translation>
 <translation id="7793098747275782155">गाढा निलो</translation>
@@ -10186,7 +10186,6 @@
 <translation id="8075044377771022666">फुटर</translation>
 <translation id="8076835018653442223">तपाईंको प्रशासकले तपाईंको डिभाइसमा रहेका स्थानीय फाइलहरूमाथिको पहुँचलाई असक्षम पार्नुभएको छ</translation>
 <translation id="8077120325605624147">तपाईंले खोल्ने कुनै पनि साइटले तपाईंलाई जुनसुकै विज्ञापन देखाउन सक्छ</translation>
-<translation id="8077579734294125741">Chrome का अन्य प्रोफाइलहरू</translation>
 <translation id="8077749280021225629">ब्राउजिङ डेटा (<ph name="URL" />) पनि मेटाउनुहोस्। यसो गर्दा तपाईंलाई <ph name="DOMAIN" /> बाट साइन आउट गरिन सक्छ।<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">फोटो प्रयोग गरी खोज्ने सुविधा</translation>
 <translation id="8079606020824373126">Google पासवर्ड म्यानेजरले तपाईंको खाताको पासवर्ड परिवर्तन गरी भरपर्दो पासवर्ड सेट गरिदिन र उक्त पासवर्ड <ph name="EMAIL" /> मा सेभ गरिदिन सक्छ। <ph name="PASSWORD_CHANGE" /></translation>
@@ -10693,7 +10692,6 @@
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8425492902634685834">कार्यपट्टीमा पिन गर्नुहोस्</translation>
 <translation id="8425768983279799676">तपाईं आफ्नो डिभाइस अनलक गर्न आफ्नो PIN प्रयोग गर्न सक्नुहुन्छ।</translation>
-<translation id="8426697201161711396">आफ्ना सबै डिभाइसमा आफ्ना पासवर्डलगायतका कुराहरू प्राप्त गर्न Chrome मा साइन इन गर्नुहोस्</translation>
 <translation id="8427213022735114808">श्रुतिलेखन सुविधाले कुनै पनि पाठ क्षेत्रमा आवाजमार्फत टाइप गर्ने सुविधा सक्षम पार्न तपाईंको आवाज Google मा पठाउँछ।</translation>
 <translation id="8427292751741042100">कुनै पनि होस्टमा इम्बेड गरिएको</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
@@ -11617,6 +11615,7 @@
 <translation id="9042827002460091668">इन्टरनेट कनेक्सन जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="9042893549633094279">गोपनीयता र सुरक्षा</translation>
 <translation id="9043264199499366189">ChromeOS Flex सिस्टम इभेन्टको सदस्यता लिइयोस्</translation>
+<translation id="9043767139743235992">अपाङ्गता भएका मान्छेप्रति समर्पित Google को ग्राहक सेवा विभागमा सम्पर्क गर्नुहोस्</translation>
 <translation id="9044646465488564462">सञ्जालमा जडान गर्न असफल भयो: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">पछि पढ्न सेभ गरिएका वेबपेजको तपाईंको सूची सारेर नयाँ साइड प्यानलमा लगिएको छ। यहाँ प्रयोग गरी हेर्नुहोस्।</translation>
 <translation id="9048745018038487540">सबै फन्ट चयन गर्नुहोस्</translation>

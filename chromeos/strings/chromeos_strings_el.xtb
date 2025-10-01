@@ -41,7 +41,7 @@
 <translation id="1145018782460575098">Το παράθυρο Ενημέρωσης υλικολογισμικού για εξωτερικές συσκευές είναι ανοικτό. <ph name="NUM_UPDATES" /> διαθέσιμες ενημερώσεις.</translation>
 <translation id="1145516343487477149">Βρείτε άρθρα βοήθειας και απαντήσεις σε συνήθεις ερωτήσεις του Chromebook</translation>
 <translation id="1154390310959620237">Μπορείτε να προσαρμόσετε μόνο 5 συντομεύσεις. Διαγράψτε μια συντόμευση, για να προσθέσετε μια νέα.</translation>
-<translation id="1155154308031262006">Εισαγάγετε μια οδηγία</translation>
+<translation id="1155154308031262006">Εισαγάγετε μια προτροπή</translation>
 <translation id="115705039208660697">ανανάδες</translation>
 <translation id="1164939766849482256">Προφύλαξη οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
@@ -365,7 +365,7 @@
 <translation id="2446553403094072641">Ακρίβεια κινητής υποδιαστολής</translation>
 <translation id="2448312741937722512">Τύπος</translation>
 <translation id="2448857983905133469">Εργαλεία για την τάξη</translation>
-<translation id="2468124392950503650">Επιλέξτε μια οδηγία για δημιουργία ή δείτε τον <ph name="BEGIN_LINK_PROMPTING_GUIDE" />οδηγό οδηγιών<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
+<translation id="2468124392950503650">Επιλέξτε μια προτροπή για δημιουργία ή δείτε την <ph name="BEGIN_LINK_PROMPTING_GUIDE" />εκπαίδευση για προτροπές<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Χρησιμοποιήστε τη λειτουργία Βοήθησέ με να γράψω, για να δημιουργήσετε ένα πρόχειρο ή να τελειοποιήσετε μια υπάρχουσα εργασία, με την υποστήριξη του Google AI</translation>
 <translation id="2475982808118771221">Παρουσιάστηκε σφάλμα</translation>
 <translation id="2480572840229215612">καβούρια</translation>
@@ -447,7 +447,7 @@
 <translation id="2878387241690264070">Εκφόρτιση <ph name="RATE" /> σε <ph name="NUM_SECONDS" /> δευτερόλεπτα.</translation>
 <translation id="2880569433548999039">Προφύλαξη οθόνης Κίνηση των σύννεφων</translation>
 <translation id="2882230315487799269">Προσαρμογή οδηγίας AI</translation>
-<translation id="2888298276507578975">Εισαγάγετε μια οδηγία όπως "γράψε ένα ευχαριστήριο σημείωμα"</translation>
+<translation id="2888298276507578975">Εισαγάγετε μια προτροπή όπως "γράψε ένα ευχαριστήριο σημείωμα"</translation>
 <translation id="2890557891229184386">τροπικό νησί</translation>
 <translation id="2895772081848316509">σκούρο</translation>
 <translation id="2915996080311180594">Επανεκκίνηση αργότερα</translation>
@@ -497,7 +497,7 @@
 <translation id="3170673040743561620">Τοποθετήστε το έγγραφό σας στον σαρωτή</translation>
 <translation id="3174321110679064523">Ταπετσαρία Από την αυγή μέχρι να νυχτώσει</translation>
 <translation id="3178532070248519384">αβάν γκαρντ</translation>
-<translation id="3182676044300231689">Πληκτρολογήστε μια οδηγία όπως "να αποπνέει περισσότερη σιγουριά"</translation>
+<translation id="3182676044300231689">Πληκτρολογήστε μια προτροπή όπως "να αποπνέει περισσότερη σιγουριά"</translation>
 <translation id="3188257591659621405">Τα αρχεία μου</translation>
 <translation id="319101249942218879">Η εικόνα avatar άλλαξε</translation>
 <translation id="3192947282887913208">Αρχεία ήχου</translation>
@@ -760,7 +760,7 @@
 <translation id="4320904097188876154">ροζ νέον</translation>
 <translation id="432961742358282111">Κάντε δεξί κλικ ή πατήστε παρατεταμένα, για να λάβετε ορισμούς, μεταφράσεις ή μετατροπές μονάδων. Χρησιμοποιήστε τα πλήκτρα αριστερού ή δεξιού βέλους για τη διαχείριση αυτής της λειτουργίας.</translation>
 <translation id="4333390807948134856">Το πλήκτρο <ph name="KEY_NAME" /> πατήθηκε</translation>
-<translation id="4334293042716981313">Μπορείτε, επίσης, να <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />γράψετε τη δική σας οδηγία<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
+<translation id="4334293042716981313">Μπορείτε, επίσης, να <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />γράψετε τη δική σας προτροπή<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">πλήκτρο</translation>
 <translation id="4356100841225547054">Απενεργοποίηση έντασης ήχου</translation>
 <translation id="4361257691546579041">Το APN είναι τύπου προεπιλογής.</translation>

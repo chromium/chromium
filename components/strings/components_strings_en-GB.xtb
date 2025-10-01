@@ -1289,6 +1289,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3137507986424712703">{COUNT,plural, =0{None}=1{sign-in data for 1 account}other{sign-in data for # accounts}}</translation>
 <translation id="3140646734028448730">Business Services</translation>
 <translation id="3141093262818886744">Open anyway</translation>
+<translation id="3141337053413339205">Switch to this tab.</translation>
 <translation id="3141641372357166056">No consent decision</translation>
 <translation id="3144458715650412431">Test policies have been applied. Review and reset them at chrome://policy/test. Admin policies will not be applied.</translation>
 <translation id="3145945101586104090">Failed to decode response</translation>
@@ -3433,6 +3434,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
 <translation id="6675846980676550611">AR not allowed</translation>
 <translation id="6677351035258626477">Fast Food</translation>
+<translation id="6677738644213083042">Switch to this tab</translation>
 <translation id="6679354743514146922">Chrome browser is trying to fill your password on <ph name="APP_NAME" />.</translation>
 <translation id="6681790815630918386">CVC saved</translation>
 <translation id="6683022854667115063">Headphones</translation>

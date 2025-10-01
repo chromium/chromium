@@ -1616,6 +1616,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7176183551031110427">Zoom out</translation>
 <translation id="7186568385131859684">Control how browsing history is used with your other data across Google services</translation>
 <translation id="719133302483559673">Manage your interests and preferences.</translation>
+<translation id="7191382490098297347">Camera roll image</translation>
 <translation id="7203496777391039568">Your organisation's data is private and secure</translation>
 <translation id="720399613139435155">Translation failed</translation>
 <translation id="7204922488054642675">Personalised news</translation>
@@ -1642,6 +1643,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7300448350764260141">Add an extra layer of protection against online threats.</translation>
 <translation id="7311244614769792472">No results found</translation>
 <translation id="7313347584264171202">You'll find your Incognito tabs here</translation>
+<translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">You already have passwords for these accounts in your Google Password Manager. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7346909386216857016">OK, got it</translation>

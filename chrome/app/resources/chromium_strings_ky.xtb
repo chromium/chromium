@@ -74,7 +74,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="1898804291554630487">Бул бет жөнүндө суроо берүү</translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
 <translation id="1911763535808217981">Ушуну өчүрүү менен Gmail сыяктуу Google сайттарына Chromium'суз кире аласыз</translation>
-<translation id="1916451563296275579">Бул колдонмодогу нерселерди Chromium'дан өчүрүү</translation>
 <translation id="1929939181775079593">Chromium жооп бербей жатат. Өчүрүп кайра ишке киргизесизби?</translation>
 <translation id="1933341829955786215">Уюмуңуз, <ph name="MANAGER" />, Chromium'га кирүүнү талап кылат</translation>
 <translation id="193439633299369377">Жаңыртууну колдонуу үчүн ChromiumOS өчүрүлүп күйгүзүлүшү керек.</translation>
@@ -628,7 +627,6 @@ Chromium параметрлериңизди калыбына келтире ал
 <translation id="8586442755830160949">Автордук укук <ph name="YEAR" /> Chromium авторлору. Бардык укуктар корголгон.</translation>
 <translation id="8601359445272098721">Жаңылык! Эми "Экрандагыны которуу" баскычын басып, экрандагы текстти да, сүрөттөрдү да которо аласыз</translation>
 <translation id="8619360774459241877">Chromium иштетилүүдө…</translation>
-<translation id="8621669128220841554">Белгиси катадан улам, орнотулбай калды. Chromium'ду кайра жүктөп алыңыз.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing версиясын демейки серепчиңиз катары тандай албайсыз.</translation>
 <translation id="8697124171261953979">Chromium иштеп баштаганда же Omnibox'тон изделгенде, кайсы бет көрсөтүлө тургандыгын көзөмөлдөйт.</translation>
 <translation id="8704119203788522458">Бул сиздин Chromium</translation>

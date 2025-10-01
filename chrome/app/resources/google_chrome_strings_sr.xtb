@@ -44,6 +44,7 @@
 <translation id="1434626383986940139">Chrome Canary апликације</translation>
 <translation id="1439793550875056299">Закачи Chrome</translation>
 <translation id="146866447420868597">Желите ли да се пријавите у Chrome?</translation>
+<translation id="1476347941828409626">Управљај Chrome профилима</translation>
 <translation id="1492280395845991349">Поново покрените да бисте довршили ажурирање Chrome-а</translation>
 <translation id="1497802159252041924">Грешка при инсталацији: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Прилагодите нови Chrome профил</translation>
@@ -252,6 +253,9 @@
 <translation id="3810973564298564668">Управљај</translation>
 <translation id="383928141529488001">Google Chrome захтева приступ Bluetooth-у да би истраживао 
  Bluetooth уређаје. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Резимирајте:** У једној реченици са мање од 30 речи опишите примарни предмет и сврху садржаја на снимку екрана.
+
+          **Предложите питања:** Генеришите листу са 3 до 5 питања која подстичу на размишљање и која корисник може да постави да би боље разумео снимак екрана. Ова питања треба да обухватају бар једно које се конкретно односи на визуелни објекат, његов дизајн или положај.</translation>
 <translation id="386202838227397562">Затворите све прозоре Google Chrome прегледача и покушајте поново.</translation>
 <translation id="3873044882194371212">Отвори линк у Chrome прозору без архи&amp;вирања</translation>
 <translation id="3885770153807205175">Бирач језика</translation>
@@ -527,6 +531,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7024536598735240744">Грешка при отпакивању: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталација је прекинута.</translation>
 <translation id="7025800014283535195">Овде можете да прелазите са једног Chrome профила на други</translation>
+<translation id="7047386856539490735">Да ли су ови резултати корисни?</translation>
 <translation id="7051685429025310665">Нисте скоро посећивали сајт. Chrome је уклонио дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Прилагодите Chrome себи</translation>
 <translation id="7060643578009939353">Претражите овај видео помоћу Google објектива</translation>
@@ -597,10 +602,10 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7777080907402804672">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа. То можете да искључите у подешавањима у сваком тренутку.</translation>
 <translation id="778331955594035129">Chrome-у треба дозвола за локацију за овај сајт</translation>
 <translation id="7787950393032327779">Изгледа да се профил користи у неком другом Google Chrome процесу (<ph name="PROCESS_ID" />) на неком другом рачунару (<ph name="HOST_NAME" />). Chrome је закључао профил да не би био оштећен. Ако сте сигурни да ниједан други процес не користи овај профил, можете да откључате профил и поново покренете Chrome.</translation>
+<translation id="7792336732117553384">Управљај Chrome профилима</translation>
 <translation id="7801699035218095297">Google Chrome покушава да копира лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="7804364787702057554">Ваш налог у Chrome-у</translation>
 <translation id="7808348361785373670">Уклони из Chrome-а...</translation>
-<translation id="7825851276765848807">Инсталација није успела услед неутврђене грешке. Преузмите Google Chrome поново.</translation>
 <translation id="7827099906024714326">Chrome мора да верификује да сте то ви да би неки подаци могли да се чувају на Google налогу и користе на свим уређајима. Ако се одјавите одмах, ови подаци ће бити избрисани.</translation>
 <translation id="7845233973568007926">Хвала вам на инсталацији. Морате да рестартујете рачунар пре него што почнете да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Наставите тамо где сте стали: Chrome може да врати картице сваки пут када га рестартујете. Да бисте то укључили, идите у</translation>
@@ -679,7 +684,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="873133009373065397">Google Chrome не може да одреди ни да подеси подразумевани прегледач</translation>
 <translation id="8747073452963259673">доњи леви угао области претраге: улево <ph name="LEFT" />%, надоле <ph name="BOTTOM" />%</translation>
 <translation id="8748735421235723888">Chrome ослобађа меморију са неактивних картица. То активним картицама и другим апликацијама пружа више рачунарских ресурса и одржава Chrome брзим. Неактивне картице се аутоматски поново активирају када се вратите на њих. <ph name="BEGIN_LINK" />Сазнајте више о Уштеди меморије<ph name="END_LINK" /></translation>
-<translation id="8753189155654018347">Уклони податке ове апликације из Chrome-а</translation>
 <translation id="8765470054473112089">Када куцате у траци за адресу или у оквиру за претрагу, Chrome шаље текст који уносите подразумеваном претраживачу да бисте добијали боље предлоге. Ово је искључено у режиму без архивирања.</translation>
 <translation id="8781673607513845160">Да бисте користили камеру, одобрите Chrome-у приступ у <ph name="BEGIN_LINK" />подешавањима система<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Грешка при инсталацији: Администратор мреже је применио смернице за групу које спречавају инсталацију: <ph name="INSTALL_ERROR" /></translation>

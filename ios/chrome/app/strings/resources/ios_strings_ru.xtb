@@ -408,7 +408,7 @@
 <translation id="251837347827266434">Вы выйдете из аккаунта, вкладки будут закрыты, а данные о работе в браузере удалены</translation>
 <translation id="2520787026086861736">Чтобы отключить эту функцию, перейдите в раздел <ph name="BEGIN_LINK" />Автозаполнение и пароли<ph name="END_LINK" />.</translation>
 <translation id="2523295204312809179">Если вы закроете группу вкладок, она автоматически появится здесь.</translation>
-<translation id="2524699375503213836">Перенос данных из Safari</translation>
+<translation id="2524699375503213836">Перенесите данные из Safari</translation>
 <translation id="2529021024822217800">Открыть все</translation>
 <translation id="2536991091671391962">Вы можете использовать сохраненные пароли на любом устройстве. Они сохраняются в Google Менеджере паролей для аккаунта <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скрытый пароль</translation>
@@ -559,7 +559,7 @@
 <translation id="3119874402040566234">Вы выйдете из аккаунта, а данные о работе в браузере будут удалены</translation>
 <translation id="3124568093781685165">Открывайте близким доступ к паролям.</translation>
 <translation id="3130863904455712965">История и другие данные</translation>
-<translation id="3132584647087998639">Импорт данных</translation>
+<translation id="3132584647087998639">Импортируйте свои данные</translation>
 <translation id="313283613037595347">Создать вкладку инкогнито.</translation>
 <translation id="3136739222562075778">В этой карточке показывается снижение цен на товары в открытых вкладках</translation>
 <translation id="3138611310073113613">Отменить выбор</translation>
@@ -1643,6 +1643,7 @@
 <translation id="7300448350764260141">Добавьте дополнительный уровень защиты от онлайн-угроз.</translation>
 <translation id="7311244614769792472">Ничего не найдено</translation>
 <translation id="7313347584264171202">Здесь вы найдете свои вкладки инкогнито</translation>
+<translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7334364820047587268">Пароли для этих аккаунтов уже сохранены в Google Менеджере паролей. Если вы импортируете один из паролей ниже, существующий будет заменен.</translation>
 <translation id="7336264872878993241">Скачивается: <ph name="PERCENT" />%</translation>
 <translation id="7346909386216857016">ОК</translation>
@@ -1652,7 +1653,7 @@
 <translation id="7366909168761621528">Данные о работе в браузере</translation>
 <translation id="7367530036083223701">Установите виджет Менеджера паролей для безопасного доступа ко всем паролям с главного экрана.</translation>
 <translation id="7380220816562673297">Сейчас вы можете предоставлять доступ к паролям только участникам семейной группы. <ph name="BEGIN_LINK" />Создайте ее<ph name="END_LINK" /> максимум для шести человек и пользуйтесь дополнительными возможностями продуктов и подписок Google.</translation>
-<translation id="7380698179418029202">Выберите <ph name="BEGIN_BOLD" />ZIP<ph name="END_BOLD" />-файл для экспорта.</translation>
+<translation id="7380698179418029202">Выберите <ph name="BEGIN_BOLD" />ZIP<ph name="END_BOLD" />-файл, экспортированный из Safari.</translation>
 <translation id="739101637685146669">Укажите, какой URL-адрес вы хотите добавить в закладки.</translation>
 <translation id="7393747756726387725">Увеличить</translation>
 <translation id="7397805793441258955">{COUNT,plural, =1{1 сайт}one{# сайт}few{# сайта}many{# сайтов}other{# сайта}}</translation>

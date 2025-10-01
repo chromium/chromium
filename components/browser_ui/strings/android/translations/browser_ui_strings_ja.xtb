@@ -40,6 +40,7 @@
 <translation id="1500473259453106018">タブカードで値下げ情報を非表示にする</translation>
 <translation id="1508931164824684991">サイトが JavaScript を使用できるようにする</translation>
 <translation id="1510341833810331442">サイトはデバイスにデータを保存できません</translation>
+<translation id="1532175480576580256">カスタム ショートカットのボトムシートが画面全体に表示されています</translation>
 <translation id="1538031354170655462">付近のタグやデバイスと接続してバッジのスキャンやタッチ決済などを行うため、サイトで近距離無線通信（NFC）を使用する場合があります</translation>
 <translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
 <translation id="1569054338208717605">Chrome の V8 エンジンでサイトを高速化する（攻撃に対する Chrome の耐性は若干低下します）</translation>
@@ -115,6 +116,7 @@
 <translation id="228293613124499805">アクセスするサイトの多くは、エクスペリエンスの向上を目的として、設定内容やあなたがサイトと共有した情報をデバイス上に保存します。この設定はオンにしておくことをおすすめします。</translation>
 <translation id="2289270750774289114">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する（推奨）</translation>
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアントサイドで証明書を選択することはできません。</translation>
+<translation id="2347601491101454548">カスタム ショートカットのボトムシートが画面の下半分に表示されています</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2379925928934107488">可能であれば、Chrome がダークモードを使用している場合にダークモードをサイトに適用します</translation>
 <translation id="2390272837142897736">拡大</translation>
@@ -303,6 +305,7 @@
 <translation id="4336566011000459927">今日、Chrome で Cookie を再び制限します</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4340799661701629185">サイトに通知の送信を許可しない</translation>
+<translation id="4341577178275615435">カーソル ブラウジングをオンまたはオフにするには、F7 ショートカット キーを使用します</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
 <translation id="4412683424767388419">Chrome の色のボトムシートが画面の下半分に表示されています</translation>
 <translation id="4412992751769744546">サードパーティの Cookie を許可する</translation>

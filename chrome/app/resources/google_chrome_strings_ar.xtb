@@ -42,6 +42,7 @@
 <translation id="1434626383986940139">‏تطبيقات Chrome Canary</translation>
 <translation id="1439793550875056299">‏تثبيت Chrome</translation>
 <translation id="146866447420868597">‏هل المطلوب تسجيل الدخول إلى Chrome؟</translation>
+<translation id="1476347941828409626">‏&amp;إدارة الملفات الشخصية على Chrome</translation>
 <translation id="1492280395845991349">‏إعادة التشغيل لإكمال تحديث Chrome</translation>
 <translation id="1497802159252041924">حدث خطأ أثناء التثبيت: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">‏يمكنك الآن تخصيص ملفك الشخصي الجديد على Chrome.</translation>
@@ -250,6 +251,9 @@
 <translation id="3810973564298564668">إدارة</translation>
 <translation id="383928141529488001">‏يجب منح Google Chrome الإذن بالوصول إلى البلوتوث لاستكشاف 
 الأجهزة التي تتضمّن بلوتوث. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**تلخيص:** أريد وصفًا للموضوع الرئيسي وهدف محتوى لقطة الشاشة في جملة واحدة لا تزيد عن 30 كلمة.
+
+          **اقتراح أسئلة:** أريد قائمة نقطية تتضمّن من 3 إلى 5 أسئلة تشجّع على التفكير ويمكن للمستخدم طرحها لفهم لقطة الشاشة بشكل أفضل. يجب أن تتضمّن هذه الأسئلة سؤالاً واحدًا على الأقل يتعلّق بعنصر مرئي أو تصميمه أو موضعه تحديدًا.</translation>
 <translation id="386202838227397562">‏يُرجى إغلاق كل نوافذ Google Chrome وإعادة المحاولة.</translation>
 <translation id="3873044882194371212">‏فتح الرابط في نافذة تصفح متخفٍ في Chrome</translation>
 <translation id="3885770153807205175">أداة اختيار اللغة</translation>
@@ -523,6 +527,7 @@
 <translation id="7024536598735240744">حدث خطأ في فك ضغط الحزمة: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
+<translation id="7047386856539490735">هل هذه النتائج مفيدة؟</translation>
 <translation id="7051685429025310665">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="7060643578009939353">‏البحث عن هذا الفيديو باستخدام "عدسة Google"</translation>
@@ -593,10 +598,10 @@
 <translation id="7777080907402804672">‏في حال لم تتضمن صورة  ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
 <translation id="778331955594035129">‏يحتاج Chrome إلى إذن تحديد الموقع الجغرافي من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="7787950393032327779">‏يبدو أن الملف الشخصي قيد الاستخدام بواسطة عملية أخرى في Google Chrome (<ph name="PROCESS_ID" />) على جهاز كمبيوتر آخر (<ph name="HOST_NAME" />). وقد تمّ قفل الملف الشخصي من جانب Chrome لضمان عدم تعرضه للتلف. فإذا كنت واثقًا من عدم وجود عمليات أخرى قيد التشغيل على جهاز الكمبيوتر، فيُمكنك فتح قفل الملف الشخصي وإعادة تشغيل Chrome مجددًا.</translation>
+<translation id="7792336732117553384">‏&amp;إدارة الملفات الشخصية على Chrome</translation>
 <translation id="7801699035218095297">‏يحاول Google Chrome نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="7804364787702057554">‏حسابك في Chrome</translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>
-<translation id="7825851276765848807">‏فشل التثبيت نظرًا لحدوث خطأ غير محدد. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="7827099906024714326">‏يحتاج Chrome إلى إثبات هويتك قبل حفظ بعض البيانات في حسابك على Google واستخدامها على جميع أجهزتك. إذا سجّلت الخروج الآن، فسيتم حذف هذه البيانات.</translation>
 <translation id="7845233973568007926">شكرًا على التثبيت. عليك إعادة تشغيل الكمبيوتر قبل استخدام <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">‏المتابعة من حيث توقفت: يمكن لمتصفح Chrome استعادة علامات التبويب كلما أعدت تشغيله. لتفعيل هذه الميزة، يُرجى الانتقال إلى</translation>
@@ -675,7 +680,6 @@
 <translation id="873133009373065397">‏يتعذَّر على Google Chrome تحديد المتصفح التلقائي أو تعيينه</translation>
 <translation id="8747073452963259673">أسفل يمين مساحة البحث: %<ph name="LEFT" /> من الجهة اليمنى و%<ph name="BOTTOM" /> من الأسفل</translation>
 <translation id="8748735421235723888">‏يفرِّغ Chrome الذاكرة من علامات التبويب غير النشطة. ويوفّر هذا لعلامات التبويب النشطة والتطبيقات الأخرى مزيدًا من موارد الكمبيوتر للحفاظ على أداء Chrome السريع. سيُعاد تلقائيًا تنشيط علامات التبويب غير النشطة عند رجوعك إليها. <ph name="BEGIN_LINK" />مزيد من المعلومات حول ميزة "توفير الذاكرة"<ph name="END_LINK" /></translation>
-<translation id="8753189155654018347">‏إزالة بيانات هذه التطبيقات من Chrome</translation>
 <translation id="8765470054473112089">‏عند الكتابة في شريط العناوين أو مربّع البحث، يرسل Chrome ما تكتبه إلى محرك البحث التلقائي للحصول على اقتراحات أفضل. يتم إيقاف هذا الإعداد في "وضع التصفّح المتخفي".</translation>
 <translation id="8781673607513845160">‏لاستخدام الكاميرا، يجب منح Chrome إذن الوصول في <ph name="BEGIN_LINK" />إعدادات النظام<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">حدث الخطأ التالي في التثبيت لأنّ مشرف شبكتك طبَّق سياسة مجموعة تمنع إجراء التثبيت: <ph name="INSTALL_ERROR" /></translation>

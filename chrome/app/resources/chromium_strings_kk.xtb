@@ -73,7 +73,6 @@
 <translation id="1898804291554630487">Осы бет жайында сұрақ қойыңыз</translation>
 <translation id="1900969832270057921">"Chromium-ді жаңарту құралы" қызметі</translation>
 <translation id="1911763535808217981">Бұл функцияны өшіріп, Chromium браузеріне кірместен Gmail сияқты Google сайттарын пайдалана беруіңізге болады</translation>
-<translation id="1916451563296275579">Chromium-нен бұл қолданбалар деректерін өшіру</translation>
 <translation id="1929939181775079593">Chromium жауап бермейді. Қазір қайта іске қосасыз ба?</translation>
 <translation id="1933341829955786215">Ұйымыңыз (<ph name="MANAGER" />) Chromium-ге кіруді талап етеді</translation>
 <translation id="193439633299369377">Жаңарту күшіне енуі үшін ChromiumOS жүйесін өшіріп қосу керек.</translation>
@@ -627,7 +626,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Барлық құқықтар қорғалған.</translation>
 <translation id="8601359445272098721">Жаңалық! Енді "экранды аудару" түймесін басу арқылы экрандағы мәтін мен суреттерді де аудара аласыз.</translation>
 <translation id="8619360774459241877">Chromium іске қосылуда…</translation>
-<translation id="8621669128220841554">Орнату анықталмаған қате себебінен сәтсіз аяқталды. Chromium браузерін қайта жүктеңіз.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing браузерін әдепкі браузер қылу мүмкін емес.</translation>
 <translation id="8697124171261953979">Сонымен қатар ол Chromium іске қосқаныңызда немесе Omnibox ішінен іздегеніңізде қайсы бет көрсетілетінін бақылайды.</translation>
 <translation id="8704119203788522458">Сізге арналған Chromium.</translation>
