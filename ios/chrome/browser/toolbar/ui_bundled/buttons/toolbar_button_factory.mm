@@ -206,17 +206,21 @@ const CGFloat kDiamondCornerRadius = 13;
 
     // The system share image has uneven vertical padding. Add a small bottom
     // padding to balance it.
-    // TODO(crbug.com/411039614): Replace UIGraphicsBeginImageContextWithOptions
-    // with UIGraphicsImageRenderer.
-    UIGraphicsBeginImageContextWithOptions(
-        CGSizeMake(image.size.width,
-                   image.size.height + kShareIconBalancingHeightPadding),
-        NO, 0.0);
-    [image drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
-    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UIGraphicsImageRendererFormat* format =
+        [UIGraphicsImageRendererFormat preferredFormat];
+    format.scale = 0.0;
+    format.opaque = NO;
+    UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
+        initWithSize:CGSizeMake(
+                         image.size.width,
+                         image.size.height + kShareIconBalancingHeightPadding)
+              format:format];
 
-    return newImage;
+    return
+        [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+          [image
+              drawInRect:CGRectMake(0, 0, image.size.width, image.size.height)];
+        }];
   };
 
   ToolbarButton* shareButton =
