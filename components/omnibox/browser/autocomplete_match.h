@@ -580,7 +580,7 @@ struct AutocompleteMatch {
   // Returns true if this match has a keyword that puts the omnibox instantly
   // into keyword mode when the match is focused via keyboard, instead of
   // the usual waiting for activation of a visible keyword button.
-  bool HasInstantKeyword(TemplateURLService* template_url_service) const;
+  bool HasInstantKeyword(const TemplateURLService* template_url_service) const;
 
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match. If this match represents a selected keyword, i.e.

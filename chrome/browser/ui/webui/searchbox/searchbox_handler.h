@@ -51,7 +51,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.
   virtual std::string AutocompleteIconToResourceName(
-      const gfx::VectorIcon& icon);
+      const gfx::VectorIcon& icon) const;
 
   // Returns true if the page remote is bound and ready to receive calls.
   bool IsRemoteBound() const;
@@ -115,9 +115,9 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       std::unique_ptr<OmniboxController> controller);
   ~SearchboxHandler() override;
 
-  OmniboxController* omnibox_controller() const;
-  AutocompleteController* autocomplete_controller() const;
-  OmniboxEditModel* edit_model() const;
+  OmniboxController* omnibox_controller();
+  AutocompleteController* autocomplete_controller();
+  OmniboxEditModel* edit_model();
 
   void OnPreviewReceived(GetTabPreviewCallback callback,
                          const SkBitmap& preview_bitmap);
@@ -140,27 +140,34 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
 
- private:
-  std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
-      const AutocompleteResult& result,
-      const OmniboxEditModel* edit_model,
-      bookmarks::BookmarkModel* bookmark_model,
-      const omnibox::GroupConfigMap& suggestion_groups_map,
-      const TemplateURLService* turl_service);
-  base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
-  CreateSuggestionGroupsMap(
-      const AutocompleteResult& result,
-      const OmniboxEditModel* edit_model,
-      const PrefService* prefs,
-      const omnibox::GroupConfigMap& suggestion_groups_map);
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
       const std::u16string& input,
       const AutocompleteResult& result,
       const OmniboxEditModel* edit_model,
       bookmarks::BookmarkModel* bookmark_model,
       const PrefService* prefs,
-      const TemplateURLService* turl_service);
+      const TemplateURLService* turl_service) const;
+  base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
+  CreateSuggestionGroupsMap(
+      const AutocompleteResult& result,
+      const OmniboxEditModel* edit_model,
+      const PrefService* prefs,
+      const omnibox::GroupConfigMap& suggestion_groups_map) const;
+  std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
+      const AutocompleteResult& result,
+      const OmniboxEditModel* edit_model,
+      bookmarks::BookmarkModel* bookmark_model,
+      const omnibox::GroupConfigMap& suggestion_groups_map,
+      const TemplateURLService* turl_service) const;
+  std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
+      const AutocompleteMatch& match,
+      size_t line,
+      const OmniboxEditModel* edit_model,
+      bookmarks::BookmarkModel* bookmark_model,
+      const omnibox::GroupConfigMap& suggestion_groups_map,
+      const TemplateURLService* turl_service) const;
 
+ private:
   base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
 };
 

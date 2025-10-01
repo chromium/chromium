@@ -28,7 +28,7 @@ class LensSearchboxHandler : public SearchboxHandler {
 
   // SearchboxHandler:
   std::string AutocompleteIconToResourceName(
-      const gfx::VectorIcon& icon) override;
+      const gfx::VectorIcon& icon) const override;
 
   // searchbox::mojom::PageHandler:
   void SetPage(
