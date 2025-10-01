@@ -151,6 +151,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFiltersByDomain) {
   EXPECT_EQ(future.Get().value()[0].request_origin,
             url::Origin::Create(GURL("https://foo.com")));
   EXPECT_FALSE(credentials[0].immediatelyAvailableToLogin);
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
 }
 
 TEST_F(ActorLoginGetCredentialsHelperTest, GetCredentialsFromAllStores) {
@@ -243,6 +244,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest, ImmediatelyAvailableToLogin) {
   ASSERT_EQ(credentials.size(), 1u);
   EXPECT_EQ(credentials[0].username, u"foo_username");
   EXPECT_TRUE(credentials[0].immediatelyAvailableToLogin);
+  EXPECT_FALSE(credentials[0].has_persistent_permission);
 }
 
 }  // namespace actor_login

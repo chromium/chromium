@@ -67,6 +67,10 @@ struct Credential {
   // on the provided Tab.
   bool immediatelyAvailableToLogin = false;
 
+  // Whether the user has granted persistent permission for this credential to
+  // be used on `request_origin`.
+  bool has_persistent_permission = false;
+
 #if defined(UNIT_TEST)
   // An exact equality comparison of all the fields is only useful for tests.
   friend bool operator==(const Credential&, const Credential&) = default;

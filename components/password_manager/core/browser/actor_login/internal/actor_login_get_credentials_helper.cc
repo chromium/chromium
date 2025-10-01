@@ -87,6 +87,8 @@ Credential PasswordFormToCredential(
   credential.source_site_or_app = GetSourceSiteOrAppFromUrl(form.url);
   credential.request_origin = request_origin;
   credential.immediatelyAvailableToLogin = immediately_available_to_login;
+  // TODO(crbug.com/443238776): Implement populating this field properly.
+  credential.has_persistent_permission = false;
   return credential;
 }
 
