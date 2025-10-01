@@ -61,8 +61,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
       mojo::ScopedDataPipeProducerHandle read_tensor_producer,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
-      scoped_refptr<gpu::MemoryTracker> memory_tracker);
+      scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner);
 
   WebNNContextImpl(const WebNNContextImpl&) = delete;
   WebNNContextImpl& operator=(const WebNNContextImpl&) = delete;
@@ -133,7 +134,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // Exposes a SequencedTaskRunner which can be used to schedule tasks in
   // sequence with this WebNNContext -- that is, on the same gpu::Scheduler
   // sequence. Does not support nested loops or delayed tasks.
-  scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner() const {
+  scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner() const {
     return scheduler_task_runner_;
   }
 

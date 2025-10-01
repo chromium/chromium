@@ -81,8 +81,9 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
       WebNNContextProviderImpl* context_provider,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
-      scoped_refptr<gpu::MemoryTracker> memory_tracker)
+      scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner)
       : WebNNContextImpl(std::move(receiver),
                          context_provider,
                          GetContextPropertiesForTesting(),
@@ -91,8 +92,9 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
                          mojo::ScopedDataPipeProducerHandle(),
                          command_buffer_id,
                          std::move(sequence),
-                         std::move(task_runner),
-                         std::move(memory_tracker)) {}
+                         std::move(scheduler_task_runner),
+                         std::move(memory_tracker),
+                         std::move(owning_task_runner)) {}
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override {
@@ -159,15 +161,17 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
       mojom::CreateContextOptionsPtr options,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
+      scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
       scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       mojom::WebNNContextProvider::CreateWebNNContextCallback callback)
       override {
     mojo::PendingAssociatedRemote<mojom::WebNNContext> remote;
     auto context_impl = base::MakeRefCounted<FakeWebNNContextImpl>(
         remote.InitWithNewEndpointAndPassReceiver(), context_provider_impl,
-        command_buffer_id, std::move(sequence), std::move(task_runner),
-        std::move(memory_tracker));
+        command_buffer_id, std::move(sequence),
+        std::move(scheduler_task_runner), std::move(memory_tracker),
+        std::move(owning_task_runner));
     ContextProperties context_properties = context_impl->properties();
     // The receiver bound to FakeWebNNContext.
     auto success = mojom::CreateContextSuccess::New(

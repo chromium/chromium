@@ -29,8 +29,9 @@ ContextImplOrt::ContextImplOrt(
     scoped_refptr<Environment> env,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
-    scoped_refptr<gpu::MemoryTracker> memory_tracker)
+    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner)
     : WebNNContextImpl(
           std::move(receiver),
           context_provider,
@@ -40,8 +41,9 @@ ContextImplOrt::ContextImplOrt(
           std::move(write_tensor_producer),
           command_buffer_id,
           std::move(sequence),
-          std::move(task_runner),
-          std::move(memory_tracker)),
+          std::move(scheduler_task_runner),
+          std::move(memory_tracker),
+          std::move(owning_task_runner)),
       env_(std::move(env)),
       session_options_(SessionOptions::Create(this->options().device, env_)) {}
 

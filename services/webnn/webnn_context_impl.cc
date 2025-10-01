@@ -46,17 +46,19 @@ WebNNContextImpl::WebNNContextImpl(
     mojo::ScopedDataPipeProducerHandle read_tensor_producer,
     gpu::CommandBufferId command_buffer_id,
     std::unique_ptr<ScopedSequence> sequence,
-    scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
-    scoped_refptr<gpu::MemoryTracker> memory_tracker)
+    scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner)
     : WebNNObjectImpl<mojom::WebNNContext, blink::WebNNContextToken>(
           std::move(receiver),
-          task_runner),
+          scheduler_task_runner,
+          std::move(owning_task_runner)),
       context_provider_(context_provider),
       properties_(IntersectWithBaseProperties(std::move(properties))),
       options_(std::move(options)),
       command_buffer_id_(command_buffer_id),
       sequence_(std::move(sequence)),
-      scheduler_task_runner_(std::move(task_runner)),
+      scheduler_task_runner_(std::move(scheduler_task_runner)),
       write_tensor_consumer_(std::move(write_tensor_consumer)),
       read_tensor_producer_(std::move(read_tensor_producer)),
       memory_type_tracker_(std::move(memory_tracker)) {
@@ -269,7 +271,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   auto receiver = remote.InitWithNewEndpointAndPassReceiver();
 
   // Must be a scheduled task since this depends on shared image creation task.
-  PostTaskToOwningTaskRunner(
+  PostTaskToSchedulerTaskRunner(
       base::BindOnce(
           [](base::WeakPtr<WebNNContextImpl> self,
              mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
@@ -354,7 +356,7 @@ void WebNNContextImpl::OnLost(const std::string& reason) {
   // Safe to use base::Unretained because `this` is sequence-bound to
   // scheduler_task_runner_. Deletion occurs via Shutdown(), which drops all
   // pending tasks - including this one - before the object is destroyed.
-  PostTaskToOwningTaskRunner(base::BindOnce(
+  PostTaskToSchedulerTaskRunner(base::BindOnce(
       [](WebNNContextImpl* self, const std::string& reason) {
         self->GetMojoReceiver().ResetWithReason(/*custom_reason=*/0, reason);
         self->OnDisconnect();

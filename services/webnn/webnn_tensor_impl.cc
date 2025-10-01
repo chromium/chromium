@@ -19,7 +19,8 @@ WebNNTensorImpl::WebNNTensorImpl(
     mojom::TensorInfoPtr tensor_info)
     : WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken>(
           std::move(receiver),
-          context->scheduler_task_runner()),
+          context->scheduler_task_runner(),
+          context->owning_task_runner()),
       context_(std::move(context)),
       descriptor_(std::move(tensor_info->descriptor)),
       usage_(std::move(tensor_info->usage)) {}
@@ -31,7 +32,8 @@ WebNNTensorImpl::WebNNTensorImpl(
     std::unique_ptr<gpu::WebNNTensorRepresentation> representation)
     : WebNNObjectImpl<mojom::WebNNTensor, blink::WebNNTensorToken>(
           std::move(receiver),
-          context->scheduler_task_runner()),
+          context->scheduler_task_runner(),
+          context->owning_task_runner()),
       context_(std::move(context)),
       representation_(std::move(representation)),
       descriptor_(std::move(tensor_info->descriptor)),
@@ -57,7 +59,7 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
       context_->scheduler_task_runner(), std::move(callback));
 
   // Call ReadTensorImpl() implemented by a backend.
-  PostTaskToOwningTaskRunner(base::BindOnce(
+  PostTaskToSchedulerTaskRunner(base::BindOnce(
       [](WebNNTensorImpl* self, ReadTensorCallback callback,
          mojo::ReportBadMessageCallback bad_message_cb) {
         if (self->is_exported()) {
@@ -87,7 +89,7 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
   }
 
   // Call WriteTensorImpl() implemented by a backend.
-  PostTaskToOwningTaskRunner(base::BindOnce(
+  PostTaskToSchedulerTaskRunner(base::BindOnce(
       [](WebNNTensorImpl* self, mojo_base::BigBuffer src_buffer,
          mojo::ReportBadMessageCallback bad_message_cb) {
         if (self->is_exported()) {
@@ -111,7 +113,7 @@ void WebNNTensorImpl::ImportTensor(const gpu::SyncToken& fence) {
   // tasks run.
   context_->WaitSyncToken(fence);
 
-  PostTaskToOwningTaskRunner(base::BindOnce(
+  PostTaskToSchedulerTaskRunner(base::BindOnce(
       [](WebNNTensorImpl* self, mojo::ReportBadMessageCallback bad_message_cb) {
         if (!self->is_exported()) {
           LOG(ERROR) << "[WebNN] ImportTensor called without the tensor being "
@@ -145,7 +147,7 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
     return;
   }
 
-  PostTaskToOwningTaskRunner(base::BindOnce(
+  PostTaskToSchedulerTaskRunner(base::BindOnce(
       [](WebNNTensorImpl* self, WebNNContextImpl* context,
          ExportTensorCallback callback,
          mojo::ReportBadMessageCallback bad_message_cb) {

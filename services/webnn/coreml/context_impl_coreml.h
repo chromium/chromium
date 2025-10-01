@@ -28,8 +28,9 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       mojom::CreateContextOptionsPtr options,
       gpu::CommandBufferId command_buffer_id,
       std::unique_ptr<ScopedSequence> sequence,
-      scoped_refptr<gpu::SchedulerTaskRunner> task_runner,
-      scoped_refptr<gpu::MemoryTracker> memory_tracker);
+      scoped_refptr<gpu::SchedulerTaskRunner> scheduler_task_runner,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;
