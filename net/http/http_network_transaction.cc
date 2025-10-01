@@ -935,7 +935,6 @@ void HttpNetworkTransaction::OnNeedsProxyAuth(
   establishing_tunnel_ = true;
   response_.headers = proxy_response.headers;
   response_.auth_challenge = proxy_response.auth_challenge;
-  response_.did_use_http_auth = proxy_response.did_use_http_auth;
   SetProxyInfoInResponse(used_proxy_info, &response_);
 
   if (!ContentEncodingsValid()) {
@@ -1461,9 +1460,8 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     modify_headers_callbacks_.Run(&request_headers_);
   }
 
-  response_.did_use_http_auth =
-      request_headers_.HasHeader(HttpRequestHeaders::kAuthorization) ||
-      request_headers_.HasHeader(HttpRequestHeaders::kProxyAuthorization);
+  response_.did_use_server_http_auth =
+      request_headers_.HasHeader(HttpRequestHeaders::kAuthorization);
   return OK;
 }
 

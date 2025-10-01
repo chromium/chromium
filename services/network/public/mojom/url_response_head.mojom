@@ -332,4 +332,8 @@ struct URLResponseHead {
 
   // The parsed value of the Unencoded-Digest header, if present.
   UnencodedDigests? unencoded_digests;
+
+  // True if HTTP authentication was used to fetch this response. This will not
+  // be set for proxy auth.
+  bool did_use_server_http_auth = false;
 };

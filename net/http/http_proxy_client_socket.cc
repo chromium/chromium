@@ -366,10 +366,6 @@ int HttpProxyClientSocket::DoCalculateHeaders() {
   if (auth_->HaveAuth()) {
     auth_->AddAuthorizationHeader(&authorization_headers_);
   }
-  // AddAuthorizationHeader() might not have added the header even if
-  // HaveAuth().
-  response_.did_use_http_auth =
-      authorization_headers_.HasHeader(HttpRequestHeaders::kProxyAuthorization);
 
   if (proxy_delegate_) {
     ASSIGN_OR_RETURN(

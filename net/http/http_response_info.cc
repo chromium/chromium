@@ -93,7 +93,7 @@ enum {
   RESPONSE_INFO_HAS_CONNECTION_INFO = 1 << 18,
 
   // This bit is set if the request has http authentication.
-  RESPONSE_INFO_USE_HTTP_AUTHENTICATION = 1 << 19,
+  RESPONSE_INFO_USE_SERVER_HTTP_AUTHENTICATION = 1 << 19,
 
   // This bit is set if ssl_info has SCTs.
   RESPONSE_INFO_HAS_SIGNED_CERTIFICATE_TIMESTAMPS = 1 << 20,
@@ -318,7 +318,8 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
 
   *response_truncated = (flags & RESPONSE_INFO_TRUNCATED) != 0;
 
-  did_use_http_auth = (flags & RESPONSE_INFO_USE_HTTP_AUTHENTICATION) != 0;
+  did_use_server_http_auth =
+      (flags & RESPONSE_INFO_USE_SERVER_HTTP_AUTHENTICATION) != 0;
 
   unused_since_prefetch = (flags & RESPONSE_INFO_UNUSED_SINCE_PREFETCH) != 0;
 
@@ -416,8 +417,8 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickle(
   if (connection_info != HttpConnectionInfo::kUNKNOWN) {
     flags |= RESPONSE_INFO_HAS_CONNECTION_INFO;
   }
-  if (did_use_http_auth)
-    flags |= RESPONSE_INFO_USE_HTTP_AUTHENTICATION;
+  if (did_use_server_http_auth)
+    flags |= RESPONSE_INFO_USE_SERVER_HTTP_AUTHENTICATION;
   if (unused_since_prefetch)
     flags |= RESPONSE_INFO_UNUSED_SINCE_PREFETCH;
   if (restricted_prefetch)

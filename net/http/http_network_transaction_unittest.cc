@@ -3238,6 +3238,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuth) {
 
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
   EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
 }
@@ -3349,6 +3350,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthWithAddressChange) {
 
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
   EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
 
@@ -3533,6 +3535,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAlive) {
     const HttpResponseInfo* response = trans.GetResponseInfo();
     ASSERT_TRUE(response);
     EXPECT_TRUE(CheckBasicServerAuth(response->auth_challenge));
+    EXPECT_FALSE(response->did_use_server_http_auth);
 
     TestCompletionCallback callback2;
 
@@ -3551,6 +3554,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAlive) {
 
     response = trans.GetResponseInfo();
     ASSERT_TRUE(response);
+    EXPECT_TRUE(response->did_use_server_http_auth);
     EXPECT_FALSE(response->auth_challenge.has_value());
     EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
 
@@ -3633,6 +3637,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveNoBody) {
 
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
   EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
 }
@@ -3714,6 +3719,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveLargeBody) {
 
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
   EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
 }
@@ -3797,6 +3803,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthKeepAliveImpatientServer) {
 
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
   EXPECT_EQ(5, response->headers->GetContentLength()->InBytes());
 }
@@ -4307,7 +4314,6 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
-    EXPECT_FALSE(response->did_use_http_auth);
     EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
               response->proxy_chain);
 
@@ -4326,7 +4332,7 @@ TEST_P(HttpNetworkTransactionTest, BasicAuthProxyKeepAliveHttp11) {
     EXPECT_EQ(10, response->headers->GetContentLength()->InBytes());
     EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
     EXPECT_TRUE(CheckBasicProxyAuth(response->auth_challenge));
-    EXPECT_TRUE(response->did_use_http_auth);
+    EXPECT_FALSE(response->did_use_server_http_auth);
     EXPECT_EQ(PacResultElementToProxyChain("PROXY myproxy:70"),
               response->proxy_chain);
 
@@ -10638,7 +10644,6 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
   EXPECT_EQ(407, response->headers->response_code());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
-  EXPECT_FALSE(response->did_use_http_auth);
   EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
             response->proxy_chain);
 
@@ -10662,7 +10667,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetry) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_TRUE(response->did_use_http_auth);
+  EXPECT_FALSE(response->did_use_server_http_auth);
   EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
             response->proxy_chain);
 
@@ -10754,7 +10759,6 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
   EXPECT_EQ(407, response->headers->response_code());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
-  EXPECT_FALSE(response->did_use_http_auth);
   EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
             response->proxy_chain);
 
@@ -10778,7 +10782,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAlive) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_TRUE(response->did_use_http_auth);
+  EXPECT_FALSE(response->did_use_server_http_auth);
   EXPECT_EQ(PacResultElementToProxyChain("HTTPS myproxy:70"),
             response->proxy_chain);
 
@@ -10880,7 +10884,6 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   EXPECT_EQ(407, response->headers->response_code());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
-  EXPECT_FALSE(response->did_use_http_auth);
   EXPECT_EQ(proxy_chain1, response->proxy_chain);
 
   TestCompletionCallback callback2;
@@ -10906,7 +10909,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_TRUE(response->did_use_http_auth);
+  EXPECT_FALSE(response->did_use_server_http_auth);
   EXPECT_EQ(proxy_chain2, response->proxy_chain);
 
   // The password prompt info should not be set.
@@ -11007,7 +11010,6 @@ TEST_P(HttpNetworkTransactionTest,
   EXPECT_EQ(407, response->headers->response_code());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
   EXPECT_TRUE(CheckBasicSecureProxyAuth(response->auth_challenge));
-  EXPECT_FALSE(response->did_use_http_auth);
   EXPECT_EQ(proxy_chain, response->proxy_chain);
 
   TestCompletionCallback callback2;
@@ -11032,7 +11034,6 @@ TEST_P(HttpNetworkTransactionTest,
   EXPECT_EQ(200, response->headers->response_code());
   EXPECT_EQ(100, response->headers->GetContentLength()->InBytes());
   EXPECT_TRUE(HttpVersion(1, 1) == response->headers->GetHttpVersion());
-  EXPECT_FALSE(response->did_use_http_auth);
   EXPECT_EQ(direct, response->proxy_chain);
 
   // The password prompt info should not be set.
@@ -11513,6 +11514,7 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2) {
 
   response = trans.GetResponseInfo();
   ASSERT_TRUE(response);
+  EXPECT_TRUE(response->did_use_server_http_auth);
   EXPECT_FALSE(response->auth_challenge.has_value());
 
   TestCompletionCallback callback3;
@@ -14184,6 +14186,7 @@ TEST_P(HttpNetworkTransactionTest, DigestPreAuthNonceCount) {
 
     response = trans.GetResponseInfo();
     ASSERT_TRUE(response);
+    EXPECT_TRUE(response->did_use_server_http_auth);
     EXPECT_FALSE(response->auth_challenge.has_value());
   }
 

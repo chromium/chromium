@@ -83,9 +83,11 @@
 #include "net/storage_access_api/status.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/gtest_util.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
@@ -4540,11 +4542,12 @@ MATCHER_P3(MatchesTrustTokenDetails, origin, issuer, blocked, "") {
       arg, result_listener);
 }
 
-// Responds certificate request with previously set responses.
-class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
+// Responds certificate request with previously set responses and to HTTP auth
+// challenges as well.
+class ClientCertAndHttpAuthObserver : public TestURLLoaderNetworkObserver {
  public:
-  ClientCertAuthObserver() = default;
-  ~ClientCertAuthObserver() override = default;
+  ClientCertAndHttpAuthObserver() = default;
+  ~ClientCertAndHttpAuthObserver() override = default;
 
   enum class CertificateResponse {
     INVALID = -1,
@@ -4560,6 +4563,7 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
     NO_CREDENTIALS,
     CORRECT_CREDENTIALS,
     INCORRECT_CREDENTIALS_THEN_CORRECT_ONES,
+    CORRECT_PROXY_CREDENTIALS,
   };
   void OnAuthRequired(
       const std::optional<base::UnguessableToken>& window_id,
@@ -4575,11 +4579,16 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
         auth_credentials_ = std::nullopt;
         break;
       case CredentialsResponse::CORRECT_CREDENTIALS:
+        ASSERT_FALSE(auth_info.is_proxy);
         auth_credentials_ = net::AuthCredentials(u"USER", u"PASS");
         break;
       case CredentialsResponse::INCORRECT_CREDENTIALS_THEN_CORRECT_ONES:
         auth_credentials_ = net::AuthCredentials(u"USER", u"FAIL");
         credentials_response_ = CredentialsResponse::CORRECT_CREDENTIALS;
+        break;
+      case CredentialsResponse::CORRECT_PROXY_CREDENTIALS:
+        ASSERT_TRUE(auth_info.is_proxy);
+        auth_credentials_ = net::AuthCredentials(u"PROXY_USER", u"PROXY_PASS");
         break;
     }
     mojo::Remote<mojom::AuthChallengeResponder> auth_challenge_responder_remote(
@@ -4675,9 +4684,9 @@ class ClientCertAuthObserver : public TestURLLoaderNetworkObserver {
 };
 
 TEST_F(URLLoaderTest, SetAuth) {
-  ClientCertAuthObserver client_auth_observer;
+  ClientCertAndHttpAuthObserver client_auth_observer;
   client_auth_observer.set_credentials_response(
-      ClientCertAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
+      ClientCertAndHttpAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
 
   ResourceRequest request =
       CreateResourceRequest("GET", test_server()->GetURL(kTestAuthURL));
@@ -4712,9 +4721,9 @@ TEST_F(URLLoaderTest, SetAuth) {
 }
 
 TEST_F(URLLoaderTest, CancelAuth) {
-  ClientCertAuthObserver client_auth_observer;
+  ClientCertAndHttpAuthObserver client_auth_observer;
   client_auth_observer.set_credentials_response(
-      ClientCertAuthObserver::CredentialsResponse::NO_CREDENTIALS);
+      ClientCertAndHttpAuthObserver::CredentialsResponse::NO_CREDENTIALS);
 
   ResourceRequest request =
       CreateResourceRequest("GET", test_server()->GetURL(kTestAuthURL));
@@ -4748,9 +4757,9 @@ TEST_F(URLLoaderTest, CancelAuth) {
 }
 
 TEST_F(URLLoaderTest, TwoChallenges) {
-  ClientCertAuthObserver client_auth_observer;
+  ClientCertAndHttpAuthObserver client_auth_observer;
   client_auth_observer.set_credentials_response(
-      ClientCertAuthObserver::CredentialsResponse::
+      ClientCertAndHttpAuthObserver::CredentialsResponse::
           INCORRECT_CREDENTIALS_THEN_CORRECT_ONES);
 
   ResourceRequest request =
@@ -4787,9 +4796,9 @@ TEST_F(URLLoaderTest, TwoChallenges) {
 TEST_F(URLLoaderTest, NoAuthRequiredForFavicon) {
   constexpr char kFaviconTestPage[] = "/has_favicon.html";
 
-  ClientCertAuthObserver client_auth_observer;
+  ClientCertAndHttpAuthObserver client_auth_observer;
   client_auth_observer.set_credentials_response(
-      ClientCertAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
+      ClientCertAndHttpAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
 
   ResourceRequest request =
       CreateResourceRequest("GET", test_server()->GetURL(kFaviconTestPage));
@@ -4824,9 +4833,9 @@ TEST_F(URLLoaderTest, NoAuthRequiredForFavicon) {
 }
 
 TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
-  ClientCertAuthObserver client_auth_observer;
+  ClientCertAndHttpAuthObserver client_auth_observer;
   client_auth_observer.set_credentials_response(
-      ClientCertAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
+      ClientCertAndHttpAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
 
   ResourceRequest request =
       CreateResourceRequest("GET", test_server()->GetURL(kTestAuthURL));
@@ -4853,6 +4862,124 @@ TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
       client_auth_observer.last_seen_response_headers();
   ASSERT_TRUE(auth_required_headers);
   EXPECT_EQ(auth_required_headers->response_code(), 401);
+}
+
+// Tests that `did_use_server_http_auth` is present on the response when a
+// request receives and responds to an authentication challenge.
+TEST_F(URLLoaderTest, ServerHttpAuthFlagSet) {
+  ClientCertAndHttpAuthObserver client_auth_observer;
+  client_auth_observer.set_credentials_response(
+      ClientCertAndHttpAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS);
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL(kTestAuthURL));
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  context().mutable_factory_params().process_id = kProcessId;
+  context().mutable_factory_params().is_orb_enabled = false;
+  URLLoaderOptions url_loader_options;
+  url_loader_options.url_loader_network_observer = client_auth_observer.Bind();
+  std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilResponseBodyArrived();
+  EXPECT_TRUE(client()->has_received_response());
+  EXPECT_FALSE(client()->has_received_completion());
+  EXPECT_TRUE(client()->response_head()->did_use_server_http_auth);
+
+  // Spin the message loop until the delete callback is invoked, and then delete
+  // the URLLoader.
+  delete_run_loop.Run();
+
+  client()->RunUntilComplete();
+  EXPECT_TRUE(client()->has_received_completion());
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      client()->response_head()->headers;
+  ASSERT_TRUE(headers);
+  EXPECT_EQ(200, headers->response_code());
+  EXPECT_EQ(1, client_auth_observer.on_auth_required_call_counter());
+  ASSERT_FALSE(url_loader);
+}
+
+// Tests that `did_use_server_http_auth` is not present on the response when a
+// request does not use an authentication challenge.
+TEST_F(URLLoaderTest, ServerHttpAuthFlagNotSet) {
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  context().mutable_factory_params().process_id = kProcessId;
+  context().mutable_factory_params().is_orb_enabled = false;
+  URLLoaderOptions url_loader_options;
+  std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilResponseBodyArrived();
+  EXPECT_TRUE(client()->has_received_response());
+  EXPECT_FALSE(client()->has_received_completion());
+  EXPECT_FALSE(client()->response_head()->did_use_server_http_auth);
+
+  // Spin the message loop until the delete callback is invoked, and then delete
+  // the URLLoader.
+  delete_run_loop.Run();
+
+  client()->RunUntilComplete();
+  EXPECT_TRUE(client()->has_received_completion());
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      client()->response_head()->headers;
+  ASSERT_TRUE(headers);
+  EXPECT_EQ(200, headers->response_code());
+  ASSERT_FALSE(url_loader);
+}
+
+// Tests that `did_use_server_http_auth` is not present on the response when a
+// request receives and responds to a proxy authentication challenge.
+TEST_F(URLLoaderTest, ServerHttpAuthFlagNotSetForProxy) {
+  net::EmbeddedTestServer proxy_server(net::EmbeddedTestServer::TYPE_HTTP);
+  net::test_server::RegisterProxyBasicAuthHandler(proxy_server, "PROXY_USER",
+                                                  "PROXY_PASS");
+  proxy_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(proxy_server.Start());
+
+  net::URLRequestContextBuilder context_builder;
+  context_builder.set_proxy_resolution_service(
+      net::ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
+          "PROXY " + proxy_server.host_port_pair().ToString(),
+          TRAFFIC_ANNOTATION_FOR_TESTS));
+  auto test_network_delegate = std::make_unique<net::TestNetworkDelegate>();
+  unowned_test_network_delegate_ = test_network_delegate.get();
+  context_builder.set_network_delegate(std::move(test_network_delegate));
+  context_builder.set_client_socket_factory_for_testing(GetSocketFactory());
+  context().set_url_request_context(nullptr);
+  url_request_context_ = context_builder.Build();
+  context().set_url_request_context(url_request_context_.get());
+
+  ClientCertAndHttpAuthObserver client_auth_observer;
+  client_auth_observer.set_credentials_response(
+      ClientCertAndHttpAuthObserver::CredentialsResponse::
+          CORRECT_PROXY_CREDENTIALS);
+
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server()->GetURL(kHostnameWithAliases, "/hello.html"));
+  base::RunLoop delete_run_loop;
+  mojo::Remote<mojom::URLLoader> loader;
+  context().mutable_factory_params().process_id = kProcessId;
+  context().mutable_factory_params().is_orb_enabled = false;
+  URLLoaderOptions url_loader_options;
+  url_loader_options.url_loader_network_observer = client_auth_observer.Bind();
+  std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.BindNewPipeAndPassReceiver(), request, client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  // This should be false as we do not set the flag for proxy auth.
+  EXPECT_FALSE(client()->response_head()->did_use_server_http_auth);
+  ASSERT_FALSE(url_loader);
 }
 
 // Make sure the client can't call FollowRedirect if there's no pending
@@ -4946,9 +5073,10 @@ TEST_F(URLLoaderTest, ClientAuthRespondTwice) {
   scoped_refptr<TestSSLPrivateKey> private_key =
       base::MakeRefCounted<TestSSLPrivateKey>(identity->ssl_private_key());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::VALID_CERTIFICATE_SIGNATURE);
+      ClientCertAndHttpAuthObserver::CertificateResponse::
+          VALID_CERTIFICATE_SIGNATURE);
   client_cert_observer.set_private_key(private_key);
   client_cert_observer.set_certificate(identity->certificate());
 
@@ -4999,9 +5127,9 @@ TEST_F(URLLoaderTest, ClientAuthDestroyResponder) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::
+      ClientCertAndHttpAuthObserver::CertificateResponse::
           DESTROY_CLIENT_CERT_RESPONDER);
 
   ResourceRequest request =
@@ -5033,9 +5161,9 @@ TEST_F(URLLoaderTest, ClientAuthCancelConnection) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::
+      ClientCertAndHttpAuthObserver::CertificateResponse::
           URL_LOADER_REQUEST_CANCELLED);
 
   ResourceRequest request =
@@ -5066,9 +5194,9 @@ TEST_F(URLLoaderTest, ClientAuthCancelCertificateSelection) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::
+      ClientCertAndHttpAuthObserver::CertificateResponse::
           CANCEL_CERTIFICATE_SELECTION);
 
   ResourceRequest request =
@@ -5108,9 +5236,9 @@ TEST_F(URLLoaderTest, ClientAuthNoCertificate) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::NULL_CERTIFICATE);
+      ClientCertAndHttpAuthObserver::CertificateResponse::NULL_CERTIFICATE);
 
   ResourceRequest request =
       CreateResourceRequest("GET", test_server.GetURL("/defaultresponse"));
@@ -5149,9 +5277,10 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithValidSignature) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::VALID_CERTIFICATE_SIGNATURE);
+      ClientCertAndHttpAuthObserver::CertificateResponse::
+          VALID_CERTIFICATE_SIGNATURE);
   client_cert_observer.set_private_key(private_key);
   scoped_refptr<net::X509Certificate> certificate =
       test_server.GetCertificate();
@@ -5195,9 +5324,10 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithInvalidSignature) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(test_server.Start());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::VALID_CERTIFICATE_SIGNATURE);
+      ClientCertAndHttpAuthObserver::CertificateResponse::
+          VALID_CERTIFICATE_SIGNATURE);
   client_cert_observer.set_private_key(private_key);
   scoped_refptr<net::X509Certificate> certificate =
       test_server.GetCertificate();
@@ -6000,9 +6130,10 @@ TEST_P(URLLoaderParameterTest, CredentialsModeOmitRequireClientCert) {
   scoped_refptr<TestSSLPrivateKey> private_key =
       base::MakeRefCounted<TestSSLPrivateKey>(identity->ssl_private_key());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::VALID_CERTIFICATE_SIGNATURE);
+      ClientCertAndHttpAuthObserver::CertificateResponse::
+          VALID_CERTIFICATE_SIGNATURE);
   client_cert_observer.set_private_key(private_key);
   client_cert_observer.set_certificate(identity->certificate());
 
@@ -6060,9 +6191,10 @@ TEST_P(URLLoaderParameterTest, CredentialsModeOmitOptionalClientCert) {
   scoped_refptr<TestSSLPrivateKey> private_key =
       base::MakeRefCounted<TestSSLPrivateKey>(identity->ssl_private_key());
 
-  ClientCertAuthObserver client_cert_observer;
+  ClientCertAndHttpAuthObserver client_cert_observer;
   client_cert_observer.set_certificate_response(
-      ClientCertAuthObserver::CertificateResponse::VALID_CERTIFICATE_SIGNATURE);
+      ClientCertAndHttpAuthObserver::CertificateResponse::
+          VALID_CERTIFICATE_SIGNATURE);
   client_cert_observer.set_private_key(private_key);
   client_cert_observer.set_certificate(identity->certificate());
 
@@ -6200,10 +6332,11 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
 
 TEST_F(URLLoaderTest, CookieReportingAuth) {
   for (auto mode :
-       {ClientCertAuthObserver::CredentialsResponse::NO_CREDENTIALS,
-        ClientCertAuthObserver::CredentialsResponse::CORRECT_CREDENTIALS}) {
+       {ClientCertAndHttpAuthObserver::CredentialsResponse::NO_CREDENTIALS,
+        ClientCertAndHttpAuthObserver::CredentialsResponse::
+            CORRECT_CREDENTIALS}) {
     MockCookieObserver cookie_observer(CookieAccessType::kChange);
-    ClientCertAuthObserver client_auth_observer;
+    ClientCertAndHttpAuthObserver client_auth_observer;
     client_auth_observer.set_credentials_response(mode);
 
     GURL url = test_server()->GetURL(
@@ -6496,9 +6629,9 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
   // Check a valid cookie
   {
     MockDevToolsObserver devtools_observer;
-    ClientCertAuthObserver client_auth_observer;
+    ClientCertAndHttpAuthObserver client_auth_observer;
     client_auth_observer.set_credentials_response(
-        ClientCertAuthObserver::CredentialsResponse::NO_CREDENTIALS);
+        ClientCertAndHttpAuthObserver::CredentialsResponse::NO_CREDENTIALS);
 
     GURL url = test_server()->GetURL(
         "a.test", "/auth-basic?set-cookie-if-challenged&password=PASS");
@@ -6537,9 +6670,9 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
   // Check a flagged cookie (secure cookie from insecure connection)
   {
     MockDevToolsObserver devtools_observer;
-    ClientCertAuthObserver client_auth_observer;
+    ClientCertAndHttpAuthObserver client_auth_observer;
     client_auth_observer.set_credentials_response(
-        ClientCertAuthObserver::CredentialsResponse::NO_CREDENTIALS);
+        ClientCertAndHttpAuthObserver::CredentialsResponse::NO_CREDENTIALS);
 
     GURL url = test_server()->GetURL(
         "a.test", "/auth-basic?set-secure-cookie-if-challenged&password=PASS");
