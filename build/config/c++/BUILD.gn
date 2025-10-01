@@ -105,6 +105,20 @@ config("runtime_library") {
     }
   }
 
+  if (is_ios) {
+    # Add the path to our custom libc++ to the swift compiler. This is used when
+    # enabling the C++/Swift interoperability.
+    swiftflags = [
+      "-Xcc=-nostdinc++",
+      "-isystem",
+      rebase_path("//third_party/libc++/src/include", root_build_dir),
+      "-isystem",
+      rebase_path("//third_party/libc++abi/src/include", root_build_dir),
+      "-I",
+      rebase_path("//buildtools/third_party/libc++", root_build_dir),
+    ]
+  }
+
   # In a world without NaCl, the `runtime_library` config would also configure
   # the `_LIBCPP_ENABLE_ASSERTIONS` define to enable hardening when using the
   # custom hermetic libc++. However, this is currently added by the `compiler`

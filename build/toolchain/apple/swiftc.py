@@ -385,6 +385,7 @@ def invoke_swift_compiler(args, extras_args, build_cache_dir, output_file_map):
       '-save-temps',
       '-no-color-diagnostics',
       '-serialize-diagnostics',
+      '-explicit-module-build',
       '-emit-dependencies',
       '-emit-module',
       '-emit-module-path',
