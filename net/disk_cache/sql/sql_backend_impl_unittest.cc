@@ -1465,6 +1465,8 @@ TEST_F(SqlBackendImplTest,
       net::ERR_IO_PENDING);
   EXPECT_THAT(range_future.Get().net_error, IsError(net::ERR_FAILED));
   entry->Close();
+
+  EXPECT_EQ(backend->GetSizeOfInFlightEntryModificationsMapForTesting(), 0u);
 }
 
 TEST_F(SqlBackendImplTest, SpeculativeCreateEntryDbFailureDoom) {

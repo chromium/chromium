@@ -170,14 +170,14 @@ class SyncResultReceiver : public base::RefCounted<SyncResultReceiver<T>> {
   bool sync_call_finished_ = false;
 };
 
-// Creates a `base::OnceClosure` that takes ownership of an `OperationHandle`.
-// When the closure is run, the handle is destroyed, signaling the completion
-// of the operation to the `ExclusiveOperationCoordinator`. This is typically
-// used with `base::OnceCallback::Then()` to ensure the handle is released only
-// after the primary callback has finished.
-base::OnceClosure DoNothingWithBoundHandle(
-    std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
-  return base::OnceClosure(base::DoNothingWithBoundArgs(std::move(handle)));
+// Creates a `base::OnceClosure` that takes ownership of `args`. When the
+// closure is run, the `args` are destroyed. This is typically used with
+// `base::OnceCallback::Then()` to ensure the handle is released only after the
+// primary callback has finished.
+template <typename... Args>
+base::OnceClosure OnceClosureWithBoundArgs(Args&&... args) {
+  return base::OnceClosure(
+      base::DoNothingWithBoundArgs(std::forward<Args>(args)...));
 }
 
 // Retrieves the `ResId` from `res_id_or_error` if it holds a `ResId` value.
@@ -258,7 +258,7 @@ class SqlBackendImpl::IteratorImpl : public Backend::Iterator {
         res_id_iterator_,
         base::BindOnce(&IteratorImpl::OnOpenLatestEntryBeforeResIdFinished,
                        weak_factory_.GetWeakPtr())
-            .Then(DoNothingWithBoundHandle(std::move(handle))));
+            .Then(OnceClosureWithBoundArgs(std::move(handle))));
   }
 
   // Callback for `SqlPersistentStore::OpenLatestEntryBeforeResId`.
@@ -593,7 +593,7 @@ void SqlBackendImpl::HandleDoomEntryOperation(
                          : net::ERR_FAILED);
                },
                weak_factory_.GetWeakPtr(), std::move(callback))
-               .Then(DoNothingWithBoundHandle(std::move(handle))));
+               .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 net::Error SqlBackendImpl::DoomAllEntries(CompletionOnceCallback callback) {
@@ -641,7 +641,7 @@ void SqlBackendImpl::HandleDoomEntriesBetweenOperation(
                                           : net::ERR_FAILED);
             },
             std::move(callback))
-            .Then(DoNothingWithBoundHandle(std::move(handle))));
+            .Then(OnceClosureWithBoundArgs(std::move(handle))));
     return;
   }
 
@@ -675,7 +675,7 @@ void SqlBackendImpl::HandleDoomEntriesBetweenOperation(
             }
           },
           weak_factory_.GetWeakPtr(), std::move(callback))
-          .Then(DoNothingWithBoundHandle(std::move(handle))));
+          .Then(OnceClosureWithBoundArgs(std::move(handle))));
 
   // Doom active entries that fall within the time range.
   for (auto* entry : active_entries_to_be_doomed) {
@@ -759,21 +759,25 @@ void SqlBackendImpl::OnExternalCacheHit(const std::string& key) {
     return;
   }
   const base::Time now = base::Time::Now();
-  in_flight_entry_modifications_[entry_key].emplace_back(nullptr, now);
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       entry_key,
       base::BindOnce(&SqlBackendImpl::HandleOnExternalCacheHitOperation,
-                     weak_factory_.GetWeakPtr(), entry_key, now));
+                     weak_factory_.GetWeakPtr(), entry_key, now,
+                     PushInFlightEntryModification(
+                         entry_key, InFlightEntryModification(nullptr, now))));
 }
 
 void SqlBackendImpl::HandleOnExternalCacheHitOperation(
     const CacheEntryKey& key,
     base::Time now,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
   store_->UpdateEntryLastUsed(
       key, now,
-      WrapErrorCallbackToPopInFlightEntryModification(key, base::DoNothing())
-          .Then(DoNothingWithBoundHandle(std::move(handle))));
+      base::BindOnce([](SqlPersistentStore::Error error) {})
+          .Then(OnceClosureWithBoundArgs(
+              std::move(pop_in_flight_entry_modification)))
+          .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 void SqlBackendImpl::OnBrowserIdle() {
@@ -914,22 +918,27 @@ void SqlBackendImpl::UpdateEntryLastUsed(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     base::Time last_used) {
-  in_flight_entry_modifications_[key].emplace_back(res_id_or_error, last_used);
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
-      key, base::BindOnce(&SqlBackendImpl::HandleUpdateEntryLastUsedOperation,
-                          weak_factory_.GetWeakPtr(), key, res_id_or_error,
-                          last_used));
+      key,
+      base::BindOnce(
+          &SqlBackendImpl::HandleUpdateEntryLastUsedOperation,
+          weak_factory_.GetWeakPtr(), key, res_id_or_error, last_used,
+          PushInFlightEntryModification(
+              key, InFlightEntryModification(res_id_or_error, last_used))));
 }
 
 void SqlBackendImpl::HandleUpdateEntryLastUsedOperation(
     const CacheEntryKey& key,
     const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
     base::Time last_used,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
   store_->UpdateEntryLastUsed(
       key, last_used,
-      WrapErrorCallbackToPopInFlightEntryModification(
-          key, base::DoNothingWithBoundArgs(std::move(handle))));
+      base::BindOnce([](SqlPersistentStore::Error error) {})
+          .Then(OnceClosureWithBoundArgs(
+              std::move(pop_in_flight_entry_modification)))
+          .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 void SqlBackendImpl::UpdateEntryHeaderAndLastUsed(
@@ -938,13 +947,14 @@ void SqlBackendImpl::UpdateEntryHeaderAndLastUsed(
     base::Time last_used,
     scoped_refptr<net::GrowableIOBuffer> buffer,
     int64_t header_size_delta) {
-  in_flight_entry_modifications_[key].emplace_back(res_id_or_error, last_used,
-                                                   buffer);
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key, base::BindOnce(
                &SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation,
                weak_factory_.GetWeakPtr(), key, res_id_or_error, last_used,
-               std::move(buffer), header_size_delta));
+               std::move(buffer), header_size_delta,
+               PushInFlightEntryModification(
+                   key, InFlightEntryModification(res_id_or_error, last_used,
+                                                  buffer))));
 }
 
 void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
@@ -953,6 +963,7 @@ void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
     base::Time last_used,
     scoped_refptr<net::GrowableIOBuffer> buffer,
     int64_t header_size_delta,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
   const auto optional_res_id = GetResId(res_id_or_error);
   if (!optional_res_id) {
@@ -963,8 +974,10 @@ void SqlBackendImpl::HandleUpdateEntryHeaderAndLastUsedOperation(
   }
   store_->UpdateEntryHeaderAndLastUsed(
       key, *optional_res_id, last_used, std::move(buffer), header_size_delta,
-      WrapErrorCallbackToPopInFlightEntryModification(
-          key, base::DoNothingWithBoundArgs(std::move(handle))));
+      base::BindOnce([](SqlPersistentStore::Error error) {})
+          .Then(OnceClosureWithBoundArgs(
+              std::move(pop_in_flight_entry_modification)))
+          .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 void SqlBackendImpl::WriteEntryData(
@@ -977,7 +990,6 @@ void SqlBackendImpl::WriteEntryData(
     int buf_len,
     bool truncate,
     CompletionOnceCallback callback) {
-  in_flight_entry_modifications_[key].emplace_back(res_id_or_error, body_end);
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
       key,
       base::BindOnce(&SqlBackendImpl::HandleWriteEntryDataOperation,
@@ -993,7 +1005,10 @@ void SqlBackendImpl::WriteEntryData(
                          },
                          WrapCallbackWithAbortError<int>(std::move(callback),
                                                          net::ERR_ABORTED),
-                         buf_len)));
+                         buf_len),
+                     PushInFlightEntryModification(
+                         key, InFlightEntryModification(res_id_or_error,
+                                                        body_end))));
 }
 
 void SqlBackendImpl::HandleWriteEntryDataOperation(
@@ -1005,6 +1020,7 @@ void SqlBackendImpl::HandleWriteEntryDataOperation(
     int buf_len,
     bool truncate,
     SqlPersistentStore::ErrorCallback callback,
+    PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
   const auto optional_res_id = GetResId(res_id_or_error);
   if (!optional_res_id) {
@@ -1017,8 +1033,10 @@ void SqlBackendImpl::HandleWriteEntryDataOperation(
   store_->WriteEntryData(
       key, *optional_res_id, old_body_end, offset, std::move(buffer), buf_len,
       truncate,
-      WrapErrorCallbackToPopInFlightEntryModification(key, std::move(callback))
-          .Then(DoNothingWithBoundHandle(std::move(handle))));
+      std::move(callback)
+          .Then(OnceClosureWithBoundArgs(
+              std::move(pop_in_flight_entry_modification)))
+          .Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 void SqlBackendImpl::ReadEntryData(
@@ -1063,7 +1081,7 @@ void SqlBackendImpl::HandleReadEntryDataOperation(
   }
   store_->ReadEntryData(
       *optional_res_id, offset, buffer, buf_len, body_end, sparse_reading,
-      std::move(callback).Then(DoNothingWithBoundHandle(std::move(handle))));
+      std::move(callback).Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 void SqlBackendImpl::GetEntryAvailableRange(
@@ -1098,6 +1116,33 @@ void SqlBackendImpl::HandleGetEntryAvailableRangeOperation(
                                  std::move(callback));
 }
 
+SqlBackendImpl::PopInFlightEntryModificationRunner
+SqlBackendImpl::PushInFlightEntryModification(
+    const CacheEntryKey& entry_key,
+    InFlightEntryModification in_flight_entry_modification) {
+  in_flight_entry_modifications_[entry_key].emplace_back(
+      std::move(in_flight_entry_modification));
+  return PopInFlightEntryModificationRunner(base::ScopedClosureRunner(
+      base::BindOnce(&SqlBackendImpl::PopInFlightEntryModification,
+                     weak_factory_.GetWeakPtr(), entry_key)));
+}
+
+void SqlBackendImpl::PopInFlightEntryModification(
+    const CacheEntryKey& entry_key) {
+  // The in-flight modifications for a given key are queued and removed in FIFO
+  // order. This is safe because `exclusive_operation_coordinator_` serializes
+  // all normal operations for the same key. This guarantees that modifications
+  // are enqueued and the corresponding store operations are executed in the
+  // same order.
+  auto it = in_flight_entry_modifications_.find(entry_key);
+  CHECK(it != in_flight_entry_modifications_.end());
+  CHECK(!it->second.empty());
+  it->second.pop_front();
+  if (it->second.empty()) {
+    in_flight_entry_modifications_.erase(it);
+  }
+}
+
 void SqlBackendImpl::ApplyInFlightEntryModifications(
     const CacheEntryKey& key,
     SqlPersistentStore::EntryInfo& entry_info) {
@@ -1125,34 +1170,6 @@ void SqlBackendImpl::ApplyInFlightEntryModifications(
   }
 }
 
-SqlPersistentStore::ErrorCallback
-SqlBackendImpl::WrapErrorCallbackToPopInFlightEntryModification(
-    const CacheEntryKey& key,
-    SqlPersistentStore::ErrorCallback callback) {
-  return base::BindOnce(
-      [](base::WeakPtr<SqlBackendImpl> weak_ptr, const CacheEntryKey& key,
-         SqlPersistentStore::ErrorCallback callback,
-         SqlPersistentStore::Error result) {
-        if (weak_ptr) {
-          // The in-flight modifications for a given key are queued and removed
-          // in FIFO order. This is safe because
-          // `exclusive_operation_coordinator_` serializes all normal operations
-          // for the same key. This guarantees that modifications are enqueued
-          // and the corresponding store operations are executed in the same
-          // order.
-          auto it = weak_ptr->in_flight_entry_modifications_.find(key);
-          CHECK(it != weak_ptr->in_flight_entry_modifications_.end());
-          CHECK(!it->second.empty());
-          it->second.pop_front();
-          if (it->second.empty()) {
-            weak_ptr->in_flight_entry_modifications_.erase(it);
-          }
-        }
-        std::move(callback).Run(result);
-      },
-      weak_factory_.GetWeakPtr(), key, std::move(callback));
-}
-
 int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
   exclusive_operation_coordinator_.PostOrRunExclusiveOperation(base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> background_task_runner,
@@ -1163,7 +1180,7 @@ int SqlBackendImpl::FlushQueueForTest(CompletionOnceCallback callback) {
             // Post a no-op task to the background runner.
             FROM_HERE, base::BindOnce([]() {}),
             base::BindOnce(std::move(callback), net::OK)
-                .Then(DoNothingWithBoundHandle(std::move(handle))));
+                .Then(OnceClosureWithBoundArgs(std::move(handle))));
       },
       background_task_runner_, std::move(callback)));
 
@@ -1224,7 +1241,7 @@ void SqlBackendImpl::HandleDeleteDoomedEntriesOperation(
   store_->DeleteDoomedEntries(
       std::move(excluded_ids),
       base::BindOnce([](SqlPersistentStore::Error result) {
-      }).Then(DoNothingWithBoundHandle(std::move(handle))));
+      }).Then(OnceClosureWithBoundArgs(std::move(handle))));
 }
 
 void SqlBackendImpl::EnableStrictCorruptionCheckForTesting() {

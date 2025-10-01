@@ -203,8 +203,22 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // silently recovering.
   void EnableStrictCorruptionCheckForTesting();
 
+  // Returns the current size of the `in_flight_entry_modifications_` map.
+  // This is for testing purposes only.
+  size_t GetSizeOfInFlightEntryModificationsMapForTesting() {
+    return in_flight_entry_modifications_.size();
+  }
+
  private:
   class IteratorImpl;
+
+  // A RAII helper that ensures `PopInFlightEntryModification` is called when
+  // it goes out of scope. This guarantees that an in-flight modification is
+  // removed from `in_flight_entry_modifications_` once the associated operation
+  // completes or is aborted.
+  using PopInFlightEntryModificationRunner =
+      base::StrongAlias<class PopInFlightEntryModificationRunnerTag,
+                        base::ScopedClosureRunner>;
 
   // Identifies the type of a entry operation.
   enum class OpenOrCreateEntryOperationType {
@@ -343,6 +357,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       const CacheEntryKey& key,
       const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error,
       base::Time last_used,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `UpdateEntryHeaderAndLastUsed()`. This method
@@ -353,6 +368,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       base::Time last_used,
       scoped_refptr<net::GrowableIOBuffer> buffer,
       int64_t header_size_delta,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `WriteEntryData()`. This method is scheduled
@@ -367,6 +383,7 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       int buf_len,
       bool truncate,
       SqlPersistentStore::ErrorCallback callback,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
 
   // Handles the backend logic for `ReadEntryData()`. This method is scheduled
@@ -404,20 +421,26 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   void HandleOnExternalCacheHitOperation(
       const CacheEntryKey& key,
       base::Time now,
+      PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  // Adds an `InFlightEntryModification` to the queue for `entry_key` and
+  // returns a `PopInFlightEntryModificationRunner`. The returned runner ensures
+  // that the modification is removed from the queue when the runner goes out of
+  // scope, guaranteeing proper cleanup even in error paths.
+  PopInFlightEntryModificationRunner PushInFlightEntryModification(
+      const CacheEntryKey& entry_key,
+      InFlightEntryModification in_flight_entry_modification);
+
+  // Removes the oldest `InFlightEntryModification` from the queue for
+  // `entry_key`. This is called by `PopInFlightEntryModificationRunner` when
+  // an operation completes or is aborted.
+  void PopInFlightEntryModification(const CacheEntryKey& entry_key);
 
   // Applies in-flight modifications to an entry's info.
   void ApplyInFlightEntryModifications(
       const CacheEntryKey& key,
       SqlPersistentStore::EntryInfo& entry_info);
-
-  // Wraps an `ErrorCallback` to pop the oldest in-flight entry modification
-  // from `in_flight_entry_modifications_` once the callback is invoked. This
-  // ensures that the queue of in-flight modifications is managed correctly.
-  SqlPersistentStore::ErrorCallback
-  WrapErrorCallbackToPopInFlightEntryModification(
-      const CacheEntryKey& key,
-      SqlPersistentStore::ErrorCallback callback);
 
   // Schedules the `HandleDeleteDoomedEntriesOperation` task to run. This is the
   // entry point for the one-time cleanup of entries that were doomed in a
