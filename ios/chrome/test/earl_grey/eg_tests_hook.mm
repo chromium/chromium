@@ -255,6 +255,10 @@ std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
       service->SetGetAllPriceTrackedBookmarksCallbackValue({});
       continue;
     }
+    if (value == "has-empty-subscriptions-results") {
+      service->SetGetAllSubscriptionsCallbackValue({});
+      continue;
+    }
   }
 
   return service;

@@ -52,10 +52,6 @@
 
 namespace {
 
-bool IsShopCardImpressionLimitsEnabled() {
-  return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits);
-}
-
 int GetImpressionLimit() {
   return base::GetFieldTrialParamByFeatureAsInt(
       commerce::kShopCard, commerce::kShopCardMaxImpressions,
@@ -147,9 +143,7 @@ int GetImpressionLimit() {
 }
 
 - (void)fetchLatestShopCardItem {
-  if (base::Contains(commerce::kShopCardVariation.Get(),
-                     commerce::kShopCardArm1) &&
-      !_prefService->GetBoolean(
+  if (!_prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled)) {
     return;
   }
@@ -159,13 +153,7 @@ int GetImpressionLimit() {
     return;
   }
 
-  if (base::Contains(commerce::kShopCardVariation.Get(),
-                     commerce::kShopCardArm1)) {
-    [self fetchPriceTrackedBookmarksIfApplicable];
-  } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) {
-    // TODO(crbug.com/392971752): populate for card 2.
-    _shopCardItem = [[ShopCardItem alloc] init];
-  }
+  [self fetchPriceTrackedBookmarksIfApplicable];
 }
 
 - (void)fetchPriceTrackedBookmarksIfApplicable {
@@ -248,10 +236,7 @@ int GetImpressionLimit() {
   _shopCardItem.shopCardFaviconConsumerSource = self;
   _shopCardItem.shopCardData.shopCardItemType =
       ShopCardItemType::kPriceDropForTrackedProducts;
-  if (base::Contains(commerce::kShopCardVariation.Get(),
-                     commerce::kShopCardArm1)) {
-    _shopCardItem.shouldShowSeeMore = YES;
-  }
+  _shopCardItem.shouldShowSeeMore = YES;
   PriceDrop priceDrop;
 
   std::unique_ptr<payments::CurrencyFormatter> formatter =
@@ -345,11 +330,8 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 #pragma mark - Public
 - (void)disableModule {
-  if (base::Contains(commerce::kShopCardVariation.Get(),
-                     commerce::kShopCardArm1)) {
-    _prefService->SetBoolean(
-        prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
-  }
+  _prefService->SetBoolean(
+      prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
                             ContentSuggestionsModuleType::kShopCard);
 }
@@ -420,7 +402,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 }
 
 - (void)logImpressionForItem:(ShopCardItem*)item {
-  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+  if (!_impressionLimitService) {
     return;
   }
   _impressionLimitService->LogImpressionForURL(
@@ -429,7 +411,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 }
 
 - (void)logEngagementForItem:(ShopCardItem*)item {
-  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+  if (!_impressionLimitService) {
     return;
   }
   _impressionLimitService->LogCardEngagement(
@@ -438,7 +420,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 }
 
 - (BOOL)hasReachedImpressionLimit:(const GURL&)url {
-  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+  if (!_impressionLimitService) {
     return NO;
   }
   std::optional<int> count = _impressionLimitService->GetImpressionCount(
@@ -447,7 +429,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 }
 
 - (BOOL)hasBeenOpened:(const GURL&)url {
-  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+  if (!_impressionLimitService) {
     return NO;
   }
   return _impressionLimitService->HasBeenEngagedWith(

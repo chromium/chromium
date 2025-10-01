@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
+#import "base/feature_list.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
@@ -18,6 +19,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
@@ -367,8 +369,10 @@ using segmentation_platform::TipIdentifier;
                          browser:self.browser
         optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
                                      profile)
-          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
-                                     profile)
+          impressionLimitService:
+              base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)
+                  ? ImpressionLimitServiceFactory::GetForProfile(profile)
+                  : nil
                  shoppingService:commerce::ShoppingServiceFactory::
                                      GetForProfile(profile)
                    bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
@@ -409,12 +413,9 @@ using segmentation_platform::TipIdentifier;
     _priceTrackingPromoMediator.NTPActionsDelegate = self.NTPActionsDelegate;
     [moduleMediators addObject:_priceTrackingPromoMediator];
   }
-  if (base::FeatureList::IsEnabled(commerce::kShopCard) &&
-      (base::Contains(commerce::kShopCardVariation.Get(),
-                      commerce::kShopCardArm1) ||
-       commerce::kShopCardVariation.Get() == commerce::kShopCardArm2)) {
-    // If ShopCard experiment is on, create the ShopCard mediator.
-    // Note at this point we don't know which of the 4 variants will show.
+  // Only users that are eligible for ShoppingList are eligible for the
+  // ShopCard.
+  if (shoppingService->IsShoppingListEligible()) {
     _shopCardMediator = [[ShopCardMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
                                     profile)
@@ -885,15 +886,13 @@ using segmentation_platform::TipIdentifier;
     case ContentSuggestionsModuleType::kTabResumption:
       [self showMagicStackRecentTabs];
       break;
-    case ContentSuggestionsModuleType::kShopCard:
-      if (base::Contains(commerce::kShopCardVariation.Get(),
-                         commerce::kShopCardArm1)) {
-        id<PriceTrackedItemsCommands> priceNotificationsCommands =
-            HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                               PriceTrackedItemsCommands);
-        [priceNotificationsCommands showPriceTrackedItems];
-      }
+    case ContentSuggestionsModuleType::kShopCard: {
+      id<PriceTrackedItemsCommands> priceNotificationsCommands =
+          HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                             PriceTrackedItemsCommands);
+      [priceNotificationsCommands showPriceTrackedItems];
       break;
+    }
     default:
       break;
   }

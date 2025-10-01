@@ -675,6 +675,7 @@ TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
       static_cast<commerce::MockShoppingService*>(
           commerce::ShoppingServiceFactory::GetForProfile(GetProfile()));
   shopping_service->SetIsShoppingListEligible(true);
+  shopping_service->SetGetAllSubscriptionsCallbackValue({});
 
   FakeMagicStackRankingModelDelegate* delegate_ =
       [[FakeMagicStackRankingModelDelegate alloc] init];

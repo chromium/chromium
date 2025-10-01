@@ -53,19 +53,26 @@ ImpressionLimitService::ImpressionLimitService(
       bookmark_model_(bookmark_model),
       shopping_service_(shopping_service) {
   DCHECK(history_service_);
-  if (base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)) {
-    history_service_observation_.Observe(history_service_.get());
-    subscriptions_observation_.Observe(shopping_service_);
-    bookmark_model_observation_.Observe(bookmark_model);
-    for (const auto& pref_name : GetAllowListedPrefs()) {
-      RemoveEntriesOlderThan30Days(pref_name);
-    }
-  } else {
-    // ShopCard feature is experimental. Don't keep impression
-    // counts around when flag is turned off.
-    for (const auto& pref_name : GetAllowListedPrefs()) {
-      pref_service_->ClearPref(pref_name);
-    }
+  history_service_observation_.Observe(history_service_.get());
+  subscriptions_observation_.Observe(shopping_service_);
+  bookmark_model_observation_.Observe(bookmark_model);
+  for (const auto& pref_name : GetAllowListedPrefs()) {
+    RemoveEntriesOlderThan30Days(pref_name);
+  }
+  // ShopCard arm 3, 4 and 5 are still experimental (only arm 1 has launched).
+  // So delete any preferences stored for those arms, unless the arm is turned
+  // on.
+  if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm3) {
+    pref_service_->ClearPref(
+        tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
+  }
+  if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm4) {
+    pref_service_->ClearPref(
+        tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions);
+  }
+  if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm5) {
+    pref_service_->ClearPref(
+        tab_resumption_prefs::kTabResumptionRegularUrlImpressions);
   }
 }
 

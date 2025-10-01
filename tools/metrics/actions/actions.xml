@@ -15845,6 +15845,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.HomeCustomization.MagicStackPage.ShopCardReviews.Toggled">
+  <obsolete>Deprecated as of 09/2025.</obsolete>
   <owner>davidjm@chromium.org</owner>
   <owner>gloriafang@google.com</owner>
   <owner>thegreenfrog@chromium.org</owner>

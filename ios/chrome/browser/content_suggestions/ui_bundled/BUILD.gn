@@ -21,6 +21,7 @@ source_set("coordinator") {
     ":ui",
     "//base",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
     "//components/feature_engagement/public",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/image_fetcher/core",
