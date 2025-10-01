@@ -108,11 +108,10 @@ TEST_F(HistorySyncOptinServiceTest, AbortFlowIfOneInProgress) {
   base::OnceClosure captured_closure;
   EXPECT_CALL(*delegate_ptr,
               ShowHistorySyncOptinScreen(profile_.get(), testing::_))
-      .WillOnce(testing::Invoke(
-          [&](Profile* profile,
-              base::OnceClosure history_optin_completed_closure) {
-            captured_closure = std::move(history_optin_completed_closure);
-          }));
+      .WillOnce([&](Profile* profile,
+                    base::OnceClosure history_optin_completed_closure) {
+        captured_closure = std::move(history_optin_completed_closure);
+      });
 
   // Start the first flow.
   bool flow_started = service_->StartHistorySyncOptinFlow(

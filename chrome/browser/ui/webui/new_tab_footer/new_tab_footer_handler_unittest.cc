@@ -48,7 +48,6 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 using testing::_;
-using ::testing::DoAll;
 using ::testing::SaveArg;
 
 namespace {
@@ -215,7 +214,7 @@ TEST_F(NewTabFooterHandlerExtensionTest, AttachedTabStateUpdated) {
   new_tab_footer::mojom::NewTabPageType ntp_type;
   EXPECT_CALL(document_, AttachedTabStateUpdated)
       .Times(3)
-      .WillRepeatedly(DoAll(SaveArg<0>(&ntp_type)));
+      .WillRepeatedly(SaveArg<0>(&ntp_type));
 
   handler().AttachedTabStateUpdated(GURL(extension->url()));
   document_.FlushForTesting();

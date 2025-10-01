@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerTest, RealboxUpdatesEditModelInput) {
   AutocompleteInput input;
   EXPECT_CALL(*autocomplete_controller_, Start(_))
       .Times(2)
-      .WillRepeatedly(DoAll(SaveArg<0>(&input)));
+      .WillRepeatedly(SaveArg<0>(&input));
 
   handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
 

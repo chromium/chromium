@@ -164,12 +164,12 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
 
@@ -190,12 +190,12 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
 
@@ -481,12 +481,12 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     EXPECT_CALL(*lens_searchbox_client_, GetPageClassification())
         .Times(1)
@@ -533,12 +533,12 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     std::u16string input_text;
     EXPECT_CALL(*omnibox_edit_model_, SetUserText(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input_text)));
+        .WillOnce(SaveArg<0>(&input_text));
 
     AutocompleteInput input;
     EXPECT_CALL(*autocomplete_controller_, Start(_))
         .Times(1)
-        .WillOnce(DoAll(SaveArg<0>(&input)));
+        .WillOnce(SaveArg<0>(&input));
 
     EXPECT_CALL(*lens_searchbox_client_, GetPageClassification())
         .Times(1)

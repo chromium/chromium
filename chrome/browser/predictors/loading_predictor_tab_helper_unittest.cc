@@ -144,7 +144,7 @@ void LoadingPredictorTabHelperTest::
   EXPECT_CALL(*mock_collector_,
               RecordFinishNavigation(_, _,
                                      /* is_error_page */ false))
-      .WillOnce(DoAll(SaveArg<1>(&new_main_frame_url)));
+      .WillOnce(SaveArg<1>(&new_main_frame_url));
 
   NavigateAndCommitInFrame(url, main_rfh());
 
