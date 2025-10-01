@@ -1268,8 +1268,11 @@ domain Network
   # Blocks URLs from loading.
   experimental command setBlockedURLs
     parameters
+      # URL patterns to block. Patterns use the URLPattern constructor string syntax
+      # (https://urlpattern.spec.whatwg.org/). Example: `*://*:*/*.css`.
+      optional array of string urlPatterns
       # URL patterns to block. Wildcards ('*') are allowed.
-      array of string urls
+      deprecated optional array of string urls
 
   # Toggles ignoring of service worker for each request.
   command setBypassServiceWorker

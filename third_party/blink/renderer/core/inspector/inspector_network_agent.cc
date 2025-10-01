@@ -40,6 +40,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -806,9 +807,21 @@ SourceTypeEnum SourceTypeFromString(const String& type) {
 
 }  // namespace
 
+static std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>
+BuildURLPatternMatcher(const String& pattern) {
+  return url_pattern::SimpleUrlPatternMatcher::Create(pattern.Utf8(),
+                                                      GURL("https://*"))
+      .value_or(std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>());
+}
+
 void InspectorNetworkAgent::Restore() {
   if (enabled_.Get())
     Enable();
+  for (const String& pattern : blocked_patterns_.Keys()) {
+    if (auto matcher = BuildURLPatternMatcher(pattern)) {
+      blocked_pattern_matchers_.emplace_back(std::move(matcher));
+    }
+  }
 }
 
 static std::unique_ptr<protocol::Network::ResourceTiming> BuildObjectForTiming(
@@ -1220,8 +1233,16 @@ void InspectorNetworkAgent::Trace(Visitor* visitor) const {
 }
 
 void InspectorNetworkAgent::ShouldBlockRequest(const KURL& url, bool* result) {
-  if (blocked_urls_.IsEmpty())
+  if (blocked_patterns_.IsEmpty() && blocked_urls_.IsEmpty())
     return;
+
+  GURL gurl(url);
+  for (const auto& matcher : blocked_pattern_matchers_) {
+    if (matcher->Match(gurl)) {
+      *result = true;
+      return;
+    }
+  }
 
   String url_string = url.GetString();
   for (const String& blocked : blocked_urls_.Keys()) {
@@ -2402,10 +2423,38 @@ void InspectorNetworkAgent::getResponseBody(
 }
 
 protocol::Response InspectorNetworkAgent::setBlockedURLs(
+    std::unique_ptr<protocol::Array<String>> url_patterns,
     std::unique_ptr<protocol::Array<String>> urls) {
   blocked_urls_.Clear();
-  for (const String& url : *urls)
-    blocked_urls_.Set(url, true);
+  blocked_patterns_.Clear();
+  blocked_pattern_matchers_.clear();
+  Vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
+      blocked_pattern_matchers;
+
+  if (url_patterns) {
+    for (const String& pattern : *url_patterns) {
+      if (auto matcher = BuildURLPatternMatcher(pattern)) {
+        blocked_pattern_matchers.emplace_back(std::move(matcher));
+      } else {
+        return protocol::Response::InvalidParams(
+            "Pattern \"" + pattern.Utf8() +
+            "\" failed to parse as a URLPattern.");
+      }
+    }
+
+    for (const String& pattern : *url_patterns) {
+      blocked_patterns_.Set(pattern, true);
+    }
+  }
+
+  std::swap(blocked_pattern_matchers_, blocked_pattern_matchers);
+
+  if (urls) {
+    for (const String& url : *urls) {
+      blocked_urls_.Set(url, true);
+    }
+  }
+
   return protocol::Response::Success();
 }
 
@@ -2737,6 +2786,7 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       cache_disabled_(&agent_state_, /*default_value=*/false),
       bypass_service_worker_(&agent_state_, /*default_value=*/false),
       blocked_urls_(&agent_state_, /*default_value=*/false),
+      blocked_patterns_(&agent_state_, /*default_value=*/false),
       extra_request_headers_(&agent_state_, /*default_value=*/String()),
       attach_debug_stack_enabled_(&agent_state_, /*default_value=*/false),
       total_buffer_size_(&agent_state_,

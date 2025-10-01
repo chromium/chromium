@@ -31,11 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_NETWORK_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_NETWORK_AGENT_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/containers/span.h"
 #include "base/containers/span_or_size.h"
 #include "base/unguessable_token.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -58,6 +60,10 @@ class WebSocketHandshakeRequest;
 }  // namespace blink
 }  // namespace mojom
 }  // namespace network
+
+namespace url_pattern {
+class SimpleUrlPatternMatcher;
+}
 
 namespace blink {
 
@@ -287,6 +293,7 @@ class CORE_EXPORT InspectorNetworkAgent final
           matches) override;
 
   protocol::Response setBlockedURLs(
+      std::unique_ptr<protocol::Array<String>> url_patterns,
       std::unique_ptr<protocol::Array<String>> urls) override;
   protocol::Response replayXHR(const String& request_id) override;
   protocol::Response streamResourceContent(
@@ -383,12 +390,15 @@ class CORE_EXPORT InspectorNetworkAgent final
       frame_navigation_initiator_map_;
 
   HashSet<String> streaming_request_ids_;
+  Vector<std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>
+      blocked_pattern_matchers_;
 
   HeapHashSet<Member<XMLHttpRequest>> replay_xhrs_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean cache_disabled_;
   InspectorAgentState::Boolean bypass_service_worker_;
   InspectorAgentState::BooleanMap blocked_urls_;
+  InspectorAgentState::BooleanMap blocked_patterns_;
   InspectorAgentState::StringMap extra_request_headers_;
   InspectorAgentState::Boolean attach_debug_stack_enabled_;
   InspectorAgentState::Integer total_buffer_size_;

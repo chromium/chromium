@@ -1605,7 +1605,8 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/core/inspector/inspector_network_agent.cc'
+            'third_party/blink/renderer/core/inspector/inspector_network_agent.cc',
+            'third_party/blink/renderer/core/inspector/inspector_network_agent.h',
         ],
         'allowed': [
             'base::flat_set',
@@ -1614,6 +1615,7 @@ _CONFIG = [
             'net::IPAddress',
             'net::SourceStreamType',
             'net::SSL.+',
+            'url_pattern::SimpleUrlPatternMatcher',
         ],
     },
     {
