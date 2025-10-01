@@ -27,7 +27,8 @@ bool IsDevOrCanaryOrUnofficialChannel() {
   is_official_build = true;
 #endif
 
-  return channel == version_info::Channel::CANARY ||
+  return channel == version_info::Channel::UNKNOWN ||
+         channel == version_info::Channel::CANARY ||
          channel == version_info::Channel::DEV || !is_official_build;
 }
 
