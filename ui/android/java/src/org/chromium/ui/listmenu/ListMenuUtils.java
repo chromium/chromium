@@ -401,7 +401,8 @@ public class ListMenuUtils {
             // The method calls below ensure that when we transition to a different submenu, the
             // keyboard focus goes to the topmost element.
             mContentView.setSelection(0);
-            if (mHeaderView != null) mHeaderView.setSelection(0);
+            if (mHeaderView != null && mHeaderModelList != null && !mHeaderModelList.isEmpty())
+                mHeaderView.setSelection(0);
             mView.requestFocus();
         }
     }
