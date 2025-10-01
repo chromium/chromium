@@ -489,7 +489,6 @@ public class ContextMenuCoordinatorTest {
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
         shadowDialog.show();
 
-        // Add the flyout popup to be removed.
         List<ContextMenuListView> listViews = mCoordinator.getListViewsForTest();
         assertThat("Expected there to be 1 ContextMenuListView", listViews, hasSize(1));
         ContextMenuListView listView = listViews.get(0);
