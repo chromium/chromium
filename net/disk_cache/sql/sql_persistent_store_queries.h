@@ -173,7 +173,7 @@ inline constexpr const char kDeleteLiveEntriesBetween_SelectLiveResources[] =
 inline constexpr const char kDeleteResourcesByResIds_DeleteFromResources[] =
     "DELETE FROM resources WHERE res_id=?";
 
-inline constexpr const char kUpdateEntryLastUsed_UpdateResourceLastUsed[] =
+inline constexpr const char kUpdateEntryLastUsedByKey_UpdateResourceLastUsed[] =
     // clang-format off
     "UPDATE resources "
     "SET "
@@ -181,6 +181,17 @@ inline constexpr const char kUpdateEntryLastUsed_UpdateResourceLastUsed[] =
     "WHERE "
         "cache_key_hash=? AND " // 1
         "cache_key=? AND "      // 2
+        "doomed=0";
+// clang-format on
+
+inline constexpr const char
+    kUpdateEntryLastUsedByResId_UpdateResourceLastUsed[] =
+        // clang-format off
+    "UPDATE resources "
+    "SET "
+        "last_used=? "      // 0
+    "WHERE "
+        "res_id=? AND "     // 1
         "doomed=0";
 // clang-format on
 
@@ -388,7 +399,8 @@ enum class Query {
   kDeleteAllEntries_DeleteFromBlobs,
   kDeleteLiveEntriesBetween_SelectLiveResources,
   kDeleteResourcesByResIds_DeleteFromResources,
-  kUpdateEntryLastUsed_UpdateResourceLastUsed,
+  kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,
+  kUpdateEntryLastUsedByResId_UpdateResourceLastUsed,
   kUpdateEntryHeaderAndLastUsed_UpdateResource,
   kWriteEntryData_UpdateResource,
   kTrimOverlappingBlobs_DeleteContained,
@@ -445,8 +457,10 @@ inline base::cstring_view GetQuery(Query query) {
       return internal::kDeleteLiveEntriesBetween_SelectLiveResources;
     case Query::kDeleteResourcesByResIds_DeleteFromResources:
       return internal::kDeleteResourcesByResIds_DeleteFromResources;
-    case Query::kUpdateEntryLastUsed_UpdateResourceLastUsed:
-      return internal::kUpdateEntryLastUsed_UpdateResourceLastUsed;
+    case Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed:
+      return internal::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed;
+    case Query::kUpdateEntryLastUsedByResId_UpdateResourceLastUsed:
+      return internal::kUpdateEntryLastUsedByResId_UpdateResourceLastUsed;
     case Query::kUpdateEntryHeaderAndLastUsed_UpdateResource:
       return internal::kUpdateEntryHeaderAndLastUsed_UpdateResource;
     case Query::kWriteEntryData_UpdateResource:

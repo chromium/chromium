@@ -348,7 +348,9 @@ class Backend {
       base::Time initial_time,
       base::Time end_time,
       base::flat_set<CacheEntryKey> excluded_keys);
-  Error UpdateEntryLastUsed(const CacheEntryKey& key, base::Time last_used);
+  Error UpdateEntryLastUsedByKey(const CacheEntryKey& key,
+                                 base::Time last_used);
+  Error UpdateEntryLastUsedByResId(ResId res_id, base::Time last_used);
   ErrorAndEvictionRequested UpdateEntryHeaderAndLastUsed(
       const CacheEntryKey& key,
       ResId res_id,
@@ -409,8 +411,9 @@ class Backend {
       base::Time end_time,
       const base::flat_set<CacheEntryKey>& excluded_keys,
       bool& corruption_detected);
-  Error UpdateEntryLastUsedInternal(const CacheEntryKey& key,
-                                    base::Time last_used);
+  Error UpdateEntryLastUsedByKeyInternal(const CacheEntryKey& key,
+                                         base::Time last_used);
+  Error UpdateEntryLastUsedByResIdInternal(ResId res_id, base::Time last_used);
   Error UpdateEntryHeaderAndLastUsedInternal(
       const CacheEntryKey& key,
       ResId res_id,
@@ -1333,28 +1336,28 @@ ResIdAndHashKeyListOrError Backend::DeleteLiveEntriesBetweenInternal(
              : base::unexpected(error);
 }
 
-Error Backend::UpdateEntryLastUsed(const CacheEntryKey& key,
-                                   base::Time last_used) {
-  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.UpdateEntryLastUsed", "data",
-                     [&](perfetto::TracedValue trace_context) {
+Error Backend::UpdateEntryLastUsedByKey(const CacheEntryKey& key,
+                                        base::Time last_used) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.UpdateEntryLastUsedByKey",
+                     "data", [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
                        dict.Add("key", key.string());
                        dict.Add("last_used", last_used);
                      });
   base::ElapsedTimer timer;
-  auto result = UpdateEntryLastUsedInternal(key, last_used);
-  RecordTimeAndErrorResultHistogram("UpdateEntryLastUsed", timer.Elapsed(),
+  auto result = UpdateEntryLastUsedByKeyInternal(key, last_used);
+  RecordTimeAndErrorResultHistogram("UpdateEntryLastUsedByKey", timer.Elapsed(),
                                     result, /*corruption_detected=*/false);
-  TRACE_EVENT_END1("disk_cache", "SqlBackend.UpdateEntryLastUsed", "result",
-                   [&](perfetto::TracedValue trace_context) {
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.UpdateEntryLastUsedByKey",
+                   "result", [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
                      PopulateTraceDetails(result, dict);
                    });
   return result;
 }
 
-Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
-                                           base::Time last_used) {
+Error Backend::UpdateEntryLastUsedByKeyInternal(const CacheEntryKey& key,
+                                                base::Time last_used) {
   if (simulate_db_failure_for_testing_) {
     return Error::kFailedForTesting;
   }
@@ -1367,10 +1370,58 @@ Error Backend::UpdateEntryLastUsedInternal(const CacheEntryKey& key,
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
-        GetQuery(Query::kUpdateEntryLastUsed_UpdateResourceLastUsed)));
+        GetQuery(Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed)));
     statement.BindTime(0, last_used);
     statement.BindInt64(1, key.hash().value());
     statement.BindString(2, key.string());
+    if (!statement.Run()) {
+      return Error::kFailedToExecute;
+    }
+    change_count = db_.GetLastChangeCount();
+  }
+  if (!transaction.Commit()) {
+    return Error::kFailedToCommitTransaction;
+  }
+  return change_count == 0 ? Error::kNotFound : Error::kOk;
+}
+
+Error Backend::UpdateEntryLastUsedByResId(ResId res_id, base::Time last_used) {
+  TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.UpdateEntryLastUsedByResId",
+                     "data", [&](perfetto::TracedValue trace_context) {
+                       auto dict = std::move(trace_context).WriteDictionary();
+                       dict.Add("res_id", res_id.value());
+                       dict.Add("last_used", last_used);
+                     });
+  base::ElapsedTimer timer;
+  auto result = UpdateEntryLastUsedByResIdInternal(res_id, last_used);
+  RecordTimeAndErrorResultHistogram("UpdateEntryLastUsedByResId",
+                                    timer.Elapsed(), result,
+                                    /*corruption_detected=*/false);
+  TRACE_EVENT_END1("disk_cache", "SqlBackend.UpdateEntryLastUsedByResId",
+                   "result", [&](perfetto::TracedValue trace_context) {
+                     auto dict = std::move(trace_context).WriteDictionary();
+                     PopulateTraceDetails(result, dict);
+                   });
+  return result;
+}
+
+Error Backend::UpdateEntryLastUsedByResIdInternal(ResId res_id,
+                                                  base::Time last_used) {
+  if (simulate_db_failure_for_testing_) {
+    return Error::kFailedForTesting;
+  }
+  CheckDatabaseInitStatus();
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return Error::kFailedToStartTransaction;
+  }
+  int64_t change_count = 0;
+  {
+    sql::Statement statement(db_.GetCachedStatement(
+        SQL_FROM_HERE,
+        GetQuery(Query::kUpdateEntryLastUsedByResId_UpdateResourceLastUsed)));
+    statement.BindTime(0, last_used);
+    statement.BindInt64(1, res_id.value());
     if (!statement.Run()) {
       return Error::kFailedToExecute;
     }
@@ -2504,11 +2555,18 @@ class SqlPersistentStoreImpl : public SqlPersistentStore {
             std::move(callback),
             IndexMismatchLocation::kDeleteLiveEntriesBetween));
   }
-  void UpdateEntryLastUsed(const CacheEntryKey& key,
-                           base::Time last_used,
-                           ErrorCallback callback) override {
-    backend_.AsyncCall(&Backend::UpdateEntryLastUsed)
+  void UpdateEntryLastUsedByKey(const CacheEntryKey& key,
+                                base::Time last_used,
+                                ErrorCallback callback) override {
+    backend_.AsyncCall(&Backend::UpdateEntryLastUsedByKey)
         .WithArgs(key, last_used)
+        .Then(WrapCallback(std::move(callback)));
+  }
+  void UpdateEntryLastUsedByResId(ResId res_id,
+                                  base::Time last_used,
+                                  ErrorCallback callback) override {
+    backend_.AsyncCall(&Backend::UpdateEntryLastUsedByResId)
+        .WithArgs(res_id, last_used)
         .Then(WrapCallback(std::move(callback)));
   }
   void UpdateEntryHeaderAndLastUsed(const CacheEntryKey& key,

@@ -204,9 +204,16 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Updates the `last_used` timestamp for the entry with the specified `key`.
   // `callback` is invoked with `kOk` on success, or `kNotFound` if the entry
   // does not exist or is already doomed.
-  virtual void UpdateEntryLastUsed(const CacheEntryKey& key,
-                                   base::Time last_used,
-                                   ErrorCallback callback) = 0;
+  virtual void UpdateEntryLastUsedByKey(const CacheEntryKey& key,
+                                        base::Time last_used,
+                                        ErrorCallback callback) = 0;
+
+  // Updates the `last_used` timestamp for the entry with the specified
+  // `res_id`. `callback` is invoked with `kOk` on success, or `kNotFound` if
+  // the entry does not exist or is already doomed.
+  virtual void UpdateEntryLastUsedByResId(ResId res_id,
+                                          base::Time last_used,
+                                          ErrorCallback callback) = 0;
 
   // Updates the header data (stream 0) and the `last_used` timestamp for a
   // specific cache entry. The `bytes_usage` for the entry is adjusted based

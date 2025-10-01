@@ -772,7 +772,7 @@ void SqlBackendImpl::HandleOnExternalCacheHitOperation(
     base::Time now,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
-  store_->UpdateEntryLastUsed(
+  store_->UpdateEntryLastUsedByKey(
       key, now,
       base::BindOnce([](SqlPersistentStore::Error error) {})
           .Then(OnceClosureWithBoundArgs(
@@ -933,8 +933,14 @@ void SqlBackendImpl::HandleUpdateEntryLastUsedOperation(
     base::Time last_used,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
-  store_->UpdateEntryLastUsed(
-      key, last_used,
+  const auto optional_res_id = GetResId(res_id_or_error);
+  if (!optional_res_id) {
+    // Fail the operation for entries that were speculatively created but
+    // failed, or for entries that previously failed optimistic writes.
+    return;
+  }
+  store_->UpdateEntryLastUsedByResId(
+      *optional_res_id, last_used,
       base::BindOnce([](SqlPersistentStore::Error error) {})
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))

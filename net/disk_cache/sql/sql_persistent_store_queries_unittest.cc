@@ -153,10 +153,13 @@ TEST_F(SqlPersistentStoreQueriesTest, AllQueriesHaveValidPlan) {
            {Query::kDeleteResourcesByResIds_DeleteFromResources,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},
-           {Query::kUpdateEntryLastUsed_UpdateResourceLastUsed,
+           {Query::kUpdateEntryLastUsedByKey_UpdateResourceLastUsed,
             "`--SEARCH resources USING "
             "INDEX index_resources_cache_key_hash_doomed "
             "(cache_key_hash=? AND doomed=?)"},
+           {Query::kUpdateEntryLastUsedByResId_UpdateResourceLastUsed,
+            "`--SEARCH resources USING "
+            "INTEGER PRIMARY KEY (rowid=?)"},
            {Query::kUpdateEntryHeaderAndLastUsed_UpdateResource,
             "`--SEARCH resources USING "
             "INTEGER PRIMARY KEY (rowid=?)"},

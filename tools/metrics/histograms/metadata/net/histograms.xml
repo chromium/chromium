@@ -160,7 +160,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadEntryData"/>
   <variant name="RunEviction"/>
   <variant name="UpdateEntryHeaderAndLastUsed"/>
-  <variant name="UpdateEntryLastUsed"/>
+  <variant name="UpdateEntryLastUsedByKey"/>
+  <variant name="UpdateEntryLastUsedByResId"/>
   <variant name="WriteEntryData"/>
 </variants>
 
