@@ -166,7 +166,7 @@ public class NavigationSheetTest {
                 history.addEntry(
                         new NavigationEntry(
                                 FULL_HISTORY_ENTRY_INDEX,
-                                new GURL(UrlConstants.HISTORY_URL),
+                                new GURL(UrlConstants.NATIVE_HISTORY_URL),
                                 GURL.emptyGURL(),
                                 GURL.emptyGURL(),
                                 mActivityTestRule

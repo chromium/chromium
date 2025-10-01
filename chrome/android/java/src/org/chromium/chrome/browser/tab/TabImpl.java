@@ -783,7 +783,9 @@ class TabImpl implements Tab {
 
         // Record UMA "ShowHistory" here. That way it'll pick up both user
         // typing chrome://history as well as selecting from the drop down menu.
-        if (fixedUrl.getSpec().equals(UrlConstants.HISTORY_URL)) {
+        String fixedUrlSpec = fixedUrl.getSpec();
+        if (UrlConstants.HISTORY_HOST.equals(fixedUrlSpec)
+                || UrlConstants.NATIVE_HISTORY_URL.equals(fixedUrlSpec)) {
             RecordUserAction.record("ShowHistory");
         }
 
@@ -791,7 +793,7 @@ class TabImpl implements Tab {
             return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, null);
         }
 
-        params.setUrl(fixedUrl.getSpec());
+        params.setUrl(fixedUrlSpec);
         NavigationHandle handle = mWebContents.getNavigationController().loadUrl(params);
         return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, handle);
     }

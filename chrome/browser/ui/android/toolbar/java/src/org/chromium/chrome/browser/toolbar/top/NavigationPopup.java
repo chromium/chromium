@@ -36,7 +36,8 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
@@ -129,10 +130,12 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
                 mNavigationController.getDirectedNavigationHistory(
                         isForward, MAXIMUM_HISTORY_ITEMS);
         if (!shouldUseIncognitoResources()) {
+            UrlConstantResolver urlConstantResolver =
+                    UrlConstantResolverFactory.getForProfile(profile);
             mHistory.addEntry(
                     new NavigationEntry(
                             FULL_HISTORY_ENTRY_INDEX,
-                            new GURL(UrlConstants.HISTORY_URL),
+                            new GURL(urlConstantResolver.getHistoryPageUrl()),
                             GURL.emptyGURL(),
                             GURL.emptyGURL(),
                             resources.getString(R.string.show_full_history),

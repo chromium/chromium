@@ -130,7 +130,7 @@ class NavigationSheetMediator {
             if (!requestedUrls.contains(pageUrl)) {
                 FaviconHelper.FaviconImageCallback imageCallback =
                         (bitmap, iconUrl) -> onFaviconAvailable(pageUrl, bitmap);
-                if (!pageUrl.getSpec().equals(UrlConstants.HISTORY_URL)) {
+                if (!pageUrl.getSpec().equals(UrlConstants.NATIVE_HISTORY_URL)) {
                     mFaviconHelper.getLocalFaviconImageForURL(
                             mProfile, pageUrl, mFaviconSize, imageCallback);
                     requestedUrls.add(pageUrl);
