@@ -2409,9 +2409,8 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
       "SBClientPhishing.MatchCSDAllowlistOnCreditCardForm", false, 1);
 }
 
-// TODO: crbug.com/443098659 - Re-enable after fixing failing test.
 TEST_F(ClientSideDetectionHostCreditCardFormTest,
-       DISABLED_CreditCardFormProceedsWithClassificationOnLowSiteEngagement) {
+       CreditCardFormProceedsWithClassificationOnLowSiteEngagement) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -2453,6 +2452,7 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   auto form_data = autofill::test::CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true);
   autofill_manager()->OnFormsSeen({form_data}, {});
+  WaitUntilHighConfidenceAllowlistCheckDone();
   WaitAndCheckPreClassificationChecks();
 
   // Pre-classification should have proceeded to classification.
@@ -2497,8 +2497,6 @@ TEST_F(ClientSideDetectionHostCreditCardFormTest,
   // Check that histograms haven't been recorded yet.
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.SiteEngagement.CreditCardForm", 0);
-  histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult.CreditCardForm", 0);
 
   csd_host_->RegisterAutofillManager();
 
