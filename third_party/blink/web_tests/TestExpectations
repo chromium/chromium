@@ -9746,6 +9746,7 @@ crbug.com/444048840 [ Linux ] inspector-protocol/sessions/page-set-document-cont
 crbug.com/448325313 [ Mac ] http/tests/devtools/persistence/persistence-move-breakpoints-on-reload.js [ Failure Pass ]
 
 # Gardener 2025-10-01
+crbug.com/448484970 [ Win11-arm64 ] external/wpt/webxr/xrSession_visibilityState_inline.https.html [ Failure Pass ]
 crbug.com/448484970 [ Mac ] external/wpt/webxr/xrSession_visibilityState_inline.https.html [ Failure Pass ]
 crbug.com/448489521 [ Debug Linux ] external/wpt/css/css-contain/contain-size-select-elem-005.html [ Failure Pass ]
 crbug.com/448490201 [ Debug Linux ] virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/backplate/forced-colors-mode-backplate-08.html [ Failure Pass ]
