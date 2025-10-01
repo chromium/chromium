@@ -193,7 +193,9 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)presentPasswordIssueDetails:(PasswordIssue*)password {
-  DCHECK(!_passwordDetails);
+  if (_passwordDetails) {
+    base::debug::DumpWithoutCrashing();
+  }
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
