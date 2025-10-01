@@ -8,6 +8,10 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
+#include "components/variations/net/variations_http_headers.h"
+#include "components/variations/variations.mojom.h"
+#include "components/variations/variations_client.h"
+#include "components/variations/variations_ids_provider.h"
 #include "google_apis/common/api_error_codes.h"
 
 namespace {
@@ -34,15 +38,39 @@ struct GlicUserStatusResponse {
 namespace glic {
 GlicUserStatusRequest::GlicUserStatusRequest(
     google_apis::RequestSender* sender,
+    variations::VariationsClient* variations_client,
     GURL url,
     base::OnceCallback<void(const CachedUserStatus&)> process_response_callback)
     : UrlFetchRequestBase(sender,
                           google_apis::ProgressCallback(),
                           google_apis::ProgressCallback()),
       url_(url),
+      variations_client_(variations_client),
       process_response_callback_(std::move(process_response_callback)) {}
 
 GlicUserStatusRequest::~GlicUserStatusRequest() = default;
+
+std::vector<std::string> GlicUserStatusRequest::GetExtraRequestHeaders() const {
+  std::vector<std::string> headers;
+
+  if (!variations_client_) {
+    return headers;
+  }
+
+  variations::mojom::VariationsHeadersPtr variations =
+      variations_client_->GetVariationsHeaders();
+  if (variations_client_->IsOffTheRecord() || variations.is_null()) {
+    return headers;
+  }
+
+  // The endpoint is always a Google property.
+  headers.push_back(
+      base::StrCat({variations::kClientDataHeader, ": ",
+                    variations->headers_map.at(
+                        variations::mojom::GoogleWebVisibility::FIRST_PARTY)}));
+
+  return headers;
+}
 
 GURL GlicUserStatusRequest::GetURL() const {
   return url_;

@@ -124,11 +124,12 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   void RegisterUserStatusHandler(net::HttpStatusCode status_code,
                                  std::string response_body) {
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
-        [=](const net::test_server::HttpRequest& request)
+        [=, this](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
           if (request.relative_url != kGlicUserStatusRelativeTestUrl) {
             return nullptr;
           }
+          most_recent_request_ = request;
           auto response =
               std::make_unique<net::test_server::BasicHttpResponse>();
 
@@ -216,6 +217,10 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
 
   Profile* profile() { return browser()->profile(); }
 
+  net::test_server::HttpRequest& most_recent_request() {
+    return most_recent_request_.value();
+  }
+
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> adaptor_;
@@ -223,6 +228,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::ScopedClosureRunner disclaimer_service_resetter_;
+  std::optional<net::test_server::HttpRequest> most_recent_request_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
@@ -769,6 +775,28 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
                 ->GetDict(prefs::kGlicUserStatus)
                 .FindBool(kIsEnterpriseAccountDataProtected),
             false);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, ClientDataHeaderExists) {
+  policy::ScopedManagementServiceOverrideForTesting platform_management(
+      policy::ManagementServiceFactory::GetForProfile(profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  RegisterUserStatusHandler(
+      net::HTTP_OK,
+      R"({"isGlicEnabled": true, "isAccessDeniedByAdmin": false})");
+  net::test_server::EmbeddedTestServerHandle test_server_handle;
+  ASSERT_TRUE(test_server_handle =
+                  embedded_test_server()->StartAndReturnHandle());
+
+  SetGlicUserStatusUrlForTest();
+
+  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetCachedStatusDict().has_value(); }));
+
+  EXPECT_NE(most_recent_request().headers["X-Client-Data"], "");
 }
 
 }  // namespace

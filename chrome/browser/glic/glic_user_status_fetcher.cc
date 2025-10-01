@@ -290,7 +290,8 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
       /*custom_user_agent=*/std::string(), kTrafficAnnotation);
 
   auto request = std::make_unique<GlicUserStatusRequest>(
-      request_sender_.get(), endpoint_, std::move(callback));
+      request_sender_.get(), profile_->GetVariationsClient(), endpoint_,
+      std::move(callback));
   cancel_closure_ =
       request_sender_->StartRequestWithAuthRetry(std::move(request));
 }

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
+#include "components/variations/variations_client.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 #include "google_apis/common/request_sender.h"
@@ -17,6 +18,7 @@ class GlicUserStatusRequest : public google_apis::UrlFetchRequestBase {
  public:
   explicit GlicUserStatusRequest(
       google_apis::RequestSender* sender,
+      variations::VariationsClient* variations_client,
       GURL url,
       base::OnceCallback<void(const CachedUserStatus&)>
           process_response_callback);
@@ -25,6 +27,7 @@ class GlicUserStatusRequest : public google_apis::UrlFetchRequestBase {
   ~GlicUserStatusRequest() override;
 
  protected:
+  std::vector<std::string> GetExtraRequestHeaders() const override;
   GURL GetURL() const override;
 
   google_apis::ApiErrorCode MapReasonToError(
@@ -46,6 +49,7 @@ class GlicUserStatusRequest : public google_apis::UrlFetchRequestBase {
       std::string_view response_body);
 
   GURL url_;
+  raw_ptr<variations::VariationsClient> variations_client_;
   base::OnceCallback<void(const CachedUserStatus&)> process_response_callback_;
 };
 
