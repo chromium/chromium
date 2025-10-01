@@ -165,6 +165,9 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
 
     @Override
     protected boolean shouldShowButton(@Nullable Tab tab) {
+        if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) {
+            return super.shouldShowButton(tab);
+        }
         return mShouldShowButtonForCurrentPage;
     }
 
@@ -193,7 +196,9 @@ public class ReaderModeToolbarButtonController extends BaseButtonDataProvider
     }
 
     private void maybeRefreshButton(@Nullable Tab tab) {
-        if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) return;
+        if (!DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) {
+            return;
+        }
 
         // The callback controller may still have a pending task to hide the button. Destroy it and
         // create a new one to ensure that the button can be shown again.
