@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -458,30 +457,8 @@ float TextDecorationInfo::ComputeThickness() const {
     return 1.f * decorating_box_style_->EffectiveZoom();
 #endif
   }
-  return ComputeUnderlineThickness(decoration.Thickness());
-}
-
-float TextDecorationInfo::ComputeUnderlineThickness(
-    const TextDecorationThickness& applied_decoration_thickness) const {
-  float thickness = 0;
-  if (RuntimeEnabledFeatures::
-          SvgTextCentralBaselineTextDecorationFixEnabled() ||
-      flipped_underline_position_ ==
-          ResolvedUnderlinePosition::kNearAlphabeticBaselineAuto ||
-      flipped_underline_position_ ==
-          ResolvedUnderlinePosition::kNearAlphabeticBaselineFromFont ||
-      !decorating_box_style_) {
-    thickness = ComputeDecorationThickness(applied_decoration_thickness,
-                                           computed_font_size_, font_data_);
-  } else {
-    // Compute decorating box. Position and thickness are computed from the
-    // decorating box.
-    // Only for non-Roman for now for the performance implications.
-    // https:// drafts.csswg.org/css-text-decor-3/#decorating-box
-    thickness = ComputeDecorationThickness(
-        applied_decoration_thickness, decorating_box_style_->ComputedFontSize(),
-        decorating_box_style_->GetFont()->PrimaryFont());
-  }
+  const float thickness = ComputeDecorationThickness(
+      decoration.Thickness(), computed_font_size_, font_data_);
   const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   return std::max(minimum_thickness, thickness);
 }
