@@ -1028,6 +1028,26 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
+<histogram
+    name="Permissions.PredictionService.Action.{PermissionType}.{Likelihood}.{Prominence}"
+    enum="PermissionAction" expires_after="2026-09-30">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the user action on a permission prompt when the prediction service
+    determined the grant likelihood to be unlikely or very unlikely.
+  </summary>
+  <token key="Prominence">
+    <variant name="Loud"/>
+    <variant name="Quiet"/>
+  </token>
+  <token key="Likelihood">
+    <variant name="Unlikely"/>
+    <variant name="VeryUnlikely"/>
+  </token>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
+</histogram>
+
 <histogram name="Permissions.PredictionService.ConcurrentRequests"
     enum="PermissionPredictionSupportedType" expires_after="2025-12-01">
   <owner>elklm@chromium.org</owner>

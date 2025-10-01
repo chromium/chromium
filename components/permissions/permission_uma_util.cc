@@ -694,6 +694,39 @@ std::string GetPermissionStringForUma(
                << " not accounted for";
 }
 
+const char* GetPredictionGrantLikelihoodString(
+    PermissionUiSelector::PredictionGrantLikelihood likelihood) {
+  switch (likelihood) {
+    case PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED:
+      return "Unspecified";
+    case PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY:
+      return "VeryUnlikely";
+    case PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY:
+      return "Unlikely";
+    case PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_NEUTRAL:
+      return "Neutral";
+    case PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY:
+      return "Likely";
+    case PermissionUiSelector::PredictionGrantLikelihood::
+        PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY:
+      return "VeryLikely";
+  }
+  NOTREACHED();
+}
+
+const char* GetProminenceString(PermissionPromptDisposition disposition) {
+  if (PermissionUmaUtil::IsPromptDispositionQuiet(disposition)) {
+    return "Quiet";
+  } else {
+    return "Loud";
+  }
+}
+
 }  // anonymous namespace
 
 // PermissionUmaUtil ----------------------------------------------------------
@@ -1099,6 +1132,24 @@ void PermissionUmaUtil::PermissionPromptResolved(
                         ".DidClickLearnMore"}),
           did_click_learn_more);
     }
+  }
+
+  // Record the permission action for the prediction service if the prediction
+  // is UNLIKELY or VERY_UNLIKELY. `predicted_grant_likelihood` is only
+  // populated by the prediction service for Notification and Geolocation
+  // permissions.
+  if (predicted_grant_likelihood.has_value() &&
+      (predicted_grant_likelihood.value() ==
+           PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY ||
+       predicted_grant_likelihood.value() ==
+           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY)) {
+    const char* prominence_string = GetProminenceString(ui_disposition);
+    std::string histogram_name = base::StrCat(
+        {"Permissions.PredictionService.Action.", permission_type, ".",
+         GetPredictionGrantLikelihoodString(predicted_grant_likelihood.value()),
+         ".", prominence_string});
+    base::UmaHistogramEnumeration(histogram_name, permission_action,
+                                  PermissionAction::NUM);
   }
 }  // namespace permissions
 
