@@ -12,13 +12,13 @@
 #include "base/sequence_checker.h"
 #include "gpu/config/gpu_info.h"
 #include "media/base/encoder_status.h"
+#include "media/base/media_log.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/video/video_encode_accelerator.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
-class MediaLog;
 class VideoFrame;
 }  // namespace media
 
