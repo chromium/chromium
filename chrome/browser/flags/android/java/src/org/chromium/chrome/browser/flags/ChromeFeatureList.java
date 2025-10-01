@@ -747,8 +747,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidMinimalUiLargeScreen =
             newCachedFlag(ANDROID_MINIMAL_UI_LARGE_SCREEN, true);
-    public static final CachedFlag sAndroidOpenIncognitoAsWindow =
-            newCachedFlag(ANDROID_OPEN_INCOGNITO_AS_WINDOW, BuildConfig.IS_DESKTOP_ANDROID);
     public static final CachedFlag sAndroidProgressBarVisualUpdate =
             newCachedFlag(
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,
@@ -1055,8 +1053,6 @@ public abstract class ChromeFeatureList {
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripDensityChangeAndroid =
             newCachedFlag(TAB_STRIP_DENSITY_CHANGE_ANDROID, true);
-    public static final CachedFlag sTabStripIncognitoMigration =
-            newCachedFlag(TAB_STRIP_INCOGNITO_MIGRATION, BuildConfig.IS_DESKTOP_ANDROID);
     public static final CachedFlag sTabWindowManagerReportIndicesMismatch =
             newCachedFlag(TAB_WINDOW_MANAGER_REPORT_INDICES_MISMATCH, true);
     public static final CachedFlag sTabletTabStripAnimation =
@@ -1120,7 +1116,6 @@ public abstract class ChromeFeatureList {
                     sAndroidDesktopDensity,
                     sAndroidElegantTextHeight,
                     sAndroidMinimalUiLargeScreen,
-                    sAndroidOpenIncognitoAsWindow,
                     sAndroidProgressBarVisualUpdate,
                     sAndroidSettingsContainment,
                     sAndroidSurfaceColorUpdate,
@@ -1243,7 +1238,6 @@ public abstract class ChromeFeatureList {
                     sTabClosureMethodRefactor,
                     sTabModelInitFixes,
                     sTabStripDensityChangeAndroid,
-                    sTabStripIncognitoMigration,
                     sTabWindowManagerReportIndicesMismatch,
                     sTabletTabStripAnimation,
                     sToolbarPhoneAnimationRefactor,
@@ -1281,6 +1275,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_APPEARANCE_SETTINGS, false);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, false);
+    public static final MutableFlagWithSafeDefault sAndroidOpenIncognitoAsWindow =
+            newMutableFlagWithSafeDefault(ANDROID_OPEN_INCOGNITO_AS_WINDOW, false);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabs =
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, false);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabsTabletTabStrip =
@@ -1374,6 +1370,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID, true);
     public static final MutableFlagWithSafeDefault sTabStorageSqlitePrototype =
             newMutableFlagWithSafeDefault(TAB_STORAGE_SQLITE_PROTOTYPE, false);
+    public static final MutableFlagWithSafeDefault sTabStripIncognitoMigration =
+            newMutableFlagWithSafeDefault(TAB_STRIP_INCOGNITO_MIGRATION, false);
     public static final MutableFlagWithSafeDefault sTabStripLayoutOptimization =
             newMutableFlagWithSafeDefault(TAB_STRIP_LAYOUT_OPTIMIZATION, true);
     public static final MutableFlagWithSafeDefault sTabSwitcherForeignFaviconSupport =

@@ -29,7 +29,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -491,19 +490,16 @@ public class ChromeTabbedOnDragListenerUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnDrag_ActionDrop_DifferentModel_Success() {
         verifyDropToDifferentModelSuccess(/* isGroupDrag= */ false, /* isMultiTabDrag= */ false);
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnDrag_ActionDrop_DifferentModel_Success_TabGroup() {
         verifyDropToDifferentModelSuccess(/* isGroupDrag= */ true, /* isMultiTabDrag= */ false);
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnDrag_ActionDrop_DifferentModel_Success_MultiTab() {
         verifyDropToDifferentModelSuccess(/* isGroupDrag= */ false, /* isMultiTabDrag= */ true);
     }
