@@ -32,7 +32,6 @@ class WebStateImpl::SerializedData {
   // is used when the WebState will transition to "realized" state.
   SerializedData(WebStateImpl* owner,
                  BrowserState* browser_state,
-                 NSString* stable_identifier,
                  WebStateID unique_identifier,
                  proto::WebStateMetadataStorage metadata,
                  WebStateStorageLoader storage_loader,
@@ -68,7 +67,6 @@ class WebStateImpl::SerializedData {
   base::Time GetLastActiveTime() const;
   base::Time GetCreationTime() const;
   BrowserState* GetBrowserState() const;
-  NSString* GetStableIdentifier() const;
   WebStateID GetUniqueIdentifier() const;
   const std::u16string& GetTitle() const;
   const FaviconStatus& GetFaviconStatus() const;
@@ -92,8 +90,7 @@ class WebStateImpl::SerializedData {
   // The owning BrowserState. Indirectly owns this object.
   const raw_ptr<BrowserState> browser_state_;
 
-  // The stable and unique identifiers.
-  NSString* const stable_identifier_;
+  // The unique identifier.
   const WebStateID unique_identifier_;
 
   // Information about this WebState available when the object is not

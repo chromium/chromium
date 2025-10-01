@@ -369,16 +369,6 @@ class WebState : public base::SupportsUserData {
 
   // Returns a unique identifier for this WebState that is stable across
   // restart of the application (and across "undo" after a tab is closed).
-  // It is local to the device and not synchronized. This can be used as a key
-  // to identify locally this WebState (e.g. can be used as part of the name
-  // of the file that is used to store a snapshot of the WebState, or it can
-  // be used as a key in an NSDictionary).
-  //
-  // DEPRECATED: use GetUniqueIdentifier() instead.
-  virtual NSString* GetStableIdentifier() const = 0;
-
-  // Returns a unique identifier for this WebState that is stable across
-  // restart of the application (and across "undo" after a tab is closed).
   // It is local to the device and not synchronized (but may be used by
   // the sync code to uniquely identify a session on the current device).
   // It can be used as a key to identify this WebState.

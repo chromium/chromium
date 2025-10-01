@@ -247,10 +247,6 @@ void FakeWebState::LoadData(NSData* data,
 
 void FakeWebState::ExecuteUserJavaScript(NSString* javaScript) {}
 
-NSString* FakeWebState::GetStableIdentifier() const {
-  return stable_identifier_;
-}
-
 WebStateID FakeWebState::GetUniqueIdentifier() const {
   return unique_identifier_;
 }

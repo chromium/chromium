@@ -162,11 +162,6 @@ ContentWebState::ContentWebState(const CreateParams& params,
   [web_view_ addSubview:web_contents_view];
 
   session_storage_ = session_storage;
-  if (session_storage) {
-    UUID_ = [session_storage.stableIdentifier copy];
-  } else {
-    UUID_ = [[[NSUUID UUID] UUIDString] copy];
-  }
 
   creation_time_ = base::Time::Now();
   last_active_time_ = params.last_active_time.value_or(creation_time_);
@@ -375,10 +370,6 @@ void ContentWebState::ExecuteUserJavaScript(NSString* javaScript) {
 
   primary_main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(javaScript),
                                         {});
-}
-
-NSString* ContentWebState::GetStableIdentifier() const {
-  return UUID_;
 }
 
 WebStateID ContentWebState::GetUniqueIdentifier() const {

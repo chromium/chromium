@@ -99,8 +99,8 @@ WebStateImpl::WebStateImpl(const CreateParams& params) {
   const base::Time last_active_time =
       params.last_active_time.value_or(creation_time);
 
-  pimpl_ = std::make_unique<RealizedWebState>(
-      this, creation_time, [[NSUUID UUID] UUIDString], WebStateID::NewUnique());
+  pimpl_ = std::make_unique<RealizedWebState>(this, creation_time,
+                                              WebStateID::NewUnique());
   pimpl_->Init(params.browser_state, last_active_time,
                params.created_with_opener);
 
@@ -127,8 +127,8 @@ WebStateImpl::WebStateImpl(const CreateParams& params,
   [session_storage serializeMetadataToProto:metadata];
 
   saved_ = std::make_unique<SerializedData>(
-      this, params.browser_state, session_storage.stableIdentifier,
-      session_storage.uniqueIdentifier, std::move(metadata),
+      this, params.browser_state, session_storage.uniqueIdentifier,
+      std::move(metadata),
       base::BindOnce(&SessionStorageToProto, session_storage),
       std::move(session_fetcher));
   saved_->SetSessionStorage(session_storage);
@@ -144,9 +144,8 @@ WebStateImpl::WebStateImpl(BrowserState* browser_state,
   AddWebStateImplMarker();
 
   saved_ = std::make_unique<SerializedData>(
-      this, browser_state, [[NSUUID UUID] UUIDString], unique_identifier,
-      std::move(metadata), std::move(storage_loader),
-      std::move(session_fetcher));
+      this, browser_state, unique_identifier, std::move(metadata),
+      std::move(storage_loader), std::move(session_fetcher));
 
   SendGlobalCreationEvent();
 }
@@ -167,7 +166,6 @@ WebStateImpl::WebStateImpl(CloneFrom, const RealizedWebState& pimpl) {
   });
 
   pimpl_ = std::make_unique<RealizedWebState>(this, pimpl.GetCreationTime(),
-                                              [[NSUUID UUID] UUIDString],
                                               WebStateID::NewUnique());
   pimpl_->InitWithProto(pimpl.GetBrowserState(), base::Time::Now(),
                         pimpl.GetTitle(), pimpl.GetVisibleURL(),
@@ -567,7 +565,6 @@ WebState* WebStateImpl::ForceRealizedWithPolicy(RealizationPolicy policy) {
     // reason why the initialisation of the RealizedWebState needs to
     // be done after the constructor is done.
     pimpl_ = std::make_unique<RealizedWebState>(this, saved_->GetCreationTime(),
-                                                saved_->GetStableIdentifier(),
                                                 saved_->GetUniqueIdentifier());
 
     // Take the SerializedData out of `saved_`. This ensures that `saved_` is
@@ -754,7 +751,7 @@ CRWSessionStorage* WebStateImpl::BuildSessionStorage() const {
     session_storage =
         [[CRWSessionStorage alloc] initWithProto:storage
                                 uniqueIdentifier:GetUniqueIdentifier()
-                                stableIdentifier:GetStableIdentifier()];
+                                stableIdentifier:[[NSUUID UUID] UUIDString]];
   } else {
     session_storage = saved_->GetSessionStorage();
   }
@@ -782,14 +779,6 @@ void WebStateImpl::LoadData(NSData* data,
 void WebStateImpl::ExecuteUserJavaScript(NSString* javascript) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->ExecuteUserJavaScript(javascript);
-}
-
-NSString* WebStateImpl::GetStableIdentifier() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pimpl_) [[likely]] {
-    return pimpl_->GetStableIdentifier();
-  }
-  return saved_->GetStableIdentifier();
 }
 
 WebStateID WebStateImpl::GetUniqueIdentifier() const {

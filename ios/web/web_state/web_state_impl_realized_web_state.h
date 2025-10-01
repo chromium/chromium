@@ -37,7 +37,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   // WebStateImpl.
   RealizedWebState(WebStateImpl* owner,
                    base::Time creation_time,
-                   NSString* stable_identifier,
                    WebStateID unique_identifier);
 
   RealizedWebState(const RealizedWebState&) = delete;
@@ -179,7 +178,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void WasHidden();
   void SetKeepRenderProcessAlive(bool keep_alive);
   BrowserState* GetBrowserState() const;
-  NSString* GetStableIdentifier() const;
   WebStateID GetUniqueIdentifier() const;
   void OpenURL(const WebState::OpenURLParams& params);
   void Stop();
@@ -321,10 +319,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
 
   // The User-Agent type.
   UserAgentType user_agent_type_ = UserAgentType::AUTOMATIC;
-
-  // The stable identifier. Set during `Init()` call. Never nil after this
-  // method has been called. Stable across application restarts.
-  __strong NSString* const stable_identifier_;
 
   // The unique identifier. Stable across application restarts.
   const WebStateID unique_identifier_;
