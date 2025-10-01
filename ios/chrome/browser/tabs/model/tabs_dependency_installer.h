@@ -7,8 +7,8 @@
 
 #import <memory>
 
+class Browser;
 class TabsDependencyInstallationHelper;
-class WebStateList;
 
 namespace web {
 class WebState;
@@ -16,7 +16,7 @@ class WebState;
 
 // Interface for classes wishing to install and/or uninstall dependencies
 // (delegates, etc) for each WebState when they are inserted/removed from
-// a WebstateList.
+// a Browser's WebStateList.
 class TabsDependencyInstaller {
  public:
   // Policy controlling when the TabsDependencyInstaller should be
@@ -38,12 +38,13 @@ class TabsDependencyInstaller {
   TabsDependencyInstaller();
   virtual ~TabsDependencyInstaller();
 
-  // Starts observing the WebStateList and installing the dependencies.
-  void StartObserving(WebStateList* web_state_list, Policy policy);
+  // Starts observing the Browser's WebStateList and installing the
+  // dependencies.
+  void StartObserving(Browser* browser, Policy policy);
 
-  // Stops observing the WebStateList (and if there are still WebStates
-  // with installed dependencies, uninstall them). Must be called before
-  // the destructor of DependencyInstaller is called.
+  // Stops observing the Browser's WebStateList (and if there are still
+  // WebStates with installed dependencies, uninstall them). Must be called
+  // before the destructor of DependencyInstaller is called.
   void StopObserving();
 
   // Serves as a hook for any installation work needed to set up a per-WebState

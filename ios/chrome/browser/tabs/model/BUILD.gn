@@ -222,6 +222,7 @@ source_set("dependency_installer") {
   deps = [
     ":features",
     "//base",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",

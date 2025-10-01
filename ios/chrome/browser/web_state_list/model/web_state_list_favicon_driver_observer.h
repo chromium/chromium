@@ -10,6 +10,8 @@
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
+class Browser;
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -28,7 +30,7 @@ class WebStateListFaviconDriverObserver
     : public TabsDependencyInstaller,
       public favicon::FaviconDriverObserver {
  public:
-  WebStateListFaviconDriverObserver(WebStateList* web_state_list,
+  WebStateListFaviconDriverObserver(Browser* browser,
                                     id<WebStateFaviconDriverObserver> observer);
 
   WebStateListFaviconDriverObserver(const WebStateListFaviconDriverObserver&) =

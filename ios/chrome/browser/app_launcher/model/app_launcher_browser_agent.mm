@@ -156,7 +156,7 @@ RequestCauseFromActionCause(AppLauncherAlertCause cause) {
 
 AppLauncherBrowserAgent::AppLauncherBrowserAgent(Browser* browser)
     : BrowserUserData(browser), tab_helper_delegate_(browser) {
-  StartObserving(browser->GetWebStateList(), Policy::kAccordingToFeature);
+  StartObserving(browser, Policy::kAccordingToFeature);
   browser->AddObserver(this);
   app_launcher_scene_state_observer_ = [[AppLauncherSceneStateObserver alloc]
       initWithTransitionCallback:

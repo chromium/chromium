@@ -14,7 +14,7 @@
 
 PersistTabContextBrowserAgent::PersistTabContextBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  StartObserving(browser_->GetWebStateList(), Policy::kAccordingToFeature);
+  StartObserving(browser, Policy::kAccordingToFeature);
   persist_tab_context_state_agent_ = [[PersistTabContextStateAgent alloc]
       initWithTransitionCallback:
           base::BindRepeating(

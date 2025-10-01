@@ -1831,8 +1831,8 @@ const char kChromeAppStoreUrl[] =
 - (void)startTabLifeCycleMediator {
   Browser* browser = self.browser;
 
-  TabLifecycleMediator* tabLifecycleMediator = [[TabLifecycleMediator alloc]
-      initWithWebStateList:browser->GetWebStateList()];
+  TabLifecycleMediator* tabLifecycleMediator =
+      [[TabLifecycleMediator alloc] initWithBrowser:browser];
 
   // Set properties that are already valid.
   tabLifecycleMediator.commandDispatcher = browser->GetCommandDispatcher();
@@ -1844,7 +1844,6 @@ const char kChromeAppStoreUrl[] =
   tabLifecycleMediator.overscrollActionsDelegate = self;
   tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
   tabLifecycleMediator.editMenuBuilder = self;
-  tabLifecycleMediator.browser = self.browser;
 
   self.tabLifecycleMediator = tabLifecycleMediator;
 }

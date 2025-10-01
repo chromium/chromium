@@ -37,7 +37,7 @@ AccountConsistencyBrowserAgent::AccountConsistencyBrowserAgent(
     Browser* browser,
     UIViewController* base_view_controller)
     : BrowserUserData(browser), base_view_controller_(base_view_controller) {
-  StartObserving(browser->GetWebStateList(), Policy::kOnlyRealized);
+  StartObserving(browser, Policy::kOnlyRealized);
   application_handler_ =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
   settings_handler_ =

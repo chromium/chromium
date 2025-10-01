@@ -108,7 +108,7 @@ WebStateDelegateBrowserAgent::WebStateDelegateBrowserAgent(
       << "WebStateDelegateBrowserAgent created for a Browser with a non-empty "
          "WebStateList.";
 
-  StartObserving(web_state_list_, Policy::kOnlyRealized);
+  StartObserving(browser, Policy::kOnlyRealized);
 }
 
 WebStateDelegateBrowserAgent::~WebStateDelegateBrowserAgent() {

@@ -62,6 +62,10 @@
 #import "ui/base/device_form_factor.h"
 
 @interface TabLifecycleMediator () <TabsDependencyInstalling>
+
+// The source browser.
+@property(nonatomic, assign) Browser* browser;
+
 @end
 
 @implementation TabLifecycleMediator {
@@ -69,10 +73,11 @@
   TabsDependencyInstallerBridge _dependencyInstallerBridge;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithBrowser:(Browser*)browser {
   if ((self = [super init])) {
     _dependencyInstallerBridge.StartObserving(
-        self, webStateList, TabsDependencyInstaller::Policy::kOnlyRealized);
+        self, browser, TabsDependencyInstaller::Policy::kOnlyRealized);
+    _browser = browser;
   }
   return self;
 }

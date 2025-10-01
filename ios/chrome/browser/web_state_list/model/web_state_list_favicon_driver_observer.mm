@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+
 WebStateListFaviconDriverObserver::WebStateListFaviconDriverObserver(
-    WebStateList* web_state_list,
+    Browser* browser,
     id<WebStateFaviconDriverObserver> observer)
     : favicon_observer_(observer) {
-  StartObserving(web_state_list, Policy::kAccordingToFeature);
+  StartObserving(browser, Policy::kAccordingToFeature);
 }
 
 WebStateListFaviconDriverObserver::~WebStateListFaviconDriverObserver() {

@@ -16,7 +16,7 @@ DataSharingBrowserAgent::DataSharingBrowserAgent(
     collaboration::CollaborationService* service)
     : BrowserUserData(browser), service_(service) {
   CHECK(service_);
-  StartObserving(browser->GetWebStateList(), Policy::kAccordingToFeature);
+  StartObserving(browser, Policy::kAccordingToFeature);
 }
 
 DataSharingBrowserAgent::~DataSharingBrowserAgent() {

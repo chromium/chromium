@@ -262,6 +262,10 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 // The consumer for this object.
 @property(nonatomic, weak) id<TabStripConsumer> consumer;
 
+// The WebStateList that this mediator listens for any changes on the total
+// number of Webstates.
+@property(nonatomic, assign) WebStateList* webStateList;
+
 @end
 
 @implementation TabStripMediator {
@@ -442,6 +446,11 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   }
 }
 
+- (void)setBrowser:(Browser*)browser {
+  _browser = browser;
+  self.webStateList = browser->GetWebStateList();
+}
+
 - (void)deleteSavedGroupWithID:(const base::Uuid&)savedID {
   _tabGroupSyncService->RemoveGroup(savedID);
 }
@@ -504,34 +513,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
 
 #pragma mark - Public properties
 
-- (void)setWebStateList:(WebStateList*)webStateList {
-  if (_webStateList) {
-    [self removeWebStateObservations];
-    _webStateListFaviconObserver.reset();
-    _webStateList->RemoveObserver(_webStateListObserver.get());
-  }
 
-  _webStateList = webStateList;
-
-  if (_webStateList) {
-    DCHECK_GE(_webStateList->count(), 0);
-    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-    _webStateList->AddObserver(_webStateListObserver.get());
-
-    _webStateListFaviconObserver =
-        std::make_unique<WebStateListFaviconDriverObserver>(_webStateList,
-                                                            self);
-
-    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
-    [self addWebStateObservations];
-
-    // `fetchMessages` depends on the web state list to obtain a group that is
-    // corresponded to a message.
-    [self fetchMessages];
-  }
-
-  [self populateConsumerItems];
-}
 
 #pragma mark - WebStateListObserving
 
@@ -1940,6 +1922,34 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
   // TODO(crbug.com/393073658):
   // - Unblock the screen.
   // - Show an error if needed.
+}
+
+- (void)setWebStateList:(WebStateList*)webStateList {
+  if (_webStateList) {
+    [self removeWebStateObservations];
+    _webStateListFaviconObserver.reset();
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+  }
+
+  _webStateList = webStateList;
+
+  if (_webStateList) {
+    DCHECK_GE(_webStateList->count(), 0);
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    _webStateList->AddObserver(_webStateListObserver.get());
+
+    _webStateListFaviconObserver =
+        std::make_unique<WebStateListFaviconDriverObserver>(_browser, self);
+
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+    [self addWebStateObservations];
+
+    // `fetchMessages` depends on the web state list to obtain a group that is
+    // corresponded to a message.
+    [self fetchMessages];
+  }
+
+  [self populateConsumerItems];
 }
 
 @end

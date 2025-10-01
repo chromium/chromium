@@ -174,7 +174,6 @@ class TabStripMediatorTest : public PlatformTest {
                                      faviconLoader:nil];
 
     mediator_.profile = profile_.get();
-    mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();
     mediator_.tabStripHandler = tab_strip_handler_;
     mediator_.URLLoader = loader_;

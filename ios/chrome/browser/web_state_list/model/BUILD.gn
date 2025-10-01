@@ -22,6 +22,7 @@ source_set("model") {
     "//base",
     "//components/favicon/core",
     "//components/favicon/ios",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/tabs/model:dependency_installer",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -38,6 +39,7 @@ source_set("unit_tests") {
     ":session_metrics",
     "//base/test:test_support",
     "//components/favicon/ios",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",

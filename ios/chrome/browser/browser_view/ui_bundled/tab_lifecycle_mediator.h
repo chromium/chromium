@@ -51,15 +51,12 @@ class Browser;
 @property(nonatomic, weak) id<AppLauncherTabHelperBrowserPresentationProvider>
     appLauncherBrowserPresentationProvider;
 @property(nonatomic, weak) id<EditMenuBuilder> editMenuBuilder;
-// The source browser.
-@property(nonatomic, assign) Browser* browser;
 
 // Creates an instance of the mediator. Delegates will be installed into all
-// existing web states in `webStateList`. While the mediator is alive,
-// delegates will be added and removed from web states when they are inserted
-// into or removed from the web state list.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-    NS_DESIGNATED_INITIALIZER;
+// existing web states in the `browser` web state list. While the mediator is
+// alive, delegates will be added and removed from web states when they are
+// inserted into or removed from the web state list.
+- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

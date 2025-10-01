@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -47,7 +48,7 @@ class WebStateListFaviconDriverObserverTest : public PlatformTest {
   favicon::FaviconDriver* CreateAndInsertWebState();
 
   WebStateListFaviconDriverObserver* web_state_list_favicon_driver_observer() {
-    return &web_state_list_favicon_driver_observer_;
+    return web_state_list_favicon_driver_observer_.get();
   }
 
   FakeWebStateFaviconDriverObserver* favicon_observer() {
@@ -57,19 +58,24 @@ class WebStateListFaviconDriverObserverTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
+  std::unique_ptr<TestBrowser> browser_;
+  raw_ptr<WebStateList> web_state_list_;
   FakeWebStateFaviconDriverObserver* favicon_observer_;
-  WebStateListFaviconDriverObserver web_state_list_favicon_driver_observer_;
+  std::unique_ptr<WebStateListFaviconDriverObserver>
+      web_state_list_favicon_driver_observer_;
 };
 
 WebStateListFaviconDriverObserverTest::WebStateListFaviconDriverObserverTest()
     : profile_(TestProfileIOS::Builder().Build()),
-      web_state_list_(&web_state_list_delegate_),
-      favicon_observer_([[FakeWebStateFaviconDriverObserver alloc] init]),
+      favicon_observer_([[FakeWebStateFaviconDriverObserver alloc] init]) {
+  browser_ = std::make_unique<TestBrowser>(
+      profile_.get(), std::make_unique<FakeWebStateListDelegate>());
+  web_state_list_ = browser_->GetWebStateList();
 
-      web_state_list_favicon_driver_observer_(&web_state_list_,
-                                              favicon_observer_) {}
+  web_state_list_favicon_driver_observer_ =
+      std::make_unique<WebStateListFaviconDriverObserver>(browser_.get(),
+                                                          favicon_observer_);
+}
 
 favicon::FaviconDriver*
 WebStateListFaviconDriverObserverTest::CreateAndInsertWebState() {
@@ -81,8 +87,8 @@ WebStateListFaviconDriverObserverTest::CreateAndInsertWebState() {
   favicon::FaviconDriver* favicon_driver =
       favicon::WebFaviconDriver::FromWebState(web_state.get());
 
-  web_state_list_.InsertWebState(std::move(web_state),
-                                 WebStateList::InsertionParams::AtIndex(0));
+  web_state_list_->InsertWebState(std::move(web_state),
+                                  WebStateList::InsertionParams::AtIndex(0));
 
   return favicon_driver;
 }

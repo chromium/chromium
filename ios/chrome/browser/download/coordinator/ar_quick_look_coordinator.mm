@@ -145,8 +145,7 @@ PresentQLPreviewController GetHistogramEnum(
   if ((self = [super initWithBaseViewController:baseViewController
                                         browser:browser])) {
     _dependencyInstallerBridge.StartObserving(
-        self, browser->GetWebStateList(),
-        TabsDependencyInstaller::Policy::kOnlyRealized);
+        self, browser, TabsDependencyInstaller::Policy::kOnlyRealized);
   }
   return self;
 }

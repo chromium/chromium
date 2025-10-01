@@ -22,7 +22,6 @@ enum class TabGroupActionType;
 @protocol TabStripConsumer;
 @protocol TabStripMediatorDelegate;
 class UrlLoadingBrowserAgent;
-class WebStateList;
 
 namespace base {
 class Uuid;
@@ -51,10 +50,6 @@ class WebStateID;
                 TabSwitcherItemSnapShotAndFaviconDataSource,
                 TabStripMutator,
                 TabStripTabGroupCellDataSource>
-
-// The WebStateList that this mediator listens for any changes on the total
-// number of Webstates.
-@property(nonatomic, assign) WebStateList* webStateList;
 
 // The ProfileIOS model for the corresponding browser.
 @property(nonatomic, assign) ProfileIOS* profile;

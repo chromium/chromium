@@ -152,9 +152,8 @@ constexpr CGFloat kFacePileAvatarSize = 16;
                                  shareKitService:shareKitService
                             collaborationService:collaborationService
                                    faviconLoader:faviconLoader];
-  self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.profile = profile;
   self.mediator.browser = self.browser;
+  self.mediator.profile = profile;
   self.mediator.tabStripHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabStripCommands);
   self.mediator.URLLoader = UrlLoadingBrowserAgent::FromBrowser(self.browser);

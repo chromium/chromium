@@ -37,8 +37,7 @@
   if (self) {
     _webStateList = browser->GetWebStateList();
     _dependencyInstallerBridge.StartObserving(
-        self, _webStateList,
-        TabsDependencyInstaller::Policy::kAccordingToFeature);
+        self, browser, TabsDependencyInstaller::Policy::kAccordingToFeature);
   }
   return self;
 }
