@@ -369,9 +369,10 @@ void TabSharingUIViews::OnInfoBarRemoved(infobars::InfoBar* infobar,
   }
 
   infobar->owner()->RemoveObserver(this);
+
+  content::WebContents* content_for_removed_infobar = infobars_entry->first;
   infobars_.erase(infobars_entry);
-  if (infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar) ==
-      shared_tab_) {
+  if (content_for_removed_infobar == shared_tab_) {
     StopSharing();
   }
 }
