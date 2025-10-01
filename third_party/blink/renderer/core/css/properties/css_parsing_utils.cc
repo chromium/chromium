@@ -754,6 +754,18 @@ bool ConsumeTranslate3d(CSSParserTokenStream& stream,
   return true;
 }
 
+// Returns true for filter functions for which the following applies:
+//
+// > Values of amount over 100% are allowed but UAs must clamp the values to 1.
+//
+// https://drafts.fxtf.org/filter-effects-1/#typedef-filter-function
+bool ShouldClampFilterFunctionArgument(CSSValueID filter_type) {
+  return filter_type == CSSValueID::kGrayscale ||
+         filter_type == CSSValueID::kInvert ||
+         filter_type == CSSValueID::kOpacity ||
+         filter_type == CSSValueID::kSepia;
+}
+
 CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
                                         const CSSParserContext& context) {
   CSSValueID filter_type = stream.Peek().FunctionId();
@@ -777,19 +789,6 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
       if (stream.AtEnd()) {
         context.Count(WebFeature::kCSSFilterFunctionNoArguments);
         no_arguments = true;
-      } else if (filter_type == CSSValueID::kBrightness) {
-        // FIXME (crbug.com/397061): Support calc expressions like
-        // calc(10% + 0.5)
-        parsed_value = ConsumePercent(
-            stream, context,
-            RuntimeEnabledFeatures::
-                    CSSFilterBrightnessNonNegativePercentageEnabled()
-                ? CSSPrimitiveValue::ValueRange::kNonNegative
-                : CSSPrimitiveValue::ValueRange::kAll);
-        if (!parsed_value) {
-          parsed_value = ConsumeNumber(
-              stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
-        }
       } else if (filter_type == CSSValueID::kHueRotate) {
         parsed_value =
             ConsumeAngle(stream, context, WebFeature::kUnitlessZeroAngleFilter);
@@ -807,21 +806,21 @@ CSSFunctionValue* ConsumeFilterFunction(CSSParserTokenStream& stream,
           parsed_value = ConsumeNumber(
               stream, context, CSSPrimitiveValue::ValueRange::kNonNegative);
         }
-        // NOTE: calc() values should not be attempted evaluated parse-time,
-        // and will be clamped in
-        // FilterOperationResolver::ResolveNumericArgumentForFunction() instead,
-        // when we can resolve e.g. length units.
-        if (auto* literal_value =
-                DynamicTo<CSSNumericLiteralValue>(parsed_value);
-            literal_value && filter_type != CSSValueID::kSaturate &&
-            filter_type != CSSValueID::kContrast) {
-          bool is_percentage = literal_value->IsPercentage();
-          double max_allowed = is_percentage ? 100.0 : 1.0;
-          if (literal_value->ClampedDoubleValue() > max_allowed) {
-            parsed_value = CSSNumericLiteralValue::Create(
-                max_allowed, is_percentage
-                                 ? CSSPrimitiveValue::UnitType::kPercentage
-                                 : CSSPrimitiveValue::UnitType::kNumber);
+        if (ShouldClampFilterFunctionArgument(filter_type)) {
+          // NOTE: calc() values should not be attempted evaluated parse-time,
+          // and will be clamped in
+          // FilterOperationResolver::ResolveNumericArgumentForFunction()
+          // instead, when we can resolve e.g. length units.
+          if (auto* literal_value =
+                  DynamicTo<CSSNumericLiteralValue>(parsed_value)) {
+            bool is_percentage = literal_value->IsPercentage();
+            double max_allowed = is_percentage ? 100.0 : 1.0;
+            if (literal_value->ClampedDoubleValue() > max_allowed) {
+              parsed_value = CSSNumericLiteralValue::Create(
+                  max_allowed, is_percentage
+                                   ? CSSPrimitiveValue::UnitType::kPercentage
+                                   : CSSPrimitiveValue::UnitType::kNumber);
+            }
           }
         }
       }

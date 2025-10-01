@@ -1326,10 +1326,6 @@
       status: "experimental",
     },
     {
-      name: "CSSFilterBrightnessNonNegativePercentage",
-      status: "stable",
-    },
-    {
       // crbug.com/417306102
       name: "CssFitWidthText",
       status: "experimental",
