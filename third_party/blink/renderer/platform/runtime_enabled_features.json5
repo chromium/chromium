@@ -2501,7 +2501,7 @@
     {
       // crbug.com/41170551
       name: "FontLanguageOverride",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FontMatchAliasesAsLastResort",
