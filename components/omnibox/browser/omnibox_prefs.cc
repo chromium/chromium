@@ -39,6 +39,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(omnibox::kDismissedHistoryScopePromo, false);
   registry->RegisterBooleanPref(omnibox::kDismissedHistoryEmbeddingsScopePromo,
                                 false);
+  registry->RegisterBooleanPref(kBottomOmniboxEverUsed, false);
 
   registry->RegisterIntegerPref(kShownCountGeminiIph, 0);
   registry->RegisterIntegerPref(kShownCountEnterpriseSearchAggregatorIph, 0);

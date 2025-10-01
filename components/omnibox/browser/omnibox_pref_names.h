@@ -12,6 +12,12 @@ namespace omnibox {
 
 inline constexpr char kAIModeSettings[] = "omnibox.ai_mode_settings";
 
+// LINT.IfChange(TipsPrefNames)
+// Boolean for whether bottom omnibox was ever used.
+inline constexpr char kBottomOmniboxEverUsed[] =
+    "omnibox.bottom_omnibox_ever_used";
+// LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ToolbarPositionController.java:TipsPrefNames)
+
 // Booleans that specify whether various IPH suggestions have been dismissed.
 inline constexpr char kDismissedEnterpriseSearchAggregatorIphPrefName[] =
     "omnibox.dismissed_enterprise_search_aggregator_iph";

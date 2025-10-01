@@ -1821,7 +1821,8 @@ public class ToolbarManager
                         mTopInsetCoordinatorSupplier,
                         new Handler(Looper.getMainLooper()),
                         mActivity,
-                        mToolbarPositionSupplier);
+                        mToolbarPositionSupplier,
+                        mProfileSupplier);
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
             mMiniOriginBarController =
                     new MiniOriginBarController(
