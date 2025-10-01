@@ -257,22 +257,54 @@
    "note_taking_new_note_url": "https://example.com/scope1234/new_note1308772041",
    "parent_app_id": "463354209",
    "pending_update_info": {
+      "downloaded_manifest_icons": [ {
+         "icon_sizes": [ 512 ],
+         "purpose": "ANY"
+      }, {
+         "icon_sizes": [ 128, 48, 48, 1024 ],
+         "purpose": "MASKABLE"
+      }, {
+         "icon_sizes": [ 64, 128 ],
+         "purpose": "MONOCHROME"
+      } ],
+      "downloaded_trusted_icons": [ {
+         "icon_sizes": [ 128 ],
+         "purpose": "ANY"
+      }, {
+         "icon_sizes": [ 96, 1024 ],
+         "purpose": "MASKABLE"
+      }, {
+         "icon_sizes": [ 512 ],
+         "purpose": "MONOCHROME"
+      } ],
       "manifest_icons": [ {
          "purpose": "MASKABLE",
-         "size_in_px": 96,
-         "url": "https://example.com/icons2572177745"
+         "size_in_px": 128,
+         "url": "https://example.com/icons2588856730"
       }, {
          "purpose": "ANY",
+         "size_in_px": 512,
+         "url": "https://example.com/icons4285246002"
+      }, {
+         "purpose": "MONOCHROME",
+         "size_in_px": 64,
+         "url": "https://example.com/icons10760248"
+      }, {
+         "purpose": "MASKABLE",
+         "size_in_px": 48,
+         "url": "https://example.com/icons1601631484"
+      }, {
+         "purpose": "MONOCHROME",
          "size_in_px": 128,
-         "url": "https://example.com/icons3502924369"
+         "url": "https://example.com/icons2667443007"
+      }, {
+         "purpose": "MASKABLE",
+         "size_in_px": 48,
+         "url": "https://example.com/icons4170548515"
       }, {
          "purpose": "MASKABLE",
          "size_in_px": 1024,
-         "url": "https://example.com/icons476349338"
-      }, {
-         "purpose": "MONOCHROME",
-         "size_in_px": 512,
-         "url": "https://example.com/icons3978233549"
+         "url": "https://example.com/icons443139040"
       } ],
       "name": "Name1234",
       "trusted_icons": [ {
@@ -463,8 +495,8 @@
    "sources": [ "IwaShimlessRma", "Kiosk", "Policy", "IwaPolicy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "UserInstalled", "IwaUserInstalled", "ApsDefault", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
    "stored_trusted_icon_sizes": {
-      "ANY": [ 48 ],
-      "MASKABLE": [ 512 ]
+      "ANY": [ 64 ],
+      "MASKABLE": [ 48 ]
    },
    "supported_links_offer_dismiss_count": -1919878426,
    "supported_links_offer_ignore_count": -1324773009,
@@ -522,33 +554,17 @@
    },
    "theme_color": "rgba(220,247,174,1)",
    "trusted_icons": [ {
-      "purpose": "kMaskable",
-      "square_size_px": 128,
-      "url": "https://example.com/icons2588856730"
-   }, {
       "purpose": "kAny",
-      "square_size_px": 512,
-      "url": "https://example.com/icons4285246002"
+      "square_size_px": 96,
+      "url": "https://example.com/icons3570247854"
    }, {
-      "purpose": "kMonochrome",
+      "purpose": "kMaskable",
       "square_size_px": 64,
-      "url": "https://example.com/icons10760248"
-   }, {
-      "purpose": "kMaskable",
-      "square_size_px": 48,
-      "url": "https://example.com/icons1601631484"
+      "url": "https://example.com/icons554811270"
    }, {
       "purpose": "kMonochrome",
-      "square_size_px": 128,
-      "url": "https://example.com/icons2667443007"
-   }, {
-      "purpose": "kMaskable",
       "square_size_px": 48,
-      "url": "https://example.com/icons4170548515"
-   }, {
-      "purpose": "kMaskable",
-      "square_size_px": 1024,
-      "url": "https://example.com/icons443139040"
+      "url": "https://example.com/icons798475713"
    } ],
    "user_link_capturing_preference": "1",
    "was_shortcut_app": true,

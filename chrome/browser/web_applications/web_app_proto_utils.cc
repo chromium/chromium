@@ -48,18 +48,6 @@ std::optional<apps::IconInfo::Purpose> SyncPurposeToIconInfoPurpose(
   }
 }
 
-sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
-    apps::IconInfo::Purpose purpose) {
-  switch (purpose) {
-    case apps::IconInfo::Purpose::kAny:
-      return sync_pb::WebAppIconInfo_Purpose_ANY;
-    case apps::IconInfo::Purpose::kMonochrome:
-      return sync_pb::WebAppIconInfo_Purpose_MONOCHROME;
-    case apps::IconInfo::Purpose::kMaskable:
-      return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
-  }
-}
-
 content::proto::ImageResource_Purpose
 ManifestImageResourcePurposeToImageResoucePurposeProto(
     blink::mojom::ManifestImageResource_Purpose purpose) {
@@ -242,6 +230,18 @@ ParseAppImageResource(const char* container_name_for_logging,
   }
 
   return manifest_icons;
+}
+
+sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
+    apps::IconInfo::Purpose purpose) {
+  switch (purpose) {
+    case apps::IconInfo::Purpose::kAny:
+      return sync_pb::WebAppIconInfo_Purpose_ANY;
+    case apps::IconInfo::Purpose::kMonochrome:
+      return sync_pb::WebAppIconInfo_Purpose_MONOCHROME;
+    case apps::IconInfo::Purpose::kMaskable:
+      return sync_pb::WebAppIconInfo_Purpose_MASKABLE;
+  }
 }
 
 sync_pb::WebAppIconInfo AppIconInfoToSyncProto(

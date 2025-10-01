@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/proto/web_app_tab_strip.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_url_pattern.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
@@ -44,6 +45,9 @@ std::optional<std::vector<apps::IconInfo>> ParseAppIconInfos(
 std::optional<std::vector<blink::Manifest::ImageResource>>
 ParseAppImageResource(const char* container_name_for_logging,
                       const RepeatedImageResourceProto& manifest_icons_proto);
+
+sync_pb::WebAppIconInfo_Purpose IconInfoPurposeToSyncPurpose(
+    apps::IconInfo::Purpose purpose);
 
 // Use the given |icon_info| to populate a |WebAppIconInfo| sync proto.
 sync_pb::WebAppIconInfo AppIconInfoToSyncProto(const apps::IconInfo& icon_info);

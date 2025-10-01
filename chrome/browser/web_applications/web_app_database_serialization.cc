@@ -1351,7 +1351,9 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
     // Exit early if there is a `PendingUpdateInfo` that is completely empty.
     if (!proto.pending_update_info().has_name() &&
         proto.pending_update_info().trusted_icons().empty() &&
-        proto.pending_update_info().manifest_icons().empty()) {
+        proto.pending_update_info().manifest_icons().empty() &&
+        proto.pending_update_info().downloaded_trusted_icons().empty() &&
+        proto.pending_update_info().downloaded_manifest_icons().empty()) {
       return nullptr;
     }
 
@@ -1372,6 +1374,26 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
       }
       for (const auto& icon : proto.pending_update_info().trusted_icons()) {
         if (!icon.has_url() || !icon.has_size_in_px() || !icon.has_purpose()) {
+          return nullptr;
+        }
+      }
+      // If manifest_icons and trusted_icons are populated, then
+      // downloaded_trusted_icon_sizes and downloaded_manifest_icon_sizes must
+      // also be populated.
+      if (proto.pending_update_info().downloaded_trusted_icons().empty() ||
+          proto.pending_update_info().downloaded_manifest_icons().empty()) {
+        return nullptr;
+      }
+
+      for (const auto& icon :
+           proto.pending_update_info().downloaded_manifest_icons()) {
+        if (icon.icon_sizes().empty() || !icon.has_purpose()) {
+          return nullptr;
+        }
+      }
+      for (const auto& icon :
+           proto.pending_update_info().downloaded_trusted_icons()) {
+        if (icon.icon_sizes().empty() || !icon.has_purpose()) {
           return nullptr;
         }
       }

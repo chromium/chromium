@@ -182,15 +182,30 @@ message GeneratedIconFix {
   optional uint32 attempt_count = 4;  // Required.
 }
 
+// Stores the mapping of an icon purpose to icon sizes for downloaded icons.
+// This is saved in PendingUpdateInfo if there are pending icons to be updated
+// from the ManifestSilentUpdateCommand. It is written to the web app in the
+// ApplyManifestPendingUpdateCommand if the user confirms the updates.
+message DownloadedIconSizeInfo {
+  optional sync_pb.WebAppIconInfo.Purpose purpose = 1;
+  repeated int32 icon_sizes = 2;
+}
+
 // Stores the pending updates for security sensitive members. Saved when an
 // update is registered in the ManifestSilentUpdateCommand, and used to show
 // update UX. At least one field should be populated. If the icon is populated,
-// the url, size, and purpose must all be populated.
+// the url, size, and purpose must all be populated. The downloaded manifest
+// and downloaded trusted icons map the stored manifest and trusted icon
+// purposes with all their downloaded sizes. If manifest icons and trusted
+// icons exist, the downloaded manifest and downloaded trusted icons must also
+// exist.
 message PendingUpdateInfo {
   optional string name = 1;
   reserved 2;
   repeated sync_pb.WebAppIconInfo manifest_icons = 3;
   repeated sync_pb.WebAppIconInfo trusted_icons = 4;
+  repeated DownloadedIconSizeInfo downloaded_manifest_icons = 5;
+  repeated DownloadedIconSizeInfo downloaded_trusted_icons = 6;
 }
 
 // Full WebApp object data. See detailed comments in

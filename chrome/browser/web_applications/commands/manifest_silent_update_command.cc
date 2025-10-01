@@ -82,7 +82,11 @@ ConvertIconPurposeToManifestImagePurpose(apps::IconInfo::Purpose app_purpose) {
 void CopyIconsToPendingUpdateInfo(
     const std::vector<apps::IconInfo>& icon_infos,
     google::protobuf::RepeatedPtrField<sync_pb::WebAppIconInfo>*
-        destination_icons) {
+        destination_icons,
+    google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>*
+        destination_size_map) {
+  std::map<sync_pb::WebAppIconInfo::Purpose, std::vector<int32_t>>
+      sizes_by_purpose;
   for (const auto& icon_info : icon_infos) {
     sync_pb::WebAppIconInfo* pending_icon = destination_icons->Add();
 
@@ -91,11 +95,24 @@ void CopyIconsToPendingUpdateInfo(
         ConvertIconPurposeToSyncPurpose(icon_info.purpose);
     pending_icon->set_purpose(icon_purpose);
     if (icon_info.square_size_px.has_value()) {
-      pending_icon->set_size_in_px(icon_info.square_size_px.value());
+      const int32_t icon_size = icon_info.square_size_px.value();
+      pending_icon->set_size_in_px(icon_size);
+      sizes_by_purpose[icon_purpose].push_back(icon_size);
+    }
+  }
+
+  for (const auto& [purpose, sizes] : sizes_by_purpose) {
+    if (!sizes.empty()) {
+      proto::DownloadedIconSizeInfo* downloaded_icon_info =
+          destination_size_map->Add();
+
+      downloaded_icon_info->set_purpose(purpose);
+      for (int32_t size : sizes) {
+        downloaded_icon_info->add_icon_sizes(size);
+      }
     }
   }
 }
-
 }  // namespace
 
 bool IsAppUpdated(ManifestSilentUpdateCheckResult result) {
@@ -607,7 +624,7 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
     return;
   }
   // After this line, the icon urls have changed. Those icons are either stored
-  // in PendingUpdateInfo if there is amore than 10% diff, or silently updated
+  // in PendingUpdateInfo if there is a more than 10% diff, or silently updated
   // otherwise.
 
   CHECK(!new_install_info_->trusted_icons.empty());
@@ -658,10 +675,14 @@ void ManifestSilentUpdateCommand::FinalizeUpdateIfSilentChangesExist() {
       pending_update_info = proto::PendingUpdateInfo();
     }
     GetMutableDebugValue().Set("greater_than_ten_percent", true);
-    CopyIconsToPendingUpdateInfo(new_install_info_->trusted_icons,
-                                 pending_update_info->mutable_trusted_icons());
-    CopyIconsToPendingUpdateInfo(new_install_info_->manifest_icons,
-                                 pending_update_info->mutable_manifest_icons());
+    CopyIconsToPendingUpdateInfo(
+        new_install_info_->trusted_icons,
+        pending_update_info->mutable_trusted_icons(),
+        pending_update_info->mutable_downloaded_trusted_icons());
+    CopyIconsToPendingUpdateInfo(
+        new_install_info_->manifest_icons,
+        pending_update_info->mutable_manifest_icons(),
+        pending_update_info->mutable_downloaded_manifest_icons());
     pending_trusted_icon_bitmaps_ = new_install_info_->trusted_icon_bitmaps;
     pending_manifest_icon_bitmaps_ = new_install_info_->icon_bitmaps;
 

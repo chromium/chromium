@@ -1184,13 +1184,55 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     }
 
     if (random.next_bool() || !pending_update_info.has_name()) {
-      std::vector<apps::IconInfo> icons_to_update =
+      std::vector<apps::IconInfo> trusted_icons_to_update =
+          CreateRandomIconMetadata(random, params.base_url);
+      std::vector<apps::IconInfo> manifest_icons_to_update =
           CreateRandomIconMetadata(random, params.base_url);
 
-      for (const auto& icon : icons_to_update) {
-        *pending_update_info.add_trusted_icons() = AppIconInfoToSyncProto(icon);
+      // A mapping of the icon purpose to the downloaded icon sizes.
+      std::map<sync_pb::WebAppIconInfo::Purpose, std::vector<int32_t>>
+          trusted_sizes_by_purpose;
+      std::map<sync_pb::WebAppIconInfo::Purpose, std::vector<int32_t>>
+          manifest_sizes_by_purpose;
+
+      for (const auto& trusted_icon : trusted_icons_to_update) {
+        *pending_update_info.add_trusted_icons() =
+            AppIconInfoToSyncProto(trusted_icon);
+        const auto icon_purpose =
+            IconInfoPurposeToSyncPurpose(trusted_icon.purpose);
+        const int32_t icon_size = trusted_icon.square_size_px.value();
+
+        trusted_sizes_by_purpose[icon_purpose].push_back(icon_size);
+      }
+
+      for (const auto& manifest_icon : manifest_icons_to_update) {
         *pending_update_info.add_manifest_icons() =
-            AppIconInfoToSyncProto(icon);
+            AppIconInfoToSyncProto(manifest_icon);
+        const auto icon_purpose =
+            IconInfoPurposeToSyncPurpose(manifest_icon.purpose);
+        const int32_t icon_size = manifest_icon.square_size_px.value();
+
+        manifest_sizes_by_purpose[icon_purpose].push_back(icon_size);
+      }
+
+      for (const auto& trusted_size_purpose : trusted_sizes_by_purpose) {
+        proto::DownloadedIconSizeInfo downloaded_icon_info;
+        downloaded_icon_info.set_purpose(trusted_size_purpose.first);
+        for (int32_t size : trusted_size_purpose.second) {
+          downloaded_icon_info.add_icon_sizes(size);
+        }
+        *pending_update_info.add_downloaded_trusted_icons() =
+            downloaded_icon_info;
+      }
+
+      for (const auto& manifest_size_purpose : manifest_sizes_by_purpose) {
+        proto::DownloadedIconSizeInfo downloaded_icon_info;
+        downloaded_icon_info.set_purpose(manifest_size_purpose.first);
+        for (int32_t size : manifest_size_purpose.second) {
+          downloaded_icon_info.add_icon_sizes(size);
+        }
+        *pending_update_info.add_downloaded_manifest_icons() =
+            downloaded_icon_info;
       }
     }
 
