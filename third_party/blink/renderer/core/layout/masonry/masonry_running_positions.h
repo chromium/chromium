@@ -192,7 +192,7 @@ class CORE_EXPORT MasonryRunningPositions {
   // returns whether or not a path of eligible track openings were found.
   // Because of the recursive nature of this method, the `track_opening_indices`
   // in `eligible_track_opening_result` will be in reverse order.
-  bool AccumulateTrackOpeningsToAccomodateItem(
+  bool AccumulateTrackOpeningsToAccommodateItem(
       LayoutUnit item_stacking_axis_contribution,
       LayoutUnit previous_track_opening_start_position,
       LayoutUnit previous_track_opening_end_position,

@@ -9,7 +9,6 @@
     grid-template-rows: repeat(4, 60px);
     grid-auto-flow: column;
 }
-
 .left {
     transform: translateX(-40px);
 }
@@ -26,8 +25,11 @@
     <div style="background: blueviolet; width: 20px; grid-row: 3;">
       3
     </div>
-    <div style="background: lightsteelblue; width: 40px; grid-row: 4;">
+    <div style="background: lightsteelblue; width: 60px; grid-row: 4;">
       4
+    </div>
+    <div class="left" style="background: yellow; width: 10px; grid-row: 2 / span 2;">
+      10
     </div>
     <div class="left" style="background: yellow; width: 10px; grid-row: 2 / span 3;">
       6
@@ -38,11 +40,11 @@
     <div class="left" style="background: yellow; width: 10px; grid-row: 2 / span 3;">
       8
     </div>
-    <div class="left" style="background: yellow; width: 10px; grid-row: 2 / span 3;">
-      9
-    </div>
     <div class="left" style="background: aqua; width: 20px; grid-row: span 4;">
       5
+    </div>
+    <div class="left" style="background: green; width: 10px; grid-row: span 3;">
+      9
     </div>
   </div>
 </body>

@@ -100,7 +100,7 @@ LayoutUnit MasonryRunningPositions::CalculateUsedTrackSize(
   return used_track_size;
 }
 
-bool MasonryRunningPositions::AccumulateTrackOpeningsToAccomodateItem(
+bool MasonryRunningPositions::AccumulateTrackOpeningsToAccommodateItem(
     LayoutUnit item_stacking_axis_contribution,
     LayoutUnit previous_track_opening_start_position,
     LayoutUnit previous_track_opening_end_position,
@@ -116,8 +116,8 @@ bool MasonryRunningPositions::AccumulateTrackOpeningsToAccomodateItem(
     // Calculate the overlap between the previous track's eligible opening and
     // the current opening. We need to ensure that the item we are placing into
     // the track opening does not layout on top of already laid out items, which
-    // means that we have to always choose the greatest start position and the
-    // smallest end position.
+    // means that we have to always choose the lowest start position and the
+    // highest end position.
     const LayoutUnit overlap_start_position =
         std::max(previous_track_opening_start_position,
                  current_track_opening.start_position);
@@ -133,15 +133,23 @@ bool MasonryRunningPositions::AccumulateTrackOpeningsToAccomodateItem(
       // Otherwise, check to see if the next n-1 tracks have openings that can
       // align to accomodate the current item. If they do, we can return.
       if (num_tracks_remaining == 0 ||
-          AccumulateTrackOpeningsToAccomodateItem(
+          AccumulateTrackOpeningsToAccommodateItem(
               item_stacking_axis_contribution,
               /*previous_track_opening_start_position=*/
               overlap_start_position,
               /*previous_track_opening_end_position=*/overlap_end_position,
               num_tracks_remaining - 1, track_to_check_for_openings + 1,
               eligible_track_opening_result)) {
+        // The first time we encounter this conditional should be when
+        // `num_tracks_remaining` is 0, which is when we're at the end of the
+        // path of adjacent track openings. At that point,
+        // `overlap_start_position` will hold the lowest start position amongst
+        // the path of eligible tracks.
+        if (!eligible_track_opening_result.IsValid()) {
+          DCHECK_EQ(num_tracks_remaining, 0u);
+          eligible_track_opening_result.start_position = overlap_start_position;
+        }
         eligible_track_opening_result.track_opening_indices.emplace_back(i);
-        eligible_track_opening_result.start_position = overlap_start_position;
         break;
       }
     }
@@ -200,7 +208,7 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
     }
 
     EligibleTrackOpeningPath eligible_track_opening_result;
-    AccumulateTrackOpeningsToAccomodateItem(
+    AccumulateTrackOpeningsToAccommodateItem(
         item_stacking_axis_contribution,
         /*previous_track_opening_start_position=*/LayoutUnit(),
         /*previous_track_opening_end_position=*/LayoutUnit::Max(),
@@ -230,7 +238,7 @@ MasonryRunningPositions::GetEligibleTrackOpeningAndUpdateMasonryItemSpan(
   // erasing items.
   //
   // The indices of the track openings are stored in reverse order due to the
-  // recursive nature of `AccumulateTrackOpeningsToAccomodateItem`, so we need
+  // recursive nature of `AccumulateTrackOpeningsToAccommodateItem`, so we need
   // to iterate through the tracks in reverse order.
   if (highest_eligible_track_opening_result.IsValid()) {
     wtf_size_t current_track_index =
