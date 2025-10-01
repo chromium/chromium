@@ -68,7 +68,8 @@ using BleStatus = device::FidoRequestHandlerBase::BleStatus;
 
 void UpdateModelBeforeStartFlow(
     AuthenticatorRequestDialogModel* model,
-    device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
+    device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
+    bool is_off_the_record) {
   model->request_type = tai.request_type;
   model->resident_key_requirement = tai.resident_key_requirement;
   model->attestation_conveyance_preference =
@@ -78,7 +79,7 @@ void UpdateModelBeforeStartFlow(
   model->show_security_key_on_qr_sheet =
       base::Contains(tai.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  model->is_off_the_record = tai.is_off_the_record_context;
+  model->is_off_the_record = is_off_the_record;
   model->platform_has_biometrics = tai.platform_has_biometrics;
 }
 
@@ -378,7 +379,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     }
 #endif
 
-    UpdateModelBeforeStartFlow(model_.get(), transport_availability);
+    UpdateModelBeforeStartFlow(model_.get(), transport_availability,
+                               /*is_off_the_record=*/false);
     controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
@@ -771,7 +773,8 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
     } else {
       NOTREACHED();
     }
-    UpdateModelBeforeStartFlow(model_.get(), transport_availability);
+    UpdateModelBeforeStartFlow(model_.get(), transport_availability,
+                               /*is_off_the_record=*/false);
     controller_->StartFlow(std::move(transport_availability), {});
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;

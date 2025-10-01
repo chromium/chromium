@@ -378,7 +378,8 @@ class RepeatingValueCallbackReceiver {
 };
 
 void UpdateModelBeforeStartFlow(AuthenticatorRequestDialogModel* model,
-                                TransportAvailabilityInfo tai) {
+                                TransportAvailabilityInfo tai,
+                                bool is_off_the_record) {
   model->request_type = tai.request_type;
   model->resident_key_requirement = tai.resident_key_requirement;
   model->attestation_conveyance_preference =
@@ -388,7 +389,7 @@ void UpdateModelBeforeStartFlow(AuthenticatorRequestDialogModel* model,
   model->show_security_key_on_qr_sheet =
       base::Contains(tai.available_transports,
                      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  model->is_off_the_record = tai.is_off_the_record_context;
+  model->is_off_the_record = is_off_the_record;
   model->platform_has_biometrics = tai.platform_has_biometrics;
 }
 
@@ -1236,7 +1237,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
         test.params, TransportAvailabilityParam::kIsConditionalUI);
     controller.SetUIPresentation(is_autofill ? UIPresentation::kAutofill
                                              : UIPresentation::kModal);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
     if (is_autofill) {
       EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
@@ -1303,7 +1305,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
                                  device::AuthenticatorType::kWinNative));
       controller.set_cable_transport_info(std::nullopt, "fido:/1234");
 
-      UpdateModelBeforeStartFlow(model.get(), tai);
+      UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
       controller.StartFlow(std::move(tai), {});
 
       const bool win_ui_was_immediately_triggered =
@@ -1365,7 +1367,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       AuthenticatorReference("ID", AuthenticatorTransport::kInternal,
                              device::AuthenticatorType::kWinNative));
   controller.set_cable_transport_info(std::nullopt, "fido:/1234");
-  UpdateModelBeforeStartFlow(model.get(), tai);
+  UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
   controller.StartFlow(std::move(tai), {});
 
   // The Windows native UI should have been triggered.
@@ -1393,7 +1395,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinNoPlatformAuthenticator) {
   tai.has_win_native_api_authenticator = true;
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
-  UpdateModelBeforeStartFlow(model.get(), tai);
+  UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.StartFlow(std::move(tai), {});
   EXPECT_EQ(model->step(), Step::kErrorWindowsHelloNotEnabled);
@@ -1412,7 +1414,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, NoAvailableTransports) {
   TransportAvailabilityInfo transports_info;
   transports_info.attestation_conveyance_preference =
       device::AttestationConveyancePreference::kNone;
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(Step::kErrorNoAvailableTransports, model->step());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -1491,8 +1494,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
     transports_info.available_transports = {
         AuthenticatorTransport::kHybrid,
         device::FidoTransportProtocol::kUsbHumanInterfaceDevice};
-    transports_info.is_off_the_record_context =
-        test.profile == Profile::INCOGNITO;
 
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
@@ -1500,7 +1501,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
 
     controller.set_cable_transport_info(
         /*extension_is_v2=*/std::nullopt, std::nullopt);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(
+        model.get(), transports_info,
+        /*is_off_the_record=*/test.profile == Profile::INCOGNITO);
     controller.StartFlow(std::move(transports_info), {});
 
     for (const auto step : test.steps) {
@@ -1563,7 +1566,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AwaitingAcknowledgement) {
     transports_info.available_transports = kAllTransportsWithoutCable;
 
     EXPECT_CALL(mock_observer, OnStepTransition());
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 #if BUILDFLAG(IS_MAC)
     EXPECT_EQ(Step::kCreatePasskey, model->step());
@@ -1608,7 +1612,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterAlreadyPowered) {
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     controller.set_cable_transport_info(true, std::nullopt);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
     EXPECT_EQ(test_case.expected_final_step, model->step());
     EXPECT_TRUE(model->ble_adapter_is_powered);
@@ -1640,7 +1645,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     model->observers.AddObserver(&mock_observer);
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     controller.set_cable_transport_info(true, std::nullopt);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 
     EXPECT_EQ(Step::kBlePowerOnManual, model->step());
@@ -1689,7 +1695,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
                                         std::nullopt);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
     EXPECT_EQ(model->show_security_key_on_qr_sheet,
               ble_status == BleStatus::kOn);
@@ -1734,7 +1741,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
     controller.set_cable_transport_info(true, std::nullopt);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 
     EXPECT_EQ(Step::kBlePowerOnAutomatic, model->step());
@@ -1774,7 +1782,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterPendingPermission) {
     controller.SetRequestBlePermissionCallback(
         request_ble_permission_callback_receiver.Callback());
     controller.set_cable_transport_info(true, std::nullopt);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 
     device::FidoRequestHandlerBase::BlePermissionCallback
@@ -1828,7 +1837,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   transports_info.has_platform_authenticator_credential = device::
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   controller.SetUIPresentation(UIPresentation::kAutofill);
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
   task_environment()->RunUntilIdle();
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
@@ -1871,7 +1881,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
   transports_info.recognized_credentials = {kCred1, kCred2};
   controller.SetUIPresentation(UIPresentation::kAutofill);
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   EXPECT_TRUE(model->should_dialog_be_closed());
@@ -1902,7 +1913,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
   transports_info.attestation_conveyance_preference =
       device::AttestationConveyancePreference::kNone;
   controller.SetUIPresentation(UIPresentation::kAutofill);
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -1936,7 +1948,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
   transports_info.attestation_conveyance_preference =
       device::AttestationConveyancePreference::kNone;
   controller.SetUIPresentation(UIPresentation::kAutofill);
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -1975,7 +1988,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PlatformVirtualAuthenticator) {
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.has_empty_allow_list = false;
   transports_info.recognized_credentials = {kCred2};
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
   run_loop.Run();
 }
@@ -2019,7 +2033,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, PreSelect) {
     transports_info.has_platform_authenticator_credential = device::
         FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
     transports_info.recognized_credentials = {kCred1FromICloudKeychain, kCred2};
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 
     if (has_empty_allow_list) {
@@ -2071,7 +2086,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, JumpToWindowsWithNewUI) {
 
   RequestCallbackReceiver request_callback;
   controller.SetRequestCallback(request_callback.Callback());
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
   EXPECT_EQ(request_callback.WaitForResult(), "win");
 }
@@ -2098,7 +2114,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
       transports_info.available_transports = {
           AuthenticatorTransport::kHybrid,
           AuthenticatorTransport::kUsbHumanInterfaceDevice};
-      UpdateModelBeforeStartFlow(model.get(), transports_info);
+      UpdateModelBeforeStartFlow(model.get(), transports_info,
+                                 /*is_off_the_record=*/false);
       controller.StartFlow(std::move(transports_info), {});
 
       std::ranges::find_if(model->mechanisms, [](const auto& m) -> bool {
@@ -2125,7 +2142,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AdvanceThroughCableV2States) {
   transports_info.ble_status = BleStatus::kOn;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
 
   controller.OnCableEvent(device::cablev2::Event::kPhoneConnected);
@@ -2151,7 +2169,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   transports_info.ble_status = BleStatus::kOn;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
   transports_info.available_transports = {AuthenticatorTransport::kHybrid};
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
 
   controller.OnCableEvent(device::cablev2::Event::kPhoneConnected);
@@ -2189,7 +2208,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Crbug1503187) {
       account_preselected_callback;
   controller.SetAccountPreselectedCallback(
       account_preselected_callback.Callback());
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
 }
 
@@ -2221,7 +2241,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
         account_preselected_callback;
     controller.SetAccountPreselectedCallback(
         account_preselected_callback.Callback());
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
     ASSERT_EQ(model->priority_mechanism_index.has_value(),
               test.type_of_priority_mechanism.has_value());
@@ -2290,7 +2311,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, HybridButtonLabel) {
     content::AuthenticatorRequestClientDelegate::Hints hints;
     hints.transport = test_case.transport_hint;
     controller.SetHints(std::move(hints));
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
     auto hybrid_button_it =
         std::ranges::find_if(model->mechanisms, [](const auto& m) {
@@ -2351,7 +2373,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {
       controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
           kICloudKeychainId, AuthenticatorTransport::kInternal,
           device::AuthenticatorType::kICloudKeychain));
-      UpdateModelBeforeStartFlow(model.get(), transports_info);
+      UpdateModelBeforeStartFlow(model.get(), transports_info,
+                                 /*is_off_the_record=*/false);
       controller.StartFlow(std::move(transports_info), {});
       if (should_create_in_icloud_keychain) {
         EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
@@ -2418,7 +2441,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
         account_preselected_callback;
     controller.SetAccountPreselectedCallback(
         account_preselected_callback.Callback());
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
 
     EXPECT_EQ(model->step(), Step::kNotStarted);
@@ -2453,7 +2477,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
   controller.SetUIPresentation(UIPresentation::kAutofill);
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(transports_info, {});
 
   const std::vector<password_manager::PasskeyCredential>* autofill_passkeys =
@@ -2489,7 +2514,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   controller.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kOther));
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
 
   // Entries will be sorted by username. So the first entry should correspond to
@@ -2633,7 +2659,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
                  << "Has creds: " << static_cast<int>(test_case.has_creds));
     SCOPED_TRACE(testing::Message()
                  << "Handles hybrid: " << test_case.supports_hybrid);
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
     auto win_button_it =
         std::ranges::find_if(model->mechanisms, [](const auto& m) {
@@ -2698,7 +2725,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     fake_win_webauthn_api.set_version(4);
     SCOPED_TRACE(testing::Message()
                  << "Attachment: " << static_cast<int>(test_case.attachment));
-    UpdateModelBeforeStartFlow(model.get(), transports_info);
+    UpdateModelBeforeStartFlow(model.get(), transports_info,
+                               /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
     auto win_button_it =
         std::ranges::find_if(model->mechanisms, [](const auto& m) {
@@ -2747,7 +2775,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   // Set the UI presentation to kModalImmediate.
   controller.SetUIPresentation(UIPresentation::kModalImmediate);
 
-  UpdateModelBeforeStartFlow(model.get(), transports_info);
+  UpdateModelBeforeStartFlow(model.get(), transports_info,
+                             /*is_off_the_record=*/false);
   controller.StartFlow(std::move(transports_info), {});
 
   // Verify that no iCloud Keychain mechanism was added.

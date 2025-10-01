@@ -1165,7 +1165,7 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
       return;
     }
 
-    if (transport_availability_.is_off_the_record_context) {
+    if (model_->is_off_the_record) {
       // Step::kCreatePasskey incorporates an incognito warning if
       // applicable, so the OTR interstitial step only needs to show in the
       // "old" UI.

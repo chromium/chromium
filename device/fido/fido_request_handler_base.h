@@ -139,10 +139,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // Whether the platform can check biometrics and has biometrics configured.
     bool platform_has_biometrics = false;
 
-    // Indicates whether the request is occurring in an off-the-record
-    // BrowserContext (e.g. Chrome Incognito mode).
-    bool is_off_the_record_context = false;
-
     // Indicates the ResidentKeyRequirement of the current request. Only valid
     // if |request_type| is |RequestType::kMakeCredential|. Requests with a
     // value of |ResidentKeyRequirement::kPreferred| or

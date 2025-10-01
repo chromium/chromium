@@ -294,8 +294,6 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
       request_.user_verification;
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
-  transport_availability_info().is_off_the_record_context =
-      options_.is_off_the_record_context;
   transport_availability_info().transport_list_did_include_internal =
       AllowListIncludedTransport(request_, FidoTransportProtocol::kInternal);
   transport_availability_info().transport_list_did_include_hybrid =
