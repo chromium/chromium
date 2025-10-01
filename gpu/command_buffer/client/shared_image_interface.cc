@@ -37,10 +37,9 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
       << si_info.meta.format.ToString();
 #endif
 
-  gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(si_info.meta.format);
-  const size_t buffer_size =
-      gfx::BufferSizeForBufferFormat(si_info.meta.size, buffer_format);
+  const size_t buffer_size = viz::SharedMemorySizeForSharedImageFormat(
+                                 si_info.meta.format, si_info.meta.size)
+                                 .value();
   auto shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
 
@@ -60,7 +59,9 @@ void SharedImageInterface::CreateSharedMemoryRegionFromSIInfo(
   handle = gfx::GpuMemoryBufferHandle(std::move(shared_memory_region));
   handle.offset = 0;
   handle.stride = static_cast<int32_t>(
-      gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
+      viz::SharedMemoryRowSizeForSharedImageFormat(
+          si_info.meta.format, /*plane=*/0, si_info.meta.size.width())
+          .value());
 }
 
 gpu::SharedImageUsageSet SharedImageInterface::GetCpuSIUsage(
