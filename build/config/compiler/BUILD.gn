@@ -1742,6 +1742,12 @@ config("compiler_deterministic") {
       # This removes absolute paths from .pcm files.
       "-Xclang",
       "-fmodule-file-home-is-cwd",
+
+      # Set a fixed dummy path to get deterministic module files even if the
+      # build happens in a different directory. See https://crbug.com/448270644
+      # for more context.
+      "-Xclang",
+      "-fmodules-cache-path=/not_exist_dummy_dir",
     ]
   }
 }
