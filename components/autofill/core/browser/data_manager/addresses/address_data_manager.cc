@@ -459,7 +459,7 @@ bool AddressDataManager::IsNewProfileImportBlockedForDomain(
     return false;
   }
 
-  return GetProfileSaveStrikeDatabase()->ShouldBlockFeature(url.host());
+  return GetProfileSaveStrikeDatabase()->ShouldBlockFeature(url.GetHost());
 }
 
 void AddressDataManager::AddStrikeToBlockNewProfileImportForDomain(
@@ -467,7 +467,7 @@ void AddressDataManager::AddStrikeToBlockNewProfileImportForDomain(
   if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
     return;
   }
-  GetProfileSaveStrikeDatabase()->AddStrike(url.host());
+  GetProfileSaveStrikeDatabase()->AddStrike(url.GetHost());
 }
 
 void AddressDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
@@ -475,7 +475,7 @@ void AddressDataManager::RemoveStrikesToBlockNewProfileImportForDomain(
   if (!GetProfileSaveStrikeDatabase() || !url.is_valid() || !url.has_host()) {
     return;
   }
-  GetProfileSaveStrikeDatabase()->ClearStrikes(url.host());
+  GetProfileSaveStrikeDatabase()->ClearStrikes(url.GetHost());
 }
 
 bool AddressDataManager::IsProfileUpdateBlocked(const std::string& guid) const {

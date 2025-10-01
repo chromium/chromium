@@ -131,8 +131,8 @@ PageLoadMetricsObserver::ShouldObserveMimeType(
 
 PageLoadMetricsObserver::ObservePolicy
 PageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
-  bool should_observe_scheme =
-      url.SchemeIsHTTPOrHTTPS() || delegate_->ShouldObserveScheme(url.scheme());
+  bool should_observe_scheme = url.SchemeIsHTTPOrHTTPS() ||
+                               delegate_->ShouldObserveScheme(url.GetScheme());
   return should_observe_scheme ? CONTINUE_OBSERVING : STOP_OBSERVING;
 }
 

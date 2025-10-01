@@ -112,12 +112,12 @@ net::SchemeHostPortMatcherResult SubdomainMatchingRule::Evaluate(
     return net::SchemeHostPortMatcherResult::kNoMatch;
   }
 
-  if (url.scheme() != scheme_) {
+  if (url.GetScheme() != scheme_) {
     // Didn't match scheme expectation.
     return net::SchemeHostPortMatcherResult::kNoMatch;
   }
 
-  return base::MatchPattern(url.host(), optional_host_)
+  return base::MatchPattern(url.GetHost(), optional_host_)
              ? net::SchemeHostPortMatcherResult::kInclude
              : net::SchemeHostPortMatcherResult::kNoMatch;
 }

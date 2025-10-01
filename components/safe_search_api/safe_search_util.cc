@@ -85,7 +85,7 @@ void ForceGoogleSafeSearch(const GURL& url, GURL* new_url) {
     return;
   }
 
-  std::string query = url.query();
+  std::string query = url.GetQuery();
   std::string new_query = AddSafeSearchParameters(query);
   if (query == new_query) {
     return;

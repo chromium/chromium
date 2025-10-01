@@ -79,7 +79,7 @@ class NotificationContentDetectionServiceTest
       scoped_feature_list_.InitAndEnableFeature(
           kGlobalCacheListForGatingNotificationProtections);
       SetNotificationsGlobalCacheListDomainsForTesting(
-          {GURL(kAllowlistedUrl).host()});
+          {GURL(kAllowlistedUrl).GetHost()});
     } else {
       scoped_feature_list_.InitAndDisableFeature(
           kGlobalCacheListForGatingNotificationProtections);

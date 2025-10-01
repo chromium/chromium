@@ -71,7 +71,7 @@ std::vector<double> CalculateDerivedFeatures(bool isOGArticle,
                                              const std::string& innerHTML) {
   // In the training pipeline, the strings are explicitly encoded in utf-8 (as
   // they are here).
-  const std::string& path = url.path();
+  const std::string& path = url.GetPath();
   int innerTextWords = GetWordCount(innerText);
   int textContentWords = GetWordCount(textContent);
   int innerHTMLWords = GetWordCount(innerHTML);
@@ -190,7 +190,7 @@ std::vector<double> CalculateDerivedFeatures(bool openGraph,
                                              double mozScore,
                                              double mozScoreAllSqrt,
                                              double mozScoreAllLinear) {
-  const std::string& path = url.path();
+  const std::string& path = url.GetPath();
   std::vector<double> features;
   // 'opengraph', opengraph,
   features.push_back(openGraph);

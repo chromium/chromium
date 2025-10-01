@@ -545,7 +545,7 @@ TEST_F(LogoServiceImplTest, CTARequestedBackgroundCanUpdate) {
     logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/false);
     task_environment_.RunUntilIdle();
   }
-  EXPECT_EQ(latest_url_.query().find("graybg:1"), std::string::npos);
+  EXPECT_EQ(latest_url_.GetQuery().find("graybg:1"), std::string::npos);
 
   use_gray_background_ = true;
   test_url_loader_factory_.ClearResponses();
@@ -559,7 +559,7 @@ TEST_F(LogoServiceImplTest, CTARequestedBackgroundCanUpdate) {
     logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/false);
     task_environment_.RunUntilIdle();
   }
-  EXPECT_NE(latest_url_.query().find("graybg:1"), std::string::npos);
+  EXPECT_NE(latest_url_.GetQuery().find("graybg:1"), std::string::npos);
 }
 
 TEST_F(LogoServiceImplTest, DownloadAndCacheLogo) {

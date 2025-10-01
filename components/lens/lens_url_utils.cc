@@ -110,8 +110,8 @@ bool IsLensMWebResult(const GURL& url) {
   std::string request_id;
   std::string surface;
   GURL result_url = GURL(lens::features::GetLensOverlayResultsSearchURL());
-  return !url.is_empty() && url.host() == result_url.host() &&
-         url.path() == result_url.path() &&
+  return !url.is_empty() && url.GetHost() == result_url.GetHost() &&
+         url.GetPath() == result_url.GetPath() &&
          net::GetValueForKeyInQuery(url, kLensRequestQueryParameter,
                                     &request_id) &&
          !net::GetValueForKeyInQuery(url, kLensSurfaceQueryParameter, &surface);

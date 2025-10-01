@@ -63,7 +63,7 @@ bool IsValidDomain(const std::string& rp_id) {
   // A valid domain, such as 'site.example', should be a URL host (and nothing
   // more of the URL!) that is not an IP address.
   GURL url("https://" + rp_id);
-  return url.is_valid() && url.host() == rp_id && !url.HostIsIPAddress();
+  return url.is_valid() && url.GetHost() == rp_id && !url.HostIsIPAddress();
 }
 
 bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,

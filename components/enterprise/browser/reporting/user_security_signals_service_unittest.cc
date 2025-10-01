@@ -48,7 +48,7 @@ class MockUserSecuritySignalsServiceDelegate
 net::CanonicalCookie GetTestCookie(const GURL& url, const std::string& name) {
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
-          url, name, /*value=*/"cookie_value", /*domain=*/"." + url.host(),
+          url, name, /*value=*/"cookie_value", /*domain=*/"." + url.GetHost(),
           /*path=*/"/", /*creation_time=*/base::Time(),
           /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
           /*secure=*/true, /*http_only=*/false,

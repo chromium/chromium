@@ -158,7 +158,7 @@ void SafeBrowsingNavigationObserver::DidFinishNavigation(
   if ((navigation_handle->HasCommitted() || navigation_handle->IsDownload()) &&
       !navigation_handle->GetSocketAddress().address().empty()) {
     GetObserverManager()->RecordHostToIpMapping(
-        navigation_handle->GetURL().host(),
+        navigation_handle->GetURL().GetHost(),
         navigation_handle->GetSocketAddress().ToStringWithoutPort());
   }
 

@@ -146,9 +146,10 @@ TEST_F(HashAffiliationFetcherTest, BuildQueryURL) {
 
   GURL query_url = fetcher.BuildQueryURL();
 
-  EXPECT_EQ("https", query_url.scheme());
-  EXPECT_EQ("www.googleapis.com", query_url.host());
-  EXPECT_EQ("/affiliation/v1/affiliation:lookupByHashPrefix", query_url.path());
+  EXPECT_EQ("https", query_url.GetScheme());
+  EXPECT_EQ("www.googleapis.com", query_url.GetHost());
+  EXPECT_EQ("/affiliation/v1/affiliation:lookupByHashPrefix",
+            query_url.GetPath());
 }
 
 TEST_F(HashAffiliationFetcherTest, GetRequestedFacetURIs) {

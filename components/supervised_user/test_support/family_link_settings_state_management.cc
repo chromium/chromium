@@ -134,7 +134,7 @@ inline void AddWebsiteException(
       request.mutable_url_filtering_settings()->add_exceptions();
   // DefineChromeTestStateRequest requires patterns rather than fully-qualified
   // urls. Host part works well in this case.
-  exception->set_pattern(url.host());
+  exception->set_pattern(url.GetHost());
   exception->set_exception_type(exception_type);
 }
 

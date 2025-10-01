@@ -205,7 +205,8 @@ MATCHER_P3(CookieMatcher, name, value, domain, "") {
 
 // Checks that the argument (a GURL) is secure and has the given hostname.
 MATCHER_P(CookieSourceMatcher, cookie_host, "") {
-  return arg.is_valid() && arg.scheme() == "https" && arg.host() == cookie_host;
+  return arg.is_valid() && arg.GetScheme() == "https" &&
+         arg.GetHost() == cookie_host;
 }
 
 void RunSetCookieCallbackWithSuccess(

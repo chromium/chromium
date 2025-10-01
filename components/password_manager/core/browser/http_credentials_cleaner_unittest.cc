@@ -185,7 +185,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
 
   if (test.is_hsts_enabled) {
     base::RunLoop run_loop;
-    network_context->AddHSTS(http_form.url.host(), base::Time::Max(),
+    network_context->AddHSTS(http_form.url.GetHost(), base::Time::Max(),
                              false /*include_subdomains*/,
                              run_loop.QuitClosure());
     run_loop.Run();

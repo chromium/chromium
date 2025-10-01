@@ -530,7 +530,7 @@ void PrivacySandboxSettingsImpl::SetFledgeJoiningAllowed(
     // Add a dummy scheme and use GURL to confirm the provided string is a valid
     // host.
     const GURL url("https://" + top_frame_etld_plus1);
-    effective_top_frame_etld_plus1 = url.host();
+    effective_top_frame_etld_plus1 = url.GetHost();
   }
 
   // Ignore attempts to configure an empty etld+1. This will also catch the

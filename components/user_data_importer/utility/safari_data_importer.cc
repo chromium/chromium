@@ -110,21 +110,21 @@ bool IsRedirect(const GURL& source_url, const GURL& destination_url) {
   // Check for differences in scheme.
   if ((source_url.has_scheme() != destination_url.has_scheme()) ||
       (source_url.has_scheme() && destination_url.has_scheme() &&
-       !source_url.SchemeIs(destination_url.scheme()))) {
+       !source_url.SchemeIs(destination_url.GetScheme()))) {
     return true;
   }
 
   // Check for differences in host.
   if ((source_url.has_host() != destination_url.has_host()) ||
       (source_url.has_host() && destination_url.has_host() &&
-       source_url.host() != destination_url.host())) {
+       source_url.GetHost() != destination_url.GetHost())) {
     return true;
   }
 
   // Check for differences in path.
   if ((source_url.has_path() != destination_url.has_path()) ||
       (source_url.has_path() && destination_url.has_path() &&
-       source_url.path() != destination_url.path())) {
+       source_url.GetPath() != destination_url.GetPath())) {
     return true;
   }
 

@@ -144,7 +144,7 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() {
         "{ \"history_recording_enabled\": %s }",
         base::ToString(service_->IsWebAndAppActivityEnabled()));
 
-  } else if (url_.host() == kSyncServerHost) {
+  } else if (url_.GetHost() == kSyncServerHost) {
     // Other forms of browsing history query.
     std::unique_ptr<sync_pb::HistoryStatusResponse> history_status(
         new sync_pb::HistoryStatusResponse());

@@ -270,7 +270,7 @@ TEST_F(ImageServiceImplTest, SuggestBackendEndToEnd) {
 
   ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
   GURL request_url = test_url_loader_factory_.GetPendingRequest(0)->request.url;
-  EXPECT_EQ(request_url.host(), "www.google.com");
+  EXPECT_EQ(request_url.GetHost(), "www.google.com");
 
   test_url_loader_factory_.AddResponse(request_url.spec(), R"([
   "santa monica",

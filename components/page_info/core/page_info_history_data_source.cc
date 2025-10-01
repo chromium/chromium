@@ -62,11 +62,11 @@ void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
     base::OnceCallback<void(std::optional<base::Time>)> callback) {
   base::Time now = base::Time::Now();
   history_service_->GetLastVisitToHost(
-      site_url_.host(), /*begin_time=*/base::Time(), /*end_time=*/now,
+      site_url_.GetHost(), /*begin_time=*/base::Time(), /*end_time=*/now,
       history::VisitQuery404sPolicy::kExclude404s,
       base::BindOnce(&PageInfoHistoryDataSource::
                          OnLastVisitBeforeRecentNavigationsComplete,
-                     weak_factory_.GetWeakPtr(), site_url_.host(), now,
+                     weak_factory_.GetWeakPtr(), site_url_.GetHost(), now,
                      std::move(callback)),
       &query_task_tracker_);
 }

@@ -155,7 +155,7 @@ GURL SanitizeURLForReport(
   if (CanReportFullBeaconURLToCollector(beacon_url, collector_url))
     return beacon_url.GetAsReferrer();
 
-  std::string path = beacon_url.path();
+  std::string path = beacon_url.GetPath();
   const std::string empty_path;
   const std::string* longest_path_prefix = &empty_path;
   for (const auto& path_prefix : path_prefixes) {

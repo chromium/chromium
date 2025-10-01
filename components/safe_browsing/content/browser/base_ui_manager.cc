@@ -42,7 +42,7 @@ using safe_browsing::ThreatSeverity;
 // Returns the URL host that should be used in a AllowlistUrlSet.
 std::string GetCanonicalizedHost(const GURL& url) {
   if (url.HostIsIPAddress()) {
-    return url.host();
+    return url.GetHost();
   } else {
     std::string canon_host;
     safe_browsing::V4ProtocolManagerUtil::CanonicalizeUrl(url, &canon_host,

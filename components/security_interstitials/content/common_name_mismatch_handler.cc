@@ -138,8 +138,8 @@ void CommonNameMismatchHandler::OnSimpleLoaderHandler(
     response_code = head->headers->response_code();
   }
   if (response_code == 200 && final_url.SchemeIsCryptographic() &&
-      final_url.host() != request_url_.host()) {
-    DCHECK_EQ(final_url.host(), final_url.host());
+      final_url.GetHost() != request_url_.GetHost()) {
+    DCHECK_EQ(final_url.GetHost(), final_url.GetHost());
     result = SUGGESTED_URL_AVAILABLE;
   }
   simple_url_loader_.reset();

@@ -343,7 +343,7 @@ VisitSegmentDatabase::QuerySegmentUsage(
       GURL url(statement2.ColumnStringView(0));
       if (url_filter.is_null() || url_filter.Run(url)) {
         std::u16string title = statement2.ColumnString16(1);
-        HostTitleKey current_key(url.host(),
+        HostTitleKey current_key(url.GetHost(),
                                  title.substr(0, kTitleDedupLength));
         // If `!visual_deduplication_enabled` then it's okay to skip insert(),
         // since `added_host_titles` won't be used anyway.

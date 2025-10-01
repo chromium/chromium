@@ -1396,7 +1396,7 @@ VisitDatabase::GetGoogleDomainVisitsFromSearchesInRange(base::Time begin_time,
   while (statement.Step()) {
     const GURL url(statement.ColumnStringView(1));
     if (google_util::IsGoogleSearchUrl(url)) {
-      domain_visits.emplace_back(url.host(), statement.ColumnTime(0));
+      domain_visits.emplace_back(url.GetHost(), statement.ColumnTime(0));
     }
   }
   return domain_visits;

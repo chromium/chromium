@@ -346,7 +346,7 @@ void SharingService::SendNotificationForSendTabToSelfPush(
       base::UTF8ToUTF16(entry.GetDeviceName()));
   std::string body = l10n_util::GetStringFUTF8(
       IDS_SEND_TAB_PUSH_NOTIFICATION_BODY, base::UTF8ToUTF16(entry.GetTitle()),
-      base::UTF8ToUTF16(entry.GetURL().host()));
+      base::UTF8ToUTF16(entry.GetURL().GetHost()));
 
   push_notification_entry->set_title(title);
   push_notification_entry->set_text(body);

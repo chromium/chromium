@@ -318,7 +318,7 @@ void V4ProtocolManagerUtil::UrlToFullHashes(
 
   std::vector<std::string> hosts;
   if (url.HostIsIPAddress()) {
-    hosts.push_back(url.host());
+    hosts.push_back(url.GetHost());
   } else {
     GenerateHostVariantsToCheck(canon_host, &hosts);
   }

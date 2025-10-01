@@ -91,7 +91,8 @@ void KidsManagementApiServerMock::InstallOn(
 std::unique_ptr<net::test_server::HttpResponse>
 KidsManagementApiServerMock::ListFamilyMembers(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != kListFamilyMembersConfig.StaticServicePath()) {
+  if (request.GetURL().GetPath() !=
+      kListFamilyMembersConfig.StaticServicePath()) {
     return nullptr;
   }
 
@@ -108,7 +109,7 @@ KidsManagementApiServerMock::ListFamilyMembers(
 std::unique_ptr<net::test_server::HttpResponse>
 KidsManagementApiServerMock::ClassifyUrl(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != kClassifyUrlConfig.StaticServicePath()) {
+  if (request.GetURL().GetPath() != kClassifyUrlConfig.StaticServicePath()) {
     return nullptr;
   }
 

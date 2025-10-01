@@ -481,7 +481,7 @@ void WebHistoryService::QueryOtherFormsOfBrowsingHistory(
                                        channel);
   GURL::Replacements replace_path;
   std::string new_path =
-      url.path() + kQueryOtherFormsOfBrowsingHistoryUrlSuffix;
+      url.GetPath() + kQueryOtherFormsOfBrowsingHistoryUrlSuffix;
   replace_path.SetPathStr(new_path);
   url = url.ReplaceComponents(replace_path);
   DCHECK(url.is_valid());

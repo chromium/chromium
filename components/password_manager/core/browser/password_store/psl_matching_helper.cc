@@ -44,7 +44,7 @@ std::ostream& operator<<(std::ostream& out, MatchResult result) {
 
 bool IsFederatedRealm(const std::string& form_signon_realm, const GURL& url) {
   // The format should be "federation://origin.host/federation.host;
-  std::string federated_realm = "federation://" + url.host() + "/";
+  std::string federated_realm = "federation://" + url.GetHost() + "/";
   return form_signon_realm.size() > federated_realm.size() &&
          base::StartsWith(form_signon_realm, federated_realm,
                           base::CompareCase::INSENSITIVE_ASCII);
@@ -106,7 +106,8 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
   }
 
   if (gurl1.DomainIs("google.com") && gurl2.DomainIs("google.com")) {
-    return gurl1.scheme() == gurl2.scheme() && gurl1.port() == gurl2.port() &&
+    return gurl1.GetScheme() == gurl2.GetScheme() &&
+           gurl1.GetPort() == gurl2.GetPort() &&
            IsAllowedForPSLMatchedGoogleDomain(gurl1) &&
            IsAllowedForPSLMatchedGoogleDomain(gurl2);
   }
@@ -118,8 +119,8 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
     return false;
   }
 
-  return gurl1.scheme() == gurl2.scheme() && domain1 == domain2 &&
-         gurl1.port() == gurl2.port();
+  return gurl1.GetScheme() == gurl2.GetScheme() && domain1 == domain2 &&
+         gurl1.GetPort() == gurl2.GetPort();
 }
 
 std::string GetRegistryControlledDomain(const GURL& signon_realm) {
@@ -141,12 +142,12 @@ std::string GetRegexForPSLMatching(const std::string& signon_realm) {
   // We need to escape . in the domain. Since the domain has already been
   // sanitized using GURL, we do not need to escape any other characters.
   base::ReplaceChars(registered_domain, ".", "\\.", &registered_domain);
-  std::string scheme = signon_realm_url.scheme();
+  std::string scheme = signon_realm_url.GetScheme();
   // We need to escape . in the scheme. Since the scheme has already been
   // sanitized using GURL, we do not need to escape any other characters.
   // The scheme soap.beep is an example with '.'.
   base::ReplaceChars(scheme, ".", "\\.", &scheme);
-  const std::string port = signon_realm_url.port();
+  const std::string port = signon_realm_url.GetPort();
   // For a signon realm such as http://foo.bar/, this regexp will match
   // domains on the form http://foo.bar/, http://www.foo.bar/,
   // http://www.mobile.foo.bar/. It will not match http://notfoo.bar/.
@@ -161,7 +162,7 @@ std::string GetRegexForPSLFederatedMatching(const std::string& signon_realm) {
 }
 
 std::string GetExpressionForFederatedMatching(const GURL& url) {
-  return base::StringPrintf("federation://%s/", url.host().c_str());
+  return base::StringPrintf("federation://%s/", url.GetHost().c_str());
 }
 
 }  // namespace password_manager

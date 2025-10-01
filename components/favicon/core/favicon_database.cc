@@ -738,8 +738,9 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
 std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
     const GURL& url,
     const favicon_base::IconTypeSet& required_icon_types) {
-  if (url.host().empty())
+  if (url.GetHost().empty()) {
     return std::nullopt;
+  }
 
   // This query prioritizes PageUrlType::kRegular over PageUrlType::kRedirect.
   // If PageUrlType is ever changed the ORDER BY clause for page_url_type may
@@ -760,11 +761,11 @@ std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
   // expensive. This statement finds all rows where page_url starts from either
   // "http://<host>/" or "https://<host>/".
   std::string http_prefix =
-      base::StringPrintf("http://%s/", url.host().c_str());
+      base::StringPrintf("http://%s/", url.GetHost().c_str());
   statement.BindString(0, http_prefix);
   statement.BindString(1, database_utils::UpperBoundString(http_prefix));
   std::string https_prefix =
-      base::StringPrintf("https://%s/", url.host().c_str());
+      base::StringPrintf("https://%s/", url.GetHost().c_str());
   statement.BindString(2, https_prefix);
   statement.BindString(3, database_utils::UpperBoundString(https_prefix));
 

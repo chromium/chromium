@@ -395,7 +395,7 @@ void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
   if (save_strike_db_by_host_ && url.is_valid() && url.has_host()) {
     save_strike_db_by_host_->AddStrike(
         AutofillAiSaveStrikeDatabaseByHost::GetId(
-            entity.type().name_as_string(), url.host()));
+            entity.type().name_as_string(), url.GetHost()));
   }
   if (save_strike_db_by_attribute_) {
     for (const std::string& key :
@@ -417,7 +417,7 @@ void AutofillAiManager::ClearStrikesForSave(const GURL& url,
   if (save_strike_db_by_host_ && url.is_valid() && url.has_host()) {
     save_strike_db_by_host_->ClearStrikes(
         AutofillAiSaveStrikeDatabaseByHost::GetId(
-            entity.type().name_as_string(), url.host()));
+            entity.type().name_as_string(), url.GetHost()));
   }
   if (save_strike_db_by_attribute_) {
     for (const std::string& key :
@@ -440,7 +440,7 @@ bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
   if (!save_strike_db_by_host_ ||
       save_strike_db_by_host_->ShouldBlockFeature(
           AutofillAiSaveStrikeDatabaseByHost::GetId(
-              entity.type().name_as_string(), url.host()))) {
+              entity.type().name_as_string(), url.GetHost()))) {
     return true;
   }
 

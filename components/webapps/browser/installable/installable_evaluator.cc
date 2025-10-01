@@ -50,7 +50,7 @@ InstallableStatusCode HasManifestOrAtRootScope(
     case InstallableCriteria::kDoNotCheck:
       return InstallableStatusCode::NO_ERROR_DETECTED;
     case InstallableCriteria::kNoManifestAtRootScope:
-      if (site_url.GetWithoutFilename().path().length() <= 1) {
+      if (site_url.GetWithoutFilename().GetPath().length() <= 1) {
         return InstallableStatusCode::NO_ERROR_DETECTED;
       }
       break;
@@ -94,7 +94,7 @@ bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
     case InstallableCriteria::kNoManifestAtRootScope:
       return manifest.start_url.is_valid() ||
              metadata.application_url.is_valid() ||
-             site_url.GetWithoutFilename().path().length() <= 1;
+             site_url.GetWithoutFilename().GetPath().length() <= 1;
   }
 }
 
@@ -331,13 +331,13 @@ bool InstallableEvaluator::IsContentSecure(content::WebContents* web_contents) {
 
   // chrome:// URLs are considered secure.
   const GURL& url = web_contents->GetLastCommittedURL();
-  if (url.scheme() == content::kChromeUIScheme) {
+  if (url.GetScheme() == content::kChromeUIScheme) {
     return true;
   }
 
   // chrome-untrusted:// URLs are shipped with Chrome, so they are considered
   // secure in this context.
-  if (url.scheme() == content::kChromeUIUntrustedScheme) {
+  if (url.GetScheme() == content::kChromeUIUntrustedScheme) {
     return true;
   }
 

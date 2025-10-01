@@ -97,7 +97,7 @@ const base::Value::List* GetPrefList(const PrefService* pref_service,
 }
 
 bool BypassBlocklistWildcardForURL(const GURL& url) {
-  const std::string& scheme = url.scheme();
+  const std::string& scheme = url.GetScheme();
   for (const char* bypass_scheme : kBypassBlocklistWildcardForSchemes) {
     if (scheme == bypass_scheme)
       return true;

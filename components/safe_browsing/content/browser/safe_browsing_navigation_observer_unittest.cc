@@ -692,8 +692,8 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleIPAddresses) {
       now.InSecondsFSinceUnixEpoch() - 60.0 * 60.0);  // Stale
   base::Time in_an_hour = base::Time::FromSecondsSinceUnixEpoch(
       now.InSecondsFSinceUnixEpoch() + 60.0 * 60.0);  // Invalid
-  std::string host_0 = GURL("http://foo/0").host();
-  std::string host_1 = GURL("http://bar/1").host();
+  std::string host_0 = GURL("http://foo/0").GetHost();
+  std::string host_1 = GURL("http://bar/1").GetHost();
   host_to_ip_map()->insert(
       std::make_pair(host_0, std::vector<ResolvedIPAddress>()));
   (*host_to_ip_map())[host_0].push_back(ResolvedIPAddress(now, "1.1.1.1"));
@@ -720,7 +720,7 @@ TEST_F(SBNavigationObserverTest, TestRecordHostToIpMapping) {
   base::Time now = base::Time::Now();  // Fresh
   base::Time one_hour_ago = base::Time::FromSecondsSinceUnixEpoch(
       now.InSecondsFSinceUnixEpoch() - 60.0 * 60.0);  // Stale
-  std::string host_0 = GURL("http://foo/0").host();
+  std::string host_0 = GURL("http://foo/0").GetHost();
   host_to_ip_map()->insert(
       std::make_pair(host_0, std::vector<ResolvedIPAddress>()));
   (*host_to_ip_map())[host_0].push_back(ResolvedIPAddress(now, "1.1.1.1"));
@@ -743,7 +743,7 @@ TEST_F(SBNavigationObserverTest, TestRecordHostToIpMapping) {
   EXPECT_LT(now, (*host_to_ip_map())[host_0][2].timestamp);
 
   // Record a host-ip pair, neither of which has been seen before.
-  std::string host_1 = GURL("http://bar/1").host();
+  std::string host_1 = GURL("http://bar/1").GetHost();
   RecordHostToIpMapping(host_1, "9.9.9.9");
   ASSERT_EQ(2U, host_to_ip_map()->size());
   EXPECT_EQ(3U, (*host_to_ip_map())[host_0].size());

@@ -1602,23 +1602,23 @@ TEST_F(HintsManagerTest, RemoveFetchedEntriesByHintKeys_Host) {
 
   hint = get_hints_response->add_hints();
   hint->set_key_representation(proto::HOST);
-  hint->set_key(url.host());
+  hint->set_key(url.GetHost());
   page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("anything/*");
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->hint_cache()->UpdateFetchedHints(
-      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      std::move(get_hints_response), base::Time().Now(), {url.GetHost()}, {url},
       run_loop->QuitClosure());
-  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 
   run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->RemoveFetchedEntriesByHintKeys(
-      run_loop->QuitClosure(), proto::KeyRepresentation::HOST, {url.host()});
+      run_loop->QuitClosure(), proto::KeyRepresentation::HOST, {url.GetHost()});
   run_loop->Run();
 
-  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 }
 
@@ -1640,15 +1640,15 @@ TEST_F(HintsManagerTest, RemoveFetchedEntriesByHintKeys_URL) {
 
   hint = get_hints_response->add_hints();
   hint->set_key_representation(proto::HOST);
-  hint->set_key(url.host());
+  hint->set_key(url.GetHost());
   page_hint = hint->add_page_hints();
   page_hint->set_page_pattern("anything/*");
 
   std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
   hints_manager()->hint_cache()->UpdateFetchedHints(
-      std::move(get_hints_response), base::Time().Now(), {url.host()}, {url},
+      std::move(get_hints_response), base::Time().Now(), {url.GetHost()}, {url},
       run_loop->QuitClosure());
-  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_TRUE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_TRUE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 
   run_loop = std::make_unique<base::RunLoop>();
@@ -1659,7 +1659,7 @@ TEST_F(HintsManagerTest, RemoveFetchedEntriesByHintKeys_URL) {
 
   // Both the host and url entries should have been removed to support upgrading
   // hint keys from HOST to FULL_URL.
-  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.host()));
+  EXPECT_FALSE(hints_manager()->hint_cache()->HasHint(url.GetHost()));
   EXPECT_FALSE(hints_manager()->hint_cache()->HasURLKeyedEntryForURL(url));
 }
 

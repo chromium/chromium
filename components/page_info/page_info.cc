@@ -854,7 +854,7 @@ void PageInfo::OnRevokeSSLErrorBypassButtonPressed() {
       delegate_->GetStatefulSSLHostStateDelegate();
   DCHECK(stateful_ssl_host_state_delegate);
   stateful_ssl_host_state_delegate->RevokeUserAllowExceptionsHard(
-      site_url().host());
+      site_url().GetHost());
   did_revoke_user_ssl_decisions_ = true;
   RecordPageInfoAction(page_info::PAGE_INFO_RESET_DECISIONS_CLICKED);
 }
@@ -1265,9 +1265,11 @@ void PageInfo::ComputeUIInputs(const GURL& url) {
   DCHECK(delegate);
   DCHECK(web_contents_);
   bool has_cert_allow_exception = delegate->HasCertAllowException(
-      url.host(), web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
+      url.GetHost(),
+      web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
   bool has_http_allow_exception = delegate->IsHttpAllowedForHost(
-      url.host(), web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
+      url.GetHost(),
+      web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
 
   // HTTP allowlist entries can be added because of silent HTTPS-Upgrades
   // without the user proceeding through a warning. Only show a warning decision

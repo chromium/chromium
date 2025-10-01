@@ -376,7 +376,7 @@ TEST_F(CookieHelperTest, CannedDeleteCookie) {
 
   EXPECT_EQ(2u, helper->GetCookieCount());
 
-  DeleteCookie(helper.get(), origin1.host());
+  DeleteCookie(helper.get(), origin1.GetHost());
 
   EXPECT_EQ(1u, helper->GetCookieCount());
   {

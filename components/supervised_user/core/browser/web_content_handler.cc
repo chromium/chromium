@@ -65,7 +65,7 @@ void WebContentHandler::OnLocalApprovalRequestCompleted(
 
   switch (approval_result) {
     case LocalApprovalResult::kApproved:
-      settings_service.RecordLocalWebsiteApproval(url.host());
+      settings_service.RecordLocalWebsiteApproval(url.GetHost());
       // Record duration metrics only for completed approval flows.
       RecordTimeToApprovalDurationMetric(base::TimeTicks::Now() - start_time);
       break;

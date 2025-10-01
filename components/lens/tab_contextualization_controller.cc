@@ -117,8 +117,8 @@ void TabContextualizationController::OnAnnotatedPageContentReceived(
 
   std::move(callback).Run(
       optimization_guide::IsPageContextEligible(
-          tab_url.host(), tab_url.path(), std::move(frame_metadata_structs),
-          page_context_eligibility_),
+          tab_url.GetHost(), tab_url.GetPath(),
+          std::move(frame_metadata_structs), page_context_eligibility_),
       std::move(result));
 }
 

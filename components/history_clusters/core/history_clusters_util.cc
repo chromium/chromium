@@ -153,7 +153,8 @@ GURL ComputeURLForDeduping(const GURL& url) {
 
   // Strip out www, but preserve the eTLD+1. This matches the omnibox behavior.
   // Make an explicit local, as a std::string_view can't point to a temporary.
-  std::string stripped_host = url_formatter::StripWWW(url_for_deduping.host());
+  std::string stripped_host =
+      url_formatter::StripWWW(url_for_deduping.GetHost());
   replacements.SetHostStr(std::string_view(stripped_host));
 
   // Replace http protocol with https. It's just for deduplication.

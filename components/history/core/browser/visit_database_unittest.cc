@@ -1344,7 +1344,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentScheme) {
   base::Time last_visit;
   VisitRow row;
   EXPECT_TRUE(GetLastVisitToHost(
-      GURL("https://www.chromium.org").host(), begin_time, end_time,
+      GURL("https://www.chromium.org").GetHost(), begin_time, end_time,
       VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, begin_time + base::Minutes(1));
 }
@@ -1376,7 +1376,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_IncludePort) {
 
   base::Time last_visit;
   EXPECT_TRUE(GetLastVisitToHost(
-      GURL("https://www.chromium.org").host(), begin_time, end_time,
+      GURL("https://www.chromium.org").GetHost(), begin_time, end_time,
       VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, begin_time + base::Minutes(1));
 }
@@ -1408,7 +1408,7 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_DifferentPorts) {
 
   base::Time last_visit;
   EXPECT_TRUE(GetLastVisitToHost(
-      GURL("https://www.chromium.org:8080").host(), begin_time, end_time,
+      GURL("https://www.chromium.org:8080").GetHost(), begin_time, end_time,
       VisitQuery404sPolicy::kInclude404s, &last_visit));
   EXPECT_EQ(last_visit, begin_time + base::Minutes(1));
 }
@@ -1435,13 +1435,13 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_404) {
   // That visit should appear as the most recent visit when including 404s.
   base::Time last_visit_time;
   EXPECT_TRUE(GetLastVisitToHost(
-      GURL("https://www.chromium.org").host(), begin_time, end_time,
+      GURL("https://www.chromium.org").GetHost(), begin_time, end_time,
       VisitQuery404sPolicy::kInclude404s, &last_visit_time));
   EXPECT_EQ(last_visit_time, begin_time + base::Minutes(1));
 
   // No visit should appear when excluding 404s, but the call should succeed.
   EXPECT_TRUE(GetLastVisitToHost(
-      GURL("https://www.chromium.org").host(), begin_time, end_time,
+      GURL("https://www.chromium.org").GetHost(), begin_time, end_time,
       VisitQuery404sPolicy::kExclude404s, &last_visit_time));
   EXPECT_EQ(last_visit_time, base::Time());
 
@@ -1458,13 +1458,13 @@ TEST_F(VisitDatabaseTest, GetLastVisitToHost_404) {
   // The 404 visit should still appear as the most recent visit when including
   // 404s.
   EXPECT_TRUE(GetLastVisitToHost(
-      GURL("https://www.chromium.org").host(), begin_time, end_time,
+      GURL("https://www.chromium.org").GetHost(), begin_time, end_time,
       VisitQuery404sPolicy::kInclude404s, &last_visit_time));
   EXPECT_EQ(last_visit_time, begin_time + base::Minutes(1));
 
   // The older, non-404 should now appear when excluding 404s.
   EXPECT_TRUE(GetLastVisitToHost(
-      GURL("https://www.chromium.org").host(), begin_time, end_time,
+      GURL("https://www.chromium.org").GetHost(), begin_time, end_time,
       VisitQuery404sPolicy::kExclude404s, &last_visit_time));
   EXPECT_EQ(last_visit_time, begin_time);
 }

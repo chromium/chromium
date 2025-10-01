@@ -71,7 +71,7 @@ std::unique_ptr<TopDomainEntry> MakeEntry(
   // There might be unicode domains in the list. Store them in punycode in
   // the trie.
   const GURL domain(std::string("http://") + hostname);
-  entry->top_domain = domain.host();
+  entry->top_domain = domain.GetHost();
 
   entry->is_top_bucket = is_top_bucket;
   entry->skeleton_type = skeleton_type;

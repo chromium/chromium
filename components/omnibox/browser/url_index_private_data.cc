@@ -666,7 +666,7 @@ void URLIndexPrivateData::HistoryIdsToScoredMatches(
   for (const auto& history_id : history_ids) {
     DCHECK(history_info_map_.count(history_id));
     unique_hosts.insert(
-        history_info_map_.find(history_id)->second.url_row.url().host());
+        history_info_map_.find(history_id)->second.url_row.url().GetHost());
     // `ScoredHistoryMatch` assigns the same specificity to suggestions for
     // counts 4 or larger.
     // TODO(manukh) Should share `kMaxUniqueHosts` with `ScoredHistoryMatch`,
@@ -870,7 +870,7 @@ void URLIndexPrivateData::ResetSearchTermCache() {
 bool URLIndexPrivateData::URLSchemeIsAllowlisted(
     const GURL& gurl,
     const std::set<std::string>& allowlist) {
-  return allowlist.find(gurl.scheme()) != allowlist.end();
+  return allowlist.find(gurl.GetScheme()) != allowlist.end();
 }
 
 bool URLIndexPrivateData::ShouldExclude(

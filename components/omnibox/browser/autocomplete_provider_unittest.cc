@@ -1434,29 +1434,29 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   AutocompleteMatch match(nullptr, 1100, false,
                           AutocompleteMatchType::SEARCH_SUGGEST);
   GURL url(GetDestinationURL(match, base::Milliseconds(2456)));
-  EXPECT_TRUE(url.path().empty());
+  EXPECT_TRUE(url.GetPath().empty());
 
   // The protocol needs to be https.
   RegisterTemplateURL(kTestTemplateURLKeyword,
                       "https://foo/{searchTerms}/{google:assistedQueryStats}");
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
+  EXPECT_TRUE(url.GetPath().empty());
 
   // There needs to be a keyword provider.
   match.keyword = kTestTemplateURLKeyword;
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
+  EXPECT_TRUE(url.GetPath().empty());
 
   // search_terms_args needs to be set.
   match.search_terms_args =
       std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_TRUE(url.path().empty());
+  EXPECT_TRUE(url.GetPath().empty());
 
   // searchbox_stats need to have been set.
   match.search_terms_args->searchbox_stats.set_client_name("chrome");
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqMA&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqMA&", url.GetPath());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
@@ -1471,7 +1471,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   // Test field trial triggered bit set.
   set_remote_search_feature_triggered_in_session(true);
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqMA&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqMA&", url.GetPath());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
@@ -1487,7 +1487,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   set_remote_search_feature_triggered_in_session(false);
   set_current_page_classification(metrics::OmniboxEventProto::OTHER);
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqNA&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajBqNA&", url.GetPath());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
@@ -1503,7 +1503,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   set_remote_search_feature_triggered_in_session(true);
   set_current_page_classification(metrics::OmniboxEventProto::OTHER);
   url = GetDestinationURL(match, base::Milliseconds(2456));
-  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNA&", url.path());
+  EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNA&", url.GetPath());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;
@@ -1561,7 +1561,7 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   add_zero_suggest_provider_experiment_stats_v2(experiment_stats_v2);
   url = GetDestinationURL(match, base::Milliseconds(2456));
   EXPECT_EQ("//gs_lcrp=EgZjaHJvbWXSAQgyNDU2ajFqNOIDCRIEMCw2NyCRTg&",
-            url.path());
+            url.GetPath());
   // Make sure searchbox_stats is serialized and encoded correctly.
   {
     std::string serialized_proto;

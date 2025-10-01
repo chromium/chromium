@@ -83,7 +83,7 @@ bool WordMatchesURLContent(
     const std::vector<std::u16string>& terms_prefixed_by_http_or_https,
     const GURL& url) {
   size_t prefix_length =
-      url.scheme().length() + strlen(url::kStandardSchemeSeparator);
+      url.GetScheme().length() + strlen(url::kStandardSchemeSeparator);
   DCHECK_GE(url.spec().length(), prefix_length);
   const std::u16string& formatted_url = url_formatter::FormatUrl(
       url, url_formatter::kFormatUrlOmitNothing, base::UnescapeRule::NORMAL,
@@ -1014,7 +1014,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   // from history that differ only by some obscure query param from each other
   // or from the search/keyword provider matches.
   const TemplateURL* template_url = GetTemplateURLWithKeyword(
-      template_url_service, keyword, stripped_destination_url.host());
+      template_url_service, keyword, stripped_destination_url.GetHost());
   if (template_url && template_url->SupportsReplacement(
                           template_url_service->search_terms_data())) {
     using CacheKey = std::tuple<const TemplateURL*, GURL, bool>;
@@ -1043,7 +1043,7 @@ GURL AutocompleteMatch::GURLToStrippedGURL(
   // Remove the www. prefix from the host.
   static const char prefix[] = "www.";
   static const size_t prefix_len = std::size(prefix) - 1;
-  std::string host = stripped_destination_url.host();
+  std::string host = stripped_destination_url.GetHost();
   if (host.compare(0, prefix_len, prefix) == 0 && host.length() > prefix_len) {
     replacements.SetHostStr(std::string_view(host).substr(prefix_len));
     needs_replacement = true;

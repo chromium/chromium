@@ -391,7 +391,7 @@ GURL ConstructGURLWithScheme(const std::string& url) {
   if (!gurl.has_scheme()) {
     GURL https_url(
         base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator, url}));
-    if (url::HostIsIPAddress(https_url.host())) {
+    if (url::HostIsIPAddress(https_url.GetHost())) {
       GURL::Replacements replacements;
       replacements.SetSchemeStr(url::kHttpScheme);
       return https_url.ReplaceComponents(replacements);
@@ -465,7 +465,7 @@ std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
   }
   GURL realm(signon_realm);
   if (realm.is_valid() && realm.has_host()) {
-    return base::UTF8ToUTF16(realm.host());
+    return base::UTF8ToUTF16(realm.GetHost());
   }
   return base::UTF8ToUTF16(signon_realm);
 }

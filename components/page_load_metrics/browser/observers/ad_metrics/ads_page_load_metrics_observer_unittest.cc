@@ -2889,7 +2889,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdBlocklistFull_NotFired) {
   // Five interventions are allowed to occur, per origin per day. Add five
   // entries to the blocklist.
   for (int i = 0; i < 5; i++)
-    blocklist()->AddEntry(GURL(kNonAdUrl).host(), true, 0);
+    blocklist()->AddEntry(GURL(kNonAdUrl).GetHost(), true, 0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2912,7 +2912,7 @@ TEST_P(AdsPageLoadMetricsObserverTest,
   // Fill up the blocklist to verify the blocklist logic is correctly ignored
   // when disabled.
   for (int i = 0; i < 5; i++)
-    blocklist()->AddEntry(GURL(kNonAdUrl).host(), true, 0);
+    blocklist()->AddEntry(GURL(kNonAdUrl).GetHost(), true, 0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
@@ -2949,7 +2949,7 @@ TEST_P(AdsPageLoadMetricsObserverTest, HeavyAdBlocklist_InterventionReported) {
   // Five interventions are allowed to occur, per origin per day. Add four
   // entries to the blocklist.
   for (int i = 0; i < 4; i++)
-    blocklist()->AddEntry(GURL(kNonAdUrl).host(), true, 0);
+    blocklist()->AddEntry(GURL(kNonAdUrl).GetHost(), true, 0);
 
   RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
   RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);

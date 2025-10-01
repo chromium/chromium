@@ -1142,10 +1142,10 @@ class AutofillServerCommunicationTest
     GURL absolute_url = server_.GetURL(request.relative_url);
     ++call_count_;
 
-    if (absolute_url.path().find("/v1/pages") == 0) {
+    if (absolute_url.GetPath().find("/v1/pages") == 0) {
       payloads().push_back(!request.content.empty()
                                ? request.content
-                               : GetLookupContent(absolute_url.path()));
+                               : GetLookupContent(absolute_url.GetPath()));
       AutofillQueryResponse proto;
       proto.add_form_suggestions()
           ->add_field_suggestions()
@@ -1163,7 +1163,7 @@ class AutofillServerCommunicationTest
       return response;
     }
 
-    if (absolute_url.path() == "/v1/forms:vote") {
+    if (absolute_url.GetPath() == "/v1/forms:vote") {
       payloads().push_back(request.content);
       auto response = std::make_unique<BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
@@ -2042,11 +2042,11 @@ TEST_F(AutofillCrowdsourcingManagerTest, RequestsInLastMinute) {
   base::HistogramTester histogram;
   url_loader_factory().SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        if (request.url.path().find("/v1/pages") != std::string::npos) {
+        if (request.url.GetPath().find("/v1/pages") != std::string::npos) {
           url_loader_factory().AddResponse(
               request.url.spec(),
               "<autofillqueryresponse></autofillqueryresponse>");
-        } else if (request.url.path().find("/v1/forms:vote") !=
+        } else if (request.url.GetPath().find("/v1/forms:vote") !=
                    std::string::npos) {
           url_loader_factory().AddResponse(
               request.url.spec(),

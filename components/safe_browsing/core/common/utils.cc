@@ -135,7 +135,7 @@ bool CanGetReputationOfUrl(const GURL& url) {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url)) {
     return false;
   }
-  const std::string hostname = url.host();
+  const std::string hostname = url.GetHost();
   // There is no reason to send URLs with very short or single-label hosts.
   // The Safe Browsing server does not check them.
   if (hostname.size() < 4 || std::ranges::count(hostname, '.') < 1) {

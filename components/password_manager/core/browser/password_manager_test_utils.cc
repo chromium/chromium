@@ -73,7 +73,7 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
         url::SchemeHostPort(GURL("https://accounts.google.com/login"));
     if (!affiliations::IsValidAndroidFacetURI(form->signon_realm)) {
       form->signon_realm =
-          "federation://" + form->url.host() + "/accounts.google.com";
+          "federation://" + form->url.GetHost() + "/accounts.google.com";
       form->type = PasswordForm::Type::kApi;
     }
   }

@@ -289,7 +289,7 @@ void AddressProfileSaveManagerTest::TestImportScenario(
                 ->GetMaxStrikesLimit()
           : 1;
   address_data_manager().GetProfileSaveStrikeDatabase()->AddStrikes(
-      initial_strikes_for_domain, form_url().host());
+      initial_strikes_for_domain, form_url().GetHost());
   ASSERT_EQ(
       address_data_manager().IsNewProfileImportBlockedForDomain(form_url()),
       test_scenario.new_profiles_suppresssed_for_domain);
@@ -536,7 +536,7 @@ void AddressProfileSaveManagerTest::VerifyStrikeCounts(
   // profile was declined.
   const int profile_save_strikes =
       address_data_manager().GetProfileSaveStrikeDatabase()->GetStrikes(
-          form_url().host());
+          form_url().GetHost());
   if (IsNewProfile(test_scenario) && last_import.UserDeclined()) {
     EXPECT_EQ(initial_strikes_for_domain + 1, profile_save_strikes);
   } else if (IsNewProfile(test_scenario) && last_import.UserAccepted()) {

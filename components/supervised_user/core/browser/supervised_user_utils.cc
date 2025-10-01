@@ -207,7 +207,7 @@ GURL GetParentAccessURL(
                                     "&continue=", kParentAccessContinueURL});
   if (base::FeatureList::IsEnabled(
           kLocalWebApprovalsWidgetSupportsUrlPayload) &&
-      blocked_url.has_value() && !blocked_url.value().host().empty()) {
+      blocked_url.has_value() && !blocked_url.value().GetHost().empty()) {
     // Prepare blocked URL hostname for user-friendly display, including internationalized
     // domain name (IDN) conversion if necessary.
     std::u16string blocked_hostname = url_formatter::FormatUrl(
@@ -286,7 +286,7 @@ std::optional<std::string> MaybeGetPacpResultFromUrl(const GURL& url) {
       /*search_key=*/kParentAccessResultQueryParameter,
       /*out_value=*/&result_value);
 
-  if (!url.host().starts_with(kPacpOriginUrlHost) ||
+  if (!url.GetHost().starts_with(kPacpOriginUrlHost) ||
       !contains_result_query_param) {
     return std::nullopt;
   }
@@ -376,8 +376,8 @@ GURL UrlFormatter::FormatUrl(const GURL& url) const {
   // the stripping.
   bool skip_trivial_subdomain_strip =
       filtering_behavior_reason_ == FilteringBehaviorReason::MANUAL &&
-      stripped_url.host() != url.host() &&
-      supervised_user_url_filter_->IsHostInBlocklist(url.host());
+      stripped_url.GetHost() != url.GetHost() &&
+      supervised_user_url_filter_->IsHostInBlocklist(url.GetHost());
 
   GURL target_url = skip_trivial_subdomain_strip ? url : stripped_url;
 

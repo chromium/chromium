@@ -119,10 +119,10 @@ class EmbeddedURLExtractor {
     if (url.DomainIs(kGoogleAmpCacheHost)) {
       std::string s;
       std::string embedded;
-      if (re2::RE2::FullMatch(url.path(), google_amp_cache_path_regex_, &s,
+      if (re2::RE2::FullMatch(url.GetPath(), google_amp_cache_path_regex_, &s,
                               &embedded)) {
         if (url.has_query())
-          embedded += "?" + url.query();
+          embedded += "?" + url.GetQuery();
         return BuildURL(!s.empty(), embedded);
       }
     }
@@ -188,7 +188,7 @@ class EmbeddedURLExtractor {
             google_util::DISALLOW_NON_STANDARD_PORTS)) {
       std::string s;
       std::string embedded;
-      if (re2::RE2::FullMatch(url.path(), google_amp_viewer_path_regex_, &s,
+      if (re2::RE2::FullMatch(url.GetPath(), google_amp_viewer_path_regex_, &s,
                               &embedded)) {
         // The embedded URL may be percent-encoded. Undo that.
         embedded = base::UnescapeBinaryURLComponent(embedded);

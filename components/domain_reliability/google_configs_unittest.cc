@@ -14,8 +14,9 @@ namespace {
 // This really only checks domains, not origins.
 bool HasSameOriginCollector(const DomainReliabilityConfig* config) {
   for (const auto& collector : config->collectors) {
-    if (collector->host() == config->origin.host())
+    if (collector->GetHost() == config->origin.host()) {
       return true;
+    }
   }
   return false;
 }

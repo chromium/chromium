@@ -102,7 +102,7 @@ void Convert(std::istream& input) {
         << "This binary only accepts hostnames" << line;
 
     const std::string ascii_hostname =
-        base::IsStringASCII(line) ? line : GURL("https://" + line).host();
+        base::IsStringASCII(line) ? line : GURL("https://" + line).GetHost();
 
     // Convert twice, first with spoof checks on, then with spoof checks
     // ignored inside GetSpoofCheckResult(). This is because only the call to

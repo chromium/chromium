@@ -154,7 +154,7 @@ bool WebAppOriginAssociationParser::UrlIsWithinScope(
     const GURL& url,
     const url::Origin& extended_origin) {
   return extended_origin.IsSameOriginWith(url) &&
-         url.path().starts_with(extended_origin.GetURL().path());
+         url.GetPath().starts_with(extended_origin.GetURL().GetPath());
 }
 
 }  // namespace webapps

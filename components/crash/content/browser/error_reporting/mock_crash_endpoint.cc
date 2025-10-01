@@ -79,12 +79,12 @@ MockCrashEndpoint::HandleRequest(const net::test_server::HttpRequest& request) {
   GURL absolute_url = test_server_->GetURL(request.relative_url);
   LOG(INFO) << "MockCrashEndpoint::HandleRequest(" << absolute_url.spec()
             << ")";
-  if (absolute_url.path() != kTestCrashEndpoint) {
+  if (absolute_url.GetPath() != kTestCrashEndpoint) {
     return nullptr;
   }
 
   ++report_count_;
-  last_report_ = Report(absolute_url.query(), request.content);
+  last_report_ = Report(absolute_url.GetQuery(), request.content);
   all_reports_.push_back(*last_report_);
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(response_code_);

@@ -718,7 +718,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
         if (state->original_options.host_only) {
           // Do post filter to skip entries that do not have the correct
           // hostname.
-          if (gurl.host() != host_name_utf8) {
+          if (gurl.GetHost() != host_name_utf8) {
             continue;
           }
         }

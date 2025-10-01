@@ -519,8 +519,8 @@ CancelCallbackOnce FakeDriveService::GetRemainingChangeList(
   // The URL should be the one filled in GetChangeListInternal of the
   // previous method invocation, so it should start with "http://localhost/?".
   // See also GetChangeListInternal.
-  DCHECK_EQ(next_link.host(), "localhost");
-  DCHECK_EQ(next_link.path(), "/");
+  DCHECK_EQ(next_link.GetHost(), "localhost");
+  DCHECK_EQ(next_link.GetPath(), "/");
 
   int64_t start_changestamp = 0;
   std::string search_query;
@@ -529,7 +529,7 @@ CancelCallbackOnce FakeDriveService::GetRemainingChangeList(
   int start_offset = 0;
   int max_results = default_max_results_;
   base::StringPairs parameters;
-  if (base::SplitStringIntoKeyValuePairs(next_link.query(), '=', '&',
+  if (base::SplitStringIntoKeyValuePairs(next_link.GetQuery(), '=', '&',
                                          &parameters)) {
     for (const auto& param : parameters) {
       if (param.first == "changestamp") {

@@ -97,52 +97,52 @@ TEST_F(HistoryClearableStrikeDatabaseTest,
   base::Time start_time = base::Time::Now();
   // Both strikes are added within the deletion window, but the second should
   // be ruled out by the filter.
-  strike_database_->AddStrike(kUrl1.host());
-  strike_database_->AddStrike(kUrl2.host());
+  strike_database_->AddStrike(kUrl1.GetHost());
+  strike_database_->AddStrike(kUrl2.GetHost());
   base::Time end_time = base::Time::Now();
 
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 1);
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.GetHost()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.GetHost()), 1);
 
   ClearStrikesByOriginAndTime(delete_first_url_row_, start_time, end_time);
 
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 0);
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.GetHost()), 0);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.GetHost()), 1);
 }
 
 TEST_F(HistoryClearableStrikeDatabaseTest, RemoveStrikesByOrigin) {
-  strike_database_->AddStrike(kUrl1.host());
-  strike_database_->AddStrike(kUrl2.host());
+  strike_database_->AddStrike(kUrl1.GetHost());
+  strike_database_->AddStrike(kUrl2.GetHost());
 
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 1);
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.GetHost()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.GetHost()), 1);
 
   ClearStrikesByOrigin(delete_first_url_row_);
 
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 0);
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.host()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.GetHost()), 0);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl2.GetHost()), 1);
 }
 
 TEST_F(HistoryClearableStrikeDatabaseTest,
        DoNotRemoveStrikeAfterDeletionWindow) {
   base::Time start_time = base::Time::Now();
-  strike_database_->AddStrike(kUrl1.host());
+  strike_database_->AddStrike(kUrl1.GetHost());
   task_environment_.FastForwardBy(base::Minutes(1));
   base::Time end_time = base::Time::Now();
   task_environment_.FastForwardBy(base::Minutes(1));
 
   // Now update the time stamp of this entry by adding another strike.
   // By this, the entry should not be deleted.
-  strike_database_->AddStrike(kUrl1.host());
+  strike_database_->AddStrike(kUrl1.GetHost());
 
   ClearStrikesByOriginAndTime(delete_all_urls_rows_, start_time, end_time);
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 2);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.GetHost()), 2);
 }
 
 TEST_F(HistoryClearableStrikeDatabaseTest,
        DoNotRemoveStrikeBeforeDeletionWindow) {
   // The strike is added before the deletion window.
-  strike_database_->AddStrike(kUrl1.host());
+  strike_database_->AddStrike(kUrl1.GetHost());
   task_environment_.FastForwardBy(base::Minutes(1));
 
   base::Time start_time = base::Time::Now();
@@ -151,7 +151,7 @@ TEST_F(HistoryClearableStrikeDatabaseTest,
 
   ClearStrikesByOriginAndTime(delete_all_urls_rows_, start_time, end_time);
 
-  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.host()), 1);
+  EXPECT_EQ(strike_database_->GetStrikes(kUrl1.GetHost()), 1);
 }
 
 }  // namespace

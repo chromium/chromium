@@ -81,7 +81,7 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
   }
 
   // First check full host name.
-  if (BloomFilterContains(url.host())) {
+  if (BloomFilterContains(url.GetHost())) {
     return true;
   }
 
@@ -92,7 +92,7 @@ bool OptimizationFilter::ContainsHostSuffix(const GURL& url) const {
 
   // Now check host suffixes from shortest to longest but skipping the
   // root domain (eg, skipping "com", "org", "in", "uk").
-  std::string full_host(url.host());
+  std::string full_host(url.GetHost());
   int suffix_count = 1;
   auto left_pos = full_host.find_last_of('.');  // root domain position
   while ((left_pos - 1) != std::string::npos &&

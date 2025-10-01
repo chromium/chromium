@@ -241,9 +241,10 @@ TEST_F(RecoveryKeyStoreConnectionImplTest, ShouldListVaults) {
   vault->mutable_vault_parameters()->set_vault_handle(kVaultHandle1);
   network::ResourceRequest url_request = GetPendingHTTPRequest()->request;
   EXPECT_EQ(url_request.method, "GET");
-  EXPECT_THAT(url_request.url.query(), Not(HasSubstr("page_token")));
-  EXPECT_THAT(url_request.url.query(), HasSubstr("use_case=13"));
-  EXPECT_THAT(url_request.url.query(), HasSubstr("challenge_not_required=1"));
+  EXPECT_THAT(url_request.url.GetQuery(), Not(HasSubstr("page_token")));
+  EXPECT_THAT(url_request.url.GetQuery(), HasSubstr("use_case=13"));
+  EXPECT_THAT(url_request.url.GetQuery(),
+              HasSubstr("challenge_not_required=1"));
   SimulateResponse(kListVaultsUrl, net::HTTP_OK, response.SerializeAsString());
 
   auto result = future.Take();
@@ -268,7 +269,7 @@ TEST_F(RecoveryKeyStoreConnectionImplTest, ShouldListVaultsWithPagination) {
         kBackendPublicKey1);
     vault->mutable_vault_parameters()->set_vault_handle(kVaultHandle1);
     response.set_next_page_token("next-page-token");
-    EXPECT_THAT(GetPendingHTTPRequest()->request.url.query(),
+    EXPECT_THAT(GetPendingHTTPRequest()->request.url.GetQuery(),
                 Not(HasSubstr("page_token")));
     SimulateResponse(kListVaultsUrl, net::HTTP_OK,
                      response.SerializeAsString());
@@ -280,7 +281,7 @@ TEST_F(RecoveryKeyStoreConnectionImplTest, ShouldListVaultsWithPagination) {
     vault->mutable_vault_parameters()->set_backend_public_key(
         kBackendPublicKey2);
     vault->mutable_vault_parameters()->set_vault_handle(kVaultHandle2);
-    EXPECT_THAT(GetPendingHTTPRequest()->request.url.query(),
+    EXPECT_THAT(GetPendingHTTPRequest()->request.url.GetQuery(),
                 HasSubstr("page_token=next-page-token"));
     SimulateResponse(kListVaultsUrl, net::HTTP_OK,
                      response.SerializeAsString());

@@ -95,7 +95,7 @@ class TestSafeBrowsingActivationThrottleDelegate
       mojom::ActivationLevel effective_level,
       ActivationDecision* decision) override {
     CHECK(handle->IsInMainFrame());
-    if (allowlisted_hosts_.count(handle->GetURL().host())) {
+    if (allowlisted_hosts_.count(handle->GetURL().GetHost())) {
       if (effective_level ==
           subresource_filter::mojom::ActivationLevel::kEnabled) {
         *decision = subresource_filter::ActivationDecision::URL_ALLOWLISTED;
@@ -107,7 +107,7 @@ class TestSafeBrowsingActivationThrottleDelegate
 
   void AllowlistInCurrentWebContents(const GURL& url) {
     ASSERT_TRUE(url.SchemeIsHTTPOrHTTPS());
-    allowlisted_hosts_.insert(url.host());
+    allowlisted_hosts_.insert(url.GetHost());
   }
 
   void ClearAllowlist() { allowlisted_hosts_.clear(); }

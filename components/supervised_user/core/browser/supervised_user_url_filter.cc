@@ -527,7 +527,7 @@ FilteringBehavior SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
         url_it->second ? FilteringBehavior::kAllow : FilteringBehavior::kBlock;
   }
 
-  const std::string host = url.host();
+  const std::string host = url.GetHost();
   if (result != FilteringBehavior::kBlock) {
     // If there is a match with Block behaviour, set the result to Block.
     auto it = std::ranges::find_if(

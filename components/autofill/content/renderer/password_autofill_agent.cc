@@ -279,8 +279,8 @@ bool IsPublicSuffixDomainMatch(const std::string& url1,
   if (domain1.empty() || domain2.empty())
     return false;
 
-  return gurl1.scheme() == gurl2.scheme() && domain1 == domain2 &&
-         gurl1.port() == gurl2.port();
+  return gurl1.GetScheme() == gurl2.GetScheme() && domain1 == domain2 &&
+         gurl1.GetPort() == gurl2.GetPort();
 }
 
 // Helper function that calculates form signature for `form_data` and returns it

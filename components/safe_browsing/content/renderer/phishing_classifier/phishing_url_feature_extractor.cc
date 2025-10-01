@@ -32,7 +32,7 @@ bool PhishingUrlFeatureExtractor::ExtractFeatures(const GURL& url,
   } else {
     // Remove any leading/trailing dots.
     std::string host;
-    base::TrimString(url.host(), ".", &host);
+    base::TrimString(url.GetHost(), ".", &host);
 
     // TODO(bryner): Ensure that the url encoding is consistent with
     // the features in the model.
@@ -87,7 +87,7 @@ bool PhishingUrlFeatureExtractor::ExtractFeatures(const GURL& url,
   }
 
   std::vector<std::string> long_tokens;
-  SplitStringIntoLongAlphanumTokens(url.path(), &long_tokens);
+  SplitStringIntoLongAlphanumTokens(url.GetPath(), &long_tokens);
   for (const std::string& token : long_tokens) {
     if (!features->AddBooleanFeature(features::kUrlPathToken + token))
       return false;

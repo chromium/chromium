@@ -75,7 +75,7 @@ std::string GetURLTypeForCrashKey(const GURL& url) {
   if (!url.is_valid()) {
     return "invalid";
   }
-  return url.scheme();
+  return url.GetScheme();
 }
 
 void CheckNavigationIsInPrimaryOngoingList(

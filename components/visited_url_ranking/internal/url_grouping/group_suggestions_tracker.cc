@@ -63,8 +63,8 @@ std::optional<std::string> GetHostForTab(
       continue;
     }
     if (tab_id_value->float_val == tab_id) {
-      if (!url_value->url->host().empty()) {
-        return url_value->url->host();
+      if (!url_value->url->GetHost().empty()) {
+        return url_value->url->GetHost();
       }
       return std::nullopt;
     }

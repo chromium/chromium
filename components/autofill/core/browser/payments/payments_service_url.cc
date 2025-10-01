@@ -96,8 +96,8 @@ GURL GetManageInstrumentsUrl() {
 
 GURL GetManageInstrumentUrl(int64_t instrument_id) {
   GURL url = GetManageInstrumentsUrl();
-  std::string new_query =
-      base::StrCat({url.query(), "&id=", base::NumberToString(instrument_id)});
+  std::string new_query = base::StrCat(
+      {url.GetQuery(), "&id=", base::NumberToString(instrument_id)});
   GURL::Replacements replacements;
   replacements.SetQueryStr(new_query);
   return url.ReplaceComponents(replacements);

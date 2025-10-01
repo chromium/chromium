@@ -73,7 +73,7 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
     if (top_frame_site.has_value()) {
       for (const auto& domain : domain_list) {
         // SchemefulSite normalizes to eTLD+1 using the Public Suffix List.
-        std::string registrable_domain = top_frame_site->GetURL().host();
+        std::string registrable_domain = top_frame_site->GetURL().GetHost();
         if (registrable_domain == domain) {
           vlog("unconditional proxy domain matched");
           is_unconditional_match = true;

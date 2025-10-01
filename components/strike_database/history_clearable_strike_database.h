@@ -59,7 +59,7 @@ class HistoryClearableStrikeDatabase
     }
     std::set<std::string> deleted_hosts;
     for (const auto& url_row : deletion_info.deleted_rows()) {
-      deleted_hosts.insert(url_row.url().host());
+      deleted_hosts.insert(url_row.url().GetHost());
     }
     if (!deletion_info.time_range().IsValid()) {
       ClearStrikesByOrigin(deleted_hosts);

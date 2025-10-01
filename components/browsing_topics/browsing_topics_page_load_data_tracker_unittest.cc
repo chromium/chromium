@@ -190,7 +190,8 @@ TEST_F(BrowsingTopicsPageLoadDataTrackerTest,
   BrowsingTopicsPageLoadDataTracker::CreateForPage(
       web_contents()->GetPrimaryMainFrame()->GetPage(),
       /*redirect_hosts_with_topics_invoked=*/
-      std::set<HashedHost>{HashMainFrameHostForStorage(url.host())}, source_id);
+      std::set<HashedHost>{HashMainFrameHostForStorage(url.GetHost())},
+      source_id);
 
   auto* tracker = GetBrowsingTopicsPageLoadDataTracker();
 

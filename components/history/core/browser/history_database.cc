@@ -285,10 +285,10 @@ void HistoryDatabase::ComputeDatabaseMetrics(
       GURL url(url_sql.ColumnStringView(0));
       base::Time visit_time = url_sql.ColumnTime(1);
       ++month_url_count;
-      month_hosts.insert(url.host());
+      month_hosts.insert(url.GetHost());
       if (visit_time > one_week_ago) {
         ++week_url_count;
-        week_hosts.insert(url.host());
+        week_hosts.insert(url.GetHost());
       }
     }
     base::UmaHistogramCounts1M("History.WeeklyURLCount", week_url_count);

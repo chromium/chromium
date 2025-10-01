@@ -313,8 +313,9 @@ ScoredHistoryMatch::ScoredHistoryMatch(
     // (because the URL-that-you-typed will go first and everything
     // else will be assigned one minus the previous score, as coded
     // at the end of HistoryURLProvider::DoAutocomplete().
-    if (base::UTF8ToUTF16(gurl.host()) == terms_vector[0])
+    if (base::UTF8ToUTF16(gurl.GetHost()) == terms_vector[0]) {
       hup_like_score = HistoryURLProvider::kScoreForBestInlineableResult;
+    }
 
     // HistoryURLProvider has the function PromoteOrCreateShorterSuggestion()
     // that's meant to promote prefixes of the best match (if they've

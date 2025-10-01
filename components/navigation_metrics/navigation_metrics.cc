@@ -87,9 +87,9 @@ void RecordPrimaryMainFrameNavigation(
                               Scheme::COUNT);
     UMA_HISTOGRAM_BOOLEAN(kMainFrameHasRTLDomainDifferentPage,
                           base::i18n::StringContainsStrongRTLChars(
-                              url_formatter::IDNToUnicode(url.host())));
+                              url_formatter::IDNToUnicode(url.GetHost())));
 
-    if (net::IsHostnameNonUnique(url.host())) {
+    if (net::IsHostnameNonUnique(url.GetHost())) {
       UMA_HISTOGRAM_ENUMERATION(kMainFrameSchemeDifferentPageNonUniqueHostname,
                                 scheme, Scheme::COUNT);
     }
@@ -97,7 +97,7 @@ void RecordPrimaryMainFrameNavigation(
 
   UMA_HISTOGRAM_BOOLEAN(kMainFrameHasRTLDomain,
                         base::i18n::StringContainsStrongRTLChars(
-                            url_formatter::IDNToUnicode(url.host())));
+                            url_formatter::IDNToUnicode(url.GetHost())));
 
   if (is_off_the_record) {
     UMA_HISTOGRAM_ENUMERATION(kMainFrameSchemeOTR, scheme, Scheme::COUNT);

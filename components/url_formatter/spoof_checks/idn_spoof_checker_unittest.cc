@@ -1415,7 +1415,7 @@ TEST(IDNSpoofCheckerNoFixtureTest, Skeletons) {
   IDNSpoofChecker checker;
   for (const TestCase& test_case : kTestCases) {
     const url_formatter::IDNConversionResult result =
-        UnsafeIDNToUnicodeWithDetails(test_case.url.host());
+        UnsafeIDNToUnicodeWithDetails(test_case.url.GetHost());
     Skeletons skeletons = checker.GetSkeletons(result.result);
     EXPECT_EQ(1u, skeletons.size());
     EXPECT_EQ(test_case.expected_skeleton, *skeletons.begin());
@@ -1427,13 +1427,13 @@ TEST(IDNSpoofCheckerNoFixtureTest, MultipleSkeletons) {
   // apple with U+04CF (ӏ)
   const GURL url1("http://appӏe.com");
   const url_formatter::IDNConversionResult result1 =
-      UnsafeIDNToUnicodeWithDetails(url1.host());
+      UnsafeIDNToUnicodeWithDetails(url1.GetHost());
   Skeletons skeletons1 = checker.GetSkeletons(result1.result);
   EXPECT_EQ(Skeletons({"apple.corn", "appie.corn"}), skeletons1);
 
   const GURL url2("http://œxamþle.com");
   const url_formatter::IDNConversionResult result2 =
-      UnsafeIDNToUnicodeWithDetails(url2.host());
+      UnsafeIDNToUnicodeWithDetails(url2.GetHost());
   Skeletons skeletons2 = checker.GetSkeletons(result2.result);
   // This skeleton set doesn't include strings with "œ" because it gets
   // converted to "oe" by ICU during skeleton extraction.
@@ -1555,7 +1555,7 @@ TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
   IDNSpoofChecker checker;
   const GURL url("http://éxample.com");
   const url_formatter::IDNConversionResult result =
-      UnsafeIDNToUnicodeWithDetails(url.host());
+      UnsafeIDNToUnicodeWithDetails(url.GetHost());
   std::u16string diacritics_removed =
       checker.MaybeRemoveDiacritics(result.result);
   EXPECT_EQ(u"example.com", diacritics_removed);
@@ -1565,7 +1565,7 @@ TEST(IDNSpoofCheckerNoFixtureTest, MaybeRemoveDiacritics) {
   // removal isn't necessary.
   const GURL non_lgc_url("http://xn--lsa922apb7a6do.com");
   const url_formatter::IDNConversionResult non_lgc_result =
-      UnsafeIDNToUnicodeWithDetails(non_lgc_url.host());
+      UnsafeIDNToUnicodeWithDetails(non_lgc_url.GetHost());
   std::u16string diacritics_not_removed =
       checker.MaybeRemoveDiacritics(non_lgc_result.result);
   EXPECT_EQ(u"नागरी́.com", diacritics_not_removed);

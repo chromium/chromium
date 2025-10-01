@@ -857,7 +857,7 @@ void SSLErrorHandler::CommonNameMismatchHandlerCallback(
                     SUGGESTED_URL_AVAILABLE) {
     RecordUMA(WWW_MISMATCH_URL_AVAILABLE);
     CommonNameMismatchRedirectObserver::AddToConsoleAfterNavigation(
-        web_contents(), request_url_.host(), suggested_url.host());
+        web_contents(), request_url_.GetHost(), suggested_url.GetHost());
     delegate_->NavigateToSuggestedURL(suggested_url);
   } else {
     RecordUMA(WWW_MISMATCH_URL_NOT_AVAILABLE);

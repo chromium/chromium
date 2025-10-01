@@ -917,7 +917,7 @@ bool HistoryBackend::IsUntypedIntranetHost(const GURL& url) {
       !url.SchemeIs(url::kFtpScheme))
     return false;
 
-  const std::string host = url.host();
+  const std::string host = url.GetHost();
   const size_t registry_length =
       net::registry_controlled_domains::GetCanonicalHostRegistryLength(
           host, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
@@ -2848,7 +2848,7 @@ URLRows HistoryBackend::GetMatchesForHost(const std::u16string& host_name) {
     URLRow row;
     std::string host_name_utf8 = base::UTF16ToUTF8(host_name);
     while (iter.GetNextURL(&row)) {
-      if (row.url().is_valid() && row.url().host() == host_name_utf8) {
+      if (row.url().is_valid() && row.url().GetHost() == host_name_utf8) {
         results.push_back(std::move(row));
       }
     }

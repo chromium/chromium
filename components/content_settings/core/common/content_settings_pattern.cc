@@ -264,7 +264,7 @@ bool ContentSettingsPattern::Builder::Canonicalize(PatternParts* parts) {
         return false;
       if (parts->path == url.path_piece())
         break;
-      parts->path = url.path();
+      parts->path = url.GetPath();
     }
   }
 
@@ -416,23 +416,25 @@ ContentSettingsPattern ContentSettingsPattern::FromURL(const GURL& url) {
     local_url = url.inner_url();
   }
   if (local_url->SchemeIsFile()) {
-    builder.WithScheme(local_url->scheme())->WithPath(local_url->path());
+    builder.WithScheme(local_url->GetScheme())->WithPath(local_url->GetPath());
   } else {
     // Please keep the order of the ifs below as URLs with an IP as host can
     // also have a "http" scheme.
     const bool is_non_wildcard_portless_scheme =
-        IsNonWildcardDomainNonPortScheme(local_url->scheme());
+        IsNonWildcardDomainNonPortScheme(local_url->GetScheme());
     if (local_url->HostIsIPAddress()) {
-      builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
+      builder.WithScheme(local_url->GetScheme())
+          ->WithHost(local_url->GetHost());
     } else if (local_url->SchemeIs(url::kHttpScheme)) {
       builder.WithSchemeWildcard()->WithDomainWildcard()->WithHost(
-          local_url->host());
+          local_url->GetHost());
     } else if (local_url->SchemeIs(url::kHttpsScheme)) {
-      builder.WithScheme(local_url->scheme())
+      builder.WithScheme(local_url->GetScheme())
           ->WithDomainWildcard()
-          ->WithHost(local_url->host());
+          ->WithHost(local_url->GetHost());
     } else if (is_non_wildcard_portless_scheme) {
-      builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
+      builder.WithScheme(local_url->GetScheme())
+          ->WithHost(local_url->GetHost());
     } else {
       // Unsupported scheme
     }
@@ -443,7 +445,7 @@ ContentSettingsPattern ContentSettingsPattern::FromURL(const GURL& url) {
         builder.WithPortWildcard();
       }
     } else {
-      builder.WithPort(local_url->port());
+      builder.WithPort(local_url->GetPort());
     }
   }
   return builder.Build();
@@ -458,13 +460,13 @@ ContentSettingsPattern ContentSettingsPattern::FromURLNoWildcard(
     local_url = url.inner_url();
   }
   if (local_url->SchemeIsFile()) {
-    builder.WithScheme(local_url->scheme())->WithPath(local_url->path());
+    builder.WithScheme(local_url->GetScheme())->WithPath(local_url->GetPath());
   } else {
-    builder.WithScheme(local_url->scheme())->WithHost(local_url->host());
+    builder.WithScheme(local_url->GetScheme())->WithHost(local_url->GetHost());
     if (local_url->port_piece().empty()) {
       builder.WithPort(std::string(GetDefaultPort(local_url->scheme_piece())));
     } else {
-      builder.WithPort(local_url->port());
+      builder.WithPort(local_url->GetPort());
     }
   }
   return builder.Build();
@@ -479,12 +481,12 @@ ContentSettingsPattern ContentSettingsPattern::FromURLToSchemefulSitePattern(
   auto builder = ContentSettingsPattern::CreateBuilder();
 
   if (registrable_domain.empty()) {
-    registrable_domain = url.host();
+    registrable_domain = url.GetHost();
   } else {
     builder->WithDomainWildcard();
   }
 
-  return builder->WithScheme(url.scheme())
+  return builder->WithScheme(url.GetScheme())
       ->WithHost(registrable_domain)
       ->WithPathWildcard()
       ->WithPortWildcard()

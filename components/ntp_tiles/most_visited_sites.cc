@@ -668,7 +668,7 @@ NTPTilesVector MostVisitedSites::CreatePopularSitesTiles(
       continue;
     }
 
-    const std::string& host = popular_site.url.host();
+    const std::string& host = popular_site.url.GetHost();
     if (IsHostOrMobilePageKnown(hosts_to_skip, host)) {
       continue;
     }
@@ -743,7 +743,7 @@ NTPTilesVector MostVisitedSites::InsertHomeTile(
 
     // If there's a tile has the same host name with homepage, insert the tile
     // to the first position of the list. This is also a deduplication.
-    if (tile.url.host() == homepage_url.host() && !homepage_tile_added) {
+    if (tile.url.GetHost() == homepage_url.GetHost() && !homepage_tile_added) {
       tile.source = TileSource::HOMEPAGE;
       homepage_tile_added = true;
       new_tiles.insert(new_tiles.begin(), std::move(tile));
@@ -958,7 +958,7 @@ void MostVisitedSites::SaveTilesAndNotify(
 bool MostVisitedSites::IsNtpTileFromPreinstalledApp(GURL url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return url.is_valid() && url.SchemeIs(extensions::kExtensionScheme) &&
-         extension_misc::IsPreinstalledAppId(url.host());
+         extension_misc::IsPreinstalledAppId(url.GetHost());
 #else
   return false;
 #endif
@@ -969,7 +969,7 @@ bool MostVisitedSites::WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url) {
   const base::Value::List& migrated_apps =
       prefs->GetList(webapps::kWebAppsMigratedPreinstalledApps);
   for (const auto& val : migrated_apps) {
-    if (val.is_string() && val.GetString() == url.host()) {
+    if (val.is_string() && val.GetString() == url.GetHost()) {
       return true;
     }
   }
@@ -1043,7 +1043,7 @@ void MostVisitedSites::AddToHostsAndTotalCount(const NTPTilesVector& new_tiles,
                                                std::set<std::string>* hosts,
                                                size_t* total_tile_count) const {
   for (const auto& tile : new_tiles) {
-    hosts->insert(tile.url.host());
+    hosts->insert(tile.url.GetHost());
   }
   *total_tile_count += new_tiles.size();
   DCHECK_LE(*total_tile_count, GetMaxNumSites());

@@ -568,7 +568,7 @@ void ContextualSearchProvider::AddLensEntrypointMatch(
   match.takeover_action =
       base::MakeRefCounted<ContextualSearchOpenLensAction>();
   match.contents =
-      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().host()));
+      base::UTF8ToUTF16(url_formatter::StripWWW(input.current_url().GetHost()));
   if (!match.contents.empty()) {
     match.contents_class = {{0, ACMatchClassification::DIM}};
   }

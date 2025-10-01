@@ -82,7 +82,7 @@ struct MatchParams {
 GURL GetHostNameWithHTTPScheme(const GURL& url) {
   DCHECK(url.SchemeIsHTTPOrHTTPS());
   std::string result(url::kHttpScheme);
-  result.append(url::kStandardSchemeSeparator).append(url.host());
+  result.append(url::kStandardSchemeSeparator).append(url.GetHost());
   return GURL(result);
 }
 // e.g, ("www.foo.com", "/bar/test.cgi") -> "http://www.foo.com/bar/test/cgi"
@@ -758,7 +758,7 @@ bool VerdictCacheManager::GetCachedRealTimeLlamaForcedTriggerInfo(
 
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
     const GURL& url) {
-  std::string hostname = url.host();
+  std::string hostname = url.GetHost();
   ChromeUserPopulation::PageLoadToken token;
   token.set_token_source(
       ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION);
@@ -772,7 +772,7 @@ ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
 
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(
     const GURL& url) {
-  std::string hostname = url.host();
+  std::string hostname = url.GetHost();
   if (!base::Contains(page_load_token_map_, hostname)) {
     return ChromeUserPopulation::PageLoadToken();
   }
@@ -1251,7 +1251,7 @@ void VerdictCacheManager::StopCleanUpTimerForTesting() {
 void VerdictCacheManager::SetPageLoadTokenForTesting(
     const GURL& url,
     ChromeUserPopulation::PageLoadToken token) {
-  std::string hostname = url.host();
+  std::string hostname = url.GetHost();
   page_load_token_map_[hostname] = token;
 }
 

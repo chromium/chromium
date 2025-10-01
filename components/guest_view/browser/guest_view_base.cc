@@ -1304,7 +1304,7 @@ bool GuestViewBase::IsOwnedByControlledFrameEmbedder() const {
 
 void GuestViewBase::SetOwnerHost() {
   if (IsOwnedByExtension()) {
-    owner_host_ = GetOwnerLastCommittedURL().host();
+    owner_host_ = GetOwnerLastCommittedURL().GetHost();
   } else if (IsOwnedByWebUI()) {
     owner_host_ = std::string();
   } else if (IsOwnedByControlledFrameEmbedder()) {

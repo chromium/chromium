@@ -535,7 +535,7 @@ void FeaturedSearchProvider::AddFeaturedEnterpriseSiteSearchIPHMatch() {
   for (const TemplateURL* turl :
        template_url_service_->GetFeaturedEnterpriseSiteSearchEngines()) {
     if (turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
-      sites.push_back(url_formatter::StripWWW(GURL(turl->url()).host()));
+      sites.push_back(url_formatter::StripWWW(GURL(turl->url()).GetHost()));
     }
   }
   std::ranges::sort(sites);

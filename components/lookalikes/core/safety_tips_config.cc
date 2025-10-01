@@ -49,7 +49,7 @@ void UrlToSafetyTipPatterns(const GURL& url,
 
   std::vector<std::string> hosts;
   if (url.HostIsIPAddress()) {
-    hosts.push_back(url.host());
+    hosts.push_back(url.GetHost());
   } else {
     V4ProtocolManagerUtil::GenerateHostVariantsToCheck(canon_host, &hosts);
   }

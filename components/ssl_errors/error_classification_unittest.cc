@@ -74,7 +74,7 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
     GURL origin("https://example.com");
     std::string www_host;
     std::vector<std::string> host_name_tokens = base::SplitString(
-        origin.host(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        origin.GetHost(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_TRUE(
         ssl_errors::GetWWWSubDomainMatch(origin, dns_names_example, &www_host));
     EXPECT_EQ("www.example.com", www_host);
@@ -92,7 +92,7 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
     GURL origin("https://foo.blah.example.com");
     std::string www_host;
     std::vector<std::string> host_name_tokens = base::SplitString(
-        origin.host(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        origin.GetHost(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_FALSE(
         ssl_errors::GetWWWSubDomainMatch(origin, dns_names_example, &www_host));
     EXPECT_FALSE(ssl_errors::NameUnderAnyNames(host_name_tokens,
@@ -106,7 +106,7 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
     GURL origin("https://foo.www.example.com");
     std::string www_host;
     std::vector<std::string> host_name_tokens = base::SplitString(
-        origin.host(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        origin.GetHost(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_FALSE(
         ssl_errors::GetWWWSubDomainMatch(origin, dns_names_example, &www_host));
     EXPECT_TRUE(ssl_errors::NameUnderAnyNames(host_name_tokens,
@@ -120,7 +120,7 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
     GURL origin("https://www.example.com.foo");
     std::string www_host;
     std::vector<std::string> host_name_tokens = base::SplitString(
-        origin.host(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        origin.GetHost(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_FALSE(
         ssl_errors::GetWWWSubDomainMatch(origin, dns_names_example, &www_host));
     EXPECT_FALSE(ssl_errors::NameUnderAnyNames(host_name_tokens,
@@ -134,7 +134,7 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
     GURL origin("https://www.fooexample.com.");
     std::string www_host;
     std::vector<std::string> host_name_tokens = base::SplitString(
-        origin.host(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        origin.GetHost(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_FALSE(
         ssl_errors::GetWWWSubDomainMatch(origin, dns_names_example, &www_host));
     EXPECT_FALSE(ssl_errors::NameUnderAnyNames(host_name_tokens,
@@ -183,7 +183,7 @@ TEST_F(SSLErrorClassificationTest, TestNameMismatch) {
     GURL origin("https://a.b.webkit.org");
     std::string www_host;
     std::vector<std::string> host_name_tokens = base::SplitString(
-        origin.host(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+        origin.GetHost(), ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     EXPECT_FALSE(
         ssl_errors::GetWWWSubDomainMatch(origin, dns_names_webkit, &www_host));
     EXPECT_FALSE(ssl_errors::NameUnderAnyNames(host_name_tokens,

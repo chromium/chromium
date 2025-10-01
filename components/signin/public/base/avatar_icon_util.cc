@@ -152,7 +152,7 @@ GURL GetAvatarImageURLWithOptions(const GURL& old_url,
   DCHECK(old_url.is_valid());
 
   std::vector<std::string> components =
-      base::SplitString(old_url.path(), kURLPathSeparator,
+      base::SplitString(old_url.GetPath(), kURLPathSeparator,
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   auto new_components =

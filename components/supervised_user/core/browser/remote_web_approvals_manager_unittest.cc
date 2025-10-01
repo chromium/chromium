@@ -186,7 +186,8 @@ TEST_F(RemoteWebApprovalsManagerTest, CreatePermissionRequest) {
 
   // Add an entry in for the test url in the blocklist in order to get the
   // unstriped url in the approval.
-  supervised_user_test_environment().SetManualFilterForHost(url.host(), false);
+  supervised_user_test_environment().SetManualFilterForHost(url.GetHost(),
+                                                            false);
 
   {
     AsyncResultHolder result_holder;

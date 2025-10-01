@@ -166,7 +166,7 @@ FieldClassificationModelEncoder::EncodeFormFeatures(
       case FeaturesEnum::FEATURE_FORM_NAME:
         return EncodeAttribute(form.name_attribute());
       case FeaturesEnum::FEATURE_FRAME_URL_PATH:
-        return EncodeAttribute(base::UTF8ToUTF16(form.url().path()));
+        return EncodeAttribute(base::UTF8ToUTF16(form.url().GetPath()));
     }
     return {};
   };

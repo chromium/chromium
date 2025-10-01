@@ -646,7 +646,8 @@ AuthorityView AuthorityView::Decode(std::string_view encoded_string) {
 // static
 std::string AuthorityView::Encode(const GURL& url) {
   CHECK(url.is_valid());
-  return AuthorityView{.host = url.host(), .port = PortToString(url)}.Encode();
+  return AuthorityView{.host = url.GetHost(), .port = PortToString(url)}
+      .Encode();
 }
 
 // static

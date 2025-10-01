@@ -231,7 +231,7 @@ GURL PasswordSharingRecipientsDownloader::GetPasswordSharingRecipientsURL(
     version_info::Channel channel) {
   GURL sync_service_url = syncer::GetSyncServiceURL(
       *base::CommandLine::ForCurrentProcess(), channel);
-  std::string path = sync_service_url.path();
+  std::string path = sync_service_url.GetPath();
   if (path.empty() || *path.rbegin() != '/') {
     path += '/';
   }

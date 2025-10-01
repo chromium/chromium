@@ -1495,7 +1495,7 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   // Report intervention to the blocklist.
   if (auto* blocklist = GetHeavyAdBlocklist()) {
     blocklist->AddEntry(
-        GetDelegate().GetWebContents()->GetLastCommittedURL().host(),
+        GetDelegate().GetWebContents()->GetLastCommittedURL().GetHost(),
         true /* opt_out */,
         static_cast<int>(
             heavy_ad_intervention::HeavyAdBlocklistType::kHeavyAdOnlyType));
@@ -1558,7 +1558,7 @@ bool AdsPageLoadMetricsObserver::IsBlocklisted(bool report) {
       heavy_ads_blocklist_reason_ == blocklist::BlocklistReason::kAllowed) {
     std::vector<blocklist::BlocklistReason> passed_reasons;
     heavy_ads_blocklist_reason_ = blocklist->IsLoadedAndAllowed(
-        GetDelegate().GetWebContents()->GetLastCommittedURL().host(),
+        GetDelegate().GetWebContents()->GetLastCommittedURL().GetHost(),
         static_cast<int>(
             heavy_ad_intervention::HeavyAdBlocklistType::kHeavyAdOnlyType),
         false /* opt_out */, &passed_reasons);

@@ -374,7 +374,7 @@ bool PhishingDOMFeatureExtractor::IsExternalDomain(const GURL& url,
   // TODO(bryner): Ensure that the url encoding is consistent with the features
   // in the model.
   if (url.HostIsIPAddress()) {
-    domain->assign(url.host());
+    domain->assign(url.GetHost());
   } else {
     domain->assign(net::registry_controlled_domains::GetDomainAndRegistry(
         url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES));

@@ -479,7 +479,7 @@ std::string GetExtendedTopLevelDomain(
     return main_domain;
   }
 
-  std::string full_domain = url.host();
+  std::string full_domain = url.GetHost();
 
   // Something went wrong, and it shouldn't happen. Return early in this case to
   // avoid undefined behaviour.

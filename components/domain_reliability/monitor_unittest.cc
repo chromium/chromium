@@ -643,8 +643,9 @@ TEST_F(DomainReliabilityMonitorTest, RealRequest) {
   EXPECT_EQ("http.response.empty", beacons[0]->status);
   EXPECT_EQ("", beacons[0]->quic_error);
   EXPECT_EQ(net::ERR_EMPTY_RESPONSE, beacons[0]->chrome_error);
-  EXPECT_EQ(test_server.base_url().host() + ":" + test_server.base_url().port(),
-            beacons[0]->server_ip);
+  EXPECT_EQ(
+      test_server.base_url().GetHost() + ":" + test_server.base_url().GetPort(),
+      beacons[0]->server_ip);
   EXPECT_FALSE(beacons[0]->was_proxied);
   EXPECT_EQ("HTTP", beacons[0]->protocol);
   EXPECT_FALSE(beacons[0]->details.quic_broken);

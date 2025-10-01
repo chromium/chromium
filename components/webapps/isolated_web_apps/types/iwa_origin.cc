@@ -44,7 +44,7 @@ base::expected<IwaOrigin, std::string> IwaOrigin::Create(const GURL& url) {
   if (!url.SchemeIs(webapps::kIsolatedAppScheme)) {
     return base::unexpected(
         base::StrCat({"The URL scheme must be ", webapps::kIsolatedAppScheme,
-                      ", but was ", url.scheme()}));
+                      ", but was ", url.GetScheme()}));
   }
 
   // Valid isolated-app:// `GURL`s can never include credentials or ports, since
@@ -54,7 +54,7 @@ base::expected<IwaOrigin, std::string> IwaOrigin::Create(const GURL& url) {
   DCHECK(!url.has_username() && !url.has_password() && !url.has_port() &&
          url.IsStandard());
 
-  return web_package::SignedWebBundleId::Create(url.host())
+  return web_package::SignedWebBundleId::Create(url.GetHost())
       .transform([](const web_package::SignedWebBundleId& web_bundle_id) {
         return IwaOrigin(web_bundle_id);
       })
@@ -62,7 +62,7 @@ base::expected<IwaOrigin, std::string> IwaOrigin::Create(const GURL& url) {
         return base::StrCat(
             {"The host of isolated-app:// URLs must be a valid Signed "
              "Web Bundle ID (got ",
-             url.host(), "): ", error});
+             url.GetHost(), "): ", error});
       });
 }
 

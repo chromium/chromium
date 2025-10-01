@@ -840,7 +840,7 @@ DomainInfo GetDomainInfo(const std::string& hostname) {
 }
 
 DomainInfo GetDomainInfo(const GURL& url) {
-  return GetDomainInfo(url.host());
+  return GetDomainInfo(url.GetHost());
 }
 
 std::string GetETLDPlusOne(const std::string& hostname) {

@@ -69,7 +69,7 @@ bool IsURLBlocklisted(GURL url) {
 
   // Ignore if host contains blocked host name.
   for (const auto& blocked_host : kMostVisitedBlocklist) {
-    if (base::EndsWith(url.host(), blocked_host,
+    if (base::EndsWith(url.GetHost(), blocked_host,
                        base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
     }
@@ -474,16 +474,16 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
   // suggest for them).
   if (input_type != metrics::OmniboxInputType::EMPTY &&
       !(page_url.is_valid() &&
-        ((page_url.scheme() == url::kHttpScheme) ||
-         (page_url.scheme() == url::kHttpsScheme) ||
-         (page_url.scheme() == url::kAboutScheme) ||
-         (page_url.scheme() ==
+        ((page_url.GetScheme() == url::kHttpScheme) ||
+         (page_url.GetScheme() == url::kHttpsScheme) ||
+         (page_url.GetScheme() == url::kAboutScheme) ||
+         (page_url.GetScheme() ==
           client->GetEmbedderRepresentationOfAboutScheme())))) {
     return false;
   }
 
   if (omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get().enabled &&
-      page_url.scheme() == content::kChromeUIScheme) {
+      page_url.GetScheme() == content::kChromeUIScheme) {
     return false;
   }
 

@@ -416,7 +416,7 @@ void BrowsingTopicsCalculator::OnGetRecentlyVisitedURLsCompleted(
       continue;
     }
 
-    std::string raw_host = url_result.url().host();
+    std::string raw_host = url_result.url().GetHost();
     raw_hosts.insert(raw_host);
 
     if (url_result.visit_time() >= history_data_start_time_) {

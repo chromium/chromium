@@ -36,7 +36,7 @@ PasswordReuseDetectionManager::~PasswordReuseDetectionManager() = default;
 
 void PasswordReuseDetectionManager::DidNavigateMainFrame(
     const GURL& main_frame_url) {
-  if (main_frame_url.host() == main_frame_url_.host()) {
+  if (main_frame_url.GetHost() == main_frame_url_.GetHost()) {
     return;
   }
 

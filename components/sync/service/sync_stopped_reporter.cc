@@ -146,7 +146,7 @@ void SyncStoppedReporter::OnTimeout() {
 
 // Static.
 GURL SyncStoppedReporter::GetSyncEventURL(const GURL& sync_service_url) {
-  std::string path = sync_service_url.path();
+  std::string path = sync_service_url.GetPath();
   if (path.empty() || *path.rbegin() != '/') {
     path += '/';
   }

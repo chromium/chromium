@@ -707,7 +707,7 @@ void AutocompleteResult::SortAndCull(
         u", input=" + input.text();
 
     const std::string& in_scheme = base::UTF16ToUTF8(input.scheme());
-    const std::string& dest_scheme = default_match->destination_url.scheme();
+    const std::string& dest_scheme = default_match->destination_url.GetScheme();
     DCHECK(url_formatter::IsEquivalentScheme(in_scheme, dest_scheme))
         << debug_info;
   }

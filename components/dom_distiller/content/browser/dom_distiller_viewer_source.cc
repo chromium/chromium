@@ -239,12 +239,12 @@ void DomDistillerViewerSource::StartDataRequest(
   // from |URLDataSource|. |web_contents| is the most convenient place to
   // obtain the full URL.
   // TODO(crbug.com/40095934): pass GURL in URLDataSource::StartDataRequest().
-  const std::string query = GURL("https://host/" + path).query();
+  const std::string query = GURL("https://host/" + path).GetQuery();
   GURL request_url = web_contents->GetVisibleURL();
   // The query should match what's seen in |web_contents|.
   // For javascript:window.open(), it's not the case, but it's not a supported
   // use case.
-  if (request_url.query() != query || request_url.path() != "/") {
+  if (request_url.GetQuery() != query || request_url.GetPath() != "/") {
     request_url = GURL();
   }
   RequestViewerHandle* request_viewer_handle =

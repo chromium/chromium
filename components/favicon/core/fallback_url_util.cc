@@ -31,7 +31,7 @@ std::u16string GetFallbackIconText(const GURL& url) {
     if (url.HostIsIPAddress()) {
       return kFallbackIconTextForIP;
     }
-    domain = url.host();
+    domain = url.GetHost();
 
 #if BUILDFLAG(IS_IOS)
     // Return "A" if it's an Android app URL. iOS only.

@@ -1019,7 +1019,7 @@ TEST_P(CredentialManagerImplTest,
   federated.federation_origin =
       url::SchemeHostPort(GURL("https://google.com/"));
   federated.signon_realm =
-      "federation://" + federated.url.host() + "/google.com";
+      "federation://" + federated.url.GetHost() + "/google.com";
   store_->AddLogin(federated);
 
   form_.match_type = PasswordForm::MatchType::kExact;
@@ -1584,7 +1584,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithPSLCredential) {
 TEST_P(CredentialManagerImplTest, ZeroClickWithPSLAndNormalCredentials) {
   form_.password_value.clear();
   form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
-  form_.signon_realm = "federation://" + form_.url.host() + "/google.com";
+  form_.signon_realm = "federation://" + form_.url.GetHost() + "/google.com";
   form_.skip_zero_click = false;
   store_->AddLogin(form_);
   store_->AddLogin(subdomain_form_);
@@ -1755,7 +1755,7 @@ TEST_P(CredentialManagerImplTest,
   federated.federation_origin =
       url::SchemeHostPort(GURL("https://google.com/"));
   federated.signon_realm =
-      "federation://" + federated.url.host() + "/google.com";
+      "federation://" + federated.url.GetHost() + "/google.com";
   store_->AddLogin(federated);
 
   form_.username_value = u"username_value";

@@ -403,7 +403,7 @@ void ShortcutsBackend::AddOrUpdateShortcut(const std::u16string& text,
   const auto expanded_text =
       ExpandToFullWord(text_trimmed,
                        GetSwappedContents(match) + u" " +
-                           base::UTF8ToUTF16(match.destination_url.host()),
+                           base::UTF8ToUTF16(match.destination_url.GetHost()),
                        false);
   AddShortcut(ShortcutsDatabase::Shortcut(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), expanded_text,

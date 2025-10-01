@@ -94,7 +94,7 @@ bool MaskedDomainListManager::Matches(
   if (!mdl) {
     return false;
   }
-  std::string request_domain = request_url.host();
+  std::string request_domain = request_url.GetHost();
   if (request_domain.size() > 0 && request_domain.back() == '.') {
     request_domain = request_domain.substr(0, request_domain.length() - 1);
   }
@@ -107,7 +107,7 @@ bool MaskedDomainListManager::Matches(
   std::string top_frame_domain;
   if (top_frame_site.has_value()) {
     const GURL& top_frame_url = top_frame_site->GetURL();
-    top_frame_domain = top_frame_url.host();
+    top_frame_domain = top_frame_url.GetHost();
     if (top_frame_domain.size() > 0 && top_frame_domain.back() == '.') {
       top_frame_domain =
           top_frame_domain.substr(0, top_frame_domain.length() - 1);
@@ -194,8 +194,8 @@ void MaskedDomainListManager::RecordCreationTime() {
 const GURL& MaskedDomainListManager::SanitizeURLIfNeeded(
     const GURL& url,
     GURL& sanitized_url) const {
-  if (!url.host().empty() && url.host().back() == '.') {
-    std::string host = url.host();
+  if (!url.GetHost().empty() && url.GetHost().back() == '.') {
+    std::string host = url.GetHost();
     host = host.substr(0, host.length() - 1);
     GURL::Replacements replacements;
     replacements.SetHostStr(host);

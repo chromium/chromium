@@ -134,7 +134,7 @@ bool IsDistilledPage(const GURL& url) {
 }
 
 bool IsUrlDistilledFormat(const GURL& url) {
-  return url.is_valid() && url.scheme() == kDomDistillerScheme;
+  return url.is_valid() && url.GetScheme() == kDomDistillerScheme;
 }
 
 }  // namespace url_utils

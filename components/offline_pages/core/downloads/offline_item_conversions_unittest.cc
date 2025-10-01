@@ -87,7 +87,7 @@ TEST(OfflineItemConversionsTest, SavePageRequestConversion) {
   EXPECT_EQ(ContentId(kOfflinePageNamespace, guid), offline_item.id);
   EXPECT_EQ(kTestUrl, offline_item.url);
   EXPECT_EQ(kTestOriginalUrl, offline_item.original_url);
-  EXPECT_EQ(kTestUrl.host(), offline_item.title);
+  EXPECT_EQ(kTestUrl.GetHost(), offline_item.title);
   EXPECT_EQ(base::FilePath(), offline_item.file_path);
   EXPECT_EQ(creation_time, offline_item.creation_time);
   EXPECT_EQ(base::Time(), offline_item.completion_time);

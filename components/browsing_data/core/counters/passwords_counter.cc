@@ -155,7 +155,7 @@ void PasswordStoreFetcher::OnGetPasswordStoreResults(
         result->url,
         net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     if (domain.empty())
-      domain = result->url.host();
+      domain = result->url.GetHost();
     sorted_domains.emplace_back(domain);
   }
   // Only consecutive duplicates are removed below. Since we're only listing two

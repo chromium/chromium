@@ -28,7 +28,7 @@ void ApplySubstituteQueryPattern(
     network::ResourceRequest* request,
     const mojom::UrlRequestRewriteSubstituteQueryPatternPtr&
         substitute_query_pattern) {
-  std::string url_query = request->url.query();
+  std::string url_query = request->url.GetQuery();
 
   base::ReplaceSubstringsAfterOffset(&url_query, 0,
                                      substitute_query_pattern->pattern,
@@ -52,17 +52,17 @@ void ApplyReplaceUrl(network::ResourceRequest* request,
   }
 
   if (new_url.has_scheme() &&
-      new_url.scheme().compare(request->url.scheme()) != 0) {
+      new_url.GetScheme().compare(request->url.GetScheme()) != 0) {
     // No cross-scheme redirect allowed.
     return;
   }
 
   GURL::Replacements replacements;
-  std::string host = new_url.host();
+  std::string host = new_url.GetHost();
   replacements.SetHostStr(host);
-  std::string port = new_url.port();
+  std::string port = new_url.GetPort();
   replacements.SetPortStr(port);
-  std::string path = new_url.path();
+  std::string path = new_url.GetPath();
   replacements.SetPathStr(path);
 
   request->url = request->url.ReplaceComponents(replacements);
@@ -72,8 +72,8 @@ void ApplyRemoveHeader(
     network::ResourceRequest* request,
     const mojom::UrlRequestRewriteRemoveHeaderPtr& remove_header) {
   std::optional<std::string> query_pattern = remove_header->query_pattern;
-  if (query_pattern &&
-      request->url.query().find(query_pattern.value()) == std::string::npos) {
+  if (query_pattern && request->url.GetQuery().find(query_pattern.value()) ==
+                           std::string::npos) {
     // Per the FIDL API, the header should be removed if there is no query
     // pattern or if the pattern matches. Neither is true here.
     return;
@@ -87,8 +87,9 @@ void ApplyAppendToQuery(
     network::ResourceRequest* request,
     const mojom::UrlRequestRewriteAppendToQueryPtr& append_to_query) {
   std::string url_query;
-  if (request->url.has_query() && !request->url.query().empty())
-    url_query = request->url.query() + "&";
+  if (request->url.has_query() && !request->url.GetQuery().empty()) {
+    url_query = request->url.GetQuery() + "&";
+  }
   url_query += append_to_query->query;
 
   GURL::Replacements replacements;
@@ -118,8 +119,9 @@ bool RuleFiltersMatchUrl(const GURL& url,
   if (rule->hosts_filter) {
     bool found = false;
     for (const std::string_view host : rule->hosts_filter.value()) {
-      if ((found = HostMatches(url.host(), host)))
+      if ((found = HostMatches(url.GetHost(), host))) {
         break;
+      }
     }
     if (!found)
       return false;
@@ -128,7 +130,7 @@ bool RuleFiltersMatchUrl(const GURL& url,
   if (rule->schemes_filter) {
     bool found = false;
     for (const auto& scheme : rule->schemes_filter.value()) {
-      if (url.scheme().compare(scheme) == 0) {
+      if (url.GetScheme().compare(scheme) == 0) {
         found = true;
         break;
       }

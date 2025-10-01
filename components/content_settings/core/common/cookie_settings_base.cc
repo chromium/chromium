@@ -668,7 +668,7 @@ CookieSettingsBase::DecideAccess(const GURL& url,
         ThirdPartyCookieAllowMechanism::kAllowByGlobalSetting};
   }
 
-  if (IsThirdPartyCookiesAllowedScheme(first_party_url.scheme())) {
+  if (IsThirdPartyCookiesAllowedScheme(first_party_url.GetScheme())) {
     return AllowAllCookies{ThirdPartyCookieAllowMechanism::kAllowByScheme};
   }
 

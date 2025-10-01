@@ -156,7 +156,7 @@ bool IsUrlSyncable(
 
   if (url_restriction->block_if_path_is_same() &&
       url.GetWithEmptyPath() == previous_url.GetWithEmptyPath() &&
-      url.path() == previous_url.path()) {
+      url.GetPath() == previous_url.GetPath()) {
     return false;
   }
 

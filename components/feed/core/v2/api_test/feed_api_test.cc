@@ -1125,7 +1125,7 @@ std::string FeedApiTest::DumpStoreState(bool print_keys) {
 
 void FeedApiTest::FollowWebFeed(const WebFeedPageInformation page_info) {
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
-  network_.InjectResponse(SuccessfulFollowResponse(page_info.url().host()));
+  network_.InjectResponse(SuccessfulFollowResponse(page_info.url().GetHost()));
   stream_->subscriptions().FollowWebFeed(
       page_info, feedwire::webfeed::WebFeedChangeReason::WEB_PAGE_MENU,
       callback.Bind());

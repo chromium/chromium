@@ -256,7 +256,7 @@ void OnDeviceHeadProvider::HeadModelSearchDone(
   // Extract search query from current URL.
   std::string previous_query, query_str;
   const GURL& current_url = params->input.current_url();
-  if (current_url.path() == "/search" &&
+  if (current_url.GetPath() == "/search" &&
       net::GetValueForKeyInQuery(current_url, "q", &query_str)) {
     previous_query = query_str;
   }

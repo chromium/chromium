@@ -230,7 +230,7 @@ void PasswordRequirementsSpecFetcherImpl::OnFetchComplete(
     DCHECK(!origin.HostIsIPAddress());
     // |host| is a std::string instead of std::string_view as the protbuf::Map
     // implementation does not support StringPieces as parameters for find.
-    std::string host = origin.host();
+    std::string host = origin.GetHost();
     auto host_iter = shard.specs().find(host);
     if (host_iter != shard.specs().end()) {
       const PasswordRequirementsSpec& spec = host_iter->second;

@@ -48,7 +48,8 @@ bool CanonicalURLStringCompare(const std::string& s1, const std::string& s2) {
 
 bool HaveSameSchemeHostAndPort(const GURL&url1, const GURL& url2) {
   return url1.scheme_piece() == url2.scheme_piece() &&
-         url1.host_piece() == url2.host_piece() && url1.port() == url2.port();
+         url1.host_piece() == url2.host_piece() &&
+         url1.GetPort() == url2.GetPort();
 }
 
 bool IsPathPrefix(const std::string& p1, const std::string& p2) {
@@ -88,7 +89,7 @@ GURL ToggleHTTPAndHTTPS(const GURL& url) {
 }
 
 std::string HostForTopHosts(const GURL& url) {
-  std::string host = url.host();
+  std::string host = url.GetHost();
   if (base::StartsWith(host, "www.", base::CompareCase::SENSITIVE))
     host.assign(host, 4, std::string::npos);
   return host;

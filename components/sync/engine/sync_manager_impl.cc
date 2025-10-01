@@ -78,7 +78,7 @@ std::string StripTrailingSlash(const std::string& s) {
 GURL MakeConnectionURL(const GURL& sync_server, const std::string& client_id) {
   DCHECK_EQ(kSyncServerSyncPath[0], '/');
   std::string full_path =
-      StripTrailingSlash(sync_server.path()) + kSyncServerSyncPath;
+      StripTrailingSlash(sync_server.GetPath()) + kSyncServerSyncPath;
 
   GURL::Replacements path_replacement;
   path_replacement.SetPathStr(full_path);

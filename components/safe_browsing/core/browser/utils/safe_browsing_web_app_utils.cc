@@ -41,7 +41,7 @@ std::optional<SafeBrowsingWebAppKey> GetSafeBrowsingWebAppKey(
     web_app_key.set_start_url_origin(
         base::StrCat({start_url.host_piece(), ":", start_url.port_piece()}));
   } else {
-    web_app_key.set_start_url_origin(start_url.host());
+    web_app_key.set_start_url_origin(start_url.GetHost());
   }
 
   return web_app_key;

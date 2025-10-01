@@ -1512,7 +1512,8 @@ std::vector<privacy_sandbox::CanonicalTopic>
 PageSpecificContentSettings::GetAccessedTopics() const {
   if (accessed_topics_.empty() &&
       privacy_sandbox::kPrivacySandboxSettings4ShowSampleDataForTesting.Get() &&
-      page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
+      page().GetMainDocument().GetLastCommittedURL().GetHost() ==
+          "example.com") {
     // TODO(crbug.com/40210776): Remove sample topic when API is ready.
     return {privacy_sandbox::CanonicalTopic(browsing_topics::Topic(3),
                                             kTopicsAPISampleDataTaxonomy),

@@ -25,23 +25,23 @@ TEST(ContentSettingsPatternTest, GURL) {
   // Document and verify GURL behavior.
   GURL url("http://mail.google.com:80");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("http://mail.google.com");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("https://mail.google.com:443");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("https://mail.google.com");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 
   url = GURL("http://mail.google.com");
   EXPECT_EQ(-1, url.IntPort());
-  EXPECT_EQ("", url.port());
+  EXPECT_EQ("", url.GetPort());
 }
 
 TEST(ContentSettingsPatternTest, FromURL) {

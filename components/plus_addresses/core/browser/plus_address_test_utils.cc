@@ -124,8 +124,8 @@ std::unique_ptr<net::test_server::HttpResponse>
 HandleRequestToPlusAddressWithSuccess(
     const net::test_server::HttpRequest& request) {
   // Ignore unrecognized path.
-  if (request.GetURL().path() != kReservePath &&
-      request.GetURL().path() != kConfirmPath) {
+  if (request.GetURL().GetPath() != kReservePath &&
+      request.GetURL().GetPath() != kConfirmPath) {
     return nullptr;
   }
 
@@ -143,7 +143,7 @@ HandleRequestToPlusAddressWithSuccess(
   http_response->set_content_type("application/json");
   PlusProfile profile = CreatePlusProfile(
       /*plus_address=*/is_refresh ? kFakePlusAddressRefresh : kFakePlusAddress,
-      /*is_confirmed=*/request.GetURL().path() == kConfirmPath);
+      /*is_confirmed=*/request.GetURL().GetPath() == kConfirmPath);
   http_response->set_content(MakeCreationResponse(profile));
   return http_response;
 }

@@ -65,8 +65,8 @@ std::vector<FrameMetadata> GetFrameMetadataFromPageContent(
       MetaTag meta_tag(tag->name, tag->content);
       meta_tags.push_back(std::move(meta_tag));
     }
-    FrameMetadata metadata(frame_metadata_mojom->url.host(),
-                           frame_metadata_mojom->url.path(),
+    FrameMetadata metadata(frame_metadata_mojom->url.GetHost(),
+                           frame_metadata_mojom->url.GetPath(),
                            std::move(meta_tags));
     frame_metadata_structs.push_back(std::move(metadata));
   }

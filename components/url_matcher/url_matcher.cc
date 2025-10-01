@@ -228,11 +228,14 @@ bool URLMatcherCondition::IsMatch(
   // that the match was found in the correct component of the URL.
   switch (criterion_) {
     case HOST_CONTAINS:
-      return url.host().find(string_pattern_->pattern()) != std::string::npos;
+      return url.GetHost().find(string_pattern_->pattern()) !=
+             std::string::npos;
     case PATH_CONTAINS:
-      return url.path().find(string_pattern_->pattern()) != std::string::npos;
+      return url.GetPath().find(string_pattern_->pattern()) !=
+             std::string::npos;
     case QUERY_CONTAINS:
-      return url.query().find(string_pattern_->pattern()) != std::string::npos;
+      return url.GetQuery().find(string_pattern_->pattern()) !=
+             std::string::npos;
     default:
       break;
   }
@@ -261,9 +264,9 @@ URLMatcherConditionFactory::~URLMatcherConditionFactory() = default;
 
 std::string URLMatcherConditionFactory::CanonicalizeURLForComponentSearches(
     const GURL& url) const {
-  return kBeginningOfURL + CanonicalizeHostname(url.host()) + kEndOfDomain +
-         url.path() + kEndOfPath +
-         (url.has_query() ? CanonicalizeQuery(url.query(), true, true)
+  return kBeginningOfURL + CanonicalizeHostname(url.GetHost()) + kEndOfDomain +
+         url.GetPath() + kEndOfPath +
+         (url.has_query() ? CanonicalizeQuery(url.GetQuery(), true, true)
                           : std::string()) +
          kEndOfURL;
 }
@@ -381,7 +384,7 @@ std::string URLMatcherConditionFactory::CanonicalizeURLForFullSearches(
   replacements.ClearRef();
   // Clear port if it is implicit from scheme.
   if (url.has_port()) {
-    const std::string& port = url.scheme();
+    const std::string& port = url.GetScheme();
     if (url::DefaultPortForScheme(port) == url.EffectiveIntPort()) {
       replacements.ClearPort();
     }
@@ -400,7 +403,7 @@ static std::string CanonicalizeURLForRegexSearchesHelper(const GURL& url,
     replacements.ClearQuery();
   // Clear port if it is implicit from scheme.
   if (url.has_port()) {
-    const std::string& port = url.scheme();
+    const std::string& port = url.GetScheme();
     if (url::DefaultPortForScheme(port) == url.EffectiveIntPort()) {
       replacements.ClearPort();
     }
@@ -684,7 +687,7 @@ URLMatcherSchemeFilter::URLMatcherSchemeFilter(
 URLMatcherSchemeFilter::~URLMatcherSchemeFilter() = default;
 
 bool URLMatcherSchemeFilter::IsMatch(const GURL& url) const {
-  return base::Contains(filters_, url.scheme());
+  return base::Contains(filters_, url.GetScheme());
 }
 
 //

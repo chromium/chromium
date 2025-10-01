@@ -53,10 +53,10 @@ bool SettingsDeleteSigninCookiesOnExit(
 
   return !cookie_settings ||
          cookie_settings->ShouldDeleteCookieOnExit(
-             settings, "." + gaia_url.host(),
+             settings, "." + gaia_url.GetHost(),
              net::CookieSourceScheme::kSecure) ||
          cookie_settings->ShouldDeleteCookieOnExit(
-             settings, "." + google_url.host(),
+             settings, "." + google_url.GetHost(),
              net::CookieSourceScheme::kSecure);
 #endif
 }

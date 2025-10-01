@@ -15,7 +15,7 @@ size_t FastHash(const net::CanonicalCookie& cookie) {
          7 * base::PersistentHash(cookie.Path()) +
          (cookie.IsPartitioned()
               ? 13 * base::PersistentHash(
-                         cookie.PartitionKey()->site().GetURL().host())
+                         cookie.PartitionKey()->site().GetURL().GetHost())
               : 0);
 }
 

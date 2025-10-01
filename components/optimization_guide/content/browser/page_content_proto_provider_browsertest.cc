@@ -1024,19 +1024,19 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderBrowserTestMultiProcess,
   EXPECT_EQ(metadata().frame_metadata.size(), 3u);
 
   const auto& main_frame_metadata = metadata().frame_metadata[0];
-  EXPECT_EQ(main_frame_metadata->url.host(), "a.com");
+  EXPECT_EQ(main_frame_metadata->url.GetHost(), "a.com");
   EXPECT_EQ(main_frame_metadata->meta_tags.size(), 1u);
   EXPECT_EQ(main_frame_metadata->meta_tags[0]->name, "author");
   EXPECT_EQ(main_frame_metadata->meta_tags[0]->content, "George");
 
   const auto& child_frame_metadata1 = metadata().frame_metadata[1];
-  EXPECT_EQ(child_frame_metadata1->url.host(), "a.com");
+  EXPECT_EQ(child_frame_metadata1->url.GetHost(), "a.com");
   EXPECT_EQ(child_frame_metadata1->meta_tags.size(), 1u);
   EXPECT_EQ(child_frame_metadata1->meta_tags[0]->name, "author");
   EXPECT_EQ(child_frame_metadata1->meta_tags[0]->content, "Gary");
 
   const auto& child_frame_metadata2 = metadata().frame_metadata[2];
-  EXPECT_EQ(child_frame_metadata2->url.host(), "a.com");
+  EXPECT_EQ(child_frame_metadata2->url.GetHost(), "a.com");
   EXPECT_EQ(child_frame_metadata2->meta_tags.size(), 1u);
   EXPECT_EQ(child_frame_metadata2->meta_tags[0]->name, "author");
   EXPECT_EQ(child_frame_metadata2->meta_tags[0]->content, "Gary");

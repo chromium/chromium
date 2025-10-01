@@ -594,7 +594,7 @@ bool IDNSpoofChecker::IsTopDomain(const GURL& url) {
   }
   std::string domain_and_registry =
       net::registry_controlled_domains::GetDomainAndRegistry(
-          url.host(),
+          url.GetHost(),
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
   return IsDomainAndRegistryATopDomain(domain_and_registry);
 }

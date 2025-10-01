@@ -121,16 +121,17 @@ apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url,
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
-                                         url.scheme(),
+                                         url.GetScheme(),
                                          apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAuthority,
                                          omit_port_for_testing
-                                             ? std::string(url.host())
+                                             ? std::string(url.GetHost())
                                              : AuthorityView::Encode(url),
                                          apps::PatternMatchType::kLiteral);
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, url.path(),
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath,
+                                         url.GetPath(),
                                          apps::PatternMatchType::kPrefix);
 
   return intent_filter;

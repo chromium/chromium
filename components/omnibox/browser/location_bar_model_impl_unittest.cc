@@ -141,7 +141,7 @@ TEST_F(LocationBarModelImplTest, FormatsReaderModeUrls) {
       dom_distiller::kDomDistillerScheme, http_url, "title");
   // Ensure the test is set up properly by checking the reader mode URL has
   // the reader mode scheme.
-  EXPECT_EQ(dom_distiller::kDomDistillerScheme, distilled.scheme());
+  EXPECT_EQ(dom_distiller::kDomDistillerScheme, distilled.GetScheme());
   delegate()->SetURL(distilled);
 
   // The user should see the same URL seen for the original article.

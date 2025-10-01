@@ -177,7 +177,7 @@ bool MigrateToVersion4(sql::Database& db, sql::MetaTable& meta_table) {
     net::SchemefulSite context_site =
         net::SchemefulSite::Deserialize(select_statement.ColumnStringView(1));
     if (context_site.opaque() ||
-        context_site.GetURL().scheme() == url::kFileScheme) {
+        context_site.GetURL().GetScheme() == url::kFileScheme) {
       continue;
     }
 

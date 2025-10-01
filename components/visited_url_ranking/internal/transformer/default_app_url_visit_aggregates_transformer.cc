@@ -45,7 +45,7 @@ void DefaultAppURLVisitAggregatesTransformer::Transform(
   std::erase_if(aggregates, [&](auto& visit_aggregate) {
     for (const auto& fetcher_entry : visit_aggregate.fetcher_data_map) {
       const GURL& url = GetVisitVariantUrl(fetcher_entry.second);
-      return default_app_blocklist_.contains(url.host());
+      return default_app_blocklist_.contains(url.GetHost());
     }
     return false;
   });

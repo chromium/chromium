@@ -746,7 +746,7 @@ std::u16string FormatUrlWithAdjustments(
   // reason we avoid stripping schemes in this case.
   const char kFTP[] = "ftp.";
   bool strip_scheme =
-      !base::StartsWith(url.host(), kFTP, base::CompareCase::SENSITIVE) &&
+      !base::StartsWith(url.GetHost(), kFTP, base::CompareCase::SENSITIVE) &&
       (((format_types & kFormatUrlOmitHTTP) &&
         url.SchemeIs(url::kHttpScheme)) ||
        ((format_types & kFormatUrlOmitHTTPS) &&

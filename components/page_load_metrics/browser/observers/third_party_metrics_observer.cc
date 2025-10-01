@@ -32,7 +32,7 @@ bool IsSameSite(const url::Origin& origin1, const url::Origin& origin2) {
 }
 
 bool IsSameSite(const GURL& url1, const GURL& url2) {
-  return url1.SchemeIs(url2.scheme()) &&
+  return url1.SchemeIs(url2.GetScheme()) &&
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -351,7 +351,7 @@ ThirdPartyMetricsObserver::GetThirdPartyInfo(const GURL& url,
   // //net/base/registry_controlled_domains/registry_controlled_domains.h.
   if (registrable_domain.empty()) {
     if (url.has_host()) {
-      registrable_domain = url.host();
+      registrable_domain = url.GetHost();
     } else {
       return nullptr;
     }
@@ -361,7 +361,7 @@ ThirdPartyMetricsObserver::GetThirdPartyInfo(const GURL& url,
   is_third_party = true;
 
   GURL representative_url(
-      base::StrCat({url.scheme(), "://", registrable_domain, "/"}));
+      base::StrCat({url.GetScheme(), "://", registrable_domain, "/"}));
   auto it = all_third_party_info_.find(representative_url);
   if (it == all_third_party_info_.end() &&
       all_third_party_info_.size() < 1000) {  // Bound growth.

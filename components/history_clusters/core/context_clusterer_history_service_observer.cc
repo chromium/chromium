@@ -477,7 +477,7 @@ ContextClustererHistoryServiceObserver::CreateClusterVisit(
 
 float ContextClustererHistoryServiceObserver::GetEngagementScore(
     const GURL& normalized_url) {
-  std::string visit_host = normalized_url.host();
+  std::string visit_host = normalized_url.GetHost();
   auto it = engagement_score_cache_.Peek(visit_host);
   if (it != engagement_score_cache_.end() &&
       it->second.expiry_time > clock_->Now()) {
