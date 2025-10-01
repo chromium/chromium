@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/common/permissions/permissions_data.h"
+
 #include <stdint.h>
 
 #include <string>
@@ -19,6 +21,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/common/socket_permission_request.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -30,7 +33,6 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_message_test_util.h"
 #include "extensions/common/permissions/permission_set.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/socket_permission.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/url_pattern_set.h"
@@ -38,6 +40,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using base::UTF16ToUTF8;
 using content::SocketPermissionRequest;

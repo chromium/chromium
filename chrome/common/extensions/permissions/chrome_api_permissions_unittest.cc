@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
