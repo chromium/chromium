@@ -122,9 +122,7 @@ namespace ios_web_view {
 
 // Tests if a CWVWebView can be created from -[CWVWebView
 // initWithFrame:configuration:WKConfiguration:createdWKWebView]
-// TODO(crbug.com/448343655): disabled as it causes the following test to crash.
-TEST_F(WebViewFromWKWebViewConfigurationTest,
-       DISABLED_FromWKWebViewConfiguration) {
+TEST_F(WebViewFromWKWebViewConfigurationTest, FromWKWebViewConfiguration) {
   ASSERT_TRUE(test_server_->Start());
 
   CGRect frame = UIScreen.mainScreen.bounds;
