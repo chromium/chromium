@@ -279,7 +279,7 @@ browser_exposed_mojom_targets = [
   "//services/viz/privileged/mojom/gl:gl",
   "//services/viz/public/mojom:mojom",
   "//services/viz/public/mojom:shared_image_format",
-  "//services/viz/public/mojom:singleplanar_format",
+  "//services/viz/public/mojom/compositing/internal:singleplanar_format",
   "//services/webnn/public/mojom:mojom",
   "//skia/public/mojom:mojom",
   "//storage/browser/quota:mojo_bindings",

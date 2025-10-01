@@ -19,7 +19,7 @@ viz_component("shared_image_format") {
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
-    "//services/viz/public/mojom:singleplanar_format",
+    "//services/viz/public/mojom/compositing/internal:singleplanar_format",
   ]
   deps = [
     "//base",

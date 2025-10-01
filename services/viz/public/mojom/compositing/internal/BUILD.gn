@@ -1,0 +1,19 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# The enum that SharedImageFormat uses internally to denote singleplanar
+# formats. Must be defined in a separate file and GN target from
+# shared_image_format.mojom as it is used by shared_image_format.h, which
+# itself is used from shared_image_format_mojom_traits.*.
+# Not intended for client usage.
+mojom("singleplanar_format") {
+  generate_java = true
+  sources = [ "singleplanar_format.mojom" ]
+  visibility = [
+    "//components/viz/common/resources:shared_image_format",
+    "//services/viz/public/mojom",
+    "//services/viz/public/mojom:shared_image_format",
+  ]
+}
