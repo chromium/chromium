@@ -430,6 +430,8 @@ Status Database::ForceCloseAndRunTasks(const std::string& message) {
 
 void Database::ScheduleOpenConnection(
     std::unique_ptr<PendingConnection> connection) {
+  CHECK(IsAcceptingConnections());
+
   connection_coordinator_.ScheduleOpenConnection(std::move(connection));
 }
 
