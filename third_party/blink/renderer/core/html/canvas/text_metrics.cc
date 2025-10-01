@@ -17,13 +17,9 @@
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -92,19 +88,6 @@ TextMetrics::TextMetrics(const Font* font,
     : TextMetrics() {
   Update(font, direction, baseline, align, text, text_painter);
 }
-
-namespace {
-const ShapeResult* ShapeWord(const TextRun& word_run, const Font& font) {
-  ShapeResultSpacing<TextRun> spacing(word_run);
-  spacing.SetSpacingAndExpansion(font.GetFontDescription());
-  HarfBuzzShaper shaper(word_run.NormalizedUTF16());
-  ShapeResult* shape_result = shaper.Shape(&font, word_run.Direction());
-  if (!spacing.HasSpacing()) {
-    return shape_result;
-  }
-  return shape_result->ApplySpacingToCopy(spacing, word_run);
-}
-}  // namespace
 
 void TextMetrics::Update(const Font* font,
                          const TextDirection& direction,
@@ -187,13 +170,6 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
     PlainTextPainter& text_painter) {
   runs_with_offset_.clear();
 
-  // We don't need to lazily obtain ShapeResults again later.
-  // TODO(crbug.com/389726691): Remove this flag. It's always false.
-  shaping_needed_ = false;
-  // getIndexFromOffset() and CorrectMixedBidi() need to change behavior
-  // for word-split runs.
-  // TODO(crbug.com/389726691): Remove this flag. It's always true.
-  split_by_word_ = true;
   const PlainTextNode& node = text_painter.SegmentAndShape(
       TextRun(text_, direction_, /* directional_override */ false,
               /* normalize_space */ true),
@@ -222,17 +198,6 @@ std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
   return {xpos, glyph_bounds};
 }
 
-void TextMetrics::ShapeTextIfNeeded() {
-  if (!shaping_needed_) {
-    return;
-  }
-  for (auto& run : runs_with_offset_) {
-    TextRun word_run(run.text_, run.direction_, false);
-    run.shape_result_ = ShapeWord(word_run, *font_);
-  }
-  shaping_needed_ = false;
-}
-
 const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     uint32_t start,
     uint32_t end,
@@ -250,7 +215,6 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
     return selection_rects;
   }
 
-  ShapeTextIfNeeded();
   const double height = font_bounding_box_ascent_ + font_bounding_box_descent_;
   const double y = -font_bounding_box_ascent_;
 
@@ -282,9 +246,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
           selection_rects.push_back(DOMRectReadOnly::Create(
               to_x - text_align_dx_, y, from_x - to_x, height));
         }
-        if (split_by_word_) {
-          direction_list.push_back(run_with_offset.direction_);
-        }
+        direction_list.push_back(run_with_offset.direction_);
       }
       continue;
     }
@@ -317,9 +279,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
       selection_rects.push_back(DOMRectReadOnly::Create(
           to_x - text_align_dx_, y, from_x - to_x, height));
     }
-    if (split_by_word_) {
-      direction_list.push_back(run_with_offset.direction_);
-    }
+    direction_list.push_back(run_with_offset.direction_);
   }
 
   // Merges touching rectangles. Rectangles in `selection_rects` are
@@ -328,7 +288,7 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
   //
   // Test:
   // external/wpt/html/canvas/element/text/2d.text.measure.selection-rects.tentative.html
-  if (split_by_word_ && selection_rects.size() >= 2) {
+  if (selection_rects.size() >= 2) {
     DCHECK_EQ(selection_rects.size(), direction_list.size());
     auto approximately_equal = [](double v1, double v2) {
       return std::abs(v1 - v2) <= 0.1;
@@ -370,8 +330,6 @@ DOMRectReadOnly* TextMetrics::getActualBoundingBox(
                        start >= text_.length() ? "start" : "end"));
     return DOMRectReadOnly::FromRectF(bounding_box);
   }
-
-  ShapeTextIfNeeded();
 
   for (const auto& run_with_offset : runs_with_offset_) {
     const unsigned int run_start_index = run_with_offset.character_offset_;
@@ -492,8 +450,6 @@ HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
     cluster_text_baseline = options->baseline();
   }
 
-  ShapeTextIfNeeded();
-
   for (const auto& run_with_offset : runs_with_offset_) {
     HeapVector<TextClusterCallbackContext> clusters_for_run;
 
@@ -569,8 +525,6 @@ unsigned TextMetrics::getIndexFromOffset(double x) {
     target_x = width_;
   }
 
-  ShapeTextIfNeeded();
-
   for (HeapVector<RunWithOffset>::reverse_iterator riter =
            runs_with_offset_.rbegin();
        riter != runs_with_offset_.rend(); riter++) {
@@ -600,7 +554,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Move it to the start of the next RTL run on its left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        if (!split_by_word_ || IsRtl(next_run->direction_)) {
+        if (IsRtl(next_run->direction_)) {
           return next_run->character_offset_;
         }
       }
@@ -609,9 +563,6 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // it to the last position of the RTL run to the right, which is the first
       // position of the LTR run, unless there is no run to the right.
       if (riter != runs_with_offset_.rbegin()) {
-        if (!split_by_word_) {
-          return riter->character_offset_;
-        }
         auto right_run = riter - 1;
         if (IsRtl(right_run->direction_)) {
           //   rtl_run_1, ltr_run_1, ltr_run_2(*riter), rtl_run_2(right_run)
@@ -630,7 +581,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // Move it to the start of the next LTR run on its right.
       if (riter != runs_with_offset_.rbegin()) {
         auto previous_run = riter - 1;
-        if (!split_by_word_ || IsLtr(previous_run->direction_)) {
+        if (IsLtr(previous_run->direction_)) {
           return previous_run->character_offset_;
         }
       }
@@ -640,7 +591,7 @@ unsigned TextMetrics::CorrectForMixedBidi(
       // no run to the left.
       auto next_run = riter + 1;
       if (next_run != runs_with_offset_.rend()) {
-        if (!split_by_word_ || IsLtr(next_run->direction_)) {
+        if (IsLtr(next_run->direction_)) {
           return next_run->character_offset_ + next_run->num_characters_;
         }
       }

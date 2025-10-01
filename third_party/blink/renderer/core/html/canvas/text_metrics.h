@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
-#include "third_party/blink/renderer/platform/text/text_run.h"
 
 namespace blink {
 
@@ -121,7 +120,6 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   // returns a pair of the total width and the glyph bounding rectangle.
   std::pair<float, gfx::RectF> MeasureRuns(PlainTextPainter& text_painter);
 
-  void ShapeTextIfNeeded();
   unsigned CorrectForMixedBidi(HeapVector<RunWithOffset>::reverse_iterator&,
                                unsigned);
 
@@ -157,11 +155,7 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
   V8CanvasTextBaseline::Enum ctx_text_baseline_ =
       V8CanvasTextBaseline::Enum::kAlphabetic;
 
-  // Cache of ShapeResults that is lazily created the first time it's needed.
   HeapVector<RunWithOffset> runs_with_offset_;
-  bool shaping_needed_ = false;
-  // This flag should be removed on removal of "CanvasTextNg" origin trial.
-  bool split_by_word_ = false;
 };
 
 template <>
