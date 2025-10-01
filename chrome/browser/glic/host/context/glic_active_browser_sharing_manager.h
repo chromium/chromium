@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/glic/host/context/glic_delegating_sharing_manager.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 
 class Profile;
 
@@ -17,8 +17,7 @@ namespace glic {
 // active and its active tab is showing a GlicInstance, this sharing manager
 // behaves like the sharing manager for that instance. Otherwise it behaves like
 // an empty sharing manager (nothing is or can be shared).
-class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager,
-                                        public BrowserListObserver {
+class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager {
  public:
   explicit GlicActiveBrowserSharingManager(Profile* profile);
   ~GlicActiveBrowserSharingManager() override;
@@ -28,16 +27,15 @@ class GlicActiveBrowserSharingManager : public GlicDelegatingSharingManager,
   GlicActiveBrowserSharingManager& operator=(
       const GlicActiveBrowserSharingManager&) = delete;
 
-  // BrowserListObserver.
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserNoLongerActive(Browser* browser) override;
-
   // Callback for changes to the active tab.
-  void OnActiveTabChanged(BrowserWindowInterface* browser);
+  void OnActiveTabChanged(tabs::TabInterface* active_tab);
 
  private:
   // Updates the delegate based on current active browser state.
   void UpdateDelegate();
+
+  // TODO(b:444463509): Refactor into a shared singleton.
+  GlicActiveTabForProfileTracker active_tab_tracker_;
 
   // Subscription for active tab changes.
   base::CallbackListSubscription active_tab_subscription_;

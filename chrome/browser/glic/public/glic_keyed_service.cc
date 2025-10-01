@@ -846,6 +846,10 @@ GlicInstance* GlicKeyedService::GetInstanceForActiveTab(
       bwi ? bwi->GetActiveTabInterface() : nullptr);
 }
 
+GlicInstance* GlicKeyedService::GetInstanceForTab(tabs::TabInterface* tab) {
+  return window_controller().GetInstanceForTab(tab);
+}
+
 void GlicKeyedService::SendAdditionalContext(
     tabs::TabHandle tab_handle,
     mojom::AdditionalContextPtr context) {

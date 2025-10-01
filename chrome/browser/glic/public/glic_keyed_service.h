@@ -256,6 +256,9 @@ class GlicKeyedService : public KeyedService,
   // null if there is none. `bwi` can be null if preloaded with no browser open.
   GlicInstance* GetInstanceForActiveTab(BrowserWindowInterface* bwi);
 
+  // Get the GlicInstance for a provided tab, or null if there is none.
+  GlicInstance* GetInstanceForTab(tabs::TabInterface* tab);
+
   // Sends additional context to the web client associated with the given tab.
   // If no web client exists for the tab, then this method does nothing. It is
   // the responsibility of the caller to ensure that a host exists before

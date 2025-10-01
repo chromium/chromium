@@ -8,57 +8,34 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 namespace glic {
 
 GlicActiveBrowserSharingManager::GlicActiveBrowserSharingManager(
     Profile* profile)
-    : profile_(profile) {
-  BrowserList::AddObserver(this);
+    : active_tab_tracker_(profile), profile_(profile) {
+  active_tab_subscription_ = active_tab_tracker_.AddActiveTabChangedCallback(
+      base::BindRepeating(&GlicActiveBrowserSharingManager::OnActiveTabChanged,
+                          base::Unretained(this)));
 }
 
-GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() {
-  BrowserList::RemoveObserver(this);
-}
-
-void GlicActiveBrowserSharingManager::OnBrowserSetLastActive(Browser* browser) {
-  if (browser->profile() == profile_) {
-    active_tab_subscription_ =
-        browser->RegisterActiveTabDidChange(base::BindRepeating(
-            &GlicActiveBrowserSharingManager::OnActiveTabChanged,
-            base::Unretained(this)));
-  } else {
-    active_tab_subscription_ = {};
-  }
-
-  UpdateDelegate();
-}
-
-void GlicActiveBrowserSharingManager::OnBrowserNoLongerActive(
-    Browser* browser) {
-  active_tab_subscription_ = {};
-
-  UpdateDelegate();
-}
+GlicActiveBrowserSharingManager::~GlicActiveBrowserSharingManager() = default;
 
 void GlicActiveBrowserSharingManager::OnActiveTabChanged(
-    BrowserWindowInterface* browser) {
+    tabs::TabInterface* active_tab) {
   UpdateDelegate();
 }
 
 void GlicActiveBrowserSharingManager::UpdateDelegate() {
-  BrowserWindowInterface* const browser =
-      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-  if (browser->GetProfile() != profile_ || !browser->IsActive()) {
+  tabs::TabInterface* active_tab = active_tab_tracker_.GetActiveTab();
+  if (!active_tab) {
     SetDelegate(nullptr);
     return;
   }
 
   GlicInstance* glic_instance =
-      GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
-          ->GetInstanceForActiveTab(browser);
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->GetInstanceForTab(
+          active_tab);
   if (glic_instance && glic_instance->IsShowing()) {
     SetDelegate(glic_instance->host().sharing_manager().GetWeakPtr());
     return;
