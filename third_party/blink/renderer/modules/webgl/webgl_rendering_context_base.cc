@@ -6105,6 +6105,11 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
       SourceImageStatus status;
       image_for_render = image->GetSourceImageForCanvas(
           FlushReason::kWebGLTexImage, &status, gfx::SizeF(300, 150));
+      // Since the size of the source has not been previously validated,
+      // GetSourceImageForCanvas() can return nullptr.
+      if (!image_for_render) {
+        image_for_render = Image::NullImage();
+      }
     }
     // DrawImageIntoBuffer always respects orientation
     image_for_render = DrawImageIntoBufferForTexImage(
