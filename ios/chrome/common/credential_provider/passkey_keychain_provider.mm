@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 
 #import "base/functional/callback.h"
 

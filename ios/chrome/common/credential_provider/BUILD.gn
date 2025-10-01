@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/ios/ios_sdk.gni")
+import("//ios/build/chrome_build.gni")
 
 source_set("credential_provider") {
   sources = [
@@ -63,6 +64,45 @@ source_set("mock_credential_store") {
     "mock_credential_store.mm",
   ]
   deps = [ ":ui" ]
+}
+
+source_set("passkey_keychain_provider") {
+  public_deps = [ ":passkey_keychain_provider_header" ]
+  deps = [ ios_passkey_keychain_provider_target ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_header") {
+  sources = [ "passkey_keychain_provider.h" ]
+  deps = [ "//base" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_implementation") {
+  sources = [ "passkey_keychain_provider.mm" ]
+  deps = [
+    ":passkey_keychain_provider_header",
+    "//base",
+  ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_keychain_provider_bridge") {
+  sources = [
+    "passkey_keychain_provider_bridge.h",
+    "passkey_keychain_provider_bridge.mm",
+  ]
+  deps = [
+    ":credential_provider",
+    ":passkey_keychain_provider",
+    "//base",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
+  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

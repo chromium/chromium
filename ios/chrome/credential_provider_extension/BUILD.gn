@@ -33,7 +33,6 @@ source_set("credential_provider") {
     ":account_verification_provider",
     ":font_provider",
     ":metrics_util",
-    ":passkey_keychain_provider_bridge",
     ":passkey_request_details",
     ":reauthentication_handler",
     ":system_strings",
@@ -42,6 +41,7 @@ source_set("credential_provider") {
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/crash_report",
     "//ios/chrome/common/credential_provider",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_bridge",
     "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
@@ -131,21 +131,6 @@ source_set("passkey_util") {
     "AuthenticationServices.framework",
     "Foundation.framework",
   ]
-}
-
-source_set("passkey_keychain_provider_bridge") {
-  sources = [
-    "passkey_keychain_provider_bridge.h",
-    "passkey_keychain_provider_bridge.mm",
-  ]
-  deps = [
-    ":passkey_keychain_provider",
-    "//base",
-    "//components/sync/protocol",
-    "//components/webauthn/core/browser:passkey_model",
-    "//ios/chrome/common/credential_provider",
-  ]
-  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("password_util") {
@@ -240,25 +225,12 @@ source_set("font_provider_implementation") {
   frameworks = [ "Foundation.framework" ]
 }
 
-source_set("passkey_keychain_provider") {
-  public_deps = [ ":passkey_keychain_provider_header" ]
-  deps = [ ios_passkey_keychain_provider_target ]
-  assert_no_deps = [ "//ios/chrome/browser/*" ]
-  frameworks = [ "Foundation.framework" ]
-}
-
+# Compatibility target.
+# TODO(crbug.com/448228341): Remove after internal is updated.
 source_set("passkey_keychain_provider_header") {
   sources = [ "passkey_keychain_provider.h" ]
-  deps = [ "//base" ]
-  assert_no_deps = [ "//ios/chrome/browser/*" ]
-  frameworks = [ "Foundation.framework" ]
-}
-
-source_set("passkey_keychain_provider_implementation") {
-  sources = [ "passkey_keychain_provider.mm" ]
   deps = [
-    ":passkey_keychain_provider_header",
-    "//base",
+    "//ios/chrome/common/credential_provider:passkey_keychain_provider_header",
   ]
   assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]

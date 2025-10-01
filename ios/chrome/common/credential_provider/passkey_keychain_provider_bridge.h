@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
-#define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
+#ifndef IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
+#define IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
+#import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 
 @protocol Credential;
 
@@ -64,4 +64,4 @@ typedef void (^FetchSecurityDomainSecretCompletionBlock)(
 
 @end
 
-#endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
+#endif  // IOS_CHROME_COMMON_CREDENTIAL_PROVIDER_PASSKEY_KEYCHAIN_PROVIDER_BRIDGE_H_
