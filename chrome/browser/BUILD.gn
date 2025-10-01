@@ -9409,29 +9409,3 @@ if (is_chromeos) {
     ]
   }
 }
-
-if (is_win || is_mac || is_linux) {
-  fuzzer_test("browser_switcher_ieem_sitelist_parser_fuzzer") {
-    sources = [ "browser_switcher/ieem_sitelist_parser_fuzzer.cc" ]
-    deps = [
-      ":browser",
-      "//base",
-      "//chrome/browser/browser_switcher",
-      "//mojo/core/embedder",
-      "//services/data_decoder/public/cpp:test_support",
-    ]
-
-    if (is_win) {
-      deps += [
-        # Stub out thunks for transitive dependencies (they're normally linked
-        # into the Chrome binary by separate GN rules, but for the fuzzer we
-        # have to do it manually here).
-        "//chrome/chrome_elf:test_stubs",
-        "//components/crash/core/app:test_support",
-      ]
-    }
-
-    # The fuzzed code needs more RAM that the default limit.
-    libfuzzer_options = [ "rss_limit_mb=4096" ]
-  }
-}

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 assert(is_win || is_mac || is_linux)
 
 source_set("browser_switcher") {
@@ -148,4 +150,28 @@ if (!is_android) {
       ]
     }
   }
+}
+
+fuzzer_test("browser_switcher_ieem_sitelist_parser_fuzzer") {
+  sources = [ "ieem_sitelist_parser_fuzzer.cc" ]
+  deps = [
+    ":browser_switcher",
+    "//base",
+    "//chrome/browser",
+    "//mojo/core/embedder",
+    "//services/data_decoder/public/cpp:test_support",
+  ]
+
+  if (is_win) {
+    deps += [
+      # Stub out thunks for transitive dependencies (they're normally linked
+      # into the Chrome binary by separate GN rules, but for the fuzzer we
+      # have to do it manually here).
+      "//chrome/chrome_elf:test_stubs",
+      "//components/crash/core/app:test_support",
+    ]
+  }
+
+  # The fuzzed code needs more RAM that the default limit.
+  libfuzzer_options = [ "rss_limit_mb=4096" ]
 }
