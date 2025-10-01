@@ -10,10 +10,13 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
 
+import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 
 @NullMarked
 public class KeyboardAccessibleListView extends ListView {
+
+    private int mSelectedItemPosition;
 
     public KeyboardAccessibleListView(Context context) {
         super(context);
@@ -33,6 +36,17 @@ public class KeyboardAccessibleListView extends ListView {
     }
 
     @Override
+    public int getSelectedItemPosition() {
+        return mSelectedItemPosition;
+    }
+
+    @Override
+    public void setSelection(int i) {
+        mSelectedItemPosition = i;
+        super.setSelection(i);
+    }
+
+    @Override
     public boolean onKeyDown(int keyCode, KeyEvent keyEvent) {
         if (keyEvent.getAction() != KeyEvent.ACTION_DOWN) {
             return super.onKeyDown(keyCode, keyEvent);
@@ -40,16 +54,32 @@ public class KeyboardAccessibleListView extends ListView {
         // If the key event is unmodified tab, or unmodified down arrow,
         if (keyEvent.hasNoModifiers()
                 && (keyCode == KeyEvent.KEYCODE_TAB || keyCode == KeyEvent.KEYCODE_DPAD_DOWN)) {
-            // We always consider the event "handled" (returning true).
-            View nextView = getFocusedChild().focusSearch(FOCUS_DOWN);
-            // We focus the next item when there is a next item. If there's no next item, stop.
-            if (nextView != null) nextView.requestFocus();
+            if (mSelectedItemPosition >= getCount() - 1) {
+                View nextView = getFocusedChild().focusSearch(FOCUS_DOWN);
+                // We focus the next item when there is a next item. If there's no next item, stop.
+                if (nextView != null) {
+                    nextView.requestFocus();
+                }
+            } else {
+                mSelectedItemPosition =
+                        MathUtils.clamp(mSelectedItemPosition, 0, getCount() - 1) + 1;
+                super.onKeyDown(keyCode, keyEvent);
+            }
             return true;
         }
         if ((keyEvent.hasModifiers(KeyEvent.META_SHIFT_ON) && keyCode == KeyEvent.KEYCODE_TAB)
                 || (keyEvent.hasNoModifiers() && (keyCode == KeyEvent.KEYCODE_DPAD_UP))) {
-            View nextView = getFocusedChild().focusSearch(FOCUS_UP);
-            if (nextView != null) nextView.requestFocus();
+            if (mSelectedItemPosition <= 0) {
+                View nextView = getFocusedChild().focusSearch(FOCUS_UP);
+                // We focus the next item when there is a next item. If there's no next item, stop.
+                if (nextView != null) {
+                    nextView.requestFocus();
+                }
+            } else {
+                mSelectedItemPosition =
+                        MathUtils.clamp(mSelectedItemPosition, 0, getCount() - 1) - 1;
+                super.onKeyDown(keyCode, keyEvent);
+            }
             return true;
         }
         return super.onKeyDown(keyCode, keyEvent);

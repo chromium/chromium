@@ -4,7 +4,11 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static android.view.KeyEvent.ACTION_DOWN;
+import static android.view.KeyEvent.KEYCODE_TAB;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.base.test.util.Batch.UNIT_TESTS;
@@ -17,6 +21,7 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITE
 
 import android.app.Activity;
 import android.graphics.drawable.ColorDrawable;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -190,6 +195,31 @@ public class BrowserUiListMenuUnitTest {
                 "Expected 2nd dimension to be itemHeight*2 + padding",
                 itemHeight * 2L + verticalPadding,
                 dimensions[1]);
+    }
+
+    @Test
+    public void testKeyboardNavigation() {
+        mBasicListMenu = getBasicListMenu(mActivity, mData, item -> {});
+        View view = mBasicListMenu.getContentView();
+        ListView headerView = view.findViewById(R.id.menu_header);
+        ListView contentView = setupListViewForSubmenuTesting();
+        // Navigate to submenu and focus on header.
+        ListItem submenuParent = (ListItem) contentView.getItemAtPosition(0);
+        submenuParent.model.get(CLICK_LISTENER).onClick(mView);
+        // Need to shadow the list views and populate them manually
+        populateListView(headerView);
+        populateListView(contentView);
+        headerView.getChildAt(0).requestFocus();
+        // Hit tab and now the content view should have focus.
+        headerView.onKeyDown(KEYCODE_TAB, new KeyEvent(ACTION_DOWN, KEYCODE_TAB));
+        assertTrue("Expected content view to contain focus", contentView.hasFocus());
+        for (int i = 0; i < NUM_SUBMENU_ITEMS - 1; i++) {
+            contentView.onKeyDown(KEYCODE_TAB, new KeyEvent(ACTION_DOWN, KEYCODE_TAB));
+            assertEquals(
+                    "Expected item at position " + (i + 1) + " in content list to be selected",
+                    i + 1,
+                    contentView.getSelectedItemPosition());
+        }
     }
 
     private ListView setupListViewForSubmenuTesting() {
