@@ -21,6 +21,8 @@ extern const char kForceDeviceSwitcherExperienceCommandLineFlag[];
 extern const char kForceShopperExperience[];
 extern const char kUserAgent[];
 
+// Force the discover feed to show the sign-in promo.
+extern const char kForceFeedSigninPromo[];
 }  // namespace switches
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_CHROME_SWITCHES_H_

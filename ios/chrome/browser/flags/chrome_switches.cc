@@ -51,4 +51,6 @@ const char kForceShopperExperience[] = "force-shopper-experience";
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 
+const char kForceFeedSigninPromo[] = "force-feed-signin-promo";
+
 }  // namespace switches

@@ -990,13 +990,28 @@
 
 // This also belongs to #pragma mark - SigninPromoViewMediatorDelegate
 - (void)showSigninWithCommand:(ShowSigninCommand*)command {
-  if (_signinCoordinator) {
+  if (_signinCoordinator.viewWillPersist) {
+    // There is a signin-coordinator currently being presented.
+    // Let’s call the completion block of the command in order to inform the
+    // giver of the command that the command is interrupted.
     SigninCoordinatorCompletionCallback completion = command.completion;
     if (completion) {
       completion(SigninCoordinatorResultInterrupted, nil);
     }
     return;
+  } else if (_signinCoordinator) {
+    // There may be a signin-coordinator being presented. Due to uncertainty,
+    // let’s close the current sign-in coordinator and start the new one.
+    _signinCoordinator.signinCompletion(SigninCoordinatorResultInterrupted,
+                                        nil);
+    // The signin-completion should have unset the sign-in coordinator.
+    CHECK(!_signinCoordinator, base::NotFatalUntil::M146);
   }
+  __weak __typeof(self) weakSelf = self;
+  [command addSigninCompletion:^(SigninCoordinatorResult result,
+                                 id<SystemIdentity>) {
+    [weakSelf showSigninCommandDidFinish];
+  }];
   _signinCoordinator =
       [SigninCoordinator signinCoordinatorWithCommand:command
                                               browser:self.browser
