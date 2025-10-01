@@ -7188,6 +7188,7 @@ struct PrepareToDrawSuccessTestCase {
   };
 
   bool high_res_required = false;
+  bool has_view_transition_save_directive = false;
   State layer_before;
   State layer_between;
   State layer_after;
@@ -7282,6 +7283,11 @@ TEST_P(LayerTreeHostImplPrepareToDrawTest, PrepareToDrawSucceedsAndFails) {
   cases.back().layer_between.has_missing_tile = true;
   cases.back().layer_before.has_missing_tile = true;
   cases.back().layer_before.is_animating = true;
+  // 17. checkerboarded animated content with a view transition save directive.
+  cases.push_back(PrepareToDrawSuccessTestCase(DrawResult::kSuccess));
+  cases.back().has_view_transition_save_directive = true;
+  cases.back().layer_between.has_missing_tile = true;
+  cases.back().layer_between.is_animating = true;
 
   auto* root = SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(),
                                                  gfx::Size(10, 10));
@@ -7303,6 +7309,14 @@ TEST_P(LayerTreeHostImplPrepareToDrawTest, PrepareToDrawSucceedsAndFails) {
     CreateLayerFromState(root, timeline(), testcase.layer_between);
     CreateLayerFromState(root, timeline(), testcase.layer_after);
     UpdateDrawProperties(host_impl_->active_tree());
+
+    if (testcase.has_view_transition_save_directive) {
+      host_impl_->active_tree()->AddViewTransitionRequest(
+          ViewTransitionRequest::CreateCapture(
+              blink::ViewTransitionToken(), false, {},
+              base::DoNothingAs<void(
+                  const viz::ViewTransitionElementResourceRects&)>()));
+    }
 
     if (testcase.high_res_required)
       host_impl_->SetRequiresHighResToDraw();

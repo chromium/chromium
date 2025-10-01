@@ -1620,6 +1620,15 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   if (resourceless_software_draw_)
     draw_result = DrawResult::kSuccess;
 
+  // We can't abort a save directive because that will stall a pending view
+  // transition.
+  // TODO(vmpstr): We might want to revisit this, and punt the save directive to
+  // the next frame (which we can force). This is non-trivial to do, and may not
+  // be worth it for rare cases like this.
+  if (frame->has_view_transition_save_directive) {
+    draw_result = DrawResult::kSuccess;
+  }
+
 #if DCHECK_IS_ON()
   for (const auto& render_pass : frame->render_passes) {
     for (auto* quad : render_pass->quad_list)
@@ -1661,7 +1670,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // destroyed.
   // TODO(weiliangc): Test copy request w/ LayerTreeFrameSink recreation. Would
   // trigger this DCHECK.
-  DCHECK(!frame->has_copy_requests || draw_result == DrawResult::kSuccess);
+  DCHECK((!frame->has_copy_requests &&
+          !frame->has_view_transition_save_directive) ||
+         draw_result == DrawResult::kSuccess);
 
   return draw_result;
 }
@@ -3155,6 +3166,9 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     }
 
     auto display_color_spaces = GetDisplayColorSpaces();
+    // TODO(vmpstr): If the frame we would produce has animated checkerboarded
+    // content, we should wait until an actual frame is produced before
+    // destructively taking view transition requests.
     for (auto& request : active_tree_->TakeViewTransitionRequests(
              /*should_set_needs_update_draw_properties=*/true)) {
       if (resourceless_software_draw_) {
