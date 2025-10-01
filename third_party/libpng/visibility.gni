@@ -27,10 +27,6 @@ visibility = [
   # dependency has been made optional.
   "//third_party:png",  # In standalone PDFium
   "//third_party/pdfium/third_party:png",  # In Chromium
-
-  # Other dependency edges that seem like Chrome => ... => libpng dependencies
-  # but really aren't.  TODO: Clarify this comment in follow-up CLs.
-  "//third_party/weston/*",
 ]
 
 # Dependencies that do not really flow into Chrome binaries.
@@ -44,6 +40,14 @@ visibility += [
   # also `cwebp_exe_allowed_visibility` in
   # `//third_party/libwebp/visibility.gni`.
   "//third_party/libwebp:imagedec",
+
+  # `weston` => `libpng` is a test-only dependency as described in
+  # `//third_party/weston/README.chromium`.  The `weston` targets are not
+  # marked as `testonly` but their `visibility` is restricted and (in build
+  # configurations meant for testing) the only dependency of product code is
+  # the `data_deps` edge from `//ui/ozone/platform/wayland` to the
+  # `//third_party/weston` target (the latter one is an `executable`).
+  "//third_party/weston:cairo_shared",
 ]
 
 # Test/tool-only dependencies under `//third_party/angle`

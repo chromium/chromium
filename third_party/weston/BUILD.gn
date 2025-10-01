@@ -10,6 +10,8 @@ import("//build/toolchain/toolchain.gni")
 import("//third_party/wayland/features.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 
+visibility = [ ":*" ]
+
 wayland_protocol("text_cursor_position_protocol") {
   sources = [ "src/protocol/text-cursor-position.xml" ]
 }
@@ -289,6 +291,7 @@ shared_library("gl_renderer") {
   output_prefix_override = true
   output_name = "gl-renderer"
 
+  visibility = []
   visibility = [ ":weston" ]
 
   # gl_renderer currently requires files under src/libweston and src/shared to
@@ -354,6 +357,7 @@ shared_library("wayland_backend") {
   output_prefix_override = true
   output_name = "wayland-backend"
 
+  visibility = []
   visibility = [ ":weston" ]
 
   defines = [ "BUILD_WAYLAND_COMPOSITOR = 1" ]
@@ -391,6 +395,7 @@ shared_library("headless_backend") {
   output_prefix_override = true
   output_name = "headless-backend"
 
+  visibility = []
   visibility = [ ":weston" ]
 
   defines = [ "BUILD_HEADLESS_COMPOSITOR=1" ]
@@ -525,6 +530,7 @@ shared_library("weston_systemd_notify") {
 executable("weston_keyboard") {
   output_name = "weston-keyboard"
 
+  visibility = []
   visibility = [ ":weston" ]
 
   sources = [ "src/clients/keyboard.c" ]
@@ -547,6 +553,7 @@ executable("weston_keyboard") {
 executable("weston_screenshooter") {
   output_name = "weston-screenshooter"
 
+  visibility = []
   visibility = [ ":weston" ]
 
   include_dirs = [ "src/libweston" ]
@@ -572,6 +579,7 @@ executable("weston_screenshooter") {
 executable("weston_desktop_shell") {
   output_name = "weston-desktop-shell"
 
+  visibility = []
   visibility = [ ":weston" ]
 
   sources = [ "src/clients/desktop-shell.c" ]
@@ -595,6 +603,7 @@ shared_library("desktop_shell") {
   output_prefix_override = true
   output_name = "desktop-shell"
 
+  visibility = []
   visibility = [ ":weston" ]
 
   sources = [
@@ -620,6 +629,8 @@ shared_library("desktop_shell") {
 }
 
 executable("weston") {
+  visibility = []
+  visibility = [ "//ui/ozone/platform/wayland" ]
   deps = [
     ":compositor",
     ":libweston",
