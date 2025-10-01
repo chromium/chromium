@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -58,9 +59,10 @@ void LaunchAppWithParams(
         barrier_callback.Run();
       } else {
         apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->BrowserAppLauncher()
             ->LaunchAppWithParams(
                 std::move(params_copy),
-                base::IgnoreArgs<apps::LaunchResult&&>(barrier_callback));
+                base::IgnoreArgs<content::WebContents*>(barrier_callback));
       }
     }
     return;
@@ -70,9 +72,11 @@ void LaunchAppWithParams(
     GetBrowserAppLauncherForTesting().Run(params);
     std::move(launch_finished_callback).Run();
   } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
-        std::move(params), base::IgnoreArgs<apps::LaunchResult&&>(
-                               std::move(launch_finished_callback)));
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->BrowserAppLauncher()
+        ->LaunchAppWithParams(std::move(params),
+                              base::IgnoreArgs<content::WebContents*>(
+                                  std::move(launch_finished_callback)));
   }
 }
 
