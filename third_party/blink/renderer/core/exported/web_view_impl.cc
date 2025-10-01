@@ -83,6 +83,7 @@
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_render_theme.h"
@@ -1253,7 +1254,12 @@ void WebViewImpl::DidFirstVisuallyNonEmptyPaint() {
 }
 
 void WebViewImpl::OnFirstContentfulPaint() {
-  local_main_frame_host_remote_->OnFirstContentfulPaint();
+  DCHECK(MainFrameImpl());
+  WebPerformanceMetricsForReporting metrics =
+      MainFrameImpl()->PerformanceMetricsForReporting();
+  local_main_frame_host_remote_->OnFirstContentfulPaint(
+      metrics.FirstContentfulPaintAsMonotonicTime() -
+      metrics.NavigationStartAsMonotonicTime());
 }
 
 void WebViewImpl::UpdateICBAndResizeViewport(

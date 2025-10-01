@@ -8129,8 +8129,12 @@ void RenderFrameHostImpl::DidInferColorScheme(
   }
 }
 
-void RenderFrameHostImpl::OnFirstContentfulPaint() {
-  GetPage().set_did_first_contentful_paint_in_main_document();
+void RenderFrameHostImpl::OnFirstContentfulPaint(base::TimeDelta load_time) {
+  GetPage().SetFirstContentfulPaintInMainDocumentLoadTime(load_time);
+  NotifyFirstContentfulPaint();
+}
+
+void RenderFrameHostImpl::NotifyFirstContentfulPaint() {
   if (IsInPrimaryMainFrame()) {
     // Notify the delegates of the FCP. Note that the notifications for
     // prerendering pages will be deferred until activation.

@@ -331,8 +331,8 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
     main_document_->DocumentOnLoadCompleted();
   }
 
-  if (did_first_contentful_paint_in_main_document()) {
-    main_document_->OnFirstContentfulPaint();
+  if (first_contentful_paint_in_main_document_load_time_) {
+    main_document_->NotifyFirstContentfulPaint();
   }
 
   main_document_->ForEachRenderFrameHostImpl(

@@ -212,9 +212,14 @@ void WebContentsObserverProxy::DOMContentLoaded(
 }
 
 void WebContentsObserverProxy::OnFirstContentfulPaintInPrimaryMainFrame() {
+  Page& primaryPage = web_contents()->GetPrimaryPage();
+  std::optional<base::TimeDelta> loadTime =
+      static_cast<PageImpl&>(primaryPage)
+          .GetFirstContentfulPaintInMainDocumentLoadTime();
+  DCHECK(loadTime);
   Java_WebContentsObserverProxy_firstContentfulPaintInPrimaryMainFrame(
-      AttachCurrentThread(), java_observer_,
-      web_contents()->GetPrimaryPage().GetJavaPage());
+      AttachCurrentThread(), java_observer_, primaryPage.GetJavaPage(),
+      loadTime->InMicroseconds());
 }
 
 void WebContentsObserverProxy::NavigationEntryCommitted(

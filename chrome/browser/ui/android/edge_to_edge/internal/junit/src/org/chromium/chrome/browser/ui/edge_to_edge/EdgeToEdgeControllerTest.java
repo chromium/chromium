@@ -1440,7 +1440,7 @@ public class EdgeToEdgeControllerTest {
         WebContentsObserver webContentsObserver =
                 mEdgeToEdgeControllerImpl.getWebContentsObserver();
         assertNotNull(webContentsObserver);
-        webContentsObserver.firstContentfulPaintInPrimaryMainFrame(null);
+        webContentsObserver.firstContentfulPaintInPrimaryMainFrame(null, /*loadTimeUs=*/ 0);
     }
 
     @Test

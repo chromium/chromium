@@ -189,8 +189,10 @@ public abstract class WebContentsObserver {
      * Notifies that the first contentful paint happened on the primary main frame.
      *
      * @param page The Page where the first contentful paint happened.
+     * @param loadTimeUs The time taken for the first contentful paint to occur from navigation
+     *     start in microseconds (μs).
      */
-    public void firstContentfulPaintInPrimaryMainFrame(Page page) {}
+    public void firstContentfulPaintInPrimaryMainFrame(Page page, long loadTimeUs) {}
 
     /**
      * Notifies that a navigation entry has been committed.
