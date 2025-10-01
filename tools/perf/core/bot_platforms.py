@@ -566,6 +566,7 @@ _CROSSBENCH_PIXEL9 = frozenset([
     # _jetstream2_crossbench(arguments=['--fileserver', '--debug']),
     _motionmark1_3_crossbench(arguments=['--fileserver', '--debug']),
     _speedometer3_crossbench(arguments=['--fileserver', '--debug']),
+    _speedometer3_a11y_crossbench(arguments=['--fileserver', '--debug']),
     _loadline_phone_crossbench(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
