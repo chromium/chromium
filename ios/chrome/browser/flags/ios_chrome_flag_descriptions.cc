@@ -646,10 +646,6 @@ const char kFeedbackIncludeGWSVariationsName[] =
 const char kFeedbackIncludeGWSVariationsDescription[] =
     "Includes GWS variations in Chrome feedback reports.";
 
-const char kFullscreenImprovementName[] = "Improve fullscreen";
-const char kFullscreenImprovementDescription[] =
-    "When enabled, fullscreen should have a better stability.";
-
 const char kFullscreenPromosManagerSkipInternalLimitsName[] =
     "Fullscreen Promos Manager (Skip internal Impression Limits)";
 const char kFullscreenPromosManagerSkipInternalLimitsDescription[] =

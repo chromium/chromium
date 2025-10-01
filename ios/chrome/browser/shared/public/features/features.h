@@ -517,9 +517,6 @@ BASE_DECLARE_FEATURE(kContentNotificationDeliveredNAU);
 // Parameter value for the max number of delivered NAUs to be sent per session.
 extern const char kDeliveredNAUMaxPerSession[];
 
-// Feature flag to enable a more stable fullscreen.
-BASE_DECLARE_FEATURE(kFullscreenImprovement);
-
 // Feature flag to enable a new illustration in the sync opt-in promotion view.
 BASE_DECLARE_FEATURE(kNewSyncOptInIllustration);
 

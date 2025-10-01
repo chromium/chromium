@@ -431,8 +431,6 @@ BASE_FEATURE(kContentNotificationDeliveredNAU,
 
 const char kDeliveredNAUMaxPerSession[] = "DeliveredNAUMaxPerSession";
 
-BASE_FEATURE(kFullscreenImprovement, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNewSyncOptInIllustration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsNewSyncOptInIllustration() {
