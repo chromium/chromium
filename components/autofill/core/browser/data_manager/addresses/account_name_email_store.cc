@@ -138,6 +138,10 @@ void AccountNameEmailStore::ApplyChange(const AutofillProfileChange& change) {
           prefs::kAutofillNameAndEmailProfileNotSelectedCounter,
           features::kAutofillNameAndEmailProfileNotSelectedThreshold.Get() + 1);
       return;
+    case AutofillProfileChange::UPDATE:
+      // Although the kAccountNameEmail profile is read-only from the user POV,
+      // it still supports silent updates.
+      return;
     case AutofillProfileChange::ADD:
       return;
     case AutofillProfileChange::HIDE_IN_AUTOFILL:
@@ -145,9 +149,6 @@ void AccountNameEmailStore::ApplyChange(const AutofillProfileChange& change) {
       // soft removed, since `AddressDataManager` already removed it, there is
       // nothing left to do.
       return;
-    case AutofillProfileChange::UPDATE:
-      // kAccountNameEmail profile is read only.
-      NOTREACHED();
   }
 }
 
