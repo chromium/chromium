@@ -8,6 +8,7 @@
 
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -19,6 +20,11 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+using RepeatingTabCallback =
+    base::MockCallback<base::RepeatingCallback<void(tabs::TabInterface*)>>;
+}
 
 namespace tabs {
 
@@ -152,6 +158,51 @@ TEST_F(TabModelTest, DiscardContentsUpdatesSessionIdMapping) {
             factory->GetHandleForSessionId(new_session_id));
   EXPECT_EQ(TabHandle::Null().raw_value(),
             factory->GetHandleForSessionId(original_session_id));
+}
+
+TEST_F(TabModelTest, SplitViewVisibleAndActiveCallbacks) {
+  // Create a source tab strip with 3 tabs.
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  AppendTab(tab_strip);
+  AppendTab(tab_strip);
+  ASSERT_EQ(3, tab_strip.count());
+
+  // Create a split with the first two tabs, then activate the tab outside the
+  // split.
+  tab_strip.ActivateTabAt(0);
+  tab_strip.AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                          split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tab_strip.ActivateTabAt(2);
+
+  // Set up subscriptions for visible and active.
+  std::vector<base::CallbackListSubscription> subscriptions;
+
+  RepeatingTabCallback did_tab_0_activate_callback;
+  EXPECT_CALL(did_tab_0_activate_callback, Run).Times(1);
+  subscriptions.push_back(tab_strip.GetTabAtIndex(0)->RegisterDidActivate(
+      did_tab_0_activate_callback.Get()));
+  RepeatingTabCallback did_tab_0_become_visible_callback;
+  EXPECT_CALL(did_tab_0_become_visible_callback, Run).Times(1);
+  subscriptions.push_back(tab_strip.GetTabAtIndex(0)->RegisterDidBecomeVisible(
+      did_tab_0_become_visible_callback.Get()));
+
+  RepeatingTabCallback did_tab_1_activate_callback;
+  EXPECT_CALL(did_tab_1_activate_callback, Run).Times(0);
+  subscriptions.push_back(tab_strip.GetTabAtIndex(1)->RegisterDidActivate(
+      did_tab_1_activate_callback.Get()));
+  RepeatingTabCallback did_tab_1_become_visible_callback;
+  EXPECT_CALL(did_tab_1_become_visible_callback, Run).Times(1);
+  subscriptions.push_back(tab_strip.GetTabAtIndex(1)->RegisterDidBecomeVisible(
+      did_tab_1_become_visible_callback.Get()));
+
+  // Activate a tab in the split and confirm expectations.
+  tab_strip.ActivateTabAt(0);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_0_activate_callback);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_0_become_visible_callback);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_1_activate_callback);
+  testing::Mock::VerifyAndClearExpectations(&did_tab_1_become_visible_callback);
 }
 
 }  // namespace tabs
