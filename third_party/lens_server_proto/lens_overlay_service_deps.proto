@@ -174,7 +174,7 @@ message Payload {
 
 // Specifies the options for the server to use when reading stored chunks from
 // state layer during a streamed request.
-// Next ID: 3
+// Next ID: 4
 message StoredChunkOptions {
   // When set to true, Lens will retrieve payload chunks uploaded to state
   // layer via the UploadChunk API and use those to construct
@@ -185,6 +185,10 @@ message StoredChunkOptions {
   // The total number of chunks the payload was split into. This is used to
   // facilitate the reconstruction of content_data.
   int64 total_stored_chunks = 2;
+
+  // Indicates that this is a retry for a previously failed attempt to read
+  // payload chunks from the server.
+  bool is_read_retry = 3;
 }
 
 // Possible compression types for content_data.

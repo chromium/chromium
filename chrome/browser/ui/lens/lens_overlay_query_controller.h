@@ -899,6 +899,9 @@ class LensOverlayQueryController {
   // Whether or not the upload is being chunked.
   bool chunk_upload_in_progress_ = false;
 
+  // True if a page content upload is being retried due to missing chunk errors.
+  bool retrying_page_content_upload_ = false;
+
   // Stores the last reported upload progress position for each chunk, indexed
   // by chunk id.
   std::vector<size_t> chunk_progress;

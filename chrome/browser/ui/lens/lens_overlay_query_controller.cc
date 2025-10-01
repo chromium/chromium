@@ -280,7 +280,8 @@ lens::Payload CreatePageContentPayloadForChunks(
     lens::MimeType primary_content_type,
     GURL page_url,
     std::optional<std::string> page_title,
-    int64_t total_stored_chunks) {
+    int64_t total_stored_chunks,
+    bool is_read_retry) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
 
@@ -297,6 +298,8 @@ lens::Payload CreatePageContentPayloadForChunks(
   content_data->mutable_stored_chunk_options()->set_read_stored_chunks(true);
   content_data->mutable_stored_chunk_options()->set_total_stored_chunks(
       total_stored_chunks);
+  content_data->mutable_stored_chunk_options()->set_is_read_retry(
+      is_read_retry);
   content_data->set_compression_type(lens::CompressionType::ZSTD);
   return payload;
 }
@@ -1204,6 +1207,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   page_contents_request_start_time_ = base::TimeTicks::Now();
   page_content_request_in_progress_ = true;
   chunk_upload_in_progress_ = false;
+  retrying_page_content_upload_ = false;
   remaining_upload_chunk_responses_ = 0;
   remaining_chunk_retries = lens::features::GetLensOverlayUploadChunkRetries();
 
@@ -1336,7 +1340,8 @@ void LensOverlayQueryController::UploadChunkResponseHandler(
         FROM_HERE,
         base::BindOnce(&CreatePageContentPayloadForChunks,
                        underlying_page_contents_, primary_content_type_,
-                       page_url_, page_title_, total_chunks),
+                       page_url_, page_title_, total_chunks,
+                       retrying_page_content_upload_),
         base::BindOnce(
             &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
             weak_ptr_factory_.GetWeakPtr(), request_id));
@@ -1357,8 +1362,16 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2(
 
   request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
 
-  // Save the request in case it needs to be resent.
+  // Save the request in case it needs to be resent. Modify the payload to set
+  // the is_read_retry param. Note that this not used if
+  // RetryUploadChunkRequests is called as a new payload is used instead.
   pending_page_content_request_.CopyFrom(request);
+  pending_page_content_request_.mutable_objects_request()
+      ->mutable_payload()
+      ->mutable_content()
+      ->mutable_content_data(0)
+      ->mutable_stored_chunk_options()
+      ->set_is_read_retry(true);
 
   page_content_access_token_fetcher_ = CreateOAuthHeadersAndContinue(
       base::BindOnce(&LensOverlayQueryController::PerformPageContentRequest,
@@ -1430,6 +1443,7 @@ bool LensOverlayQueryController::MaybeRetryPageContentUpload(
           server_response.error().missing_chunks_metadata();
       if (!missing_chunks_metadata.has_chunk_metadata()) {
         // Interaction request likely misrouted. Resend it.
+        retrying_page_content_upload_ = true;
         page_content_access_token_fetcher_ =
             CreateOAuthHeadersAndContinue(base::BindOnce(
                 &LensOverlayQueryController::PerformPageContentRequest,
@@ -1438,6 +1452,7 @@ bool LensOverlayQueryController::MaybeRetryPageContentUpload(
       }
       if (missing_chunks_metadata.missing_chunk_ids_size() > 0) {
         // Missing chunks. Resend the missing chunks.
+        retrying_page_content_upload_ = true;
         chunk_upload_access_token_fetcher_ =
             CreateOAuthHeadersAndContinue(base::BindOnce(
                 &LensOverlayQueryController::RetryUploadChunkRequests,
@@ -1515,6 +1530,7 @@ void LensOverlayQueryController::PageContentUploadFinished() {
   pending_page_content_request_.Clear();
   page_content_request_in_progress_ = false;
   chunk_upload_in_progress_ = false;
+  retrying_page_content_upload_ = false;
   chunk_progress.clear();
   if (pending_contextual_query_callback_) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
