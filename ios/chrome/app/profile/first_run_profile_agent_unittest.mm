@@ -32,6 +32,8 @@ class FirstRunProfileAgentTest : public PlatformTest {
     [profile_state_ addAgent:profile_agent_];
   }
 
+  ~FirstRunProfileAgentTest() override { profile_state_.profile = nullptr; }
+
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;

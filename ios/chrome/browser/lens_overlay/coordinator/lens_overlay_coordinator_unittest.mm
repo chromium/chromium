@@ -197,6 +197,8 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     }));
   }
 
+  ~LensOverlayCoordinatorTest() override { profile_state_.profile = nullptr; }
+
   void TearDown() override {
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
       // Dismisses `base_view_controller_` and waits for the dismissal to

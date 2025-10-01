@@ -70,6 +70,10 @@ class SessionMetricsProfileAgentTest : public PlatformTest {
     [profile_state_ addAgent:[[SessionMetricsProfileAgent alloc] init]];
   }
 
+  ~SessionMetricsProfileAgentTest() override {
+    profile_state_.profile = nullptr;
+  }
+
   FakeProfileSessionDurationsService* GetProfileSessionDurationsService() {
     return static_cast<FakeProfileSessionDurationsService*>(
         IOSProfileSessionDurationsServiceFactory::GetForProfile(

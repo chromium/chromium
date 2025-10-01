@@ -65,6 +65,8 @@ class PostRestoreProfileAgentTest : public PlatformTest {
     [profile_state_ addAgent:profile_agent_];
   }
 
+  ~PostRestoreProfileAgentTest() override { profile_state_.profile = nullptr; }
+
   void TriggerProfileStateChange() {
     [profile_agent_ profileState:profile_state_
         didTransitionToInitStage:ProfileInitStage::kProfileLoaded

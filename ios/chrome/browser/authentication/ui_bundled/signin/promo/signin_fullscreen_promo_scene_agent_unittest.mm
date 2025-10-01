@@ -78,6 +78,10 @@ class SigninFullscreenPromoSceneAgentTest : public PlatformTest {
     scene_state_.UIEnabled = YES;
   }
 
+  ~SigninFullscreenPromoSceneAgentTest() override {
+    profile_state_.profile = nullptr;
+  }
+
   void TearDown() override {
     NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
     [standardDefaults removeObjectForKey:kDisplayedSSORecallForMajorVersionKey];
