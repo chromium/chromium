@@ -125,6 +125,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.OPEN_HELP,
         KeyboardShortcutsSemanticMeaning.OPEN_MENU,
         KeyboardShortcutsSemanticMeaning.CUSTOM_EXTENSION_SHORTCUT,
+        KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT,
         KeyboardShortcutsSemanticMeaning.MAX_VALUE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -224,8 +225,11 @@ public class KeyboardShortcuts {
         // This enum isn't precisely a single semantic meaning, but we want to report metrics.
         int CUSTOM_EXTENSION_SHORTCUT = 60;
 
+        // Tab strip shortcuts.
+        int TOGGLE_MULTISELECT = 61;
+
         // Max value.
-        int MAX_VALUE = 61;
+        int MAX_VALUE = 62;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning)
@@ -681,6 +685,12 @@ public class KeyboardShortcuts {
                             KeyEvent.KEYCODE_SLASH,
                             (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON))
                 });
+
+        new KeyboardShortcutDefinition(
+                KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT,
+                new KeyCombo(KeyEvent.KEYCODE_H, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON),
+                R.string.keyboard_shortcut_toggle_multiselect,
+                R.string.keyboard_shortcut_tab_navigation_group_header);
 
         // Unimplemented shortcuts.
         // TODO(crbug.com/402775002): Figure out what shortcut does TOGGLE_MULTITASK_MENU.
@@ -1155,6 +1165,8 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_BOOKMARKS:
                     return menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.focus_bookmarks, /* fromMenu= */ false);
+                case KeyboardShortcutsSemanticMeaning.TOGGLE_MULTISELECT:
+                    return toolbarManager.multiselectKeyboardFocusedItem();
             }
         }
 

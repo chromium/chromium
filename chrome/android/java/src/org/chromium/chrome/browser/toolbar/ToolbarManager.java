@@ -3356,6 +3356,16 @@ public class ToolbarManager
         return mStripLayoutHelperManager.reorderKeyboardFocusedItem(toLeft);
     }
 
+    /**
+     * Toggles multiselection on the keyboard focused tab.
+     *
+     * @return Whether a multiselect action was performed.
+     */
+    public boolean multiselectKeyboardFocusedItem() {
+        if (mStripLayoutHelperManager == null) return false;
+        return mStripLayoutHelperManager.multiselectKeyboardFocusedItem();
+    }
+
     public void onXrSpaceModeChanged(Boolean fullSpaceMode) {
         boolean isFsm = Boolean.TRUE.equals(fullSpaceMode);
         mSuppressToolbarSceneLayerSupplier.set(isFsm);

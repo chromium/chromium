@@ -1749,6 +1749,15 @@ public class StripLayoutHelperManager
         return getActiveStripLayoutHelper().moveSelectedStripView(toLeft);
     }
 
+    /**
+     * Toggles multiselection on the keyboard focused tab.
+     *
+     * @return Whether the multiselect action was successfully performed.
+     */
+    public boolean multiselectKeyboardFocusedItem() {
+        return getActiveStripLayoutHelper().multiselectKeyboardFocusedItem();
+    }
+
     private boolean isActivityInXrFullSpaceModeNow() {
         return mXrSpaceModeObservableSupplier != null && mXrSpaceModeObservableSupplier.get();
     }

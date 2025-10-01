@@ -1748,6 +1748,7 @@ Unknown properties are collapsed to zero. -->
   <int value="59" label="Open menu"/>
   <int value="60"
       label="Use a custom keyboard shortcut registered by an extension"/>
+  <int value="61" label="Toggle multiselect"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/KeyboardShortcuts.java:KeyboardShortcutsSemanticMeaning, //tools/metrics/histograms/metadata/accessibility/histograms.xml:KeyboardShortcutsSemanticMeaning) -->
