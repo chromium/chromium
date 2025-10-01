@@ -69,6 +69,12 @@ void BookmarkBarPreloadPipeline::StartPrefetch(
       std::move(same_url_matcher),
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
 
+  if (IsSearchUrl(web_contents, url_)) {
+    attempt->SetEligibility(ToPreloadingEligibility(
+        ChromePreloadingEligibility::KDisallowSearchUrl));
+    return;
+  }
+
   prefetch_handle_ = web_contents.StartPrefetch(
       url_, /*use_prefetch_proxy=*/false, kBookmarkBarMetricSuffix,
       blink::mojom::Referrer(), /*referring_origin=*/std::nullopt,
