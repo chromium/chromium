@@ -923,6 +923,48 @@ TEST_F(AudioRendererImplTest, Underflow_OneCapacityIncreasePerUnderflow) {
   testing::Mock::VerifyAndClearExpectations(this);
 }
 
+// Verify that the sink is reinitialized properly when an AudioBuffer
+// with a different channel count to the previous one is delivered.
+TEST_F(AudioRendererImplTest, SinkReconfiguredOnChannelCountChange) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(kMatchSourceAudioChannelLayout);
+
+  Initialize();
+  Preroll();
+  StartTicking();
+
+  const auto check_channel_mask = [](const std::vector<bool>& mask,
+                                     int total_channels) {
+    EXPECT_FALSE(mask.empty());
+    ASSERT_EQ(mask.size(), static_cast<size_t>(total_channels));
+    for (int ch = 0; ch < total_channels; ++ch) {
+      ASSERT_TRUE(mask[ch]);
+    }
+  };
+
+  // Verify that channel count prior to sink
+  // reinitialization is as expected.
+  check_channel_mask(std::move(channel_mask()), kChannels);
+
+  // Drain internal buffer, we should have a pending read.
+  EXPECT_TRUE(ConsumeBufferedData(frames_buffered()));
+  WaitForPendingRead();
+
+  // Deliver a buffer with a different channel count and layout.
+  const int new_channels = 6;
+  const ChannelLayout new_channel_layout = CHANNEL_LAYOUT_5_1;
+  scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
+      kSampleFormat, new_channel_layout, new_channels, kInputSamplesPerSecond,
+      1.0f, 0.0f, kInputFramesChunk, base::TimeDelta());
+  DeliverBuffer(DecoderStatus::Codes::kOk, std::move(buffer));
+
+  // Verify that sink was reinitialized with the new channel count.
+  check_channel_mask(std::move(channel_mask()), new_channels);
+
+  // Verify sink is in playing state after sink reinitialization.
+  EXPECT_EQ(FakeAudioRendererSink::kPlaying, sink_->state());
+}
+
 // Verify that the proper reduced search space is configured for playback rate
 // changes when upmixing is applied to the input.
 TEST_F(AudioRendererImplTest, ChannelMask) {

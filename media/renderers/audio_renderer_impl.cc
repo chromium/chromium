@@ -137,13 +137,17 @@ void AudioRendererImpl::StartTicking() {
 void AudioRendererImpl::StartRendering_Locked() {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(state_, kPlaying);
+  DCHECK(state_ == kPlaying || state_ == kReinitializingSink);
   DCHECK(!sink_playing_);
   DCHECK_NE(playback_rate_, 0.0);
   lock_.AssertAcquired();
 
   sink_playing_ = true;
   was_unmuted_ = was_unmuted_ || volume_ != 0;
+  if (state_ == kReinitializingSink) {
+    // Do not start the sink yet if the sink is reinitializing.
+    return;
+  }
   base::AutoUnlock auto_unlock(lock_);
   if (volume_ || render_muted_audio_) {
     MaybeStartRealSink();
@@ -172,11 +176,14 @@ void AudioRendererImpl::StopTicking() {
 
 void AudioRendererImpl::StopRendering_Locked() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(state_, kPlaying);
+  DCHECK(state_ == kPlaying || state_ == kReinitializingSink);
   DCHECK(sink_playing_);
   lock_.AssertAcquired();
 
   sink_playing_ = false;
+  if (state_ == kReinitializingSink) {
+    return;
+  }
 
   base::AutoUnlock auto_unlock(lock_);
   if (volume_ || render_muted_audio_) {
@@ -303,10 +310,14 @@ void AudioRendererImpl::Flush(base::OnceClosure callback) {
   }
 
   base::AutoLock auto_lock(lock_);
-  DCHECK_EQ(state_, kPlaying);
+  DCHECK(state_ == kPlaying || state_ == kReinitializingSink);
   DCHECK(!flush_cb_);
 
   flush_cb_ = std::move(callback);
+  if (state_ == kReinitializingSink) {
+    // Defer flush if the sink is reinitializing.
+    return;
+  }
   ChangeState_Locked(kFlushing);
 
   if (pending_read_)
@@ -411,6 +422,35 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
 #endif
 }
 
+void AudioRendererImpl::InitializeSink() {
+  sink_->Initialize(audio_parameters_, this);
+  null_sink_->Initialize(audio_parameters_, this);
+  null_sink_->Start();  // Does nothing but reduce state bookkeeping.
+  real_sink_needs_start_ = true;
+  SetVolume(volume_);
+}
+
+void AudioRendererImpl::OnSourceChannelCountChanged(
+    OutputDeviceInfo /* output_device_info */) {
+  DVLOG(1) << __func__ << ": Reconfiguring sink for channel count:"
+           << audio_parameters_.channels();
+  InitializeSink();
+  base::AutoLock auto_lock(lock_);
+  if (flush_cb_) {
+    DCHECK(!sink_playing_);
+    DVLOG(1) << __func__ << ": Complete flush during sink reinitialization.";
+    ChangeState_Locked(kFlushed);
+    DoFlush_Locked();
+    return;
+  }
+  ChangeState_Locked(kPlaying);
+  AttemptRead_Locked();
+  if (sink_playing_) {
+    sink_playing_ = false;
+    StartRendering_Locked();
+  }
+}
+
 void AudioRendererImpl::OnDeviceInfoReceived(
     DemuxerStream* stream,
     CdmContext* cdm_context,
@@ -472,9 +512,11 @@ void AudioRendererImpl::OnDeviceInfoReceived(
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO) && BUILDFLAG(IS_WIN)
 
-  bool use_stream_params = !expecting_config_changes_ || !hw_params.IsValid() ||
-                           hw_params.format() == AudioParameters::AUDIO_FAKE ||
-                           !sink_->IsOptimizedForHardwareParameters();
+  bool use_stream_params =
+      !expecting_config_changes_ || !hw_params.IsValid() ||
+      hw_params.format() == AudioParameters::AUDIO_FAKE ||
+      !sink_->IsOptimizedForHardwareParameters() ||
+      base::FeatureList::IsEnabled(kMatchSourceAudioChannelLayout);
 
   if (stream->audio_decoder_config().channel_layout() ==
           CHANNEL_LAYOUT_DISCRETE &&
@@ -719,11 +761,7 @@ void AudioRendererImpl::OnAudioDecoderStreamInitialized(bool success) {
 
   {
     base::AutoUnlock auto_unlock(lock_);
-    sink_->Initialize(audio_parameters_, this);
-    null_sink_->Initialize(audio_parameters_, this);
-    null_sink_->Start();  // Does nothing but reduce state bookkeeping.
-    real_sink_needs_start_ = true;
-    SetVolume(volume_);
+    InitializeSink();
   }
 
   DCHECK(!sink_playing_);
@@ -766,6 +804,10 @@ void AudioRendererImpl::OnStatisticsUpdate(const PipelineStatistics& stats) {
 void AudioRendererImpl::OnBufferingStateChange(BufferingState buffering_state) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
+  if (state_ == kReinitializingSink) {
+    // Defer buffering state changes if the sink is reinitializing.
+    return;
+  }
   // "Underflow" is only possible when playing. This avoids noise like blaming
   // the decoder for an "underflow" that is really just a seek.
   BufferingStateChangeReason reason = BUFFERING_CHANGE_REASON_UNKNOWN;
@@ -791,12 +833,13 @@ void AudioRendererImpl::SetVolume(float volume) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Only consider audio as unmuted if the volume is set to a non-zero value
-  // when the state is kPlaying.
-  if (state_ == kPlaying) {
+  // when the state is kPlaying or kReinitializingSink.
+  if (state_ == kPlaying || state_ == kReinitializingSink) {
     was_unmuted_ = was_unmuted_ || volume != 0;
   }
 
-  if (state_ == kUninitialized || state_ == kInitializing) {
+  if (state_ == kUninitialized || state_ == kInitializing ||
+      state_ == kReinitializingSink) {
     volume_ = volume;
     return;
   }
@@ -848,7 +891,8 @@ void AudioRendererImpl::SetRenderMutedAudio(bool render_muted_audio) {
   }
 
   render_muted_audio_ = render_muted_audio;
-  if (!volume_ && state_ != kUninitialized && state_ != kInitializing) {
+  if (!volume_ && state_ != kUninitialized && state_ != kInitializing &&
+      state_ != kReinitializingSink) {
     if (render_muted_audio_) {
       MaybeStartRealSink();
     } else {
@@ -912,10 +956,57 @@ void AudioRendererImpl::DecodedAudioReady(
 
   bool need_another_buffer = true;
 
+  bool allow_config_changes = expecting_config_changes_;
+  if (base::FeatureList::IsEnabled(kMatchSourceAudioChannelLayout) &&
+      !buffer->end_of_stream() &&
+      ((audio_parameters_.channels() != buffer->channel_count()) ||
+       (audio_parameters_.sample_rate() != buffer->sample_rate()))) {
+    // If the incoming buffer's channel count or sample rate has changed,
+    // we need to reconfigure the sink to match. This drops all
+    // in-progress audio buffers and may cause audible glitches,
+    // but this is deemed acceptable for this use case.
+    DVLOG(1) << __func__ << ": Reconfiguring sink: channel count from "
+             << audio_parameters_.channels() << " to "
+             << buffer->channel_count() << ", sample rate from "
+             << audio_parameters_.sample_rate() << " to "
+             << buffer->sample_rate();
+    allow_config_changes = false;
+    {
+      base::AutoUnlock auto_unlock(lock_);
+      sink_->Stop();
+      null_sink_->Stop();
+    }
+    ChangeState_Locked(kReinitializingSink);
+
+    last_decoded_channel_layout_ = buffer->channel_layout();
+    last_decoded_channels_ = buffer->channel_count();
+    audio_parameters_.SetChannelLayoutConfig(last_decoded_channel_layout_,
+                                             last_decoded_channels_);
+
+    last_decoded_sample_rate_ = buffer->sample_rate();
+    audio_parameters_.set_sample_rate(last_decoded_sample_rate_);
+
+    // Recreate the algorithm with the new audio parameters.
+    algorithm_->FlushBuffers();
+    algorithm_->Initialize(audio_parameters_, is_encrypted_);
+    if (latency_hint_) {
+      algorithm_->SetLatencyHint(latency_hint_);
+    }
+    algorithm_->SetPreservesPitch(preserves_pitch_);
+    ConfigureChannelMask();
+
+    // Asynchronously reconfigure the sink with the new parameters.
+    {
+      base::AutoUnlock auto_unlock(lock_);
+      sink_->GetOutputDeviceInfoAsync(
+          base::BindOnce(&AudioRendererImpl::OnSourceChannelCountChanged,
+                         weak_factory_.GetWeakPtr()));
+    }
+  }
+
   // FFmpeg allows "channel pair element" and "single channel element" type
   // AAC streams to masquerade as mono and stereo respectively. Allow these
   // specific exceptions to avoid playback errors.
-  bool allow_config_changes = expecting_config_changes_;
   if (!expecting_config_changes_ && !buffer->end_of_stream() &&
       current_decoder_config_.codec() == AudioCodec::kAAC &&
       buffer->sample_rate() == audio_parameters_.sample_rate()) {
@@ -933,7 +1024,6 @@ void AudioRendererImpl::DecodedAudioReady(
       allow_config_changes = true;
     }
   }
-
   if (allow_config_changes) {
     if (!buffer->end_of_stream()) {
       if (last_decoded_sample_rate_ &&
@@ -1018,7 +1108,8 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
     if (first_packet_timestamp_ == kNoTimestamp)
       should_render_end_of_stream = true;
   } else {
-    if (buffer->IsBitstreamFormat() && state_ == kPlaying) {
+    if (buffer->IsBitstreamFormat() &&
+        (state_ == kPlaying || state_ == kReinitializingSink)) {
       if (IsBeforeStartTime(*buffer))
         return true;
 
@@ -1030,7 +1121,7 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
         audio_clock_ = std::make_unique<AudioClock>(
             buffer->timestamp(), audio_parameters_.sample_rate());
       }
-    } else if (state_ == kPlaying) {
+    } else if (state_ == kPlaying || state_ == kReinitializingSink) {
       if (IsBeforeStartTime(*buffer))
         return true;
 
@@ -1088,6 +1179,7 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
       DCHECK(!pending_read_);
       return false;
 
+    case kReinitializingSink:
     case kPlaying:
       if (received_end_of_stream_ || algorithm_->IsQueueAdequateForPlayback()) {
         if (buffering_state_ == BUFFERING_HAVE_NOTHING)
@@ -1136,6 +1228,7 @@ bool AudioRendererImpl::CanRead_Locked() {
     case kInitializing:
     case kFlushing:
     case kFlushed:
+    case kReinitializingSink:
       return false;
 
     case kPlaying:
@@ -1182,7 +1275,7 @@ void AudioRendererImpl::SetPlaybackRate(double playback_rate) {
 }
 
 bool AudioRendererImpl::IsBeforeStartTime(const AudioBuffer& buffer) {
-  DCHECK_EQ(state_, kPlaying);
+  DCHECK(state_ == kPlaying || state_ == kReinitializingSink);
   return !buffer.end_of_stream() &&
          (buffer.timestamp() + buffer.duration()) < start_timestamp_;
 }
@@ -1217,6 +1310,8 @@ int AudioRendererImpl::Render(base::TimeDelta delay,
   int frames_written = 0;
   {
     base::AutoLock auto_lock(lock_);
+    DCHECK_NE(state_, kReinitializingSink);
+
     last_render_time_ = tick_clock_->NowTicks();
 
     int64_t frames_delayed = AudioTimestampHelper::TimeToFrames(
@@ -1436,6 +1531,7 @@ void AudioRendererImpl::HandleAbortedReadOrDecodeError(PipelineStatus status) {
 
     case kFlushed:
     case kPlaying:
+    case kReinitializingSink:
       if (status != PIPELINE_OK) {
         MEDIA_LOG(ERROR, media_log_)
             << "audio error during playing, status: " << status;

@@ -952,6 +952,15 @@ BASE_FEATURE(kAutoplayDisableSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 // Whether we should allow color space changes to flush AcceleratedVideoDecoder.
 BASE_FEATURE(kAVDColorSpaceChanges, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Allows Chrome to reconfigure the sink to match the channel count of the
+// source audio data. This ensures opening of an audio output stream to match
+// the source audio data channels, to signal to the downstream audio
+// subsystem that the audio must be processed according to the source audio
+// channel count.
+// TODO(crbug.com/445215599): This should be replaced with a MediaClient
+// mechanism if it works as intended.
+BASE_FEATURE(kMatchSourceAudioChannelLayout, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Allows the enhanced picture-in-picture transition animation that depend on
 // the sourceRectHint PictureInPictureParam.

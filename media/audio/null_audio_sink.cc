@@ -48,6 +48,7 @@ void NullAudioSink::Start() {
 void NullAudioSink::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   started_ = false;
+  playing_ = false;
   // Stop may be called at any time, so we have to check before stopping.
   if (fake_worker_)
     fake_worker_->Stop();

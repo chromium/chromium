@@ -10,6 +10,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/android/device_info.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -163,6 +164,27 @@ std::optional<aaudio_channel_mask_t> ChannelMaskFromChannelLayout(
     return AAUDIO_CHANNEL_STEREO;
   }
 
+  // Map to canonical AAUDIO_CHANNEL_QUAD channel mask for 4-channel
+  // PCM MediaCodec decoded audio. This ensures compatibility with
+  // Android devices for signaling 4-channel output.
+  if (layout == CHANNEL_LAYOUT_QUAD) {
+    return AAUDIO_CHANNEL_QUAD;
+  }
+
+  // Map to canonical AAUDIO_CHANNEL_PENTA channel mask for 5-channel
+  // PCM MediaCodec decoded audio. This ensures compatibility with
+  // Android devices for signaling 5-channel output.
+  if (layout == CHANNEL_LAYOUT_5_0) {
+    return AAUDIO_CHANNEL_PENTA;
+  }
+
+  // Map to canonical AAUDIO_CHANNEL_5POINT1 channel mask for 6-channel
+  // PCM MediaCodec decoded audio. This ensures compatibility with
+  // Android devices for signaling 6-channel output.
+  if (layout == CHANNEL_LAYOUT_5_1) {
+    return AAUDIO_CHANNEL_5POINT1;
+  }
+
   aaudio_channel_mask_t mask = 0;
 
   for (int ch = 0; ch <= Channels::CHANNELS_MAX; ++ch) {
@@ -228,7 +250,15 @@ AAudioStreamWrapper::AAudioStreamWrapper(DataCallback* callback,
       performance_mode_ = AAUDIO_PERFORMANCE_MODE_LOW_LATENCY;
       break;
     case AudioLatency::Type::kPlayback:
-      performance_mode_ = AAUDIO_PERFORMANCE_MODE_POWER_SAVING;
+      // For multichannel PCM playback, do not use power saving
+      // mode to allow direct multichannel PCM outputs to be opened
+      // where available. Limit this to automotive devices only.
+      if (params_.channels() > 2 &&
+          base::android::device_info::is_automotive()) {
+        performance_mode_ = AAUDIO_PERFORMANCE_MODE_NONE;
+      } else {
+        performance_mode_ = AAUDIO_PERFORMANCE_MODE_POWER_SAVING;
+      }
       break;
     case AudioLatency::Type::kUnknown:
       // The default value should be set above.

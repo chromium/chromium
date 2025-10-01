@@ -141,16 +141,34 @@ class MEDIA_EXPORT AudioRendererImpl
   //  |      |
   //  |      V            Decoders reset
   //  +-  kFlushed <------------------ kFlushing
-  //         | StartPlaying()             ^
-  //         |                            |
-  //         |                            | Flush()
-  //         `---------> kPlaying --------'
-  enum State { kUninitialized, kInitializing, kFlushing, kFlushed, kPlaying };
+  //      ^  | StartPlaying()             ^
+  //      |  |                            |
+  //      |  |                            | Flush()
+  //      |  `---------> kPlaying --------'
+  //      |               ^    |
+  //      |               |    |
+  //      |               |    V
+  //      `-------- kReinitializingSink
+  //
+  enum State {
+    kUninitialized,
+    kInitializing,
+    kFlushing,
+    kFlushed,
+    kReinitializingSink,
+    kPlaying
+  };
 
   // Called after hardware device information is available.
   void OnDeviceInfoReceived(DemuxerStream* stream,
                             CdmContext* cdm_context,
                             OutputDeviceInfo output_device_info);
+
+  void InitializeSink();
+
+  // Called when the channel count of the decoded buffer from the audio decoder
+  // has changed.
+  void OnSourceChannelCountChanged(OutputDeviceInfo /* output_device_info */);
 
   // Callback from the audio decoder delivering decoded audio samples.
   void DecodedAudioReady(AudioDecoderStream::ReadResult result);

@@ -453,6 +453,7 @@ source_set("unit_tests") {
     "audio_output_unittest.cc",
     "audio_system_impl_unittest.cc",
     "audio_thread_hang_monitor_unittest.cc",
+    "null_audio_sink_unittest.cc",
     "power_observer_helper_unittest.cc",
     "reconfigurable_audio_bus_pool_unittest.cc",
     "simple_sources_unittest.cc",

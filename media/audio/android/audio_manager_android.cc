@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -1011,9 +1012,12 @@ AudioParameters AudioManagerAndroid::GetPreferredOutputStreamParameters(
   if (input_params_are_valid) {
     // AudioManager APIs for GetOptimalOutputFramesPerBuffer() don't support
     // channel layouts greater than stereo unless low latency audio is
-    // supported.
+    // supported or we support reinitializing the sink based on source
+    // audio channels on an automotive device.
     if (input_params.channels() <= 2 ||
-        GetJniDelegate().IsAudioLowLatencySupported()) {
+        GetJniDelegate().IsAudioLowLatencySupported() ||
+        (base::FeatureList::IsEnabled(media::kMatchSourceAudioChannelLayout) &&
+         base::android::device_info::is_automotive())) {
       channel_layout_config = input_params.channel_layout_config();
     }
 
