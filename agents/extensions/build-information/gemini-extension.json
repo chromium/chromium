@@ -1,8 +1,8 @@
 {
-  "name": "build_information",
+  "name": "build-information",
   "version": "1.0.0",
   "mcpServers": {
-    "build_information": {
+    "build-information": {
       "command": "vpython3",
       "args": ["build/mcp_servers/build_information.py"]
     }

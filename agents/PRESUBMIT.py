@@ -45,7 +45,8 @@ def CheckPylint(input_api, output_api):
 def CheckPromptfooTestCases(input_api, output_api):
     """Checks that promptfoo.yaml files are valid."""
     promptfoo_files = [
-        f.AbsoluteLocalPath() for f in input_api.AffectedFiles()
+        f.AbsoluteLocalPath()
+        for f in input_api.AffectedFiles(include_deletes=False)
         if f.LocalPath().endswith('.promptfoo.yaml')
     ]
 

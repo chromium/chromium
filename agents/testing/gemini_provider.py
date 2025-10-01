@@ -16,7 +16,7 @@ from typing import Any
 
 DEFAULT_TIMEOUT_SECONDS = 600
 DEFAULT_EXTENSIONS = [
-    'build_information',
+    'build-information',
     'depot_tools',
     'landmines',
     'test_landmines',
