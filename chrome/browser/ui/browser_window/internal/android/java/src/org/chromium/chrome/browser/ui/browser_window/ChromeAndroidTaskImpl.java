@@ -451,6 +451,7 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void deactivate() {
+        if (!isActive()) return;
         ChromeAndroidTaskTrackerImpl.getInstance().activatePenultimatelyActivatedTask();
     }
 

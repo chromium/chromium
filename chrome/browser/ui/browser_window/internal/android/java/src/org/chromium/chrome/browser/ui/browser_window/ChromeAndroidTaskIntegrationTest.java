@@ -362,6 +362,37 @@ public class ChromeAndroidTaskIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* test needs "new window" in app menu */)
+    public void deactivate_notTriggeredIfAlreadyInactive() {
+        // Arrange
+        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
+        int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
+        var firstChromeAndroidTask = getChromeAndroidTask(firstTaskId);
+        assertNotNull(firstChromeAndroidTask);
+        assertTrue(firstChromeAndroidTask.isActive());
+
+        RegularNewTabPageStation ntpStation =
+                webPageStation.openRegularTabAppMenu().openNewWindow();
+        int secondTaskId = ntpStation.getActivity().getTaskId();
+        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
+        assertNotNull(secondChromeAndroidTask);
+        assertTrue(secondChromeAndroidTask.isActive());
+        assertFalse("Task should be inactive", firstChromeAndroidTask.isActive());
+
+        // Act
+        firstChromeAndroidTask.deactivate();
+
+        // Assert
+        assertFalse(
+                "Deactivate should be a no-op for inactive tasks",
+                firstChromeAndroidTask.isActive());
+        assertTrue("Deactivate should be a no-op", secondChromeAndroidTask.isActive());
+        // Cleanup
+        ntpStation.getActivity().finish();
+    }
+
+    @Test
+    @MediumTest
     public void isMaximized_trueByDefault() {
         // Arrange
         mFreshCtaTransitTestRule.startOnBlankPage();
