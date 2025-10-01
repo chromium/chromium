@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
 #define COMPONENTS_SECURE_EMBED_BROWSER_SECURE_EMBED_HOST_H_
 
+#include "base/component_export.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
@@ -14,7 +15,7 @@ class RenderFrameHost;
 
 namespace secure_embed {
 
-class SecureEmbedHost {
+class COMPONENT_EXPORT(SECURE_EMBED) SecureEmbedHost {
  public:
   static void BindSecureEmbedHost(
       content::RenderFrameHost* render_frame_host,

@@ -7,13 +7,18 @@ import("//components/secure_embed/buildflags/buildflags.gni")
 assert(enable_secure_embed)
 
 component("renderer") {
+  defines = [ "IS_SECURE_EMBED_IMPL" ]
+
   public = [ "create_plugin.h" ]
 
   sources = [
     "create_plugin.cc",
+    "create_plugin.h",
     "secure_embed_web_plugin.cc",
     "secure_embed_web_plugin.h",
   ]
 
   deps = [ "//third_party/blink/public:blink" ]
+
+  public_deps = [ "//components/secure_embed/common:mojom" ]
 }

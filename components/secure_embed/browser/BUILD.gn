@@ -2,11 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/secure_embed/buildflags/buildflags.gni")
+
+assert(enable_secure_embed)
+
+component("browser") {
+  defines = [ "IS_SECURE_EMBED_IMPL" ]
+
+  public = [ "secure_embed_host.h" ]
+
+  sources = [
+    "secure_embed_host.cc",
+    "secure_embed_host.h",
+  ]
+
+  public_deps = [ "//components/secure_embed/common:mojom" ]
+}
+
 source_set("browser_tests") {
   testonly = true
-  sources = [ "secure_embed_browsertest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "secure_embed_browsertest.cc" ]
 
   public_deps = [
     "//base/test:test_support",
@@ -15,12 +33,4 @@ source_set("browser_tests") {
     "//content/test:browsertest_support",
     "//content/test:test_support",
   ]
-}
-
-component("browser") {
-  public = [ "secure_embed_host.h" ]
-
-  sources = [ "secure_embed_host.cc" ]
-
-  public_deps = [ "//components/secure_embed/common:mojom" ]
 }
