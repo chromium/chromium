@@ -341,6 +341,19 @@ void MaybeRegisterChromeFeaturePromos(
                        "The IPH is displayed when the user clicks on such an "
                        "input field and is anchored against it.")));
 
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHAutofillAiValuablesFeature,
+          autofill::PopupViewViews::kAutofillAiValuablesElementId,
+          IDS_AUTOFILL_AI_VALUABLES_IPH_BODY,
+          IDS_AUTOFILL_IPH_LOYALTY_CARD_SUGGESTION_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetBubbleTitleText(IDS_AUTOFILL_AI_VALUABLES_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+          .SetMetadata(
+              143, "vizcay@google.com",
+              "Triggered after Wallet autofill suggestions are shown.")));
+
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

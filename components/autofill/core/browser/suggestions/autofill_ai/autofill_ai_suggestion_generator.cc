@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -363,6 +364,10 @@ Suggestion GetSuggestionForEntity(
   suggestion.labels = {{Suggestion::Text(std::move(label))}};
   suggestion.payload = Suggestion::AutofillAiPayload(entity.guid());
   suggestion.icon = GetSuggestionIcon(entity.type());
+  if (entity.record_type() == EntityInstance::RecordType::kServerWallet) {
+    suggestion.iph_metadata = Suggestion::IPHMetadata(
+        &feature_engagement::kIPHAutofillAiValuablesFeature);
+  }
   return suggestion;
 }
 

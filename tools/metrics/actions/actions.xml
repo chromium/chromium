@@ -50556,6 +50556,7 @@ should be able to be added at any place in this file.
   <suffix name="AutofillAccountNameEmailSuggestion"
       label="For AutofillAccountNameEmailSuggestion feature."/>
   <suffix name="AutofillAiOptIn" label="For AutofillAiOptIn feature."/>
+  <suffix name="AutofillAiValuables" label="For AutofillAiValuables feature."/>
   <suffix name="AutofillBnplAffirmOrZipSuggestion"
       label="For AutofillBnplAffirmOrZipSuggestion IPH feature."/>
   <suffix name="AutofillBnplAffirmZipOrKlarnaSuggestion"

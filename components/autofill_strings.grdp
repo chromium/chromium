@@ -980,6 +980,15 @@
   <message name="IDS_AUTOFILL_AI_OPT_IN_IPH_MAYBE_LATER" desc="The left of two buttons that’s essentially the user’s path to not learning more or turning on enhanced autofill. “Maybe later” conveys that the user won’t do it now but that they’ll have the choice to do it later. Localizer has existing translations of this button label.">
     Maybe later
   </message>
+  <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_TITLE" desc="IPH toast for a suggestion item with an item from Google Wallet.">
+    Now you can autofill more info from Google Wallet
+  </message>
+  <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_BODY" desc="IPH toast for a suggestion item with an item from Google Wallet.">
+    Manage your information or turn these suggestions off in Settings
+  </message>
+  <message name="IDS_AUTOFILL_AI_VALUABLES_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="IPH toast for a suggestion item with an item from Google Wallet.">
+    Now you can autofill more info from Google Wallet
+  </message>
 
   <!-- Save/ Update dialog-->
   <message name="IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user is renting a car and just filled in info about their driver’s license. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">

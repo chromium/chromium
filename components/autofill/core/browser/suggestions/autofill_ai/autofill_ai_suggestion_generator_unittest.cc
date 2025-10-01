@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -752,6 +753,18 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
   SetForm({NAME_FULL, FLIGHT_RESERVATION_TICKET_NUMBER});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Flight · MUC–BEY")));
+}
+
+// Tests that the Wallet suggestions show the IPH.
+TEST_F(AutofillAiSuggestionGeneratorTest, WalletSuggestionsShowIPH) {
+  SetEntities({test::GetVehicleEntityInstanceWithRandomGuid(
+      {.record_type = EntityInstance::RecordType::kServerWallet})});
+  SetForm({VEHICLE_LICENSE_PLATE, VEHICLE_VIN});
+  std::vector<Suggestion> suggestions =
+      CreateAutofillAiFillingSuggestions(field(0));
+  raw_ptr<const base::Feature> kIphFeature =
+      &feature_engagement::kIPHAutofillAiValuablesFeature;
+  EXPECT_THAT(suggestions, SuggestionsAre(HasIphFeature(kIphFeature)));
 }
 
 }  // namespace

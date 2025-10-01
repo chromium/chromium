@@ -1111,6 +1111,10 @@ void PopupViewViews::CreateSuggestionViews() {
                          kIPHAutofillAccountNameEmailSuggestionFeature) {
             row_view->SetProperty(views::kElementIdentifierKey,
                                   kAutofillAccountNameEmailSuggestionElementId);
+          } else if (feature ==
+                     &feature_engagement::kIPHAutofillAiValuablesFeature) {
+            row_view->SetProperty(views::kElementIdentifierKey,
+                                  kAutofillAiValuablesElementId);
           }
       }
     }
@@ -1479,6 +1483,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(
     PopupViewViews,
     kAutofillCreditCardSuggestionEntryElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
+                                      kAutofillAiValuablesElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PopupViewViews,
                                       kAutofillAiOptInIphElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(

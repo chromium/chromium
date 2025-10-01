@@ -71,6 +71,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillAiOptIn"
       summary="snooze educating users about the possibility of turning on the
                AutofillAi feature"/>
+  <variant name="IPH_AutofillAiValuables"
+      summary="snooze educating users about the possibility of autofilling
+               Google Wallet passses"/>
   <variant name="IPH_AutofillBnplAffirmOrZipSuggestion"
       summary="message shown when users see the Autofill BNPL chip to educate
                users that they can now pay over time using Affirm or Zip."/>
