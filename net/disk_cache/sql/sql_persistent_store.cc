@@ -2324,6 +2324,11 @@ int64_t Backend::CalculateTotalSize() {
 
 bool Backend::MaybeRunCheckpoint() {
   TRACE_EVENT("disk_cache", "SqlBackend.MaybeRunCheckpoint");
+  if (!db_.is_open()) {
+    // The database might have been closed if a catastrophic error occurred and
+    // RazeAndPoison() was called.
+    return false;
+  }
   if (!IsBrowserIdle()) {
     // Between the time when idle was detected in the browser process and the
     // time when this backend was notified, the browser became non-idle.
