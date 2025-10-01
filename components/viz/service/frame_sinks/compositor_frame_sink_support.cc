@@ -1009,14 +1009,6 @@ void CompositorFrameSinkSupport::DidReceiveCompositorFrameAck() {
     return;
   }
 
-  // TODO(https://crbug.com/40902503): Drawing from a layer context is indeed
-  // local, but we'll likely want to use a different resource return policy.
-  if (layer_context_) {
-    client_->ReclaimResources(std::move(surface_returned_resources_));
-    surface_returned_resources_.clear();
-    return;
-  }
-
   client_->DidReceiveCompositorFrameAck(std::move(surface_returned_resources_));
   surface_returned_resources_.clear();
 }
