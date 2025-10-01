@@ -337,6 +337,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorMulitContentsViewMiniToolbarForeground] = {
       ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorMulitContentsViewActiveContentOutline] = {ui::kColorSysOutline};
+  mixer[kColorMulitContentsViewInactiveContentOutline] = {
+      ui::kColorSysNeutralOutline};
 
   mixer[kColorNewTabButtonFocusRing] = ui::PickGoogleColorTwoBackgrounds(
       ui::kColorSysStateFocusRing,
