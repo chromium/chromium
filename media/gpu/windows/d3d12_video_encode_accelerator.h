@@ -31,6 +31,8 @@
 namespace media {
 
 class CommandBufferHelper;
+class VEAEncodingLatencyMetricsHelper;
+
 typedef base::OnceCallback<void(scoped_refptr<VideoFrame> frame,
                                 Microsoft::WRL::ComPtr<ID3D12Resource> resource,
                                 HRESULT hr)>
@@ -115,6 +117,7 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   void DoEncodeTask(scoped_refptr<VideoFrame> frame,
                     Microsoft::WRL::ComPtr<ID3D12Resource> resolved_texture,
                     const VideoEncoder::EncodeOptions& options,
+                    base::TimeTicks start_time,
                     const BitstreamBuffer& bitstream_buffer);
 
   void TryEncodeFrames();
@@ -158,6 +161,9 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAccelerator
   scoped_refptr<CommandBufferHelper> command_buffer_helper_;
 
   VideoEncoderInfo encoder_info_;
+
+  std::unique_ptr<VEAEncodingLatencyMetricsHelper> metrics_helper_;
+  bool encoded_at_least_one_frame_ = false;
 
   Config config_;
   size_t bitstream_buffer_size_ = 0;

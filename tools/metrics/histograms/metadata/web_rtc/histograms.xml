@@ -2203,6 +2203,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Av1" summary=""/>
     <variant name="Generic" summary=""/>
     <variant name="H264" summary=""/>
+    <variant name="H265" summary=""/>
     <variant name="Multiplex" summary=""/>
     <variant name="Vp8" summary=""/>
     <variant name="Vp9" summary=""/>
@@ -2939,6 +2940,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Av1" summary=""/>
     <variant name="Generic" summary=""/>
     <variant name="H264" summary=""/>
+    <variant name="H265" summary=""/>
     <variant name="Multiplex" summary=""/>
     <variant name="Vp8" summary=""/>
     <variant name="Vp9" summary=""/>
@@ -3121,6 +3123,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Av1" summary=""/>
     <variant name="Generic" summary=""/>
     <variant name="H264" summary=""/>
+    <variant name="H265" summary=""/>
     <variant name="Multiplex" summary=""/>
     <variant name="Vp8" summary=""/>
     <variant name="Vp9" summary=""/>
@@ -3563,6 +3566,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Av1" summary=""/>
     <variant name="Generic" summary=""/>
     <variant name="H264" summary=""/>
+    <variant name="H265" summary=""/>
     <variant name="Multiplex" summary=""/>
     <variant name="Vp8" summary=""/>
     <variant name="Vp9" summary=""/>

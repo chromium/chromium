@@ -214,6 +214,7 @@ struct MediaFoundationVideoEncodeAccelerator::PendingInput {
   ComMFSample input_sample;
   bool resolving_shared_image = false;
   gpu::Mailbox shared_image_token;
+  base::TimeTicks frame_encode_start_time = base::TimeTicks::Now();
 };
 
 class MediaFoundationVideoEncodeAccelerator::EncodeOutput {
@@ -532,6 +533,9 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
 
   // Notify encoder info change to client after initialization succeeded.
   client_->NotifyEncoderInfoChange(encoder_info_);
+
+  metrics_helper_ = std::make_unique<VEAEncodingLatencyMetricsHelper>(
+      "Media.VideoEncoder.MFVEA.EncodingLatency.", codec_);
 
   return {EncoderStatus::Codes::kOk};
 }
@@ -1825,12 +1829,13 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     // We don't actually tell the MFT about the color space since all current
     // MFT implementations just write UNSPECIFIED in the bitstream, and setting
     // it can actually break some encoders; see https://crbug.com/1446081.
-    sample_metadata_queue_.push_back(
-        OutOfBandMetadata{.color_space = input.color_space,
-                          .discard_output = input.discard_output,
-                          .qp = quantizer,
-                          .frame_id = input_since_keyframe_count_,
-                          .timestamp = input.timestamp});
+    sample_metadata_queue_.push_back(OutOfBandMetadata{
+        .color_space = input.color_space,
+        .discard_output = input.discard_output,
+        .qp = quantizer,
+        .frame_id = input_since_keyframe_count_,
+        .timestamp = input.timestamp,
+        .frame_encode_start_time = input.frame_encode_start_time});
   }
 
   {
@@ -2464,6 +2469,12 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   }
   DVLOG(3) << "Encoded data with size:" << output_buffer_span.size()
            << " keyframe " << keyframe;
+
+  if (metrics_helper_) {
+    metrics_helper_->EncodeOneFrame(
+        keyframe, base::TimeTicks::Now() - metadata.frame_encode_start_time);
+  }
+
   // If no bit stream buffer presents, queue the output first.
   if (bitstream_buffer_queue_.empty()) {
     DVLOG(3) << "No bitstream buffers.";

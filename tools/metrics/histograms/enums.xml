@@ -26232,6 +26232,11 @@ Called by update_net_error_codes.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<enum name="VEAInitSuccessRate">
+  <int value="0" label="kInit"/>
+  <int value="1" label="kSuccess"/>
+</enum>
+
 <!-- LINT.IfChange(VideoCodec) -->
 
 <enum name="VideoCodec">

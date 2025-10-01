@@ -7471,6 +7471,47 @@ chromium-metrics-reviews@google.com.
   <token key="DbOperation" variants="DbOperation"/>
 </histogram>
 
+<histogram name="Media.VideoEncoder.D3D12VEA.EncodeStatus.{VideoCodec}"
+    enum="EncoderStatus" expires_after="2026-04-01">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records if the {VideoCodec} encoder was torn down because the stream ended,
+    or if it was due to an encoder error. Recorded once when shutting down an
+    accelerated (or out of process) video encoder.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.D3D12VEA.InitSuccessRate.{VideoCodec}"
+    enum="VEAInitSuccessRate" expires_after="2026-04-01">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the usage and success rate of D3D12 video encode accelerator for
+    {VideoCodec} codec. kInit is recorded every time VEA Initialize() is called.
+    kSuccess is recorded only when VEA initialization completes successfully.
+    Success percentage = (kSuccess count / kInit count) * 100.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
+<histogram name="Media.VideoEncoder.{Impl}.EncodingLatency.{VideoCodec}"
+    units="ms" expires_after="2026-04-01">
+  <owner>eugene@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Average encoding latency in milliseconds per frame for the {VideoCodec}
+    codec when using the {Impl}. Recorded on every key frame or when the
+    encoding session is destroyed so remaining samples are reported.
+  </summary>
+  <token key="Impl">
+    <variant name="D3D12VEA" summary=""/>
+    <variant name="MFVEA" summary=""/>
+  </token>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
 <histogram name="Media.VideoEncoder.{Usage}.{Impl}.Area" units="pixels"
     expires_after="2026-02-22">
   <owner>hiroh@chromium.org</owner>
