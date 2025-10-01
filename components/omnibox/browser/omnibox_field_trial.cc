@@ -680,7 +680,8 @@ bool IsDeterministicAimActionInTypedStateEnabled(
 bool IsAimOmniboxEntrypointEnabled(
     const AimEligibilityService* aim_eligibility_service) {
   return AimEligibilityService::GenericKillSwitchFeatureCheck(
-      aim_eligibility_service, omnibox::kAiModeOmniboxEntryPoint);
+      aim_eligibility_service, omnibox::kAiModeOmniboxEntryPoint,
+      omnibox::kAiModeOmniboxEntryPointEnUs);
 }
 
 bool IsAimStarterPackEnabled(

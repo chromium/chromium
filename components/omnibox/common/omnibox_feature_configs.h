@@ -166,7 +166,11 @@ struct AiMode : Config<AiMode> {
 // If enabled, show the AIM entrypoint in the omnibox.
 struct AiModeOmniboxEntryPoint : Config<AiModeOmniboxEntryPoint> {
   AiModeOmniboxEntryPoint();
+  // Whether the AIM entrypoint is enabled for all users.
   bool enabled;
+  // Whether the AIM entrypoint is enabled only for users whose locale is set to
+  // English and who are located in the US. Has no effect if `enabled` is true.
+  bool enabledEnUs;
 
   // Never display AIM hint text.
   bool hide_aim_hint_text;

@@ -67,6 +67,8 @@ extern const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam;
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
 BASE_DECLARE_FEATURE(kAiModeOmniboxEntryPoint);
+BASE_DECLARE_FEATURE(kAiModeOmniboxEntryPointEnUs);
+BASE_DECLARE_FEATURE(kHideAimEntrypointOnUserInput);
 BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 BASE_DECLARE_FEATURE(kOmniboxMultimodalInput);
 BASE_DECLARE_FEATURE(kRemoveSearchReadyOmnibox);
@@ -154,8 +156,6 @@ BASE_DECLARE_FEATURE(kGeminiPrototypeOmniboxProvider);
 // Returns whether the Gemini Prototype provider is enabled.
 bool IsGeminiPrototypeProviderEnabled();
 #endif
-
-BASE_DECLARE_FEATURE(kHideAimEntrypointOnUserInput);
 
 // Whether the composebox should use the new `chrome-compose` client.
 BASE_DECLARE_FEATURE(kComposeboxUsesChromeComposeClient);

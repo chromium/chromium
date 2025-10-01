@@ -188,7 +188,19 @@ BASE_FEATURE(kOmniboxMultimodalInput, DISABLED);
 
 // Whether the AI Mode entrypoint is shown in the Omnibox as a RHS button. Only
 // used on desktop platforms.
-BASE_FEATURE(kAiModeOmniboxEntryPoint, ENABLED);
+// The first feature enables the entrypoint for all users. The second feature
+// enables the entrypoint only for users who have their locale set to English
+// and are located in the US, and has no effect if the first feature is
+// enabled.
+BASE_FEATURE(kAiModeOmniboxEntryPoint, DISABLED);
+BASE_FEATURE(kAiModeOmniboxEntryPointEnUs, ENABLED);
+
+// Hides the AIM entrypoint in the Omnibox when user input is in progress. Only
+// used on desktop platforms.
+BASE_FEATURE(kHideAimEntrypointOnUserInput,
+             "OmniboxHideAimEntrypointOnUserInput",
+             DISABLED);
+
 
 // When enabled, removes the Search Ready Omnibox feature.
 BASE_FEATURE(kRemoveSearchReadyOmnibox, DISABLED);
@@ -355,11 +367,6 @@ bool IsGeminiPrototypeProviderEnabled() {
   return base::FeatureList::IsEnabled(kGeminiPrototypeOmniboxProvider);
 }
 #endif
-
-// Hides the AIM entrypoint in the Omnibox when user input is in progress.
-BASE_FEATURE(kHideAimEntrypointOnUserInput,
-             "OmniboxHideAimEntrypointOnUserInput",
-             DISABLED);
 
 // Controls whether the composebox
 BASE_FEATURE(kComposeboxUsesChromeComposeClient, DISABLED);
