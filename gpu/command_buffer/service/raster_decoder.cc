@@ -1161,8 +1161,6 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.using_vulkan_context =
       shared_context_state_->GrContextIsVulkan() ? true : false;
 
-  caps.max_copy_texture_chromium_size =
-      feature_info()->workarounds().max_copy_texture_chromium_size;
   caps.texture_format_etc1_npot =
       feature_info()->feature_flags().oes_compressed_etc1_rgb8_texture &&
       !feature_info()->workarounds().etc1_power_of_two_only;

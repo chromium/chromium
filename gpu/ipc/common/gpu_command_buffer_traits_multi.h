@@ -47,7 +47,6 @@ IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gpu::Capabilities)
   IPC_STRUCT_TRAITS_MEMBER(max_texture_size)
-  IPC_STRUCT_TRAITS_MEMBER(max_copy_texture_chromium_size)
 
   IPC_STRUCT_TRAITS_MEMBER(egl_image_external)
   IPC_STRUCT_TRAITS_MEMBER(texture_format_bgra8888)

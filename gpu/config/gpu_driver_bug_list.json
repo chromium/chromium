@@ -728,18 +728,6 @@
       ]
     },
     {
-      "id": 133,
-      "description": "CHROMIUM_copy_texture with 1MB copy per flush to avoid unwanted cache growth on Adreno",
-      "cr_bugs": [542478],
-      "os": {
-        "type": "android"
-      },
-      "gl_renderer": "Adreno.*",
-      "features": [
-        "max_copy_texture_chromium_size_1048576"
-      ]
-    },
-    {
       "id": 135,
       "description": "Screen flickers on 2009 iMacs",
       "cr_bugs": [543324],

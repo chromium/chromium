@@ -35,7 +35,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
-      int max_copy_texture_chromium_size,
       bool use_partial_raster,
       int max_staging_buffer_usage_in_bytes,
       bool is_overlay_candidate);
@@ -137,7 +136,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
   const scoped_refptr<gpu::SharedImageInterface> sii_;
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
-  const int max_bytes_per_copy_operation_;
   const bool use_partial_raster_;
   const bool tile_overlay_candidate_;
 

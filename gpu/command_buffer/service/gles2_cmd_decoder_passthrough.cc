@@ -1328,8 +1328,6 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
         std::min(caps.max_texture_size,
                  feature_info_->workarounds().webgl_or_caps_max_texture_size);
   }
-  caps.max_copy_texture_chromium_size =
-      feature_info_->workarounds().max_copy_texture_chromium_size;
   caps.render_buffer_format_bgra8888 =
       feature_info_->feature_flags().ext_render_buffer_format_bgra8888;
   caps.gpu_rasterization = false;

@@ -59,7 +59,6 @@
 namespace cc {
 namespace {
 
-const size_t kMaxBytesPerCopyOperation = 1000U;
 const size_t kMaxStagingBuffers = 32U;
 
 enum RasterBufferProviderType {
@@ -185,8 +184,8 @@ class RasterBufferProviderTest
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             worker_context_provider_->SharedImageInterface(),
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-            context_provider_.get(), worker_context_provider_.get(),
-            kMaxBytesPerCopyOperation, false, kMaxStagingBuffers,
+            context_provider_.get(), worker_context_provider_.get(), false,
+            kMaxStagingBuffers,
             /*is_overlay_candidate=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:

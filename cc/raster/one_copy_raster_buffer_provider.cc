@@ -39,13 +39,6 @@
 #include "ui/gl/trace_util.h"
 
 namespace cc {
-namespace {
-
-// 4MiB is the size of 4 512x512 tiles, which has proven to be a good
-// default batch size for copy operations.
-const int kMaxBytesPerCopyOperation = 1024 * 1024 * 4;
-
-}  // namespace
 
 OneCopyRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     OneCopyRasterBufferProvider* client,
@@ -126,18 +119,12 @@ OneCopyRasterBufferProvider::OneCopyRasterBufferProvider(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    int max_copy_texture_chromium_size,
     bool use_partial_raster,
     int max_staging_buffer_usage_in_bytes,
     bool is_overlay_candidate)
     : sii_(sii),
       compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      max_bytes_per_copy_operation_(
-          max_copy_texture_chromium_size
-              ? std::min(kMaxBytesPerCopyOperation,
-                         max_copy_texture_chromium_size)
-              : kMaxBytesPerCopyOperation),
       use_partial_raster_(use_partial_raster),
       tile_overlay_candidate_(is_overlay_candidate),
       staging_pool_(std::move(task_runner),

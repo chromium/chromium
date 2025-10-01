@@ -38,7 +38,6 @@ struct GPU_COMMAND_BUFFER_COMMON_EXPORT Capabilities {
 
   // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
   int max_texture_size = 0;
-  int max_copy_texture_chromium_size = 0;
   bool egl_image_external = false;
   bool egl_image_external_essl3 = false;
   bool texture_format_bgra8888 = false;
