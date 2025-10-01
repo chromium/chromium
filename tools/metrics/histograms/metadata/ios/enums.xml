@@ -118,6 +118,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="UserInitiatedFinishedByCode"/>
   <int value="3" label="UserTapped"/>
   <int value="4" label="BottomReached"/>
+  <int value="5" label="NoChange"/>
 </enum>
 
 <!-- LINT.ThenChange(//ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h:FullscreenModeTransitionReason) -->

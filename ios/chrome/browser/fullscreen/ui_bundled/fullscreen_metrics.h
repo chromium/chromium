@@ -28,7 +28,11 @@ enum class FullscreenModeTransitionReason {
   kUserTapped = 3,
   // Reported when exiting fullscreen mode by reaching the bottom of the page.
   kBottomReached = 4,
-  kMaxValue = kBottomReached,
+  // Reported when the animation is called but the state is still the same, so
+  // for example, when the user start in fullscreen mode and the animation is
+  // triggered to go in fullscreen mode.
+  kNoChange = 5,
+  kMaxValue = kNoChange,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:FullscreenModeTransitionReason)
 
