@@ -62,7 +62,6 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/shortcuts/chrome_webloc_file.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -83,7 +82,6 @@
 #import "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/profiles/profile_menu_controller.h"
 #import "chrome/browser/ui/cocoa/share_menu_controller.h"
-#import "chrome/browser/ui/cocoa/tab_group_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -94,7 +92,6 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -663,8 +660,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   std::unique_ptr<HistoryMenuBridge> _historyMenuBridge;
 
-  std::unique_ptr<TabGroupMenuBridge> _tabGroupMenuBridge;
-
   // The profile menu, which appears right before the Help menu. It is only
   // available when multiple profiles is enabled.
   ProfileMenuController* __strong _profileMenuController;
@@ -998,8 +993,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // deleted first.
   _historyMenuBridge.reset();
 
-  _tabGroupMenuBridge.reset();
-
   // It's safe to delete |_lastProfile| now.
   [self setLastProfile:nullptr];
 
@@ -1062,10 +1055,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   [self setLastProfile:profile];
   _lastActiveColorProvider = browser->window()->GetColorProvider();
-
-  if (_tabGroupMenuBridge) {
-    _tabGroupMenuBridge->SetActiveBrowser(browser);
-  }
 }
 
 // Called when shutting down or logging out.
@@ -1993,8 +1982,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     _historyMenuBridge->OnProfileWillBeDestroyed();
   }
 
-  _tabGroupMenuBridge.reset();
-
   _profilePrefRegistrar.reset();
 
   NSMenuItem* bookmarkItem = [NSApp.mainMenu itemWithTag:IDC_BOOKMARKS_MENU];
@@ -2048,16 +2035,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   _historyMenuBridge = std::make_unique<HistoryMenuBridge>(_lastProfile);
   _historyMenuBridge->BuildMenu();
-
-  if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
-    auto* tab_group_service =
-        tab_groups::TabGroupSyncServiceFactory::GetForProfile(_lastProfile);
-    if (tab_group_service) {
-      _tabGroupMenuBridge =
-          std::make_unique<TabGroupMenuBridge>(_lastProfile, tab_group_service);
-      _tabGroupMenuBridge->BuildMenu();
-    }
-  }
 
   chrome::BrowserCommandController::
       UpdateSharedCommandsForIncognitoAvailability(

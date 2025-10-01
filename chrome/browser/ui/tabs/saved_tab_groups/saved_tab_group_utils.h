@@ -10,7 +10,6 @@
 
 #include "base/containers/span.h"
 #include "base/uuid.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_action.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -37,7 +36,6 @@ struct ActivityLogItem;
 namespace tab_groups {
 
 class SavedTabGroupTab;
-class TabGroupSyncService;
 
 enum class GroupDeletionReason {
   ClosedLastTab,
@@ -177,10 +175,6 @@ class SavedTabGroupUtils {
   // must exist.
   static tabs::TabInterface* GetGroupedTab(LocalTabGroupID group_id,
                                            LocalTabID tab_id);
-
-  static void PerformTabGroupMenuAction(const TabGroupMenuAction& action,
-                                        Browser* browser,
-                                        TabGroupSyncService* tab_group_service);
 };
 
 }  // namespace tab_groups
