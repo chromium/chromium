@@ -358,9 +358,6 @@ extern const char kEnableBenchmarkingChoiceDisabled[];
 extern const char kEnableBenchmarkingChoiceDefaultFeatureStates[];
 extern const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[];
 
-extern const char kEnableBookmarksSelectedTypeOnSigninForTestingName[];
-extern const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[];
-
 extern const char kEnableCrossDevicePrefTrackerName[];
 extern const char kEnableCrossDevicePrefTrackerDescription[];
 
@@ -4839,12 +4836,6 @@ extern const char kGlicZOrderChangesDescription[];
 
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsName[];
 extern const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[];
-
-extern const char kSyncEnableBookmarksInTransportModeName[];
-extern const char kSyncEnableBookmarksInTransportModeDescription[];
-
-extern const char kReadingListEnableSyncTransportModeUponSignInName[];
-extern const char kReadingListEnableSyncTransportModeUponSignInDescription[];
 
 extern const char kEnableGenericOidcAuthProfileManagementName[];
 extern const char kEnableGenericOidcAuthProfileManagementDescription[];

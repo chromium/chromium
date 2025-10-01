@@ -3018,11 +3018,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-bookmarks-selected-type-on-signin-for-testing",
-    "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "enable-bound-session-credentials",
     "owners": [ "alexilin@chromium.org", "msalama@chromium.org", "chrome-signin-team@google.com" ],
     "expiry_milestone": 143
@@ -8711,11 +8706,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "reading-list-enable-sync-transport-mode-upon-sign-in",
-    "owners": [ "mmrashad@google.com", "rsult@google.com", "uno-desktop@google.com" ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "realbox-secondary-zero-suggest",
     "owners": [ "mahmadi@google.com", "chrome-desktop-search@google.com" ],
     "expiry_milestone": 120
@@ -9621,11 +9611,6 @@
       "yiwenqian@google.com", "payments-autofill-team@google.com"
     ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "sync-enable-bookmarks-in-transport-mode",
-    "owners": [ "msalama@chromium.org", "uno-desktop@google.com" ],
-    "expiry_milestone": 143
   },
   {
     "name": "sync-trusted-vault-infobar-message-improvements",

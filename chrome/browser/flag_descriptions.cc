@@ -582,13 +582,6 @@ const char kEnableBenchmarkingChoiceDefaultFeatureStates[] =
 const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[] =
     "Match Field Trial Testing Config";
 
-const char kEnableBookmarksSelectedTypeOnSigninForTestingName[] =
-    "Enable bookmarks selected type on sign-in for testing";
-const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[] =
-    "Test-only flag to help with the development of "
-    "sync-enable-bookmarks-in-transport-mode. Enables the bookmarks "
-    "UserSelectableType upon sign-in";
-
 const char kEnableCrossDevicePrefTrackerName[] =
     "Enable Cross-Device Pref Tracker";
 const char kEnableCrossDevicePrefTrackerDescription[] =
@@ -8356,16 +8349,6 @@ const char kDesktopPWAsUserLinkCapturingScopeExtensionsDescription[] =
     "Allows the 'Desktop PWA Scope Extensions' feature to be used with the "
     "'Desktop PWA Link Capturing' feature. Both of those features are required "
     "to be turned on for this flag to have an effect.";
-
-const char kSyncEnableBookmarksInTransportModeName[] =
-    "Enable bookmarks in transport mode";
-const char kSyncEnableBookmarksInTransportModeDescription[] =
-    "Enables account bookmarks for signed-in non-syncing users";
-
-const char kReadingListEnableSyncTransportModeUponSignInName[] =
-    "Enable reading list in transport mode";
-const char kReadingListEnableSyncTransportModeUponSignInDescription[] =
-    "Enables account reading list for signed-in non-syncing users";
 
 const char kEnableGenericOidcAuthProfileManagementName[] =
     "Enable generic OIDC profile management";

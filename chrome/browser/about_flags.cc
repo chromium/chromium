@@ -11299,20 +11299,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCanvasHibernationDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"sync-enable-bookmarks-in-transport-mode",
-     flag_descriptions::kSyncEnableBookmarksInTransportModeName,
-     flag_descriptions::kSyncEnableBookmarksInTransportModeDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kSyncEnableBookmarksInTransportMode)},
-    {"reading-list-enable-sync-transport-mode-upon-sign-in",
-     flag_descriptions::kReadingListEnableSyncTransportModeUponSignInName,
-     flag_descriptions::
-         kReadingListEnableSyncTransportModeUponSignInDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(syncer::kReadingListEnableSyncTransportModeUponSignIn)},
-#endif
-
     {"visited-url-ranking-service-domain-deduplication",
      flag_descriptions::kVisitedURLRankingServiceDeduplicationName,
      flag_descriptions::kVisitedURLRankingServiceDeduplicationDescription,
@@ -11623,14 +11609,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement)},
-
-    {"enable-bookmarks-selected-type-on-signin-for-testing",
-     flag_descriptions::kEnableBookmarksSelectedTypeOnSigninForTestingName,
-     flag_descriptions::
-         kEnableBookmarksSelectedTypeOnSigninForTestingDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         syncer::kEnableBookmarksSelectedTypeOnSigninForTesting)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"separate-local-and-account-themes",
