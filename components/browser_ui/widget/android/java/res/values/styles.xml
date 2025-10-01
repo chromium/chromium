@@ -32,6 +32,9 @@ found in the LICENSE file.
         <item name="windowActionBar">false</item>
     </style>
 
+    <style name="ThemeOverlay.BrowserUI.AlertDialog.TimePicker">
+        <item name="android:buttonBarButtonStyle">@style/TimePickerDialogButtonStyle</item>
+    </style>
 
     <!-- Card styles -->
     <style name="CardTransparentForDark">

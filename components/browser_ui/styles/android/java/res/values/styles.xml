@@ -76,7 +76,13 @@ found in the LICENSE file.
     </style>
 
     <style name="AlertDialogButtonStyle" parent="Widget.Material3Expressive.Button.TextButton.Dialog">
-        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Primary</item>
+    </style>
+
+    <style name="TimePickerDialogButtonStyle" parent="AlertDialogButtonStyle">
+        <!-- Arbitrary value to force the button bar orientation to vertical. -->
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
     </style>
 
     <!-- Styled to match BlackHeadline but setup to override values in the app compat parent theme.
