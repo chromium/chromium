@@ -234,6 +234,9 @@ Actions MakeScroll(RenderFrameHost& rfh,
       << "Scroll action supports only one axis at a time.";
   Actions actions;
   ScrollAction* scroll = actions.add_actions()->mutable_scroll();
+  auto* tab = TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(&rfh));
+  scroll->set_tab_id(tab->GetHandle().raw_value());
 
   if (content_node_id.has_value()) {
     scroll->mutable_target()->set_content_node_id(content_node_id.value());
