@@ -315,7 +315,8 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
 class MockCaptureHandleProvider
     : public VideoCaptureDevice::Client::Buffer::HandleProvider {
  public:
-  MockCaptureHandleProvider(const gfx::Size& size, gfx::BufferFormat format) {
+  MockCaptureHandleProvider(const gfx::Size& size,
+                            viz::SharedImageFormat format) {
     gmb_handle_ =
         gpu::TestSharedImageInterface::CreatePixmapHandle(size, format);
   }
@@ -459,7 +460,7 @@ TEST_P(V4l2CaptureDelegateGPUMemoryBufferTest, CameraCaptureOneCopy) {
             EXPECT_EQ(format, PIXEL_FORMAT_NV12);
             capture_buffer->handle_provider =
                 std::make_unique<MockCaptureHandleProvider>(
-                    size, gfx::BufferFormat::YUV_420_BIPLANAR);
+                    size, viz::MultiPlaneFormat::kNV12);
             return VideoCaptureDevice::Client::ReserveResult::kSucceeded;
           });
 

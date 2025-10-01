@@ -42,7 +42,7 @@ class TestSharedImageInterface : public SharedImageInterface {
   // test clients that need the handle grab it from the created SI.
   static gfx::GpuMemoryBufferHandle CreatePixmapHandle(
       const gfx::Size& size,
-      gfx::BufferFormat format);
+      viz::SharedImageFormat format);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   // for default-args overloads

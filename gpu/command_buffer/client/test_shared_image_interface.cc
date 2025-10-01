@@ -58,21 +58,22 @@ gfx::GpuMemoryBufferType GetNativeBufferType() {
 }
 
 // Creates a shared memory region and returns a handle to it.
-gfx::GpuMemoryBufferHandle CreateGMBHandle(
-    const gfx::BufferFormat& buffer_format,
-    const gfx::Size& size,
-    gfx::BufferUsage buffer_usage) {
-  size_t buffer_size = 0u;
-  CHECK(
-      gfx::BufferSizeForBufferFormatChecked(size, buffer_format, &buffer_size));
+gfx::GpuMemoryBufferHandle CreateGMBHandle(const viz::SharedImageFormat& format,
+                                           const gfx::Size& size,
+                                           gfx::BufferUsage buffer_usage) {
+  size_t buffer_size =
+      viz::SharedMemorySizeForSharedImageFormat(format, size).value();
+  CHECK(buffer_size);
   auto shared_memory_region =
       base::UnsafeSharedMemoryRegion::Create(buffer_size);
   CHECK(shared_memory_region.IsValid());
 
   gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
   handle.offset = 0;
-  handle.stride = static_cast<uint32_t>(
-      gfx::RowSizeForBufferFormat(size.width(), buffer_format, 0));
+  handle.stride =
+      static_cast<uint32_t>(viz::SharedMemoryRowSizeForSharedImageFormat(
+                                format, /*plane*/ 0, size.width())
+                                .value());
 
   return handle;
 }
@@ -157,14 +158,14 @@ TestSharedImageInterface::~TestSharedImageInterface() = default;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 gfx::GpuMemoryBufferHandle TestSharedImageInterface::CreatePixmapHandle(
     const gfx::Size& size,
-    gfx::BufferFormat format) {
+    viz::SharedImageFormat format) {
   gfx::NativePixmapHandle native_pixmap_handle;
-  for (size_t i = 0; i < gfx::NumberOfPlanesForLinearBufferFormat(format);
-       i++) {
-    size_t height_in_pixels;
-    CHECK(gfx::PlaneHeightForBufferFormatChecked(size.height(), format, i,
-                                                 &height_in_pixels));
-    size_t stride = gfx::RowSizeForBufferFormat(size.width(), format, i);
+  for (int i = 0; i < format.NumberOfPlanes(); i++) {
+    size_t height_in_pixels = format.GetPlaneSize(i, size).height();
+    CHECK(height_in_pixels);
+    size_t stride =
+        viz::SharedMemoryRowSizeForSharedImageFormat(format, i, size.width())
+            .value();
     native_pixmap_handle.planes.emplace_back(
         stride, 0, height_in_pixels * stride,
         base::ScopedFD(open("/dev/zero", O_RDWR)));
@@ -231,10 +232,8 @@ scoped_refptr<ClientSharedImage> TestSharedImageInterface::CreateSharedImage(
     return client_si;
   }
 
-  auto gmb_handle = CreateGMBHandle(
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          si_info.meta.format),
-      si_info_copy.meta.size, buffer_usage);
+  auto gmb_handle = CreateGMBHandle(si_info.meta.format, si_info_copy.meta.size,
+                                    buffer_usage);
 
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info_copy, sync_token,
