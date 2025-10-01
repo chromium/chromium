@@ -161,6 +161,8 @@ class GlicWindowControllerImpl
   const InstanceId& id() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
+  base::CallbackListSubscription RegisterLastActiveInstanceChangedCallback(
+      LastActiveInstanceChangedCallback callback) override;
 
  private:
   // Sets the floating attributes of the glic window.

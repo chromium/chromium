@@ -72,6 +72,27 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() = default;
 
+void GlicInstanceCoordinatorImpl::OnInstanceVisibilityChanged(
+    GlicInstance* instance,
+    bool is_showing) {
+  const bool becoming_active =
+      is_showing && (instance != last_active_instance_);
+  const bool becoming_inactive =
+      !is_showing && (instance == last_active_instance_);
+
+  if (becoming_active) {
+    last_active_instance_ = instance;
+    NotifyLastActiveInstanceChanged();
+  } else if (becoming_inactive) {
+    last_active_instance_ = nullptr;
+    NotifyLastActiveInstanceChanged();
+  }
+}
+
+void GlicInstanceCoordinatorImpl::NotifyLastActiveInstanceChanged() {
+  last_active_instance_changed_callback_list_.Notify(last_active_instance_);
+}
+
 GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
     tabs::TabInterface* tab) {
   if (!tab) {
@@ -355,6 +376,16 @@ base::CallbackListSubscription GlicInstanceCoordinatorImpl::RegisterStateChange(
   return base::CallbackListSubscription();
 }
 
+base::CallbackListSubscription
+GlicInstanceCoordinatorImpl::RegisterLastActiveInstanceChangedCallback(
+    LastActiveInstanceChangedCallback callback) {
+  auto subscription =
+      last_active_instance_changed_callback_list_.Add(std::move(callback));
+  // Fire immediately to give subscribers an initial value.
+  NotifyLastActiveInstanceChanged();
+  return subscription;
+}
+
 void GlicInstanceCoordinatorImpl::AttachInstance(GlicInstance* instance) {
   NOTIMPLEMENTED();
 }
@@ -426,6 +457,10 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstance* instance) {
+  if (instance == last_active_instance_) {
+    last_active_instance_ = nullptr;
+    NotifyLastActiveInstanceChanged();
+  }
   instances_.erase(instance->id());
 }
 

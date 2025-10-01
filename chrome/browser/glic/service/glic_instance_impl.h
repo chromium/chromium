@@ -50,22 +50,26 @@ class GlicInstanceImpl : public GlicInstance,
     kFloating,
   };
 
-  class AttachmentDelegate {
+  class InstanceCoordinatorDelegate {
    public:
-    virtual ~AttachmentDelegate() = default;
+    virtual ~InstanceCoordinatorDelegate() = default;
     virtual void AttachInstance(GlicInstance* instance) = 0;
     virtual void DetachInstance(GlicInstance* instance) = 0;
     virtual void OnInstanceOrphaned(GlicInstance* instance) = 0;
+    // Called by an instance when its visibility state changes.
+    virtual void OnInstanceVisibilityChanged(GlicInstance* instance,
+                                             bool is_showing) = 0;
     virtual void SwitchConversation(
         tabs::TabInterface* tab,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
   };
 
-  GlicInstanceImpl(Profile* profile,
-                   InstanceId instance_id,
-                   base::WeakPtr<AttachmentDelegate> attachment_delegate,
-                   GlicMetrics* metrics);
+  GlicInstanceImpl(
+      Profile* profile,
+      InstanceId instance_id,
+      base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
+      GlicMetrics* metrics);
   ~GlicInstanceImpl() override;
 
   GlicInstanceImpl(const GlicInstanceImpl&) = delete;
@@ -195,7 +199,7 @@ class GlicInstanceImpl : public GlicInstance,
   raw_ptr<Profile> profile_;
   raw_ptr<GlicKeyedService> service_;
 
-  base::WeakPtr<AttachmentDelegate> attachment_delegate_;
+  base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate_;
   InstanceId id_;
 
   // The single source of truth for all embedders.

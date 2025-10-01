@@ -213,6 +213,13 @@ class GlicWindowController : public GlicInstance::UIDelegate {
       tabs::TabInterface& tab) = 0;
 
   virtual void SidePanelShown(BrowserWindowInterface* browser) = 0;
+
+  using LastActiveInstanceChangedCallback =
+      base::RepeatingCallback<void(GlicInstance* new_instance)>;
+  virtual base::CallbackListSubscription
+  RegisterLastActiveInstanceChangedCallback(
+      LastActiveInstanceChangedCallback callback) = 0;
+
   // Helper function to get the always detached flag.
   static bool AlwaysDetached() {
     return base::FeatureList::IsEnabled(features::kGlicDetached);

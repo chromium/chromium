@@ -1593,6 +1593,13 @@ base::CallbackListSubscription GlicWindowControllerImpl::RegisterStateChange(
   return state_change_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription
+GlicWindowControllerImpl::RegisterLastActiveInstanceChangedCallback(
+    LastActiveInstanceChangedCallback callback) {
+  NOTIMPLEMENTED();
+  return base::CallbackListSubscription();
+}
+
 void GlicWindowControllerImpl::SetWindowState(State new_state) {
   if (state_ == new_state) {
     return;

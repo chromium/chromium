@@ -92,6 +92,10 @@ class MockGlicWindowController
               RegisterStateChange,
               (StateChangeCallback callback),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterLastActiveInstanceChangedCallback,
+              (LastActiveInstanceChangedCallback callback),
+              (override));
   MOCK_METHOD(void, SidePanelShown, (BrowserWindowInterface*), (override));
 
   base::WeakPtr<GlicWindowController> GetWeakPtr() override {

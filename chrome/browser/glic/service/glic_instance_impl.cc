@@ -80,6 +80,9 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 void GlicInstanceImpl::NotifyStateChange() {
   state_change_callback_list_.Notify(IsShowing(),
                                      host().GetPrimaryCurrentView());
+  if (coordinator_delegate_) {
+    coordinator_delegate_->OnInstanceVisibilityChanged(this, IsShowing());
+  }
 }
 
 GlicInstanceImpl::EmbedderEntry::EmbedderEntry() = default;
@@ -91,11 +94,11 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::EmbedderEntry::operator=(
 GlicInstanceImpl::GlicInstanceImpl(
     Profile* profile,
     InstanceId instance_id,
-    base::WeakPtr<AttachmentDelegate> attachment_delegate,
+    base::WeakPtr<InstanceCoordinatorDelegate> coordinator_delegate,
     GlicMetrics* metrics)
     : profile_(profile),
       service_(GlicKeyedService::Get(profile)),
-      attachment_delegate_(attachment_delegate),
+      coordinator_delegate_(coordinator_delegate),
       id_(instance_id),
       host_(profile_, this, this),
       sharing_manager_(
@@ -115,17 +118,17 @@ GlicInstanceImpl::GlicInstanceImpl(
 GlicInstanceImpl::~GlicInstanceImpl() = default;
 
 void GlicInstanceImpl::AttachInstance() {
-  if (!attachment_delegate_) {
+  if (!coordinator_delegate_) {
     return;
   }
-  attachment_delegate_->AttachInstance(this);
+  coordinator_delegate_->AttachInstance(this);
 }
 
 void GlicInstanceImpl::DetachInstance() {
-  if (!attachment_delegate_) {
+  if (!coordinator_delegate_) {
     return;
   }
-  attachment_delegate_->DetachInstance(this);
+  coordinator_delegate_->DetachInstance(this);
 }
 
 bool GlicInstanceImpl::IsShowing() const {
@@ -479,8 +482,8 @@ void GlicInstanceImpl::MaybeShowHostUi(GlicUiEmbedder* embedder) {
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab,
                                            const InstanceId& instance_id) {
   UnbindTab(tab);
-  if (IsOrphaned() && attachment_delegate_) {
-    attachment_delegate_->OnInstanceOrphaned(this);
+  if (IsOrphaned() && coordinator_delegate_) {
+    coordinator_delegate_->OnInstanceOrphaned(this);
   }
 }
 
@@ -496,9 +499,9 @@ void GlicInstanceImpl::SwitchConversation(
     tabs::TabInterface* tab,
     glic::mojom::ConversationInfoPtr info,
     mojom::WebClientHandler::SwitchConversationCallback callback) {
-  if (attachment_delegate_) {
-    attachment_delegate_->SwitchConversation(tab, std::move(info),
-                                             std::move(callback));
+  if (coordinator_delegate_) {
+    coordinator_delegate_->SwitchConversation(tab, std::move(info),
+                                              std::move(callback));
   } else {
     std::move(callback).Run(mojom::SwitchConversationErrorReason::kUnknown);
   }
