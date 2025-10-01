@@ -23,6 +23,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1065,12 +1066,19 @@ public class KeyboardShortcuts {
                     }
                     return true;
                 case KeyboardShortcutsSemanticMeaning.CLOSE_TAB:
+                    List<Tab> selectedTabs = new ArrayList<>();
+                    for (int i = 0; i < currentTabModel.getCount(); i++) {
+                        @Nullable Tab tab = currentTabModel.getTabAt(i);
+                        if (tab == null) continue;
+                        if (!currentTabModel.isTabMultiSelected(tab.getId())) continue;
+                        selectedTabs.add(tab);
+                    }
                     Tab tab = TabModelUtils.getCurrentTab(currentTabModel);
                     if (tab != null) {
                         currentTabModel
                                 .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeTab(tab)
+                                        TabClosureParams.closeTabs(selectedTabs)
                                                 .allowUndo(false)
                                                 .tabClosingSource(
                                                         TabClosingSource.KEYBOARD_SHORTCUT)

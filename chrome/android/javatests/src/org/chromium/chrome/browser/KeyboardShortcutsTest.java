@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.description;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
@@ -18,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.SystemClock;
+import android.util.Pair;
 import android.view.KeyEvent;
 
 import androidx.test.filters.SmallTest;
@@ -49,6 +51,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.List;
 import java.util.Set;
 
 /** Unit tests for {@link KeyboardShortcuts}. */
@@ -60,6 +63,8 @@ import java.util.Set;
 })
 public class KeyboardShortcutsTest {
 
+    private static final int TAB_ID = 0;
+    private static final int TAB_ID_2 = 0;
     // Want this to be less than 8 so we can test that "go to tab" keyboard shortcut is not called.
     private static final int SMALL_NUMBER_OF_TABS = 7;
     // Want this to be greater than 10 so we can test "go to tab" keyboard shortcut.
@@ -69,6 +74,7 @@ public class KeyboardShortcutsTest {
 
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     @Mock private Tab mTab;
+    @Mock private Tab mTab2;
     @Mock private TabModel mTabModel;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabRemover mTabRemover;
@@ -77,7 +83,7 @@ public class KeyboardShortcutsTest {
 
     @Before
     public void setUp() {
-        setUpTabModelSelector();
+        setUpTabModelSelector(List.of(mTab));
         when(mMenuOrKeyboardActionController.onMenuOrKeyboardAction(anyInt(), anyBoolean()))
                 .thenReturn(true);
     }
@@ -86,16 +92,20 @@ public class KeyboardShortcutsTest {
      * Sets up the mock {@link #mTabModelSelector}, which should be passed to {@code
      * KeyboardShortcuts.onKeyDown()} for testing.
      */
-    private void setUpTabModelSelector() {
+    private void setUpTabModelSelector(List<Tab> tabs) {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
 
-        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getCount()).thenReturn(tabs.size());
         when(mTabModel.index()).thenReturn(0);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        for (int i = 0; i < tabs.size(); i++) {
+            when(mTabModel.getTabAt(i)).thenReturn(tabs.get(i));
+            when(tabs.get(i).getId()).thenReturn(i);
+            when(tabs.get(i).getWebContents()).thenReturn(mWebContents);
+        }
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        when(mTabModel.isTabMultiSelected(TAB_ID)).thenReturn(true);
 
-        when(mTab.getWebContents()).thenReturn(mWebContents);
         doNothing().when(mTabRemover).closeTabs(any(TabClosureParams.class), anyBoolean());
     }
 
@@ -103,34 +113,48 @@ public class KeyboardShortcutsTest {
 
     @Test
     @SmallTest
-    public void testCloseTab_ctrlW() {
-        testCloseTab(KeyEvent.KEYCODE_W, KeyEvent.META_CTRL_ON);
-    }
+    public void testCloseTab() {
+        List<Pair<Integer, Integer>> keyCodeAndModifier =
+                List.of(
+                        new Pair<>(KeyEvent.KEYCODE_W, KeyEvent.META_CTRL_ON),
+                        new Pair<>(KeyEvent.KEYCODE_F4, KeyEvent.META_CTRL_ON),
+                        new Pair<>(KeyEvent.KEYCODE_BUTTON_B, KeyboardUtils.NO_MODIFIER));
+        for (List<Tab> tabsToClose : List.of(List.of(mTab), List.of(mTab, mTab2))) {
+            setUpTabModelSelector(tabsToClose);
+            for (Tab tab : tabsToClose) {
+                when(mTabModel.isTabMultiSelected(tab.getId())).thenReturn(true);
+            }
+            for (int i = 0; i < keyCodeAndModifier.size(); i++) {
+                clearInvocations(mTabRemover);
+                int keyCode = keyCodeAndModifier.get(i).first;
+                int modifier = keyCodeAndModifier.get(i).second;
+                boolean isKeyEventHandled =
+                        keyDown(keyCode, modifier, /* isCurrentTabVisible= */ true);
 
-    @Test
-    @SmallTest
-    public void testCloseTab_ctrlF4() {
-        testCloseTab(KeyEvent.KEYCODE_F4, KeyEvent.META_CTRL_ON);
-    }
-
-    @Test
-    @SmallTest
-    public void testCloseTab_buttonB() {
-        testCloseTab(KeyEvent.KEYCODE_BUTTON_B, KeyboardUtils.NO_MODIFIER);
-    }
-
-    private void testCloseTab(int keyCode, int metaState) {
-        boolean isKeyEventHandled = keyDown(keyCode, metaState, /* isCurrentTabVisible= */ true);
-
-        assertTrue(isKeyEventHandled);
-        verify(mTabRemover)
-                .closeTabs(
-                        eq(
-                                TabClosureParams.closeTab(mTab)
-                                        .allowUndo(false)
-                                        .tabClosingSource(TabClosingSource.KEYBOARD_SHORTCUT)
-                                        .build()),
-                        /* allowDialog= */ eq(true));
+                String debugString =
+                        "at test index "
+                                + i
+                                + " with key code "
+                                + keyCode
+                                + " with modifier "
+                                + modifier;
+                assertTrue(
+                        "Expected key event to be handled for " + debugString, isKeyEventHandled);
+                verify(
+                                mTabRemover,
+                                description(
+                                        "Expected closeTabs to be called with correct"
+                                                + " TabClosureParams"))
+                        .closeTabs(
+                                eq(
+                                        TabClosureParams.closeTabs(tabsToClose)
+                                                .allowUndo(false)
+                                                .tabClosingSource(
+                                                        TabClosingSource.KEYBOARD_SHORTCUT)
+                                                .build()),
+                                /* allowDialog= */ eq(true));
+            }
+        }
     }
 
     // Bookmarks shortcuts
