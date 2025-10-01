@@ -630,3 +630,8 @@ JNI_WebContentsState_GetVirtualUrlFromByteBuffer(
   return WebContentsState::GetVirtualUrlFromByteBuffer(env, span,
                                                        saved_state_version);
 }
+
+static void JNI_WebContentsState_FreeStringPointer(JNIEnv* env,
+                                                   jlong string_pointer) {
+  delete reinterpret_cast<std::string*>(string_pointer);
+}

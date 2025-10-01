@@ -35,18 +35,17 @@ void RunJavaCallbackLoadAllTabs(
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_tab_state_vector;
   for (tabs_pb::TabState& tab_state : tab_states) {
     base::android::ScopedJavaLocalRef<jobject> j_web_contents_state_buffer;
+    long j_web_contents_state_string_pointer = 0;
     if (tab_state.has_web_contents_state_bytes()) {
-      // TODO(https://crbug.com/427255040): This is probably leaking memory and
-      // should be fixed. No path back from Java when the owning object is
-      // destroyed/cleaned/gc'd, and Java currently has no way to tell the
-      // backing implementation of the owning object.
-      raw_ptr<std::string> web_contents_state_bytes_ptr =
+      std::string* web_contents_state_bytes_ptr =
           tab_state.release_web_contents_state_bytes();
       j_web_contents_state_buffer =
           base::android::ScopedJavaLocalRef<jobject>::Adopt(
               env, env->NewDirectByteBuffer(
                        static_cast<void*>(web_contents_state_bytes_ptr->data()),
                        web_contents_state_bytes_ptr->size()));
+      j_web_contents_state_string_pointer =
+          reinterpret_cast<long>(web_contents_state_bytes_ptr);
     }
 
     base::Token tab_group_token(tab_state.tab_group_id_high(),
@@ -58,7 +57,8 @@ void RunJavaCallbackLoadAllTabs(
         Java_TabStateStorageService_createTabState(
             env, tab_state.parent_id(), tab_state.root_id(),
             tab_state.timestamp_millis(), j_web_contents_state_buffer,
-            tab_state.web_contents_state_version(), tab_state.opener_app_id(),
+            tab_state.web_contents_state_version(),
+            j_web_contents_state_string_pointer, tab_state.opener_app_id(),
             tab_state.theme_color(), tab_state.launch_type_at_creation(),
             tab_state.user_agent(),
             tab_state.last_navigation_committed_timestamp_millis(),

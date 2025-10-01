@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -39,7 +41,9 @@ public class WebContentsState {
     private static @Nullable WebContentsState sEmptyWebContentsState;
 
     /** A packed (pickle) representation of the navigation entries for a {@link WebContents}. */
-    private static class PackedData {
+    private static class PackedData implements Destroyable {
+        private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
+
         /**
          * mBuffer should not be modified once it is set. Also, it is required to be a "direct"
          * buffer which is allocated outside the JVM heap, so that it can be accessed via the JNI
@@ -47,17 +51,24 @@ public class WebContentsState {
          * ByteBuffer.allocateDirect() or similar.
          */
         private final ByteBuffer mBuffer;
-
         private final int mVersion;
+        private long mNativeStringPointer;
 
         /**
          * @param buffer The buffer for the WebContentsState.
          * @param version The version of the WebContentsState.
+         * @param nativeStringPointer The native string pointer for the buffer, may be 0 if the
+         *     buffer is allocated in Java.
          */
-        public PackedData(ByteBuffer buffer, int version) {
+        public PackedData(ByteBuffer buffer, int version, long nativeStringPointer) {
             assert buffer.isDirect();
             mBuffer = buffer;
             mVersion = version;
+            mNativeStringPointer = nativeStringPointer;
+            // There is no need to assert here as the buffer is allocated in Java.
+            if (mNativeStringPointer == 0) {
+                LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
+            }
         }
 
         /** Returns the buffer for the WebContentsState. */
@@ -68,6 +79,16 @@ public class WebContentsState {
         /** Returns the version of the WebContentsState. */
         public int version() {
             return mVersion;
+        }
+
+        /** Destroys the native string pointer. */
+        @Override
+        public void destroy() {
+            if (mNativeStringPointer != 0) {
+                WebContentsStateJni.get().freeStringPointer(mNativeStringPointer);
+                mNativeStringPointer = 0;
+                LifetimeAssert.destroy(mLifetimeAssert);
+            }
         }
     }
 
@@ -127,7 +148,22 @@ public class WebContentsState {
      * @param version The version of the {@link WebContentsState}.
      */
     public WebContentsState(ByteBuffer buffer, int version) {
-        mPackedData = new PackedData(buffer, version);
+        mPackedData = new PackedData(buffer, version, /* nativeStringPointer= */ 0);
+    }
+
+    /**
+     * @param buffer The buffer to use for the {@link WebContentsState}.
+     * @param version The version of the {@link WebContentsState}.
+     * @param nativeStringPointer The native string pointer for the buffer, may be 0 if the buffer
+     *     is allocated in Java.
+     */
+    public WebContentsState(ByteBuffer buffer, int version, long nativeStringPointer) {
+        mPackedData = new PackedData(buffer, version, nativeStringPointer);
+    }
+
+    /** Destroys the {@link WebContentsState}. */
+    public void destroy() {
+        mPackedData.destroy();
     }
 
     /** Returns the buffer for the {@link WebContentsState}. */
@@ -235,7 +271,10 @@ public class WebContentsState {
 
     private boolean maybeSwapPackedData(@Nullable ByteBuffer buffer) {
         if (buffer == null) return false;
-        mPackedData = new PackedData(buffer, CONTENTS_STATE_CURRENT_VERSION);
+        mPackedData.destroy();
+        mPackedData =
+                new PackedData(
+                        buffer, CONTENTS_STATE_CURRENT_VERSION, /* nativeStringPointer= */ 0);
         return true;
     }
 
@@ -283,5 +322,7 @@ public class WebContentsState {
 
         @JniType("std::optional<std::string>")
         @Nullable String getVirtualUrlFromByteBuffer(ByteBuffer state, int savedStateVersion);
+
+        void freeStringPointer(long stringPointer);
     }
 }

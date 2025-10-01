@@ -58,6 +58,7 @@ public class TabStateStorageService {
             long timestampMillis,
             @Nullable ByteBuffer webContentsStateBuffer,
             int webContentsStateVersion,
+            long webContentsStateStringPointer,
             @Nullable @JniType("std::string") String openerAppId,
             int themeColor,
             int launchTypeAtCreation,
@@ -72,8 +73,12 @@ public class TabStateStorageService {
         tabState.rootId = rootId;
         tabState.timestampMillis = timestampMillis;
         if (webContentsStateBuffer != null) {
+            assert webContentsStateStringPointer != 0;
             tabState.contentsState =
-                    new WebContentsState(webContentsStateBuffer, webContentsStateVersion);
+                    new WebContentsState(
+                            webContentsStateBuffer,
+                            webContentsStateVersion,
+                            webContentsStateStringPointer);
         }
         tabState.openerAppId = openerAppId;
         tabState.themeColor = themeColor;

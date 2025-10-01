@@ -808,7 +808,13 @@ class TabImpl implements Tab {
         WebContents oldWebContents = mWebContents;
         destroyWebContents(false);
         mWebContents = null;
-        mWebContentsState = oldWebContentsState;
+        if (mWebContentsState != oldWebContentsState) {
+            if (mWebContentsState != null) {
+                mWebContentsState.destroy();
+                mWebContentsState = null;
+            }
+            mWebContentsState = oldWebContentsState;
+        }
         mIsLoading = false;
         // In case extracting the WebContentsState fails make sure we reload to the same URL.
         if (mWebContentsState == null) {
@@ -857,6 +863,7 @@ class TabImpl implements Tab {
         } else {
             // If we failed to append the pending navigation, clear the WebContentsState and restore
             // the tab to a blank state.
+            mWebContentsState.destroy();
             mWebContentsState = null;
 
             // Since we are not allowed to auto-navigate the only remaining fallback is to clobber
@@ -1141,6 +1148,10 @@ class TabImpl implements Tab {
         mTabViewManager.destroy();
         hideNativePage(false, null);
         destroyWebContents(true);
+        if (mWebContentsState != null) {
+            mWebContentsState.destroy();
+            mWebContentsState = null;
+        }
 
         TabImportanceManager.tabDestroyed(this);
 
@@ -2240,6 +2251,7 @@ class TabImpl implements Tab {
             View compositorView = compositorViewHolderSupplier.get();
             webContents.setSize(compositorView.getWidth(), compositorView.getHeight());
 
+            mWebContentsState.destroy();
             mWebContentsState = null;
             initWebContents(webContents);
 
@@ -2423,6 +2435,9 @@ class TabImpl implements Tab {
 
     @VisibleForTesting
     void setWebContentsState(WebContentsState webContentsState) {
+        if (mWebContentsState != null) {
+            mWebContentsState.destroy();
+        }
         mWebContentsState = webContentsState;
     }
 
