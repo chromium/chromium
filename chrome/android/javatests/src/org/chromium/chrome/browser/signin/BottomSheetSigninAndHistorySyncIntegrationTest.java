@@ -359,7 +359,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(SigninFeatures.USE_HOSTED_DOMAIN_FOR_MANAGEMENT_CHECK_ON_SIGNIN)
     public void testWithManagedAccount_signIn_showsManagementNotice() {
         mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
 

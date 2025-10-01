@@ -62,11 +62,6 @@ class SigninManagerAndroid : public KeyedService {
 
   void StopApplyingCloudPolicy(JNIEnv* env);
 
-  void IsAccountManaged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_account_info,
-      const base::android::JavaParamRef<jobject>& j_callback);
-
   base::android::ScopedJavaLocalRef<jstring> GetManagementDomain(JNIEnv* env);
 
   // Delete all data for this profile.
@@ -120,11 +115,6 @@ class SigninManagerAndroid : public KeyedService {
       base::OnceCallback<void()> policy_callback,
       const std::optional<ManagementCredentials>& credentials);
 
-  void OnPolicyRegisterDoneForIsAccountManaged(
-      const CoreAccountInfo& account,
-      base::android::ScopedJavaGlobalRef<jobject> callback,
-      const std::optional<ManagementCredentials>& credentials);
-
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,
                                base::OnceCallback<void()> policy_callback,
                                const ManagementCredentials& credentials);
@@ -147,9 +137,6 @@ class SigninManagerAndroid : public KeyedService {
 
   // Java-side SigninManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_signin_manager_;
-
-  // The last invocation of IsAccountManaged() is cached.
-  std::optional<CachedIsAccountManaged> cached_is_account_managed_;
 
   base::ThreadChecker thread_checker_;
 

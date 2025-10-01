@@ -34,7 +34,6 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -173,14 +172,6 @@ public class SigninManagerImplTest {
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
         when(mNativeMock.getUserAcceptedAccountManagement(anyLong())).thenReturn(true);
-
-        doAnswer(
-                        (args) -> {
-                            ((Callback<Boolean>) args.getArgument(2)).onResult(true);
-                            return null;
-                        })
-                .when(mNativeMock)
-                .isAccountManaged(anyLong(), any(), any());
 
         doAnswer(
                         (args) -> {

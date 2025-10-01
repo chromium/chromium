@@ -374,11 +374,6 @@ BASE_FEATURE(kSyncEnableBookmarksInTransportMode,
 BASE_FEATURE(kUnoForAuto, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kUseHostedDomainForManagementCheckOnSignin,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // When enabled, Chrome will always use the /IssueToken endpoint to fetch access
 // tokens, no matter if a refresh token is bound or not.
