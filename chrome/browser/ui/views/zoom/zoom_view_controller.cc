@@ -10,13 +10,10 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
@@ -101,15 +98,15 @@ void ZoomViewController::UpdateBubbleVisibility(bool prefer_to_show_bubble,
       CanBubbleBeVisible(prefer_to_show_bubble, is_at_default_zoom);
   if (can_bubble_be_visible) {
     if (prefer_to_show_bubble) {
-      GetBubbleCoordinator()->Show(
+      ZoomBubbleView::ShowBubble(
           GetWebContents(), from_user_gesture ? ZoomBubbleView::USER_GESTURE
                                               : ZoomBubbleView::AUTOMATIC);
     } else {
-      GetBubbleCoordinator()->RefreshIfShowing(GetWebContents());
+      ZoomBubbleView::RefreshBubbleIfShowing(GetWebContents());
     }
   } else {
     if (IsBubbleVisible()) {
-      GetBubbleCoordinator()->Hide();
+      ZoomBubbleView::CloseCurrentBubble();
     }
   }
 }
@@ -137,11 +134,6 @@ bool ZoomViewController::CanBubbleBeVisible(bool prefer_to_show_bubble,
 
 content::WebContents* ZoomViewController::GetWebContents() const {
   return tab_interface_->GetContents();
-}
-
-ZoomBubbleCoordinator* ZoomViewController::GetBubbleCoordinator() {
-  return ZoomBubbleCoordinator::From(
-      tab_interface_->GetBrowserWindowInterface());
 }
 
 }  // namespace zoom

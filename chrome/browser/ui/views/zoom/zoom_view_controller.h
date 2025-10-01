@@ -7,8 +7,6 @@
 
 #include "components/tabs/public/tab_interface.h"
 
-class ZoomBubbleCoordinator;
-
 namespace content {
 class WebContents;
 }
@@ -59,10 +57,6 @@ class ZoomViewController {
 
   // Helper to retrieve the active WebContents from the tab.
   content::WebContents* GetWebContents() const;
-
-  // Returns the zoom bubble coordinator associated with the window owning this
-  // zoom page action.
-  ZoomBubbleCoordinator* GetBubbleCoordinator();
 
   // Because zoom settings are per-tab, we store the tab interface by reference.
   // The TabInterface is guaranteed valid for this object’s lifetime.
