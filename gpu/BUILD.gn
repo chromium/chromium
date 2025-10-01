@@ -609,6 +609,7 @@ test("gpu_unittests") {
     sources += [
       "command_buffer/service/dawn_caching_interface_unittest.cc",
       "command_buffer/service/dawn_platform_unittest.cc",
+      "command_buffer/service/gpu_persistent_cache_unittest.cc",
       "config/webgpu_blocklist_unittest.cc",
     ]
   }
@@ -626,6 +627,7 @@ test("gpu_unittests") {
     "//base/test:test_support",
     "//cc:test_support",
     "//cc/paint",
+    "//components/persistent_cache",
     "//components/viz/common/resources:shared_image_format",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client:gles2_c_lib",
