@@ -342,15 +342,11 @@ const CGFloat kFaviconCornerRadius = 8;
   }
 }
 
-// Updates the favicon background based on the device orientation and whether
-// the empty thumbnail is showing.
+// Updates the favicon background based on whether the empty thumbnail is
+// showing.
 - (void)updateFaviconBackground {
-  if (IsLandscape(self.window)) {
     _snapshotFaviconView.backgroundColor =
         _emptyView.hidden ? [UIColor whiteColor] : [UIColor clearColor];
-  } else {
-    _snapshotFaviconView.backgroundColor = [UIColor whiteColor];
-  }
 }
 
 @end
