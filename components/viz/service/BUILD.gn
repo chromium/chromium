@@ -232,6 +232,7 @@ viz_component("service") {
     "hit_test/hit_test_manager.h",
     "input/input_manager.cc",
     "input/input_manager.h",
+    "input/input_on_viz_state_processing_result.cc",
     "input/input_on_viz_state_processing_result.h",
     "input/peak_gpu_memory_tracker_impl.cc",
     "input/peak_gpu_memory_tracker_impl.h",

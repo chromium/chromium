@@ -512,8 +512,7 @@ void InputManager::StateOnTouchTransfer(
 #if BUILDFLAG(IS_ANDROID)
   auto iter = frame_sink_metadata_map_.find(state->root_widget_frame_sink_id);
   if (iter == frame_sink_metadata_map_.end()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kStateProcessingResultHistogram,
+    EmitStateProcessingResultHistogram(
         InputOnVizStateProcessingResult::kCouldNotFindViewForFrameSinkId);
     android_state_transfer_handler_.StateOnTouchTransfer(
         std::move(state), /* rir_support= */ nullptr);
@@ -522,8 +521,7 @@ void InputManager::StateOnTouchTransfer(
 
   if (!GetRootCompositorFrameSinkId(state->root_widget_frame_sink_id)
            .is_valid()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kStateProcessingResultHistogram,
+    EmitStateProcessingResultHistogram(
         InputOnVizStateProcessingResult::kFrameSinkIdNotAttachedToRootCFS);
     android_state_transfer_handler_.StateOnTouchTransfer(
         std::move(state), /* rir_support= */ nullptr);
@@ -535,8 +533,7 @@ void InputManager::StateOnTouchTransfer(
   // TODO(crbug.com/404741207): Convert this to CHECK once the underlying
   // reason for crash is fixed.
   if (support_base->IsRenderInputRouterSupportChildFrame()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kStateProcessingResultHistogram,
+    EmitStateProcessingResultHistogram(
         InputOnVizStateProcessingResult::kFrameSinkIdCorrespondsToChildView);
     android_state_transfer_handler_.StateOnTouchTransfer(
         std::move(state), /* rir_support= */ nullptr);

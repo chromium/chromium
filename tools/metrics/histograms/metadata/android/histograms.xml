@@ -2656,7 +2656,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.InputOnViz.Viz.StateProcessingResult2"
+<histogram name="Android.InputOnViz.Viz.StateProcessingResult3"
     enum="InputOnVizStateProcessingResult" expires_after="2026-01-25">
   <owner>kartarsingh@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
@@ -2664,6 +2664,11 @@ chromium-metrics-reviews@google.com.
     Records what happened to state received on Viz, upon successful transfer of
     a touch sequence the Browser process sends over touch transfer state for Viz
     to handle input sequence.
+
+    Compared to `Android.InputOnViz.Viz.StateProcessingResult2`, version 3 of
+    histogram further splits some of the `ProcessedSuccessfully` cases into
+    `TransferBackToBrowserSuccessfully` and `DroppedTransferBackToBrowserFailed`
+    buckets.
   </summary>
 </histogram>
 
