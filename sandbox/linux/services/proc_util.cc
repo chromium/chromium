@@ -72,7 +72,7 @@ int ProcUtil::CountOpenFds(int proc_fd) {
 }
 
 bool ProcUtil::HasOpenDirectory(int proc_fd) {
-  DCHECK_LE(0, proc_fd);
+  CHECK_LE(0, proc_fd);
   int proc_self_fd =
       openat(proc_fd, "self/fd/", O_DIRECTORY | O_RDONLY | O_CLOEXEC);
 
