@@ -192,6 +192,11 @@ void GestureListenerManager::OnInputEvent(const RenderWidgetHost& widget,
     return;
   }
 
+  if (WebInputEvent::IsTouchEventType(event_type) &&
+      static_cast<const blink::WebTouchEvent&>(event).IsTouchSequenceEnd()) {
+    UpdateOnTouchUp();
+  }
+
   if (event_type == blink::mojom::EventType::kGestureFlingStart) {
     DCHECK(!is_in_a_fling_);
     is_in_a_fling_ = true;
@@ -305,6 +310,16 @@ void GestureListenerManager::UpdateOnTouchDown() {
     return;
 
   Java_GestureListenerManagerImpl_updateOnTouchDown(env, obj);
+}
+
+void GestureListenerManager::UpdateOnTouchUp() {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_GestureListenerManagerImpl_updateOnTouchUp(env, obj);
 }
 
 void GestureListenerManager::OnRootScrollOffsetChanged(

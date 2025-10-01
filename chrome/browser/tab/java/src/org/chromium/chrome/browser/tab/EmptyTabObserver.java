@@ -192,6 +192,12 @@ public class EmptyTabObserver implements TabObserver {
     public void onGestureEnd() {}
 
     @Override
+    public void onTouchDown() {}
+
+    @Override
+    public void onTouchUp() {}
+
+    @Override
     public void didBackForwardTransitionAnimationChange(Tab tab) {}
 
     @Override
