@@ -1085,7 +1085,7 @@ std::string PrintHttpProxyTestName(
     const testing::TestParamInfo<
         std::tuple<TcpProxyTestCase, std::string_view>>& info) {
   return ::testing::PrintToString(std::get<0>(info.param)) + "_" +
-         GURL(std::get<1>(info.param)).scheme();
+         GURL(std::get<1>(info.param)).GetScheme();
 }
 
 constexpr TcpProxyTestCase kHttpProxyTestCases[] = {

@@ -205,7 +205,7 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
   } else {
     headers->insert(
         {spdy::kHttp2AuthorityHeader, GetHostAndOptionalPort(info.url)});
-    headers->insert({spdy::kHttp2SchemeHeader, info.url.scheme()});
+    headers->insert({spdy::kHttp2SchemeHeader, info.url.GetScheme()});
     headers->insert({spdy::kHttp2PathHeader, info.url.PathForRequest()});
   }
 
@@ -246,7 +246,7 @@ void CreateSpdyHeadersFromHttpRequestForExtendedConnect(
 
   // Extended CONNECT, unlike CONNECT, requires scheme and path, and uses the
   // default port in the authority header.
-  headers->insert({spdy::kHttp2SchemeHeader, info.url.scheme()});
+  headers->insert({spdy::kHttp2SchemeHeader, info.url.GetScheme()});
   headers->insert({spdy::kHttp2PathHeader, info.url.PathForRequest()});
   headers->insert({spdy::kHttp2ProtocolHeader, ext_connect_protocol});
 

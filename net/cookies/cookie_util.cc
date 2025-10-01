@@ -116,7 +116,7 @@ bool HasValidHostPrefixAttributes(const GURL& url,
   if (!HasValidSecurePrefixAttributes(url, secure) || path != "/") {
     return false;
   }
-  return domain.empty() || (url.HostIsIPAddress() && url.host() == domain);
+  return domain.empty() || (url.HostIsIPAddress() && url.GetHost() == domain);
 }
 
 // Tests that a cookie has the attributes for a valid __Http- prefix without
@@ -383,7 +383,7 @@ std::optional<std::string> GetCookieDomainWithString(
         CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII);
   }
 
-  const std::string url_host(url.host());
+  const std::string url_host(url.GetHost());
 
   // Disallow invalid hostnames containing multiple `.` at the end.
   // Httpbis-rfc6265bis draft-11, §5.1.2 says to convert the request host "into
@@ -456,7 +456,7 @@ std::optional<std::string> GetCookieDomainWithString(
   }
 
   // Ensure |url| and |cookie_domain| have the same domain+registry.
-  const std::string url_scheme(url.scheme());
+  const std::string url_scheme(url.GetScheme());
   const std::string url_domain_and_registry(
       GetEffectiveDomain(url_scheme, url_host));
   if (url_domain_and_registry.empty()) {
@@ -634,7 +634,7 @@ std::string CanonPathWithString(const GURL& url, std::string_view path_string) {
   //    Set-Cookie response, up to, but not including, the
   //    right-most /."""
   // How would this work for a cookie on /?  We will include it then.
-  const std::string& url_path = url.path();
+  const std::string& url_path = url.GetPath();
 
   size_t idx = url_path.find_last_of('/');
 

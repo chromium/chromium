@@ -876,7 +876,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
       !session_->ShouldForceQuic(destination, proxy_info_, is_websocket_) &&
       enable_alternative_services_ &&
       session_->params().use_dns_https_svcb_alpn &&
-      base::EqualsCaseInsensitiveASCII(request_info_.url.scheme(),
+      base::EqualsCaseInsensitiveASCII(request_info_.url.GetScheme(),
                                        url::kHttpsScheme) &&
       session_->IsQuicEnabled() && proxy_info_.is_direct() &&
       !session_->http_server_properties()->IsAlternativeServiceBroken(
@@ -1177,7 +1177,7 @@ void HttpStreamFactory::JobController::MaybeReportBrokenAlternativeService(
   if (alt_job_net_error == ERR_NETWORK_CHANGED ||
       alt_job_net_error == ERR_INTERNET_DISCONNECTED ||
       (alt_job_net_error == ERR_NAME_NOT_RESOLVED &&
-       request_info_.url.host() == alt_service.host)) {
+       request_info_.url.GetHost() == alt_service.host)) {
     // No need to mark alternative service as broken.
     return;
   }
@@ -1381,7 +1381,7 @@ HttpStreamFactory::JobController::GetAdvertisedAltSvcInternal(
       return {alternative_service_info, AdvertisedAltSvcState::kQuicNotBroken};
     }
 
-    if (!IsQuicAllowedForHost(destination.host())) {
+    if (!IsQuicAllowedForHost(destination.GetHost())) {
       continue;
     }
 

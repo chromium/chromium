@@ -61,7 +61,7 @@ class TestBase : public WebSocketStreamCreateTestBase {
                         const std::string& response_body) {
     url_request_context_host_.SetExpectations(
         WebSocketStandardRequestWithCookies(
-            url.path(), url.host(), origin, cookie_header,
+            url.GetPath(), url.GetHost(), origin, cookie_header,
             /*send_additional_request_headers=*/{}, /*extra_headers=*/{}),
         response_body);
     CreateAndConnectStream(url, NoSubProtocols(), origin, site_for_cookies,

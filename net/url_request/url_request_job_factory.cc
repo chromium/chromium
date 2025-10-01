@@ -107,7 +107,7 @@ std::unique_ptr<URLRequestJob> URLRequestJobFactory::CreateJob(
       return job;
   }
 
-  auto it = protocol_handler_map_.find(request->url().scheme());
+  auto it = protocol_handler_map_.find(request->url().GetScheme());
   if (it == protocol_handler_map_.end()) {
     return std::make_unique<URLRequestErrorJob>(request,
                                                 ERR_UNKNOWN_URL_SCHEME);
@@ -122,7 +122,7 @@ bool URLRequestJobFactory::IsSafeRedirectTarget(const GURL& location) const {
     // Error cases are safely handled.
     return true;
   }
-  auto it = protocol_handler_map_.find(location.scheme());
+  auto it = protocol_handler_map_.find(location.GetScheme());
   if (it == protocol_handler_map_.end()) {
     // Unhandled cases are safely handled.
     return true;

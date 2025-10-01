@@ -185,7 +185,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
           StorageAccessApiStatus::kNone) {
     const GURL socket_url(url);
     const std::string socket_host = GetHostAndOptionalPort(socket_url);
-    const std::string socket_path = socket_url.path();
+    const std::string socket_path = socket_url.GetPath();
 
     if (stream_type_ == BASIC_HANDSHAKE_STREAM) {
       url_request_context_host_.SetExpectations(
@@ -352,7 +352,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
     const GURL socket_url(url);
     const std::string socket_host = GetHostAndOptionalPort(socket_url);
-    const std::string socket_path = socket_url.path();
+    const std::string socket_path = socket_url.GetPath();
 
     url_request_context_host_.SetExpectations(
         WebSocketStandardRequest(socket_path, socket_host, Origin(),
@@ -380,7 +380,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
     const GURL socket_url(url);
     const std::string socket_host = GetHostAndOptionalPort(socket_url);
-    const std::string socket_path = socket_url.path();
+    const std::string socket_path = socket_url.GetPath();
 
     url_request_context_host_.SetExpectations(
         WebSocketStandardRequest(socket_path, socket_host, Origin(),

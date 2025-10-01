@@ -81,7 +81,7 @@ HttpAuthController::HttpAuthController(
     : target_(target),
       auth_url_(auth_url),
       auth_scheme_host_port_(auth_url),
-      auth_path_(auth_url.path()),
+      auth_path_(auth_url.GetPath()),
       network_anonymization_key_(network_anonymization_key),
       http_auth_cache_(http_auth_cache),
       http_auth_handler_factory_(http_auth_handler_factory),

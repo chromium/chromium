@@ -72,7 +72,7 @@ std::unique_ptr<Session> CreateSessionHelper(
     const std::string& origin = "https://foo.test") {
   SessionParams::Scope scope;
   scope.origin = origin;
-  std::string cookie_attr = "Secure; Domain=" + GURL(url_string).host();
+  std::string cookie_attr = "Secure; Domain=" + GURL(url_string).GetHost();
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", cookie_attr}});
   SessionParams params{session_id,

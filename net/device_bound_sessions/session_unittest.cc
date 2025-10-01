@@ -1006,11 +1006,11 @@ TEST_F(SessionTest, RefreshInitiators) {
 
   const std::string& initiator_rule = session->allowed_refresh_initiators()[0];
   EXPECT_FALSE(MatchesHostPattern(initiator_rule,
-                                  GURL("https://not-example.test").host()));
+                                  GURL("https://not-example.test").GetHost()));
   EXPECT_TRUE(MatchesHostPattern(
-      initiator_rule, GURL("https://subdomain.not-example.test").host()));
+      initiator_rule, GURL("https://subdomain.not-example.test").GetHost()));
   EXPECT_FALSE(MatchesHostPattern(
-      initiator_rule, GURL("https://some-other-example.test").host()));
+      initiator_rule, GURL("https://some-other-example.test").GetHost()));
 }
 
 TEST_F(SessionTest, InvalidRefreshInitiators) {

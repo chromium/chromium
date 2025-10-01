@@ -661,7 +661,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
         // Skip all validations if the fetcher endpoint is not a subdomain but
         // rather the top-level site (which matches the origin when including
         // the site).
-        fetcher_endpoint_.host() != (*session_or_error)->origin().host()) {
+        fetcher_endpoint_.GetHost() != (*session_or_error)->origin().host()) {
       GURL::Replacements replacements;
       replacements.SetPathStr("/.well-known/device-bound-sessions");
       replacements.SetHostStr((*session_or_error)->origin().host());

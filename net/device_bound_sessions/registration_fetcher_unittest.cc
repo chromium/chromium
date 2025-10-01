@@ -357,7 +357,7 @@ std::unique_ptr<test_server::HttpResponse> ReturnWellKnown(
   response->set_content_type("application/json");
   response->set_code(HTTP_OK);
   response->set_content(base::ReplaceStringPlaceholders(
-      contents, {request.base_url.port()}, /*offsets=*/nullptr));
+      contents, {request.base_url.GetPort()}, /*offsets=*/nullptr));
   return response;
 }
 

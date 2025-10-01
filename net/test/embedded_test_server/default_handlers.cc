@@ -237,7 +237,7 @@ std::unique_ptr<HttpResponse> HandleEchoAll(const HttpRequest& request) {
 // /echo-raw
 // Returns the query string as the raw response (no HTTP headers).
 std::unique_ptr<HttpResponse> HandleEchoRaw(const HttpRequest& request) {
-  return std::make_unique<RawHttpResponse>("", request.GetURL().query());
+  return std::make_unique<RawHttpResponse>("", request.GetURL().GetQuery());
 }
 
 // /set-cookie?COOKIES
@@ -248,8 +248,9 @@ std::unique_ptr<HttpResponse> HandleSetCookie(const HttpRequest& request) {
   std::string content;
   GURL request_url = request.GetURL();
   if (request_url.has_query()) {
-    std::vector<std::string> cookies = base::SplitString(
-        request_url.query(), "&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<std::string> cookies =
+        base::SplitString(request_url.GetQuery(), "&", base::KEEP_WHITESPACE,
+                          base::SPLIT_WANT_ALL);
     for (const auto& cookie : cookies) {
       http_response->AddCustomHeader("Set-Cookie", cookie);
       content += cookie;
@@ -394,7 +395,7 @@ std::unique_ptr<HttpResponse> HandleSetHeaderWithFile(
   base::FilePath server_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &server_root);
   base::FilePath file_path =
-      server_root.AppendASCII(request_url.path().substr(prefix.size() + 1));
+      server_root.AppendASCII(request_url.GetPath().substr(prefix.size() + 1));
   std::string file_content;
   CHECK(base::ReadFileToString(file_path, &file_content));
   http_response->set_content(file_content);
@@ -419,7 +420,7 @@ std::unique_ptr<HttpResponse> HandleIframe(const HttpRequest& request) {
 
   GURL iframe_url("about:blank");
   if (request_url.has_query()) {
-    iframe_url = GURL(base::UnescapeBinaryURLComponent(request_url.query()));
+    iframe_url = GURL(base::UnescapeBinaryURLComponent(request_url.GetQuery()));
   }
 
   http_response->set_content(base::StringPrintf(
@@ -782,7 +783,7 @@ std::unique_ptr<HttpResponse> HandleSlowServer(const HttpRequest& request) {
 
   GURL request_url = request.GetURL();
   if (request_url.has_query())
-    delay = std::atof(request_url.query().c_str());
+    delay = std::atof(request_url.GetQuery().c_str());
 
   auto http_response =
       std::make_unique<DelayedHttpResponse>(base::Seconds(delay));
@@ -851,7 +852,7 @@ std::unique_ptr<HttpResponse> HandleExabyteResponse(
 // Returns a response with a gzipped body of "<body>". Attempts to allocate
 // enough memory to contain the body, but DCHECKs if that fails.
 std::unique_ptr<HttpResponse> HandleGzipBody(const HttpRequest& request) {
-  std::string uncompressed_body = request.GetURL().query();
+  std::string uncompressed_body = request.GetURL().GetQuery();
   auto compressed_body = CompressGzip(uncompressed_body);
 
   auto http_response = std::make_unique<BasicHttpResponse>();

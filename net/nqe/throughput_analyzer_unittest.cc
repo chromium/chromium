@@ -213,14 +213,14 @@ TEST_F(ThroughputAnalyzerTest,
 
     // Add an entry to the host cache mapping kUrl to non-local IP when using an
     // empty NetworkAnonymizationKey.
-    mock_host_resolver->rules()->AddRule(kUrl.host(), "1.2.3.4");
+    mock_host_resolver->rules()->AddRule(kUrl.GetHost(), "1.2.3.4");
     mock_host_resolver->LoadIntoCache(url::SchemeHostPort(kUrl),
                                       NetworkAnonymizationKey(), std::nullopt);
 
     // Add an entry to the host cache mapping kUrl to local IP when using
     // kNetworkAnonymizationKey.
     mock_host_resolver->rules()->ClearRules();
-    mock_host_resolver->rules()->AddRule(kUrl.host(), "127.0.0.1");
+    mock_host_resolver->rules()->AddRule(kUrl.GetHost(), "127.0.0.1");
     mock_host_resolver->LoadIntoCache(url::SchemeHostPort(kUrl),
                                       kNetworkAnonymizationKey, std::nullopt);
 

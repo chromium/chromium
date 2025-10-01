@@ -3707,7 +3707,7 @@ TEST_P(QuicNetworkTransactionTest, RemoteAltSvcWorkingWhileLocalAltSvcBroken) {
 
   GURL origin1 = request_.url;  // mail.example.org
   GURL origin2("https://www.example.org/");
-  ASSERT_NE(origin1.host(), origin2.host());
+  ASSERT_NE(origin1.GetHost(), origin2.GetHost());
 
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
@@ -3846,7 +3846,7 @@ TEST_P(QuicNetworkTransactionTest,
 
   GURL origin1 = request_.url;
   GURL origin2("https://www.example.org/");
-  ASSERT_NE(origin1.host(), origin2.host());
+  ASSERT_NE(origin1.GetHost(), origin2.GetHost());
 
   MockQuicData mock_quic_data(version_);
 
@@ -3885,11 +3885,11 @@ TEST_P(QuicNetworkTransactionTest,
   QuicTestPacketMaker client_maker2(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), origin2.host(), quic::Perspective::IS_CLIENT, true);
+      context_.clock(), origin2.GetHost(), quic::Perspective::IS_CLIENT, true);
   QuicTestPacketMaker server_maker2(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), origin2.host(), quic::Perspective::IS_SERVER, false);
+      context_.clock(), origin2.GetHost(), quic::Perspective::IS_SERVER, false);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -3940,13 +3940,15 @@ TEST_P(QuicNetworkTransactionTest,
 
   // Set up alternative service for |origin1|.
   base::Time expiration = base::Time::Now() + base::Days(1);
-  AlternativeService alternative1(NextProto::kProtoQUIC, origin1.host(), 443);
+  AlternativeService alternative1(NextProto::kProtoQUIC, origin1.GetHost(),
+                                  443);
   http_server_properties_->SetQuicAlternativeService(
       url::SchemeHostPort(origin1), NetworkAnonymizationKey(), alternative1,
       expiration, supported_versions_);
 
   // Set up alternative service for |origin2|.
-  AlternativeService alternative2(NextProto::kProtoQUIC, origin2.host(), 443);
+  AlternativeService alternative2(NextProto::kProtoQUIC, origin2.GetHost(),
+                                  443);
   http_server_properties_->SetQuicAlternativeService(
       url::SchemeHostPort(origin2), NetworkAnonymizationKey(), alternative2,
       expiration, supported_versions_);
@@ -4177,7 +4179,7 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
   context_.params()->allow_remote_alt_svc = true;
   GURL origin1 = request_.url;
   GURL origin2("https://www.example.org/");
-  ASSERT_NE(origin1.host(), origin2.host());
+  ASSERT_NE(origin1.GetHost(), origin2.GetHost());
 
   MockQuicData mock_quic_data(version_);
 
@@ -4205,11 +4207,11 @@ TEST_P(QuicNetworkTransactionTest, PoolByDestination) {
   QuicTestPacketMaker client_maker2(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), origin2.host(), quic::Perspective::IS_CLIENT, true);
+      context_.clock(), origin2.GetHost(), quic::Perspective::IS_CLIENT, true);
   QuicTestPacketMaker server_maker2(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
-      context_.clock(), origin2.host(), quic::Perspective::IS_SERVER, false);
+      context_.clock(), origin2.GetHost(), quic::Perspective::IS_SERVER, false);
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -4488,9 +4490,10 @@ TEST_P(QuicNetworkTransactionTest, ConfirmAlternativeService) {
 
   EXPECT_FALSE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
       alternative_service, NetworkAnonymizationKey()));
-  EXPECT_NE(nullptr, http_server_properties_->GetServerNetworkStats(
-                         url::SchemeHostPort("https", request_.url.host(), 443),
-                         NetworkAnonymizationKey()));
+  EXPECT_NE(nullptr,
+            http_server_properties_->GetServerNetworkStats(
+                url::SchemeHostPort("https", request_.url.GetHost(), 443),
+                NetworkAnonymizationKey()));
 }
 
 TEST_P(QuicNetworkTransactionTest,
@@ -4583,14 +4586,16 @@ TEST_P(QuicNetworkTransactionTest,
 
   EXPECT_FALSE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
       alternative_service, kNetworkAnonymizationKey1));
-  EXPECT_NE(nullptr, http_server_properties_->GetServerNetworkStats(
-                         url::SchemeHostPort("https", request_.url.host(), 443),
-                         kNetworkAnonymizationKey1));
+  EXPECT_NE(nullptr,
+            http_server_properties_->GetServerNetworkStats(
+                url::SchemeHostPort("https", request_.url.GetHost(), 443),
+                kNetworkAnonymizationKey1));
   EXPECT_TRUE(http_server_properties_->WasAlternativeServiceRecentlyBroken(
       alternative_service, kNetworkAnonymizationKey2));
-  EXPECT_EQ(nullptr, http_server_properties_->GetServerNetworkStats(
-                         url::SchemeHostPort("https", request_.url.host(), 443),
-                         kNetworkAnonymizationKey2));
+  EXPECT_EQ(nullptr,
+            http_server_properties_->GetServerNetworkStats(
+                url::SchemeHostPort("https", request_.url.GetHost(), 443),
+                kNetworkAnonymizationKey2));
 }
 
 TEST_P(QuicNetworkTransactionTest, UseAlternativeServiceForQuicForHttps) {
@@ -4747,9 +4752,10 @@ TEST_P(QuicNetworkTransactionTest, ZeroRTTWithHttpRace) {
   CheckWasQuicResponse(&trans);
   CheckResponseData(&trans, kQuicRespData);
 
-  EXPECT_EQ(nullptr, http_server_properties_->GetServerNetworkStats(
-                         url::SchemeHostPort("https", request_.url.host(), 443),
-                         NetworkAnonymizationKey()));
+  EXPECT_EQ(nullptr,
+            http_server_properties_->GetServerNetworkStats(
+                url::SchemeHostPort("https", request_.url.GetHost(), 443),
+                NetworkAnonymizationKey()));
 }
 
 TEST_P(QuicNetworkTransactionTest, ZeroRTTWithNoHttpRace) {
@@ -6543,7 +6549,7 @@ TEST_P(QuicNetworkTransactionWithDestinationTest, InvalidCertificate) {
   }
 
   GURL url("https://mail.example.com/");
-  origin1_ = url.host();
+  origin1_ = url.GetHost();
 
   // Not used for requests, but this provides a test case where the certificate
   // is valid for the hostname of the alternative service.
@@ -8557,7 +8563,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
         client_maker1.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
             ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
-            GetRequestHeaders("GET", url1.scheme(), "/1"), nullptr));
+            GetRequestHeaders("GET", url1.GetScheme(), "/1"), nullptr));
     unpartitioned_mock_quic_data.AddRead(
         ASYNC, server_maker1.MakeResponseHeadersPacket(
                    1, GetNthClientInitiatedBidirectionalStreamId(0), false,
@@ -8577,7 +8583,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
         client_maker1.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(1), true,
             ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
-            GetRequestHeaders("GET", url2.scheme(), "/2"), nullptr));
+            GetRequestHeaders("GET", url2.GetScheme(), "/2"), nullptr));
     unpartitioned_mock_quic_data.AddRead(
         ASYNC, server_maker1.MakeResponseHeadersPacket(
                    3, GetNthClientInitiatedBidirectionalStreamId(1), false,
@@ -8597,7 +8603,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
         client_maker1.MakeRequestHeadersPacket(
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(2), true,
             ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
-            GetRequestHeaders("GET", url3.scheme(), "/3"), nullptr));
+            GetRequestHeaders("GET", url3.GetScheme(), "/3"), nullptr));
     unpartitioned_mock_quic_data.AddRead(
         ASYNC, server_maker1.MakeResponseHeadersPacket(
                    5, GetNthClientInitiatedBidirectionalStreamId(2), false,
@@ -8639,7 +8645,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
         client_maker2.MakeRequestHeadersPacket(
             packet_num2++, GetNthClientInitiatedBidirectionalStreamId(0), true,
             ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
-            GetRequestHeaders("GET", url1.scheme(), "/1"), nullptr));
+            GetRequestHeaders("GET", url1.GetScheme(), "/1"), nullptr));
     partitioned_mock_quic_data1.AddRead(
         ASYNC, server_maker2.MakeResponseHeadersPacket(
                    1, GetNthClientInitiatedBidirectionalStreamId(0), false,
@@ -8659,7 +8665,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
         client_maker2.MakeRequestHeadersPacket(
             packet_num2++, GetNthClientInitiatedBidirectionalStreamId(1), true,
             ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
-            GetRequestHeaders("GET", url3.scheme(), "/3"), nullptr));
+            GetRequestHeaders("GET", url3.GetScheme(), "/3"), nullptr));
     partitioned_mock_quic_data1.AddRead(
         ASYNC, server_maker2.MakeResponseHeadersPacket(
                    3, GetNthClientInitiatedBidirectionalStreamId(1), false,
@@ -8699,7 +8705,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
         client_maker3.MakeRequestHeadersPacket(
             packet_num3++, GetNthClientInitiatedBidirectionalStreamId(0), true,
             ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY),
-            GetRequestHeaders("GET", url2.scheme(), "/2"), nullptr));
+            GetRequestHeaders("GET", url2.GetScheme(), "/2"), nullptr));
     partitioned_mock_quic_data2.AddRead(
         ASYNC, server_maker3.MakeResponseHeadersPacket(
                    1, GetNthClientInitiatedBidirectionalStreamId(0), false,

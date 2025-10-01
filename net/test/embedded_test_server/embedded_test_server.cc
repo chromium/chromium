@@ -70,8 +70,9 @@ std::unique_ptr<HttpResponse> ServeResponseForPath(
     const std::string& content_type,
     const std::string& content,
     const HttpRequest& request) {
-  if (request.GetURL().path() != expected_path)
+  if (request.GetURL().GetPath() != expected_path) {
     return nullptr;
+  }
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(status_code);
@@ -88,8 +89,8 @@ std::unique_ptr<HttpResponse> ServeResponseForSubPaths(
     const std::string& content_type,
     const std::string& content,
     const HttpRequest& request) {
-  if (request.GetURL().path() != expected_path &&
-      !request.GetURL().path().starts_with(expected_path + "/")) {
+  if (request.GetURL().GetPath() != expected_path &&
+      !request.GetURL().GetPath().starts_with(expected_path + "/")) {
     return nullptr;
   }
 

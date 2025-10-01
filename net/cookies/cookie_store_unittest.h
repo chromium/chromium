@@ -794,9 +794,9 @@ TYPED_TEST_P(CookieStoreTest, SetCanonicalCookieTest) {
 TYPED_TEST_P(CookieStoreTest, SecureEnforcement) {
   CookieStore* cs = this->GetCookieStore();
   GURL http_url(this->http_www_foo_.url());
-  std::string http_domain(http_url.host());
+  std::string http_domain(http_url.GetHost());
   GURL https_url(this->https_www_foo_.url());
-  std::string https_domain(https_url.host());
+  std::string https_domain(https_url.GetHost());
 
   // Confirm that setting the secure attribute from an insecure source fails,
   // but the other combinations work.

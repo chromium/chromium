@@ -215,7 +215,7 @@ class EmbeddedTestServerTest
     request_relative_url_ = request.relative_url;
     request_absolute_url_ = request.GetURL();
 
-    if (request_absolute_url_.path() == path) {
+    if (request_absolute_url_.GetPath() == path) {
       auto http_response = std::make_unique<BasicHttpResponse>();
       http_response->set_code(code);
       http_response->set_content(content);

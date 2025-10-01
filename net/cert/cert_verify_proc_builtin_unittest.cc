@@ -536,12 +536,12 @@ TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
     TestCompletionCallback verify_callback;
     // Ensure HSTS upgrades for the domain which hosts the CRLs.
     context()->transport_security_state()->AddHSTS(
-        test_server.base_url().host(), base::Time::Now() + base::Seconds(30),
+        test_server.base_url().GetHost(), base::Time::Now() + base::Seconds(30),
         /*include_subdomains=*/true);
     // Setting `is_top_level_nav` true prevents the upgrade from being blocked
     // by kHstsTopLevelNavigationsOnly.
     ASSERT_TRUE(context()->transport_security_state()->ShouldUpgradeToSSL(
-        test_server.base_url().host(), /*is_top_level_nav=*/true));
+        test_server.base_url().GetHost(), /*is_top_level_nav=*/true));
     Verify(chain.get(), "www.example.com",
            CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
            &verify_result, &verify_net_log_source, verify_callback.callback());

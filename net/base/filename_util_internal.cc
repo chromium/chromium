@@ -257,9 +257,9 @@ std::u16string GetSuggestedFilenameImpl(
   // |default_name|.  Some schemes (e.g.: file:, about:, data:) do not have a
   // host name.
   if (filename.empty() && default_name.empty() && url.is_valid() &&
-      !url.host().empty()) {
+      !url.GetHost().empty()) {
     // TODO(jungshik) : Decode a 'punycoded' IDN hostname. (bug 1264451)
-    filename = url.host();
+    filename = url.GetHost();
   }
 
   bool replace_trailing = false;

@@ -75,11 +75,11 @@ void ParseUrl(std::string_view url,
               std::string* path) {
   GURL gurl(url);
   path->assign(gurl.PathForRequest());
-  scheme->assign(gurl.scheme());
-  host->assign(gurl.host());
+  scheme->assign(gurl.GetScheme());
+  host->assign(gurl.GetHost());
   if (gurl.has_port()) {
     host->append(":");
-    host->append(gurl.port());
+    host->append(gurl.GetPort());
   }
 }
 

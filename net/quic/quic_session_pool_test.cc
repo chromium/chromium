@@ -3961,7 +3961,7 @@ TEST_P(QuicSessionPoolTest,
   socket_data
       .AddWrite("connect-udp",
                 ConstructConnectUdpRequestPacket(
-                    to_proxy_packet_num++, stream_id, proxy.host(),
+                    to_proxy_packet_num++, stream_id, proxy.GetHost(),
                     "/.well-known/masque/udp/www.example.org/443/", false))
       .Sync();
   socket_data.AddRead("server-settings",
@@ -4179,7 +4179,7 @@ TEST_P(QuicSessionPoolTest, MigrateOnPathDegradingWithProxiedSession) {
   socket_data
       .AddWrite("connect-udp",
                 ConstructConnectUdpRequestPacket(
-                    to_proxy_packet_num++, stream_id, proxy.host(),
+                    to_proxy_packet_num++, stream_id, proxy.GetHost(),
                     "/.well-known/masque/udp/www.example.org/443/", false))
       .Sync();
   socket_data.AddRead("server-settings",
@@ -13326,7 +13326,7 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   socket_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   socket_data1.AddWrite(
       SYNCHRONOUS, ConstructConnectUdpRequestPacket(
-                       2, stream_id, proxy1.host(),
+                       2, stream_id, proxy1.GetHost(),
                        "/.well-known/masque/udp/www.example.org/443/", false));
   socket_data1.AddRead(ASYNC, ConstructServerSettingsPacket(3));
   socket_data1.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));
@@ -13352,7 +13352,7 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
   socket_data2.AddWrite(
       SYNCHRONOUS, ConstructConnectUdpRequestPacket(
-                       2, stream_id, proxy2.host(),
+                       2, stream_id, proxy2.GetHost(),
                        "/.well-known/masque/udp/mail.example.org/443/", false));
   socket_data2.AddRead(ASYNC, ConstructServerSettingsPacket(3));
   socket_data2.AddRead(ASYNC, ConstructOkResponsePacket(4, stream_id, true));

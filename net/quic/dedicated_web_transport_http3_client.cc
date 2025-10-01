@@ -648,8 +648,8 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   session_ = std::make_unique<DedicatedWebTransportHttp3ClientSession>(
       InitializeQuicConfig(*quic_context_->params()), supported_versions_,
       connection.release(),
-      quic::QuicServerId(url_.host(), url_.EffectiveIntPort()), &crypto_config_,
-      this);
+      quic::QuicServerId(url_.GetHost(), url_.EffectiveIntPort()),
+      &crypto_config_, this);
   if (!original_supported_versions_.empty()) {
     session_->set_client_original_supported_versions(
         original_supported_versions_);
@@ -776,8 +776,8 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   }
 
   quiche::HttpHeaderBlock headers;
-  DCHECK_EQ(url_.scheme(), url::kHttpsScheme);
-  headers[":scheme"] = url_.scheme();
+  DCHECK_EQ(url_.GetScheme(), url::kHttpsScheme);
+  headers[":scheme"] = url_.GetScheme();
   headers[":method"] = "CONNECT";
   headers[":authority"] = GetHostAndOptionalPort(url_);
   headers[":path"] = url_.PathForRequest();

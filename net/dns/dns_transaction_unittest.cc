@@ -671,7 +671,7 @@ class DnsTransactionTestBase : public testing::Test {
                            bool make_available = true) {
     GURL url(URLRequestMockDohJob::GetMockHttpsUrl("doh_test"));
     URLRequestFilter* filter = URLRequestFilter::GetInstance();
-    filter->AddHostnameInterceptor(url.scheme(), url.host(),
+    filter->AddHostnameInterceptor(url.GetScheme(), url.GetHost(),
                                    std::make_unique<DohJobInterceptor>(this));
     CHECK_LE(num_doh_servers, 255u);
     std::vector<string> templates;
@@ -856,7 +856,7 @@ class DnsTransactionTestBase : public testing::Test {
     // If the path indicates a redirect, skip checking the list of
     // configured servers, because it won't be there and we still want
     // to handle it.
-    bool server_found = request->url().path() == "/redirect-destination";
+    bool server_found = request->url().GetPath() == "/redirect-destination";
     for (auto server : config_.doh_config.servers()) {
       if (server_found)
         break;
@@ -2549,8 +2549,8 @@ TEST_F(DnsTransactionTest, HttpsPostWithWrongType) {
 void MakeResponseRedirect(URLRequest* request, HttpResponseInfo* info) {
   if (request->url_chain().size() < 2) {
     info->headers->ReplaceStatusLine("HTTP/1.1 302 Found");
-    info->headers->AddHeader("Location",
-                             "/redirect-destination?" + request->url().query());
+    info->headers->AddHeader(
+        "Location", "/redirect-destination?" + request->url().GetQuery());
   }
 }
 
@@ -2575,7 +2575,7 @@ void MakeResponseInsecureRedirect(URLRequest* request, HttpResponseInfo* info) {
   if (request->url_chain().size() < 2) {
     info->headers->ReplaceStatusLine("HTTP/1.1 302 Found");
     const std::string location = URLRequestMockDohJob::GetMockHttpUrl(
-        "/redirect-destination?" + request->url().query());
+        "/redirect-destination?" + request->url().GetQuery());
     info->headers->AddHeader("Location", location);
   }
 }

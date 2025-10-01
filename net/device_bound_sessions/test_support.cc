@@ -107,7 +107,7 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
                                    base::Value::List().Append(
                                        base::Value::Dict()
                                            .Set("type", "exclude")
-                                           .Set("domain", base_url.host())
+                                           .Set("domain", base_url.GetHost())
                                            .Set("path", "/favicon.ico"))))
             .Set("credentials",
                  base::Value::List().Append(

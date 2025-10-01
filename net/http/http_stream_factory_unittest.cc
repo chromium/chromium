@@ -1259,7 +1259,7 @@ TEST_P(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     // Set up QUIC as alternative_service.
     HttpServerProperties http_server_properties;
     const AlternativeService alternative_service(
-        NextProto::kProtoQUIC, url.host().c_str(), url.IntPort());
+        NextProto::kProtoQUIC, url.GetHost().c_str(), url.IntPort());
     base::Time expiration = base::Time::Now() + base::Days(1);
     HostPortPair host_port_pair(alternative_service.GetHostPortPair());
     url::SchemeHostPort server("https", host_port_pair.host(),
@@ -4005,11 +4005,11 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   const std::set<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
 
   host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
-      kUrlA.host(), "127.0.0.1", kDnsAliasesA);
+      kUrlA.GetHost(), "127.0.0.1", kDnsAliasesA);
   host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
-      kUrlB.host(), "127.0.0.1", kDnsAliasesB);
+      kUrlB.GetHost(), "127.0.0.1", kDnsAliasesB);
   host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
-      kUrlC.host(), "127.0.0.1",
+      kUrlC.GetHost(), "127.0.0.1",
       /*dns_aliases=*/std::set<std::string>());
 
   // Prepare mock QUIC data for a first session establishment.
@@ -4047,9 +4047,9 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
 
   // Set up QUIC as alternative_service.
   Initialize();
-  AddQuicAlternativeService(url::SchemeHostPort(kUrlA), kUrlA.host());
-  AddQuicAlternativeService(url::SchemeHostPort(kUrlB), kUrlB.host());
-  AddQuicAlternativeService(url::SchemeHostPort(kUrlC), kUrlC.host());
+  AddQuicAlternativeService(url::SchemeHostPort(kUrlA), kUrlA.GetHost());
+  AddQuicAlternativeService(url::SchemeHostPort(kUrlB), kUrlB.GetHost());
+  AddQuicAlternativeService(url::SchemeHostPort(kUrlC), kUrlC.GetHost());
 
   // Create three HttpRequestInfos, differing only in host name.
   // All three will resolve to 127.0.0.1 and hence be IP aliases.
@@ -4108,7 +4108,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   EXPECT_TRUE(requester3.stream_done());
   EXPECT_FALSE(requester3.websocket_stream());
   ASSERT_TRUE(requester3.stream());
-  EXPECT_THAT(requester3.stream()->GetDnsAliases(), ElementsAre(kUrlC.host()));
+  EXPECT_THAT(requester3.stream()->GetDnsAliases(),
+              ElementsAre(kUrlC.GetHost()));
 
   // Clear the host resolve rules to ensure that we are using cached info.
   host_resolver()->rules()->ClearRules();
@@ -4164,7 +4165,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   EXPECT_TRUE(requester6.stream_done());
   EXPECT_FALSE(requester6.websocket_stream());
   ASSERT_TRUE(requester6.stream());
-  EXPECT_THAT(requester6.stream()->GetDnsAliases(), ElementsAre(kUrlC.host()));
+  EXPECT_THAT(requester6.stream()->GetDnsAliases(),
+              ElementsAre(kUrlC.GetHost()));
 
   // Verify the session pool reused the first session and no new session is
   // created. This will fail unless the session pool supports multiple

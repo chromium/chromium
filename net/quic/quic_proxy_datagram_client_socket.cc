@@ -427,7 +427,7 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
   if (!url_.has_host()) {
     return ERR_ADDRESS_INVALID;
   }
-  std::string host = url_.host();
+  std::string host = url_.GetHost();
   int port = url_.IntPort();
   std::string host_and_port =
       url_.has_port() ? base::StrCat({host, ":", base::NumberToString(port)})
@@ -445,7 +445,7 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
 
   // Generate a fake request line for logging purposes.
   std::string request_line =
-      base::StringPrintf("CONNECT-UDP %s HTTP/3\r\n", url_.path().c_str());
+      base::StringPrintf("CONNECT-UDP %s HTTP/3\r\n", url_.GetPath().c_str());
   NetLogRequestHeaders(net_log_,
                        NetLogEventType::HTTP_TRANSACTION_SEND_TUNNEL_HEADERS,
                        request_line, &request_.extra_headers);

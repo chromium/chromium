@@ -280,12 +280,15 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
   // each time. Returns the time which is strictly greater than any creation
   // time which was passed to created cookies.
   base::Time PopulateCmForPredicateCheck(CookieMonster* cm) {
-    std::string url_top_level_domain_plus_1(GURL(kTopLevelDomainPlus1).host());
-    std::string url_top_level_domain_plus_2(GURL(kTopLevelDomainPlus2).host());
-    std::string url_top_level_domain_plus_3(GURL(kTopLevelDomainPlus3).host());
+    std::string url_top_level_domain_plus_1(
+        GURL(kTopLevelDomainPlus1).GetHost());
+    std::string url_top_level_domain_plus_2(
+        GURL(kTopLevelDomainPlus2).GetHost());
+    std::string url_top_level_domain_plus_3(
+        GURL(kTopLevelDomainPlus3).GetHost());
     std::string url_top_level_domain_secure(
-        GURL(kTopLevelDomainPlus2Secure).host());
-    std::string url_other(GURL(kOtherDomain).host());
+        GURL(kTopLevelDomainPlus2Secure).GetHost());
+    std::string url_other(GURL(kOtherDomain).GetHost());
 
     this->DeleteAll(cm);
 
@@ -4176,7 +4179,7 @@ TEST_F(CookieMonsterTest, BackingStoreCommunication) {
 
       EXPECT_EQ(input->name, output->Name());
       EXPECT_EQ(input->value, output->Value());
-      EXPECT_EQ(input->url.host(), output->Domain());
+      EXPECT_EQ(input->url.GetHost(), output->Domain());
       EXPECT_EQ(input->path, output->Path());
       EXPECT_LE(current.ToInternalValue(),
                 output->CreationDate().ToInternalValue());
@@ -4604,25 +4607,25 @@ TEST_F(CookieMonsterTest, SetAllCookies) {
 
   CookieList list;
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "." + http_www_foo_.url().host(), "/", base::Time::Now(),
+      "A", "B", "." + http_www_foo_.url().GetHost(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "C", "D", "." + http_www_foo_.url().host(), "/bar", base::Time::Now(),
+      "C", "D", "." + http_www_foo_.url().GetHost(), "/bar", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "W", "X", "." + http_www_foo_.url().host(), "/", base::Time::Now(),
+      "W", "X", "." + http_www_foo_.url().GetHost(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), false, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-Y", "Z", https_www_foo_.url().host(), "/", base::Time::Now(),
+      "__Host-Y", "Z", https_www_foo_.url().GetHost(), "/", base::Time::Now(),
       base::Time(), base::Time(), base::Time(), true, false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT,
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"))));
   // Expired cookie, should not be stored.
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "expired", "foobar", https_www_foo_.url().host(), "/",
+      "expired", "foobar", https_www_foo_.url().GetHost(), "/",
       base::Time::Now() - base::Days(1), base::Time::Now() - base::Days(2),
       base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
       CookieSameSite::NO_RESTRICTION, CookiePriority::COOKIE_PRIORITY_DEFAULT));
@@ -8356,7 +8359,7 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
   base::Time original_expiry = original_creation + base::Days(800);
   CookieList list;
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "." + https_www_foo_.url().host(), "/", original_creation,
+      "A", "B", "." + https_www_foo_.url().GetHost(), "/", original_creation,
       original_expiry, base::Time(), base::Time(), true, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   EXPECT_TRUE(SetAllCookies(cookie_monster.get(), list));
@@ -8372,7 +8375,7 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated300DaysAgoThenUpdatedNow) {
   EXPECT_TRUE(SetCanonicalCookie(
       cookie_monster.get(),
       CanonicalCookie::CreateSanitizedCookie(
-          https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
+          https_www_foo_.url(), "A", "B", https_www_foo_.url().GetHost(), "/",
           new_creation, new_expiry, base::Time(), true, false,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, std::nullopt,
           /*status=*/nullptr),
@@ -8399,7 +8402,7 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
   base::Time original_expiry = original_creation + base::Days(800);
   CookieList list;
   list.push_back(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "A", "B", "." + https_www_foo_.url().host(), "/", original_creation,
+      "A", "B", "." + https_www_foo_.url().GetHost(), "/", original_creation,
       original_expiry, base::Time(), base::Time(), true, false,
       CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT));
   EXPECT_TRUE(SetAllCookies(cookie_monster.get(), list));
@@ -8415,7 +8418,7 @@ TEST_F(CookieMonsterTest, FromStorageCookieCreated500DaysAgoThenUpdatedNow) {
   EXPECT_TRUE(SetCanonicalCookie(
       cookie_monster.get(),
       CanonicalCookie::CreateSanitizedCookie(
-          https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
+          https_www_foo_.url(), "A", "B", https_www_foo_.url().GetHost(), "/",
           new_creation, new_expiry, base::Time(), true, false,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, std::nullopt,
           /*status=*/nullptr),
@@ -8443,7 +8446,7 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
   EXPECT_TRUE(SetCanonicalCookie(
       cookie_monster.get(),
       CanonicalCookie::CreateSanitizedCookie(
-          https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
+          https_www_foo_.url(), "A", "B", https_www_foo_.url().GetHost(), "/",
           original_creation, original_expiry, base::Time(), true, false,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, std::nullopt,
           /*status=*/nullptr),
@@ -8459,7 +8462,7 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated300DaysAgoThenUpdatedNow) {
   EXPECT_TRUE(SetCanonicalCookie(
       cookie_monster.get(),
       CanonicalCookie::CreateSanitizedCookie(
-          https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
+          https_www_foo_.url(), "A", "B", https_www_foo_.url().GetHost(), "/",
           new_creation, new_expiry, base::Time(), true, false,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, std::nullopt,
           /*status=*/nullptr),
@@ -8487,7 +8490,7 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
   EXPECT_TRUE(SetCanonicalCookie(
       cookie_monster.get(),
       CanonicalCookie::CreateSanitizedCookie(
-          https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
+          https_www_foo_.url(), "A", "B", https_www_foo_.url().GetHost(), "/",
           original_creation, original_expiry, base::Time(), true, false,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, std::nullopt,
           /*status=*/nullptr),
@@ -8500,7 +8503,7 @@ TEST_F(CookieMonsterTest, SanitizedCookieCreated500DaysAgoThenUpdatedNow) {
   EXPECT_TRUE(SetCanonicalCookie(
       cookie_monster.get(),
       CanonicalCookie::CreateSanitizedCookie(
-          https_www_foo_.url(), "A", "B", https_www_foo_.url().host(), "/",
+          https_www_foo_.url(), "A", "B", https_www_foo_.url().GetHost(), "/",
           new_creation, new_expiry, base::Time(), true, false,
           CookieSameSite::NO_RESTRICTION, COOKIE_PRIORITY_DEFAULT, std::nullopt,
           /*status=*/nullptr),

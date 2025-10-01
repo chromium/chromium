@@ -71,7 +71,7 @@ std::u16string UnescapeIdentityString(std::string_view escaped_text) {
 GURL AppendQueryParameter(const GURL& url,
                           std::string_view name,
                           std::string_view value) {
-  std::string query(url.query());
+  std::string query(url.GetQuery());
 
   if (!query.empty())
     query += "&";
@@ -259,7 +259,7 @@ bool ParseHostAndPort(std::string_view input, std::string* host, int* port) {
 std::string GetHostAndPort(const GURL& url) {
   // For IPv6 literals, GURL::host() already includes the brackets so it is
   // safe to just append a colon.
-  return base::StringPrintf("%s:%d", url.host().c_str(),
+  return base::StringPrintf("%s:%d", url.GetHost().c_str(),
                             url.EffectiveIntPort());
 }
 
@@ -267,8 +267,9 @@ std::string GetHostAndOptionalPort(const GURL& url) {
   // For IPv6 literals, GURL::host() already includes the brackets
   // so it is safe to just append a colon.
   if (url.has_port())
-    return base::StringPrintf("%s:%s", url.host().c_str(), url.port().c_str());
-  return url.host();
+    return base::StringPrintf("%s:%s", url.GetHost().c_str(),
+                              url.GetPort().c_str());
+  return url.GetHost();
 }
 
 NET_EXPORT std::string GetHostAndOptionalPort(
@@ -541,7 +542,7 @@ OriginRelation GetOriginRelation(const GURL& target_url,
 void GetIdentityFromURL(const GURL& url,
                         std::u16string* username,
                         std::u16string* password) {
-  *username = UnescapeIdentityString(url.username());
+  *username = UnescapeIdentityString(url.GetUsername());
   *password = UnescapeIdentityString(url.password());
 }
 

@@ -1176,8 +1176,9 @@ class ZeroRTTResponse : public test_server::HttpResponse {
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
     const test_server::HttpRequest& request) {
-  if (request.GetURL().path() != "/zerortt" || !request.ssl_info)
+  if (request.GetURL().GetPath() != "/zerortt" || !request.ssl_info) {
     return nullptr;
+  }
 
   return std::make_unique<ZeroRTTResponse>(
       request.ssl_info->early_data_received);

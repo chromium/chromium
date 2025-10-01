@@ -1265,7 +1265,7 @@ void QuicChromiumClientSession::OnOriginFrame(const quic::OriginFrame& frame) {
       return;
     }
     GURL url(base::StrCat({origin_str, "/"}));
-    if (!url.is_valid() || url.path() != "/") {
+    if (!url.is_valid() || url.GetPath() != "/") {
       continue;
     }
     url::SchemeHostPort origin(url);

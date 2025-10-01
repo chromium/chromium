@@ -74,7 +74,7 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
       return;
     }
     case ProxyRules::Type::PROXY_LIST_PER_SCHEME: {
-      const ProxyList* entry = MapUrlSchemeToProxyList(url.scheme());
+      const ProxyList* entry = MapUrlSchemeToProxyList(url.GetScheme());
       if (entry) {
         result->UseProxyList(*entry);
       } else {

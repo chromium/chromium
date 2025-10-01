@@ -92,10 +92,10 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   // Usually, remote mounts are still mounted onto the local filesystem.
   // Therefore, we discard all URLs that are not obviously local to prevent
   // spoofing attacks using file:// URLs. See crbug.com/881675.
-  if (!url.host().empty() && !net::IsLocalhost(url)) {
+  if (!url.GetHost().empty() && !net::IsLocalhost(url)) {
     return false;
   }
-  std::string path = url.path();
+  std::string path = url.GetPath();
 #endif  // !BUILDFLAG(IS_WIN)
 
   if (path.empty())

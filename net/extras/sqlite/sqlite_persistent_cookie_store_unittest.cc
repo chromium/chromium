@@ -2781,7 +2781,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SavingPartitionedCookies) {
   InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
 
   store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
-      "__Host-foo", "bar", GURL("https://example.com/").host(), "/",
+      "__Host-foo", "bar", GURL("https://example.com/").GetHost(), "/",
       /*creation=*/base::Time::Now(),
       /*expiration=*/base::Time::Now() + base::Days(1),
       /*last_access=*/base::Time::Now(),
@@ -2821,7 +2821,7 @@ TEST_F(SQLitePersistentCookieStoreTest, LoadingPartitionedCookies) {
   base::Time last_update(base::Time::Now());
 
   stmt.BindTime(0, creation);
-  stmt.BindString(1, GURL("https://www.example.com/").host());
+  stmt.BindString(1, GURL("https://www.example.com/").GetHost());
   stmt.BindString(2, "https://toplevelsite.com");
   stmt.BindString(3, "__Host-foo");
   stmt.BindString(4, "bar");
@@ -2842,7 +2842,7 @@ TEST_F(SQLitePersistentCookieStoreTest, LoadingPartitionedCookies) {
   auto cc = std::move(cookies[0]);
   EXPECT_EQ("__Host-foo", cc->Name());
   EXPECT_EQ("bar", cc->Value());
-  EXPECT_EQ(GURL("https://www.example.com/").host(), cc->Domain());
+  EXPECT_EQ(GURL("https://www.example.com/").GetHost(), cc->Domain());
   EXPECT_TRUE(cc->IsPartitioned());
   EXPECT_EQ(
       CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com")),

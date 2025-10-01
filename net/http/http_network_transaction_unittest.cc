@@ -6234,19 +6234,19 @@ class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
     *results = ProxyInfo();
     results->set_traffic_annotation(
         MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-    if (url.path() == "/socks4") {
+    if (url.GetPath() == "/socks4") {
       results->UsePacString("SOCKS " + ProxyHostPortPairAsString());
       return OK;
     }
-    if (url.path() == "/socks5") {
+    if (url.GetPath() == "/socks5") {
       results->UsePacString("SOCKS5 " + ProxyHostPortPairAsString());
       return OK;
     }
-    if (url.path() == "/http") {
+    if (url.GetPath() == "/http") {
       results->UsePacString("PROXY " + ProxyHostPortPairAsString());
       return OK;
     }
-    if (url.path() == "/https") {
+    if (url.GetPath() == "/https") {
       results->UsePacString("HTTPS " + ProxyHostPortPairAsString());
       return OK;
     }
@@ -24357,7 +24357,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
   session_deps_.host_resolver->set_synchronous_mode(true);
-  session_deps_.host_resolver->rules()->AddRule(GURL(url_).host(),
+  session_deps_.host_resolver->rules()->AddRule(GURL(url_).GetHost(),
                                                 ERR_NAME_NOT_RESOLVED);
   TestCompletionCallback callback;
 
@@ -24378,7 +24378,7 @@ TEST_P(HttpNetworkTransactionNetworkErrorLoggingTest,
       std::make_unique<HttpNetworkTransaction>(DEFAULT_PRIORITY, session.get());
 
   session_deps_.host_resolver->set_synchronous_mode(false);
-  session_deps_.host_resolver->rules()->AddRule(GURL(url_).host(),
+  session_deps_.host_resolver->rules()->AddRule(GURL(url_).GetHost(),
                                                 ERR_NAME_NOT_RESOLVED);
   TestCompletionCallback callback;
 

@@ -57,7 +57,8 @@ void URLRequestFilter::AddHostnameInterceptor(
   // Check to see if we're masking URLs in the url_interceptor_map_.
   for (const auto& [url_spec, _] : url_interceptor_map_) {
     const GURL url(url_spec);
-    DCHECK(!hostname_interceptor_map_.contains({url.scheme(), url.host()}));
+    DCHECK(
+        !hostname_interceptor_map_.contains({url.GetScheme(), url.GetHost()}));
   }
 #endif  // !NDEBUG
 }
@@ -79,8 +80,8 @@ bool URLRequestFilter::AddUrlInterceptor(
   url_interceptor_map_[url.spec()] = std::move(interceptor);
 
   // Check to see if this URL is masked by a hostname handler.
-  DCHECK_EQ(
-      0u, hostname_interceptor_map_.count(std::pair(url.scheme(), url.host())));
+  DCHECK_EQ(0u, hostname_interceptor_map_.count(
+                    std::pair(url.GetScheme(), url.GetHost())));
 
   return true;
 }
@@ -107,8 +108,8 @@ std::unique_ptr<URLRequestJob> URLRequestFilter::MaybeInterceptRequest(
   std::unique_ptr<URLRequestJob> job;
 
   // Check the hostname map first.
-  const std::string hostname = request->url().host();
-  const std::string scheme = request->url().scheme();
+  const std::string hostname = request->url().GetHost();
+  const std::string scheme = request->url().GetScheme();
 
   {
     auto it = hostname_interceptor_map_.find(std::pair(scheme, hostname));

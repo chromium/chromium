@@ -258,7 +258,7 @@ int PacFileDecider::DoQuickCheck() {
     return OK;
   }
 
-  std::string host = current_pac_source().url.host();
+  std::string host = current_pac_source().url.GetHost();
 
   HostResolver::ResolveHostParameters parameters;
   // We use HIGHEST here because proxy decision blocks doing any other requests.

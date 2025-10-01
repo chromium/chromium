@@ -2680,7 +2680,7 @@ bool CookieMonster::HasCookieableScheme(const GURL& url) {
   if (!is_cookieable) {
     // The scheme didn't match any in our allowed list.
     DVLOG(net::cookie_util::kVlogPerCookieMonster)
-        << "WARNING: Unsupported cookie scheme: " << url.scheme();
+        << "WARNING: Unsupported cookie scheme: " << url.GetScheme();
   }
   return is_cookieable;
 }
@@ -2939,7 +2939,7 @@ void CookieMonster::RecordPeriodicFirstPartySetsStats(
           DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
           if (!site.has_registrable_domain_or_host())
             return acc;
-          return acc + cookies_.count(GetKey(site.GetURL().host()));
+          return acc + cookies_.count(GetKey(site.GetURL().GetHost()));
         });
     base::UmaHistogramCustomCounts("Cookie.PerFirstPartySetCount", sample, 0,
                                    4000, 50);
@@ -3023,7 +3023,7 @@ CookieMonster::IsCookieSentToSamePortThatSetIt(
   if (source_port == destination_port)
     return CookieSentToSamePort::kYes;
 
-  const std::string& destination_scheme = destination.scheme();
+  const std::string& destination_scheme = destination.GetScheme();
   bool destination_port_is_default =
       url::DefaultPortForScheme(destination_scheme) == destination_port;
 
@@ -3049,7 +3049,7 @@ std::optional<bool> CookieMonster::SiteHasCookieInOtherPartition(
     const net::SchemefulSite& site,
     const CookiePartitionKey& partition_key) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::string domain = site.GetURL().host();
+  std::string domain = site.GetURL().GetHost();
   if (store_ && !finished_fetching_all_cookies_ &&
       !keys_loaded_.count(domain)) {
     return std::nullopt;

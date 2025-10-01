@@ -86,7 +86,7 @@ std::unique_ptr<WebTransportClient> CreateWebTransportClient(
     const NetworkAnonymizationKey& anonymization_key,
     URLRequestContext* context,
     const WebTransportParameters& parameters) {
-  if (url.scheme() == url::kHttpsScheme) {
+  if (url.GetScheme() == url::kHttpsScheme) {
     if (!parameters.enable_web_transport_http3) {
       return std::make_unique<FailedWebTransportClient>(
           ERR_DISALLOWED_URL_SCHEME, visitor);

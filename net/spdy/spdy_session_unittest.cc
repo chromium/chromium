@@ -5702,7 +5702,7 @@ TEST_F(AltSvcFrameTest, ProcessAltSvcFrame) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
@@ -5739,7 +5739,7 @@ TEST_F(AltSvcFrameTest, IgnoreQuicAltSvcWithUnsupportedVersion) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(
@@ -5767,7 +5767,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameForOriginNotCoveredByCert) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5794,7 +5794,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithEmptyOriginOnStreamZero) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5817,7 +5817,7 @@ TEST_F(AltSvcFrameTest,
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5864,7 +5864,7 @@ TEST_F(AltSvcFrameTest, ProcessAltSvcFrameOnActiveStream) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -5945,7 +5945,7 @@ TEST_F(AltSvcFrameTest,
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -6015,7 +6015,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnStreamWithInsecureOrigin) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -6040,7 +6040,7 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnNonExistentStream) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   ASSERT_TRUE(spdy_session_pool_->http_server_properties()
                   ->GetAlternativeServiceInfos(session_origin,
@@ -6054,7 +6054,7 @@ TEST_F(AltSvcFrameTest, InvalidOrigin) {
   const std::string origin("https:?");
   const GURL origin_gurl(origin);
   EXPECT_FALSE(origin_gurl.is_valid());
-  EXPECT_TRUE(origin_gurl.host().empty());
+  EXPECT_TRUE(origin_gurl.GetHost().empty());
   EXPECT_TRUE(origin_gurl.SchemeIs(url::kHttpsScheme));
 
   spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 0);
@@ -6068,7 +6068,7 @@ TEST_F(AltSvcFrameTest, InvalidOrigin) {
 
   base::RunLoop().RunUntilIdle();
 
-  const url::SchemeHostPort session_origin("https", test_url_.host(),
+  const url::SchemeHostPort session_origin("https", test_url_.GetHost(),
                                            test_url_.EffectiveIntPort());
   AlternativeServiceInfoVector altsvc_info_vector =
       spdy_session_pool_->http_server_properties()->GetAlternativeServiceInfos(

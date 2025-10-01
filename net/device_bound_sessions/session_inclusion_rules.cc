@@ -118,7 +118,8 @@ SessionInclusionRules::Create(const url::Origin& origin,
     // don't return an error if the rule is not valid or add a CHECK, because a
     // refresh URL is allowed to be outside an origin-scoped session.
     rules.AddUrlRuleIfValid(SessionInclusionRules::InclusionResult::kExclude,
-                            refresh_endpoint.host(), refresh_endpoint.path());
+                            refresh_endpoint.GetHost(),
+                            refresh_endpoint.GetPath());
   }
 
   return rules;
@@ -231,7 +232,7 @@ bool SessionInclusionRules::AllowsRefreshForInitiator(
 }
 
 bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {
-  if (!MatchesHostPattern(host_pattern, url.host())) {
+  if (!MatchesHostPattern(host_pattern, url.GetHost())) {
     return false;
   }
 
