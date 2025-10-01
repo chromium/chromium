@@ -706,7 +706,6 @@
 <translation id="1473927070149284123">Повторіть спробу або підключіться до мережі вручну</translation>
 <translation id="1474785664565228650">Щоб зміни в налаштуваннях мікрофона почали діяти й ви могли продовжити роботу, перезапустіть додаток Parallels Desktop.</translation>
 <translation id="1476088332184200792">Скопіювати на пристрій</translation>
-<translation id="1476347941828409626">&amp;Керувати профілями Chrome</translation>
 <translation id="1476607407192946488">&amp;Налаштування мови</translation>
 <translation id="1477446329585670721">Домен <ph name="DOMAIN" /> вимагає, щоб ви не виймали розумну картку.</translation>
 <translation id="1477654881618305065">Ваша організація не дозволяє надсилати цей контент. Якщо вам потрібна допомога, зв’яжіться з адміністратором.</translation>
@@ -1012,6 +1011,7 @@
 <translation id="1668804837842452164">Зберегти в додатку <ph name="BRAND" /> для облікового запису <ph name="EMAIL" /></translation>
 <translation id="1668979692599483141">Докладніше про підказки</translation>
 <translation id="1670399744444387456">Основні параметри</translation>
+<translation id="1671525612731130246">Виберіть обліковий запис Диска</translation>
 <translation id="1671749176392751693">Ідентифікатори захищеного контенту дозволено</translation>
 <translation id="1673137583248014546">Сайт <ph name="URL" /> хоче бачити марку й модель вашого ключа безпеки</translation>
 <translation id="1674073353928166410">Відкрити всі (<ph name="URL_COUNT" />) у вікні в режимі анонімного перегляду</translation>
@@ -1320,6 +1320,7 @@
 <translation id="1880618477732738742">Змінювати й надавати доступ до таких функцій, як геолокація, мікрофон, камера, файли cookie тощо, для всіх ваших вебсайтів і розширень, зокрема поточного.</translation>
 <translation id="1881445033931614352">Розкладка клавіатури</translation>
 <translation id="1881577802939775675">{COUNT,plural, =1{Елемент}one{# елемент}few{# елементи}many{# елементів}other{# елемента}}</translation>
+<translation id="188177382966899059">Deep Search</translation>
 <translation id="1884340228047885921">Поточне налаштування видимості: "Деякі контакти"</translation>
 <translation id="1884705339276589024">Змінити розмір диска Linux</translation>
 <translation id="1885066963699478692">Файли XML, які використовуються для налаштування правил.</translation>
@@ -3931,7 +3932,6 @@
 <translation id="369736917241079046">клавіша Панелі запуску + стрілка вліво</translation>
 <translation id="3697716475445175867">востаннє відкриті</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Ви можете вимкнути сповіщення із цього сайту.}one{Ви можете вимкнути сповіщення із цих сайтів.}few{Ви можете вимкнути сповіщення із цих сайтів.}many{Ви можете вимкнути сповіщення із цих сайтів.}other{Ви можете вимкнути сповіщення із цих сайтів.}}</translation>
-<translation id="3697952514309507634">Інші профілі Chrome</translation>
 <translation id="3698471669415859717">Перевірку завершено</translation>
 <translation id="3699624789011381381">Електронна адреса</translation>
 <translation id="3699755232086000535">Дозволити Parallels Desktop керувати USB-пристроями.</translation>
@@ -4009,6 +4009,7 @@
 <translation id="3735039640698208086">Під час відтворення аудіо…</translation>
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3735827758948958091">Не можна відкрити файл <ph name="FILE_NAMES" />, коли використовується підключення з тарифікацією</translation>
+<translation id="3736575924150462398">Додати вкладки або інші об’єкти</translation>
 <translation id="3737058101969549870">Зберігати наявні дані вебперегляду окремо від цього нового профілю?</translation>
 <translation id="3738632186060045350">Дані пристрою <ph name="DEVICE_TYPE" /> буде видалено через 24 години</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -4230,6 +4231,7 @@
 <translation id="3867134342671430205">Потягніть або скористайтеся клавішами зі стрілками, щоб перемістити дисплей</translation>
 <translation id="3867831579565057323">Зіставлення сенсорного екрана</translation>
 <translation id="3867944738977021751">Поля сертифіката</translation>
+<translation id="3869564880668247983">Згрупувати всі вкладки</translation>
 <translation id="3869917919960562512">Неправильний індекс.</translation>
 <translation id="3870626286046977643">Також надати доступ до системного аудіо</translation>
 <translation id="3870688298003434214">Скасувати вибір закладки "<ph name="BOOKMARK_TITLE" />"</translation>
@@ -5260,6 +5262,7 @@
 <translation id="4606933160360542263">Власна комбінація клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{Видалити групу вкладок?}one{Видалити групи вкладок?}few{Видалити групи вкладок?}many{Видалити групи вкладок?}other{Видалити групи вкладок?}}</translation>
 <translation id="4608500690299898628">&amp;Знайти...</translation>
+<translation id="4609164937357979319">Вибір облікового запису</translation>
 <translation id="4610162781778310380">У плагіні <ph name="PLUGIN_NAME" /> сталася помилка</translation>
 <translation id="4610493438923139095">Ненадійний</translation>
 <translation id="4610637590575890427">Ви мали на увазі перейти до <ph name="SITE" />?</translation>
@@ -5958,6 +5961,7 @@
 <translation id="5098963855433723436">Додаток відкривається в окремому вікні</translation>
 <translation id="5100775515702043594">Ваш адміністратор закріпив розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5101398513835324081">Додайте дію</translation>
+<translation id="5101683448725092498">Створіть резервну копію даних</translation>
 <translation id="5101839224773798795">Автоматично натискати, коли курсор зупиняється</translation>
 <translation id="5102244391872941183">Ваші дані про місцезнаходження можуть використовувати додатки й вебсайти, які мають дозвіл на доступ до геоданих, а також системні сервіси</translation>
 <translation id="5103311607312269661">збільшення яскравості екрана</translation>
@@ -6983,6 +6987,7 @@
 <translation id="583756221537636748">Чохол</translation>
 <translation id="5840680448799937675">Завжди передавати файли офлайн</translation>
 <translation id="5841270259333717135">Налаштувати Ethernet</translation>
+<translation id="5841338463993781099">Зберегти в обліковому записі?</translation>
 <translation id="5842497610951477805">Увімкнути Bluetooth</translation>
 <translation id="5844284118433003733">Якщо ви ввійшли у свій обліковий запис Google, ці дані зв’язуються з ним. Завдяки цьому ми можемо захищати вас у всіх сервісах Google, наприклад підвищити захист у Gmail після інциденту безпеки.</translation>
 <translation id="5844685625984052392">Сумнівний</translation>
@@ -7836,9 +7841,9 @@
 <translation id="6451861213630784801">Ви вийшли з облікового запису</translation>
 <translation id="6452181791372256707">Відхилити</translation>
 <translation id="6452251728599530347">Виконано <ph name="PERCENT" /></translation>
-<translation id="6452268285438583507">Додати розширення</translation>
 <translation id="6452961788130242735">Проблема з мережею чи областю</translation>
 <translation id="6453191633103419909">Якість проекції вкладок або екрана</translation>
+<translation id="6453687572758515877">Згрупувати всі вкладки</translation>
 <translation id="6453921811609336127">Щоб вибрати наступний метод введення, натисніть <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />пробіл<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
 <translation id="6455264371803474013">На певних сайтах</translation>
 <translation id="6455521402703088376">Вимкнено • Розробник скасував публікацію цього розширення</translation>
@@ -9123,6 +9128,7 @@
 <translation id="7356908624372060336">Журнали мережі</translation>
 <translation id="7357271391997763660">Запустити перевірку паролів?</translation>
 <translation id="735745346212279324">VPN від’єднано</translation>
+<translation id="7359326150089800742">Додати до пошукового запиту вкладку або файл, а також скористатись інструментом</translation>
 <translation id="7359680654975233185">Не вдалося транслювати вкладку</translation>
 <translation id="7360257054721917104">Перегляд збережених робочих столів і шаблонів. Для навігації натисніть клавішу Tab.</translation>
 <translation id="7360333718677093875">панель смайлів</translation>
@@ -9777,7 +9783,6 @@
 <translation id="7791436592012979144">Зворотне прокручування ввімкнено</translation>
 <translation id="7791543448312431591">Додати</translation>
 <translation id="7792012425874949788">Сталася помилка під час входу</translation>
-<translation id="7792336732117553384">&amp;Керувати профілями Chrome</translation>
 <translation id="7792388396321542707">Більше не ділитися</translation>
 <translation id="779308894558717334">Світло-зелений</translation>
 <translation id="7793098747275782155">Темно-синій</translation>
@@ -9929,6 +9934,7 @@
 <translation id="7903984238293908205">Катакана</translation>
 <translation id="7904526211178107182">Порти Linux стануть доступними для інших пристроїв у вашій мережі.</translation>
 <translation id="7906440585529721295">Локальні дані буде видалено</translation>
+<translation id="7907312522152480478">Щоб користуватися вкладками з інших пристроїв, підтвердьте свою особу й синхронізуйте історію і вкладки. Синхронізацію можна будь-коли вимкнути в налаштуваннях. Google може персоналізувати Пошук і інші сервіси на основі вашої історії.</translation>
 <translation id="7907502219904644296">Змінити право доступу</translation>
 <translation id="7907837847548254634">Ненадовго виділяти вибраний об'єкт</translation>
 <translation id="7908378463497120834">На жаль, підключити принаймні один розділ пристрою зовнішньої пам’яті неможливо.</translation>
@@ -10206,7 +10212,6 @@
 <translation id="8075044377771022666">Нижній колонтитул</translation>
 <translation id="8076835018653442223">Адміністратор вимкнув доступ до локальних файлів на вашому пристрої</translation>
 <translation id="8077120325605624147">Усі сайти, які ви відвідуєте, можуть показувати вам будь-які оголошення</translation>
-<translation id="8077579734294125741">Інші профілі Chrome</translation>
 <translation id="8077749280021225629">Також видалити дані вебперегляду (<ph name="URL" />), що може призвести до виходу з облікового запису на сайті <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">Пошук за зображенням</translation>
 <translation id="8079606020824373126">Google Менеджер паролів може замінити його надійним паролем, який буде збережено в обліковому записі <ph name="EMAIL" />. <ph name="PASSWORD_CHANGE" /></translation>
@@ -10566,6 +10571,7 @@
 <translation id="8323167517179506834">Введіть URL-адресу</translation>
 <translation id="8323317289166663449">Читати та змінювати всі ваші дані на комп’ютері та всіх веб-сайтах</translation>
 <translation id="8323518750352551353">Окремий вебпереглядач?</translation>
+<translation id="8323744572398547859">Щоб користуватися вкладками з інших пристроїв, увійдіть в обліковий запис і синхронізуйте історію. Крім того, ви отримаєте доступ до паролів і інших даних на всіх своїх пристроях. Синхронізацію можна будь-коли вимкнути в налаштуваннях. Google може персоналізувати Пошук і інші сервіси на основі вашої історії.</translation>
 <translation id="8324158725704657629">Не запитувати знову</translation>
 <translation id="8325413836429495820">Заборонено переглядати буфер обміну</translation>
 <translation id="8326478304147373412">PKCS #7, ланцюжок сертифікатів</translation>
@@ -10713,7 +10719,6 @@
 <translation id="8425213833346101688">Змінити</translation>
 <translation id="8425492902634685834">Закріпити на панелі завдань</translation>
 <translation id="8425768983279799676">Пристрій можна розблоковувати PIN-кодом.</translation>
-<translation id="8426697201161711396">Увійдіть в обліковий запис у Chrome, щоб отримати доступ до своїх паролів і інших даних на всіх пристроях</translation>
 <translation id="8427213022735114808">Диктування надсилає зразок вашого голосу в Google, щоб дозволити голосовий ввід у будь-якому текстовому полі.</translation>
 <translation id="8427292751741042100">вбудовано на будь-якому хості</translation>
 <translation id="8428213095426709021">Налаштування</translation>
@@ -11640,6 +11645,7 @@
 <translation id="9042827002460091668">Перевірте інтернет-з’єднання й повторіть спробу</translation>
 <translation id="9042893549633094279">Конфіденційність і безпека</translation>
 <translation id="9043264199499366189">Підписуватися на події системи ChromeOS Flex</translation>
+<translation id="9043767139743235992">Зв’язатися зі службою підтримки Google із питань доступності</translation>
 <translation id="9044646465488564462">Помилка під’єднання до мережі: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">Список читання переміщено на нову бічну панель. Перегляньте його там.</translation>
 <translation id="9048745018038487540">Вибрати всі шрифти</translation>

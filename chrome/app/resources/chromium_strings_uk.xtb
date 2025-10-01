@@ -235,6 +235,9 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="379589255253486813">Chromium повідомить вас, якщо потрібно буде вжити заходів</translation>
 <translation id="3802055581630249637">Chromium попередньо завантажує сторінки, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше</translation>
 <translation id="3810973564298564668">Керувати</translation>
+<translation id="3846683726093018685">**Підсумуй:** опиши основну тему й мету контенту на знімку екрана одним реченням, що містить до 30 слів.
+
+          **Запропонуй запитання:** створи список із 3–5 запитань для роздумів, які може поставити користувач, щоб краще зрозуміти знімок екрана. Принаймні одне із цих запитань має стосуватися візуального об’єкта, його оформлення або розміщення.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="3885770153807205175">Засіб вибору мови</translation>
 <translation id="388648406173476553">Налаштуйте й керуйте Chromium. Якщо з’явиться сповіщення, натисніть його, щоб дізнатися більше.</translation>
@@ -501,6 +504,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="7024536598735240744">Помилка розпакування: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Встановлення зупинено.</translation>
 <translation id="7045244423563602563">Персоналізуйте Chromium</translation>
+<translation id="7047386856539490735">Ці результати корисні?</translation>
 <translation id="705851970750939768">Оновити Chromium</translation>
 <translation id="7067091210845072982">Якщо зображення не має корисного опису, Chromium спробує додати його. Для цього зображення надсилаються в Google.</translation>
 <translation id="7141270731789036260">Налаштувати Chrome for Testing</translation>
@@ -626,7 +630,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
 <translation id="8601359445272098721">Новинка! Тепер ви можете перекладати текст і зображення на екрані, натиснувши кнопку "Перекласти вміст екрана".</translation>
 <translation id="8619360774459241877">Запускається Chromium…</translation>
-<translation id="8621669128220841554">Не вдалося встановити через невизначену помилку. Завантажте Chromium ще раз.</translation>
 <translation id="8648201657708811153">Google Chrome for Testing не можна зробити веб-переглядачем за умовчанням.</translation>
 <translation id="8697124171261953979">Розширення також змінило сторінку, яка відкривається під час запуску Chromium або пошуку в універсальному вікні пошуку.</translation>
 <translation id="8704119203788522458">Це ваш Chromium</translation>

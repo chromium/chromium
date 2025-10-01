@@ -1253,6 +1253,7 @@
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3090667236485488075">ग्लास</translation>
 <translation id="3093122472063815077">आता विकत घ्या, नंतर पैसे द्या यासंबंधित प्रगतीची स्क्रीन अर्ध्या उंचीवर उघडली आहे.</translation>
+<translation id="309381737510736393">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब शेअर करू शकत नाही किंवा इतरांसोबत सहयोग करू शकत नाही</translation>
 <translation id="3094051226187213523">ही सूचना वापरून AI मोड उघडा.</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">दुर्लक्ष केले कारण बंद करण्याच्या सूचीमध्ये '*' सारख्या पॅटर्नचा समावेश आहे जो धोरण बंद करण्याशी समतुल्य आहे.</translation>
@@ -1289,6 +1290,7 @@
 <translation id="3137507986424712703">{COUNT,plural, =0{काहीही नाही}=1{एका खात्यासाठी साइन इन डेटा}other{# खात्यांसाठी साइन इन डेटा}}</translation>
 <translation id="3140646734028448730">व्‍यवसाय सेवा</translation>
 <translation id="3141093262818886744">तरीही उघडा</translation>
+<translation id="3141337053413339205">या टॅबवर स्विच करा.</translation>
 <translation id="3141641372357166056">संमती निर्णय नाही</translation>
 <translation id="3144458715650412431">चाचणी धोरणे लागू केली आहेत. chrome://policy/test येथे त्यांचे पुनरावलोकन करा आणि रीसेट करा. ॲडमिन धोरणे लागू केली जाणार नाहीत.</translation>
 <translation id="3145945101586104090">प्रतिसाद डीकोड करण्यात अयशस्वी</translation>
@@ -1696,6 +1698,7 @@
 <translation id="3784372983762739446">ब्लूटूथ डिव्हाइस</translation>
 <translation id="3785246317262748285">तुम्ही सामान्यपणे साइटशी सुरक्षितरीत्या कनेक्ट करता, पण Chrome ला या वेळी सुरक्षित कनेक्शन वापरता आले नाही. हल्लेखोर हा तुमच्या नेटवर्क कनेक्शनवरील माहिती चोरण्याचा किंवा त्यामध्ये फेरबदल करण्याचा प्रयत्न करत असू शकतो. <ph name="LEARN_MORE" /></translation>
 <translation id="378611282717571199">"<ph name="SEARCH_QUERY" />" यासाठी सर्वोत्तम जुळण्या</translation>
+<translation id="3787887386289385215"><ph name="ISSUER_1_NAME" />, <ph name="ISSUER_2_NAME" />, किंवा <ph name="ISSUER_3_NAME" /></translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="3791118028061680614">अ‍ॅप्स स्विच न करता पेमेंट करा</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> इं)</translation>
@@ -2677,6 +2680,7 @@
 <translation id="5412040515238827314">फॉरमॅट चुकीचा आहे: सूचीचा पॅटर्न अपेक्षित आहे.</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> - <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">स्टॅकर ४</translation>
+<translation id="5414306071315087019">Google Pay वर आता विकत घ्या, नंतर पैसे द्या उपलब्ध आहे</translation>
 <translation id="5414446060143308245">ट्रान्सफर करण्यापूर्वी पुनरावलोकन करणे आवश्यक आहे</translation>
 <translation id="5414511064953050917">तरीही हलवा</translation>
 <translation id="5418700249417444482">तुम्ही भेट देता त्या पेजच्या URLs विश्लेषण करण्यासाठी Google Cloud किंवा तृतीय पक्षांना पाठवल्या जातात आणि तुमच्या अ‍ॅडमिनिस्ट्रेटरला दृश्यमान असू शकतात. उदाहरणार्थ, असुरक्षित वेबसाइट डिटेक्ट करण्यासाठी किंवा अ‍ॅडमिनिस्ट्रेटरने सेट केलेल्या नियमांच्या आधारावर वेबसाइट फिल्टर करण्यासाठी त्या स्कॅन केल्या जाऊ शकतात.</translation>
@@ -2797,6 +2801,7 @@
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
 <translation id="5596939519753369075">२ x ३.५ इं</translation>
 <translation id="5597254438174353289">निळा ३</translation>
+<translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> किंवा <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">व्यवस्थापनाला सपोर्ट नाही</translation>
 <translation id="5605249000617390290">किंमत ट्रॅक करण्याबद्दल अधिक जाणून घ्या</translation>
 <translation id="5605670050355397069">Ledger</translation>
@@ -3433,6 +3438,7 @@
 <translation id="6671697161687535275">Chromium वरून फॉर्म सूचना काढून टाकायच्या?</translation>
 <translation id="6675846980676550611">AR ला अनुमती नाही</translation>
 <translation id="6677351035258626477">फास्ट फूड</translation>
+<translation id="6677738644213083042">या टॅबवर स्विच करा</translation>
 <translation id="6679354743514146922">Chrome ब्राउझर हा <ph name="APP_NAME" /> वर तुमचा पासवर्ड भरण्याचा प्रयत्न करत आहे.</translation>
 <translation id="6681790815630918386">CVC सेव्ह केला आहे</translation>
 <translation id="6683022854667115063">हेडफोन</translation>

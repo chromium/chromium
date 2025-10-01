@@ -42,6 +42,7 @@
 <translation id="1434626383986940139">Програми Chrome для версії Canary</translation>
 <translation id="1439793550875056299">Закріпити Chrome</translation>
 <translation id="146866447420868597">Увійти в Chrome?</translation>
+<translation id="1476347941828409626">&amp;Керувати профілями Chrome</translation>
 <translation id="1492280395845991349">Перезапустіть, щоб завершити оновлення Chrome</translation>
 <translation id="1497802159252041924">Помилка встановлення: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Налаштуйте свій новий профіль Chrome</translation>
@@ -248,6 +249,9 @@
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="383928141529488001">Для пошуку пристроїв із Bluetooth вебпереглядачу
 Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Підсумуй:** опиши основну тему й мету контенту на знімку екрана одним реченням, що містить до 30 слів.
+
+          **Запропонуй запитання:** створи список із 3–5 запитань для роздумів, які може поставити користувач, щоб краще зрозуміти знімок екрана. Принаймні одне із цих запитань має стосуватися візуального об’єкта, його оформлення або розміщення.</translation>
 <translation id="386202838227397562">Закрийте всі вікна Google Chrome і повторіть спробу.</translation>
 <translation id="3873044882194371212">Відкрити посилання в аноні&amp;мному вікні Chrome</translation>
 <translation id="3885770153807205175">Засіб вибору мови</translation>
@@ -519,6 +523,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7024536598735240744">Помилка розпакування: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Встановлення зупинено.</translation>
 <translation id="7025800014283535195">Тут можна перемикати профілі Chrome</translation>
+<translation id="7047386856539490735">Ці результати корисні?</translation>
 <translation id="7051685429025310665">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Персоналізуйте Chrome</translation>
 <translation id="7060643578009939353">Знайти це відео за допомогою Google Об’єктива</translation>
@@ -589,10 +594,10 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7777080907402804672">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google. Ви можете будь-коли вимкнути це в налаштуваннях.</translation>
 <translation id="778331955594035129">Веб-переглядачу Chrome потрібен дозвіл на доступ до геоданих для цього сайту</translation>
 <translation id="7787950393032327779">Схоже, профіль використовується іншим процесом Google Chrome (<ph name="PROCESS_ID" />) на іншому комп’ютері (<ph name="HOST_NAME" />). Chrome заблокував цей профіль, щоб запобігти його спотворенню. Якщо ви впевнені, що жоден інший процес не використовує цей профіль, розблокуйте профіль і перезапустіть Chrome.</translation>
+<translation id="7792336732117553384">&amp;Керувати профілями Chrome</translation>
 <translation id="7801699035218095297">Google Chrome намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="7804364787702057554">Ваш обліковий запис у Chrome</translation>
 <translation id="7808348361785373670">Видалити з Chrome…</translation>
-<translation id="7825851276765848807">Програму не вдалося встановити через невизначену помилку. Завантажте Google Chrome ще раз.</translation>
 <translation id="7827099906024714326">Chrome має підтвердити вашу особу, перш ніж деякі дані можна буде зберігати в обліковому записі Google і використовувати на всіх ваших пристроях. Якщо вийти зараз, ці дані буде видалено.</translation>
 <translation id="7845233973568007926">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити комп’ютер.</translation>
 <translation id="7849037457735762883">Продовжуйте роботу з місця, де зупинилися: Chrome може відновлювати ваші вкладки після кожного перезапуску. Щоб увімкнути цю функцію, перейдіть у</translation>

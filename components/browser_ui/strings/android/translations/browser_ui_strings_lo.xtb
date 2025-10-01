@@ -145,6 +145,11 @@
 <translation id="2588271083332682494">ຈັດລະບຽບດ້ວຍກຸ່ມແຖບ</translation>
 <translation id="2597457036804169544">ຢ່ານຳໃຊ້ຮູບແບບສີສັນມືດໃສ່ເວັບໄຊ</translation>
 <translation id="2606760465469169465">ຢັ້ງຢືນອັດຕະໂນມັດ</translation>
+<translation id="2610903128639500624">ຈັດການໃນ <ph name="BEGIN_LINK1" />ການຕັ້ງຄ່າ Android<ph name="END_LINK1" />
+
+ການປົກປ້ອງຂັ້ນສູງຄວບຄຸມການຕັ້ງຄ່າ Chrome ເຫຼົ່ານີ້:
+• "ໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພສະເໝີ" ເປີດຢູ່.
+• "ຕົວປັບປະສິດທິພາບ JavaScript" ປິດຢູ່. <ph name="BEGIN_LINK2" />ຈັດການຂໍ້ຍົກເວັ້ນເວັບໄຊ<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">ອະນຸຍາດ JavaScript ສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="2626708220538466178">ຊີດລຸ່ມສຸດຂອງໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນປິດຢູ່</translation>
 <translation id="2653659639078652383">ສົ່ງ</translation>

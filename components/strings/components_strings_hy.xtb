@@ -1295,6 +1295,7 @@
 <translation id="3137507986424712703">{COUNT,plural, =0{Ոչինչ չկա}=1{1 հաշվի մուտքի տվյալներ}one{# հաշվի մուտքի տվյալներ}other{# հաշվի մուտքի տվյալներ}}</translation>
 <translation id="3140646734028448730">Բիզնես ծառայություններ</translation>
 <translation id="3141093262818886744">Բացել</translation>
+<translation id="3141337053413339205">Անցնել այս ներդիրին:</translation>
 <translation id="3141641372357166056">Համաձայնության որոշում չկա</translation>
 <translation id="3144458715650412431">Փորձնական կանոնները կիրառվել են։ Դիտեք և փոփոխեք դրանք chrome://policy/test էջում։ Ադմինիստրատորի կանոնները չեն կիրառվի։</translation>
 <translation id="3145945101586104090">Չհաջողվեց ապակոդավորել պատասխանը</translation>
@@ -3442,6 +3443,7 @@
 <translation id="6671697161687535275">Հեռացնե՞լ ձևերի առաջարկները Chromium-ից:</translation>
 <translation id="6675846980676550611">Լրացված իրականության օգտագործման թույլտվությունը մերժվել է</translation>
 <translation id="6677351035258626477">Արագ սնունդ</translation>
+<translation id="6677738644213083042">Անցնել այս ներդիրին</translation>
 <translation id="6679354743514146922">Chrome դիտարկիչը փորձում է լրացնել ձեր գաղտնաբառը <ph name="APP_NAME" /> հավելվածում։</translation>
 <translation id="6681790815630918386">CVC-ն պահվեց</translation>
 <translation id="6683022854667115063">Ականջակալներ</translation>

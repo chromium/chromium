@@ -1065,7 +1065,7 @@
 <translation id="5141363746588976328">隱藏「分頁中有產品降價」資訊卡</translation>
 <translation id="514154868070499296">字型：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">退出分頁切換工具</translation>
-<translation id="5148717509369231739">Safari 匯入</translation>
+<translation id="5148717509369231739">從 Safari 匯入</translation>
 <translation id="5157638238828697074">發生錯誤，無法開啟應用程式。</translation>
 <translation id="5163417375525818870">PDF</translation>
 <translation id="5168414296986405587">專為 iPadOS 打造</translation>
@@ -1084,7 +1084,7 @@
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5211488077761630279">要允許「<ph name="SITE_NAME" />」使用<ph name="PERMISSION" />嗎？</translation>
 <translation id="5217245356412073535">如要將預設網站檢視畫面變更為電腦版，請依序前往「設定」&gt;「內容設定」</translation>
-<translation id="5217329997012062137">使用 Google 智慧鏡頭時，系統會將頁面的螢幕截圖傳送給 Google。</translation>
+<translation id="5217329997012062137">使用 Google 智慧鏡頭時，系統會將網頁截圖傳送給 Google。</translation>
 <translation id="5220945116117011963">根據日期建立日曆活動</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5225388483876575107">A</translation>
@@ -1616,6 +1616,7 @@
 <translation id="7176183551031110427">縮小</translation>
 <translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
 <translation id="719133302483559673">管理興趣和偏好設定。</translation>
+<translation id="7191382490098297347">相機膠卷圖片</translation>
 <translation id="7203496777391039568">我們會確保貴機構的資料隱私與安全</translation>
 <translation id="720399613139435155">無法翻譯</translation>
 <translation id="7204922488054642675">個人化新聞</translation>

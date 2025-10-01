@@ -147,6 +147,11 @@
 <translation id="2588271083332682494">Varaqlar guruhlari yordamida tartibga soling</translation>
 <translation id="2597457036804169544">Saytlar uchun tungi mavzu tatbiq etilmaydi</translation>
 <translation id="2606760465469169465">Avtomatik tekshiruv</translation>
+<translation id="2610903128639500624"><ph name="BEGIN_LINK1" />Android sozlamalari<ph name="END_LINK1" /> orqali boshqarish
+
+Quyidagi Chrome sozlamalari Kuchaytirilgan himoya boshqaruvida:
+• “Doim xavfsiz ulanish ishlatilsin” parametri yoniq.
+• “JavaScript optimizer“ parametri oʻchiq. <ph name="BEGIN_LINK2" />Istisno saytlarni boshqarish<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Ko‘rsatilgan saytga JavaScript ishga tushirishga ruxsat berish.</translation>
 <translation id="2626708220538466178">Birlamchi brauzer quyi ekrani yopildi</translation>
 <translation id="2653659639078652383">Yuborish</translation>

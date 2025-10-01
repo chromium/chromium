@@ -704,7 +704,6 @@
 <translation id="1473927070149284123">फिर से कोशिश करें या मैन्युअल तरीके से नेटवर्क से कनेक्ट करें</translation>
 <translation id="1474785664565228650">माइक्रोफ़ोन की सेटिंग में बदलाव करने के लिए, Parallels Desktop का फिर से लॉन्च होना ज़रूरी है. आगे बढ़ने के लिए, Parallels Desktop को फिर से लॉन्च करें.</translation>
 <translation id="1476088332184200792">अपने डिवाइस में कॉपी करें</translation>
-<translation id="1476347941828409626">Chrome की प्रोफ़ाइलें मैनेज करें</translation>
 <translation id="1476607407192946488">&amp;भाषा सेटिंग</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> के लिए ज़रूरी है कि आप अपना स्मार्ट कार्ड डालकर रखें.</translation>
 <translation id="1477654881618305065">आपका संगठन आपको यह कॉन्टेंट शेयर करने की अनुमति नहीं देता है. अगर आपको मदद चाहिए, तो अपने एडमिन से संपर्क करें.</translation>
@@ -1010,6 +1009,7 @@
 <translation id="1668804837842452164"><ph name="EMAIL" /> के लिए <ph name="BRAND" /> में सेव करें</translation>
 <translation id="1668979692599483141">सुझावों के बारे में जानें</translation>
 <translation id="1670399744444387456">बुनियादी विकल्प</translation>
+<translation id="1671525612731130246">Drive खाता चुनें</translation>
 <translation id="1671749176392751693">सुरक्षित कॉन्टेंट दिखाने के लिए आइडेंटिफ़ायर इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="1673137583248014546"><ph name="URL" /> आपकी सुरक्षा कुंजी के निर्माता और मॉडल को देखना चाहता है</translation>
 <translation id="1674073353928166410">सभी (<ph name="URL_COUNT" />) यूआरएल गुप्त विंडो में खोलें</translation>
@@ -3929,7 +3929,6 @@
 <translation id="369736917241079046">लॉन्चर + लेफ़्ट ऐरो</translation>
 <translation id="3697716475445175867">पिछली बार खोला गया</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{आने वाले समय में, इस साइट को सूचनाएं भेजने से रोका जा सकता है.}one{आने वाले समय में, इस साइट को सूचनाएं भेजने से रोका जा सकता है.}other{आने वाले समय में, इन साइटों को सूचनाएं भेजने से रोका जा सकता है.}}</translation>
-<translation id="3697952514309507634">Chrome की अन्य प्रोफ़ाइलें</translation>
 <translation id="3698471669415859717">आपने इस कंट्रोल से जुड़ी पूरी जानकारी देख ली है</translation>
 <translation id="3699624789011381381">ईमेल पता</translation>
 <translation id="3699755232086000535">Parallels Desktop को यूएसबी डिवाइसों को कंट्रोल करने की अनुमति दें.</translation>
@@ -4228,6 +4227,7 @@
 <translation id="3867134342671430205">डिसप्ले को एक से दूसरी जगह ले जाने के लिए, उसे खींचें और छोड़ें या ऐरो बटन इस्तेमाल करें</translation>
 <translation id="3867831579565057323">टचस्क्रीन डिवाइस को मैप करें</translation>
 <translation id="3867944738977021751">प्रमाणपत्र फ़ील्ड</translation>
+<translation id="3869564880668247983">सभी टैब का ग्रुप बनाएं</translation>
 <translation id="3869917919960562512">गलत इंडेक्स.</translation>
 <translation id="3870626286046977643">सिस्टम का ऑडियो भी शेयर करें</translation>
 <translation id="3870688298003434214"><ph name="BOOKMARK_TITLE" /> से चुने हुए का निशान हटाएं</translation>
@@ -5257,6 +5257,7 @@
 <translation id="4606933160360542263">अपनी ज़रूरत के मुताबिक बटन का कॉम्बिनेशन: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4607297000182742106">{GROUP_COUNT,plural, =1{क्या आपको टैब ग्रुप मिटाना है?}one{क्या आपको टैब ग्रुप मिटाना है?}other{क्या आपको टैब ग्रुप मिटाने हैं?}}</translation>
 <translation id="4608500690299898628">&amp;ढूंढें...</translation>
+<translation id="4609164937357979319">खाता चुनें</translation>
 <translation id="4610162781778310380"><ph name="PLUGIN_NAME" /> में कोई गड़बड़ी आई</translation>
 <translation id="4610493438923139095">डिस्ट्रस्टेड</translation>
 <translation id="4610637590575890427">क्या आपका मतलब <ph name="SITE" /> पर जाने से है ?</translation>
@@ -5955,6 +5956,7 @@
 <translation id="5098963855433723436">इससे एक अलग ऐप्लिकेशन विंडो खुलती है</translation>
 <translation id="5100775515702043594">आपके एडमिन ने <ph name="EXTENSION_NAME" /> को पिन किया है</translation>
 <translation id="5101398513835324081">कोई कार्रवाई जोड़ें</translation>
+<translation id="5101683448725092498">अपने कॉन्टेंट का बैक अप लें</translation>
 <translation id="5101839224773798795">कर्सर के रुक जाने पर अपने आप क्लिक होने की सुविधा</translation>
 <translation id="5102244391872941183">सिस्टम की सेवाओं के साथ-साथ जिन ऐप्लिकेशन और वेबसाइटों के पास जगह की जानकारी इस्तेमाल करने की अनुमति है वे आपकी जगह की जानकारी को ऐक्सेस कर सकती हैं</translation>
 <translation id="5103311607312269661">डिसप्ले की रोशनी बढ़ाने वाला बटन</translation>
@@ -6982,6 +6984,7 @@
 <translation id="583756221537636748">केस</translation>
 <translation id="5840680448799937675">फ़ाइलों को हमेशा ऑफ़लाइन शेयर किया जाएगा</translation>
 <translation id="5841270259333717135">ईथरनेट कॉन्फ़िगर करें</translation>
+<translation id="5841338463993781099">क्या खाते में सेव करना है?</translation>
 <translation id="5842497610951477805">ब्लूटूथ चालू है</translation>
 <translation id="5844284118433003733">Google खाते में साइन इन करने पर, आपका ब्राउज़िंग डेटा आपके Google खाते से लिंक हो जाता है. इससे Google की सभी सेवाओं पर आपका डेटा सुरक्षित रहता है. उदाहरण: डेटा की सुरक्षा से जुड़े किसी मामले के बाद, Gmail में आपके डेटा की सुरक्षा बढ़ा दी जाती है.</translation>
 <translation id="5844685625984052392">संकेत</translation>
@@ -7836,9 +7839,9 @@
 <translation id="6451861213630784801">आपको साइन आउट कर दिया गया है</translation>
 <translation id="6452181791372256707">अस्‍वीकार करें</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> पूरा हुआ</translation>
-<translation id="6452268285438583507">एक्सटेंशन जोड़ें</translation>
 <translation id="6452961788130242735">नेटवर्क समस्या या गलत क्षेत्र</translation>
 <translation id="6453191633103419909">टैब/स्क्रीन प्रोजेक्शन की क्वालिटी</translation>
+<translation id="6453687572758515877">सभी टैब का ग्रुप बनाएं</translation>
 <translation id="6453921811609336127">अगले इनपुट के तरीके पर जाने के लिए, <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />Space<ph name="END_SPACE" /><ph name="END_SHORTCUT" /> दबाएं</translation>
 <translation id="6455264371803474013">कुछ खास साइटों पर</translation>
 <translation id="6455521402703088376">बंद है • इस एक्सटेंशन को इसके डेवलपर ने अनपब्लिश कर दिया था</translation>
@@ -8606,7 +8609,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">म्यूट करें (डिफ़ॉल्ट)</translation>
 <translation id="6979557074007409812">हां, मेरा निजी और ऑफ़िस से जुड़ा डेटा अलग-अलग रखें</translation>
-<translation id="6979737339423435258">हमेशा</translation>
+<translation id="6979737339423435258">पूरा</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">निजी रूप से ब्राउज़ करने के लिए, डॉट आइकॉन वाले मेन्यू पर क्लिक करके गुप्त विंडो खोलें</translation>
 <translation id="6981982820502123353">सुलभता</translation>
@@ -9773,7 +9776,6 @@
 <translation id="7791436592012979144">रिवर्स स्क्रोलिंग चालू है</translation>
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7792012425874949788">प्रवेश में कुछ गलत हो गया था</translation>
-<translation id="7792336732117553384">Chrome की प्रोफ़ाइलें मैनेज करें</translation>
 <translation id="7792388396321542707">शेयर करना बंद करें</translation>
 <translation id="779308894558717334">हल्का हरा</translation>
 <translation id="7793098747275782155">गहरा नीला</translation>
@@ -10202,7 +10204,6 @@
 <translation id="8075044377771022666">फ़ुटर</translation>
 <translation id="8076835018653442223">आपके एडमिन ने आपके डिवाइस की स्थानीय फ़ाइलों का एक्सेस बंद कर दिया है</translation>
 <translation id="8077120325605624147">किसी भी साइट को देखने पर, आपको कोई भी विज्ञापन दिख सकता है</translation>
-<translation id="8077579734294125741">Chrome की अन्य प्रोफ़ाइलें</translation>
 <translation id="8077749280021225629">उस ब्राउज़िंग डेटा (<ph name="URL" />) को भी मिटाएं जिसकी वजह से आपको <ph name="DOMAIN" /> से साइन आउट कर दिया जाएगा.<ph name="LEARN_MORE" /></translation>
 <translation id="80790299200510644">इमेज सर्च</translation>
 <translation id="8079606020824373126">Google Password Manager एक मज़बूत पासवर्ड जनरेट करके आपके मौजूदा पासवर्ड को अपडेट कर सकता है. नया पासवर्ड <ph name="EMAIL" /> में सेव हो जाएगा. <ph name="PASSWORD_CHANGE" /></translation>
@@ -10709,7 +10710,6 @@
 <translation id="8425213833346101688">बदलें</translation>
 <translation id="8425492902634685834">टास्कबार में पिन करें</translation>
 <translation id="8425768983279799676">आप अपने पिन का इस्तेमाल अपने डिवाइस को अनलॉक करने के लिए कर सकते हैं.</translation>
-<translation id="8426697201161711396">अपने सभी डिवाइसों पर पासवर्ड वगैरह का ऐक्सेस पाने के लिए, Chrome में साइन इन करें</translation>
 <translation id="8427213022735114808">'डिक्टेशन (आप जो बोलते हैं उसे लिखना)' सुविधा आपकी आवाज़ Google को भेजती है ताकि किसी भी लेख फ़ील्ड में बोलकर लिखा जा सके.</translation>
 <translation id="8427292751741042100">किसी भी होस्ट पर एम्बेड किया गया</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
@@ -11634,6 +11634,7 @@
 <translation id="9042827002460091668">अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
 <translation id="9042893549633094279">निजता और सुरक्षा</translation>
 <translation id="9043264199499366189">ChromeOS Flex सिस्टम इवेंट की सदस्यता लें</translation>
+<translation id="9043767139743235992">दिव्यांगों के लिए Google सहायता टीम से संपर्क करें</translation>
 <translation id="9044646465488564462">नेटवर्क से कनेक्ट करने में विफल रहा: <ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">आपकी रीडिंग लिस्ट अब नए साइड पैनल पर है. इसे यहां देखें.</translation>
 <translation id="9048745018038487540">सभी फ़ॉन्ट चुनें</translation>

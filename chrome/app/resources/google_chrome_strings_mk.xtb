@@ -44,6 +44,7 @@
 <translation id="1434626383986940139">Апликации на Chrome Canary</translation>
 <translation id="1439793550875056299">Закачи го Chrome</translation>
 <translation id="146866447420868597">Ќе се најавите на Chrome?</translation>
+<translation id="1476347941828409626">Управувајте со профилите на Chrome</translation>
 <translation id="1492280395845991349">Рестартирање за довршување на ажурирањето на Chrome</translation>
 <translation id="1497802159252041924">Грешка при инсталирање: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1507198376417198979">Приспособете го вашиот нов профил на Chrome</translation>
@@ -252,6 +253,9 @@
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="383928141529488001">Google Chrome бара пристап до Bluetooth за да открива 
  уреди со Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="3846683726093018685">**Резимирај:** Во една реченица под 30 збора, опиши ја главната тема и целта на содржините на сликата од екранот.
+
+          **Предложи прашања:** Генерирај список со точки со 3 – 5 прашања што поттикнуваат на размислување што корисникот би можел да ги постави за да ја разбере подобро сликата од екранот. Прашањава треба да опфаќаат најмалку едно што е конкретно за визуелен објект, неговиот дизајн или неговата местоположба.</translation>
 <translation id="386202838227397562">Затворете ги сите прозорци на Google Chrome и пробајте повторно.</translation>
 <translation id="3873044882194371212">Отвори го линкот во инко&amp;гнито прозорец на Chrome</translation>
 <translation id="3885770153807205175">Избор на јазик</translation>
@@ -527,6 +531,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7024536598735240744">Грешка при отпакување: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Инсталирањето запре.</translation>
 <translation id="7025800014283535195">Може да се префрлате помеѓу профилите на Chrome тука</translation>
+<translation id="7047386856539490735">Дали се корисни резултативе?</translation>
 <translation id="7051685429025310665">Не сте дошле одамна. Chrome ги отстрани следниве дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Направете го Chrome свој</translation>
 <translation id="7060643578009939353">Пребарај го видеово со Google Lens</translation>
@@ -597,10 +602,10 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7777080907402804672">Ако сликата нема корисен опис, Chrome ќе се обиде да ви обезбеди опис. За да се создаваат описи, сликите се испраќаат до Google. Ова може да го исклучите во „Поставки“ во секое време.</translation>
 <translation id="778331955594035129">На Chrome му треба дозвола за локација за сајтов</translation>
 <translation id="7787950393032327779">Се чини дека профилот го користи друг процес на Google Chrome (<ph name="PROCESS_ID" />) на друг компјутер (<ph name="HOST_NAME" />). Chrome го заклучи профилот за да не се оштети. Ако сте сигурни дека ниеден друг процес не го користи профилот, може да го отклучите профилот и повторно да стартувате Chrome.</translation>
+<translation id="7792336732117553384">Управувајте со профилите на Chrome</translation>
 <translation id="7801699035218095297">Google Chrome се обидува да копира лозинки. Внесете ја лозинката за Windows за да се дозволи ова.</translation>
 <translation id="7804364787702057554">Вашата сметка во Chrome</translation>
 <translation id="7808348361785373670">Отстрани од Chrome</translation>
-<translation id="7825851276765848807">Инсталацијата не успеа поради неодредена грешка. Преземете го Google Chrome повторно.</translation>
 <translation id="7827099906024714326">Chrome треба да го потврди вашиот идентитет пред да може да се зачуваат некои податоци во вашата сметка на Google и да се користат на сите ваши уреди. Ако се одјавите сега, податоциве ќе се избришат.</translation>
 <translation id="7845233973568007926">Фала за инсталирањето. Мора да го рестартирате компјутерот пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7849037457735762883">Продолжете каде што сте застанале: Chrome може да ги врати вашите картички секогаш кога ќе рестартирате. За да го вклучите ова, одете во</translation>
