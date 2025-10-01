@@ -49,7 +49,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
-import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -130,7 +129,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             new ObservableSupplierImpl<>();
 
     private NightModeStateProvider mNightModeStateProvider;
-    private @Nullable ServiceTracingProxyProvider mServiceTracingProxyProvider;
     private InsetObserver mInsetObserver;
     // Created in #onCreate
     private @Nullable EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
@@ -165,8 +163,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         // If ClassLoader was corrected by SplitCompatAppComponentFactory, also need to correct
         // the reference in the associated Context.
         BundleUtils.checkContextClassLoader(newBase, this);
-
-        mServiceTracingProxyProvider = ServiceTracingProxyProvider.create(newBase);
 
         mNightModeStateProvider = createNightModeStateProvider();
 
@@ -595,23 +591,11 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return ContextUtils.getApplicationContext().getSharedPreferences(name, mode);
     }
 
-    // Note that we do not need to (and can't) override getSystemService(Class<T>) as internally
-    // that just gets the name of the Service and calls getSystemService(String) for backwards
-    // compatibility with overrides like this one.
-    @Override
-    public Object getSystemService(String name) {
-        Object service = super.getSystemService(name);
-        if (mServiceTracingProxyProvider != null) {
-            mServiceTracingProxyProvider.traceSystemServices();
-        }
-        return service;
-    }
-
     /**
      * Set the back button in the automotive toolbar to perform an Android system level back.
      *
-     * This toolbar will be used to do things like exit fullscreen YouTube videos because AAOS/cars
-     * don't have a built in back button
+     * <p>This toolbar will be used to do things like exit fullscreen YouTube videos because
+     * AAOS/cars don't have a built in back button
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

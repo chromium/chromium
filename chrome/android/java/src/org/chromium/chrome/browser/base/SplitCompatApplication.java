@@ -76,7 +76,6 @@ public class SplitCompatApplication extends Application {
 
     private Supplier<Impl> mImplSupplier;
     private @Nullable Impl mImpl;
-    private @Nullable ServiceTracingProxyProvider mServiceTracingProxyProvider;
 
     /**
      * Holds the implementation of application logic. Will be called by {@link
@@ -139,8 +138,6 @@ public class SplitCompatApplication extends Application {
         if (isBrowserProcess) {
             UmaUtils.recordMainEntryPointTime();
 
-            // Register Service tracing early as some services are used below in this function.
-            mServiceTracingProxyProvider = ServiceTracingProxyProvider.create(context);
             // *** The Application Context should not be used before the locale override is set ***
             if (GlobalAppLocaleController.getInstance().init(context)) {
                 // If the app locale override preference is set, create a new override
@@ -304,18 +301,6 @@ public class SplitCompatApplication extends Application {
     @Override
     public void startActivity(Intent intent, @Nullable Bundle options) {
         getImpl().startActivity(intent, options);
-    }
-
-    // Note that we do not need to (and can't) override getSystemService(Class<T>) as internally
-    // that just gets the name of the Service and calls getSystemService(String) for backwards
-    // compatibility with overrides like this one.
-    @Override
-    public Object getSystemService(String name) {
-        Object service = super.getSystemService(name);
-        if (mServiceTracingProxyProvider != null) {
-            mServiceTracingProxyProvider.traceSystemServices();
-        }
-        return service;
     }
 
     @Override

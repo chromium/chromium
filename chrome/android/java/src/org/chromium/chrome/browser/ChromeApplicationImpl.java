@@ -58,7 +58,8 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
                     .setAsyncNotificationManagerFlag(
                             ChromeFeatureList.sAsyncNotificationManager.isEnabled());
 
-            if (ChromeFeatureList.sTraceBinderIpc.isEnabled()) {
+            // Only trace Binder IPCs for pre-Beta channels.
+            if (VersionConstants.CHANNEL <= Channel.DEV) {
                 BinderCallsListener.getInstance().installListener();
             }
 
