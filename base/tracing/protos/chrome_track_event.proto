@@ -2190,6 +2190,8 @@ message WebViewStartup {
     STATIC_GET_VARIATIONS_HEADER = 102;
     STATIC_SET_DEFAULT_TRAFFIC_STATS_TAG = 103;
     STATIC_SET_DEFAULT_TRAFFIC_STATS_UID = 104;
+    STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
+    STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
     // Remember to update WebViewStartupCallSite in enums.xml when adding new
     // values here.
   }

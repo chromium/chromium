@@ -355,6 +355,8 @@ public class WebViewChromiumAwInit {
         CallSite.STATIC_GET_VARIATIONS_HEADER,
         CallSite.STATIC_SET_DEFAULT_TRAFFIC_STATS_TAG,
         CallSite.STATIC_SET_DEFAULT_TRAFFIC_STATS_UID,
+        CallSite.STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE,
+        CallSite.STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE,
         CallSite.COUNT,
     })
     public @interface CallSite {
@@ -464,8 +466,10 @@ public class WebViewChromiumAwInit {
         int STATIC_GET_VARIATIONS_HEADER = 102;
         int STATIC_SET_DEFAULT_TRAFFIC_STATS_TAG = 103;
         int STATIC_SET_DEFAULT_TRAFFIC_STATS_UID = 104;
+        int STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
+        int STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
         // Remember to update WebViewStartupCallSite in enums.xml when adding new values here.
-        int COUNT = 105;
+        int COUNT = 107;
     };
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewStartupCallSite)

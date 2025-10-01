@@ -700,6 +700,8 @@ chromium-metrics-reviews@google.com.
   <int value="161" label="Page.isPrerendering"/>
   <int value="162" label="Profile.addCustomHeader"/>
   <int value="163" label="Profile.getCustomHeaders"/>
+  <int value="164" label="WebSettingsCompat.setRendererLibraryPrefetchMode"/>
+  <int value="165" label="WebSettingsCompat.getRendererLibraryPrefetchMode"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
@@ -1521,6 +1523,12 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Other WebApk"/>
 </enum>
 
+<enum name="RendererLibraryPrefetchMode">
+  <int value="0" label="Default"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Enabled"/>
+</enum>
+
 <enum name="RestoreTabsOnFREDeviceRestoredFrom">
   <int value="0" label="User restored tabs from the default selected device"/>
   <int value="1"
@@ -2293,6 +2301,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="GeoLocationPermissions.getInstance"/>
   <int value="12" label="WebView.setDefaultTrafficStatsTag"/>
   <int value="13" label="WebView.setDefaultTrafficStatsUid"/>
+  <int value="14" label="WebViewCompat.setRendererLibraryPrefetchMode"/>
+  <int value="15" label="WebViewCompat.getRendererLibraryPrefetchMode"/>
 <!-- LINT.ThenChange(/android_webview/glue/java/src/com/android/webview/chromium/SharedStatics.java:ApiCall) -->
 
 </enum>
@@ -2660,6 +2670,8 @@ chromium-metrics-reviews@google.com.
   <int value="102" label="staticGetVariationsHeader"/>
   <int value="103" label="staticSetDefaultTrafficStatsTag"/>
   <int value="104" label="staticSetDefaultTrafficStatsUid"/>
+  <int value="105" label="staticSetRendererLibraryPrefetchMode"/>
+  <int value="106" label="staticGetRendererLibraryPrefetchMode"/>
 </enum>
 
 <!-- LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:WebViewStartup) -->

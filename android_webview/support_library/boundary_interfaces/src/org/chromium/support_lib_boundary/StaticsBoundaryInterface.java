@@ -32,4 +32,8 @@ public interface StaticsBoundaryInterface {
     void setDefaultTrafficStatsTag(int tag);
 
     void setDefaultTrafficStatsUid(int uid);
+
+    void setRendererLibraryPrefetchMode(int mode);
+
+    int getRendererLibraryPrefetchMode();
 }

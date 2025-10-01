@@ -21,6 +21,10 @@ BASE_FEATURE(kWebViewAutoSAA, base::FEATURE_DISABLED_BY_DEFAULT);
 // flag is enabled.
 BASE_FEATURE(kWebViewBackForwardCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow apps to configure the renderer library prefetching behaviour.
+BASE_FEATURE(kWebViewConfigurableLibraryPrefetch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable loading include statements when checking digital asset links
 BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              base::FEATURE_DISABLED_BY_DEFAULT);

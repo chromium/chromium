@@ -132,4 +132,10 @@ const char kStartupNonBlockingWebViewConstructor[] =
 const char kWebViewOptInToGmsBindServiceOptimization[] =
     "webview-opt-in-to-gms-bind-service-optimization";
 
+// Enables/disables renderer-side native library prefetching.
+const char kWebViewRendererLibraryPrefetch[] =
+    "webview-renderer-library-prefetch";
+const char kWebViewRendererLibraryPrefetchDisabled[] = "disabled";
+const char kWebViewRendererLibraryPrefetchEnabled[] = "enabled";
+
 }  // namespace switches

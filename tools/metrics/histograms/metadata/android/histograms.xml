@@ -8070,6 +8070,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.RendererLibraryPrefetchMode"
+    enum="RendererLibraryPrefetchMode" expires_after="2026-03-01">
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>woa-performance@google.com</owner>
+  <summary>
+    The app-controlled RendererLibraryPrefetchMode that is set when preparing to
+    launch a renderer process. If the application somehow sets an unrecognised
+    mode it is treated and logged as the Default case.
+
+    Emitted once per renderer startup by the browser when computing renderer
+    process command line args. Only emitted for Android WebView. Only emitted
+    when the WebViewConfigurableLibraryPrefetch feature is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.RestrictedContentBlocking.ApiCallMatchesDiskCache"
     enum="BooleanMatched" expires_after="2026-06-01">

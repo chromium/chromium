@@ -22,6 +22,7 @@
 #include "base/android/library_loader/library_prefetcher.h"
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -77,8 +78,27 @@ void AwContentRendererClient::RenderThreadStarted() {
       blink::Platform::Current()->GetBrowserInterfaceBroker();
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  if (base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
-      features::kWebViewPrefetchFromRenderer.Get()) {
+  // Default behavior.
+  bool shouldPrefetchNativeLibrary =
+      base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
+      features::kWebViewPrefetchFromRenderer.Get();
+
+  // The new API can override the default.
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewConfigurableLibraryPrefetch)) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kWebViewRendererLibraryPrefetch)) {
+      std::string value = command_line->GetSwitchValueASCII(
+          switches::kWebViewRendererLibraryPrefetch);
+      if (value == switches::kWebViewRendererLibraryPrefetchEnabled) {
+        shouldPrefetchNativeLibrary = true;
+      } else if (value == switches::kWebViewRendererLibraryPrefetchDisabled) {
+        shouldPrefetchNativeLibrary = false;
+      }
+    }
+  }
+
+  if (shouldPrefetchNativeLibrary) {
     base::ThreadPool::PostTask(
         FROM_HERE, base::BindOnce([] {
           base::android::NativeLibraryPrefetcher::PrefetchNativeLibrary();

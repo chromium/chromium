@@ -43,6 +43,9 @@ namespace android_webview {
 
 namespace {
 
+RendererLibraryPrefetchMode g_renderer_library_prefetch_mode =
+    RendererLibraryPrefetchMode::kDefault;
+
 void ClientCertificatesCleared(const JavaRef<jobject>& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
@@ -68,6 +71,14 @@ net::SocketTag GetDefaultSocketTag() {
   uid_t uid = Java_AwContentsStatics_getDefaultTrafficStatsUid(env);
   int32_t tag = Java_AwContentsStatics_getDefaultTrafficStatsTag(env);
   return net::SocketTag(uid, tag);
+}
+
+void SetRendererLibraryPrefetchMode(RendererLibraryPrefetchMode mode) {
+  g_renderer_library_prefetch_mode = mode;
+}
+
+RendererLibraryPrefetchMode GetRendererLibraryPrefetchMode() {
+  return g_renderer_library_prefetch_mode;
 }
 
 // static
@@ -173,6 +184,18 @@ std::string JNI_AwContentsStatics_GetVariationsHeader(JNIEnv* env) {
   if (!headers)
     return "";
   return headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+}
+
+// static
+void JNI_AwContentsStatics_SetRendererLibraryPrefetchMode(JNIEnv* env,
+                                                          jint mode) {
+  SetRendererLibraryPrefetchMode(
+      static_cast<RendererLibraryPrefetchMode>(mode));
+}
+
+// static
+jint JNI_AwContentsStatics_GetRendererLibraryPrefetchMode(JNIEnv* env) {
+  return static_cast<jint>(GetRendererLibraryPrefetchMode());
 }
 
 }  // namespace android_webview
