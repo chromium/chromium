@@ -287,64 +287,60 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (TableViewItem*)itemForProfile:
     (const autofill::AutofillProfile&)autofillProfile {
-  std::string guid(autofillProfile.guid());
-  NSString* title = base::SysUTF16ToNSString(autofillProfile.GetInfo(
-      autofill::AutofillType(autofill::NAME_FULL),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
-  NSString* subTitle = base::SysUTF16ToNSString(autofillProfile.GetInfo(
-      autofill::AutofillType(autofill::ADDRESS_HOME_LINE1),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
-
   AutofillProfileItem* item =
       [[AutofillProfileItem alloc] initWithType:ItemTypeAddress];
-  item.title = title;
-  item.detailText = subTitle;
+  const auto& locale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  autofill::AutofillProfile::RecordType recordType =
+      autofillProfile.record_type();
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
-    autofill::AutofillProfile::RecordType recordType =
-        autofillProfile.record_type();
-    if (recordType == autofill::AutofillProfile::RecordType::kAccountHome) {
+  item.title = base::SysUTF16ToNSString(
+      autofillProfile.GetInfo(autofill::NAME_FULL, locale));
+  item.detailText = base::SysUTF16ToNSString(
+      autofillProfile.GetInfo(autofill::ADDRESS_HOME_LINE1, locale));
+  item.GUID = autofillProfile.guid();
+  item.accessibilityIdentifier = item.title;
+  item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  item.showMigrateToAccountButton = NO;
+  item.localProfileIconShown = NO;
+
+  switch (recordType) {
+    case autofill::AutofillProfile::RecordType::kAccountHome:
       item.trailingDetailText =
           l10n_util::GetNSString(IDS_IOS_PROFILE_RECORD_TYPE_HOME);
       item.autofillProfileRecordType =
           AutofillAddressProfileRecordType::AutofillAccountHomeProfile;
-    } else if (recordType ==
-               autofill::AutofillProfile::RecordType::kAccountWork) {
+      break;
+
+    case autofill::AutofillProfile::RecordType::kAccountWork:
       item.trailingDetailText =
           l10n_util::GetNSString(IDS_IOS_PROFILE_RECORD_TYPE_WORK);
       item.autofillProfileRecordType =
           AutofillAddressProfileRecordType::AutofillAccountWorkProfile;
-    }
-  }
+      break;
 
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForNameAndEmail) &&
-      autofillProfile.record_type() ==
-          autofill::AutofillProfile::RecordType::kAccountNameEmail) {
-    item.autofillProfileRecordType =
-        AutofillAddressProfileRecordType::AutofillAccountNameEmailProfile;
-  }
-
-  item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  item.accessibilityIdentifier = title;
-  item.GUID = guid;
-  item.showMigrateToAccountButton = NO;
-  item.localProfileIconShown = NO;
-  if (!autofillProfile.IsHomeAndWorkProfile()) {
-    if (autofillProfile.IsAccountProfile()) {
+    case autofill::AutofillProfile::RecordType::kAccountNameEmail:
       item.autofillProfileRecordType =
-          AutofillAddressProfileRecordType::AutofillAccountProfile;
-    } else {
-      item.autofillProfileRecordType = AutofillLocalProfile;
-      if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
-        item.showMigrateToAccountButton = YES;
-        item.image = CustomSymbolTemplateWithPointSize(
-            kCloudSlashSymbol, kCloudSlashSymbolPointSize);
-        item.localProfileIconShown = YES;
+          AutofillAddressProfileRecordType::AutofillAccountNameEmailProfile;
+      break;
+
+    default:
+      if (autofillProfile.IsAccountProfile()) {
+        item.autofillProfileRecordType =
+            AutofillAddressProfileRecordType::AutofillAccountProfile;
+      } else {
+        // This is a local profile.
+        item.autofillProfileRecordType = AutofillLocalProfile;
+        if ([self shouldShowCloudOffIconForProfile:autofillProfile]) {
+          item.showMigrateToAccountButton = YES;
+          item.localProfileIconShown = YES;
+          item.image = CustomSymbolTemplateWithPointSize(
+              kCloudSlashSymbol, kCloudSlashSymbolPointSize);
+        }
       }
-    }
+      break;
   }
+
   return item;
 }
 
