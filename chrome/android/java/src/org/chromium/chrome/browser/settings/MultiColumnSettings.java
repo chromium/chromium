@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceHeaderFragmentCompat;
+import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -28,6 +30,8 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
 
     /** Caches the current header panel width in px. */
     private int mHeaderPanelWidthPx;
+
+    private InnerOnBackPressedCallback mOnBackPressedCallback;
 
     @Override
     public PreferenceFragmentCompat onCreatePreferenceHeader() {
@@ -103,9 +107,80 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return mHeaderPanelWidthPx;
     }
 
+    private class InnerOnBackPressedCallback extends OnBackPressedCallback
+            implements SlidingPaneLayout.PanelSlideListener {
+        InnerOnBackPressedCallback() {
+            super(true);
+            getSlidingPaneLayout().addPanelSlideListener(this);
+        }
+
+        @Override
+        public void handleOnBackPressed() {
+            getSlidingPaneLayout().closePane();
+        }
+
+        @Override
+        public void onPanelSlide(View panel, float slideOffset) {}
+
+        @Override
+        public void onPanelOpened(View panel) {
+            updateEnabled();
+        }
+
+        @Override
+        public void onPanelClosed(View panel) {
+            updateEnabled();
+        }
+
+        void updateEnabled() {
+            // Trigger closePane() when
+            // - in one-column mode
+            // - the detailed pane is open (i.e., not on the main menu)
+            // - the fragment back stack is empty (i.e., with the above condition
+            //   this means the subpage directly under the main menu).
+            boolean enabled =
+                    getSlidingPaneLayout().isSlideable()
+                            && getSlidingPaneLayout().isOpen()
+                            && (getChildFragmentManager().getBackStackEntryCount() == 0);
+            setEnabled(enabled);
+        }
+    }
+
     @Override
     @SuppressWarnings("MissingSuperCall")
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        // Workaround. Disable back button handler by not calling super.onViewCreated().
+        // Overrides the back press button behavior provided by the library as workaround.
+        // The provided behavior does not close SettingsActivity even if it shows
+        // main menu in two-pane mode. Revisit later if back button behavior in the library is
+        // updated.
+        mOnBackPressedCallback = new InnerOnBackPressedCallback();
+        getSlidingPaneLayout()
+                .addOnLayoutChangeListener(
+                        (View v,
+                                int left,
+                                int top,
+                                int right,
+                                int bottom,
+                                int oldLeft,
+                                int oldTop,
+                                int oldRight,
+                                int oldBottom) -> {
+                            mOnBackPressedCallback.updateEnabled();
+                        });
+        getChildFragmentManager()
+                .addOnBackStackChangedListener(
+                        () -> {
+                            mOnBackPressedCallback.updateEnabled();
+                        });
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(this, mOnBackPressedCallback);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mOnBackPressedCallback != null) {
+            mOnBackPressedCallback.remove();
+        }
+        super.onDestroy();
     }
 }
