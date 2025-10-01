@@ -32,9 +32,10 @@ found in the LICENSE file.
         <item name="iconWidth">
             @dimen/keyboard_accessory_bar_item_icon_width
         </item>
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets</item>
     </style>
     <style name="KeyboardAccessoryLargeChip" parent="KeyboardAccessoryChip">
-        <item name="verticalInset">2dp</item>
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets_large_font</item>
     </style>
     <style name="KeyboardAccessoryLoyaltyCardChip" parent="KeyboardAccessoryChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
@@ -78,7 +79,7 @@ found in the LICENSE file.
         </item>
     </style>
     <style name="KeyboardAccessoryLargeTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
-        <item name="verticalInset">2dp</item>
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets_large_font</item>
     </style>
     <style name="KeyboardAccessoryLoyaltyCardTwoLineChip" parent="KeyboardAccessoryTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
@@ -96,5 +97,27 @@ found in the LICENSE file.
     <style name="KeyboardAccessoryHomeAndWorkLargeTwoLineChip" parent="KeyboardAccessoryLargeTwoLineChip">
         <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
         <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+    </style>
+    <style name="KeyboardAccessoryTwoLineActionButton" parent="FilledButton.Tonal.ButtonStyle">
+        <item name="android:gravity">center</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">@dimen/keyboard_accessory_chip_min_height_redesign</item>
+        <item name="android:paddingEnd">@dimen/keyboard_accessory_action_button_horizontal_padding</item>
+        <item name="android:paddingStart">@dimen/keyboard_accessory_action_button_horizontal_padding</item>
+        <item name="android:textAlignment">center</item>
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets</item>
+        <item name="rippleCornerRadiusTopStart">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+        <item name="rippleCornerRadiusTopEnd">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+        <item name="rippleCornerRadiusBottomStart">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+        <item name="rippleCornerRadiusBottomEnd">@dimen/keyboard_accessory_chip_corner_radius_redesign</item>
+    </style>
+    <style name="KeyboardAccessoryTwoLineActionButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryTwoLineActionButton</item>
+    </style>
+    <style name="KeyboardAccessoryLargeTwoLineActionButton" parent="KeyboardAccessoryTwoLineActionButton">
+        <item name="verticalInset">@dimen/keyboard_accessory_chip_vertical_insets_large_font</item>
+    </style>
+    <style name="KeyboardAccessoryLargeTwoLineActionButtonThemeOverlay">
+        <item name="android:buttonStyle">@style/KeyboardAccessoryLargeTwoLineActionButton</item>
     </style>
 </resources>

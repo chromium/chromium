@@ -314,7 +314,10 @@ class KeyboardAccessoryViewBinder {
         private final @BarItem.Type int mBarItemType;
 
         BarItemTextViewHolder(ViewGroup parent, @BarItem.Type int barItemType) {
-            super(new ButtonCompat(parent.getContext(), selectStyleForSuggestion(barItemType)));
+            super(
+                    new ButtonCompat(
+                            parent.getContext(),
+                            selectStyleForSuggestion(parent.getContext(), barItemType)));
             mBarItemType = barItemType;
         }
 
@@ -335,9 +338,12 @@ class KeyboardAccessoryViewBinder {
             Resources resources = textView.getContext().getResources();
             switch (mBarItemType) {
                 case BarItem.Type.ACTION_BUTTON:
-                    params.setMarginEnd(
-                            resources.getDimensionPixelSize(
-                                    R.dimen.keyboard_accessory_bar_item_padding));
+                    if (!ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+                        params.setMarginEnd(
+                                resources.getDimensionPixelSize(
+                                        R.dimen.keyboard_accessory_bar_item_padding));
+                    }
                     break;
                 case BarItem.Type.DISMISS_CHIP:
                     params.setMarginEnd(
@@ -351,9 +357,16 @@ class KeyboardAccessoryViewBinder {
         }
 
         @StyleRes
-        private static int selectStyleForSuggestion(@BarItem.Type int barItemType) {
+        private static int selectStyleForSuggestion(
+                Context context, @BarItem.Type int barItemType) {
             switch (barItemType) {
                 case BarItem.Type.ACTION_BUTTON:
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN)) {
+                        return useLargeChips(context)
+                                ? R.style.KeyboardAccessoryLargeTwoLineActionButtonThemeOverlay
+                                : R.style.KeyboardAccessoryTwoLineActionButtonThemeOverlay;
+                    }
                     return R.style.KeyboardAccessoryActionButtonThemeOverlay;
                 case BarItem.Type.DISMISS_CHIP:
                     return R.style.KeyboardAccessoryDismissButtonThemeOverlay;

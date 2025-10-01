@@ -12,6 +12,9 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_height">48dp</dimen>
     <dimen name="keyboard_accessory_height_redesign">64dp</dimen>
     <dimen name="keyboard_accessory_chip_min_height_redesign">64dp</dimen>
+    <dimen name="keyboard_accessory_chip_vertical_insets">8dp</dimen>
+    <dimen name="keyboard_accessory_chip_vertical_insets_large_font">2dp</dimen>
+    <dimen name="keyboard_accessory_action_button_horizontal_padding">12dp</dimen>
     <dimen name="keyboard_accessory_chip_corner_radius_redesign">8dp</dimen>
     <dimen name="keyboard_accessory_chip_home_and_work_start_padding">12dp</dimen>
     <dimen name="keyboard_accessory_top_inset_overlap">4dp</dimen>
