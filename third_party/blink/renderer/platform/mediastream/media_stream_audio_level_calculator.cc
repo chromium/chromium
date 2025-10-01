@@ -68,7 +68,7 @@ void MediaStreamAudioLevelCalculator::Calculate(
 
   max_amplitude_ = std::max(max_amplitude_, max_for_bus);
 
-  if (counter_++ == kUpdateFrequency) {
+  if (++counter_ == kUpdateFrequency) {
     // Clip the exposed signal level to make sure it is in the range [0.0,1.0].
     level_->Set(std::min(1.0f, max_amplitude_));
 

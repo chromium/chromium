@@ -14,7 +14,7 @@ namespace {
 
 constexpr int kDefaultChannels = 2;
 constexpr int kDefaultFrames = 20;
-constexpr int kUpdateFrequency = 11;
+constexpr int kUpdateFrequency = 10;
 
 void FillAudioBus(media::AudioBus* bus, float value) {
   for (media::AudioBus::Channel channel_span : bus->AllChannels()) {
