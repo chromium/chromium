@@ -19,6 +19,7 @@
 #include "base/threading/thread_checker.h"
 #include "media/cdm/aes_decryptor.h"
 #include "media/cdm/win/test/media_foundation_clear_key_session.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -91,8 +92,8 @@ class MediaFoundationClearKeyCdm final
   scoped_refptr<AesDecryptor> aes_decryptor_;
 
   // Session ID to session map.
-  std::map<std::string,
-           Microsoft::WRL::ComPtr<IMFContentDecryptionModuleSession>>
+  absl::flat_hash_map<std::string,
+                      Microsoft::WRL::ComPtr<IMFContentDecryptionModuleSession>>
       sessions_;
 
   HRESULT GetShutdownStatus() {

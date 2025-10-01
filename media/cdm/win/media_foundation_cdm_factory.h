@@ -21,6 +21,7 @@
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
 #include "media/cdm/win/media_foundation_cdm_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -89,7 +90,8 @@ class MEDIA_EXPORT MediaFoundationCdmFactory final : public CdmFactory {
   crash_reporter::ScopedCrashKeyString cdm_origin_crash_key_;
 
   // Key system to CreateCdmFactoryCB mapping. This is for testing only.
-  std::map<std::string, CreateCdmFactoryCB> create_cdm_factory_cbs_for_testing_;
+  absl::flat_hash_map<std::string, CreateCdmFactoryCB>
+      create_cdm_factory_cbs_for_testing_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaFoundationCdmFactory> weak_factory_{this};

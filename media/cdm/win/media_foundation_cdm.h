@@ -20,6 +20,7 @@
 #include "media/base/media_export.h"
 #include "media/cdm/cdm_document_service.h"
 #include "media/cdm/win/media_foundation_cdm_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -173,10 +174,12 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   int next_session_token_ = 0;
 
   // Session token to session map for sessions waiting for session ID.
-  std::map<int, std::unique_ptr<MediaFoundationCdmSession>> pending_sessions_;
+  absl::flat_hash_map<int, std::unique_ptr<MediaFoundationCdmSession>>
+      pending_sessions_;
 
   // Session ID to session map.
-  std::map<std::string, std::unique_ptr<MediaFoundationCdmSession>> sessions_;
+  absl::flat_hash_map<std::string, std::unique_ptr<MediaFoundationCdmSession>>
+      sessions_;
 
   scoped_refptr<MediaFoundationCdmProxy> cdm_proxy_;
 

@@ -282,10 +282,11 @@ class CdmProxyImpl : public MediaFoundationCdmProxy {
   // 1. The same ITA should always be returned in GetInputTrustAuthority() for
   // the same |stream_id|.
   // 2. The ITA must keep alive for decryptors to work.
-  std::map<uint32_t, ComPtr<IMFInputTrustAuthority>> input_trust_authorities_;
+  absl::flat_hash_map<uint32_t, ComPtr<IMFInputTrustAuthority>>
+      input_trust_authorities_;
 
   // |stream_id| to last used key ID mapping.
-  std::map<uint32_t, GUID> last_key_ids_;
+  absl::flat_hash_map<uint32_t, GUID> last_key_ids_;
 };
 
 }  // namespace
