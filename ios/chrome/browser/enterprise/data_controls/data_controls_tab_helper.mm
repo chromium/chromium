@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/enterprise/data_controls/data_controls_tab_helper.h"
 
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/enterprise/data_controls/core/browser/rule.h"
 #import "ios/chrome/browser/enterprise/data_controls/clipboard_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/data_controls_utils.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/public/web_state.h"
@@ -27,24 +29,23 @@ void DataControlsTabHelper::ShouldAllowCopy(
     std::move(callback).Run(true);
     return;
   }
+
   // TODO(crbug.com/444224082): Include size and format type for copy
   // operations.
   ui::ClipboardMetadata metadata;
-
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-
   const GURL& source_url = web_state_->GetLastCommittedURL();
-
   CopyPolicyVerdicts verdicts =
       IsCopyAllowedByPolicy(source_url, metadata, profile);
 
   switch (verdicts.copy_action_verdict.level()) {
     case Rule::Level::kWarn:
-      // TODO(crbug.com/438198880): Show a warning dialog to the user.
-      // For now, assume the user does not bypass the warning.
-      FinishCopy(source_url, std::move(verdicts), std::move(callback),
-                 /*bypassed=*/false);
+      ShowWarningDialog(
+          DataControlsDialog::Type::kClipboardCopyWarn,
+          base::BindOnce(&DataControlsTabHelper::FinishCopy,
+                         weak_factory_.GetWeakPtr(), source_url,
+                         std::move(verdicts), std::move(callback)));
       break;
     case Rule::Level::kBlock:
       // TODO(crbug.com/438198881): Show a toast to the user indicating that
@@ -80,11 +81,12 @@ void DataControlsTabHelper::ShouldAllowPaste(
 
   switch (policy_verdict.verdict.level()) {
     case Rule::Level::kWarn:
-      // TODO(crbug.com/438198880): Show a warning dialog to the user.
-      // For now, assume the user does not bypass the warning.
-      FinishPaste(destination_url, std::move(policy_verdict.verdict),
-                  std::move(callback),
-                  /*bypassed=*/false);
+      ShowWarningDialog(
+          DataControlsDialog::Type::kClipboardPasteWarn,
+          base::BindOnce(&DataControlsTabHelper::FinishPaste,
+                         weak_factory_.GetWeakPtr(), destination_url,
+                         std::move(policy_verdict.verdict),
+                         std::move(callback)));
       break;
     case Rule::Level::kBlock:
     // TODO(crbug.com/438198881): Show a toast to the user indicating that
@@ -108,6 +110,11 @@ void DataControlsTabHelper::ShouldAllowCut(
 void DataControlsTabHelper::ShouldAllowShare(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(true);
+}
+
+void DataControlsTabHelper::SetDataControlsCommandsHandler(
+    id<DataControlsCommands> handler) {
+  commands_handler_ = handler;
 }
 
 bool DataControlsTabHelper::IsClipboardDataControlsEnabled() const {
@@ -154,6 +161,20 @@ void DataControlsTabHelper::FinishPaste(const GURL& destination_url,
     allowed = bypassed;
   }
   std::move(callback).Run(allowed);
+}
+
+void DataControlsTabHelper::ShowWarningDialog(
+    DataControlsDialog::Type dialog_type,
+    base::OnceCallback<void(bool)> on_bypassed_callback) {
+  if (commands_handler_) {
+    [commands_handler_
+        showDataControlsWarningDialog:dialog_type
+                             callback:std::move(on_bypassed_callback)];
+  } else {
+    if (on_bypassed_callback) {
+      std::move(on_bypassed_callback).Run(false);
+    }
+  }
 }
 
 }  // namespace data_controls

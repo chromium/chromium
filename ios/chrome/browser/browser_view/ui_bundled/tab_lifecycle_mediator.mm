@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/enterprise/data_controls/data_controls_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -36,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
@@ -163,6 +165,10 @@
   DCHECK(_overscrollActionsDelegate);
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(
       _overscrollActionsDelegate);
+
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+      ->SetDataControlsCommandsHandler(
+          HandlerForProtocol(_commandDispatcher, DataControlsCommands));
 
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerTabHelperDelegate);
@@ -323,6 +329,9 @@
   }
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
+
+  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+      ->SetDataControlsCommandsHandler(nil);
 
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
   DownloadManagerTabHelper::FromWebState(webState)->SetSnackbarHandler(nil);

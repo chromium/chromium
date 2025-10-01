@@ -10,6 +10,8 @@
 #import "base/memory/weak_ptr.h"
 #import "components/enterprise/data_controls/core/browser/verdict.h"
 #import "ios/chrome/browser/enterprise/data_controls/clipboard_utils.h"
+#import "ios/chrome/browser/enterprise/data_controls/data_controls_utils.h"
+#import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
 #import "url/gurl.h"
 
@@ -42,6 +44,9 @@ class DataControlsTabHelper
   // Determines if sharing should be allowed.
   void ShouldAllowShare(base::OnceCallback<void(bool)> callback);
 
+  // Sets the command handler for Data Controls.
+  void SetDataControlsCommandsHandler(id<DataControlsCommands> handler);
+
  private:
   friend class web::LazyWebStateUserData<DataControlsTabHelper>;
   explicit DataControlsTabHelper(web::WebState* web_state);
@@ -61,9 +66,17 @@ class DataControlsTabHelper
                    base::OnceCallback<void(bool)> callback,
                    bool bypassed);
 
+  // Displays a warning dialog associated with a user's action (e.g., copy,
+  // paste, share).
+  void ShowWarningDialog(DataControlsDialog::Type dialog_type,
+                         base::OnceCallback<void(bool)> on_bypassed_callback);
+
   // Unowned pointer to the WebState owning `this`. `web_state_` will always
   // outlive `this`.
   raw_ptr<web::WebState> web_state_;
+
+  // The command handler.
+  __weak id<DataControlsCommands> commands_handler_ = nil;
 
   base::WeakPtrFactory<DataControlsTabHelper> weak_factory_{this};
 };

@@ -110,6 +110,7 @@
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/ui/features.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
+#import "ios/chrome/browser/enterprise/data_controls/data_controls_dialog_coordinator.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
@@ -230,6 +231,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/credential_exchange_commands.h"
+#import "ios/chrome/browser/shared/public/commands/data_controls_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enhanced_calendar_commands.h"
@@ -367,6 +369,7 @@ const char kChromeAppStoreUrl[] =
     ContextualSheetCommands,
     CountryCodePickerCommands,
     CredentialExchangeCommands,
+    DataControlsCommands,
     DefaultBrowserGenericPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
     DownloadListCommands,
@@ -734,6 +737,9 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for the Credential Exchange feature handling the import.
   CredentialImportCoordinator* _credentialImportCoordinator;
+
+  // The coordinator for displaying Enterprise Data Controls dialogs.
+  DataControlsDialogCoordinator* _dataControlsDialogCoordinator;
 }
 
 #pragma mark - ReaderModeBrowserAgentDelegate
@@ -964,6 +970,9 @@ const char kChromeAppStoreUrl[] =
 
   [_lastTabClosingAlert stop];
   _lastTabClosingAlert = nil;
+
+  [_dataControlsDialogCoordinator stop];
+  _dataControlsDialogCoordinator = nil;
 
   [self hideGoogleOne];
   [self updateLensUIForBackground];
@@ -1207,6 +1216,7 @@ const char kChromeAppStoreUrl[] =
     @protocol(GoogleOneCommands),
     @protocol(WelcomeBackPromoCommands),
     @protocol(CredentialExchangeCommands),
+    @protocol(DataControlsCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -1779,6 +1789,9 @@ const char kChromeAppStoreUrl[] =
 
   [_credentialImportCoordinator stop];
   _credentialImportCoordinator = nil;
+
+  [_dataControlsDialogCoordinator stop];
+  _dataControlsDialogCoordinator = nil;
 
   [self hideDriveFilePicker];
   [self hideContextualSheet];
@@ -4749,6 +4762,19 @@ const char kChromeAppStoreUrl[] =
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   [self.downloadListCoordinator start];
+}
+
+#pragma mark - DataControlsCommands
+
+- (void)showDataControlsWarningDialog:
+            (data_controls::DataControlsDialog::Type)dialogType
+                             callback:(base::OnceCallback<void(bool)>)callback {
+  _dataControlsDialogCoordinator = [[DataControlsDialogCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                      dialogType:dialogType
+                        callback:std::move(callback)];
+  [_dataControlsDialogCoordinator start];
 }
 
 @end

@@ -26,6 +26,7 @@ source_set("commands") {
     "country_code_picker_commands.h",
     "credential_exchange_commands.h",
     "credential_provider_promo_commands.h",
+    "data_controls_commands.h",
     "docking_promo_commands.h",
     "download_list_commands.h",
     "download_record_commands.h",
@@ -104,6 +105,7 @@ source_set("commands") {
   ]
 
   deps = [
+    "//components/enterprise/data_controls/core/browser",
     "//components/lens",
     "//components/tab_groups",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
