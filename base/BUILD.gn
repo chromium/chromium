@@ -1272,7 +1272,6 @@ component("base") {
       ":base_shared_preferences_jni",
       ":build_info_jni",
       ":bundle_utils_jni",
-      ":callback_jni",
       ":content_uri_utils_jni",
       ":features_jni",
       ":file_utils_jni",
@@ -1378,6 +1377,7 @@ component("base") {
     ]
     deps += [
       ":base_minimal_jni($default_toolchain)",
+      ":callback_jni($default_toolchain)",
       ":command_line_jni($default_toolchain)",
       ":library_loader_jni($default_toolchain)",
       ":tasks_minimal_jni($default_toolchain)",
