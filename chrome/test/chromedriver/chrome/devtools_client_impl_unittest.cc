@@ -61,18 +61,20 @@ bool ParseCommand(const base::Value::Dict& command,
                   base::Value::Dict* params,
                   std::string* session_id) {
   std::optional<int> maybe_id = command.FindInt("id");
-  EXPECT_TRUE(maybe_id);
-  if (!maybe_id)
+  if (!maybe_id) {
+    ADD_FAILURE();
     return false;
+  }
+
   *cmd_id = *maybe_id;
 
   const std::string* maybe_method = command.FindString("method");
-  EXPECT_NE(nullptr, maybe_method);
   if (!maybe_method) {
+    ADD_FAILURE();
     return false;
-  } else {
-    session_id->clear();
   }
+
+  session_id->clear();
   *method = *maybe_method;
 
   // session id might miss, this if fine
@@ -97,9 +99,8 @@ bool ParseMessage(const std::string& message,
                   std::string* session_id) {
   std::optional<base::Value> value =
       base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-  EXPECT_TRUE(value);
-  EXPECT_TRUE(value && value->is_dict());
   if (!value || !value->is_dict()) {
+    ADD_FAILURE();
     return false;
   }
 
@@ -300,14 +301,14 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
     Status status =
         CreateDefaultCdpResponse(cmd_id, std::move(method), std::move(params),
                                  std::move(session_id), &response);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     std::string message;
     status = SerializeAsJson(response, &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     queued_response_.push(std::move(message));
@@ -337,32 +338,29 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
                                 std::string session_id) {
     if (method == "Page.addScriptToEvaluateOnNewDocument") {
       EXPECT_FALSE(session_state->handshake_add_script_handled);
-      if (!session_state->handshake_add_script_handled) {
-        session_state->handshake_add_script_handled = true;
-      } else {
+      if (session_state->handshake_add_script_handled) {
+        ADD_FAILURE();
         return false;
       }
+      session_state->handshake_add_script_handled = true;
     } else if (method == "Runtime.evaluate") {
-      EXPECT_FALSE(session_state->handshake_runtime_eval_handled);
-      if (!session_state->handshake_runtime_eval_handled) {
-        session_state->handshake_runtime_eval_handled = true;
-      } else {
+      if (session_state->handshake_runtime_eval_handled) {
+        ADD_FAILURE();
         return false;
       }
+      session_state->handshake_runtime_eval_handled = true;
     } else if (method == "Page.enable") {
-      EXPECT_FALSE(session_state->handshake_page_enable_handled_);
-      if (!session_state->handshake_page_enable_handled_) {
-        session_state->handshake_page_enable_handled_ = true;
-      } else {
+      if (session_state->handshake_page_enable_handled_) {
+        ADD_FAILURE();
         return false;
       }
+      session_state->handshake_page_enable_handled_ = true;
     } else if (method == "Target.setAutoAttach") {
-      EXPECT_FALSE(session_state->handshake_target_set_autoattach_handled_);
-      if (!session_state->handshake_target_set_autoattach_handled_) {
-        session_state->handshake_target_set_autoattach_handled_ = true;
-      } else {
+      if (session_state->handshake_target_set_autoattach_handled_) {
+        ADD_FAILURE();
         return false;
       }
+      session_state->handshake_target_set_autoattach_handled_ = true;
     } else {
       // Unexpected handshake command
       VLOG(0) << "unexpected handshake method: " << method;
@@ -380,15 +378,15 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
     base::Value::Dict response;
     Status status =
         CreateCdpResponse(cmd_id, std::move(result), session_id, &response);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
 
     std::string message;
     status = SerializeAsJson(base::Value(std::move(response)), &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     queued_response_.push(std::move(message));
@@ -2576,30 +2574,30 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
                                     base::Value::Dict cdp_params,
                                     std::string cdp_session,
                                     const std::string* channel) {
-    EXPECT_STREQ("method", cdp_method.c_str());
     if (cdp_method != "method") {
+      ADD_FAILURE();
       return false;
     }
     base::Value::Dict response;
     Status status = CreateCdpOverBidiResponse(
         session_state, cmd_id, std::move(cdp_method), std::move(cdp_params),
         std::move(cdp_session), channel, &response);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
 
     base::Value::Dict evt;
     status = WrapBidiResponseInCdpEvent(response, mapper_session_, &evt);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
 
     std::string message;
     status = SerializeAsJson(evt, &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
 
@@ -2616,22 +2614,22 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     base::Value::Dict bidi_response;
     Status status = CreateDefaultBidiResponse(
         cmd_id, std::move(method), std::move(params), channel, &bidi_response);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
 
     base::Value::Dict evt;
     status = WrapBidiResponseInCdpEvent(bidi_response, mapper_session_, &evt);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
 
     std::string message;
     status = SerializeAsJson(evt, &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     queued_response_.push(message);
@@ -2647,10 +2645,8 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       const std::string* cdp_method = params.FindString("method");
       const std::string* cdp_session = params.FindString("session");
       const base::Value::Dict* cdp_params = params.FindDict("params");
-      EXPECT_NE(cdp_method, nullptr);
-      EXPECT_NE(cdp_session, nullptr);
-      EXPECT_TRUE(cdp_params);
       if (!cdp_method || !cdp_session || !cdp_params) {
+        ADD_FAILURE();
         return false;
       }
       return OnCdpOverBidiCommand(session_state, cmd_id, *cdp_method,
@@ -2683,8 +2679,8 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     }
 
     const std::string* expression = params.FindString("expression");
-    EXPECT_NE(nullptr, expression);
     if (!expression) {
+      ADD_FAILURE();
       return false;
     }
 
@@ -2704,17 +2700,20 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
         expression->substr(expected_exression_start.size(), count);
     std::optional<base::Value> bidi_arg = base::JSONReader::Read(
         bidi_arg_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    EXPECT_TRUE(bidi_arg->is_string()) << bidi_arg_str;
     if (!bidi_arg->is_string()) {
+      ADD_FAILURE() << bidi_arg_str;
       return false;
     }
     const std::string& bidi_expr_msg = bidi_arg->GetString();
     std::optional<base::Value> bidi_expr = base::JSONReader::Read(
         bidi_expr_msg, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
-    EXPECT_TRUE(bidi_expr) << bidi_expr_msg;
-    EXPECT_TRUE(bidi_expr->is_dict()) << bidi_expr_msg;
-    if (!bidi_expr || !bidi_expr->is_dict()) {
+    if (!bidi_expr) {
+      ADD_FAILURE() << bidi_expr_msg;
+      return false;
+    }
+    if (!bidi_expr->is_dict()) {
+      ADD_FAILURE() << bidi_expr_msg;
       return false;
     }
 
@@ -2724,10 +2723,8 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
     const std::string* bidi_method = bidi_dict.FindString("method");
     const base::Value::Dict* bidi_params = bidi_dict.FindDict("params");
     const std::string* bidi_channel = bidi_dict.FindString("goog:channel");
-    EXPECT_TRUE(bidi_cmd_id);
-    EXPECT_NE(bidi_method, nullptr);
-    EXPECT_NE(bidi_params, nullptr);
     if (!bidi_cmd_id || !bidi_method || !bidi_params) {
+      ADD_FAILURE();
       return false;
     }
 
@@ -2736,14 +2733,14 @@ class BidiMockSyncWebSocket : public MultiSessionMockSyncWebSocket {
       base::Value::Dict response;
       Status status =
           CreateRuntimeEvaluateResponse(cmd_id, session_id, &response);
-      EXPECT_TRUE(status.IsOk()) << status.message();
       if (status.IsError()) {
+        ADD_FAILURE() << status.message();
         return false;
       }
       std::string message;
       status = SerializeAsJson(response, &message);
-      EXPECT_TRUE(status.IsOk()) << status.message();
       if (status.IsError()) {
+        ADD_FAILURE() << status.message();
         return false;
       }
       queued_response_.push(std::move(message));
@@ -2773,8 +2770,8 @@ class MultiSessionMockSyncWebSocket3 : public BidiMockSyncWebSocket {
                                    base::Value::Dict* response) override {
     base::Value::Dict result;
     std::optional<int> ping = cdp_params.FindInt("wrapped-ping");
-    EXPECT_TRUE(ping);
     if (!ping) {
+      ADD_FAILURE();
       return Status{kUnknownError, "wrapped-ping is missing"};
     }
     result.Set("wrapped-pong", *ping);
@@ -2811,8 +2808,8 @@ class BidiEventListener : public DevToolsEventListener {
     }
 
     const std::string* name = params.FindString("name");
-    EXPECT_NE(name, nullptr);
-    if (name == nullptr) {
+    if (!name) {
+      ADD_FAILURE();
       return Status{kUnknownError,
                     "name is missing in the Runtime.bindingCalled params"};
     }
@@ -2821,8 +2818,8 @@ class BidiEventListener : public DevToolsEventListener {
     }
 
     const base::Value::Dict* payload = params.FindDict("payload");
-    EXPECT_NE(payload, nullptr);
-    if (payload == nullptr) {
+    if (!payload) {
+      ADD_FAILURE();
       return Status{kUnknownError,
                     "payload is missing in the Runtime.bindingCalled params"};
     }
@@ -2930,8 +2927,8 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
                             base::Value::Dict cdp_params,
                             std::string cdp_session,
                             const std::string* channel) override {
-    EXPECT_STREQ("method", cdp_method.c_str());
     if (cdp_method != "method") {
+      ADD_FAILURE();
       return false;
     }
 
@@ -2949,14 +2946,14 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     }
     base::Value::Dict evt;
     Status status = WrapBidiEventInCdpEvent(bidi_evt, mapper_session_, &evt);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     std::string message;
     status = SerializeAsJson(evt, &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     queued_response_.push(message);
@@ -2965,18 +2962,18 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     status = CreateCdpOverBidiResponse(
         session_state, cmd_id, std::move(cdp_method), std::move(cdp_params),
         std::move(cdp_session), channel, &response);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     status = WrapBidiResponseInCdpEvent(response, mapper_session_, &evt);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     status = SerializeAsJson(evt, &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     queued_response_.push(std::move(message));
@@ -2989,8 +2986,8 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
                          std::string method,
                          base::Value::Dict params,
                          const std::string* channel) override {
-    EXPECT_STREQ("method", method.c_str());
     if (method != "method") {
+      ADD_FAILURE();
       return false;
     }
 
@@ -3004,14 +3001,14 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     }
     base::Value::Dict evt;
     Status status = WrapBidiEventInCdpEvent(bidi_evt, mapper_session_, &evt);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     std::string message;
     status = SerializeAsJson(evt, &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     queued_response_.push(message);
@@ -3019,18 +3016,18 @@ class MultiSessionMockSyncWebSocket4 : public BidiMockSyncWebSocket {
     base::Value::Dict bidi_response;
     status = CreateDefaultBidiResponse(
         cmd_id, std::move(method), std::move(params), channel, &bidi_response);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     status = WrapBidiResponseInCdpEvent(bidi_response, mapper_session_, &evt);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     status = SerializeAsJson(evt, &message);
-    EXPECT_TRUE(status.IsOk()) << status.message();
     if (status.IsError()) {
+      ADD_FAILURE() << status.message();
       return false;
     }
     queued_response_.push(message);
@@ -3229,8 +3226,8 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
       }
     } else if (method == "Runtime.evaluate") {
       std::string* expression = params.FindString("expression");
-      EXPECT_TRUE(expression != nullptr);
-      if (expression == nullptr) {
+      if (!expression) {
+        ADD_FAILURE();
         return false;
       }
 
@@ -3260,8 +3257,8 @@ class BidiServerMockSyncWebSocket : public BidiMockSyncWebSocket {
                          std::string method,
                          base::Value::Dict params,
                          const std::string* channel) override {
-    EXPECT_NE(nullptr, channel);
     if (!channel) {
+      ADD_FAILURE();
       return false;
     }
     EXPECT_EQ(DevToolsClientImpl::kCdpTunnelChannel, *channel);
