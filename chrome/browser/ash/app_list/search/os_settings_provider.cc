@@ -10,6 +10,8 @@
 
 #include "ash/app_list/vector_icons/vector_icons.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_macros.h"
@@ -17,11 +19,11 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/settings/search/hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
@@ -194,8 +196,10 @@ OsSettingsResult::OsSettingsResult(Profile* profile,
 OsSettingsResult::~OsSettingsResult() = default;
 
 void OsSettingsResult::Open(int event_flags) {
-  chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile_,
-                                                               url_path_);
+  ash::NewWindowDelegate::GetInstance()->OpenOSSettingsPage(
+      CHECK_DEREF(
+          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile_)),
+      {.sub_page = url_path_});
 }
 
 OsSettingsProvider::OsSettingsProvider(Profile* profile)

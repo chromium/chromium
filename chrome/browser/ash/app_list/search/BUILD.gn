@@ -93,6 +93,7 @@ static_library("search") {
     "//chrome/browser/ui/webui/ash/settings/search/mojom",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/string_matching",
     "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/ash/services/assistant/public/cpp",
