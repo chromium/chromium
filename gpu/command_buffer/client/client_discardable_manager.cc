@@ -204,14 +204,6 @@ bool ClientDiscardableManager::HandleIsDeleted(
   return false;
 }
 
-bool ClientDiscardableManager::HandleIsDeletedForTracing(
-    ClientDiscardableHandle::Id handle_id) const {
-  auto found = handles_.find(handle_id);
-  if (found == handles_.end())
-    return true;
-  return found->second.IsDeletedForTracing();
-}
-
 bool ClientDiscardableManager::FindAllocation(CommandBuffer* command_buffer,
                                               scoped_refptr<Buffer>* buffer,
                                               int32_t* shm_id,

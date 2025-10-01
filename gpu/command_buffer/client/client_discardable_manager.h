@@ -37,9 +37,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientDiscardableManager {
   ClientDiscardableHandle GetHandle(ClientDiscardableHandle::Id handle_id);
   bool HandleIsDeleted(ClientDiscardableHandle::Id handle_id);
 
-  // For diagnostic tracing only.
-  bool HandleIsDeletedForTracing(ClientDiscardableHandle::Id handle_id) const;
-
   // Test only functions.
   void CheckPendingForTesting(CommandBuffer* command_buffer) {
     CheckPending(command_buffer);
