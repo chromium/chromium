@@ -25,11 +25,20 @@ message ManagedPrinterConfiguration {
   // Optional. Printer description visible in the print preview dialog.
   optional string description = 3;
 
+  // Serialized to JSON as an int (not a string).
+  enum UsbProtocol {
+    USB_PROTOCOL_UNSPECIFIED = 0;
+    USB_PROTOCOL_LEGACY_USB = 1;
+    USB_PROTOCOL_IPP_USB = 2;
+  }
+
   message UsbDeviceId {
     // Required.
     int32 vendor_id = 1 [json_name = "vendor_id"];
     // Required.
     int32 product_id = 2 [json_name = "product_id"];
+    // Required.
+    UsbProtocol usb_protocol = 3 [json_name = "usb_protocol"];
   }
 
   // Required. Specifies the way the printer is connected to the device.
