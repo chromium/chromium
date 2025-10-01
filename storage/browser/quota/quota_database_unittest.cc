@@ -145,7 +145,6 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "id,"
               "storage_key,"
               "host,"
-              "type,"
               "name,"
               "use_count,"
               "last_accessed,"
@@ -154,7 +153,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "quota,"
               "persistent,"
               "durability) "
-            "VALUES (?, ?, ?, 0, ?, ?, ?, ?, 0, 0, 0, 0)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0)";
       // clang-format on
       sql::Statement statement;
       statement.Assign(

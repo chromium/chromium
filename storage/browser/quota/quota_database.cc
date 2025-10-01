@@ -56,15 +56,10 @@ static const int kStaleBucketCutoffInDays = 400;
 // Version 8 - 2021-09-01 - https://crrev.com/c/3119831 (unsupported)
 // Version 9 - 2022-05-13 - https://crrev.com/c/3601253
 // Version 10 - 2023-04-10 - https://crrev.com/c/4412082
-//
-// TODO(crbug.com/40211051): Remove field `type` and all rows that are not of
-// `type` 0 (Temporary) with the next migration. All other types have been
-// deprecated and no data is associated with any other type. Therefore they
-// should be removed. Until this is done, queries without 'WHERE type=0' might
-// return buckets of other types so this should always be included until this is
-// complete.
-const int kQuotaDatabaseCurrentSchemaVersion = 10;
-const int kQuotaDatabaseCompatibleVersion = 10;
+// Version 11 - 2025-09-29 - https://crrev.com/c/6990378
+
+const int kQuotaDatabaseCurrentSchemaVersion = 11;
+const int kQuotaDatabaseCompatibleVersion = 11;
 
 // Definitions for database schema.
 const char kBucketTable[] = "buckets";
@@ -86,10 +81,10 @@ void RecordDatabaseResetHistogram(const DatabaseResetReason reason) {
 }
 
 // SQL statement fragment for inserting fields into the buckets table.
-#define BUCKETS_FIELDS_INSERTER                                               \
-  " (storage_key, host, type, name, use_count, last_accessed, last_modified," \
-  " expiration, quota, persistent, durability) "                              \
-  " VALUES (?, ?, 0, ?, ?, ?, ?, ?, ?, ?, ?) "
+#define BUCKETS_FIELDS_INSERTER                                         \
+  " (storage_key, host, name, use_count, last_accessed, last_modified," \
+  " expiration, quota, persistent, durability) "                        \
+  " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
 
 void BindBucketInitParamsToInsertStatement(const BucketInitParams& params,
                                            int use_count,
@@ -113,26 +108,23 @@ void BindBucketInitParamsToInsertStatement(const BucketInitParams& params,
 // Fields to be retrieved from the database and stored in a
 // `BucketTableEntryPtr`.
 #define BUCKET_TABLE_ENTRY_FIELDS_SELECTOR \
-  "id, storage_key, type, name, use_count, last_accessed, last_modified "
+  "id, storage_key, name, use_count, last_accessed, last_modified "
 
 mojom::BucketTableEntryPtr BucketTableEntryFromSqlStatement(
     sql::Statement& statement) {
-  // Should only ever return type Temporary. All other types are deprecated.
-  CHECK_EQ(statement.ColumnInt(2), 0);
-
   mojom::BucketTableEntryPtr entry = mojom::BucketTableEntry::New();
   entry->bucket_id = statement.ColumnInt64(0);
   entry->storage_key = statement.ColumnString(1);
-  entry->name = statement.ColumnString(3);
-  entry->use_count = statement.ColumnInt(4);
-  entry->last_accessed = statement.ColumnTime(5);
-  entry->last_modified = statement.ColumnTime(6);
+  entry->name = statement.ColumnString(2);
+  entry->use_count = statement.ColumnInt(3);
+  entry->last_accessed = statement.ColumnTime(4);
+  entry->last_modified = statement.ColumnTime(5);
   return entry;
 }
 
 // Fields to be retrieved from the database and stored in a `BucketInfo`.
 #define BUCKET_INFO_FIELDS_SELECTOR \
-  " id, storage_key, type, name, expiration, quota, persistent, durability "
+  " id, storage_key, name, expiration, quota, persistent, durability "
 
 QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
   if (!statement.Step()) {
@@ -146,13 +138,11 @@ QuotaErrorOr<BucketInfo> BucketInfoFromSqlStatement(sql::Statement& statement) {
     return base::unexpected(QuotaError::kStorageKeyError);
   }
 
-  // Should only ever return type Temporary. All other types are deprecated.
-  CHECK_EQ(statement.ColumnInt(2), 0);
   BucketInfo bucket_info(
       BucketId(statement.ColumnInt64(0)), storage_key.value(),
-      statement.ColumnString(3), statement.ColumnTime(4),
-      statement.ColumnInt64(5), statement.ColumnBool(6),
-      static_cast<blink::mojom::BucketDurability>(statement.ColumnInt(7)));
+      statement.ColumnString(2), statement.ColumnTime(3),
+      statement.ColumnInt64(4), statement.ColumnBool(5),
+      static_cast<blink::mojom::BucketDurability>(statement.ColumnInt(6)));
   // Ignore the durability saved in the database for default buckets, which
   // changed from strict by default to relaxed by default in M124.
   if (bucket_info.is_default()) {
@@ -178,7 +168,6 @@ const QuotaDatabase::TableSchema QuotaDatabase::kTables[] = {
      "(id INTEGER PRIMARY KEY AUTOINCREMENT,"
      " storage_key TEXT NOT NULL,"
      " host TEXT NOT NULL,"
-     " type INTEGER NOT NULL,"
      " name TEXT NOT NULL,"
      " use_count INTEGER NOT NULL,"
      " last_accessed INTEGER NOT NULL,"
@@ -192,10 +181,10 @@ const size_t QuotaDatabase::kTableCount = std::size(QuotaDatabase::kTables);
 
 // static
 const QuotaDatabase::IndexSchema QuotaDatabase::kIndexes[] = {
-    {"buckets_by_storage_key", kBucketTable, "(storage_key, type, name)", true},
-    {"buckets_by_host", kBucketTable, "(host, type)", false},
-    {"buckets_by_last_accessed", kBucketTable, "(type, last_accessed)", false},
-    {"buckets_by_last_modified", kBucketTable, "(type, last_modified)", false},
+    {"buckets_by_storage_key", kBucketTable, "(storage_key, name)", true},
+    {"buckets_by_host", kBucketTable, "(host)", false},
+    {"buckets_by_last_accessed", kBucketTable, "(last_accessed)", false},
+    {"buckets_by_last_modified", kBucketTable, "(last_modified)", false},
     {"buckets_by_expiration", kBucketTable, "(expiration)", false},
 };
 const size_t QuotaDatabase::kIndexCount = std::size(QuotaDatabase::kIndexes);
@@ -292,7 +281,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
       // clang-format off
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
-        "WHERE storage_key = ? AND type = 0 AND name = ?";
+        "WHERE storage_key = ? AND name = ?";
   // clang-format on
   last_operation_ = "GetBucket";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
@@ -382,8 +371,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetAllBuckets() {
   static constexpr char kSql[] =
       // clang-format off
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
-        "FROM buckets "
-        "WHERE type = 0";
+        "FROM buckets ";
   // clang-format on
   last_operation_ = "GetBucketsForType";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
@@ -403,7 +391,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForHost(
       // clang-format off
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
-        "WHERE host = ? AND type = 0";
+        "WHERE host = ?";
   // clang-format on
   last_operation_ = "GetBucketsForHost";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
@@ -424,7 +412,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForStorageKey(
       // clang-format off
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
-        "WHERE storage_key = ? AND type = 0";
+        "WHERE storage_key = ?";
   // clang-format on
   last_operation_ = "GetBucketsForStorageKey";
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
@@ -445,7 +433,7 @@ QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
   // clang-format off
   static constexpr char kSqlReadLastAccessed[] =
       "SELECT last_accessed FROM buckets "
-        "WHERE storage_key = ? AND type = 0 AND name = ?";
+        "WHERE storage_key = ? AND name = ?";
   // clang-format on
   last_operation_ = "ReadStorageKeyLastAccessTime";
   sql::Statement statement_read(
@@ -472,7 +460,7 @@ QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
   static constexpr char kSqlSetLastAccessed[] =
       "UPDATE buckets "
         "SET use_count = use_count + 1, last_accessed = ? "
-        "WHERE storage_key = ? AND type = 0 AND name = ?";
+        "WHERE storage_key = ? AND name = ?";
   // clang-format on
   last_operation_ = "SetStorageKeyLastAccessTime";
   sql::Statement statement_set(
@@ -665,7 +653,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
   // clang-format off
   static constexpr char kSql[] =
       "SELECT id, storage_key, name FROM buckets "
-        "WHERE type = 0 AND persistent = 0 "
+        "WHERE persistent = 0 "
         "ORDER BY last_accessed";
   // clang-format on
   last_operation_ = "GetBucketsForEviction";
@@ -719,8 +707,7 @@ QuotaErrorOr<std::set<StorageKey>> QuotaDatabase::GetAllStorageKeys() {
     return base::unexpected(open_error);
   }
 
-  static constexpr char kSql[] =
-      "SELECT DISTINCT storage_key FROM buckets WHERE type = 0";
+  static constexpr char kSql[] = "SELECT DISTINCT storage_key FROM buckets";
   last_operation_ = "GetStorageKeys";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
@@ -751,7 +738,7 @@ QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsModifiedBetween(
   // clang-format off
   static constexpr char kSql[] =
       "SELECT id, storage_key, name FROM buckets "
-        "WHERE type = 0 AND last_modified >= ? AND last_modified < ?";
+        "WHERE last_modified >= ? AND last_modified < ?";
   // clang-format on
   last_operation_ = "GetBucketsModifiedBetween";
 
@@ -806,7 +793,7 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetExpiredBuckets(
       "SELECT " BUCKET_INFO_FIELDS_SELECTOR
         "FROM buckets "
         "WHERE (expiration > 0 AND expiration < ?) OR "
-        "      (type = 0 AND persistent = 0 AND "
+        "      (persistent = 0 AND "
         "       last_accessed < ? AND last_modified < ?) OR "
         "      (storage_key REGEXP '.*\\^(1|4).*' AND "
         "       last_accessed < ? AND last_modified < ?)";
@@ -1260,8 +1247,7 @@ QuotaError QuotaDatabase::DumpBucketTable(const BucketTableCallback& callback) {
   static constexpr char kSql[] =
       // clang-format off
       "SELECT " BUCKET_TABLE_ENTRY_FIELDS_SELECTOR
-        "FROM buckets "
-        "WHERE type = 0 ";
+        "FROM buckets";
   // clang-format on
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
 
@@ -1302,7 +1288,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
         // clang-format off
         "SELECT count(*) "
           "FROM buckets "
-          "WHERE storage_key = ? AND type = 0";
+          "WHERE storage_key = ?";
     // clang-format on
     last_operation_ = "CountBuckets";
     sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));

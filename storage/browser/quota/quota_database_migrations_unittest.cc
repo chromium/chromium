@@ -21,8 +21,8 @@ namespace storage {
 
 namespace {
 
-const int kCurrentSchemaVersion = 10;
-const int kCurrentCompatibleVersion = 10;
+const int kCurrentSchemaVersion = 11;
+const int kCurrentCompatibleVersion = 11;
 
 std::string RemoveQuotes(std::string input) {
   std::string output;
@@ -89,7 +89,7 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
   std::string GetCurrentSchema() {
     base::FilePath current_version_path =
         temp_directory_.GetPath().AppendASCII("current_version.db");
-    EXPECT_TRUE(LoadDatabase("version_10.sql", current_version_path));
+    EXPECT_TRUE(LoadDatabase("version_11.sql", current_version_path));
     sql::Database db(sql::test::kTestTag);
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -174,18 +174,75 @@ TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV9) {
     // Check that buckets data is still present.
     EXPECT_EQ(
         "1|http://a/|http://a/"
-        "|0|bucket_a|123|13260644621105493|13242931862595604|"
-        "0|0|0|0,"
+        "|bucket_a|123|13260644621105493|13242931862595604|0|0|0|0,"
         "2|http://b/|http://b/"
-        "|0|bucket_b|111|13250042735631065|13260999511438890|"
-        "0|1000|0|0",
+        "|bucket_b|111|13250042735631065|13260999511438890|0|1000|0|0",
+        sql::test::ExecuteWithResults(
+            &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
+
+    EXPECT_EQ(GetCurrentSchema(), RemoveQuotes(db.GetSchema()));
+
+    EXPECT_EQ(GetTotalHistogramCount(), 2u);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV9ToV10",
+                                   /*sample=*/true, /*expected_count=*/1);
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV10ToV11",
+                                   /*sample=*/true, /*expected_count=*/1);
+  }
+}
+
+TEST_F(QuotaDatabaseMigrationsTest, UpgradeSchemaFromV10) {
+  ASSERT_TRUE(LoadDatabase("version_10.sql", DbPath()));
+
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(
+        meta_table.Init(&db, kCurrentSchemaVersion, kCurrentCompatibleVersion));
+    ASSERT_EQ(meta_table.GetVersionNumber(), 10);
+    ASSERT_EQ(meta_table.GetCompatibleVersionNumber(), 10);
+
+    // Check populated data.
+    EXPECT_EQ(
+        "1|http://a/|http://a/"
+        "|0|bucket_a|123|13260644621105493|13242931862595604|0|0|0|0,"
+        "2|http://b/|http://b/"
+        "|0|bucket_b|111|13250042735631065|13260999511438890|0|1000|0|0,"
+        "3|chrome-extension://abc/|chrome-extension://abc/"
+        "|1|_default|321|13261163582572088|13261079941303629|0|10000|0|1",
+        sql::test::ExecuteWithResults(
+            &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
+  }
+
+  MigrateDatabase();
+
+  // Verify upgraded schema.
+  {
+    sql::Database db(sql::test::kTestTag);
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&db));
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(
+        meta_table.Init(&db, kCurrentSchemaVersion, kCurrentCompatibleVersion));
+    EXPECT_EQ(meta_table.GetVersionNumber(), kCurrentSchemaVersion);
+    EXPECT_EQ(meta_table.GetCompatibleVersionNumber(), kCurrentSchemaVersion);
+
+    // Check that buckets data is still present.
+    EXPECT_EQ(
+        "1|http://a/|http://a/"
+        "|bucket_a|123|13260644621105493|13242931862595604|0|0|0|0,"
+        "2|http://b/|http://b/"
+        "|bucket_b|111|13250042735631065|13260999511438890|0|1000|0|0",
         sql::test::ExecuteWithResults(
             &db, "SELECT * FROM buckets ORDER BY id ASC", "|", ","));
 
     EXPECT_EQ(GetCurrentSchema(), RemoveQuotes(db.GetSchema()));
 
     EXPECT_EQ(GetTotalHistogramCount(), 1u);
-    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV9ToV10",
+    histograms_->ExpectBucketCount("Quota.DatabaseMigrationFromV10ToV11",
                                    /*sample=*/true, /*expected_count=*/1);
   }
 }

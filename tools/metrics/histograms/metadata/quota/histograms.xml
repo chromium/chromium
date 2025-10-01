@@ -74,6 +74,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="VersionUpgrades">
     <variant name="FromV9ToV10"/>
+    <variant name="FromV10ToV11"/>
   </token>
 </histogram>
 
