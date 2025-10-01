@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -31,6 +32,9 @@ class DesktopCapturer;
 }  // namespace webrtc
 
 namespace content {
+
+media::VideoPixelFormat CONTENT_EXPORT
+FourCCToVideoPixelFormat(webrtc::FourCC fourcc);
 
 // DesktopCaptureDevice implements VideoCaptureDevice for screens and windows.
 // It's essentially an adapter between webrtc::DesktopCapturer and

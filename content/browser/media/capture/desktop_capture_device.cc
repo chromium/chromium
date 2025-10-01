@@ -52,7 +52,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/fake_desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 #include "ui/gfx/icc_profile.h"
@@ -64,19 +63,6 @@
 namespace content {
 
 namespace {
-
-media::VideoPixelFormat FourCCToVideoPixelFormat(webrtc::FourCC fourcc) {
-  switch (fourcc) {
-    case webrtc::FOURCC_ARGB:
-      return media::PIXEL_FORMAT_ARGB;
-    case webrtc::FOURCC_ABGR:
-      return media::PIXEL_FORMAT_ABGR;
-    case webrtc::FOURCC_I420:
-      return media::PIXEL_FORMAT_I420;
-    default:
-      NOTREACHED();
-  }
-}
 
 // Maximum CPU time percentage of a single core that can be consumed for desktop
 // capturing. This means that on systems where screen scraping is slow we may
@@ -220,6 +206,19 @@ class ScopedHighResolutionTimer {
 };
 
 }  // namespace
+
+media::VideoPixelFormat FourCCToVideoPixelFormat(webrtc::FourCC fourcc) {
+  switch (fourcc) {
+    case webrtc::FOURCC_ARGB:
+      return media::PIXEL_FORMAT_ARGB;
+    case webrtc::FOURCC_ABGR:
+      return media::PIXEL_FORMAT_ABGR;
+    case webrtc::FOURCC_I420:
+      return media::PIXEL_FORMAT_I420;
+    default:
+      NOTREACHED();
+  }
+}
 
 class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
  public:
@@ -666,12 +665,23 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       const int temp_stride_u = temp_width_uv;
       const int temp_stride_v = temp_width_uv;
 
-      // TODO(crbug.com/352187279): Support other pixel formats.
-      CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
-      libyuv::ARGBToI420(frame->data(), frame->stride(), temp_buffer_y,
-                         temp_stride_y, temp_buffer_u, temp_stride_u,
-                         temp_buffer_v, temp_stride_v, frame->size().width(),
-                         frame->size().height());
+      switch (frame->pixel_format()) {
+        case webrtc::FOURCC_ARGB:
+          libyuv::ARGBToI420(frame->data(), frame->stride(), temp_buffer_y,
+                             temp_stride_y, temp_buffer_u, temp_stride_u,
+                             temp_buffer_v, temp_stride_v,
+                             frame->size().width(), frame->size().height());
+          break;
+        case webrtc::FOURCC_ABGR:
+          libyuv::ABGRToI420(frame->data(), frame->stride(), temp_buffer_y,
+                             temp_stride_y, temp_buffer_u, temp_stride_u,
+                             temp_buffer_v, temp_stride_v,
+                             frame->size().width(), frame->size().height());
+          break;
+        default:
+          // TODO(crbug.com/352187279): Support other pixel formats.
+          NOTREACHED() << "Unsupported pixel format.";
+      }
 
       webrtc::DesktopRect output_rect =
           ComputeLetterboxRect(output_size, frame->size());
