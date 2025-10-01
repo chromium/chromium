@@ -35,16 +35,21 @@ class NET_EXPORT SessionService {
   using OnAccessCallback = base::RepeatingCallback<void(const SessionAccess&)>;
 
   // Records the outcome of an attempt to refresh.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(DeviceBoundSessionRefreshResult)
   enum class RefreshResult {
-    kRefreshed,           // Refresh was successful.
-    kInitializedService,  // Service is now initialized, refresh may still be
-                          // needed.
-    kUnreachable,         // Refresh endpoint was unreachable.
-    kServerError,         // Refresh endpoint served a transient error.
-    kQuotaExceeded,       // Refresh quota exceeded.
-    kFatalError,          // Refresh failed and session was terminated. No
-                          // further refresh needed.
+    kRefreshed = 0,           // Refresh was successful.
+    kInitializedService = 1,  // Service is now initialized, refresh may still
+                              // be needed.
+    kUnreachable = 2,         // Refresh endpoint was unreachable.
+    kServerError = 3,         // Refresh endpoint served a transient error.
+    kQuotaExceeded = 4,       // Refresh quota exceeded.
+    kFatalError = 5,          // Refresh failed and session was terminated. No
+                              // further refresh needed.
+    kMaxValue = kFatalError
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionRefreshResult)
   using RefreshCompleteCallback = base::OnceCallback<void(RefreshResult)>;
 
   // Indicates the reason for deferring. Exactly one of

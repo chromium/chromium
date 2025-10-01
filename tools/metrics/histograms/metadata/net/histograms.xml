@@ -1860,6 +1860,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DeviceBoundSessions.DeferralResult{Duration}"
+    enum="DeviceBoundSessionRefreshResult" expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records the outcome of deferring a request due to a Device Bound
+    Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md). This is
+    logged every time a request is unblocked after being deferred {Duration},
+    which is usually due to a refresh completing.
+  </summary>
+  <token key="Duration">
+    <variant name="" summary="for any duration of deferral"/>
+    <variant name=".Instant" summary="if the deferral takes less than 1ms"/>
+    <variant name=".Slow" summary="if the deferral takes more than 1ms"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DeviceBoundSessions.DeletionReason"
     enum="DeviceBoundSessionDeletionReason" expires_after="2026-02-18">
   <owner>drubery@chromium.org</owner>
@@ -1932,6 +1949,18 @@ chromium-metrics-reviews@google.com.
     for that decision. This is logged once for each round trip of most network
     requests that can add a cookie header; requests that attempt to refresh but
     fail are omitted.
+  </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.RequestDeferredCount" units="requests"
+    expires_after="2026-02-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    This records how many requests were deferred by a single Device Bound
+    Session (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) refresh.
+    This is logged every time requests are unblocked, which is usually due to a
+    refresh completing.
   </summary>
 </histogram>
 
