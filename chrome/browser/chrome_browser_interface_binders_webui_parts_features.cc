@@ -50,6 +50,10 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/ui/webui/tab_strip_internals/tab_strip_internals_ui.h"
+#endif
+
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 #include "chrome/browser/ui/webui/watermark/watermark_ui.h"
 #endif
@@ -108,6 +112,11 @@ void PopulateChromeWebUIFrameBindersPartsFeatures(
                                          TabStripUI>(map);
   RegisterWebUIControllerInterfaceBinder<tabs_api::mojom::TabStripService,
                                          TabStripUI>(map);
+#endif
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  RegisterWebUIControllerInterfaceBinder<
+      tab_strip_internals::mojom::PageHandlerFactory, TabStripInternalsUI>(map);
 #endif
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)

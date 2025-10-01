@@ -3,20 +3,37 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(enable_session_service)
 
 source_set("tab_strip_internals") {
   sources = [
+    "tab_strip_internals_handler.cc",
+    "tab_strip_internals_handler.h",
     "tab_strip_internals_ui.cc",
     "tab_strip_internals_ui.h",
   ]
 
   deps = [
+    ":mojo_bindings",
     "//chrome/browser/resources/tab_strip_internals:resources_grit",
     "//chrome/browser/ui/tabs",
     "//chrome/common",
     "//content/public/browser",
     "//ui/webui",
   ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "tab_strip_internals.mojom" ]
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [
+    "//components/tab_groups/public/mojom:mojo_bindings",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  webui_module_path = "/"
 }

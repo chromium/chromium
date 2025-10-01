@@ -8240,7 +8240,10 @@ static_library("browser") {
       "sessions/tab_loader_delegate.cc",
       "sessions/tab_loader_delegate.h",
     ]
-    deps += [ "//components/tab_groups" ]
+    deps += [
+      "//chrome/browser/ui/webui/tab_strip_internals",
+      "//components/tab_groups",
+    ]
   }
 
   if (enable_spellcheck) {
