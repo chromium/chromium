@@ -10,8 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -35,16 +33,6 @@ bool IsValid(const AggregationKeys::Keys& keys) {
          std::ranges::all_of(keys, [](const auto& key) {
            return AggregationKeyIdHasValidLength(key.first);
          });
-}
-
-void RecordAggregatableKeysPerSource(base::HistogramBase::Sample32 count) {
-  const int kExclusiveMaxHistogramValue = 101;
-
-  static_assert(
-      kMaxAggregationKeysPerSource < kExclusiveMaxHistogramValue,
-      "Bump the version for histogram Conversions.AggregatableKeysPerSource");
-
-  base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource", count);
 }
 
 }  // namespace
@@ -77,8 +65,6 @@ AggregationKeys::FromJSON(const base::Value* value) {
     return base::unexpected(
         SourceRegistrationError::kAggregationKeysDictInvalid);
   }
-
-  RecordAggregatableKeysPerSource(num_keys);
 
   Keys::container_type keys;
   keys.reserve(num_keys);

@@ -16,8 +16,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -69,30 +67,6 @@ base::expected<void, FilterValuesError> ValidateForSource(
   return base::ok();
 }
 
-// Records the Conversions.FiltersPerFilterData metric.
-void RecordFiltersPerFilterData(base::HistogramBase::Sample32 count) {
-  const int kExclusiveMaxHistogramValue = 101;
-
-  static_assert(
-      kMaxFiltersPerSource < kExclusiveMaxHistogramValue,
-      "Bump the version for histogram Conversions.FiltersPerFilterData");
-
-  // The metrics are called potentially many times while parsing an attribution
-  // header, therefore using the macros to avoid the overhead of taking a lock
-  // and performing a map lookup.
-  UMA_HISTOGRAM_COUNTS_100("Conversions.FiltersPerFilterData", count);
-}
-
-// Records the Conversions.ValuesPerFilter metric.
-void RecordValuesPerFilter(base::HistogramBase::Sample32 count) {
-  const int kExclusiveMaxHistogramValue = 101;
-
-  static_assert(kMaxValuesPerFilter < kExclusiveMaxHistogramValue,
-                "Bump the version for histogram Conversions.ValuesPerFilter");
-
-  UMA_HISTOGRAM_COUNTS_100("Conversions.ValuesPerFilter", count);
-}
-
 base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
     base::Value::Dict dict,
     const size_t max_filters,
@@ -102,8 +76,6 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
   if (num_filters > max_filters) {
     return base::unexpected(FilterValuesError::kTooManyKeys);
   }
-
-  RecordFiltersPerFilterData(num_filters);
 
   FilterValues::container_type filter_values;
   filter_values.reserve(dict.size());
@@ -121,8 +93,6 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
     if (!list) {
       return base::unexpected(FilterValuesError::kListWrongType);
     }
-
-    RecordValuesPerFilter(list->size());
 
     ASSIGN_OR_RETURN(
         base::flat_set<std::string> values,

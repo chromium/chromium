@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/test/gmock_expected_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -131,21 +130,6 @@ TEST(AggregationKeysTest, FromJSON_CheckSize) {
     base::Value value(test_case.GetHeader());
     EXPECT_EQ(AggregationKeys::FromJSON(&value).has_value(), test_case.valid);
   }
-}
-
-TEST(AggregationKeysTest, FromJSON_RecordsMetric) {
-  using ::base::Bucket;
-
-  base::Value json = base::test::ParseJson(R"json({
-    "a": "0x3",
-    "b": "0x4"
-  })json");
-
-  base::HistogramTester histograms;
-  ASSERT_TRUE(AggregationKeys::FromJSON(&json).has_value());
-
-  EXPECT_THAT(histograms.GetAllSamples("Conversions.AggregatableKeysPerSource"),
-              ElementsAre(Bucket(2, 1)));
 }
 
 TEST(AggregationKeysTest, ToJson) {

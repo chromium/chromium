@@ -94,17 +94,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AggregatableKeysPerSource" units="keys"
-    expires_after="2026-02-04">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures the number of aggregation keys provided in attribution source
-    registration headers. Recorded once for each source registration header when
-    parsed from the attributionsrc response.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AggregatableReport.AssembleReportStatus"
     enum="ConversionAssembleAggregatableReportStatus"
     expires_after="2026-02-22">
@@ -600,18 +589,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.FiltersPerFilterData" units="filters"
-    expires_after="2026-02-04">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures filter sizes in source and trigger registrations. This includes
-    filter data in source, top-level trigger, event-level and aggregatable
-    trigger data. Recorded once for each filter data when parsed from the
-    attributionsrc response.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.GetAllDataKeysTime" units="ms"
     expires_after="2026-02-22">
   <owner>linnan@chromium.org</owner>
@@ -719,17 +696,6 @@ chromium-metrics-reviews@google.com.
     navigation which had at least one secure response register ARA headers. It
     counts how many failed registrations that navigation would have observed
     with tainting enabled.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.LegacyEventReportWindow" enum="Boolean"
-    expires_after="2026-03-22">
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Records whether a source registration contains a legacy event_report_window
-    field, regardless of whether that field or any other field has an error. See
-    https://wicg.github.io/attribution-reporting-api/#source-registration-json-key-event_report_window.
   </summary>
 </histogram>
 
@@ -1331,18 +1297,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.TriggerDataMatchingModulusSameInputOutput"
-    units="bool" expires_after="2026-02-09">
-  <owner>tquintanilla@chromium.org</owner>
-  <owner>apaseltiner@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    When a chosen source for attribution contains the trigger data matching mode
-    `modulus`, measures whether the passed trigger data equals the source's
-    chosen trigger data. Recorded when creating an event-level report.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.TriggerDataMatchingRegistration"
     enum="ConversionTriggerDataMatching" expires_after="2026-02-09">
   <owner>tquintanilla@chromium.org</owner>
@@ -1408,18 +1362,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of valid reports in a client's database. Reports are
     scanned during database initialization.
-  </summary>
-</histogram>
-
-<histogram name="Conversions.ValuesPerFilter" units="values"
-    expires_after="2026-03-29">
-  <owner>linnan@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures the number of values in a filter. This includes filter data in
-    source, top-level trigger, event-level and aggregatable trigger data.
-    Recorded once for each filter in the filter data when parsed from the
-    attributionsrc response.
   </summary>
 </histogram>
 

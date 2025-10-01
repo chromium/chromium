@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -203,9 +202,6 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
                              SourceType source_type) {
   const base::Value* singular_window = registration.Find(kEventReportWindow);
   const base::Value* multiple_windows = registration.Find(kEventReportWindows);
-
-  base::UmaHistogramBoolean("Conversions.LegacyEventReportWindow",
-                            !!singular_window);
 
   if (singular_window && multiple_windows) {
     return base::unexpected(
