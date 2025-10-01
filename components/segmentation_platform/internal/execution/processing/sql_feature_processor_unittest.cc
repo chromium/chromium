@@ -128,12 +128,9 @@ TEST_F(SqlFeatureProcessorTest, SingleSqlFeatureWithBindValues) {
        .fill_policy = proto::CustomInput::FILL_PREDICTION_TIME}};
   MetadataWriter::BindValue custom_input2{
       kBoolType,
-      {
-          .tensor_length = 2,
-          .fill_policy = proto::CustomInput::UNKNOWN_FILL_POLICY,
-          .default_values_size = default_values.size(),
-          .default_values = default_values.data(),
-      }};
+      {.tensor_length = 2,
+       .fill_policy = proto::CustomInput::UNKNOWN_FILL_POLICY,
+       .default_value = features::DefaultValue(default_values)}};
   data.emplace(0, CreateSqlFeature(kSqlQuery, {custom_input1, custom_input2}));
 
   // Construct the expected processed bind values based on the given data.

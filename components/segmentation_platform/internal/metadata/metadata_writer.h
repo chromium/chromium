@@ -23,6 +23,39 @@ namespace segmentation_platform {
 
 namespace features {
 
+// Defines default values for a feature.
+struct DefaultValue {
+  STACK_ALLOCATED();
+
+ public:
+  enum class Type { kNotSet, kSingle, kSpan, kArray };
+
+  union Value {
+    constexpr Value() = default;
+    constexpr explicit Value(float v) : single_value(v) {}
+    constexpr explicit Value(base::span<const float> s) : span_value(s) {}
+    struct ArrayValue {
+      const float* ptr{nullptr};
+      size_t size{0};
+    };
+    constexpr Value(const float* p, size_t s) : array_value({p, s}) {}
+
+    float single_value{0};
+    base::span<const float> span_value;
+    ArrayValue array_value;
+  };
+
+  const Type type{Type::kNotSet};
+  const Value value;
+
+  constexpr DefaultValue() = default;
+  constexpr explicit DefaultValue(float v) : type(Type::kSingle), value(v) {}
+  constexpr explicit DefaultValue(base::span<const float> s)
+      : type(Type::kSpan), value(s) {}
+  constexpr DefaultValue(const float* p, size_t s)
+      : type(Type::kArray), value(p, s) {}
+};
+
 // Defines a feature based on UMA metric.
 struct UMAFeature {
   STACK_ALLOCATED();
@@ -35,8 +68,7 @@ struct UMAFeature {
   const proto::Aggregation aggregation{proto::Aggregation::UNKNOWN};
   const size_t enum_ids_size{0};
   const int32_t* const accepted_enum_ids = nullptr;
-  const size_t default_values_size{0};
-  const float* const default_values = nullptr;
+  const DefaultValue default_value;
 
   static constexpr UMAFeature FromUserAction(const char* name,
                                              uint64_t bucket_count) {
@@ -60,8 +92,7 @@ struct UMAFeature {
                       .tensor_length = 1,
                       .aggregation = aggregation,
                       .enum_ids_size = 0,
-                      .default_values_size = default_values_size,
-                      .default_values = default_values};
+                      .default_value = {default_values, default_values_size}};
   }
 
   static constexpr UMAFeature FromEnumHistogram(const char* name,
@@ -88,6 +119,20 @@ struct UMAFeature {
                       .aggregation = proto::Aggregation::COUNT,
                       .enum_ids_size = enum_ids.size(),
                       .accepted_enum_ids = enum_ids.data()};
+  }
+
+  static constexpr UMAFeature FromLatestOrDefaultValue(
+      const char* name,
+      uint64_t bucket_count,
+      float default_value_float) {
+    return UMAFeature{
+        .signal_type = proto::SignalType::HISTOGRAM_VALUE,
+        .name = name,
+        .bucket_count = bucket_count,
+        .tensor_length = 1,
+        .aggregation = proto::Aggregation::LATEST_OR_DEFAULT,
+        .default_value = DefaultValue(default_value_float),
+    };
   }
 };
 
@@ -117,8 +162,7 @@ struct CustomInput {
   const uint64_t tensor_length{0};
   const proto::CustomInput::FillPolicy fill_policy{
       proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
-  const size_t default_values_size{0};
-  const float* const default_values = nullptr;
+  const DefaultValue default_value;
   const char* name{nullptr};
 
   using Arg = std::pair<const char*, const char*>;
@@ -175,6 +219,13 @@ constexpr Feature InputContext(const char* name) {
       CustomInput{.tensor_length = 1,
                   .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
                   .name = name});
+}
+
+constexpr Feature LatestOrDefaultValue(const char* name,
+                                       uint64_t bucket_count,
+                                       float default_value) {
+  return Feature::FromUMAFeature(
+      UMAFeature::FromLatestOrDefaultValue(name, bucket_count, default_value));
 }
 
 }  // namespace features

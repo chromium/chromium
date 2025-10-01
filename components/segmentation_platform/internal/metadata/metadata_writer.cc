@@ -19,13 +19,33 @@ namespace segmentation_platform {
 
 namespace {
 
+void FillDefaultValues(const features::DefaultValue& default_value,
+                       google::protobuf::RepeatedField<float>* proto_values) {
+  using DefaultValue = features::DefaultValue;
+  switch (default_value.type) {
+    case DefaultValue::Type::kSingle:
+      proto_values->Add(default_value.value.single_value);
+      break;
+    case DefaultValue::Type::kSpan:
+      for (float v : default_value.value.span_value) {
+        proto_values->Add(v);
+      }
+      break;
+    case DefaultValue::Type::kArray:
+      for (size_t i = 0; i < default_value.value.array_value.size; ++i) {
+        proto_values->Add(UNSAFE_TODO(default_value.value.array_value.ptr[i]));
+      }
+      break;
+    case DefaultValue::Type::kNotSet:
+      break;
+  }
+}
+
 void FillCustomInput(const MetadataWriter::CustomInput feature,
                      proto::CustomInput& input) {
   input.set_tensor_length(feature.tensor_length);
   input.set_fill_policy(feature.fill_policy);
-  for (size_t i = 0; i < feature.default_values_size; ++i) {
-    input.add_default_value(UNSAFE_TODO(feature.default_values[i]));
-  }
+  FillDefaultValues(feature.default_value, input.mutable_default_value());
   if (feature.name) {
     input.set_name(feature.name);
   }
@@ -80,9 +100,8 @@ void MetadataWriter::AddUmaFeatures(const UMAFeature features[],
       uma_feature->add_enum_ids(UNSAFE_TODO(feature.accepted_enum_ids[j]));
     }
 
-    for (size_t j = 0; j < feature.default_values_size; j++) {
-      uma_feature->add_default_values(UNSAFE_TODO(feature.default_values[j]));
-    }
+    FillDefaultValues(feature.default_value,
+                      uma_feature->mutable_default_values());
   }
 }
 
