@@ -139,6 +139,7 @@ class HTMLElementStack {
   bool HasOnlyOneElement() const;
   bool SecondElementIsHTMLBodyElement() const;
   bool HasTemplateInHTMLScope() const;
+  bool HasOutgoingPatchInHTMLScope() const;
   Element* HtmlElement() const;
   Element* HeadElement() const;
   Element* BodyElement() const;

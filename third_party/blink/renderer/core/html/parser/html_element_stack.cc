@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
+#include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -468,6 +469,22 @@ bool HTMLElementStack::InButtonScope(html_names::HTMLTag tag) const {
 
 bool HTMLElementStack::HasTemplateInHTMLScope() const {
   return InScopeCommon<IsRootNode>(top_.Get(), HTMLTag::kTemplate);
+}
+
+bool HTMLElementStack::HasOutgoingPatchInHTMLScope() const {
+  if (!RuntimeEnabledFeatures::DocumentPatchingEnabled()) {
+    return false;
+  }
+
+  for (HTMLStackItem* item = top_.Get(); item; item = item->NextItemInStack()) {
+    if (HTMLTemplateElement* template_element =
+            DynamicTo<HTMLTemplateElement>(item->GetNode())) {
+      if (template_element->OutgoingPatch()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 Element* HTMLElementStack::HtmlElement() const {
