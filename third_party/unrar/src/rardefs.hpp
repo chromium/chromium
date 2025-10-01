@@ -37,7 +37,12 @@
 #define PACK_MAX_DICT      0x1000000000ULL // 64 GB.
 
 // Maximum dictionary allowed by decompression.
+#if defined(CHROMIUM_UNRAR_FUZZER)
+// Try to avoid OOMs in fuzzer runs by limiting unpack size.
+#define UNPACK_MAX_DICT    0xE0000000ULL  // 3.5 GiB.
+#else
 #define UNPACK_MAX_DICT    0x1000000000ULL // 64 GB.
+#endif
 
 
 #ifndef SFX_MODULE

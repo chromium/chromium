@@ -503,6 +503,23 @@ index bb9eb0b0d0f11..aa7c52f4b5520 100644
 +#endif
  
  #endif // _RAR_OS_
+diff --git a/third_party/unrar/src/rardefs.hpp b/third_party/unrar/src/rardefs.hpp
+index 378ccc7fbad2c..ccce7f7b1e20e 100644
+--- a/third_party/unrar/src/rardefs.hpp
++++ b/third_party/unrar/src/rardefs.hpp
+@@ -37,7 +37,12 @@
+ #define PACK_MAX_DICT      0x1000000000ULL // 64 GB.
+ 
+ // Maximum dictionary allowed by decompression.
++#if defined(CHROMIUM_UNRAR_FUZZER)
++// Try to avoid OOMs in fuzzer runs by limiting unpack size.
++#define UNPACK_MAX_DICT    0xE0000000ULL  // 3.5 GiB.
++#else
+ #define UNPACK_MAX_DICT    0x1000000000ULL // 64 GB.
++#endif
+ 
+ 
+ #ifndef SFX_MODULE
 diff --git a/third_party/unrar/src/secpassword.cpp b/third_party/unrar/src/secpassword.cpp
 index 8d8f298609a76..a32ea40e3ac25 100644
 --- a/third_party/unrar/src/secpassword.cpp

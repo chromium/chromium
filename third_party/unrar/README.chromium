@@ -45,5 +45,9 @@ Notable changes from upstream:
 - Replace functions that call user32.dll and gdi32.dll on Windows, to avoid
   loading them under win32k lockdown sandbox.
 - Disable SSE support.
+- Use CHROMIUM_UNRAR_FUZZER macro to guard Chromium-specific changes used in
+  libfuzzer target:
+  - Limit the max dictionary size allowed for unpacking files to 3.5 GB rather
+    than 64 GB.
 
 All these changes are included in one patch file (chromium_changes.patch)
