@@ -278,13 +278,6 @@ const char kBlueDotOnToolsMenuButtonDescription[] =
     "When enabled, blue dot promo on tools menu button will be displayed to "
     "user";
 
-const char kBottomOmniboxDefaultSettingName[] =
-    "Bottom Omnibox Default Setting";
-const char kBottomOmniboxDefaultSettingDescription[] =
-    "Changes the default setting of the omnibox position. If the user "
-    "hasn't already changed the setting, changes the omnibox position to top "
-    "or bottom of the screen on iPhone. The default is top omnibox.";
-
 const char kBottomOmniboxEvolutionName[] = "Bottom Omnibox Evolution";
 const char kBottomOmniboxEvolutionDescription[] =
     "Enables improvements in the bottom omnibox UX and animations.";

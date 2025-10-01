@@ -407,25 +407,6 @@ const FeatureEntry::FeatureVariation
         {"Long-Press and One-Tap", kEnableExpKitTextClassifierEmailOneTap,
          std::size(kEnableExpKitTextClassifierEmailOneTap), nullptr}};
 
-const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingTop[] = {
-    {kBottomOmniboxDefaultSettingParam, kBottomOmniboxDefaultSettingParamTop}};
-const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingBottom[] = {
-    {kBottomOmniboxDefaultSettingParam,
-     kBottomOmniboxDefaultSettingParamBottom}};
-const FeatureEntry::FeatureParam kBottomOmniboxDefaultSettingSafariSwitcher[] =
-    {{kBottomOmniboxDefaultSettingParam,
-      kBottomOmniboxDefaultSettingParamSafariSwitcher}};
-const FeatureEntry::FeatureVariation kBottomOmniboxDefaultSettingVariations[] =
-    {
-        {"Top", kBottomOmniboxDefaultSettingTop,
-         std::size(kBottomOmniboxDefaultSettingTop), nullptr},
-        {"Bottom", kBottomOmniboxDefaultSettingBottom,
-         std::size(kBottomOmniboxDefaultSettingBottom), nullptr},
-        {"Bottom for Safari Switcher",
-         kBottomOmniboxDefaultSettingSafariSwitcher,
-         std::size(kBottomOmniboxDefaultSettingSafariSwitcher), nullptr},
-};
-
 // Download List UI feature flag parameters.
 // IMPORTANT: These values must match DownloadListUIType enum in features.h
 const FeatureEntry::FeatureParam kDownloadListDefaultUIParam[] = {
@@ -1920,13 +1901,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"tab-resumption", flag_descriptions::kTabResumptionName,
      flag_descriptions::kTabResumptionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabResumption)},
-    {"bottom-omnibox-default-setting",
-     flag_descriptions::kBottomOmniboxDefaultSettingName,
-     flag_descriptions::kBottomOmniboxDefaultSettingDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kBottomOmniboxDefaultSetting,
-                                    kBottomOmniboxDefaultSettingVariations,
-                                    "BottomOmniboxDefaultSetting")},
     {"bottom-omnibox-evolution", flag_descriptions::kBottomOmniboxEvolutionName,
      flag_descriptions::kBottomOmniboxEvolutionDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kBottomOmniboxEvolution)},

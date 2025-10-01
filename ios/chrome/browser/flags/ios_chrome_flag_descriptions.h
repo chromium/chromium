@@ -167,9 +167,6 @@ extern const char kBestOfAppFREDescription[];
 extern const char kBlueDotOnToolsMenuButtonName[];
 extern const char kBlueDotOnToolsMenuButtonDescription[];
 
-extern const char kBottomOmniboxDefaultSettingName[];
-extern const char kBottomOmniboxDefaultSettingDescription[];
-
 extern const char kBottomOmniboxEvolutionName[];
 extern const char kBottomOmniboxEvolutionDescription[];
 

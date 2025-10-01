@@ -404,15 +404,6 @@ extern const base::FeatureParam<int>
 // Flag to enable push notification settings menu item.
 BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 
-// Feature param under kBottomOmniboxDefaultSetting to select the default
-// setting.
-extern const char kBottomOmniboxDefaultSettingParam[];
-extern const char kBottomOmniboxDefaultSettingParamTop[];
-extern const char kBottomOmniboxDefaultSettingParamBottom[];
-extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
-// Feature flag to change the default position of the omnibox.
-BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
-
 // Feature flag the "Hide Toolbar" button in the overflow menu.
 BASE_DECLARE_FEATURE(kHideToolbarsInOverflowMenu);
 

@@ -1388,11 +1388,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "bottom-omnibox-default-setting",
-    "owners": [ "christianxu@google.com", "bling-flags@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "bottom-omnibox-evolution",
     "owners": [ "radunitescu@google.com", "christianxu@google.com"],
     "expiry_milestone": 146
