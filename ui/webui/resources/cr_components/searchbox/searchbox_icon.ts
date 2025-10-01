@@ -355,12 +355,18 @@ export class SearchboxIconElement extends CrLitElement {
   protected getContainerBgColor_(): string {
     // If the match has an image dominant color, show that color in place of the
     // image until it loads. This helps the image appear to load more smoothly.
+    // After the image loads, the color is set to white. For most entity images,
+    // this won't be visible underneath the image. But there is an umcommon case
+    // where images are not square (generally in a landscape orientation) and
+    // this background can be seen underneath the image. Most of these images
+    // are logos with a white background, so this adjusts them to look similar
+    // the more common case of a square image with rounded corners.
     return (this.imageLoading_ && this.match?.imageDominantColor) ?
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         (this.match.imageDominantColor ?
              `${this.match.imageDominantColor}40` :
              'var(--cr-searchbox-match-icon-container-background-fallback)') :
-        'transparent';
+        'white';
   }
 
   protected onIconLoad_() {
