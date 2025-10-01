@@ -83,9 +83,6 @@ source_set("test_support") {
     ":public",
     "//testing/gmock",
   ]
-  if (toolkit_views) {
-    deps += [ "//ui/views" ]
-  }
 }
 
 source_set("unit_tests") {

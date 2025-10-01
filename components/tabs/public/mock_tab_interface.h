@@ -5,11 +5,31 @@
 #ifndef COMPONENTS_TABS_PUBLIC_MOCK_TAB_INTERFACE_H_
 #define COMPONENTS_TABS_PUBLIC_MOCK_TAB_INTERFACE_H_
 
+#include <memory>
+#include <optional>
+
+#include "base/callback_list.h"
+#include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+class BrowserWindowInterface;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+namespace content {
+class WebContents;
+}
+
+namespace ui {
+class UnownedUserDataHost;
+}
+
 namespace tabs {
+class TabFeatures;
 
 class MockTabInterface : public testing::NiceMock<TabInterface> {
  public:
