@@ -34,6 +34,43 @@ enum EmbedderDataTag : uint16_t {
   kGinPerContextData,
 };
 
+enum ExternalPointerTypeTag : uint16_t {
+  kExternalPointerTypeTagDefaultTag = 0,
+  kAppHooksDelegateTag,
+  kAuctionV8LoggerTest_TestLazyFillerTag,
+  kForDebuggingOnlyBindingsTag,
+  kLazyFillerTag,
+  kPrivateAggregationBindingsTag,
+  kPrivateModelTrainingBindingsTag,
+  kRealTimeReportingBindingsTag,
+  kRegisterAdBeaconBindingsTag,
+  kRegisterAdMacroBindingsTag,
+  kReportBindingsTag,
+  kSetBidBindingsTag,
+  kSetPriorityBindingsTag,
+  kSetPrioritySignalsOverrideBindingsTag,
+  kSharedStorageBindingsTag,
+  kTextConversionHelpersTag,
+  kWebIDLCompatTestTag,
+  kDeclarativeContentHooksDelegateHandlerCallbackTag,
+  kAPIBindingHandlerCallbackTag,
+  kAPIBindingEventDataTag,
+  kAPIBindingCustomPropertyDataTag,
+  kAPIBindingJSUtilUnittestErrorInfoTag,
+  kEventEmitterUnittestListenerClosureDataTag,
+  kModuleSystemTag,
+  kObjectBackedNativeHandlerHandlerFunctionTag,
+  kGinInternalCallbackHolderBaseTag,
+  kProxyResolverV8ContextTag,
+  kThreadDebuggerCommonImplTag,
+  kViewTransitionTestDataTag,
+  kViewTransitionTestDocumentTag,
+  kViewTransitionTestBoolTag,
+  kFXJSEFunctionDescriptorTag,
+  kFXJSEClassDescriptorTag,
+  kV8IsolateTag,
+};
+
 }  // namespace gin
 
 #endif  // GIN_PUBLIC_GIN_EMBEDDERS_H_

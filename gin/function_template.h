@@ -6,6 +6,7 @@
 #define GIN_FUNCTION_TEMPLATE_H_
 
 #include <stddef.h>
+
 #include <type_traits>
 #include <utility>
 
@@ -18,6 +19,7 @@
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 #include "gin/per_isolate_data.h"
+#include "gin/public/gin_embedders.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -251,7 +253,7 @@ struct Dispatcher<ReturnType(ArgTypes...)> {
     v8::Local<v8::External> v8_holder;
     CHECK(args->GetData(&v8_holder));
     CallbackHolderBase* holder_base = reinterpret_cast<CallbackHolderBase*>(
-        v8_holder->Value());
+        v8_holder->Value(kGinInternalCallbackHolderBaseTag));
 
     typedef CallbackHolder<ReturnType(ArgTypes...)> HolderT;
     HolderT* holder = static_cast<HolderT*>(holder_base);
