@@ -1179,7 +1179,8 @@ TEST_F(RawPtrTest, FunctionParameters_Copy) {
                               &x);
 }
 
-TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
+// TODO(crbug.com/448368929): Re-enable after the next clang roll
+TEST_F(RawPtrTest, DISABLED_SetLookupUsesGetForComparison) {
   int x = 123;
   CountingRawPtr<int> ptr(&x);
   std::set<CountingRawPtr<int>> set;
