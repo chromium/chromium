@@ -105,7 +105,7 @@ enum class LinkFollowingPolicy {
 };
 
 GURL AppendUrlSeparator(const GURL& url) {
-  std::string new_path = url.path() + '/';
+  std::string new_path = url.GetPath() + '/';
   GURL::Replacements replacements;
   replacements.SetPathStr(new_path);
   return url.ReplaceComponents(replacements);

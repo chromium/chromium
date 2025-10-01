@@ -107,9 +107,9 @@ IN_PROC_BROWSER_TEST_F(SecFetchBrowserTest, CrossPortNavigation) {
 
   GURL initial_url = server2.GetURL("/title1.html");
   GURL final_url = GetSecFetchUrl();
-  EXPECT_EQ(initial_url.scheme(), final_url.scheme());
-  EXPECT_EQ(initial_url.host(), final_url.host());
-  EXPECT_NE(initial_url.port(), final_url.port());
+  EXPECT_EQ(initial_url.GetScheme(), final_url.GetScheme());
+  EXPECT_EQ(initial_url.GetHost(), final_url.GetHost());
+  EXPECT_NE(initial_url.GetPort(), final_url.GetPort());
 
   // Navigate to (paraphrasing): https://foo.com:port1/...
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));

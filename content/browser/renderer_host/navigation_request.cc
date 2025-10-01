@@ -7378,8 +7378,8 @@ NavigationRequest::CheckCredentialedSubresource() const {
   DCHECK(parent);
   const GURL& parent_url = parent->GetLastCommittedURL();
   if (url::IsSameOriginWith(parent_url, common_params_->url) &&
-      parent_url.username() == common_params_->url.username() &&
-      parent_url.password() == common_params_->url.password()) {
+      parent_url.GetUsername() == common_params_->url.GetUsername() &&
+      parent_url.GetPassword() == common_params_->url.GetPassword()) {
     return CredentialedSubresourceCheckResult::ALLOW_REQUEST;
   }
 
@@ -7472,7 +7472,8 @@ void NavigationRequest::SetupCSPEmbeddedEnforcement() {
     // 'csp' attribute.
     const GURL& url = GetURL();
     frame_csp_attribute->self_origin = network::mojom::CSPSource::New(
-        url.scheme(), url.host(), url.EffectiveIntPort(), "", false, false);
+        url.GetScheme(), url.GetHost(), url.EffectiveIntPort(), "", false,
+        false);
   }
 
   const network::mojom::ContentSecurityPolicy* parent_required_csp =

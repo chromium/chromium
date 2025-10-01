@@ -68,7 +68,7 @@ BlockedSchemeNavigationThrottle::WillStartRequest() {
   top_frame->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(kAnyFrameConsoleError,
-                         request->GetURL().scheme().c_str(),
+                         request->GetURL().GetScheme().c_str(),
                          request->GetURL().spec().c_str()));
 
   return CANCEL;
@@ -85,7 +85,7 @@ BlockedSchemeNavigationThrottle::WillProcessResponse() {
       request->frame_tree_node()->frame_tree().root()->current_frame_host();
   top_frame->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
-      base::StringPrintf(kConsoleError, request->GetURL().scheme().c_str(),
+      base::StringPrintf(kConsoleError, request->GetURL().GetScheme().c_str(),
                          request->GetURL().spec().c_str()));
   return CANCEL;
 }

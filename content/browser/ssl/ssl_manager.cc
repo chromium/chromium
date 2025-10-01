@@ -74,7 +74,7 @@ void OnAllowCertificate(SSLErrorHandler* handler,
       // ContinueRequest() gets posted to a different thread. Calling
       // AllowCert() first ensures deterministic ordering.
       if (record_decision && state_delegate) {
-        state_delegate->AllowCert(handler->request_url().host(),
+        state_delegate->AllowCert(handler->request_url().GetHost(),
                                   *handler->ssl_info().cert.get(),
                                   handler->cert_error(), storage_partition);
       }
@@ -260,7 +260,7 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
 
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), SSLHostStateDelegate::MIXED_CONTENT);
+        security_origin.GetHost(), SSLHostStateDelegate::MIXED_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
@@ -275,7 +275,7 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
 
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), SSLHostStateDelegate::CERT_ERRORS_CONTENT);
+        security_origin.GetHost(), SSLHostStateDelegate::CERT_ERRORS_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
@@ -297,7 +297,7 @@ void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
     judgment = SSLHostStateDelegate::ALLOWED;
   } else if (ssl_host_state_delegate_) {
     judgment = ssl_host_state_delegate_->QueryPolicy(
-        handler->request_url().host(), *handler->ssl_info().cert.get(),
+        handler->request_url().GetHost(), *handler->ssl_info().cert.get(),
         handler->cert_error(),
         controller_->frame_tree().GetMainFrame()->GetStoragePartition());
   } else {

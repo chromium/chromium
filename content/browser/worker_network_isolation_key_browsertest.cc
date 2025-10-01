@@ -84,7 +84,7 @@ class WorkerNetworkIsolationKeyBrowserTest : public ContentBrowserTest {
   }
 
   RenderFrameHost* CreateSubframe(const GURL& subframe_url) {
-    DCHECK_EQ(shell()->web_contents()->GetLastCommittedURL().path(),
+    DCHECK_EQ(shell()->web_contents()->GetLastCommittedURL().GetPath(),
               "/workers/frame_factory.html");
 
     content::TestNavigationObserver navigation_observer(
@@ -120,7 +120,7 @@ class WorkerNetworkIsolationKeyBrowserTest : public ContentBrowserTest {
 
     switch (worker_type) {
       case WorkerType::kServiceWorker:
-        DCHECK(subframe_rfh->GetLastCommittedURL().path() ==
+        DCHECK(subframe_rfh->GetLastCommittedURL().GetPath() ==
                "/workers/service_worker_setup.html");
         EXPECT_EQ("ok",
                   EvalJs(subframe_rfh,

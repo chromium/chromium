@@ -4099,8 +4099,8 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
   } else {
     // Set process title for sub-frames and title-less frames in traces.
     GURL loading_url = GetLoadingUrl();
-    if (!loading_url.host().empty() &&
-        loading_url.scheme() != url::kFileScheme) {
+    if (!loading_url.GetHost().empty() &&
+        loading_url.GetScheme() != url::kFileScheme) {
       std::string frame_title;
       if (frame_->Parent()) {
         frame_title += "Subframe: ";
@@ -5139,7 +5139,7 @@ void RenderFrameImpl::UpdateStateForCommit(
     RenderThreadImpl* render_thread_impl = RenderThreadImpl::current();
     if (render_thread_impl) {  // Can be NULL in tests.
       render_thread_impl->histogram_customizer()->RenderViewNavigatedToHost(
-          GetLoadingUrl().host(), blink::WebView::GetWebViewCount());
+          GetLoadingUrl().GetHost(), blink::WebView::GetWebViewCount());
     }
   }
 

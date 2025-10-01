@@ -74,7 +74,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
 
     // Return a page that redirects to d.com/title1.html.
-    if (absolute_url.path() == "/redirect_to_d") {
+    if (absolute_url.GetPath() == "/redirect_to_d") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_SEE_OTHER);
@@ -85,7 +85,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     }
 
     // Return valid cacheable script.
-    if (absolute_url.path() == "/script") {
+    if (absolute_url.GetPath() == "/script") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -96,7 +96,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     }
 
     // A basic cacheable worker that loads 3p.com/script
-    if (absolute_url.path() == "/worker.js") {
+    if (absolute_url.GetPath() == "/worker.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -116,7 +116,7 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     }
 
     // Make the document resource cacheable.
-    if (absolute_url.path() == "/title1.html") {
+    if (absolute_url.GetPath() == "/title1.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -126,13 +126,13 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
 
     // A cacheable worker that loads a nested worker on an origin provided
     // as a query param.
-    if (absolute_url.path() == "/embedding_worker.js") {
+    if (absolute_url.GetPath() == "/embedding_worker.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
 
       GURL resource =
-          GenURL(base::StringPrintf("%s.com", absolute_url.query().c_str()),
+          GenURL(base::StringPrintf("%s.com", absolute_url.GetQuery().c_str()),
                  "/worker.js");
 
       const char kLoadWorkerScript[] = "let w = new Worker('%s');";
@@ -213,10 +213,12 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
 
     // In the case of a redirect, the observed URL will be different from
     // what NavigateToURL(...) expects.
-    if (base::StartsWith(url.path(), "/redirect", base::CompareCase::SENSITIVE))
+    if (base::StartsWith(url.GetPath(), "/redirect",
+                         base::CompareCase::SENSITIVE)) {
       EXPECT_FALSE(NavigateToURL(shell(), url));
-    else
+    } else {
       EXPECT_TRUE(NavigateToURL(shell(), url));
+    }
 
     RenderFrameHost* host_to_load_resource =
         shell()->web_contents()->GetPrimaryMainFrame();

@@ -1562,7 +1562,7 @@ std::string GpuDataManagerImplPrivate::GetDomainFromURL(const GURL& url) const {
     return std::string();
   }
 
-  return url.host();
+  return url.GetHost();
 }
 
 void GpuDataManagerImplPrivate::BlockDomainsFrom3DAPIsAtTime(

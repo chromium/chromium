@@ -146,7 +146,7 @@ int64_t BucketizeBtmBounceDelay(base::TimeDelta delta) {
 std::string GetSiteForBtm(const GURL& url) {
   const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return domain.empty() ? url.host() : domain;
+  return domain.empty() ? url.GetHost() : domain;
 }
 
 std::string GetSiteForBtm(const url::Origin& origin) {

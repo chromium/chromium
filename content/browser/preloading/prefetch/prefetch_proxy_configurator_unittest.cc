@@ -109,7 +109,7 @@ TEST_F(PrefetchProxyConfiguratorTest, Fallback_DoesRandomBackoff_ErrFailed) {
   base::HistogramTester histogram_tester;
 
   net::ProxyChain proxy_chain(
-      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().GetScheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -128,7 +128,7 @@ TEST_F(PrefetchProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
   base::HistogramTester histogram_tester;
 
   net::ProxyChain proxy_chain(
-      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().GetScheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -147,7 +147,7 @@ TEST_F(PrefetchProxyConfiguratorTest, Fallback_DifferentProxy) {
   base::HistogramTester histogram_tester;
 
   net::ProxyChain proxy_chain(
-      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().GetScheme()),
       net::HostPortPair::FromURL(GURL("http://foo.com")));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -161,7 +161,7 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_200OK) {
   base::HistogramTester histogram_tester;
 
   net::ProxyChain proxy_chain(
-      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().GetScheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -177,7 +177,7 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
   base::HistogramTester histogram_tester;
 
   net::ProxyChain proxy_chain(
-      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().GetScheme()),
       net::HostPortPair::FromURL(GURL("http://foo.com")));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -193,7 +193,7 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
   base::HistogramTester histogram_tester;
 
   net::ProxyChain proxy_chain(
-      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().GetScheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
@@ -213,7 +213,7 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
   base::HistogramTester histogram_tester;
 
   net::ProxyChain proxy_chain(
-      net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
+      net::GetSchemeFromUriScheme(prefetch_proxy_url().GetScheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());

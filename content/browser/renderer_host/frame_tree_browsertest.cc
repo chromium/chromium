@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToBlob) {
   if (AreAllSitesIsolatedForTesting())
     deleted_observer.WaitUntilDeleted();
   EXPECT_EQ(GURL(blob_url_string), target->current_url());
-  EXPECT_EQ(url::kBlobScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kBlobScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("a.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateChildToAboutBlank) {
       "});");
   EXPECT_EQ(target->current_origin(), about_blank_origin);
   EXPECT_EQ(GURL(url::kAboutBlankURL), target->current_url());
-  EXPECT_EQ(url::kAboutScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kAboutScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("b.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
              "});");
   EXPECT_EQ(target->current_origin(), about_blank_origin);
   EXPECT_EQ(GURL(url::kAboutBlankURL), target->current_url());
-  EXPECT_EQ(url::kAboutScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kAboutScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("a.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());

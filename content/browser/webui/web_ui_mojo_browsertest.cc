@@ -241,7 +241,7 @@ class TestWebUIControllerFactory : public WebUIControllerFactory {
     if (!web_ui_enabled_ || !url.SchemeIs(kChromeUIScheme))
       return nullptr;
 
-    auto it = registered_controllers_.find(url.query());
+    auto it = registered_controllers_.find(url.GetQuery());
     if (it != registered_controllers_.end())
       return it->second.Run(web_ui);
 

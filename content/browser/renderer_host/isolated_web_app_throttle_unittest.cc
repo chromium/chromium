@@ -46,7 +46,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url.host() == GURL(kAppUrl).host();
+    return url.GetHost() == GURL(kAppUrl).GetHost();
   }
 
   bool HandleExternalProtocol(

@@ -513,7 +513,7 @@ class FileSystemURLLoaderFactoryTest
     }
     if (extra_headers)
       request.headers.MergeFrom(*extra_headers);
-    const std::string storage_domain = url.DeprecatedGetOriginAsURL().host();
+    const std::string storage_domain = url.DeprecatedGetOriginAsURL().GetHost();
     mojo::Remote<network::mojom::URLLoaderFactory> factory(
         CreateFileSystemURLLoaderFactory(
             render_frame_host()->GetProcess()->GetDeprecatedID(),

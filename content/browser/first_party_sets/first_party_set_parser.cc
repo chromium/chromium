@@ -212,7 +212,7 @@ class ParseContext {
                                 ParseErrorType::kInvalidDomain);
     }
 
-    bool modified_host = origin.host() != site->GetURL().host();
+    bool modified_host = origin.host() != site->GetURL().GetHost();
     return ValidateSiteResult(std::move(site).value(), modified_host);
   }
 

@@ -320,8 +320,8 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
 
   // Compare hosts here, because `main_process_lock` is for the site "a.com" and
   // `data_process_lock` is for the origin "a.com:port", since it's sandboxed.
-  EXPECT_EQ(main_process_lock.agent_cluster_key().GetSite().host(),
-            data_process_lock.agent_cluster_key().GetSite().host());
+  EXPECT_EQ(main_process_lock.agent_cluster_key().GetSite().GetHost(),
+            data_process_lock.agent_cluster_key().GetSite().GetHost());
 }
 
 // Test where a main frame has multiple data: URL subframes. This tests that

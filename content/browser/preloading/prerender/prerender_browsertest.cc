@@ -14305,9 +14305,9 @@ IN_PROC_BROWSER_TEST_F(
   // The redirected_url's origin completely differs from the prerendering one.
   GURL redirected_url = embedded_test_server()->GetURL("b.test", "/empty.html");
   GURL prerendering_url = GetUrl("/server-redirect?" + redirected_url.spec());
-  ASSERT_NE(prerendering_url.scheme(), redirected_url.scheme());
-  ASSERT_NE(prerendering_url.host(), redirected_url.host());
-  ASSERT_NE(prerendering_url.port(), redirected_url.port());
+  ASSERT_NE(prerendering_url.GetScheme(), redirected_url.GetScheme());
+  ASSERT_NE(prerendering_url.GetHost(), redirected_url.GetHost());
+  ASSERT_NE(prerendering_url.GetPort(), redirected_url.GetPort());
 
   PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
       *web_contents_impl(), prerendering_url, redirected_url);
@@ -14332,10 +14332,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   GURL redirected_url = ssl_server().GetURL("a.test", "/empty.html");
   GURL prerendering_url = embedded_test_server()->GetURL(
       "a.test", "/server-redirect?" + redirected_url.spec());
-  ASSERT_NE(prerendering_url.scheme(), redirected_url.scheme());
-  ASSERT_NE(prerendering_url.port(), redirected_url.port());
-  ASSERT_EQ(prerendering_url.scheme(), url::kHttpScheme);
-  ASSERT_EQ(redirected_url.scheme(), url::kHttpsScheme);
+  ASSERT_NE(prerendering_url.GetScheme(), redirected_url.GetScheme());
+  ASSERT_NE(prerendering_url.GetPort(), redirected_url.GetPort());
+  ASSERT_EQ(prerendering_url.GetScheme(), url::kHttpScheme);
+  ASSERT_EQ(redirected_url.GetScheme(), url::kHttpsScheme);
 
   PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
       *web_contents_impl(), prerendering_url, redirected_url);
@@ -14366,10 +14366,10 @@ IN_PROC_BROWSER_TEST_F(
   GURL redirected_url =
       GetUrl("/empty.html").ReplaceComponents(downgrade_protocol);
   GURL prerendering_url = GetUrl("/server-redirect?" + redirected_url.spec());
-  ASSERT_NE(prerendering_url.scheme(), redirected_url.scheme());
-  ASSERT_NE(prerendering_url.port(), redirected_url.port());
-  ASSERT_EQ(prerendering_url.scheme(), url::kHttpsScheme);
-  ASSERT_EQ(redirected_url.scheme(), "http");
+  ASSERT_NE(prerendering_url.GetScheme(), redirected_url.GetScheme());
+  ASSERT_NE(prerendering_url.GetPort(), redirected_url.GetPort());
+  ASSERT_EQ(prerendering_url.GetScheme(), url::kHttpsScheme);
+  ASSERT_EQ(redirected_url.GetScheme(), "http");
 
   PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
       *web_contents_impl(), prerendering_url, redirected_url);

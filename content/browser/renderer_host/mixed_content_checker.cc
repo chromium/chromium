@@ -43,7 +43,7 @@ bool IsSecureScheme(const std::string& scheme) {
 // Should return the same value as `SecurityOrigin::IsLocal()` and
 // `blink::SchemeRegistry::ShouldTreatURLSchemeAsCorsEnabled()`.
 bool ShouldTreatURLSchemeAsCorsEnabled(const GURL& url) {
-  return base::Contains(url::GetCorsEnabledSchemes(), url.scheme());
+  return base::Contains(url::GetCorsEnabledSchemes(), url.GetScheme());
 }
 
 // Should return the same value as the resource URL checks result from

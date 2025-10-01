@@ -88,10 +88,10 @@ bool MockSSLHostStateDelegate::IsHttpsEnforcedForUrl(
     const GURL& url,
     StoragePartition* storage_partition) {
   // HTTPS-First Mode is never auto-enabled for URLs with non-default ports.
-  if (!url.port().empty()) {
+  if (!url.GetPort().empty()) {
     return false;
   }
-  return base::Contains(enforce_https_hosts_, url.host());
+  return base::Contains(enforce_https_hosts_, url.GetHost());
 }
 
 void MockSSLHostStateDelegate::RevokeUserAllowExceptions(

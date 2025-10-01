@@ -862,7 +862,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     // Isolate host so that the first and second navigation are guaranteed to
     // be in different processes.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
-                             {kTestUrl.host()});
+                             {kTestUrl.GetHost()});
   }
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
 
@@ -927,7 +927,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
     // Isolate host so that the first and second navigation are guaranteed to
     // be in different processes.
     IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
-                             {kTestUrl.host()});
+                             {kTestUrl.GetHost()});
   }
 
   EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
@@ -2698,7 +2698,7 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
    public:
     // ContentBrowserTestContentBrowserClient:
     bool DisallowV8FeatureFlagOverridesForSite(const GURL& site_url) override {
-      return site_url.host() == "a.com";
+      return site_url.GetHost() == "a.com";
     }
   };
   DisallowV8FeatureOverridesContentBrowserClient content_browser_client;

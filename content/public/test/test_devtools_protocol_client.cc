@@ -215,7 +215,8 @@ bool TestDevToolsProtocolClient::MayWriteLocalFiles() {
 
 bool TestDevToolsProtocolClient::MayAttachToURL(const GURL& url,
                                                 bool is_webui) {
-  return not_attachable_hosts_.find(url.host()) == not_attachable_hosts_.end();
+  return not_attachable_hosts_.find(url.GetHost()) ==
+         not_attachable_hosts_.end();
 }
 
 std::optional<url::Origin>

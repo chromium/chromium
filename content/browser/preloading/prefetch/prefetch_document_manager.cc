@@ -49,7 +49,7 @@ struct PrefetchUrlParams {
         tags(candidate->tags.empty() ? std::nullopt
                                      : std::make_optional(candidate->tags)) {
     if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
-        ShouldPrefetchBypassProxyForTestHost(prefetch_url.host())) {
+        ShouldPrefetchBypassProxyForTestHost(prefetch_url.GetHost())) {
       // TODO(crbug.com/40942006): Remove SetProxyBypassedForTest, since it is
       // the only mutator of the PrefetchType.
       prefetch_type.SetProxyBypassedForTest();  // IN-TEST

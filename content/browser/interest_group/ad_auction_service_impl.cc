@@ -91,7 +91,7 @@ namespace {
 
 bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   // The ad_request_url origin has to be HTTPS.
-  if (config.ad_request_url.scheme() != url::kHttpsScheme) {
+  if (config.ad_request_url.GetScheme() != url::kHttpsScheme) {
     return false;
   }
 
@@ -102,7 +102,7 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
 
   // If a fallback source is specified it must be HTTPS.
   if (config.fallback_source &&
-      (config.fallback_source->scheme() != url::kHttpsScheme)) {
+      (config.fallback_source->GetScheme() != url::kHttpsScheme)) {
     return false;
   }
 

@@ -431,7 +431,7 @@ MakeCookieFromProtocolValues(
 
     secure = secure || source_url.SchemeIsCryptographic();
     if (normalized_domain.empty())
-      normalized_domain = source_url.host();
+      normalized_domain = source_url.GetHost();
   }
 
   std::string url_host = normalized_domain;
@@ -754,7 +754,7 @@ String GetProtocol(const GURL& url,
           protocol = "http/1.1";
       }
     } else {
-      protocol = url.scheme();
+      protocol = url.GetScheme();
     }
   }
   return protocol;
@@ -1923,7 +1923,7 @@ void NetworkHandler::DeleteCookies(
           "An http or https url URL must be specified"));
       return;
     }
-    normalized_domain = url.host();
+    normalized_domain = url.GetHost();
   }
 
   auto* cookie_manager =
@@ -3286,7 +3286,7 @@ std::string NetworkHandler::ExtractFragment(const GURL& url,
     *fragment = std::string();
     return url.spec();
   }
-  *fragment = "#" + url.ref();
+  *fragment = "#" + url.GetRef();
   GURL::Replacements replacements;
   replacements.ClearRef();
   return url.ReplaceComponents(replacements).spec();
@@ -3829,7 +3829,7 @@ void NetworkHandler::LoadNetworkResource(
         "NetworkHandler::LoadNetworkResource");
 
     auto factory = CreateNetworkFactoryForDevTools(
-        gurl.scheme(), frame->GetProcess(), frame->GetRoutingID(),
+        gurl.GetScheme(), frame->GetProcess(), frame->GetRoutingID(),
         frame->GetLastCommittedOrigin(), std::move(params));
     if (!factory.is_valid()) {
       callback->sendFailure(Response::InvalidParams("Unsupported URL scheme"));
@@ -3851,7 +3851,7 @@ void NetworkHandler::LoadNetworkResource(
     // TODO(mkwst): Check CSP for non-frame targets.
     auto info = host->CreateNetworkFactoryParamsForDevTools();
     auto factory = CreateNetworkFactoryForDevTools(
-        gurl.scheme(), host->GetProcessHost(), IPC::mojom::kRoutingIdNone,
+        gurl.GetScheme(), host->GetProcessHost(), IPC::mojom::kRoutingIdNone,
         info.origin, std::move(info.factory_params));
     if (factory.is_valid()) {
       url_loader_factory.Bind(std::move(factory));

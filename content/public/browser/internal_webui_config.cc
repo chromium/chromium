@@ -36,7 +36,7 @@ InternalWebUIConfig::~InternalWebUIConfig() {
 }
 
 bool IsInternalWebUI(const GURL& url) {
-  return GetInternalWebUIHostSet().contains(url.host());
+  return GetInternalWebUIHostSet().contains(url.GetHost());
 }
 
 }  // namespace content

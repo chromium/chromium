@@ -211,7 +211,7 @@ struct ExpectedReportWaiter {
         expected_body(std::move(body)),
         response(std::make_unique<net::test_server::ControllableHttpResponse>(
             server,
-            expected_url.path())) {}
+            expected_url.GetPath())) {}
 
   GURL expected_url;
   base::Value::Dict expected_body;
@@ -232,7 +232,7 @@ struct ExpectedReportWaiter {
     DCHECK(base::Contains(request.headers, "Host"));
     const GURL& request_url = request.GetURL();
     GURL header_url = GURL("https://" + request.headers.at("Host"));
-    std::string host = header_url.host();
+    std::string host = header_url.GetHost();
     GURL::Replacements replace_host;
     replace_host.SetHostStr(host);
 

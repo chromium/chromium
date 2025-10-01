@@ -3240,7 +3240,7 @@ class HeaderInjectingThrottle : public blink::URLLoaderThrottle {
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override {
     GURL url = request->url;
-    if (url.query().find("PlzRedirect") != std::string::npos) {
+    if (url.GetQuery().find("PlzRedirect") != std::string::npos) {
       GURL::Replacements replacements;
       replacements.SetQueryStr("DidRedirect");
       request->url = url.ReplaceComponents(replacements);
@@ -3598,7 +3598,7 @@ class ServiceWorkerThrottlingTest : public ServiceWorkerBrowserTest {
       const net::test_server::HttpRequest& request) {
     base::AutoLock auto_lock(lock_);
     if (!should_block_ ||
-        request.GetURL().query().find("block") == std::string::npos) {
+        request.GetURL().GetQuery().find("block") == std::string::npos) {
       return nullptr;
     }
     auto response = base::MakeRefCounted<BlockingResponse>();
@@ -5177,44 +5177,46 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
     test_server->RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (!base::Contains(request.GetURL().path(),
+          if (!base::Contains(request.GetURL().GetPath(),
                               "/service_worker/mock_response") &&
-              !base::Contains(request.GetURL().path(),
+              !base::Contains(request.GetURL().GetPath(),
                               "/service_worker/no_race")) {
             return nullptr;
           }
 
-          if (base::Contains(request.GetURL().query(), "server_close_socket")) {
+          if (base::Contains(request.GetURL().GetQuery(),
+                             "server_close_socket")) {
             return std::make_unique<net::test_server::RawHttpResponse>("", "");
           }
 
           const bool is_slow =
-              base::Contains(request.GetURL().query(), "server_slow");
+              base::Contains(request.GetURL().GetQuery(), "server_slow");
           auto http_response =
               is_slow ? std::make_unique<net::test_server::DelayedHttpResponse>(
                             base::Seconds(2))
                       : std::make_unique<net::test_server::BasicHttpResponse>();
 
           const char kQueryForRedirect[] = "server_redirect";
-          if (base::Contains(request.GetURL().query(), kQueryForRedirect)) {
+          if (base::Contains(request.GetURL().GetQuery(), kQueryForRedirect)) {
             http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
 
-            const int pos = request.GetURL().query().find(kQueryForRedirect);
+            const int pos = request.GetURL().GetQuery().find(kQueryForRedirect);
             const int len = strlen(kQueryForRedirect);
             const std::string new_query =
-                request.GetURL().query().erase(pos, len);
+                request.GetURL().GetQuery().erase(pos, len);
 
             http_response->AddCustomHeader(
-                "Location", request.GetURL().path() + "?" + new_query);
+                "Location", request.GetURL().GetPath() + "?" + new_query);
             return http_response;
           }
 
-          if (!base::Contains(request.GetURL().query(),
+          if (!base::Contains(request.GetURL().GetQuery(),
                               "server_unknown_mime_type")) {
             http_response->set_content_type("text/plain");
           }
 
-          if (base::Contains(request.GetURL().query(), "server_large_data")) {
+          if (base::Contains(request.GetURL().GetQuery(),
+                             "server_large_data")) {
             // The data pipe buffer size created for the RaceNetworkRequest test
             // is 1024 byte. Set large data to overflow the buffer.
             http_response->set_content(std::string(1024 * 3, 'A'));
@@ -5224,7 +5226,7 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
             return http_response;
           }
 
-          if (base::Contains(request.GetURL().query(), "server_notfound")) {
+          if (base::Contains(request.GetURL().GetQuery(), "server_notfound")) {
             http_response->set_code(net::HTTP_NOT_FOUND);
             http_response->set_content(
                 "[ServiceWorkerRaceNetworkRequest] Not found");
@@ -7025,15 +7027,15 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (base::Contains(request.GetURL().path(),
+          if (base::Contains(request.GetURL().GetPath(),
                              "/service_worker/direct") ||
-              base::Contains(request.GetURL().path(),
+              base::Contains(request.GetURL().GetPath(),
                              "/service_worker/direct_if_not_running") ||
-              base::Contains(request.GetURL().path(),
+              base::Contains(request.GetURL().GetPath(),
                              "/service_worker/cache_with_wrong_name") ||
-              base::Contains(request.GetURL().path(),
+              base::Contains(request.GetURL().GetPath(),
                              "/service_worker/cache_miss") ||
-              base::Contains(request.GetURL().path(),
+              base::Contains(request.GetURL().GetPath(),
                              "/service_worker/not_not_match")) {
             auto http_response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
@@ -7044,7 +7046,7 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
                 "Response from the network");
             return http_response;
           }
-          if (base::Contains(request.GetURL().path(),
+          if (base::Contains(request.GetURL().GetPath(),
                              "/service_worker/race_network_and_fetch")) {
             auto http_response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
@@ -7694,13 +7696,13 @@ class ServiceWorkerSyntheticResponseBrowserTest
     test_server->RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (!base::Contains(request.GetURL().path(),
+          if (!base::Contains(request.GetURL().GetPath(),
                               "/service_worker/synthetic_response")) {
             return nullptr;
           }
 
           const bool is_slow =
-              base::Contains(request.GetURL().query(), "server_slow");
+              base::Contains(request.GetURL().GetQuery(), "server_slow");
 
           std::string headers =
               "HTTP/1.1 200 OK\r\n"
@@ -7710,28 +7712,28 @@ class ServiceWorkerSyntheticResponseBrowserTest
               "Date: Fri, 27 Jun 2025 10:50:00 JST\r\n"
               "Test-Duplicated-Header: x\r\n";
 
-          if (base::Contains(request.GetURL().query(),
+          if (base::Contains(request.GetURL().GetQuery(),
                              "header_mismatch_ignored_header")) {
             headers += "Alt-Svc: h2=\":443\"; ma=2592000;\r\n";
-          } else if (base::Contains(request.GetURL().query(),
+          } else if (base::Contains(request.GetURL().GetQuery(),
                                     "header_mismatch_with_duplicated_header")) {
             headers +=
                 "Test-Duplicated-Header: y, z\r\n"
                 "Test-Duplicated-Header: x\r\n";
-          } else if (base::Contains(request.GetURL().query(),
+          } else if (base::Contains(request.GetURL().GetQuery(),
                                     "header_mismatch")) {
             headers += "X-Inconsistent-Header: ?1\r\n";
           }
 
           std::string content;
-          if (base::Contains(request.GetURL().query(), "echo=foo")) {
+          if (base::Contains(request.GetURL().GetQuery(), "echo=foo")) {
             content = "[SyntheticResponse] foo";
-          } else if (base::Contains(request.GetURL().query(), "echo=bar")) {
+          } else if (base::Contains(request.GetURL().GetQuery(), "echo=bar")) {
             content = "[SyntheticResponse] bar";
-          } else if (base::Contains(request.GetURL().query(),
+          } else if (base::Contains(request.GetURL().GetQuery(),
                                     "inline_script_without_csp")) {
             content = "<script>window.is_inline_script_executed=true;</script>";
-          } else if (base::Contains(request.GetURL().query(),
+          } else if (base::Contains(request.GetURL().GetQuery(),
                                     "inline_script_with_csp")) {
             content =
                 "<meta http-equiv=\"Content-Security-Policy\" "

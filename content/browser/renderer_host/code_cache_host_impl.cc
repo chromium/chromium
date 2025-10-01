@@ -146,7 +146,8 @@ bool CheckSecurityForAccessingCodeCacheData(
            process_lock.MatchesScheme(content::kChromeUIUntrustedScheme);
   }
   if (resource_url.SchemeIsHTTPOrHTTPS() ||
-      blink::CommonSchemeRegistry::IsExtensionScheme(resource_url.scheme())) {
+      blink::CommonSchemeRegistry::IsExtensionScheme(
+          resource_url.GetScheme())) {
     if (process_lock.MatchesScheme(content::kChromeUIScheme) ||
         process_lock.MatchesScheme(content::kChromeUIUntrustedScheme)) {
       // It is possible for WebUI pages to include open-web content, but such
@@ -590,7 +591,7 @@ std::optional<GURL> CodeCacheHostImpl::GetSecondaryKeyForCodeCache(
       process_lock.MatchesScheme(content::kChromeUIScheme) ||
       process_lock.MatchesScheme(content::kChromeUIUntrustedScheme) ||
       blink::CommonSchemeRegistry::IsExtensionScheme(
-          process_lock.GetProcessLockURL().scheme())) {
+          process_lock.GetProcessLockURL().GetScheme())) {
     return process_lock.GetProcessLockURL();
   }
 

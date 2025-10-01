@@ -7661,7 +7661,7 @@ class DataUrlCommitObserver : public WebContentsObserver {
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
     if (navigation_handle->HasCommitted() &&
         !navigation_handle->IsErrorPage() &&
-        navigation_handle->GetURL().scheme() == "data") {
+        navigation_handle->GetURL().GetScheme() == "data") {
       loop_.Quit();
     }
   }
@@ -7694,7 +7694,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(1U, root->child_count());
   ASSERT_EQ(0U, root->child_at(0)->child_count());
   EXPECT_EQ(main_url_a, root->current_url());
-  EXPECT_EQ("data", root->child_at(0)->current_url().scheme());
+  EXPECT_EQ("data", root->child_at(0)->current_url().GetScheme());
 
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
@@ -7703,7 +7703,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // The entry should have a FrameNavigationEntry for the data subframe.
   ASSERT_EQ(1U, entry1->root_node()->children.size());
   EXPECT_EQ("data",
-            entry1->root_node()->children[0]->frame_entry->url().scheme());
+            entry1->root_node()->children[0]->frame_entry->url().GetScheme());
 
   // 2. Navigate main frame cross-site, destroying the frames.
   GURL main_url_b(embedded_test_server()->GetURL(
@@ -7735,7 +7735,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   ASSERT_EQ(1U, root->child_count());
   EXPECT_EQ(main_url_a, root->current_url());
-  EXPECT_EQ("data", root->child_at(0)->current_url().scheme());
+  EXPECT_EQ("data", root->child_at(0)->current_url().GetScheme());
 
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
@@ -7746,7 +7746,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // frame is removed.
   ASSERT_EQ(1U, entry1->root_node()->children.size());
   EXPECT_EQ("data",
-            entry1->root_node()->children[0]->frame_entry->url().scheme());
+            entry1->root_node()->children[0]->frame_entry->url().GetScheme());
 
   // The iframe commit should have been classified AUTO_SUBFRAME and not
   // NEW_SUBFRAME, so we should still be able to go forward.

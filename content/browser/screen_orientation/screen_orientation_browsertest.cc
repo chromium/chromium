@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationBrowserTest, DISABLED_LockSmoke) {
       "NotSupportedError"; // Locking isn't supported.
 #endif
 
-  EXPECT_EQ(expected, shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ(expected, shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 // Check that using screen orientation after a frame is detached doesn't crash

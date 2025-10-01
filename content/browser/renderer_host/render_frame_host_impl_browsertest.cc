@@ -2588,14 +2588,16 @@ class NavigationHandleGrabber : public WebContentsObserver {
       : WebContentsObserver(web_contents) {}
 
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
-    if (navigation_handle->GetURL().path() != "/title2.html")
+    if (navigation_handle->GetURL().GetPath() != "/title2.html") {
       return;
+    }
     ExecuteScriptAsync(web_contents(), "document.open();");
   }
 
   void DidFinishNavigation(NavigationHandle* navigation_handle) override {
-    if (navigation_handle->GetURL().path() != "/title2.html")
+    if (navigation_handle->GetURL().GetPath() != "/title2.html") {
       return;
+    }
     if (navigation_handle->HasCommitted())
       committed_title2_ = true;
     run_loop_.Quit();
@@ -4420,19 +4422,19 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   {
     RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
 
-    EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+    EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().GetHost());
     ASSERT_EQ(2u, main_frame->child_count());
     FrameTreeNode* child_a = main_frame->child_at(0);
     FrameTreeNode* child_c = main_frame->child_at(1);
-    EXPECT_EQ("a.com", child_a->current_url().host());
-    EXPECT_EQ("c.com", child_c->current_url().host());
+    EXPECT_EQ("a.com", child_a->current_url().GetHost());
+    EXPECT_EQ("c.com", child_c->current_url().GetHost());
 
     ASSERT_EQ(1u, child_a->child_count());
     FrameTreeNode* child_b = child_a->child_at(0);
-    EXPECT_EQ("b.com", child_b->current_url().host());
+    EXPECT_EQ("b.com", child_b->current_url().GetHost());
     ASSERT_EQ(1u, child_b->child_count());
     FrameTreeNode* child_d = child_b->child_at(0);
-    EXPECT_EQ("d.com", child_d->current_url().host());
+    EXPECT_EQ("d.com", child_d->current_url().GetHost());
 
     EXPECT_EQ("a.com", main_frame->ComputeIsolationInfoForNavigation(url)
                            .site_for_cookies()
@@ -4515,19 +4517,19 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     ASSERT_EQ(1u, main_frame->child_count());
     FrameTreeNode* child_a = main_frame->child_at(0);
-    EXPECT_EQ("a.com", child_a->current_url().host());
+    EXPECT_EQ("a.com", child_a->current_url().GetHost());
 
     ASSERT_EQ(2u, child_a->child_count());
     FrameTreeNode* child_aa = child_a->child_at(0);
-    EXPECT_EQ("a.com", child_aa->current_url().host());
+    EXPECT_EQ("a.com", child_aa->current_url().GetHost());
 
     ASSERT_EQ(1u, child_aa->child_count());
     FrameTreeNode* child_aab = child_aa->child_at(0);
-    EXPECT_EQ("b.com", child_aab->current_url().host());
+    EXPECT_EQ("b.com", child_aab->current_url().GetHost());
 
     ASSERT_EQ(1u, child_aab->child_count());
     FrameTreeNode* child_aabd = child_aab->child_at(0);
-    EXPECT_EQ("d.com", child_aabd->current_url().host());
+    EXPECT_EQ("d.com", child_aabd->current_url().GetHost());
 
     // Main frame navigations are not affected by the special schema.
     EXPECT_TRUE(net::SiteForCookies::FromUrl(url).IsEquivalent(
@@ -4577,19 +4579,19 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     ASSERT_EQ(1u, main_frame->child_count());
     FrameTreeNode* child_a = main_frame->child_at(0);
-    EXPECT_EQ("a.com", child_a->current_url().host());
+    EXPECT_EQ("a.com", child_a->current_url().GetHost());
 
     ASSERT_EQ(2u, child_a->child_count());
     FrameTreeNode* child_aa = child_a->child_at(0);
-    EXPECT_EQ("a.com", child_aa->current_url().host());
+    EXPECT_EQ("a.com", child_aa->current_url().GetHost());
 
     ASSERT_EQ(1u, child_aa->child_count());
     FrameTreeNode* child_aab = child_aa->child_at(0);
-    EXPECT_EQ("b.com", child_aab->current_url().host());
+    EXPECT_EQ("b.com", child_aab->current_url().GetHost());
 
     ASSERT_EQ(1u, child_aab->child_count());
     FrameTreeNode* child_aabd = child_aab->child_at(0);
-    EXPECT_EQ("d.com", child_aabd->current_url().host());
+    EXPECT_EQ("d.com", child_aabd->current_url().GetHost());
 
     // Main frame navigations are not affected by the special schema.
     EXPECT_TRUE(net::SiteForCookies::FromUrl(url).IsEquivalent(
@@ -4802,15 +4804,15 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   {
     RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
 
-    EXPECT_EQ("a.test", main_frame->GetLastCommittedURL().host());
+    EXPECT_EQ("a.test", main_frame->GetLastCommittedURL().GetHost());
     EXPECT_EQ("http", main_frame->frame_tree_node()->current_origin().scheme());
     ASSERT_EQ(1u, main_frame->child_count());
     FrameTreeNode* child = main_frame->child_at(0);
-    EXPECT_EQ("a.test", child->current_url().host());
+    EXPECT_EQ("a.test", child->current_url().GetHost());
     EXPECT_EQ("http", child->current_origin().scheme());
     ASSERT_EQ(1u, child->child_count());
     FrameTreeNode* grandchild = child->child_at(0);
-    EXPECT_EQ("a.test", grandchild->current_url().host());
+    EXPECT_EQ("a.test", grandchild->current_url().GetHost());
 
     // Both the frames above grandchild are the same scheme, so
     // SiteForCookies::schemefully_same() should indicate that.
@@ -4837,7 +4839,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     // Navigate the middle child frame to https.
     EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
-    EXPECT_EQ("a.test", child->current_url().host());
+    EXPECT_EQ("a.test", child->current_url().GetHost());
     EXPECT_EQ("https", child->current_origin().scheme());
     EXPECT_EQ(1u, child->child_count());
 
@@ -4873,28 +4875,28 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
 
-    EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+    EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().GetHost());
 
     ASSERT_EQ(2u, main_frame->child_count());
     FrameTreeNode* child_a = main_frame->child_at(0);
-    EXPECT_EQ("a.com", child_a->current_url().host());
+    EXPECT_EQ("a.com", child_a->current_url().GetHost());
     EXPECT_TRUE(
         child_a->current_frame_host()->GetLastCommittedOrigin().opaque());
 
     ASSERT_EQ(1u, child_a->child_count());
     FrameTreeNode* child_aa = child_a->child_at(0);
-    EXPECT_EQ("a.com", child_aa->current_url().host());
+    EXPECT_EQ("a.com", child_aa->current_url().GetHost());
     EXPECT_TRUE(
         child_aa->current_frame_host()->GetLastCommittedOrigin().opaque());
 
     FrameTreeNode* child_a2 = main_frame->child_at(1);
-    EXPECT_EQ("a.com", child_a2->current_url().host());
+    EXPECT_EQ("a.com", child_a2->current_url().GetHost());
     EXPECT_FALSE(
         child_a2->current_frame_host()->GetLastCommittedOrigin().opaque());
 
     ASSERT_EQ(1u, child_a2->child_count());
     FrameTreeNode* child_a2a = child_a2->child_at(0);
-    EXPECT_EQ("a.com", child_a2a->current_url().host());
+    EXPECT_EQ("a.com", child_a2a->current_url().GetHost());
     EXPECT_FALSE(
         child_a2a->current_frame_host()->GetLastCommittedOrigin().opaque());
 
@@ -4925,7 +4927,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
     ASSERT_EQ(2u, main_frame->child_count());
     FrameTreeNode* child_a = main_frame->child_at(0);
-    EXPECT_EQ("a.com", child_a->current_url().host());
+    EXPECT_EQ("a.com", child_a->current_url().GetHost());
     EXPECT_TRUE(
         child_a->current_frame_host()->GetLastCommittedOrigin().opaque());
 
@@ -4946,7 +4948,7 @@ IN_PROC_BROWSER_TEST_F(
 
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
 
-  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().GetHost());
 
   ASSERT_EQ(1u, main_frame->child_count());
   FrameTreeNode* child_a = main_frame->child_at(0);
@@ -4977,7 +4979,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
-  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().GetHost());
 
   ASSERT_EQ(1u, main_frame->child_count());
   FrameTreeNode* child_sd = main_frame->child_at(0);
@@ -4985,7 +4987,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   ASSERT_EQ(1u, child_sd->child_count());
   FrameTreeNode* child_sd_a = child_sd->child_at(0);
-  EXPECT_EQ("a.com", child_sd_a->current_url().host());
+  EXPECT_EQ("a.com", child_sd_a->current_url().GetHost());
 
   ASSERT_EQ(1u, child_sd_a->child_count());
   FrameTreeNode* child_sd_a_sd = child_sd_a->child_at(0);
@@ -5052,7 +5054,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   RenderFrameHostImpl* main_frame = web_contents()->GetPrimaryMainFrame();
 
-  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().host());
+  EXPECT_EQ("a.com", main_frame->GetLastCommittedURL().GetHost());
 
   ASSERT_EQ(1u, main_frame->child_count());
   FrameTreeNode* child_a = main_frame->child_at(0);
@@ -6153,7 +6155,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   navigate("img-src *");
   EXPECT_EQ(1u, web_contents()->GetFaviconURLs().size());
   EXPECT_EQ("/favicon.ico",
-            web_contents()->GetFaviconURLs()[0]->icon_url.path());
+            web_contents()->GetFaviconURLs()[0]->icon_url.GetPath());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
@@ -6206,7 +6208,7 @@ class IsolatedApplicationContentBrowserClient
 
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url.host() == isolated_application_host_;
+    return url.GetHost() == isolated_application_host_;
   }
 
  private:

@@ -294,7 +294,7 @@ base::flat_map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
        base::SplitString(comma_separated_urls, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_ALL)) {
     GURL url = GURL(it);
-    urls[url.host()].push_back(url.path());
+    urls[url.GetHost()].push_back(url.GetPath());
   }
   return urls;
 }
@@ -1728,7 +1728,7 @@ bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {
 bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
   // If the current_url matches the blocked host and path, current_url is
   // not allowed to be cached.
-  const auto& it = blocked_urls_.find(current_url.host());
+  const auto& it = blocked_urls_.find(current_url.GetHost());
   if (it != blocked_urls_.end()) {
     for (const std::string& blocked_path : it->second) {
       if (base::StartsWith(current_url.path_piece(), blocked_path))
@@ -1745,7 +1745,7 @@ bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
   // the corresponding host and path is the prefix of the allowed url path. We
   // only check for host and path and not any other components including url
   // scheme here.
-  const auto& entry = allowed_urls_.find(current_url.host());
+  const auto& entry = allowed_urls_.find(current_url.GetHost());
   if (entry != allowed_urls_.end()) {
     for (const std::string& allowed_path : entry->second) {
       if (base::StartsWith(current_url.path_piece(), allowed_path))

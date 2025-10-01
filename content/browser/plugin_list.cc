@@ -251,7 +251,7 @@ bool PluginList::GetPluginInfoArray(
   // We collected stats to determine this approach isn't a major compat issue,
   // and we defend against content confusion attacks in various cases, such
   // as when the user doesn't have the Flash plugin enabled.
-  std::string path = url.path();
+  std::string path = url.GetPath();
   std::string::size_type last_dot = path.rfind('.');
   if (last_dot == std::string::npos || !mime_type.empty())
     return is_stale;

@@ -1126,7 +1126,7 @@ std::optional<GURL> IdpNetworkRequestManager::ComputeWellKnownUrl(
 
     if (etld_plus_one.empty())
       return std::nullopt;
-    well_known_url = GURL(provider.scheme() + "://" + etld_plus_one);
+    well_known_url = GURL(provider.GetScheme() + "://" + etld_plus_one);
   }
 
   GURL::Replacements replacements;

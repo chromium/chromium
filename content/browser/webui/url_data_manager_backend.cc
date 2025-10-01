@@ -137,7 +137,7 @@ void URLDataManagerBackend::UpdateWebUIDataSource(
 URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
     const GURL& url) {
   // chrome-untrusted:// sources keys are of the form "chrome-untrusted://host".
-  if (url.scheme() == kChromeUIUntrustedScheme) {
+  if (url.GetScheme() == kChromeUIUntrustedScheme) {
     auto i = data_sources_.find(url.DeprecatedGetOriginAsURL().spec());
     if (i == data_sources_.end())
       return nullptr;
@@ -146,13 +146,13 @@ URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
 
   // The input usually looks like: chrome://source_name/extra_bits?foo
   // so do a lookup using the host of the URL.
-  auto i = data_sources_.find(url.host());
+  auto i = data_sources_.find(url.GetHost());
   if (i != data_sources_.end())
     return i->second.get();
 
   // No match using the host of the URL, so do a lookup using the scheme for
   // URLs on the form source_name://extra_bits/foo .
-  i = data_sources_.find(url.scheme() + "://");
+  i = data_sources_.find(url.GetScheme() + "://");
   if (i != data_sources_.end())
     return i->second.get();
 
@@ -256,7 +256,7 @@ bool URLDataManagerBackend::CheckURLIsValid(const GURL& url) {
          url.SchemeIs(kChromeUIUntrustedScheme) ||
          (GetContentClient()->browser()->GetAdditionalWebUISchemes(
               &additional_schemes),
-          base::Contains(additional_schemes, url.scheme())));
+          base::Contains(additional_schemes, url.GetScheme())));
 
   if (!url.is_valid()) {
     NOTREACHED();

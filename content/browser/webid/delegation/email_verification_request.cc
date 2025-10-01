@@ -35,7 +35,7 @@ std::optional<std::string> GetDomainFromEmail(const std::string& email) {
   // TODO(crbug.com/380367784): consider better ways to validate if
   // the email domain is well formed.
   GURL url("https://" + std::string(parts->second));
-  if (!url.is_valid() || !url.has_host() || url.host() != parts->second) {
+  if (!url.is_valid() || !url.has_host() || url.GetHost() != parts->second) {
     return std::nullopt;
   }
 

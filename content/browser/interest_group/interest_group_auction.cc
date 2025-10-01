@@ -4195,7 +4195,7 @@ GURL InterestGroupAuction::FillPostAuctionSignals(
     return url;
   }
 
-  std::string query_string = url.query();
+  std::string query_string = url.GetQuery();
   base::ReplaceSubstringsAfterOffset(&query_string, 0, "${winningBid}",
                                      base::NumberToString(signals.winning_bid));
   base::ReplaceSubstringsAfterOffset(

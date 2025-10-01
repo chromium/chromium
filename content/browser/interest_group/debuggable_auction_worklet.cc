@@ -119,7 +119,7 @@ void DebuggableAuctionWorklet::TraceProcessData(
   auto dict = std::move(trace_context).WriteDictionary();
   dict.Add("target", unique_id_);
   dict.Add("pid", pid_.value());
-  dict.Add("host", url_.host());
+  dict.Add("host", url_.GetHost());
   switch (Type()) {
     case DebuggableAuctionWorklet::WorkletType::kBidder:
       dict.Add("type", "bidder");

@@ -126,7 +126,7 @@ bool ProcessLock::MatchesScheme(const std::string& scheme) const {
   std::string agent_cluster_key_scheme =
       agent_cluster_key().IsOriginKeyed()
           ? agent_cluster_key().GetOrigin().scheme()
-          : agent_cluster_key().GetSite().scheme();
+          : agent_cluster_key().GetSite().GetScheme();
   return agent_cluster_key_scheme == scheme;
 }
 

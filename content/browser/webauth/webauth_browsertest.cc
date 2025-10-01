@@ -1983,7 +1983,7 @@ class WCOCallbackLogger : public WebContentsObserver,
   // Start WebContentsObserver overrides:
   void WebAuthnAssertionRequestSucceeded(
       content::RenderFrameHost* render_frame_host) override {
-    log_.push_back(render_frame_host->GetLastCommittedURL().host());
+    log_.push_back(render_frame_host->GetLastCommittedURL().GetHost());
   }
   // End WebContentsObserver overrides.
 

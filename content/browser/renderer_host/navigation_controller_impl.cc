@@ -311,7 +311,7 @@ bool IsValidURLForNavigation(FrameTreeNode* node,
   // supported.  See https://crbug.com/1444221.
   if (node->current_frame_host()->GetSiteInstance()->IsGuest()) {
     auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
-    if (!cpsp->IsWebSafeScheme(dest_url.scheme()) &&
+    if (!cpsp->IsWebSafeScheme(dest_url.GetScheme()) &&
         !dest_url.SchemeIs(url::kAboutScheme)) {
       LOG(WARNING) << "Refusing to load unsafe URL in a guest: "
                    << dest_url.possibly_invalid_spec();

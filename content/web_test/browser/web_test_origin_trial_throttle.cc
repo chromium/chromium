@@ -47,7 +47,8 @@ WebTestOriginTrialThrottle::WillRedirectRequest() {
 void WebTestOriginTrialThrottle::SetHeaderForRequest() {
   GURL request_url = navigation_handle()->GetURL();
   url::Origin origin = url::Origin::CreateFromNormalizedTuple(
-      request_url.scheme(), request_url.host(), request_url.EffectiveIntPort());
+      request_url.GetScheme(), request_url.GetHost(),
+      request_url.EffectiveIntPort());
 
   base::flat_set<std::string> trials;
   if (!origin.opaque()) {

@@ -109,8 +109,8 @@ class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
       WebUI* web_ui,
       const GURL& url) override {
-    std::string foo(url.path());
-    if (url.path() == "/nobinding/") {
+    std::string foo(url.GetPath());
+    if (url.GetPath() == "/nobinding/") {
       web_ui->SetBindings(BindingsPolicySet());
     }
     return HasWebUIScheme(url) ? std::make_unique<WebUIController>(web_ui)

@@ -293,7 +293,7 @@ void WCOCallbackLogger::OnCookiesAccessed(RenderFrameHost* render_frame_host,
                                           const CookieAccessDetails& details) {
   // Callbacks for favicons are ignored only in testing logs because their
   // ordering is variable and would cause flakiness
-  if (details.url.path() == "/favicon.ico") {
+  if (details.url.GetPath() == "/favicon.ico") {
     return;
   }
 

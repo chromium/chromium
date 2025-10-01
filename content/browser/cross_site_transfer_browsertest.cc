@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest,
   GURL url2b =
       embedded_test_server()->GetURL("B.com", "/site_isolation/blank.html?2");
   GURL url2a = embedded_test_server()->GetURL(
-      "A.com", "/cross-site/" + url2b.host() + url2b.PathForRequest());
+      "A.com", "/cross-site/" + url2b.GetHost() + url2b.PathForRequest());
   NavigateToURLContentInitiated(shell(), url2a, true, true);
 
   // There should be one history entry. url2b should have replaced url1.
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(CrossSiteTransferTest,
   GURL url3b =
       embedded_test_server()->GetURL("B.com", "/site_isolation/blank.html?3");
   GURL url3a = embedded_test_server()->GetURL(
-      "A.com", "/cross-site/" + url3b.host() + url3b.PathForRequest());
+      "A.com", "/cross-site/" + url3b.GetHost() + url3b.PathForRequest());
   NavigateToURLContentInitiated(shell(), url3a, false, true);
 
   // There should be two history entries. url2b should have replaced url1. url3b

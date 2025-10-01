@@ -542,7 +542,7 @@ bool URLLoaderInterceptor::Intercept(RequestParams* params) {
   // mock.failed.request is a special request whereby the query indicates what
   // error code to respond with.
   if (params->url_request.url.DomainIs("mock.failed.request")) {
-    std::string query = params->url_request.url.query();
+    std::string query = params->url_request.url.GetQuery();
     std::string error_code = query.substr(query.find("=") + 1);
 
     int error = 0;

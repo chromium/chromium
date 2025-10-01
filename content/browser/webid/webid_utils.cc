@@ -411,11 +411,11 @@ std::string FormatUrlForDisplay(const GURL& url) {
   // relying party can be domain-wide because it relies on cookies.
   std::string formatted_url_str =
       net::IsLocalhost(url)
-          ? url.host()
+          ? url.GetHost()
           : net::registry_controlled_domains::GetDomainAndRegistry(
                 url, kDefaultPrivateRegistryFilter);
   return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-      GURL(url.scheme() + "://" + formatted_url_str),
+      GURL(url.GetScheme() + "://" + formatted_url_str),
       url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
 }
 

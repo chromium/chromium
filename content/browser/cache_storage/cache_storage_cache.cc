@@ -1890,7 +1890,7 @@ void CacheStorageCache::PutDidCreateEntry(
   proto::CacheRequest* request_metadata = metadata.mutable_request();
   request_metadata->set_method(put_context->request->method);
   if (put_context->request->url.has_ref())
-    request_metadata->set_fragment(put_context->request->url.ref());
+    request_metadata->set_fragment(put_context->request->url.GetRef());
 
   for (const auto& header : put_context->request->headers) {
     DCHECK_EQ(std::string::npos, header.first.find('\0'));

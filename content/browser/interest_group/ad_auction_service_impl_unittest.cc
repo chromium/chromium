@@ -485,14 +485,14 @@ class NetworkResponder {
     base::AutoLock auto_lock(lock_);
     // Check if there is a registered repeat callback.
     const auto callback_it =
-        net_callback_map_.find(params->url_request.url.path());
+        net_callback_map_.find(params->url_request.url.GetPath());
     if (callback_it != net_callback_map_.end()) {
       callback_it->second.Run(params);
     }
 
     // Check deferred responses map.
     const auto deferred_it =
-        deferred_responses_map_.find(params->url_request.url.path());
+        deferred_responses_map_.find(params->url_request.url.GetPath());
     if (deferred_it != deferred_responses_map_.end()) {
       CHECK(!deferred_it->second.url_loader_client);
       deferred_it->second.url_loader_client = std::move(params->client);
@@ -510,7 +510,7 @@ class NetworkResponder {
     }
 
     // Check if this is a non-update error.
-    if (params->url_request.url.path() == non_update_error_path_) {
+    if (params->url_request.url.GetPath() == non_update_error_path_) {
       CHECK(non_update_error_ != net::OK);
       params->client->OnComplete(
           network::URLLoaderCompletionStatus(non_update_error_));
@@ -518,7 +518,7 @@ class NetworkResponder {
     }
 
     // Not a non-update error, check if this is a script request.
-    const auto script_it = script_map_.find(params->url_request.url.path());
+    const auto script_it = script_map_.find(params->url_request.url.GetPath());
     if (script_it != script_map_.end()) {
       URLLoaderInterceptor::WriteResponse(
           kFledgeScriptHeaders, script_it->second, params->client.get());
@@ -527,11 +527,11 @@ class NetworkResponder {
 
     // Not a non-update error or script request, check if it's a reporting
     // request.
-    const auto report_it = report_map_.find(params->url_request.url.path());
+    const auto report_it = report_map_.find(params->url_request.url.GetPath());
     if (report_it != report_map_.end()) {
       URLLoaderInterceptor::WriteResponse(
           kFledgeReportHeaders, report_it->second, params->client.get());
-      sent_reports_.push_back(params->url_request.url.path());
+      sent_reports_.push_back(params->url_request.url.GetPath());
       OnReportSent();
       return true;
     }
@@ -550,7 +550,8 @@ class NetworkResponder {
     }
 
     // Check if it's a trusted bidding/scoring signals response.
-    const auto signals_it = signals_map_.find(params->url_request.url.path());
+    const auto signals_it =
+        signals_map_.find(params->url_request.url.GetPath());
     if (signals_it != signals_map_.end()) {
       signals_it->second.Run(params);
       return true;
@@ -559,14 +560,15 @@ class NetworkResponder {
     // Check if it's a Bidding and Auction Server key request. These can be
     // triggered by the Prefetch feature when JoinAdInterestGroup is called
     // It's safe to just fail them.
-    if (params->url_request.url.path() ==
-        GURL(kBiddingAndAuctionGCPCoordinatorKeyURL).path()) {
+    if (params->url_request.url.GetPath() ==
+        GURL(kBiddingAndAuctionGCPCoordinatorKeyURL).GetPath()) {
       params->client->OnComplete(
           network::URLLoaderCompletionStatus(net::ERR_FAILED));
       return true;
     }
 
-    if ((params->url_request.url.path() == store_url_loader_client_url_path_)) {
+    if ((params->url_request.url.GetPath() ==
+         store_url_loader_client_url_path_)) {
       CHECK(!stored_url_loader_client_);
       stored_url_loader_client_ = std::move(params->client);
       OnReportSent();
@@ -577,14 +579,14 @@ class NetworkResponder {
     // this an update request.
     OnUpdateRequestReceived(params);
     const auto update_it =
-        json_update_map_.find(params->url_request.url.path());
+        json_update_map_.find(params->url_request.url.GetPath());
     if (update_it != json_update_map_.end()) {
       URLLoaderInterceptor::WriteResponse(
           kFledgeUpdateHeaders, update_it->second, params->client.get());
       return true;
     }
 
-    if (params->url_request.url.path() == update_error_path_) {
+    if (params->url_request.url.GetPath() == update_error_path_) {
       CHECK(update_error_ != net::OK);
       params->client->OnComplete(
           network::URLLoaderCompletionStatus(update_error_));
@@ -5956,7 +5958,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     // Set a long expiration delta so that we can advance to update cancellation
     // without the interest group expiring.
     interest_group.expiry = base::Time::Now() + base::Days(30);
-    interest_group.name = update_url.path();
+    interest_group.name = update_url.GetPath();
     interest_group.update_url = update_url;
     interest_group.ads.emplace();
     blink::InterestGroup::Ad ad(
@@ -5964,7 +5966,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
         /*metadata=*/std::nullopt);
     interest_group.ads->emplace_back(std::move(ad));
     JoinInterestGroupAndFlush(interest_group);
-    EXPECT_EQ(1, GetJoinCount(kOriginA, /*name=*/update_url.path()));
+    EXPECT_EQ(1, GetJoinCount(kOriginA, /*name=*/update_url.GetPath()));
   }
 
   // Create interest group for kOriginB.
@@ -6000,12 +6002,12 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     const blink::InterestGroup& group = a_group->interest_group;
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
-    if (group.name == kUpdateUrlA.path()) {
+    if (group.name == kUpdateUrlA.GetPath()) {
       EXPECT_EQ(group.ads.value()[0].render_url(),
                 "https://example.com/render2");
       seen_succeeded = true;
       continue;
-    } else if (group.name == kUpdateUrlA2.path()) {
+    } else if (group.name == kUpdateUrlA2.GetPath()) {
       seen_failed = true;
     }
     // Failed and deferred interest groups shouldn't have updated.
@@ -6044,7 +6046,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     const blink::InterestGroup& group = a_group->interest_group;
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
-    if (group.name == kUpdateUrlA3.path()) {
+    if (group.name == kUpdateUrlA3.GetPath()) {
       EXPECT_EQ(group.ads.value()[0].render_url(),
                 "https://example.com/render2");
       break;
@@ -6071,7 +6073,7 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
     const blink::InterestGroup& group = a_group->interest_group;
     ASSERT_TRUE(group.ads.has_value());
     ASSERT_EQ(group.ads->size(), 1u);
-    if (group.name == kUpdateUrlA4.path()) {
+    if (group.name == kUpdateUrlA4.GetPath()) {
       EXPECT_EQ(group.ads.value()[0].render_url(),
                 "https://example.com/render2");
       break;

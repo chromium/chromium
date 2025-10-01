@@ -91,7 +91,7 @@ void RunTestCase(TestCase test_case,
         << cookie->DebugString();
   }
 
-  cookie_line = std::string("A=2;domain=") + test_url.host();
+  cookie_line = std::string("A=2;domain=") + test_url.GetHost();
   cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
                                                   base::Time::Now());
   if (cookie) {
@@ -104,7 +104,7 @@ void RunTestCase(TestCase test_case,
         << cookie->DebugString();
   }
 
-  cookie_line = std::string("A=2; HttpOnly;") + test_url.host();
+  cookie_line = std::string("A=2; HttpOnly;") + test_url.GetHost();
   cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
                                                   base::Time::Now());
   if (cookie) {
@@ -117,7 +117,7 @@ void RunTestCase(TestCase test_case,
         << cookie->DebugString();
   }
 
-  cookie_line = std::string("A=2; HttpOnly; Secure;") + test_url.host();
+  cookie_line = std::string("A=2; HttpOnly; Secure;") + test_url.GetHost();
   cookie = net::CanonicalCookie::CreateForTesting(test_url, cookie_line,
                                                   base::Time::Now());
   if (cookie) {

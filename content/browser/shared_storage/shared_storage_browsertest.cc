@@ -404,7 +404,7 @@ class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
   HandleSharedStorageTrustedOriginsRequest(
       const std::vector<base::Value>& json_well_known_trusted_origin_lists,
       const net::test_server::HttpRequest& request) {
-    const auto& path = request.GetURL().path();
+    const auto& path = request.GetURL().GetPath();
     if (path != kSharedStorageTrustedOriginsPath ||
         json_well_known_trusted_origin_lists.empty()) {
       return nullptr;

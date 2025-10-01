@@ -447,7 +447,7 @@ class FrameAncestorNavigationBrowserTest
         base::BindLambdaForTesting(
             [&](const net::test_server::HttpRequest& request) {
               base::AutoLock lock(lock_);
-              observed_request_headers_.emplace_back(request.GetURL().path(),
+              observed_request_headers_.emplace_back(request.GetURL().GetPath(),
                                                      request.headers);
             }));
     NavigationBaseBrowserTest::SetUpOnMainThread();
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest,
   EXPECT_THAT(
       observed_request_headers(),
       Contains(Pair(
-          inner_url.path(),
+          inner_url.GetPath(),
           testing::IsSupersetOf<HeaderMapMatchers>({
               testing::Pair("Sec-Fetch-Frame-Ancestors", expected_relation()),
           }))));
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest, SubframeRedirect) {
   load_observer.Wait();
 
   EXPECT_THAT(observed_request_headers(),
-              Contains(Pair(inner_url.path(),
+              Contains(Pair(inner_url.GetPath(),
                             testing::IsSupersetOf<HeaderMapMatchers>({
                                 testing::Pair("Sec-Fetch-Frame-Ancestors",
                                               expected_relation_for_redirect()),
@@ -571,7 +571,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest, TopFrameRedirect) {
   // since it is same-origin with itself.
   EXPECT_THAT(observed_request_headers(),
               Contains(Pair(
-                  inner_url.path(),
+                  inner_url.GetPath(),
                   testing::IsSupersetOf<HeaderMapMatchers>({
                       testing::Pair("Sec-Fetch-Frame-Ancestors", "same-origin"),
                   }))));
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_P(FrameAncestorNavigationBrowserTest,
                      JsReplace(subresource_request_script, redirecting_url)));
 
   EXPECT_THAT(observed_request_headers(),
-              Contains(Pair(inner_url.path(),
+              Contains(Pair(inner_url.GetPath(),
                             testing::IsSupersetOf<HeaderMapMatchers>({
                                 testing::Pair("Sec-Fetch-Frame-Ancestors",
                                               expected_relation_for_redirect()),
@@ -4196,7 +4196,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   TestNavigationObserver observer(web_contents());
   shell()->LoadURL(embedded_test_server()->GetURL("/virtual-url.html"));
   observer.Wait();
-  EXPECT_EQ("/title2.html", observer.last_navigation_url().path());
+  EXPECT_EQ("/title2.html", observer.last_navigation_url().GetPath());
   EXPECT_EQ(2, rewrite_count);
 }
 
@@ -10154,7 +10154,7 @@ IN_PROC_BROWSER_TEST_F(HstsUpgradeBrowserTest, UpgradeTopLevelOnly) {
                                 ->GetDefaultStoragePartition()
                                 ->GetNetworkContext();
     base::RunLoop run_loop;
-    network_context->AddHSTS(url_of_hsts_frame_http.host(), expiry,
+    network_context->AddHSTS(url_of_hsts_frame_http.GetHost(), expiry,
                              include_subdomains, run_loop.QuitClosure());
     run_loop.Run();
   }

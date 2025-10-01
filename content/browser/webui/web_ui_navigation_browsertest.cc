@@ -1093,7 +1093,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   GURL blob_url(
       EvalJs(shell(), kScript, EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */)
           .ExtractString());
-  EXPECT_EQ(url::kBlobScheme, blob_url.scheme());
+  EXPECT_EQ(url::kBlobScheme, blob_url.GetScheme());
 
   // Verify that the blob also requires a dedicated process and that it would
   // use the same site url as the original page.
@@ -1138,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
   GURL blob_url(
       EvalJs(shell(), kScript, EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1 /* world_id */)
           .ExtractString());
-  EXPECT_EQ(url::kBlobScheme, blob_url.scheme());
+  EXPECT_EQ(url::kBlobScheme, blob_url.GetScheme());
 
   // Verify that the blob also requires a dedicated process and that it would
   // use the same site url as the original page.

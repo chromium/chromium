@@ -124,7 +124,7 @@ void LocalResourceURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
   // Only the "chrome" scheme is supported.
-  CHECK(request.url.scheme() == kChromeUIScheme);
+  CHECK(request.url.GetScheme() == kChromeUIScheme);
   // Parallelize calls to GetResourceAndRespond across multiple threads.
   // Needs to be posted to a SequencedTaskRunner as Mojo requires a
   // SequencedTaskRunner::CurrentDefaultHandle in scope.

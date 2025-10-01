@@ -76,12 +76,12 @@ bool IsPathRestrictionSatisfiedInternal(
       error_message->append("') was received when fetching the script.");
       return false;
     }
-    max_scope_string = max_scope.path();
+    max_scope_string = max_scope.GetPath();
   } else {
-    max_scope_string = script_url.GetWithoutFilename().path();
+    max_scope_string = script_url.GetWithoutFilename().GetPath();
   }
 
-  std::string scope_string = scope.path();
+  std::string scope_string = scope.GetPath();
   if (!base::StartsWith(scope_string, max_scope_string,
                         base::CompareCase::SENSITIVE)) {
     *error_message = "The path of the provided scope ('";

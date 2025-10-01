@@ -454,7 +454,7 @@ std::optional<blink::WebURL> WebFrameTestProxy::WillSendRequest(
   // Need to use GURL for host() and SchemeIs()
   GURL url = adjusted_url.has_value() ? *adjusted_url : target;
 
-  std::string host = url.host();
+  std::string host = url.GetHost();
   if (!host.empty() &&
       (url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme))) {
     if (!IsLocalHost(host) && !IsTestHost(host) &&

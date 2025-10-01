@@ -436,7 +436,8 @@ void UpdateProcessReusePolicyForMainFrame(SiteInstanceImpl* site_instance,
   const GURL& site_url = site_instance->GetSiteURL();
   if (!base::FeatureList::IsEnabled(
           features::kMainFrameProcessReuseAllowIPAndLocalhost) &&
-      (site_url.HostIsIPAddress() || net::IsLocalHostname(site_url.host()))) {
+      (site_url.HostIsIPAddress() ||
+       net::IsLocalHostname(site_url.GetHost()))) {
     RecordMainFrameProcessReuseBlockReason(
         MainFrameProcessReuseBlockReason::kIsIpAddressOrLocalHost);
     return;

@@ -182,7 +182,7 @@ class MockNetworkContext : public network::TestNetworkContext {
 
  private:
   bool IsHangingHost(const GURL& url) const {
-    return base::Contains(hanging_hosts_, url.host());
+    return base::Contains(hanging_hosts_, url.GetHost());
   }
 
   using ResolveHostClientKey =
@@ -970,11 +970,11 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHost) {
   EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
       .WillRepeatedly(Return(true));
   // PreconnectFinished shouldn't be called.
-  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
+  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.GetHost()));
   preconnect_manager_->StartPreresolveHost(
       url, network_anonymization_key, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*storage_partition_config=*/nullptr);
-  mock_network_context_->CompleteHostLookup(origin.host(),
+  mock_network_context_->CompleteHostLookup(origin.GetHost(),
                                             network_anonymization_key, net::OK);
 
   // Non http url shouldn't be preresovled.
@@ -1007,14 +1007,14 @@ TEST_F(PreconnectManagerImplTest, TestStartPreresolveHosts) {
       CreateNetworkAnonymizationKey(cdn);
 
   EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
-  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(cdn.host()));
-  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.host()));
+  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(cdn.GetHost()));
+  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(fonts.GetHost()));
   preconnect_manager_->StartPreresolveHosts(
       {cdn, fonts}, network_anonymization_key, TRAFFIC_ANNOTATION_FOR_TESTS,
       /*storage_partition_config=*/nullptr);
-  mock_network_context_->CompleteHostLookup(cdn.host(),
+  mock_network_context_->CompleteHostLookup(cdn.GetHost(),
                                             network_anonymization_key, net::OK);
-  mock_network_context_->CompleteHostLookup(fonts.host(),
+  mock_network_context_->CompleteHostLookup(fonts.GetHost(),
                                             network_anonymization_key, net::OK);
 }
 
@@ -1043,7 +1043,7 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
 
   EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled())
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
+  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.GetHost()));
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
       TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -1057,7 +1057,7 @@ TEST_F(PreconnectManagerImplTest, TestStartPreconnectUrl) {
           network_anonymization_key,
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
           _, _));
-  mock_network_context_->CompleteHostLookup(origin.host(),
+  mock_network_context_->CompleteHostLookup(origin.GetHost(),
                                             network_anonymization_key, net::OK);
 
   // Non http url shouldn't be preconnected.
@@ -1099,7 +1099,7 @@ TEST_F(PreconnectManagerImplTest,
       net::NetworkAnonymizationKey::CreateSameSite(requesting_site);
 
   EXPECT_CALL(*mock_delegate_, IsPreconnectEnabled()).WillOnce(Return(true));
-  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.host()));
+  EXPECT_CALL(*mock_network_context_, ResolveHostProxy(origin.GetHost()));
   preconnect_manager_->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key,
       TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -1113,7 +1113,7 @@ TEST_F(PreconnectManagerImplTest,
           network_anonymization_key,
           net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
           _, _));
-  mock_network_context_->CompleteHostLookup(origin.host(),
+  mock_network_context_->CompleteHostLookup(origin.GetHost(),
                                             network_anonymization_key, net::OK);
 }
 
@@ -1152,7 +1152,7 @@ TEST_F(PreconnectManagerImplTest, TestDetachedRequestHasHigherPriority) {
   Mock::VerifyAndClearExpectations(preconnect_manager_.get());
 
   EXPECT_CALL(*mock_network_context_,
-              ResolveHostProxy(detached_preresolve.host()));
+              ResolveHostProxy(detached_preresolve.GetHost()));
   mock_network_context_->CompleteHostLookup(requests[0].origin.host(),
                                             network_anonymization_key, net::OK);
 
@@ -1161,7 +1161,7 @@ TEST_F(PreconnectManagerImplTest, TestDetachedRequestHasHigherPriority) {
   EXPECT_CALL(*mock_delegate_,
               PreconnectInitiated(main_frame_url, queued_origin.GetURL()));
   EXPECT_CALL(*mock_network_context_, ResolveHostProxy(queued_origin.host()));
-  mock_network_context_->CompleteHostLookup(detached_preresolve.host(),
+  mock_network_context_->CompleteHostLookup(detached_preresolve.GetHost(),
                                             network_anonymization_key, net::OK);
   mock_network_context_->CompleteHostLookup(queued_origin.host(),
                                             network_anonymization_key, net::OK);

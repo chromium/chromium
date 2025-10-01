@@ -151,7 +151,7 @@ class IndexedDBBrowserTestBase : public ContentBrowserTest {
     NavigateToURLBlockUntilNavigationsComplete(the_browser, test_url, 2);
     VLOG(0) << "Navigation done.";
     std::string result =
-        the_browser->web_contents()->GetLastCommittedURL().ref();
+        the_browser->web_contents()->GetLastCommittedURL().GetRef();
     if (result != "pass") {
       std::string js_result = EvalJs(the_browser, "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;
@@ -936,7 +936,8 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, ForceCloseWithBlob) {
   // the same blob is read again.
   std::ignore = EvalJs(shell(), "testThenGc()");
   while (true) {
-    std::string result = shell()->web_contents()->GetLastCommittedURL().ref();
+    std::string result =
+        shell()->web_contents()->GetLastCommittedURL().GetRef();
     if (!result.empty()) {
       EXPECT_EQ(result, "pass");
       break;
@@ -1294,7 +1295,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeSlicedFile) {
   same_tab_observer.Wait();
 
   // This part is copied from `SimpleTest()`.
-  std::string result = shell()->web_contents()->GetLastCommittedURL().ref();
+  std::string result = shell()->web_contents()->GetLastCommittedURL().GetRef();
   if (result != "pass") {
     std::string js_result = EvalJs(shell(), "getLog()").ExtractString();
     FAIL() << "Failed: " << js_result;

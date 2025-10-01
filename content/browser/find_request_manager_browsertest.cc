@@ -114,7 +114,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   void MakeChildFrameCrossProcess() {
     FrameTreeNode* child = first_child();
     GURL url =
-        embedded_test_server()->GetURL("b.com", child->current_url().path());
+        embedded_test_server()->GetURL("b.com", child->current_url().GetPath());
     EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
   }
 
@@ -1173,7 +1173,7 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, FindInPageDisabledForOrigin) {
   // Navigate child frame to b.com.
   EXPECT_TRUE(NavigateToURLFromRenderer(
       first_child(), embedded_test_server()->GetURL(
-                         "b.com", first_child()->current_url().path())));
+                         "b.com", first_child()->current_url().GetPath())));
   root_origin = GetOriginForFrameTreeNode(root());
   child_origin = GetOriginForFrameTreeNode(first_child());
   EXPECT_EQ("a.com", root_origin.host());

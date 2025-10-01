@@ -623,7 +623,7 @@ struct PrefetchService::CheckEligibilityParams final {
   bool IsProxyRequired() const {
     CHECK(prefetch_container);
     return prefetch_container->IsProxyRequiredForURL(url) &&
-           !ShouldPrefetchBypassProxyForTestHost(url.host());
+           !ShouldPrefetchBypassProxyForTestHost(url.GetHost());
   }
 
   base::WeakPtr<PrefetchContainer> prefetch_container;

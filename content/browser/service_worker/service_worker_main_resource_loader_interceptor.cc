@@ -39,8 +39,9 @@ bool SchemeMaySupportRedirectingToHTTPS(BrowserContext* browser_context,
   // specification requires that the registered URL is HTTPS.
   // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
   if (GetContentClient()->browser()->HasCustomSchemeHandler(browser_context,
-                                                            url.scheme()))
+                                                            url.GetScheme())) {
     return true;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   return url.SchemeIs(kExternalFileScheme);

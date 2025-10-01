@@ -2675,13 +2675,13 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     std::string val = request.headers.find("Cookie") != request.headers.end()
                           ? request.headers.at("Cookie").c_str()
                           : "";
-    cookie_headers_map_.insert(std::make_pair(request.GetURL().path(), val));
+    cookie_headers_map_.insert(std::make_pair(request.GetURL().GetPath(), val));
 
     val = request.headers.find("Sec-Fetch-Dest") != request.headers.end()
               ? request.headers.at("Sec-Fetch-Dest").c_str()
               : "";
     sec_fetch_dest_headers_map_.insert(
-        std::make_pair(request.GetURL().path(), val));
+        std::make_pair(request.GetURL().GetPath(), val));
   }
 
   // Returns true if the cookie header was present in the last request received
@@ -2695,7 +2695,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     base::AutoLock auto_lock(requests_lock_);
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    std::string file_name = url.path();
+    std::string file_name = url.GetPath();
     CHECK(base::Contains(cookie_headers_map_, file_name));
     std::string header = cookie_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);
@@ -2710,7 +2710,7 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     base::AutoLock auto_lock(requests_lock_);
     SCOPED_TRACE(from_here.ToString());
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    std::string file_name = url.path();
+    std::string file_name = url.GetPath();
     CHECK(base::Contains(sec_fetch_dest_headers_map_, file_name));
     std::string header = sec_fetch_dest_headers_map_[file_name];
     EXPECT_EQ(expected_value, header);

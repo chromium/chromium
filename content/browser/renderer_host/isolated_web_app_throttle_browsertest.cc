@@ -43,7 +43,7 @@ class IsolatedWebAppContentBrowserClient
 
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url.host() == kAppHost;
+    return url.GetHost() == kAppHost;
   }
 
   bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }

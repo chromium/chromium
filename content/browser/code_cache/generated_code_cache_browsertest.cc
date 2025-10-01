@@ -130,7 +130,7 @@ class CodeCacheBrowserTest
 
     // Worker scripts will fetch this once the cacheable resource has been
     // loaded and the test logic (checking histograms) can continue.
-    if (absolute_url.path() == "/done.js") {
+    if (absolute_url.GetPath() == "/done.js") {
       GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(done_callback_));
 
       auto http_response =
@@ -144,7 +144,7 @@ class CodeCacheBrowserTest
 
     // Returns a JavaScript file that should be cacheable by the
     // GeneratedCodeCache (>1024 characters).
-    if (absolute_url.path() == "/cacheable.js") {
+    if (absolute_url.GetPath() == "/cacheable.js") {
       if (trigger_validation_requests_ &&
           base::Contains(request.headers, "If-Modified-Since")) {
         auto http_response =
@@ -179,7 +179,7 @@ class CodeCacheBrowserTest
     }
 
     // Returns an HTML file that will load /cacheable.js.
-    if (absolute_url.path() == "/cacheable.html") {
+    if (absolute_url.GetPath() == "/cacheable.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -195,7 +195,7 @@ class CodeCacheBrowserTest
     // Returns a JavaScript file that should itself be eligible for caching in
     // the GeneratedCodeCache and that will load /cacheable.js via
     // importScripts.
-    if (absolute_url.path() == "/worker.js") {
+    if (absolute_url.GetPath() == "/worker.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -216,7 +216,7 @@ class CodeCacheBrowserTest
     }
 
     // Return a page that will create a Shared Worker that uses /worker.js.
-    if (absolute_url.path() == "/shared-worker.html") {
+    if (absolute_url.GetPath() == "/shared-worker.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -231,7 +231,7 @@ class CodeCacheBrowserTest
 
     // Returns a JavaScript module file that should be cacheable by the
     // GeneratedCodeCache (>1024 characters).
-    if (absolute_url.path() == "/cacheable_module.js") {
+    if (absolute_url.GetPath() == "/cacheable_module.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -252,7 +252,7 @@ class CodeCacheBrowserTest
     }
 
     // Returns an HTML file that will load /cacheable_module.js.
-    if (absolute_url.path() == "/cacheable_module.html") {
+    if (absolute_url.GetPath() == "/cacheable_module.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -831,7 +831,7 @@ class CompileHintsBrowserTest : public ContentBrowserTest {
 
     // Returns a JavaScript file that should be cacheable by the
     // GeneratedCodeCache (>1024 characters).
-    if (absolute_url.path() == "/cacheable.js") {
+    if (absolute_url.GetPath() == "/cacheable.js") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);
@@ -856,7 +856,7 @@ class CompileHintsBrowserTest : public ContentBrowserTest {
     }
 
     // Returns an HTML file that will load /cacheable.js.
-    if (absolute_url.path() == "/cacheable.html") {
+    if (absolute_url.GetPath() == "/cacheable.html") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
       http_response->set_code(net::HTTP_OK);

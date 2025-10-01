@@ -433,7 +433,7 @@ WebAuthRequestSecurityChecker::ValidateAppIdExtension(
   // https://fido.example.com/myAppId), no additional processing is necessary
   // and the operation may proceed."
   GURL appid_url = GURL(appid);
-  if (!appid_url.is_valid() || appid_url.scheme() != url::kHttpsScheme ||
+  if (!appid_url.is_valid() || appid_url.GetScheme() != url::kHttpsScheme ||
       appid_url.scheme_piece() != caller_origin.scheme()) {
     return blink::mojom::AuthenticatorStatus::INVALID_DOMAIN;
   }

@@ -9042,7 +9042,7 @@ double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
                                             net::GetHostOrSpecFromURL(url));
 #else
   return HostZoomMapForRenderFrameHost(rfh)->GetZoomLevelForHostAndScheme(
-      url.scheme(), net::GetHostOrSpecFromURL(url));
+      url.GetScheme(), net::GetHostOrSpecFromURL(url));
 #endif
 }
 

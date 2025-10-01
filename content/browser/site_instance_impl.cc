@@ -342,7 +342,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForTesting(
 // static
 bool SiteInstanceImpl::ShouldAssignSiteForUrlInfo(const UrlInfo& url_info) {
   // Only empty document schemes can leave SiteInstances unassigned.
-  if (!base::Contains(url::GetEmptyDocumentSchemes(), url_info.url.scheme())) {
+  if (!base::Contains(url::GetEmptyDocumentSchemes(),
+                      url_info.url.GetScheme())) {
     return true;
   }
 

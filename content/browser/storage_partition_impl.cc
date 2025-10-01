@@ -2158,8 +2158,8 @@ void StoragePartitionImpl::OnAuthRequired(
           const GURL& last_committed_url = rfh->GetLastCommittedURL();
           if (rfh->LoadedWithCacheControlNoStoreHeader() &&
               auth_info.challenger ==
-                  url::SchemeHostPort(last_committed_url.scheme(),
-                                      last_committed_url.host(),
+                  url::SchemeHostPort(last_committed_url.GetScheme(),
+                                      last_committed_url.GetHost(),
                                       last_committed_url.IntPort())) {
             BackForwardCacheCanStoreDocumentResult flattened_reasons;
             flattened_reasons.No(BackForwardCacheMetrics::NotRestoredReason::
@@ -3260,8 +3260,8 @@ void StoragePartitionImpl::ClearDataForOrigin(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(initialized_);
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
-  if (!storage_origin.host().empty()) {
-    deletion_filter->host_name = storage_origin.host();
+  if (!storage_origin.GetHost().empty()) {
+    deletion_filter->host_name = storage_origin.GetHost();
   }
   // Construct a |BrowsingDataFilterBuilder| instead of just passing a storage
   // key based on the origin directly. This is needed to be able to delete the

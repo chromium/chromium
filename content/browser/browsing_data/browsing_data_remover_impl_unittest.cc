@@ -576,8 +576,8 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCookiesDomainPreserveList) {
           BrowsingDataFilterBuilder::Mode::kPreserve));
   const GURL kTestUrl1("http://host1.com");
   const GURL kTestUrl3("http://host3.com");
-  filter->AddRegisterableDomain(kTestUrl1.host());
-  filter->AddRegisterableDomain(kTestUrl3.host());
+  filter->AddRegisterableDomain(kTestUrl1.GetHost());
+  filter->AddRegisterableDomain(kTestUrl3.GetHost());
   BlockUntilOriginDataRemoved(AnHourAgo(), base::Time::Max(),
                               BrowsingDataRemover::DATA_TYPE_COOKIES,
                               std::move(filter));
@@ -948,7 +948,7 @@ TEST_F(BrowsingDataRemoverImplTest,
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete));
   const GURL kTestUrl("http://host1.com");
-  builder->AddRegisterableDomain(kTestUrl.host());
+  builder->AddRegisterableDomain(kTestUrl.GetHost());
   // Remove the test origin.
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               BrowsingDataRemover::DATA_TYPE_SERVICE_WORKERS |
@@ -1108,7 +1108,7 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveQuotaManagedProtectedSpecificOrigin) {
   std::unique_ptr<BrowsingDataFilterBuilder> builder(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete));
-  builder->AddRegisterableDomain(kTestUrl.host());
+  builder->AddRegisterableDomain(kTestUrl.GetHost());
 
   // Try to remove the test origin. Expect failure.
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
@@ -1884,7 +1884,7 @@ TEST_F(BrowsingDataRemoverImplTest, NonDefaultStoragePartitionInFilter) {
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kDelete));
   const GURL kTestUrl("http://host1.com");
-  builder->AddRegisterableDomain(kTestUrl.host());
+  builder->AddRegisterableDomain(kTestUrl.GetHost());
   builder->SetStoragePartitionConfig(non_default_storage_partition_config);
 
   // Remove the test origin.

@@ -490,7 +490,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
     if (file_info.is_directory) {
       // Redirect to the directory URLLoader.
       GURL::Replacements replacements;
-      std::string new_path = original_request_.url.path();
+      std::string new_path = original_request_.url.GetPath();
       new_path.push_back('/');
       replacements.SetPathStr(new_path);
       const GURL directory_url =
@@ -671,7 +671,7 @@ class FileSystemURLLoaderFactory
       override {
     DVLOG(1) << "CreateLoaderAndStart: " << request.url;
 
-    const std::string path = request.url.path();
+    const std::string path = request.url.GetPath();
 
     // If the path ends with a /, we know it's a directory. If the path refers
     // to a directory and gets dispatched to FileSystemFileURLLoader, that class

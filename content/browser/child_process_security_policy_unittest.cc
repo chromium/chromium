@@ -71,7 +71,7 @@ class ChildProcessSecurityPolicyTestBrowserClient
   ChildProcessSecurityPolicyTestBrowserClient() {}
 
   bool IsHandledURL(const GURL& url) override {
-    return base::Contains(schemes_, url.scheme());
+    return base::Contains(schemes_, url.GetScheme());
   }
 
   void ClearSchemes() {

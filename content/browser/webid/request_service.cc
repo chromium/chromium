@@ -1206,7 +1206,8 @@ void RequestService::AfterAccountsDialogShown(
   // small percentage of the samples recorded.
   fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
   fedcm_metrics_->RecordRpUrlHasPath(
-      render_frame_host().GetMainFrame()->GetLastCommittedURL().path() != "/");
+      render_frame_host().GetMainFrame()->GetLastCommittedURL().GetPath() !=
+      "/");
 }
 
 void RequestService::NotifyAutofillSuggestionAccepted(

@@ -1809,7 +1809,7 @@ TEST(StoragePartitionImplStaticTest, CreatePredicateForHostCookies) {
 
   std::optional<base::Time> server_time = std::nullopt;
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
-  deletion_filter->host_name = url.host();
+  deletion_filter->host_name = url.GetHost();
 
   base::Time now = base::Time::Now();
   std::vector<std::unique_ptr<CanonicalCookie>> valid_cookies;

@@ -448,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
 
   HostZoomMap* host_zoom_map =
       HostZoomMap::GetForWebContents(shell()->web_contents());
-  host_zoom_map->SetZoomLevelForHost(test_url.host(),
+  host_zoom_map->SetZoomLevelForHost(test_url.GetHost(),
                                      blink::ZoomFactorToZoomLevel(2.5));
   WaitForNotification("Page.frameResized", true);
 
@@ -4447,7 +4447,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TestRawHeadersWithRedirects) {
                                              ->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
-      https_url.host(), expiry, include_subdomains, run_loop.QuitClosure());
+      https_url.GetHost(), expiry, include_subdomains, run_loop.QuitClosure());
   run_loop.Run();
 
   GURL::Replacements replace_scheme;

@@ -700,10 +700,10 @@ class TestBrowserClient : public ContentBrowserClient {
   // ContentBrowserClient:
   std::string GetWebUIHostnameForCodeCacheMetrics(
       const GURL& webui_url) const override {
-    if (webui_url.host() == "foo") {
+    if (webui_url.GetHost() == "foo") {
       return "Foo";
     }
-    if (webui_url.host() == "bar") {
+    if (webui_url.GetHost() == "bar") {
       return "Bar";
     }
     return std::string();

@@ -555,7 +555,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
 
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();
-    options->relying_party_id = origin_url.host();
+    options->relying_party_id = origin_url.GetHost();
     options->extensions->appid = appid;
 
     return AuthenticatorGetAssertion(std::move(options)).status;
@@ -569,7 +569,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
 
     PublicKeyCredentialCreationOptionsPtr options =
         GetTestPublicKeyCredentialCreationOptions();
-    options->relying_party.id = origin_url.host();
+    options->relying_party.id = origin_url.GetHost();
     options->appid_exclude = appid_exclude;
 
     return AuthenticatorMakeCredential(std::move(options)).status;

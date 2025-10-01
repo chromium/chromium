@@ -214,7 +214,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertErrorFatal) {
   auto* storage_partition = browser_context_->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   storage_partition->GetNetworkContext()->AddHSTS(
-      url.host(), expiry, include_subdomains, run_loop.QuitClosure());
+      url.GetHost(), expiry, include_subdomains, run_loop.QuitClosure());
   run_loop.Run();
 
   TestNavigationURLLoaderDelegate delegate;

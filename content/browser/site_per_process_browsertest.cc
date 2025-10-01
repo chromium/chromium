@@ -5981,8 +5981,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
   ASSERT_EQ(2U, new_root->child_count());
   EXPECT_EQ(main_url, new_root->current_url());
-  EXPECT_EQ("data", new_root->child_at(0)->current_url().scheme());
-  EXPECT_EQ("data", new_root->child_at(1)->current_url().scheme());
+  EXPECT_EQ("data", new_root->child_at(0)->current_url().GetScheme());
+  EXPECT_EQ("data", new_root->child_at(1)->current_url().GetScheme());
 
   EXPECT_NE(new_root->current_frame_host()->GetSiteInstance(),
             new_root->child_at(0)->current_frame_host()->GetSiteInstance());
@@ -7791,8 +7791,8 @@ class RequestDelayingSitePerProcessBrowserTest
   // Then we release the barrier and finish all delayed requests.
   std::unique_ptr<net::test_server::HttpResponse> HandleMockResource(
       const net::test_server::HttpRequest& request) {
-    auto it =
-        num_remaining_requests_to_delay_for_path_.find(request.GetURL().path());
+    auto it = num_remaining_requests_to_delay_for_path_.find(
+        request.GetURL().GetPath());
     if (it == num_remaining_requests_to_delay_for_path_.end())
       return nullptr;
 
@@ -10874,8 +10874,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
   EXPECT_EQ(
-      bar_url.host(),
-      child->current_frame_host()->GetSiteInstance()->GetSiteURL().host());
+      bar_url.GetHost(),
+      child->current_frame_host()->GetSiteInstance()->GetSiteURL().GetHost());
 
   // The subframe's SiteInstance should still be different from second_shell's
   // SiteInstance, and they should be in separate BrowsingInstances.
@@ -12890,7 +12890,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   FrameTreeNode* child =
       web_contents()->GetPrimaryFrameTree().root()->child_at(0);
   GURL original_frame_url(child->current_frame_host()->GetLastCommittedURL());
-  EXPECT_EQ("b.com", original_frame_url.host());
+  EXPECT_EQ("b.com", original_frame_url.GetHost());
 
   WebContentsConsoleObserver console_observer(web_contents());
   console_observer.SetPattern("Not allowed to load local resource: file:*");
@@ -14546,7 +14546,7 @@ class SitePerProcessWithMainFrameThresholdLocalhostTest
 IN_PROC_BROWSER_TEST_P(SitePerProcessWithMainFrameThresholdLocalhostTest,
                        AllowReuseLocalHost) {
   const GURL kUrl = embedded_test_server()->GetURL("localhost", "/title1.html");
-  ASSERT_TRUE(net::IsLocalHostname(kUrl.host()));
+  ASSERT_TRUE(net::IsLocalHostname(kUrl.GetHost()));
 
   ASSERT_TRUE(NavigateToURL(shell(), kUrl));
   Shell* second_shell = CreateShellAndNavigateToURL(kUrl);

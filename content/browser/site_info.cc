@@ -50,7 +50,8 @@ WebUIDomains GetWebUIDomains(const GURL& url) {
 // to share a process whilst maintaining independent SiteURLs to allow for
 // WebUIType differentiation.
 bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
-  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(), url.scheme())) {
+  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(),
+                      url.GetScheme())) {
     return false;
   }
 
@@ -693,7 +694,7 @@ bool SiteInfo::ShouldLockProcessToSite(
   // Most WebUI processes should be locked on all platforms.  The only exception
   // is NTP, handled via the separate callout to the embedder.
   const auto& webui_schemes = URLDataManagerBackend::GetWebUISchemes();
-  if (base::Contains(webui_schemes, site_url_.scheme())) {
+  if (base::Contains(webui_schemes, site_url_.GetScheme())) {
     return GetContentClient()->browser()->DoesWebUIUrlRequireProcessLock(
         site_url_);
   }
@@ -794,7 +795,7 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
       !effective_url.has_value()) {
     WebUIDomains host_domains = GetWebUIDomains(url_info.url);
     return AgentClusterKey::CreateSiteKeyed(
-        GURL(url_info.url.scheme() + url::kStandardSchemeSeparator +
+        GURL(url_info.url.GetScheme() + url::kStandardSchemeSeparator +
              host_domains.back()),
         AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
@@ -1023,8 +1024,8 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   }
 
   // All other URLs use a site-keyed agent cluster based on their scheme.
-  DCHECK(!url.scheme().empty());
-  GURL site_url = GURL(url.scheme() + ":");
+  DCHECK(!url.GetScheme().empty());
+  GURL site_url = GURL(url.GetScheme() + ":");
   return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
 }
 

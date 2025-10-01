@@ -7768,7 +7768,7 @@ void RenderFrameHostImpl::AllowBindings(BindingsPolicySet bindings) {
     ProcessLock process_lock = GetProcess()->GetProcessLock();
     if (!process_lock.IsLockedToSite() ||
         !base::Contains(URLDataManagerBackend::GetWebUISchemes(),
-                        process_lock.GetProcessLockURL().scheme())) {
+                        process_lock.GetProcessLockURL().GetScheme())) {
       SCOPED_CRASH_KEY_STRING256("AllowBindings", "process_lock",
                                  process_lock.ToString());
       NOTREACHED() << "Calling AllowBindings for a process not locked to WebUI:"
@@ -17362,7 +17362,7 @@ std::string GetURLTypeForCrashKey(const GURL& url) {
     return "empty";
   if (!url.is_valid())
     return "invalid";
-  return url.scheme();
+  return url.GetScheme();
 }
 
 std::string GetURLRelationForCrashKey(

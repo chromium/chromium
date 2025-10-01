@@ -126,7 +126,7 @@ class WebUIManagedInterfaceTestUI : public WebUIController,
     // WebUIDataSource::CreateAndAdd() expects "host" as the `source_name` arg
     // for trusted hosts and "chrome-untrusted://host" for untrusted hosts.
     for (const auto& host :
-         {GURL(kFooURL).host(), std::string(kFooInIframeURL)}) {
+         {GURL(kFooURL).GetHost(), std::string(kFooInIframeURL)}) {
       WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(), host);
       data_source->SetDefaultResource(IDR_WEB_UI_MANAGED_INTERFACE_TEST_HTML);

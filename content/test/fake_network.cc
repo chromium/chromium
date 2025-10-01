@@ -67,8 +67,8 @@ const FakeNetwork::ResponseInfo& FakeNetwork::FindResponseInfo(
   static const base::NoDestructor<ResponseInfo> kDefaultJsResponseInfo(
       kDefaultHttpHeaderForJS, kDefaultHttpBodyForJS, /*network_accessed=*/true,
       net::OK);
-  bool is_js =
-      base::EndsWith(url.path(), ".js", base::CompareCase::INSENSITIVE_ASCII);
+  bool is_js = base::EndsWith(url.GetPath(), ".js",
+                              base::CompareCase::INSENSITIVE_ASCII);
 
   return is_js ? *kDefaultJsResponseInfo : *kDefaultResponseInfo;
 }

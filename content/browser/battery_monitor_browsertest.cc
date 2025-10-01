@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(BatteryMonitorTest, NavigatorGetBatteryInfo) {
   GURL test_url = GetTestUrl("battery_monitor",
                              "battery_status_promise_resolution_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(BatteryMonitorTest, NavigatorGetBatteryListenChange) {
@@ -129,13 +129,14 @@ IN_PROC_BROWSER_TEST_F(BatteryMonitorTest, NavigatorGetBatteryListenChange) {
       GetTestUrl("battery_monitor", "battery_status_event_listener_test.html");
   shell()->LoadURL(test_url);
   same_tab_observer.Wait();
-  EXPECT_EQ("resolved", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("resolved",
+            shell()->web_contents()->GetLastCommittedURL().GetRef());
 
   TestNavigationObserver same_tab_observer2(shell()->web_contents(), 1);
   status.level = 0.6;
   mock_battery_monitor()->DidChange(status);
   same_tab_observer2.Wait();
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 }  //  namespace

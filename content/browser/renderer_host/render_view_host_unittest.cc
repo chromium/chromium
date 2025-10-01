@@ -52,7 +52,7 @@ class RenderViewHostTestBrowserClient : public TestContentBrowserClient {
   ~RenderViewHostTestBrowserClient() override {}
 
   bool IsHandledURL(const GURL& url) override {
-    return url.scheme() == url::kFileScheme;
+    return url.GetScheme() == url::kFileScheme;
   }
 };
 

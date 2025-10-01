@@ -1463,7 +1463,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
   } else if (rfh && params->url().SchemeIs(content::kChromeUIScheme)) {
     pending_url_loader_factory =
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-            CreateWebUIURLLoaderFactory(rfh, params->url().scheme(),
+            CreateWebUIURLLoaderFactory(rfh, params->url().GetScheme(),
                                         base::flat_set<std::string>()));
   } else if (rfh && params->url().SchemeIsFileSystem()) {
     StoragePartitionImpl* storage_partition = GetStoragePartitionForConfig(
@@ -1488,7 +1488,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
             params->render_process_host_id(),
             params->render_frame_host_routing_id(), params->initiator(),
             &non_network_url_loader_factories);
-    auto it = non_network_url_loader_factories.find(params->url().scheme());
+    auto it = non_network_url_loader_factories.find(params->url().GetScheme());
     if (it != non_network_url_loader_factories.end()) {
       pending_url_loader_factory =
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(

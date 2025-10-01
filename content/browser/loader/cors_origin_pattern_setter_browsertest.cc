@@ -125,7 +125,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
     }
   }
 
-  std::string host_ip() { return embedded_test_server()->base_url().host(); }
+  std::string host_ip() { return embedded_test_server()->base_url().GetHost(); }
 
   const std::u16string& pass_string() const { return pass_string_; }
   const std::u16string& fail_string() const { return fail_string_; }

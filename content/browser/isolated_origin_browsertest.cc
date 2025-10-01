@@ -2832,8 +2832,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   // rest of the test to operate as if all URLs are using the default ports.
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() == "foo.com") {
-          if (params->url_request.url.path() != "/") {
+        if (params->url_request.url.GetHost() == "foo.com") {
+          if (params->url_request.url.GetPath() != "/") {
             return false;
           }
 
@@ -2851,8 +2851,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
               params->client.get(), &headers, std::optional<net::SSLInfo>());
           return true;
         }
-        if (params->url_request.url.host() == "a.foo.com" ||
-            params->url_request.url.host() == "b.foo.com") {
+        if (params->url_request.url.GetHost() == "a.foo.com" ||
+            params->url_request.url.GetHost() == "b.foo.com") {
           URLLoaderInterceptor::WriteResponse("content/test/data/title1.html",
                                               params->client.get());
           return true;
@@ -5058,11 +5058,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginLongListTest, Test) {
   RenderFrameHost* subframe1 = ChildFrameAt(main_frame, 0);
   RenderFrameHost* subframe2 = ChildFrameAt(main_frame, 1);
   RenderFrameHost* subframe3 = ChildFrameAt(main_frame, 2);
-  EXPECT_EQ("bar1.com", main_frame->GetLastCommittedOrigin().GetURL().host());
+  EXPECT_EQ("bar1.com",
+            main_frame->GetLastCommittedOrigin().GetURL().GetHost());
   EXPECT_EQ("isolated.foo.com",
-            subframe1->GetLastCommittedOrigin().GetURL().host());
-  EXPECT_EQ("foo999.com", subframe2->GetLastCommittedOrigin().GetURL().host());
-  EXPECT_EQ("bar2.com", subframe3->GetLastCommittedOrigin().GetURL().host());
+            subframe1->GetLastCommittedOrigin().GetURL().GetHost());
+  EXPECT_EQ("foo999.com",
+            subframe2->GetLastCommittedOrigin().GetURL().GetHost());
+  EXPECT_EQ("bar2.com", subframe3->GetLastCommittedOrigin().GetURL().GetHost());
 
   // bar1.com and bar2.com are not on the list of origins to isolate - they
   // should stay in the same process, unless --site-per-process has also been
@@ -5200,10 +5202,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, AIsolatedCA) {
   EXPECT_TRUE(IsIsolatedOrigin(b->GetLastCommittedOrigin()));
   EXPECT_FALSE(IsIsolatedOrigin(c->GetLastCommittedOrigin()));
   EXPECT_FALSE(IsIsolatedOrigin(d->GetLastCommittedOrigin()));
-  EXPECT_EQ("www.foo.com", a->GetLastCommittedURL().host());
-  EXPECT_EQ("isolated.foo.com", b->GetLastCommittedURL().host());
-  EXPECT_EQ("c.com", c->GetLastCommittedURL().host());
-  EXPECT_EQ("www.foo.com", d->GetLastCommittedURL().host());
+  EXPECT_EQ("www.foo.com", a->GetLastCommittedURL().GetHost());
+  EXPECT_EQ("isolated.foo.com", b->GetLastCommittedURL().GetHost());
+  EXPECT_EQ("c.com", c->GetLastCommittedURL().GetHost());
+  EXPECT_EQ("www.foo.com", d->GetLastCommittedURL().GetHost());
 
   // Verify that the isolated site is indeed isolated.
   EXPECT_NE(b->GetProcess()->GetDeprecatedID(),
@@ -5462,10 +5464,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNoFlagOverrideTest,
   EXPECT_FALSE(IsIsolatedOrigin(d->GetLastCommittedOrigin()));
   EXPECT_FALSE(IsIsolatedOrigin(c1->GetLastCommittedOrigin()));
   EXPECT_FALSE(IsIsolatedOrigin(c2->GetLastCommittedOrigin()));
-  EXPECT_EQ("b.com", b->GetLastCommittedURL().host());
-  EXPECT_EQ("d.com", d->GetLastCommittedURL().host());
-  EXPECT_EQ("c.com", c1->GetLastCommittedURL().host());
-  EXPECT_EQ("c.com", c2->GetLastCommittedURL().host());
+  EXPECT_EQ("b.com", b->GetLastCommittedURL().GetHost());
+  EXPECT_EQ("d.com", d->GetLastCommittedURL().GetHost());
+  EXPECT_EQ("c.com", c1->GetLastCommittedURL().GetHost());
+  EXPECT_EQ("c.com", c2->GetLastCommittedURL().GetHost());
 
   // Verify that the isolated site is indeed isolated.
   EXPECT_NE(a->GetProcess()->GetDeprecatedID(),
@@ -6802,7 +6804,7 @@ class WildcardOriginIsolationTest : public IsolatedOriginTestBase {
   // have the string '[*.]' inserted at the correct point.
   std::string MakeWildcard(GURL url) {
     DCHECK(url.is_valid());
-    return url.scheme() + url::kStandardSchemeSeparator +
+    return url.GetScheme() + url::kStandardSchemeSeparator +
            kAllSubdomainWildcard + url.GetContent();
   }
 };
@@ -7330,18 +7332,18 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, COOPAndOriginAgentClusterNoPorts) {
   // simple test page without any headers for a.foo.com and b.foo.com.
   URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() == "foo.com") {
+        if (params->url_request.url.GetHost() == "foo.com") {
           const std::string headers =
               "HTTP/1.1 200 OK\n"
               "Content-Type: text/html\n"
               "Origin-Agent-Cluster: ?1\n"
               "Cross-Origin-Opener-Policy: same-origin\n";
           URLLoaderInterceptor::WriteResponse(
-              "content/test/data" + params->url_request.url.path(),
+              "content/test/data" + params->url_request.url.GetPath(),
               params->client.get(), &headers, std::optional<net::SSLInfo>());
           return true;
-        } else if (params->url_request.url.host() == "a.foo.com" ||
-                   params->url_request.url.host() == "b.foo.com") {
+        } else if (params->url_request.url.GetHost() == "a.foo.com" ||
+                   params->url_request.url.GetHost() == "b.foo.com") {
           URLLoaderInterceptor::WriteResponse("content/test/data/title1.html",
                                               params->client.get());
           return true;

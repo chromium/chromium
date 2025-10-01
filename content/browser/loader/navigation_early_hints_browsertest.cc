@@ -406,7 +406,7 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
       const net::test_server::HttpRequest& request) {
     GURL relative_url = request.base_url.Resolve(request.relative_url);
 
-    if (relative_url.path() == kEmptyPagePath) {
+    if (relative_url.GetPath() == kEmptyPagePath) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
       response->set_content_type("text/html");
@@ -414,7 +414,7 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
       return std::move(response);
     }
 
-    if (relative_url.path() == kRedirectedPagePath) {
+    if (relative_url.GetPath() == kRedirectedPagePath) {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->set_code(net::HTTP_OK);
       response->set_content_type("text/html");
@@ -422,7 +422,7 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
       return std::move(response);
     }
 
-    if (relative_url.path() != kHintedScriptPath) {
+    if (relative_url.GetPath() != kHintedScriptPath) {
       return nullptr;
     }
 
@@ -431,7 +431,7 @@ class NavigationEarlyHintsTest : public DevToolsProtocolTest {
     response->set_content_type("application/javascript");
     response->set_content(kHintedScriptBody);
 
-    std::string query = relative_url.query();
+    std::string query = relative_url.GetQuery();
     if (query == "corp-cross-origin") {
       response->AddCustomHeader("Cross-Origin-Resource-Policy", "cross-origin");
     } else if (query == "corp-same-origin") {
@@ -1028,7 +1028,7 @@ class Http1EarlyHintsResponse : public net::test_server::HttpResponse {
 std::unique_ptr<net::test_server::HttpResponse> HandleHttpEarlyHintsRequest(
     const net::test_server::HttpRequest& request) {
   const GURL relative_url = request.base_url.Resolve(request.relative_url);
-  if (relative_url.path() == kHttp1EarlyHintsPath) {
+  if (relative_url.GetPath() == kHttp1EarlyHintsPath) {
     return std::make_unique<Http1EarlyHintsResponse>();
   }
   return nullptr;

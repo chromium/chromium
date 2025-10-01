@@ -742,7 +742,7 @@ bool ServiceWorkerClient::IsEligibleForServiceWorkerController() const {
   std::set<std::string> schemes;
   GetContentClient()->browser()->GetSchemesBypassingSecureContextCheckAllowlist(
       &schemes);
-  return schemes.find(url_.scheme()) != schemes.end();
+  return schemes.find(url_.GetScheme()) != schemes.end();
 }
 
 bool ServiceWorkerClient::is_response_committed() const {

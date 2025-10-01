@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest, GetZoomForView_Host) {
   double host_zoom_level = default_zoom_level + 1.0;
   double temp_zoom_level = default_zoom_level + 2.0;
 
-  host_zoom_map_impl_->SetZoomLevelForHost(url_.host(), host_zoom_level);
+  host_zoom_map_impl_->SetZoomLevelForHost(url_.GetHost(), host_zoom_level);
 
   RunTestForURL(host_zoom_level, temp_zoom_level);
 }
@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
   double host_zoom_level = default_zoom_level + 1.0;
   double temp_zoom_level = default_zoom_level + 2.0;
 
-  host_zoom_map_impl_->SetZoomLevelForHostAndScheme(url_.scheme(), url_.host(),
-                                                    host_zoom_level);
+  host_zoom_map_impl_->SetZoomLevelForHostAndScheme(
+      url_.GetScheme(), url_.GetHost(), host_zoom_level);
 
   RunTestForURL(host_zoom_level, temp_zoom_level);
 }

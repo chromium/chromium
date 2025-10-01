@@ -2496,7 +2496,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ErrorPageNetworkError) {
   GURL start_url(embedded_test_server()->GetURL("foo.com", "/title1.html"));
   GURL error_url(embedded_test_server()->GetURL("/close-socket"));
-  EXPECT_NE(start_url.host(), error_url.host());
+  EXPECT_NE(start_url.GetHost(), error_url.GetHost());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
 

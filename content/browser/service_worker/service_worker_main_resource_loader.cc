@@ -500,7 +500,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
           base::GetFieldTrialParamValueByFeature(
               features::kServiceWorkerAutoPreload, "blocked_hosts"),
           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-  if (blocked_hosts->contains(resource_request_.url.host())) {
+  if (blocked_hosts->contains(resource_request_.url.GetHost())) {
     return false;
   }
 
