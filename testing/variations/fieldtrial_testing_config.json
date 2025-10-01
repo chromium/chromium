@@ -939,6 +939,22 @@
             ]
         }
     ],
+    "AndroidSmsOtpFilling": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidSmsOtpFilling",
+                        "PasswordFormClientsideClassifier"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSpareRendererCreation_V3": [
         {
             "platforms": [
@@ -17820,28 +17836,6 @@
                     "name": "Disabled",
                     "disable_features": [
                         "PassageEmbedder"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PasswordFormClientsideClassifier": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_With_Predictions_Caching",
-                    "enable_features": [
-                        "FieldClassificationModelCaching",
-                        "PasswordFormClientsideClassifier"
                     ]
                 }
             ]
