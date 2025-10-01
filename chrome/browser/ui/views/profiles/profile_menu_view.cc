@@ -41,7 +41,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_hats_util.h"
-#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -174,9 +173,11 @@ bool ProfileMenuView::close_on_deactivate_for_testing_ = true;
 ProfileMenuView::ProfileMenuView(
     ui::TrackedElement* anchor_element,
     Browser* browser,
+    signin::ProfileMenuAvatarButtonPromoInfo promo_info,
     std::optional<signin_metrics::AccessPoint> explicit_signin_access_point)
     : ProfileMenuViewBase(anchor_element, browser),
       browser_(raw_ref<Browser>::from_ptr(browser)),
+      promo_info_(promo_info),
       explicit_signin_access_point_(explicit_signin_access_point) {
   set_close_on_deactivate(close_on_deactivate_for_testing_);
 
@@ -521,11 +522,16 @@ void ProfileMenuView::OnAutofillSettingsButtonClicked() {
   chrome::ShowSettingsSubPage(&browser(), chrome::kAutofillSubPage);
 }
 
-void ProfileMenuView::OnBuildBatchUploadButtonClicked() {
-  OnActionableItemClicked(ActionableItem::kBatchUploadButton);
+void ProfileMenuView::OnBatchUploadButtonClicked(ActionableItem button_type) {
+  CHECK(button_type == ActionableItem::kBatchUploadButton ||
+        button_type ==
+            ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton);
+  OnActionableItemClicked(button_type);
   if (!perform_menu_actions()) {
     return;
   }
+  // TODO(crbug.com/447048341): Make the `BatchUploadService::EntryPoint` depend
+  // on which button was clicked.
   BatchUploadServiceFactory::GetForProfile(&profile())
       ->OpenBatchUpload(&browser(),
                         BatchUploadService::EntryPoint::kProfileMenu);
@@ -588,7 +594,7 @@ void ProfileMenuView::BuildGuestIdentity() {
   }
 }
 
-std::optional<ProfileMenuViewBase::IdentitySectionParams>
+ProfileMenuViewBase::IdentitySectionParams
 ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(&profile());
@@ -737,14 +743,51 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       break;
     }
     case signin_util::SignedInState::kSignedIn:
-      signin::ComputeProfileMenuAvatarButtonPromoType(
-          profile(),
-          base::BindOnce(&ProfileMenuView::OnPromoTypeReadyWithParams,
-                         weak_pointer_factory_.GetWeakPtr(), std::move(params),
-                         explicit_signin_access_point_.value_or(access_point)));
-      // Delegating the rest of the params construction when getting the promo
-      // result.
-      return std::nullopt;
+      if (promo_info_.type.has_value()) {
+        switch (promo_info_.type.value()) {
+          case signin::ProfileMenuAvatarButtonPromoInfo::Type::
+              kHistorySyncPromo:
+            params.subtitle = l10n_util::GetStringFUTF16(
+                IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
+                base::UTF8ToUTF16(primary_account_info.email));
+            params.button_text = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
+            button_type = ActionableItem::kHistorySyncButton;
+            break;
+          case signin::ProfileMenuAvatarButtonPromoInfo::Type::
+              kBatchUploadBookmarksPromo:
+            params.subtitle = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_PROMO_DESCRIPTION_WITH_BATCH_UPLOAD_BOOKMARK_CLEANUP);
+            params.button_text = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_PROMO_BUTTON_WITH_BATCH_UPLOAD);
+            params.button_action = base::BindRepeating(
+                &ProfileMenuView::OnBatchUploadButtonClicked,
+                base::Unretained(this),
+                ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton);
+            break;
+          case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+            CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+            params.subtitle = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO);
+            params.button_text = l10n_util::GetStringUTF16(
+                IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO);
+            break;
+        }
+      } else {
+        if (base::FeatureList::IsEnabled(
+                syncer::kReplaceSyncPromosWithSignInPromos)) {
+          // No button.
+          params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
+        } else {
+          params.subtitle =
+              l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
+          params.button_text =
+              l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
+          signin_metrics::LogSyncOptInOffered(
+              explicit_signin_access_point_.value_or(access_point));
+        }
+      }
+      break;
     case signin_util::SignedInState::kSyncing:
       // No button.
       params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
@@ -763,7 +806,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       NOTREACHED();
   }
 
-  if (!params.button_text.empty()) {
+  // Sets the default action if needed - if a button text was explicitly set and
+  // no prior action was set.
+  if (!params.button_text.empty() && params.button_action.is_null()) {
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
         account_info_for_signin_action, button_type,
@@ -771,69 +816,6 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   }
 
   return params;
-}
-
-void ProfileMenuView::OnPromoTypeReadyWithParams(
-    IdentitySectionParams params,
-    signin_metrics::AccessPoint access_point,
-    std::optional<signin::ProfileMenuAvatarButtonPromoType> promo_type) {
-  const signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(&profile());
-  CHECK_EQ(signin_util::GetSignedInState(identity_manager),
-           signin_util::SignedInState::kSignedIn);
-
-  const AccountInfo primary_account_info =
-      identity_manager->FindExtendedAccountInfo(
-          identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin));
-
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    if (!promo_type.has_value()) {
-      // No button.
-      params.subtitle = base::UTF8ToUTF16(primary_account_info.email);
-    } else {
-      switch (promo_type.value()) {
-        case signin::ProfileMenuAvatarButtonPromoType::kHistorySyncPromo:
-          params.subtitle = l10n_util::GetStringFUTF16(
-              IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
-              base::UTF8ToUTF16(primary_account_info.email));
-          params.button_text = l10n_util::GetStringUTF16(
-              IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
-          signin_metrics::LogSyncOptInOffered(access_point);
-          break;
-        case signin::ProfileMenuAvatarButtonPromoType::kSyncPromo:
-          NOTREACHED()
-              << "This promo type is not possible with "
-                 "`syncer::kReplaceSyncPromosWithSignInPromos` enabled";
-      }
-    }
-  } else {
-    if (promo_type.has_value()) {
-      CHECK_EQ(promo_type.value(),
-               signin::ProfileMenuAvatarButtonPromoType::kSyncPromo);
-      CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-      params.subtitle = l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO);
-      params.button_text = l10n_util::GetStringUTF16(
-          IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO);
-    } else {
-      params.subtitle = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
-      params.button_text =
-          l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
-    }
-    signin_metrics::LogSyncOptInOffered(access_point);
-  }
-
-  if (!params.button_text.empty()) {
-    params.button_action =
-        base::BindRepeating(&ProfileMenuView::OnSigninButtonClicked,
-                            base::Unretained(this), primary_account_info,
-                            ActionableItem::kSigninAccountButton, access_point);
-  }
-
-  // Set the button params.
-  SetProfileIdentityWithCallToAction(std::move(params));
 }
 
 void ProfileMenuView::BuildIdentityWithCallToAction() {
@@ -846,38 +828,7 @@ void ProfileMenuView::BuildIdentityWithCallToAction() {
     return;
   }
 
-  if (std::optional<ProfileMenuViewBase::IdentitySectionParams> params =
-          GetIdentitySectionParams(*entry);
-      params.has_value()) {
-    SetProfileIdentityWithCallToAction(std::move(params.value()));
-  }
-}
-
-void ProfileMenuView::OnBatchUploadDataReceived(
-    std::map<syncer::DataType, syncer::LocalDataDescription> local_data_map) {
-  size_t local_data_count = std::accumulate(
-      local_data_map.begin(), local_data_map.end(), 0u,
-      [](size_t current_count,
-         std::pair<syncer::DataType, syncer::LocalDataDescription> local_data) {
-        return current_count + local_data.second.local_data_models.size();
-      });
-  if (local_data_count == 0) {
-    return;
-  }
-
-  AddFeatureButton(
-      l10n_util::GetPluralStringFUTF16(IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON,
-                                       local_data_count),
-      base::BindRepeating(&ProfileMenuView::OnBuildBatchUploadButtonClicked,
-                          weak_pointer_factory_.GetWeakPtr()),
-      vector_icons::kSaveCloudIcon, /*icon_to_image_ratio=*/1.0f, /*index=*/0);
-
-  // Adding the button being asynchronous, the menu may be already been shown,
-  // update the view size to accommodate for the addition of the button. In
-  // theory this update should not even be visible to the user.
-  if (views::Widget* widget = GetWidget()) {
-    widget->SetSize(widget->non_client_view()->GetPreferredSize());
-  }
+  SetProfileIdentityWithCallToAction(GetIdentitySectionParams(*entry));
 }
 
 void ProfileMenuView::MaybeBuildBatchUploadButton() {
@@ -886,9 +837,17 @@ void ProfileMenuView::MaybeBuildBatchUploadButton() {
     return;
   }
 
-  BatchUploadServiceFactory::GetForProfile(&profile())
-      ->GetLocalDataDescriptionsForAvailableTypes(base::BindOnce(
-          &ProfileMenuView::OnBatchUploadDataReceived, base::Unretained(this)));
+  if (promo_info_.local_data_count == 0) {
+    return;
+  }
+
+  AddFeatureButton(
+      l10n_util::GetPluralStringFUTF16(IDS_PROFILE_MENU_BATCH_UPLOAD_BUTTON,
+                                       promo_info_.local_data_count),
+      base::BindRepeating(&ProfileMenuView::OnBatchUploadButtonClicked,
+                          base::Unretained(this),
+                          ActionableItem::kBatchUploadButton),
+      vector_icons::kSaveCloudIcon);
 }
 
 void ProfileMenuView::BuildAutofillSettingsButton() {

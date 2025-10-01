@@ -77,19 +77,30 @@ SignInPromoType GetSignInPromoTypeFromAccessPoint(
 void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
                             Profile* profile);
 
-// Different promo types that can be shown in the ProfileMenu and AvatarButton.
-enum class ProfileMenuAvatarButtonPromoType {
-  kHistorySyncPromo,
-  kSyncPromo,
+// Structure containing information needed for the promos.
+struct ProfileMenuAvatarButtonPromoInfo {
+  // Different promo types that can be shown in the ProfileMenu and
+  // AvatarButton.
+  enum class Type {
+    kHistorySyncPromo,
+    kBatchUploadBookmarksPromo,
+    kSyncPromo,
+  };
+
+  std::optional<Type> type = std::nullopt;
+  size_t local_data_count = 0;
+
+  friend bool operator==(const ProfileMenuAvatarButtonPromoInfo& info1,
+                         const ProfileMenuAvatarButtonPromoInfo& info2) =
+      default;
 };
 
-// Based on the `profile` current state, compute which promo should be shown to
-// the user. The promo between the ProfileMenu and the AvatarButton should
+// Based on the `profile` current state, compute the data to be shown for the
+// promos, if any. The promo between the ProfileMenu and the AvatarButton should
 // always be aligned.
-void ComputeProfileMenuAvatarButtonPromoType(
+void ComputeProfileMenuAvatarButtonPromoInfo(
     Profile& profile,
-    base::OnceCallback<void(std::optional<ProfileMenuAvatarButtonPromoType>)>
-        result_callback);
+    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback);
 
 class SyncPromoIdentityPillManager : public signin::IdentityManager::Observer {
  public:
@@ -111,9 +122,9 @@ class SyncPromoIdentityPillManager : public signin::IdentityManager::Observer {
   SyncPromoIdentityPillManager& operator=(SyncPromoIdentityPillManager&&) =
       delete;
 
-  bool ShouldShowPromo(ProfileMenuAvatarButtonPromoType promo_type);
-  void RecordPromoShown(ProfileMenuAvatarButtonPromoType promo_type);
-  void RecordPromoUsed(ProfileMenuAvatarButtonPromoType promo_type);
+  bool ShouldShowPromo(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
+  void RecordPromoShown(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
+  void RecordPromoUsed(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
 
   // signin::IdentityManager::Observer:
   void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;

@@ -817,7 +817,8 @@ class ShowIdentityNameStateProvider : public StateProvider,
 class HistorySyncOptinCoordinator
     : public base::SupportsUserData::Data,
       public AvatarToolbarButtonStateManager::Observer,
-      public signin::IdentityManager::Observer {
+      public signin::IdentityManager::Observer,
+      public syncer::SyncServiceObserver {
  public:
   static constexpr signin_metrics::AccessPoint kHistoryOptinAccessPoint =
       signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
@@ -834,7 +835,10 @@ class HistorySyncOptinCoordinator
     return *coordinator;
   }
 
-  bool IsPromoShowing() const { return promo_type_.has_value(); }
+  std::optional<signin::ProfileMenuAvatarButtonPromoInfo::Type> promo_type()
+      const {
+    return promo_type_;
+  }
 
   base::CallbackListSubscription AddStateChangedCallback(
       base::RepeatingClosure callback) {
@@ -843,9 +847,16 @@ class HistorySyncOptinCoordinator
 
   void PromoUsed() {
     CHECK(before_promo_used_elapsed_timer_.has_value());
-    base::UmaHistogramMediumTimes(
-        "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
-        before_promo_used_elapsed_timer_->Elapsed());
+    // TODO(crbug.com/447048341): Extend/Duplicate the below histogram to
+    // support the different promos.
+    if (promo_type_.value() ==
+            signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo ||
+        promo_type_.value() ==
+            signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
+      base::UmaHistogramMediumTimes(
+          "Signin.SyncOptIn.IdentityPill.DurationBeforeClick",
+          before_promo_used_elapsed_timer_->Elapsed());
+    }
     CHECK(promo_type_.has_value());
     sync_promo_identity_pill_manager_.RecordPromoUsed(promo_type_.value());
     Collapse();
@@ -919,6 +930,20 @@ class HistorySyncOptinCoordinator
     identity_manager_observation_.Reset();
   }
 
+  // syncer::SyncServiceObserver
+  void OnStateChanged(syncer::SyncService* sync_service) override {
+    if (sync_service->IsEngineInitialized()) {
+      sync_service_observation_.Reset();
+      TriggerWithSyncServiceInitialized();
+    }
+  }
+
+  void OnSyncShutdown(syncer::SyncService* sync_service) override {
+    if (sync_service_observation_.IsObserving()) {
+      sync_service_observation_.Reset();
+    }
+  }
+
  private:
   constexpr static const void* const kHistorySyncOptinCoordinatorKey =
       &kHistorySyncOptinCoordinatorKey;
@@ -937,23 +962,46 @@ class HistorySyncOptinCoordinator
       return;
     }
 
-    signin::ComputeProfileMenuAvatarButtonPromoType(
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(&profile_.get());
+    if (!sync_service) {
+      return;
+    }
+
+    // TODO(crbug.com/448615704): Refactor this condition to be part of
+    // `BatchUploadService` return value directly; e.g. returning std::nullopt
+    // instead of 0 (no local data) when the `syncer::SyncService` is not
+    // initialized.
+    if (!sync_service->IsEngineInitialized()) {
+      if (!sync_service_observation_.IsObserving()) {
+        sync_service_observation_.Observe(sync_service);
+      }
+      return;
+    }
+
+    TriggerWithSyncServiceInitialized();
+  }
+
+  void TriggerWithSyncServiceInitialized() {
+    CHECK(SyncServiceFactory::GetForProfile(&profile_.get())
+              ->IsEngineInitialized());
+
+    signin::ComputeProfileMenuAvatarButtonPromoInfo(
         profile_.get(),
         base::BindOnce(&HistorySyncOptinCoordinator::OnPromoTypeResult,
                        base::Unretained(this)));
   }
 
-  void OnPromoTypeResult(
-      std::optional<signin::ProfileMenuAvatarButtonPromoType> promo_type) {
+  void OnPromoTypeResult(signin::ProfileMenuAvatarButtonPromoInfo promo_info) {
     promo_type_.reset();
-    if (!promo_type.has_value()) {
+    if (!promo_info.type.has_value()) {
       return;
     }
     if (!sync_promo_identity_pill_manager_.ShouldShowPromo(
-            promo_type.value())) {
+            promo_info.type.value())) {
       return;
     }
-    promo_type_ = promo_type;
+    promo_type_ = promo_info.type;
     state_changed_callbacks.Notify();
   }
 
@@ -979,8 +1027,15 @@ class HistorySyncOptinCoordinator
     has_been_shown_since_startup_ = true;
     CHECK(promo_type_.has_value());
     sync_promo_identity_pill_manager_.RecordPromoShown(promo_type_.value());
-    base::UmaHistogramEnumeration("Signin.SyncOptIn.IdentityPill.Shown",
-                                  kHistoryOptinAccessPoint);
+    // TODO(crbug.com/447048341): Extend/Duplicate the below histogram to
+    // support the different promos.
+    if (promo_type_.value() ==
+            signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo ||
+        promo_type_.value() ==
+            signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
+      base::UmaHistogramEnumeration("Signin.SyncOptIn.IdentityPill.Shown",
+                                    kHistoryOptinAccessPoint);
+    }
     collapse_timer_.Start(FROM_HERE,
                           g_history_sync_optin_duration_for_testing.value_or(
                               kHistorySyncOptinDuration),
@@ -992,7 +1047,7 @@ class HistorySyncOptinCoordinator
   }
 
   // Type of the promo currently showing - std::nullopt if no promo.
-  std::optional<signin::ProfileMenuAvatarButtonPromoType> promo_type_;
+  std::optional<signin::ProfileMenuAvatarButtonPromoInfo::Type> promo_type_;
   bool has_been_shown_since_startup_ = false;
   base::OneShotTimer collapse_timer_;
 
@@ -1010,10 +1065,15 @@ class HistorySyncOptinCoordinator
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 };
 
 // Check `signin::ComputeProfileMenuAvatarButtonPromoType()` for promo priority
 // computation.
+// TODO(crbug.com/448609234): Rename this class (and all related classes). This
+// now takes care of all promo types in
+// `signin::ProfileMenuAvatarButtonPromoInfo::Type`, and not only HistorySync.
 class HistorySyncOptinStateProvider : public StateProvider {
  public:
   explicit HistorySyncOptinStateProvider(Browser* browser,
@@ -1025,16 +1085,23 @@ class HistorySyncOptinStateProvider : public StateProvider {
   ~HistorySyncOptinStateProvider() override = default;
 
   // StateProvider:
-  bool IsActive() const override { return coordinator_->IsPromoShowing(); }
+  bool IsActive() const override {
+    return coordinator_->promo_type().has_value();
+  }
 
   std::u16string GetText() const override {
-    if (base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
-      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
+    CHECK(coordinator_->promo_type().has_value());
+    switch (coordinator_->promo_type().value()) {
+      case signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+        return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_HISTORY);
+      case signin::ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadBookmarksPromo:
+        return l10n_util::GetStringUTF16(
+            IDS_AVATAR_BUTTON_BATCH_UPLOAD_PROMO_WITH_BOOKMARK_CLEANUP_PROMO);
+      case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+        CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+        return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
     }
-
-    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
   }
 
   void Init() override {
@@ -1042,7 +1109,7 @@ class HistorySyncOptinStateProvider : public StateProvider {
         coordinator_->AddStateChangedCallback(
             base::BindRepeating(&HistorySyncOptinStateProvider::RequestUpdate,
                                 base::Unretained(this)));
-    if (coordinator_->IsPromoShowing()) {
+    if (IsActive()) {
       RequestUpdate();
     }
   }

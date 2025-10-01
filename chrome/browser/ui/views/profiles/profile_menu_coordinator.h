@@ -8,6 +8,8 @@
 #include <optional>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "ui/views/view_tracker.h"
 
 class BrowserWindowInterface;
@@ -45,12 +47,23 @@ class ProfileMenuCoordinator {
   BrowserWindowInterface* GetBrowser();
   Profile* GetProfile();
 
+  void ShowWithPromoResults(
+      bool is_source_accelerator,
+      std::optional<signin_metrics::AccessPoint> explicit_signin_access_point
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+      ,
+      signin::ProfileMenuAvatarButtonPromoInfo promo_info
+#endif
+  );
+
   // TODO(crbug.com/425953501): Replace with `ToolbarButtonProvider` once this
   // bug is fixed.
   const raw_ref<BrowserWindowInterface> browser_;
 
   const raw_ref<Profile> profile_;
   views::ViewTracker bubble_tracker_;
+
+  base::WeakPtrFactory<ProfileMenuCoordinator> weak_pointer_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MENU_COORDINATOR_H_
