@@ -317,7 +317,6 @@ MEDIA_EXPORT extern const base::FeatureParam<std::string>
 #endif  // BUILDFLAG(IS_WIN)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaOptimizer);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaPowerExperiment);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kMemoryPressureBasedSourceBufferGC);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOverlayFullscreenVideo);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPauseBackgroundTimer);
 #if !BUILDFLAG(IS_ANDROID)

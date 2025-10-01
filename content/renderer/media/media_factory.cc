@@ -419,15 +419,6 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       webkit_preferences.embedded_media_experience_enabled;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // When memory pressure based garbage collection is enabled for MSE, the
-  // |enable_instant_source_buffer_gc| flag controls whether the GC is done
-  // immediately on memory pressure notification or during the next SourceBuffer
-  // append (slower, but is MSE-spec compliant).
-  bool enable_instant_source_buffer_gc =
-      base::GetFieldTrialParamByFeatureAsBool(
-          media::kMemoryPressureBasedSourceBufferGC,
-          "enable_instant_source_buffer_gc", false);
-
   media::MediaPlayerLoggingID player_id = media::GetNextMediaPlayerLoggingID();
   std::vector<std::unique_ptr<BatchingMediaLog::EventHandler>> handlers;
   handlers.push_back(std::make_unique<InspectorMediaEventHandler>(
@@ -504,8 +495,7 @@ std::unique_ptr<blink::WebMediaPlayer> MediaFactory::CreateMediaPlayer(
       render_thread->compositor_task_runner(),
       blink::Platform::Current()->VideoFrameCompositorTaskRunner(), initial_cdm,
       request_routing_token_cb_, media_observer,
-      enable_instant_source_buffer_gc, embedded_media_experience_enabled,
-      std::move(metrics_provider),
+      embedded_media_experience_enabled, std::move(metrics_provider),
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,
                      parent_frame_sink_id),
       RenderThreadImpl::current()->SharedMainThreadContextProvider(),

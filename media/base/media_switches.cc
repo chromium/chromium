@@ -526,12 +526,6 @@ BASE_FEATURE(kAudioFlexibleLoopbackForSystemLoopback,
 BASE_FEATURE(kCrOSEnforceMonoAudioCapture, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Make MSE garbage collection algorithm more aggressive when we are under
-// moderate or critical memory pressure. This will relieve memory pressure by
-// releasing stale data from MSE buffers.
-BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the Mirroring Service will fetch, analyze, and store
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -466,7 +466,7 @@ class WebMediaPlayerImplTest
         audio_sink_, media_thread_.task_runner(), media_thread_.task_runner(),
         media_thread_.task_runner(), media_thread_.task_runner(), nullptr,
         media::RequestRoutingTokenCallback(), mock_observer_.AsWeakPtr(), false,
-        false, provider.Unbind(),
+        provider.Unbind(),
         blink::BindOnce(&WebMediaPlayerImplTest::CreateMockSurfaceLayerBridge,
                         base::Unretained(this)),
         viz::TestContextProvider::Create(),

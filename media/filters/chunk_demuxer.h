@@ -402,11 +402,6 @@ class MEDIA_EXPORT ChunkDemuxer : public Demuxer {
                                       base::TimeDelta currentMediaTime,
                                       size_t newDataSize);
 
-  void OnMemoryPressure(
-      base::TimeDelta currentMediaTime,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-      bool force_instant_gc);
-
   // Returns the current presentation duration.
   double GetDuration();
   double GetDuration_Locked();

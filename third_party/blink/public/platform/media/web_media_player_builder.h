@@ -88,7 +88,6 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
-      bool enable_instant_source_buffer_gc,
       bool embedded_media_experience_enabled,
       CrossVariantMojoRemote<media::mojom::MediaMetricsProviderInterfaceBase>
           metrics_provider,

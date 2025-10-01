@@ -150,7 +150,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
-      bool enable_instant_source_buffer_gc,
       bool embedded_media_experience_enabled,
       mojo::PendingRemote<media::mojom::blink::MediaMetricsProvider>
           metrics_provider,

@@ -99,7 +99,6 @@ class MEDIA_EXPORT DemuxerManager {
   DemuxerManager(Client* client,
                  scoped_refptr<base::SequencedTaskRunner> media_task_runner,
                  MediaLog* log,
-                 bool enable_instant_source_buffer_gc,
                  std::unique_ptr<Demuxer> demuxer_override);
   ~DemuxerManager();
   void InvalidateWeakPtrs();
@@ -171,10 +170,6 @@ class MEDIA_EXPORT DemuxerManager {
 
   void SetDemuxer(std::unique_ptr<Demuxer> demuxer);
 
-  // Memory pressure listener specifically for when using ChunkDemuxer.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
-
   // Trampoline methods for binding with |weak_this_| that call into |client_|.;
   void OnEncryptedMediaInitData(EmeInitDataType init_data_type,
                                 const std::vector<uint8_t>& init_data);
@@ -195,12 +190,6 @@ class MEDIA_EXPORT DemuxerManager {
   // The demuxers need access the the media task runner and media log.
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<MediaLog> media_log_;
-
-  // When MSE memory pressure based garbage collection is enabled, the
-  // |enable_instant_source_buffer_gc| controls whether the GC is done
-  // immediately on memory pressure notification or during the next
-  // SourceBuffer append (slower, but MSE spec compliant).
-  bool enable_instant_source_buffer_gc_ = false;
 
   // Used for FFmpegDemuxer in most cases and for creating MemoryDataSource
   // objects.
@@ -224,9 +213,6 @@ class MEDIA_EXPORT DemuxerManager {
   // Holds an optional demuxer that can be passed in at time of creation,
   // which becomes the default demuxer to use.
   std::unique_ptr<Demuxer> demuxer_override_;
-
-  // RAII member for notifying demuxers of memory pressure.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
   bool hls_fallback_ = false;
 

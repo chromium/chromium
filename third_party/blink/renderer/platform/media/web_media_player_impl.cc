@@ -450,7 +450,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     WebContentDecryptionModule* initial_cdm,
     media::RequestRoutingTokenCallback request_routing_token_cb,
     base::WeakPtr<media::MediaObserver> media_observer,
-    bool enable_instant_source_buffer_gc,
     bool embedded_media_experience_enabled,
     mojo::PendingRemote<media::mojom::blink::MediaMetricsProvider>
         metrics_provider,
@@ -479,7 +478,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           this,
           media_task_runner_,
           media_log_.get(),
-          enable_instant_source_buffer_gc,
           std::move(demuxer_override))),
       tick_clock_(base::DefaultTickClock::GetInstance()),
       url_index_(url_index),

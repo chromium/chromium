@@ -323,29 +323,6 @@ bool SourceBufferState::EvictCodedFrames(base::TimeDelta media_time,
   return success;
 }
 
-void SourceBufferState::OnMemoryPressure(
-    base::TimeDelta media_time,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level,
-    bool force_instant_gc) {
-  // TODO(sebmarchand): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
-  // ignored.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  // Notify video streams about memory pressure first, since video typically
-  // takes up the most memory and that's where we can expect most savings.
-  for (const auto& it : video_streams_) {
-    it.second->OnMemoryPressure(media_time, memory_pressure_level,
-                                force_instant_gc);
-  }
-  for (const auto& it : audio_streams_) {
-    it.second->OnMemoryPressure(media_time, memory_pressure_level,
-                                force_instant_gc);
-  }
-}
-
 Ranges<base::TimeDelta> SourceBufferState::GetBufferedRanges(
     base::TimeDelta duration,
     bool ended) const {

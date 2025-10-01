@@ -112,12 +112,10 @@ DemuxerManager::DemuxerManager(
     Client* client,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     MediaLog* log,
-    bool enable_instant_source_buffer_gc,
     std::unique_ptr<Demuxer> demuxer_override)
     : client_(client),
       media_task_runner_(std::move(media_task_runner)),
       media_log_(log->Clone()),
-      enable_instant_source_buffer_gc_(enable_instant_source_buffer_gc),
       demuxer_override_(std::move(demuxer_override)) {
   DCHECK(client_);
 }
@@ -452,13 +450,6 @@ bool DemuxerManager::IsLiveContent() const {
 }
 
 std::unique_ptr<Demuxer> DemuxerManager::CreateChunkDemuxer() {
-  if (base::FeatureList::IsEnabled(kMemoryPressureBasedSourceBufferGC)) {
-    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-        FROM_HERE, base::MemoryPressureListenerTag::kDemuxerManager,
-        base::BindRepeating(&DemuxerManager::OnMemoryPressure,
-                            base::Unretained(this)));
-  }
-
   return std::make_unique<ChunkDemuxer>(
       base::BindPostTaskToCurrentDefault(base::BindOnce(
           &DemuxerManager::OnChunkDemuxerOpened, weak_factory_.GetWeakPtr())),
@@ -528,45 +519,7 @@ void DemuxerManager::OnEncryptedMediaInitData(
   }
 }
 
-void DemuxerManager::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  DVLOG(2) << __func__ << " level=" << level;
-  DCHECK(base::FeatureList::IsEnabled(kMemoryPressureBasedSourceBufferGC));
-  DCHECK(GetDemuxerType() == DemuxerType::kChunkDemuxer);
 
-  if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
-  // The new value of `level` will take effect on the next
-  // garbage collection. Typically this means the next SourceBuffer append()
-  // operation, since per MSE spec, the garbage collection must only occur
-  // during SourceBuffer append(). But if memory pressure is critical it might
-  // be better to perform GC immediately rather than wait for the next append
-  // and potentially get killed due to out-of-memory.
-  // So if this experiment is enabled and pressure level is critical, we'll pass
-  // down force_instant_gc==true, which will force immediate GC on
-  // SourceBufferStreams.
-  bool force_instant_gc =
-      (enable_instant_source_buffer_gc_ &&
-       level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  if (!client_) {
-    return;
-  }
-
-  // base::Unretained is safe, since `demuxer_` is actually owned by
-  // `this` via this->demuxer_. Note the destruction of `demuxer_` is done
-  // from ~WMPI by first hopping to `media_task_runner_` to prevent race with
-  // this task.
-  // TODO(crbug.com/40243452) Get rid of this static cast.
-  media_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ChunkDemuxer::OnMemoryPressure,
-          base::Unretained(static_cast<ChunkDemuxer*>(demuxer_.get())),
-          base::Seconds(client_->CurrentTime()), level, force_instant_gc));
-}
 
 void DemuxerManager::OnChunkDemuxerOpened() {
   CHECK(demuxer_);
