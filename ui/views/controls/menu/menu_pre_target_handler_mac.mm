@@ -28,7 +28,7 @@ MenuPreTargetHandlerMac::~MenuPreTargetHandlerMac() = default;
 
 void MenuPreTargetHandlerMac::NativeWidgetMacEventMonitorOnEvent(
     ui::Event* ui_event,
-    bool target_is_this_window_or_descendant,
+    bool target_is_this_window,
     bool* was_handled) {
   if (*was_handled) {
     return;

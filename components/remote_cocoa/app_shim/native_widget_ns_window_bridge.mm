@@ -990,17 +990,9 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
       if (ui_event && ui_event->type() != ui::EventType::kUnknown) {
         // Pass up whether or not the event is for this specific window. This
         // allows consumers to filter events that are not for this window.
-        bool target_is_this_window_or_descendant = false;
-        for (NSWindow* current = event.window; current;
-             current = current.parentWindow) {
-          if (current == weak_ptr->window_) {
-            target_is_this_window_or_descendant = true;
-            break;
-          }
-        }
+        bool target_is_this_window = event.window == weak_ptr->window_;
         weak_ptr->host_->DispatchMonitorEvent(
-            std::move(ui_event), target_is_this_window_or_descendant,
-            &event_handled);
+            std::move(ui_event), target_is_this_window, &event_handled);
       }
 
       return event_handled ? nil : event;

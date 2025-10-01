@@ -1140,7 +1140,7 @@ bool NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuControllerRemote(
 
 bool NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
     std::unique_ptr<ui::Event> event,
-    bool target_is_this_window_or_descendant,
+    bool target_is_this_window,
     bool* event_handled) {
   // The calls to NativeWidgetMacEventMonitorOnEvent can add or remove monitors,
   // so take a snapshot of `event_monitors_` before making any calls.
@@ -1158,7 +1158,7 @@ bool NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
       continue;
     }
     event_monitor->client_->NativeWidgetMacEventMonitorOnEvent(
-        event.get(), target_is_this_window_or_descendant, event_handled);
+        event.get(), target_is_this_window, event_handled);
     if (!weak_this) {
       return true;
     }
@@ -1686,11 +1686,10 @@ void NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuControllerRemote(
 
 void NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
     std::unique_ptr<ui::Event> event,
-    bool target_is_this_window_or_descendant,
+    bool target_is_this_window,
     DispatchMonitorEventCallback callback) {
   bool event_handled = false;
-  DispatchMonitorEvent(std::move(event), target_is_this_window_or_descendant,
-                       &event_handled);
+  DispatchMonitorEvent(std::move(event), target_is_this_window, &event_handled);
   std::move(callback).Run(event_handled);
 }
 
