@@ -252,6 +252,12 @@ class EntityInstance final {
   // `ImportOrder(x, y) == true` means `x` has higher priority than `y`.
   static bool ImportOrder(const EntityInstance& lhs, const EntityInstance& rhs);
 
+  // Comparator that ranks instances by their priority for server migration on
+  // form submission. `MigrationOrder(x, y) == true` means `x` has higher
+  // priority than `y`.
+  static bool MigrationOrder(const EntityInstance& lhs,
+                             const EntityInstance& rhs);
+
   const EntityType& type() const { return type_; }
 
   // The attributes present in this instance.

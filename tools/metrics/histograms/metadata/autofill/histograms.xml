@@ -1458,6 +1458,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="EntityType" variants="Autofill.Ai.EntityType"/>
 </histogram>
 
+<histogram
+    name="Autofill.Ai.Timing.GetEntityUpstreamCandidateFromSubmittedForm"
+    units="ms" expires_after="2026-03-01">
+  <owner>brunobraga@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Number of milliseconds passed between the start and end of the method that
+    returns a local entity candidates to be migrated to the Wallet server.
+    Emitted during form submission.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.{PromptType}.AllEntities"
     enum="EntitySaveOrUpdatePromptResult" expires_after="2026-02-22">
   <owner>brunobraga@google.com</owner>

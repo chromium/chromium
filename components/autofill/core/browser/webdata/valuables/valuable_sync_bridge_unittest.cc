@@ -93,6 +93,7 @@ EntityInstance GetServerVehicleEntityInstance(
     test::VehicleOptions options = {}) {
   options.nickname = "";
   options.date_modified = {};
+  options.use_date = {};
   options.record_type = EntityInstance::RecordType::kServerWallet;
   return test::GetVehicleEntityInstance(options);
 }
@@ -101,6 +102,7 @@ EntityInstance GetServerFlightEntityInstance(
     test::FlightReservationOptions options = {}) {
   options.nickname = "";
   options.date_modified = {};
+  options.use_date = {};
   options.record_type = EntityInstance::RecordType::kServerWallet;
   return test::GetFlightReservationEntityInstance(options);
 }

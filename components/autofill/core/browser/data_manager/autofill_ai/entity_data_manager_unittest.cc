@@ -184,7 +184,8 @@ TEST_F(EntityDataManagerTest_InitiallyEmpty, RecordEntityUsed) {
   // TODO(crbug.com/402616006): This test should re-read the entity from the db
   // and make sure the persisted information is the expected one. Update once db
   // columns are updated.
-  EntityInstance pp = test::GetPassportEntityInstance();
+  EntityInstance pp =
+      test::GetPassportEntityInstance({.use_date = base::Time::FromTimeT(0)});
   entity_data_manager().AddOrUpdateEntityInstance(pp);
   EXPECT_EQ(pp.use_count(), 0u);
   EXPECT_EQ(pp.use_date(), base::Time::FromTimeT(0));

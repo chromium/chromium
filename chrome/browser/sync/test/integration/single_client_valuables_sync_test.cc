@@ -43,6 +43,7 @@ EntityInstance GetServerVehicleEntityInstanceWithRandomGuid() {
   return autofill::test::GetVehicleEntityInstanceWithRandomGuid(
       {.nickname = "",
        .date_modified = {},
+       .use_date = {},
        .record_type = EntityInstance::RecordType::kServerWallet,
        .are_attributes_read_only =
            EntityInstance::AreAttributesReadOnly(false)});
@@ -52,6 +53,7 @@ EntityInstance GetFlightReservationEntityInstanceWithRandomGuid() {
   return autofill::test::GetFlightReservationEntityInstanceWithRandomGuid(
       {.nickname = "",
        .date_modified = {},
+       .use_date = {},
        .record_type = EntityInstance::RecordType::kServerWallet,
        // Flight reservations are read-only.
        .are_attributes_read_only =

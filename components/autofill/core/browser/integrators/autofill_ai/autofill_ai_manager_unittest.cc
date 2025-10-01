@@ -37,6 +37,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -129,7 +130,6 @@ class MockAutofillClient : public TestAutofillClient {
               (bool prompt_accepted),
               (override));
 };
-
 class AutofillAiManagerTest : public testing::Test {
  public:
   AutofillAiManagerTest() {
@@ -148,6 +148,9 @@ class AutofillAiManagerTest : public testing::Test {
             /*history_service=*/nullptr,
             /*strike_database=*/nullptr));
     autofill_client().SetUpPrefsAndIdentityForAutofillAi();
+    autofill_client().set_sync_service(&sync_service_);
+    autofill_client().GetSyncService()->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, true);
   }
 
   // Given a `FormStructure` sets `field_types_predictions` for each field in
@@ -202,6 +205,7 @@ class AutofillAiManagerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_env_;
   AutofillWebDataServiceTestHelper webdata_helper_{
       std::make_unique<EntityTable>()};
+  syncer::TestSyncService sync_service_;
   NiceMock<MockAutofillClient> autofill_client_;
   TestStrikeDatabase strike_database_;
   AutofillAiManager manager_{&autofill_client(), &strike_database_};
@@ -1019,6 +1023,181 @@ TEST_F(AutofillAiManagerImportFormTest, PromptSuppressionMetric) {
       "Autofill.Ai.PromptSuppression.SavePrompt.DriversLicense", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.Ai.PromptSuppression.UpdatePrompt.Vehicle", 1, 1);
+}
+
+class AutofillAiManagerUpstreamTest : public AutofillAiManagerTest {
+ public:
+  AutofillAiManagerUpstreamTest() = default;
+
+  std::unique_ptr<FormStructure> CreateTestForm() {
+    auto form_structure = std::make_unique<FormStructure>(test::GetFormData({
+        .fields = {{.role = NAME_FULL},
+                   {.role = VEHICLE_VIN},
+                   {.role = VEHICLE_LICENSE_PLATE}},
+    }));
+    test_api(*form_structure)
+        .SetFieldTypes({NAME_FULL, VEHICLE_VIN, VEHICLE_LICENSE_PLATE});
+    return form_structure;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiWalletVehicleRegistration};
+};
+
+// Tests that a migration prompt is shown if the user enter data in the form
+// that is a subset of some local entity.
+TEST_F(AutofillAiManagerUpstreamTest, LocalEntity_ShowsMigrationPrompt) {
+  std::unique_ptr<FormStructure> form = CreateTestForm();
+  EntityInstance local_entity = test::GetVehicleEntityInstance();
+  AddOrUpdateEntityInstance(local_entity);
+
+  form->field(0)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetRawInfo(NAME_FULL));
+  form->field(1)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetRawInfo(VEHICLE_VIN));
+  form->field(2)->set_value(
+      local_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetRawInfo(VEHICLE_LICENSE_PLATE));
+
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble);
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+TEST_F(AutofillAiManagerUpstreamTest,
+       TestGetEntityUpstreamCandidateTimingMetric) {
+  std::unique_ptr<FormStructure> form = CreateTestForm();
+  EntityInstance local_entity = test::GetVehicleEntityInstance();
+  AddOrUpdateEntityInstance(local_entity);
+
+  form->field(0)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetRawInfo(NAME_FULL));
+  form->field(1)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetRawInfo(VEHICLE_VIN));
+  form->field(2)->set_value(
+      local_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetRawInfo(VEHICLE_LICENSE_PLATE));
+
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Ai.Timing.GetEntityUpstreamCandidateFromSubmittedForm", 1);
+}
+
+// Tests that a migration prompt is not shown for flight reservations.
+TEST_F(AutofillAiManagerUpstreamTest,
+       LocalFlightReservationEntity_DoNotShowMigrationPrompt) {
+  std::unique_ptr<FormStructure> form = CreateTestForm();
+  EntityInstance local_entity = test::GetFlightReservationEntityInstance();
+  AddOrUpdateEntityInstance(local_entity);
+
+  form->field(0)->set_value(
+      local_entity
+          .attribute(
+              AttributeType(AttributeTypeName::kFlightReservationPassengerName))
+          ->GetRawInfo(NAME_FULL));
+  form->field(1)->set_value(
+      local_entity
+          .attribute(
+              AttributeType(AttributeTypeName::kFlightReservationTicketNumber))
+          ->GetRawInfo(FLIGHT_RESERVATION_TICKET_NUMBER));
+  form->field(2)->set_value(
+      local_entity
+          .attribute(
+              AttributeType(AttributeTypeName::kFlightReservationFlightNumber))
+          ->GetRawInfo(FLIGHT_RESERVATION_FLIGHT_NUMBER));
+
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble);
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// This tests check that if more than one migration candidate exists, the one
+// that was most recently used is chosen.
+TEST_F(AutofillAiManagerUpstreamTest,
+       MultipleCandidates_ShowsMigrationPromptForRecentlyUsedEntity) {
+  base::Time january_2017 = base::Time::FromSecondsSinceUnixEpoch(1484505871);
+  base::Time june_2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+  EntityInstance local_entity_1 =
+      test::GetVehicleEntityInstanceWithRandomGuid({.use_date = january_2017});
+  EntityInstance local_entity_2 =
+      test::GetVehicleEntityInstanceWithRandomGuid({.use_date = june_2017});
+  AddOrUpdateEntityInstance(local_entity_1);
+  AddOrUpdateEntityInstance(local_entity_2);
+
+  std::unique_ptr<FormStructure> form = CreateTestForm();
+  form->field(0)->set_value(
+      local_entity_1.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetRawInfo(NAME_FULL));
+  form->field(1)->set_value(
+      local_entity_1.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetRawInfo(VEHICLE_VIN));
+  form->field(2)->set_value(
+      local_entity_1
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetRawInfo(VEHICLE_LICENSE_PLATE));
+
+  std::optional<EntityInstance> entity_to_upstream;
+  std::optional<EntityInstance> old_entity;
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble)
+      .WillOnce(
+          DoAll(SaveArg<0>(&entity_to_upstream), SaveArg<1>(&old_entity)));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_FALSE(old_entity);
+  ASSERT_TRUE(entity_to_upstream);
+  // `local_entity_2` was recently used.
+  EXPECT_EQ(entity_to_upstream->guid(), local_entity_2.guid());
+}
+
+TEST_F(AutofillAiManagerUpstreamTest, FeatureOff_DoNotShowMigrationPrompt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kAutofillAiWalletVehicleRegistration);
+  std::unique_ptr<FormStructure> form = CreateTestForm();
+  EntityInstance local_entity = test::GetVehicleEntityInstance();
+  AddOrUpdateEntityInstance(local_entity);
+
+  form->field(0)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetRawInfo(NAME_FULL));
+  form->field(1)->set_value(
+      local_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetRawInfo(VEHICLE_VIN));
+  form->field(2)->set_value(
+      local_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetRawInfo(VEHICLE_LICENSE_PLATE));
+
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+}
+
+// Tests that a migration prompt is not shown if the user entered data in the
+// form that is a subset of a server entity.
+TEST_F(AutofillAiManagerUpstreamTest, ServerEntity_DoNotShowMigrationPrompt) {
+  std::unique_ptr<FormStructure> form = CreateTestForm();
+  EntityInstance server_entity = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  AddOrUpdateEntityInstance(server_entity);
+
+  form->field(0)->set_value(
+      server_entity.attribute(AttributeType(AttributeTypeName::kVehicleOwner))
+          ->GetRawInfo(NAME_FULL));
+  form->field(1)->set_value(
+      server_entity.attribute(AttributeType(AttributeTypeName::kVehicleVin))
+          ->GetRawInfo(VEHICLE_VIN));
+  form->field(2)->set_value(
+      server_entity
+          .attribute(AttributeType(AttributeTypeName::kVehiclePlateNumber))
+          ->GetRawInfo(VEHICLE_LICENSE_PLATE));
+
+  EXPECT_CALL(autofill_client(), ShowEntitySaveOrUpdateBubble).Times(0);
+  EXPECT_FALSE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 }
 
 }  // namespace

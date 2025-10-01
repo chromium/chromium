@@ -95,13 +95,23 @@ class AutofillAiManager {
   // by decreasing priority.
   //
   // The function returns two possible type of candidates:
-  // - A single EntityInstance (and std::nullopt) if the entity qualifies for a
-  //   save prompt.
+  // - A single EntityInstance (and `std::nullopt`) if the entity qualifies for
+  //   a save prompt.
   // - A pair of two entities if the entity qualifies for an update prompt. In
   //   that case, the first entity in the pair would be the new entity (after
   //   update) and the second one the old entity (before update).
   std::vector<std::pair<EntityInstance, std::optional<EntityInstance>>>
   GetEntitySaveAndUpdatePromptCandidates(const FormStructure& form);
+
+  // Given `form` that is observed at submission, returns a pair containing the
+  // candidate for showing a migration/upstream prompt together with the
+  // original local entity to be migrated. Migration means moving an entity from
+  // local storage to the Wallet server. The migrated entity is the most
+  // recently used one that is a superset of the values filled in form.
+  //
+  // The function returns `std::nullopt` if no candidate exists.
+  std::optional<std::pair<EntityInstance, EntityInstance::EntityId>>
+  GetEntityUpstreamCandidate(const FormStructure& form);
 
   // Attempts to display an import bubble for `form` if Autofill AI is
   // interested in the form. Returns whether an import bubble will be shown.
@@ -116,6 +126,7 @@ class AutofillAiManager {
       ukm::SourceId ukm_source_id,
       const EntityInstance& entity,
       AutofillClient::EntitySaveOrUpdatePromptResult result);
+
   // Updates the `EntityDataManager` and the update strike database depending on
   // the prompt `result`.
   void HandleUpdatePromptResult(
@@ -124,6 +135,24 @@ class AutofillAiManager {
       ukm::SourceId ukm_source_id,
       const EntityInstance::EntityId& entity_uuid,
       AutofillClient::EntitySaveOrUpdatePromptResult result);
+
+  // Updates the `EntityDataManager` by deleting a local entity and moving it to
+  // the Google Wallet server. Updates the strike database depending on the
+  // prompt `result`.
+  void HandleUpstreamEntityPrompt(
+      const GURL& form_url,
+      uint64_t form_session_id,
+      const std::string& domain,
+      ukm::SourceId ukm_source_id,
+      const EntityInstance& entity,
+      EntityInstance::EntityId local_entity,
+      AutofillClient::EntitySaveOrUpdatePromptResult result);
+
+  // Decides whether a migration bubble should be shown after a form submitted.
+  // This is used to upstream local entities of a certain type to the Google
+  // Wallet server.
+  bool MaybeUpstreamEntityToWallet(const FormStructure& form,
+                                   ukm::SourceId ukm_source_id);
 
   LogManager* GetCurrentLogManager();
 
