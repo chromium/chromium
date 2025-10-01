@@ -59,8 +59,6 @@ source_set("client_sources") {
   sources = [
     "client_discardable_manager.cc",
     "client_discardable_manager.h",
-    "client_discardable_texture_manager.cc",
-    "client_discardable_texture_manager.h",
     "client_shared_image.cc",
     "client_shared_image.h",
     "cmd_buffer_helper.cc",

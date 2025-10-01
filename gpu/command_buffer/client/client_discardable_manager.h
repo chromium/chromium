@@ -15,9 +15,9 @@
 
 namespace gpu {
 
-// ClientDiscardableManager is a helper class used by the
-// ClientDiscardableTextureManager. It allows for the creation and management
-// of ClientDiscardableHandles.
+// ClientDiscardableManager is a helper class used by the client side of the
+// transfer cache. It allows for the creation and management of
+// ClientDiscardableHandles.
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientDiscardableManager {
  public:
   ClientDiscardableManager();
