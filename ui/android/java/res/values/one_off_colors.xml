@@ -104,4 +104,9 @@ found in the LICENSE file.
     <!-- Sepia color for reader mode prefs theme button. -->
     <color name="reader_mode_prefs_sepia_theme_button_color">#F8F1E3</color>
 
+    <!-- Ntp customization theme colors. -->
+    <color name="ntp_color_blue_background_light">#CCE5FF</color>
+    <color name="ntp_color_blue_background_dark">#002237</color>
+    <color name="ntp_color_blue_primary_light">#006287</color>
+    <color name="ntp_color_blue_primary_dark">#62C9FF</color>
 </resources>

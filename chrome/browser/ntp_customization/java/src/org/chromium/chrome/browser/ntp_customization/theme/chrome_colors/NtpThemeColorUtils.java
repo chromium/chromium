@@ -48,7 +48,7 @@ public class NtpThemeColorUtils {
                         context,
                         NtpThemeColorInfo.NtpThemeColorId.BLUE,
                         R.color.ntp_color_blue_background,
-                        R.color.ntp_color_blue_background);
+                        R.color.ntp_color_blue_primary);
             default:
                 return null;
         }

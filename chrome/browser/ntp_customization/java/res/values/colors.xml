@@ -11,5 +11,6 @@ found in the LICENSE file.
     <!-- Ntp customization theme colors. -->
     <color name="ntp_color_light_blue_background">@color/gm3_baseline_surface_container_high_light</color>
     <color name="ntp_color_light_blue_primary">@color/baseline_primary_40</color>
-    <color name="ntp_color_blue_background">@color/baseline_primary_90</color>
+    <color name="ntp_color_blue_background">@color/ntp_color_blue_background_light</color>
+    <color name="ntp_color_blue_primary">@color/ntp_color_blue_primary_light</color>
 </resources>
