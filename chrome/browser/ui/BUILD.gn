@@ -49,7 +49,6 @@ generate_allowlist_from_histograms_file("webui_name_variants") {
 static_library("ui") {
   sources = [
     "accelerator_utils.h",
-    "bluetooth/bluetooth_dialogs.h",
     "browser_dialogs.cc",
     "browser_dialogs.h",
     "browser_navigator_params.cc",
