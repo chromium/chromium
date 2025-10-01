@@ -94,6 +94,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -1605,16 +1606,19 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   ClickSaveDeskAsTemplateMenuItem();
 
   // Launch our template and then exit overview.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   ClickFirstTemplateItem();
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
+  BrowserWindowInterface* new_browser = browser_created_observer->Wait();
+  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
   ASSERT_FALSE(split_view_controller->IsWindowInSplitView(window));
 
   // Our snapped window should have the similar bounds as it did when it was
   // saved. We may lose some precision when saving a float as a percentage.
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
   aura::Window* new_browser_window =
-      BrowserList::GetInstance()->get(1)->window()->GetNativeWindow();
+      new_browser->GetWindow()->GetNativeWindow();
   gfx::Rect new_bounds = new_browser_window->GetBoundsInScreen();
   EXPECT_EQ(0, new_bounds.x());
   EXPECT_EQ(0, new_bounds.y());
@@ -1640,14 +1644,15 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
 
   // Tests the bounds of the window if we launch it while the display is upside
   // down.
+  browser_created_observer.emplace();
   display_manager_test_api.UpdateDisplay(
       "2000x" + base::NumberToString(1000 + shelf_height) + "/u");
   launch_first_template();
+  new_browser = browser_created_observer->Wait();
 
   // The window is physically on the left, but the coordinates system is as if
   // it were on the right.
-  new_browser_window =
-      BrowserList::GetInstance()->get(2)->window()->GetNativeWindow();
+  new_browser_window = new_browser->GetWindow()->GetNativeWindow();
   new_bounds = new_browser_window->GetBoundsInScreen();
   EXPECT_EQ(800, new_bounds.x());
   EXPECT_EQ(0, new_bounds.y());
@@ -1656,14 +1661,15 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   EXPECT_EQ(0.6f, *window_state->snap_ratio());
 
   // Change to portrait mode, work area is 1000x2000.
+  browser_created_observer.emplace();
   display_manager_test_api.UpdateDisplay(
       "1000x" + base::NumberToString(2000 + shelf_height));
   launch_first_template();
+  new_browser = browser_created_observer->Wait();
 
   // The window is at the top of the screen since we are in portrait
   // orientation, and its height is 60% of the work area height.
-  new_browser_window =
-      BrowserList::GetInstance()->get(3)->window()->GetNativeWindow();
+  new_browser_window = new_browser->GetWindow()->GetNativeWindow();
   new_bounds = new_browser_window->GetBoundsInScreen();
   EXPECT_EQ(0, new_bounds.x());
   EXPECT_EQ(0, new_bounds.y());
@@ -1674,12 +1680,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchSnappedWindow) {
   // Launch the window in upside down portrait mode. The height is 60% of the
   // work area height and the window is physically on the top, but the
   // coordinate system is as if it were on the bottom.
+  browser_created_observer.emplace();
   display_manager_test_api.UpdateDisplay(
       "1000x" + base::NumberToString(2000 + shelf_height) + "/u");
   launch_first_template();
+  new_browser = browser_created_observer->Wait();
 
-  new_browser_window =
-      BrowserList::GetInstance()->get(4)->window()->GetNativeWindow();
+  new_browser_window = new_browser->GetWindow()->GetNativeWindow();
   new_bounds = new_browser_window->GetBoundsInScreen();
   EXPECT_EQ(0, new_bounds.x());
   EXPECT_EQ(800, new_bounds.y());
@@ -2329,18 +2336,18 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
   // Reenter overview and launch the template we saved.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
   ClickLibraryButton();
   ClickFirstTemplateItem();
-  content::RunAllTasksUntilIdle();
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Verify that the browser was launched with the correct number of tabs, and
   // that browser session restore did not restore any windows/tabs.
-  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  Browser* new_browser = BrowserList::GetInstance()->get(0);
-  ASSERT_TRUE(new_browser);
-  EXPECT_EQ(expected_tab_count, new_browser->tab_strip_model()->count());
+  EXPECT_EQ(expected_tab_count, new_browser->GetTabStripModel()->count());
 }
 
 // Tests that launching the same desk template multiple times creates desks with
@@ -2627,16 +2634,17 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, UndoLaunchedDesk) {
 // Tests setting first window to show on all desk and then unset it.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SetWindowProperties) {
   // Create a new browser window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ash::test::CreateAndShowBrowser(profile(), {});
+  BrowserWindowInterface* const new_browser = browser_created_observer.Wait();
 
   auto* desks_controller = ash::DesksController::Get();
 
   // Start with no all-desk window.
   EXPECT_EQ(0u, desks_controller->visible_on_all_desks_windows().size());
 
-  // Get the first browser window.
-  SessionID browser_session_id =
-      BrowserList::GetInstance()->get(0)->session_id();
+  // Get the last active browser window.
+  SessionID browser_session_id = new_browser->GetSessionID();
 
   // Set to all-desk window.
   // Assert no error.
@@ -3071,16 +3079,18 @@ IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   ClickSaveDeskAsTemplateMenuItem();
 
   // Launch the template.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ClickFirstTemplateItem();
-  content::RunAllTasksUntilIdle();
+  BrowserWindowInterface* const new_browser1 = browser_created_observer.Wait();
+  BrowserWindowInterface* const new_browser2 =
+      ui_test_utils::GetBrowserNotInSet({new_browser1, browser2, browser()});
+  ASSERT_EQ(4u, BrowserList::GetInstance()->size());
 
   ash::ToggleOverview();
   ash::WaitForOverviewExitAnimation();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  ASSERT_EQ(4u, browser_list->size());
-  aura::Window* new_w1 = browser_list->get(3)->window()->GetNativeWindow();
-  aura::Window* new_w2 = browser_list->get(2)->window()->GetNativeWindow();
+  aura::Window* const new_w1 = new_browser1->GetWindow()->GetNativeWindow();
+  aura::Window* const new_w2 = new_browser2->GetWindow()->GetNativeWindow();
 
   // The new windows will preserve the snap ratio but not added to a snap
   // group so no divider will be shown.

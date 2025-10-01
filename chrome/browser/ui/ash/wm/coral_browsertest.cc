@@ -32,9 +32,11 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "components/app_restore/restore_data.h"
 #include "content/public/test/browser_test.h"
@@ -723,17 +725,25 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveWindowToOtherDeskUpdateChip) {
 
   // TODO(crbug.com/378159705): move this to a test helper.
   // Create a browser containing 8 tabs.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   test::CreateAndShowBrowser(
       primary_profile,
       {GURL("https://mail.google.com"), GURL("https://youtube.com"),
        GURL("https://google.com"), GURL("https://earth.google.com"),
        GURL("https://maps.google.com"), GURL("https://docs.google.com"),
        GURL("https://calendar.google.com"), GURL("https://chat.google.com")});
+  BrowserWindowInterface* const regular_browser =
+      browser_created_observer->Wait();
 
   test::InstallSystemAppsForTesting(primary_profile);
 
-  // Open a File window and a PWA window.
+  // Open a File window.
+  browser_created_observer.emplace();
   test::CreateSystemWebApp(primary_profile, SystemWebAppType::FILE_MANAGER);
+  BrowserWindowInterface* const file_browser = browser_created_observer->Wait();
+
+  // Open a PWA window.
   test::InstallAndLaunchPWA(primary_profile, GURL("https://www.youtube.com/"),
                             /*launch_in_browser=*/false,
                             /*app_title=*/u"YouTube");
@@ -781,15 +791,13 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveWindowToOtherDeskUpdateChip) {
       BirchCoralProvider::Get()->GetGroupById(base::Token(2, 3));
   EXPECT_EQ(group_2->entities.size(), 4u);
 
-  auto* browser_list = BrowserList::GetInstance();
-
   auto* desks_controller = DesksController::Get();
 
   auto* new_desk = desks_controller->GetDeskAtIndex(1);
 
   // Move the browser window to another desk.
-  ASSERT_EQ(8, browser_list->get(0)->tab_strip_model()->GetTabCount());
-  auto* browser_window = browser_list->get(0)->window()->GetNativeWindow();
+  ASSERT_EQ(8, regular_browser->GetTabStripModel()->GetTabCount());
+  auto* browser_window = regular_browser->GetWindow()->GetNativeWindow();
   desks_controller->MoveWindowFromActiveDeskTo(
       browser_window, new_desk, browser_window->GetRootWindow(),
       DesksMoveWindowFromActiveDeskSource::kSendToDesk);
@@ -800,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveWindowToOtherDeskUpdateChip) {
   EXPECT_EQ(group_2->entities.size(), 1u);
 
   // Move the Files app to another desk.
-  auto* file_window = browser_list->get(1)->window()->GetNativeWindow();
+  auto* file_window = file_browser->GetWindow()->GetNativeWindow();
   ASSERT_EQ(file_window->GetTitle(), u"Files");
   desks_controller->MoveWindowFromActiveDeskTo(
       file_window, new_desk, file_window->GetRootWindow(),

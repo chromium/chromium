@@ -15,10 +15,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "device/udev_linux/fake_udev_loader.h"
@@ -958,8 +961,11 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, KeyboardFkeys) {
       Log("Verifying that 'F12' shortcut opens the developer console"),
       InAnyContext(WaitForShow(kDevToolsId)));
   // Get settings browser and verify that the window is maximized.
-  Browser* browser = BrowserList::GetInstance()->get(0);
-  EXPECT_TRUE(browser->window()->IsFullscreen());
+  BrowserWindowInterface* const settings_app_browser =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return browser->GetType() == BrowserWindowInterface::Type::TYPE_APP;
+      }).front();
+  EXPECT_TRUE(settings_app_browser->GetWindow()->IsFullscreen());
 }
 
 class KeyboardAmbientLightSensorStateObserver

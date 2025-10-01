@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_entry.h"
@@ -108,16 +109,18 @@ IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
   // Create browser 1 and navigate to url1 and then url2
   CreateBrowser({GURL(kTabUrl1), GURL(kTabUrl2)}, /*active_url_index=*/1);
   // Create a SWA
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ash::test::InstallSystemAppsForTesting(profile());
   ash::test::CreateSystemWebApp(profile(), ash::SystemWebAppType::BOCA);
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
 
-  auto* swa_browser = BrowserList::GetInstance()->get(2);
-  chrome::AddTabAt(swa_browser, GURL(kTabUrl3), /*index=*/0,
+  chrome::AddTabAt(swa_browser->GetBrowserForMigrationOnly(), GURL(kTabUrl3),
+                   /*index=*/0,
                    /*foreground=*/false);
   EXPECT_EQ(3u, BrowserList::GetInstance()->size());
 
   auto tab_list = delegate()->GetTabsListForWindow(
-      swa_browser->window()->GetNativeWindow());
+      swa_browser->GetWindow()->GetNativeWindow());
 
   // Contains the new tab and webui itself.
   ASSERT_EQ(2u, tab_list.size());
@@ -129,12 +132,13 @@ IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeTabStripDelegateBrowserTest,
                        GetTabListForSWAEmptyWindow) {
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ash::test::InstallSystemAppsForTesting(profile());
   ash::test::CreateSystemWebApp(profile(), ash::SystemWebAppType::BOCA);
+  BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
 
-  auto* swa_browser = BrowserList::GetInstance()->get(1);
   auto tab_list = delegate()->GetTabsListForWindow(
-      swa_browser->window()->GetNativeWindow());
+      swa_browser->GetWindow()->GetNativeWindow());
   // Contains the webui itself.
   EXPECT_EQ(1u, tab_list.size());
 }

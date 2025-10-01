@@ -29,6 +29,7 @@ include_rules = [
   "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_tabstrip.h",
   "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/ui/web_applications/test",
