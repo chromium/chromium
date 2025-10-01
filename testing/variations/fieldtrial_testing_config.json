@@ -15273,22 +15273,6 @@
             ]
         }
     ],
-    "MacCatapLoopbackAudioForScreenShare": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GetDisplayMediaIgnoreAudioPermissionFailures",
-                        "MacCatapLoopbackAudioForScreenShare"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacCriticalDiskSpacePressure": [
         {
             "platforms": [
