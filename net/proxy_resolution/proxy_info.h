@@ -146,8 +146,11 @@ class NET_EXPORT ProxyInfo {
   bool Fallback(int net_error, const NetLogWithSource& net_log);
 
   // De-prioritizes the proxies that we have cached as not working, by moving
-  // them to the end of the proxy list.
-  void DeprioritizeBadProxyChains(const ProxyRetryInfoMap& proxy_retry_info);
+  // them to the end of the proxy list. If `remove_bad_proxy_chains` is true,
+  // bad proxy chains are removed from the list rather than just moved
+  // to the end.
+  void DeprioritizeBadProxyChains(const ProxyRetryInfoMap& proxy_retry_info,
+                                  bool remove_bad_proxy_chains = false);
 
   // Deletes any entry which doesn't have one of the specified proxy schemes.
   void RemoveProxiesWithoutScheme(int scheme_bit_field);

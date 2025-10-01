@@ -522,7 +522,6 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)})];
-  info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
 
   net::ProxyInfo result;
@@ -539,6 +538,11 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyDeprioritizesBadProxies) {
        net::ProxyServer::FromSchemeHostAndPort(
            net::ProxyServer::SCHEME_HTTPS, "backup-proxyb", std::nullopt)}));
   expected_proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection({}));
+  expected_proxy_list.AddProxyChain(net::ProxyChain::ForIpProtection(
+      {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxya", std::nullopt),
+       net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
+                                               "proxyb", std::nullopt)}));
 
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list))
       << "Got: " << result.proxy_list().ToDebugString();
@@ -563,7 +567,6 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxyAllProxiesBad) {
                                                "proxya", std::nullopt),
        net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxyb", std::nullopt)})];
-  info.try_while_bad = false;
   info.bad_until = base::TimeTicks::Now() + base::Days(2);
 
   net::ProxyInfo result;

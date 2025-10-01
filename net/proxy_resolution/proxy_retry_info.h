@@ -19,13 +19,6 @@ struct ProxyRetryInfo {
   // We should not retry until this time.
   base::TimeTicks bad_until;
 
-  // This is the current delay. If the proxy chain is still bad, we need to
-  // increase this delay.
-  base::TimeDelta current_delay;
-
-  // True if this proxy chain should be considered even if still bad.
-  bool try_while_bad = true;
-
   // The network error received when this proxy failed, or |OK| if the proxy
   // was added to the retry list for a non-network related reason. (e.g. local
   // policy).
