@@ -50,13 +50,12 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
 
  public:
   TextMetrics();
-  // `text_painter` must be non-null if `CanvasTextNg` flag is enabled.
   TextMetrics(const Font* font,
               const TextDirection& direction,
               V8CanvasTextBaseline::Enum baseline,
               V8CanvasTextAlign::Enum align,
               const String& text,
-              PlainTextPainter* text_painter);
+              PlainTextPainter& text_painter);
 
   double width() const { return width_; }
   double actualBoundingBoxLeft() const { return actual_bounding_box_left_; }
@@ -117,10 +116,10 @@ class CORE_EXPORT TextMetrics final : public ScriptWrappable {
               V8CanvasTextBaseline::Enum baseline,
               V8CanvasTextAlign::Enum align,
               const String&,
-              PlainTextPainter* text_painter);
+              PlainTextPainter& text_painter);
   // A helper for Update().  This function updates `runs_with_offset_`, and
   // returns a pair of the total width and the glyph bounding rectangle.
-  std::pair<float, gfx::RectF> MeasureRuns(PlainTextPainter* text_painter);
+  std::pair<float, gfx::RectF> MeasureRuns(PlainTextPainter& text_painter);
 
   void ShapeTextIfNeeded();
   unsigned CorrectForMixedBidi(HeapVector<RunWithOffset>::reverse_iterator&,

@@ -234,9 +234,7 @@ TEST_P(CaretPositionForOffsetBidiTest, CaretPositionForOffsetsBidi) {
       GetFont(test_data.font), test_data.direction,
       V8CanvasTextBaseline::Enum::kAlphabetic, V8CanvasTextAlign::Enum::kLeft,
       text_string,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled(nullptr)
-          ? MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas)
-          : nullptr);
+      *MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas));
 
   for (wtf_size_t i = 0; i < test_data.points.size(); ++i) {
     EXPECT_EQ(test_data.positions[i],

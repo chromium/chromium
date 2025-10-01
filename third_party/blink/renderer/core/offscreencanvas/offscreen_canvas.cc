@@ -626,9 +626,8 @@ UniqueFontSelector* OffscreenCanvas::GetFontSelector() {
     base_selector =
         To<WorkerGlobalScope>(GetExecutionContext())->GetFontSelector();
   }
-  auto* unique_font_selector = MakeGarbageCollected<UniqueFontSelector>(
-      base_selector,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled(GetExecutionContext()));
+  auto* unique_font_selector =
+      MakeGarbageCollected<UniqueFontSelector>(base_selector);
   unique_font_selector_ = unique_font_selector;
   return unique_font_selector;
 }

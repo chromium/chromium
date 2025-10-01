@@ -88,7 +88,7 @@ TextMetrics::TextMetrics(const Font* font,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
                          const String& text,
-                         PlainTextPainter* text_painter)
+                         PlainTextPainter& text_painter)
     : TextMetrics() {
   Update(font, direction, baseline, align, text, text_painter);
 }
@@ -111,7 +111,7 @@ void TextMetrics::Update(const Font* font,
                          const V8CanvasTextBaseline::Enum baseline,
                          const V8CanvasTextAlign::Enum align,
                          const String& text,
-                         PlainTextPainter* text_painter) {
+                         PlainTextPainter& text_painter) {
   const SimpleFontData* font_data = font->PrimaryFont();
   if (!font_data)
     return;
@@ -184,86 +184,40 @@ void TextMetrics::Update(const Font* font,
 }
 
 std::pair<float, gfx::RectF> TextMetrics::MeasureRuns(
-    PlainTextPainter* text_painter) {
+    PlainTextPainter& text_painter) {
   runs_with_offset_.clear();
 
-  if (text_painter) {
-    // The CanvasTextNg feature enables obtaining the ShapeResult objects
-    // directly, so we don't need to lazily obtain them again later.
-    shaping_needed_ = false;
-    // getIndexFromOffset() and CorrectMixedBidi() need to change behavior
-    // for word-split runs.
-    split_by_word_ = true;
-    const PlainTextNode& node = text_painter->SegmentAndShape(
-        TextRun(text_, direction_, /* directional_override */ false,
-                /* normalize_space */ true),
-        *font_);
-    gfx::RectF glyph_bounds;
-    float xpos = 0;
-    runs_with_offset_.reserve(node.ItemList().size());
-    for (const auto& item : node.ItemList()) {
-      // Save the run for computing additional metrics.
-      const ShapeResult* shape_result = item.GetShapeResult();
-
-      runs_with_offset_.push_back(
-          RunWithOffset{.shape_result_ = shape_result,
-                        .text_ = item.Text(),
-                        .direction_ = item.Direction(),
-                        .character_offset_ = item.StartOffset(),
-                        .num_characters_ = item.Length(),
-                        .x_position_ = xpos});
-
-      // Accumulate the position and the glyph bounding box.
-      gfx::RectF run_glyph_bounds = item.InkBounds();
-      run_glyph_bounds.Offset(xpos, 0);
-      glyph_bounds.Union(run_glyph_bounds);
-      xpos += shape_result->Width();
-    }
-    return {xpos, glyph_bounds};
-  }
-  // If CanvasTextNg is not enabled, Font::Width is called, which causes a
-  // shaping via CachingWordShaper. Since we still need the ShapeResult objects,
-  // these are lazily created the first time they are required.
-  shaping_needed_ = true;
-
-  // x direction
-  // Run bidi algorithm on the given text. Step 5 of:
-  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
+  // We don't need to lazily obtain ShapeResults again later.
+  // TODO(crbug.com/389726691): Remove this flag. It's always false.
+  shaping_needed_ = false;
+  // getIndexFromOffset() and CorrectMixedBidi() need to change behavior
+  // for word-split runs.
+  // TODO(crbug.com/389726691): Remove this flag. It's always true.
+  split_by_word_ = true;
+  const PlainTextNode& node = text_painter.SegmentAndShape(
+      TextRun(text_, direction_, /* directional_override */ false,
+              /* normalize_space */ true),
+      *font_);
   gfx::RectF glyph_bounds;
-  String text16 = text_;
-  text16.Ensure16Bit();
-  BidiParagraph bidi;
-  bidi.SetParagraph(text16, direction_);
-  BidiParagraph::Runs runs;
-  bidi.GetVisualRuns(text16, &runs);
   float xpos = 0;
-  runs_with_offset_.reserve(runs.size());
-  for (const auto& run : runs) {
-    // Measure each run.
-    TextRun text_run(StringView(text_, run.start, run.Length()),
-                     run.Direction(),
-                     /* directional_override */ false,
-                     /* normalize_space */ true);
+  runs_with_offset_.reserve(node.ItemList().size());
+  for (const auto& item : node.ItemList()) {
+    // Save the run for computing additional metrics.
+    const ShapeResult* shape_result = item.GetShapeResult();
 
-    // Save the run for computing additional metrics. Whether we calculate the
-    // ShapeResult objects right away, or lazily when needed, depends on the
-    // CanvasTextNg feature.
-    RunWithOffset run_with_offset = {
-        .shape_result_ = nullptr,
-        .text_ = text_run.ToStringView().ToString(),
-        .direction_ = run.Direction(),
-        .character_offset_ = run.start,
-        .num_characters_ = run.Length(),
-        .x_position_ = xpos};
-
-    gfx::RectF run_glyph_bounds;
-    float run_width = font_->DeprecatedWidth(text_run, &run_glyph_bounds);
-    runs_with_offset_.push_back(run_with_offset);
+    runs_with_offset_.push_back(
+        RunWithOffset{.shape_result_ = shape_result,
+                      .text_ = item.Text(),
+                      .direction_ = item.Direction(),
+                      .character_offset_ = item.StartOffset(),
+                      .num_characters_ = item.Length(),
+                      .x_position_ = xpos});
 
     // Accumulate the position and the glyph bounding box.
+    gfx::RectF run_glyph_bounds = item.InkBounds();
     run_glyph_bounds.Offset(xpos, 0);
     glyph_bounds.Union(run_glyph_bounds);
-    xpos += run_width;
+    xpos += shape_result->Width();
   }
   return {xpos, glyph_bounds};
 }

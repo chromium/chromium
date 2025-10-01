@@ -1111,30 +1111,18 @@ void BaseRenderingContext2D::DrawTextInternal(
   bool bidi_override =
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
-  PlainTextPainter* text_painter = RuntimeEnabledFeatures::CanvasTextNgEnabled(
-                                       host->GetTopExecutionContext())
-                                       ? &host->GetPlainTextPainter()
-                                       : nullptr;
+  PlainTextPainter& text_painter = host->GetPlainTextPainter();
   TextRun text_run(text, direction, bidi_override, /* normalize_space */ true);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x), ClampTo<float>(y));
   gfx::RectF bounds;
   double font_width = 0;
-  if (text_painter) {
     if (run_start == 0 && run_end == text.length()) [[likely]] {
-      font_width = text_painter->ComputeInlineSize(text_run, *font, &bounds);
+      font_width = text_painter.ComputeInlineSize(text_run, *font, &bounds);
     } else {
-      font_width = text_painter->ComputeSubInlineSize(text_run, run_start,
-                                                      run_end, *font, &bounds);
+      font_width = text_painter.ComputeSubInlineSize(text_run, run_start,
+                                                     run_end, *font, &bounds);
     }
-  } else {
-    if (run_start == 0 && run_end == text.length()) [[likely]] {
-      font_width = font->DeprecatedWidth(text_run, &bounds);
-    } else {
-      font_width =
-          font->DeprecatedSubRunWidth(text_run, run_start, run_end, &bounds);
-    }
-  }
 
   bool use_max_width = (max_width && *max_width < font_width);
   double width = use_max_width ? *max_width : font_width;
@@ -1179,7 +1167,7 @@ void BaseRenderingContext2D::DrawTextInternal(
   Draw<OverdrawOp::kNone>(
       /*draw_func=*/
       [font, text = std::move(text), direction, bidi_override, location,
-       run_start, run_end, canvas, text_painter,
+       run_start, run_end, canvas, &text_painter,
        paint_type](MemoryManagedPaintCanvas* c, const cc::PaintFlags* flags) {
         TextRun text_run(text, direction, bidi_override,
                          /* normalize_space */ true);
@@ -1200,18 +1188,9 @@ void BaseRenderingContext2D::DrawTextInternal(
             paint_type == CanvasRenderingContext2DState::kFillPaintType
                 ? HighEntropyCanvasOpType::kFillText
                 : HighEntropyCanvasOpType::kStrokeText);
-        if (text_painter) {
-          text_painter->DrawWithBidiReorder(text_run, run_start, run_end, *font,
-                                            Font::kUseFallbackIfFontNotReady,
-                                            *c, location, *flags, draw_type);
-        } else {
-          TextRunPaintInfo text_run_paint_info(text_run);
-          text_run_paint_info.from = run_start;
-          text_run_paint_info.to = run_end;
-          font->DeprecatedDrawBidiText(c, text_run_paint_info, location,
-                                       Font::kUseFallbackIfFontNotReady, *flags,
-                                       draw_type);
-        }
+        text_painter.DrawWithBidiReorder(text_run, run_start, run_end, *font,
+                                         Font::kUseFallbackIfFontNotReady, *c,
+                                         location, *flags, draw_type);
       },
       NoOverdraw, bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
@@ -1254,11 +1233,7 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
 
   return MakeGarbageCollected<TextMetrics>(
       font, direction, state.GetTextBaseline().AsEnum(),
-      state.GetTextAlign().AsEnum(), text,
-      RuntimeEnabledFeatures::CanvasTextNgEnabled(
-          host->GetTopExecutionContext())
-          ? &host->GetPlainTextPainter()
-          : nullptr);
+      state.GetTextAlign().AsEnum(), text, host->GetPlainTextPainter());
 }
 
 String BaseRenderingContext2D::lang() const {
