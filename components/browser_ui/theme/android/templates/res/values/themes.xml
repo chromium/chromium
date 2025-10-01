@@ -380,6 +380,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
 
     <style name="ThemeOverlay.BrowserUI.ExpressiveUpdate" parent="">
         <item name="overflowMenuButtonStyle">@style/OverflowMenuButton.Expressive</item>
+        <item name="overflowMenuActionBarBgDrawable">@empty</item>
         <item name="appMenuIconRowPadding">8dp</item>
     </style>
 </resources>
