@@ -1,5 +1,4 @@
 # https://crbug.com/375086487
--InstallableManagerBrowserTest.CheckFavicon
 -InstallableManagerBrowserTest.CheckManifestCorruptedIcon
 -InstallableManagerBrowserTest.CheckManifestWithIconThatIsTooSmall
 -InstallableManagerBrowserTest.CheckManifestWithOnlyRelatedApplications
