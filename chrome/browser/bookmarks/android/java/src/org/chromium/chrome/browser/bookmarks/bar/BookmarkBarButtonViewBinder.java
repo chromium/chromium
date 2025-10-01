@@ -46,6 +46,9 @@ class BookmarkBarButtonViewBinder {
             view.setTitleTextAppearance(resId);
         } else if (key == BookmarkBarButtonProperties.BOOKMARK_ITEM) {
             // No-op.
+        } else if (key == BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID) {
+            view.setBackgroundResource(
+                    model.get(BookmarkBarButtonProperties.BACKGROUND_DRAWABLE_ID));
         }
     }
 }
