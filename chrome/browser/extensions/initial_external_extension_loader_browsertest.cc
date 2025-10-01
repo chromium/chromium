@@ -167,7 +167,7 @@ class InitialExternalExtensionLoaderRestartBrowserTest
     profile()->GetPrefs()->CommitPendingWrite();
   }
 
-  // Setups extension installation environment to that a request to install
+  // Setup extension installation environment so that a request to install
   // `kTestExtensionId` may succeed when it should.
   void PrepareExtensionInstallation() {
     base::ScopedAllowBlockingForTesting allow_blocking;
