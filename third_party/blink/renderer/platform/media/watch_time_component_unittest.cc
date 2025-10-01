@@ -223,15 +223,16 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
       media::WatchTimeKey::kAudioVideoDisplayPictureInPicture};
   auto test_component = CreateComponent<WebMediaPlayer::DisplayType>(
       WebMediaPlayer::DisplayType::kFullscreen, finalize_keys,
-      base::BindRepeating([](WebMediaPlayer::DisplayType display_type) {
+      base::BindRepeating([](WebMediaPlayer::DisplayType display_type)
+                              -> Vector<media::WatchTimeKey> {
         switch (display_type) {
           case WebMediaPlayer::DisplayType::kInline:
-            return media::WatchTimeKey::kAudioVideoDisplayInline;
+            return {media::WatchTimeKey::kAudioVideoDisplayInline};
           case WebMediaPlayer::DisplayType::kFullscreen:
-            return media::WatchTimeKey::kAudioVideoDisplayFullscreen;
+            return {media::WatchTimeKey::kAudioVideoDisplayFullscreen};
           case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
           case WebMediaPlayer::DisplayType::kDocumentPictureInPicture:
-            return media::WatchTimeKey::kAudioVideoDisplayPictureInPicture;
+            return {media::WatchTimeKey::kAudioVideoDisplayPictureInPicture};
         }
       }));
   EXPECT_EQ(test_component->current_value_for_testing(),

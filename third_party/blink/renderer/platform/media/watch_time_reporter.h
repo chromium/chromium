@@ -202,16 +202,15 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // and a conversion method to get the correct WatchTimeKey.
   std::unique_ptr<WatchTimeComponent<bool>> CreateBaseComponent();
   std::unique_ptr<WatchTimeComponent<bool>> CreatePowerComponent();
-  media::WatchTimeKey GetPowerKey(bool is_on_battery_power);
+  Vector<media::WatchTimeKey> GetPowerKeys(bool is_on_battery_power);
   std::unique_ptr<WatchTimeComponent<bool>> CreateControlsComponent();
-  media::WatchTimeKey GetControlsKey(bool has_native_controls);
+  Vector<media::WatchTimeKey> GetControlsKeys(bool has_native_controls);
   std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
   CreateDisplayTypeComponent();
-  media::WatchTimeKey GetDisplayTypeKey(
+  Vector<media::WatchTimeKey> GetDisplayTypeKeys(
       WebMediaPlayer::DisplayType display_type);
-  std::unique_ptr<WatchTimeComponent<bool>> CreateHdrComponent(bool is_eme);
-  media::WatchTimeKey GetHdrAllKey(bool is_hdr);
-  media::WatchTimeKey GetHdrEmeKey(bool is_hdr);
+  std::unique_ptr<WatchTimeComponent<bool>> CreateHdrComponent();
+  Vector<media::WatchTimeKey> GetHdrKeys(bool is_hdr);
 
   // Initialized during construction.
   const media::mojom::blink::PlaybackPropertiesPtr properties_;
@@ -265,8 +264,7 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
       display_type_component_;
   std::unique_ptr<WatchTimeComponent<bool>> controls_component_;
-  std::unique_ptr<WatchTimeComponent<bool>> hdr_all_component_;
-  std::unique_ptr<WatchTimeComponent<bool>> hdr_eme_component_;
+  std::unique_ptr<WatchTimeComponent<bool>> hdr_component_;
 
   // Special case reporter for handling background video watch time. Configured
   // as an audio only WatchTimeReporter with |is_background_| set to true.
