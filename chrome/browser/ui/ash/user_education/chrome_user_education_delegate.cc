@@ -79,14 +79,13 @@ ChromeUserEducationDelegate::~ChromeUserEducationDelegate() = default;
 std::optional<ui::ElementIdentifier>
 ChromeUserEducationDelegate::GetElementIdentifierForAppId(
     const std::string& app_id) const {
-  if (UNSAFE_TODO(
-          !strcmp(file_manager::kFileManagerSwaAppId, app_id.c_str()))) {
+  if (app_id == file_manager::kFileManagerSwaAppId) {
     return ash::kFilesAppElementId;
   }
-  if (UNSAFE_TODO(!strcmp(ash::kHelpAppId, app_id.c_str()))) {
+  if (app_id == ash::kHelpAppId) {
     return ash::kExploreAppElementId;
   }
-  if (UNSAFE_TODO(!strcmp(ash::kOsSettingsAppId, app_id.c_str()))) {
+  if (app_id == ash::kOsSettingsAppId) {
     return ash::kSettingsAppElementId;
   }
   return std::nullopt;
