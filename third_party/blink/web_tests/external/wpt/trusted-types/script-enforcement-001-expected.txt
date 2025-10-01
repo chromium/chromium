@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Script source set via HTMLElement.innerText drops trustworthiness.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'innerText' property on 'HTMLElement': This document requires 'TrustedScript' assignment."
-[FAIL] Script source set Node.textContent drops trustworthiness.
-  promise_test: Unhandled rejection with value: object "TypeError: Failed to set the 'textContent' property on 'Node': This document requires 'TrustedScript' assignment."
-Harness: the test ran to completion.
-

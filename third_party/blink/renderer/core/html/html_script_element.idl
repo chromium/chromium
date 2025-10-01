@@ -52,6 +52,15 @@
 
     // https://html.spec.whatwg.org/multipage/scripting.html#dom-script-blocking
     [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
+
+    // https://w3c.github.io/trusted-types/dist/spec/#enforcement-in-scripts
+    //
+    // TODO(vogelheim): We use non-standard ImplementedAs= names to avoid a
+    // collision with the names defined by super classes. This can be cleaned
+    // up once the TrustedTypesHTML flag is removed.
+    [CEReactions, RuntimeEnabled=TrustedTypesHTML, ImplementedAs=scriptTextContentForBinding, RaisesException=Setter] attribute (DOMString or TrustedScript)? textContent;
+    [CEReactions, RuntimeEnabled=TrustedTypesHTML, ImplementedAs=scriptInnerTextForBinding, RaisesException=Setter] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
+
 };
 
 // https://wicg.github.io/attribution-reporting-api

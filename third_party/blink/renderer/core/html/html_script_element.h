@@ -67,6 +67,16 @@ class CORE_EXPORT HTMLScriptElement final : public HTMLElement,
   V8UnionStringOrTrustedScript* text();
   void setTextWithoutTrustedTypes(const String&);
 
+  void setScriptTextContentForBinding(const V8UnionStringOrTrustedScript*,
+                                      ExceptionState&);
+  V8UnionStringOrTrustedScript* scriptTextContentForBinding();
+  void setScriptInnerTextForBinding(
+      const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
+          string_or_trusted_script,
+      ExceptionState& exception_state);
+  V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
+  scriptInnerTextForBinding();
+
   void setAsync(bool);
   bool async() const;
 
