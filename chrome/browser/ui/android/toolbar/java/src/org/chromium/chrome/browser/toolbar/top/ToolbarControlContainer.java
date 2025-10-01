@@ -848,7 +848,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 }
             } else if (Boolean.TRUE.equals(compositorInMotion)
                     && super.isDirty()
-                    && mControlContainerIsVisibleSupplier.getAsBoolean()) {
+                    && (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
+                            || mControlContainerIsVisibleSupplier.getAsBoolean())) {
                 CaptureReadinessResult captureReadinessResult = mToolbar.isReadyForTextureCapture();
                 CaptureReadinessResult.logCaptureReasonFromResult(captureReadinessResult);
                 if (ToolbarFeatures.shouldRecordSuppressionMetrics()) {

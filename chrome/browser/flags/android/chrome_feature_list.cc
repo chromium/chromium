@@ -439,6 +439,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kThirdPartyDisableChromeAutofillSettingsScreen,
     &kToolbarPhoneAnimationRefactor,
     &kToolbarSnapshotRefactor,
+    &kToolbarStaleCaptureBugFix,
     &kToolbarTabletResizeRefactor,
     &kTopControlsRefactor,
     &kTouchToSearchCallout,
@@ -1103,6 +1104,8 @@ BASE_FEATURE(kThirdPartyDisableChromeAutofillSettingsScreen,
 BASE_FEATURE(kToolbarPhoneAnimationRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarSnapshotRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kToolbarStaleCaptureBugFix, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarTabletResizeRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 
