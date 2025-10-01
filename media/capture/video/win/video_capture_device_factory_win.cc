@@ -58,6 +58,7 @@
 #include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #include "media/capture/video/win/video_capture_device_win.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 using DevicesInfo = std::vector<media::VideoCaptureDeviceInfo>;
 using base::win::GetActivationFactory;
@@ -380,7 +381,7 @@ class VideoCaptureDeviceFactoryWin::ComThreadData
   friend class base::RefCountedThreadSafe<ComThreadData>;
   ~ComThreadData() = default;
 
-  std::unordered_set<
+  absl::flat_hash_set<
       raw_ptr<IAsyncOperation<DeviceInformationCollection*>, CtnExperimental>>
       async_ops_;
   base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory_;
