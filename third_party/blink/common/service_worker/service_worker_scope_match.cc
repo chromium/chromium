@@ -12,7 +12,7 @@ namespace blink {
 namespace {
 
 bool PathContainsDisallowedCharacter(const GURL& url) {
-  std::string path = url.path();
+  std::string path = url.GetPath();
   DCHECK(base::IsStringUTF8(path));
 
   // We should avoid these escaped characters in the path component because

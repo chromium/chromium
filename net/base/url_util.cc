@@ -543,7 +543,7 @@ void GetIdentityFromURL(const GURL& url,
                         std::u16string* username,
                         std::u16string* password) {
   *username = UnescapeIdentityString(url.GetUsername());
-  *password = UnescapeIdentityString(url.password());
+  *password = UnescapeIdentityString(url.GetPassword());
 }
 
 bool HasGoogleHost(const GURL& url) {

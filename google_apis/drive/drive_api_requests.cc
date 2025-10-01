@@ -1223,8 +1223,8 @@ void BatchUploadRequest::MayCompletePrepare() {
     HttpRequestMethod method = child->request->GetRequestType();
     const std::string header = base::StringPrintf(
         kBatchUploadRequestFormat, HttpRequestMethodToString(method).c_str(),
-        url.path().c_str(), url_generator_.GetBatchUploadUrl().host().c_str(),
-        type.c_str());
+        url.GetPath().c_str(),
+        url_generator_.GetBatchUploadUrl().GetHost().c_str(), type.c_str());
 
     child->data_offset = header.size();
     child->data_size = data.size();

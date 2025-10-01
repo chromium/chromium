@@ -653,7 +653,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       ExtensionRendererLoadStatus::kUnknownExtension;
   if (extension) {
     load_status = ExtensionRendererLoadStatus::kExtensionLoaded;
-  } else if (base::Contains(unloaded_extensions_, script_url.host())) {
+  } else if (base::Contains(unloaded_extensions_, script_url.GetHost())) {
     // script_url.host() is the extension's ID.
     load_status = ExtensionRendererLoadStatus::kExtensionUnloaded;
   }

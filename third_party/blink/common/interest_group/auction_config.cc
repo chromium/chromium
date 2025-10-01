@@ -154,7 +154,7 @@ int AuctionConfig::NumPromises() const {
 }
 
 bool AuctionConfig::IsHttpsAndMatchesSellerOrigin(const GURL& url) const {
-  return url.scheme() == url::kHttpsScheme &&
+  return url.GetScheme() == url::kHttpsScheme &&
          url::Origin::Create(url) == seller;
 }
 
@@ -164,7 +164,7 @@ bool AuctionConfig::IsValidTrustedScoringSignalsURL(const GURL& url) const {
     return false;
   }
 
-  return url.scheme() == url::kHttpsScheme;
+  return url.GetScheme() == url::kHttpsScheme;
 }
 
 bool AuctionConfig::IsDirectFromSellerSignalsValid(

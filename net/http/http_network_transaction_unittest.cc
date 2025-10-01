@@ -13487,7 +13487,7 @@ TEST_P(HttpNetworkTransactionTest, AuthIdentityInURL) {
 
   // The password contains an escaped character -- for this test to pass it
   // will need to be unescaped by HttpNetworkTransaction.
-  EXPECT_EQ("b%40r", request.url.password());
+  EXPECT_EQ("b%40r", request.url.GetPassword());
 
   MockWrite data_writes1[] = {
       MockWrite("GET / HTTP/1.1\r\n"

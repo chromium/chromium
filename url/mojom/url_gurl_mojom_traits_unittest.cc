@@ -51,7 +51,7 @@ class MojoGURLStructTraitsTest : public ::testing::Test {
     // correctly serialized and deserialized, not just the spec.
     EXPECT_EQ(input.possibly_invalid_spec(), output.possibly_invalid_spec());
     EXPECT_EQ(input.is_valid(), output.is_valid());
-    EXPECT_EQ(input.scheme(), output.scheme());
+    EXPECT_EQ(input.GetScheme(), output.GetScheme());
     EXPECT_EQ(input.GetUsername(), output.GetUsername());
     EXPECT_EQ(input.GetPassword(), output.GetPassword());
     EXPECT_EQ(input.GetHost(), output.GetHost());

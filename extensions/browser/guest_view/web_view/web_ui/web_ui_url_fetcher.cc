@@ -38,7 +38,7 @@ void WebUIURLFetcher::Start() {
   }
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
-      content::CreateWebUIURLLoaderFactory(render_frame_host, url_.scheme(),
+      content::CreateWebUIURLLoaderFactory(render_frame_host, url_.GetScheme(),
                                            {}));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

@@ -220,7 +220,7 @@ bool AllowExtensionResourceLoad(const network::ResourceRequest& request,
   // process to request each other's resources. We can't do a more precise
   // check, since the renderer can lie about which extension has made the
   // request.
-  if (process_map.Contains(request.url.host(), child_id)) {
+  if (process_map.Contains(request.url.GetHost(), child_id)) {
     return true;
   }
 
@@ -257,7 +257,7 @@ bool URLIsForExtensionIcon(const GURL& url, const Extension* extension) {
     return false;
   }
 
-  DCHECK_EQ(url.host(), extension->id());
+  DCHECK_EQ(url.GetHost(), extension->id());
   std::string_view path = url.path_piece();
   DCHECK(path.length() > 0 && path[0] == '/');
   std::string_view path_without_slash = path.substr(1);
@@ -304,7 +304,7 @@ void GetSecurityPolicyForURL(const network::ResourceRequest& request,
                              const std::string** cross_origin_opener_policy,
                              bool* send_cors_header,
                              bool* follow_symlinks_anywhere) {
-  std::string resource_path = request.url.path();
+  std::string resource_path = request.url.GetPath();
 
   // Use default CSP for <webview>.
   if (!is_web_view_request) {
@@ -599,7 +599,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       return;
     }
 
-    const ExtensionId extension_id = request_.url.host();
+    const ExtensionId extension_id = request_.url.GetHost();
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
     scoped_refptr<const Extension> extension =
         registry->GenerateInstalledExtensionsSet().GetByIDorGUID(extension_id);
@@ -609,7 +609,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
         extensions::util::IsIncognitoEnabled(extension_id, browser_context_);
 
     // Redirect guid to id.
-    if (extension && request_.url.host() == extension->guid()) {
+    if (extension && request_.url.GetHost() == extension->guid()) {
       GURL::Replacements replace_host;
       replace_host.SetHostStr(extension->id());
       upstream_url_ = request_.url;
@@ -819,7 +819,7 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     // Handle shared resources (extension A loading resources out of extension
     // B).
     ExtensionId extension_id = extension->id();
-    std::string path = request_.url.path();
+    std::string path = request_.url.GetPath();
     if (SharedModuleInfo::IsImportedPath(path)) {
       std::string new_extension_id;
       std::string new_relative_path;
@@ -963,7 +963,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    DCHECK_EQ(kExtensionScheme, request.url.scheme());
+    DCHECK_EQ(kExtensionScheme, request.url.GetScheme());
     ExtensionURLLoader::CreateAndStart(std::move(loader), std::move(client),
                                        request, is_web_view_request_,
                                        render_process_id_, browser_context_);

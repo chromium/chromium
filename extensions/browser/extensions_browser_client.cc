@@ -205,7 +205,7 @@ void ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
         callback) {
   const GURL& owner_site_url = owner_site_instance->GetSiteURL();
   auto partition_config = content::StoragePartitionConfig::Create(
-      browser_context, owner_site_url.host(), partition_name, in_memory);
+      browser_context, owner_site_url.GetHost(), partition_name, in_memory);
 
   if (owner_site_url.SchemeIs(extensions::kExtensionScheme)) {
     const auto& owner_config = owner_site_instance->GetStoragePartitionConfig();

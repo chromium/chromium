@@ -200,7 +200,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
       // domain. Note: We can't use the extension_urls::IsWebstoreDomain check
       // here, as the webstore hosted app is associated with a specific path and
       // we don't want to block navigations to other paths on that domain.
-      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().host())) {
+      if (url.DomainIs(extension_urls::GetNewWebstoreLaunchURL().GetHost())) {
         return content::NavigationThrottle::BLOCK_REQUEST;
       }
     }
@@ -276,7 +276,7 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     bool allowed = true;
     url_request_util::AllowCrossRendererResourceLoadHelper(
         is_guest, target_extension, owner_extension,
-        storage_partition_config.partition_name(), url.path(),
+        storage_partition_config.partition_name(), url.GetPath(),
         navigation_handle()->GetPageTransition(), &allowed);
     if (!allowed) {
       return content::NavigationThrottle::BLOCK_REQUEST;

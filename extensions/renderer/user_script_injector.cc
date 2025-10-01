@@ -93,7 +93,7 @@ bool ShouldInjectScripts(const UserScript::ContentList& script_contents,
                          const std::set<std::string>& injected_files) {
   for (const std::unique_ptr<UserScript::Content>& content : script_contents) {
     // Check if the script is already injected.
-    if (injected_files.count(content->url().path()) == 0) {
+    if (injected_files.count(content->url().GetPath()) == 0) {
       return true;
     }
   }
@@ -254,15 +254,16 @@ std::vector<blink::WebScriptSource> UserScriptInjector::GetJsSources(
   for (const std::unique_ptr<UserScript::Content>& file : js_scripts) {
     const GURL& script_url = file->url();
     // Check if the script is already injected.
-    if (executing_scripts->count(script_url.path()) != 0)
+    if (executing_scripts->count(script_url.GetPath()) != 0) {
       continue;
+    }
 
     sources.push_back(blink::WebScriptSource(
         user_script_set_->GetJsSource(*file, script_->emulate_greasemonkey()),
         script_url));
 
     ++*num_injected_js_scripts;
-    executing_scripts->insert(script_url.path());
+    executing_scripts->insert(script_url.GetPath());
   }
 
   return sources;
@@ -281,7 +282,7 @@ std::vector<ScriptInjector::CSSSource> UserScriptInjector::GetCssSources(
   sources.reserve(css_scripts.size());
   for (const std::unique_ptr<UserScript::Content>& file :
        script_->css_scripts()) {
-    const std::string& stylesheet_path = file->url().path();
+    const std::string& stylesheet_path = file->url().GetPath();
     // Check if the stylesheet is already injected.
     if (injected_stylesheets->count(stylesheet_path) != 0)
       continue;

@@ -136,7 +136,7 @@ bool ShouldRetryRequest(const network::SimpleURLLoader* loader) {
 // maximum.
 bool IncrementAuthUserIndex(GURL* url) {
   int user_index = 0;
-  std::string old_query = url->query();
+  std::string old_query = url->GetQuery();
   std::vector<std::string> new_query_parts;
   url::Component query(0, old_query.length());
   url::Component key, value;

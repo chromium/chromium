@@ -49,7 +49,7 @@ bool DevToolsPageHandler::Parse(Extension* extension, std::u16string* error) {
   // extension, so we can call it right here in Parse() and not Validate() and
   // do not need to specify DevToolsPageHandler::PrerequisiteKeys()
   const bool is_extension_url =
-      url.is_valid() && !SharedModuleInfo::IsImportedPath(url.path());
+      url.is_valid() && !SharedModuleInfo::IsImportedPath(url.GetPath());
   if (!is_extension_url) {
     *error = errors::kInvalidDevToolsPage;
     return false;

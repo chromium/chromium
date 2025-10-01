@@ -951,7 +951,7 @@ TEST(UrlUtilTest, GetIdentityFromURL_UTF8) {
   GURL url(u"http://foo:\x4f60\x597d@blah.com");
 
   EXPECT_EQ("foo", url.GetUsername());
-  EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.password());
+  EXPECT_EQ("%E4%BD%A0%E5%A5%BD", url.GetPassword());
 
   // Extract the unescaped identity.
   std::u16string username, password;

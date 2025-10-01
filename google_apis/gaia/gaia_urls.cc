@@ -333,7 +333,7 @@ GURL GaiaUrls::ListAccountsURLWithSource(const std::string& source) {
     // TODO(crbug.com/443901858): Append laf=b64bin parameter universally.
     return list_accounts_url_;
   } else {
-    std::string query = list_accounts_url_.query();
+    std::string query = list_accounts_url_.GetQuery();
     return list_accounts_url_.Resolve(base::StringPrintf(
         "?gpsia=1&source=%s&laf=b64bin&%s", source.c_str(), query.c_str()));
   }

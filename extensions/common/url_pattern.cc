@@ -474,7 +474,7 @@ bool URLPattern::MatchesSecurityOrigin(const GURL& test) const {
     test_url = test.inner_url();
   }
 
-  if (!MatchesScheme(test_url->scheme())) {
+  if (!MatchesScheme(test_url->GetScheme())) {
     return false;
   }
 

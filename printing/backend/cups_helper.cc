@@ -780,7 +780,7 @@ HttpConnectionCUPS::HttpConnectionCUPS(const GURL& print_server_url,
   if (port == url::PORT_UNSPECIFIED)
     port = kDefaultIPPServerPort;
 
-  http_ = HttpConnect2(print_server_url.host().c_str(), port,
+  http_ = HttpConnect2(print_server_url.GetHost().c_str(), port,
                        /*addrlist=*/nullptr, AF_UNSPEC, encryption,
                        blocking ? 1 : 0, kCupsTimeout.InMilliseconds(),
                        /*cancel=*/nullptr);

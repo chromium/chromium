@@ -487,7 +487,7 @@ void ServiceWorkerTaskQueue::OnWorkerStop(int64_t version_id,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Stop tracking the worker for extension API purposes.
-  const ExtensionId& extension_id = scope.host();
+  const ExtensionId& extension_id = scope.GetHost();
   ProcessManager::Get(browser_context_)
       ->StopTrackingServiceWorkerRunningInstance(extension_id, version_id);
 
@@ -973,7 +973,7 @@ ServiceWorkerTaskQueue::GetCurrentActivationToken(
 
 void ServiceWorkerTaskQueue::OnRegistrationStoredSync(int64_t registration_id,
                                                       const GURL& scope) {
-  const ExtensionId extension_id = scope.host();
+  const ExtensionId extension_id = scope.GetHost();
   auto iter = pending_storage_registrations_.find(extension_id);
   if (iter == pending_storage_registrations_.end()) {
     return;
@@ -981,8 +981,8 @@ void ServiceWorkerTaskQueue::OnRegistrationStoredSync(int64_t registration_id,
 
   // The only registrations we track are the ones for root-scope extension
   // service workers.
-  DCHECK_EQ(kExtensionScheme, scope.scheme());
-  DCHECK_EQ("/", scope.path());
+  DCHECK_EQ(kExtensionScheme, scope.GetScheme());
+  DCHECK_EQ("/", scope.GetPath());
 
   base::UnguessableToken activation_token = iter->second;
   SequencedContextId context_id = {extension_id, browser_context_->UniqueId(),
@@ -1011,7 +1011,7 @@ void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
   }
 
   auto error_instance = std::make_unique<RuntimeError>(
-      scope.host(), browser_context_->IsOffTheRecord(),
+      scope.GetHost(), browser_context_->IsOffTheRecord(),
       base::UTF8ToUTF16(content::MessageSourceToString(message.source)),
       message.message,
       StackTrace(1, StackFrame(message.line_number, 1,

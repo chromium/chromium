@@ -41,7 +41,7 @@
 
 #define REGISTER_RESPONSE_HANDLER(url, method) \
   request_handlers_.insert(std::make_pair(     \
-      url.path(),                              \
+      url.GetPath(),                           \
       base::BindRepeating(&FakeGaia::method, base::Unretained(this))))
 
 #define REGISTER_PATH_RESPONSE_HANDLER(path, method) \
@@ -584,7 +584,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeGaia::HandleRequest(
   // The scheme and host of the URL is actually not important but required to
   // get a valid GURL in order to parse |request.relative_url|.
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string request_path = request_url.path();
+  std::string request_path = request_url.GetPath();
   auto http_response = std::make_unique<BasicHttpResponse>();
 
   auto fixed_response = fixed_responses_.find(request_path);
@@ -663,9 +663,9 @@ void FakeGaia::SetFixedResponse(const GURL& gaia_url,
                                 net::HttpStatusCode http_status_code,
                                 const std::string& http_response_body) {
   if (http_status_code == net::HTTP_OK && http_response_body.empty()) {
-    fixed_responses_.erase(gaia_url.path());
+    fixed_responses_.erase(gaia_url.GetPath());
   } else {
-    fixed_responses_[gaia_url.path()] =
+    fixed_responses_[gaia_url.GetPath()] =
         std::make_pair(http_status_code, http_response_body);
   }
 }
@@ -726,16 +726,17 @@ void FakeGaia::HandleEmbeddedSetupChromeos(const HttpRequest& request,
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
 
   std::string client_id;
-  if (!GetQueryParameter(request_url.query(), "client_id", &client_id) ||
+  if (!GetQueryParameter(request_url.GetQuery(), "client_id", &client_id) ||
       GaiaUrls::GetInstance()->oauth2_chrome_client_id() != client_id) {
     LOG(ERROR) << "Missing or invalid param 'client_id' in "
                   "/embedded/setup/chromeos call";
     return;
   }
 
-  GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
-  GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
-  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
+  GetQueryParameter(request_url.GetQuery(), "Email", &prefilled_email_);
+  GetQueryParameter(request_url.GetQuery(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.GetQuery(), "pwl",
+                    &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -747,18 +748,20 @@ void FakeGaia::HandleEmbeddedReauthChromeos(const HttpRequest& request,
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
 
   std::string client_id;
-  if (!GetQueryParameter(request_url.query(), "client_id", &client_id) ||
+  if (!GetQueryParameter(request_url.GetQuery(), "client_id", &client_id) ||
       GaiaUrls::GetInstance()->oauth2_chrome_client_id() != client_id) {
     LOG(ERROR) << "Missing or invalid param 'client_id' in "
                   "/embedded/reauth/chromeos call";
     return;
   }
 
-  GetQueryParameter(request_url.query(), "is_supervised", &is_supervised_);
-  GetQueryParameter(request_url.query(), "is_device_owner", &is_device_owner_);
-  GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
-  GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
-  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
+  GetQueryParameter(request_url.GetQuery(), "is_supervised", &is_supervised_);
+  GetQueryParameter(request_url.GetQuery(), "is_device_owner",
+                    &is_device_owner_);
+  GetQueryParameter(request_url.GetQuery(), "Email", &prefilled_email_);
+  GetQueryParameter(request_url.GetQuery(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.GetQuery(), "pwl",
+                    &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -1133,7 +1136,7 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
   http_response->set_code(net::HTTP_UNAUTHORIZED);
 
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string request_query = request_url.query();
+  std::string request_query = request_url.GetQuery();
 
   std::string source;
   if (!GetQueryParameter(request_query, "source", &source)) {
@@ -1188,7 +1191,7 @@ void FakeGaia::HandleFakeRemoveLocalAccount(
   DCHECK(http_response);
 
   std::string gaia_id_str;
-  GetQueryParameter(request.GetURL().query(), "gaia_id", &gaia_id_str);
+  GetQueryParameter(request.GetURL().GetQuery(), "gaia_id", &gaia_id_str);
   GaiaId gaia_id(gaia_id_str);
 
   if (!std::erase(configuration_.signed_out_gaia_ids, gaia_id)) {
@@ -1237,7 +1240,7 @@ void FakeGaia::HandleRotateBoundCookies(
   for (const std::string& cookie_name : configuration_.rotated_cookies) {
     const std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(
-            url, cookie_name, "dummy_value", url.host(), url.path(),
+            url, cookie_name, "dummy_value", url.GetHost(), url.GetPath(),
             /*creation_time=*/base::Time::Now(),
             /*expiration_time=*/base::Time::Now() + base::Hours(2),
             /*last_access_time=*/base::Time::Now(),
@@ -1272,7 +1275,7 @@ std::optional<GURL> FakeGaia::GetSamlRedirectUrl(
 
   // First check sso profile.
   std::string sso_profile;
-  GetQueryParameter(request_url.query(), "sso_profile", &sso_profile);
+  GetQueryParameter(request_url.GetQuery(), "sso_profile", &sso_profile);
   auto itr_sso = saml_sso_profile_url_map_.find(sso_profile);
   if (itr_sso != saml_sso_profile_url_map_.end()) {
     return itr_sso->second;
@@ -1280,7 +1283,7 @@ std::optional<GURL> FakeGaia::GetSamlRedirectUrl(
 
   // If we failed to find redirect url based on sso profile, try with domain.
   std::string domain;
-  GetQueryParameter(request_url.query(), "domain", &domain);
+  GetQueryParameter(request_url.GetQuery(), "domain", &domain);
   auto itr_domain = saml_domain_url_map_.find(domain);
   if (itr_domain != saml_domain_url_map_.end()) {
     return itr_domain->second;

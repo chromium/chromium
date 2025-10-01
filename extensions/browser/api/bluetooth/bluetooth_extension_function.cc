@@ -72,7 +72,7 @@ std::string BluetoothExtensionFunction::GetExtensionId() {
   if (extension()) {
     return extension()->id();
   }
-  return render_frame_host()->GetLastCommittedURL().host();
+  return render_frame_host()->GetLastCommittedURL().GetHost();
 }
 
 void BluetoothExtensionFunction::RunOnAdapterReady(

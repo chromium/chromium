@@ -86,7 +86,7 @@ URLLoaderFactoryBundle::~URLLoaderFactoryBundle() = default;
 
 network::mojom::URLLoaderFactory* URLLoaderFactoryBundle::GetFactory(
     const network::ResourceRequest& request) {
-  auto it = scheme_specific_factories_.find(request.url.scheme());
+  auto it = scheme_specific_factories_.find(request.url.GetScheme());
   if (it != scheme_specific_factories_.end())
     return it->second.get();
 

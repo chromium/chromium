@@ -186,7 +186,7 @@ bool Origin::CanBeDerivedFrom(const GURL& url) const {
   // For "no access" schemes, blink's SecurityOrigin will always create an
   // opaque unique one. However, about: scheme is also registered as such but
   // does not behave this way, therefore exclude it from this check.
-  if (base::Contains(url::GetNoAccessSchemes(), url.scheme()) &&
+  if (base::Contains(url::GetNoAccessSchemes(), url.GetScheme()) &&
       !url.SchemeIs(kAboutScheme)) {
     // If |this| is not opaque, definitely return false as the expectation
     // is for opaque origin.

@@ -118,11 +118,11 @@ class HlsRenditionManagerTest : public testing::Test {
     std::string variant_path = "NONE";
     std::string rendition_path = "NONE";
     if (vr.has_value()) {
-      variant_path = std::get<1>(*vr)->GetUri().value().path();
+      variant_path = std::get<1>(*vr)->GetUri().value().GetPath();
     }
     if (ar) {
       CHECK(ar.has_value());
-      rendition_path = std::get<1>(*ar)->GetUri().value().path();
+      rendition_path = std::get<1>(*ar)->GetUri().value().GetPath();
     }
     VariantSelected(variant_path, rendition_path);
   }

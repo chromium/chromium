@@ -1977,7 +1977,7 @@ WebContents* WebViewGuest::OpenURLFromTab(
   // tab, etc., are also handled by the WebContentsDelegate.
   if (!params.is_renderer_initiated &&
       (!content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-           params.url.scheme()) ||
+           params.url.GetScheme()) ||
        params.disposition != WindowOpenDisposition::CURRENT_TAB)) {
     if (!owner_web_contents()->GetDelegate()) {
       return nullptr;
@@ -2120,7 +2120,7 @@ void WebViewGuest::LoadURLWithParams(
 
   bool scheme_is_blocked =
       (!content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-           url.scheme()) &&
+           url.GetScheme()) &&
        !url.SchemeIs(url::kAboutScheme)) ||
       url.SchemeIs(url::kJavaScriptScheme);
 

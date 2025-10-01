@@ -477,10 +477,10 @@ bool Extension::OverlapsWithOrigin(const GURL& origin) const {
 
   // Note: patterns and extents ignore port numbers.
   URLPattern origin_only_pattern(kValidWebExtentSchemes);
-  if (!origin_only_pattern.SetScheme(origin.scheme())) {
+  if (!origin_only_pattern.SetScheme(origin.GetScheme())) {
     return false;
   }
-  origin_only_pattern.SetHost(origin.host());
+  origin_only_pattern.SetHost(origin.GetHost());
   origin_only_pattern.SetPath("/*");
 
   URLPatternSet origin_only_pattern_list;

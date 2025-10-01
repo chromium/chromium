@@ -251,7 +251,7 @@ RequestParams::RequestParams(
   // none of those are available, fall back to an opaque origin.
   std::string top_level_frame_or_initiator_host;
   if (info.web_request_type == WebRequestResourceType::MAIN_FRAME) {
-    top_level_frame_or_initiator_host = info.url.host();
+    top_level_frame_or_initiator_host = info.url.GetHost();
   } else {
     url::Origin top_level_frame_or_initiator_origin = first_party_origin;
 

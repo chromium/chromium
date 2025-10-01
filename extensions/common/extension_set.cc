@@ -18,7 +18,7 @@ namespace extensions {
 // disambiguate ExtensionHost.
 ExtensionId ExtensionSet::GetExtensionIdByURL(const GURL& url) {
   if (url.SchemeIs(kExtensionScheme)) {
-    return url.host();
+    return url.GetHost();
   }
 
   // Trying url::Origin is important to properly handle extension schemes inside

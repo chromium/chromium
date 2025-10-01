@@ -1450,7 +1450,7 @@ bool WebRequestProxyingURLLoaderFactory::InProgressRequest::IsRedirectSafe(
     const Extension* extension =
         ExtensionRegistry::Get(factory_->browser_context_)
             ->enabled_extensions()
-            .GetByID(target_url.host());
+            .GetByID(target_url.GetHost());
     if (!extension) {
       return false;
     }

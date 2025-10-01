@@ -168,7 +168,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, InsertOne) {
   ASSERT_EQ(1u, cookie_changes.size());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
@@ -200,13 +200,13 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, InsertMany) {
   ASSERT_LE(1u, cookie_changes.size());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
 
   ASSERT_LE(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -214,7 +214,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, InsertMany) {
   EXPECT_EQ("D", cookie_changes[1].cookie.Value());
 
   ASSERT_LE(3u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[2].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[2].cause));
@@ -222,7 +222,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, InsertMany) {
   EXPECT_EQ("F", cookie_changes[2].cookie.Value());
 
   ASSERT_LE(4u, cookie_changes.size());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes[3].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[3].cause));
@@ -248,11 +248,11 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, DeleteOne) {
   cookie_changes.clear();
 
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "A"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "A"));
   this->DeliverChangeNotifications();
 
   ASSERT_EQ(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -279,9 +279,9 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, DeleteTwo) {
   cookie_changes.clear();
 
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "C"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "C"));
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_bar_com_.url().host(), "G"));
+      this->FindAndDeleteCookie(cs, this->http_bar_com_.url().GetHost(), "G"));
   this->DeliverChangeNotifications();
 
   // Check that the cookie changes are dispatched before calling GetCookies.
@@ -292,7 +292,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, DeleteTwo) {
   EXPECT_EQ("", this->GetCookies(cs, this->http_bar_com_.url()));
 
   ASSERT_LE(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -300,7 +300,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, DeleteTwo) {
   EXPECT_EQ("D", cookie_changes[0].cookie.Value());
 
   ASSERT_EQ(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[1].cause));
@@ -332,7 +332,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, Overwrite) {
   this->DeliverChangeNotifications();
 
   ASSERT_LE(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -340,7 +340,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, Overwrite) {
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
 
   ASSERT_LE(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -403,7 +403,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, OverwriteWithHttpOnly) {
   ASSERT_EQ(1u, cookie_changes.size());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
@@ -423,7 +423,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, OverwriteWithHttpOnly) {
   this->DeliverChangeNotifications();
 
   ASSERT_LE(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -432,7 +432,7 @@ TYPED_TEST_P(CookieStoreChangeGlobalTest, OverwriteWithHttpOnly) {
   EXPECT_FALSE(cookie_changes[0].cookie.IsHttpOnly());
 
   ASSERT_LE(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -829,7 +829,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, InsertOne) {
 
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
@@ -855,13 +855,13 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, InsertMany) {
   ASSERT_LE(1u, cookie_changes.size());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
 
   ASSERT_LE(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -869,7 +869,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, InsertMany) {
   EXPECT_EQ("D", cookie_changes[1].cookie.Value());
 
   ASSERT_LE(3u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[2].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[2].cause));
@@ -908,7 +908,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, InsertFiltering) {
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
@@ -917,7 +917,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, InsertFiltering) {
   EXPECT_EQ("I", cookie_changes[1].cookie.Name());
   EXPECT_EQ("J", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -951,13 +951,13 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DeleteOne) {
   cookie_changes.clear();
 
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "A"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "A"));
   this->DeliverChangeNotifications();
 
   ASSERT_EQ(1u, cookie_changes.size());
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   ASSERT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -984,9 +984,9 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DeleteTwo) {
   cookie_changes.clear();
 
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "C"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "C"));
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "G"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "G"));
   this->DeliverChangeNotifications();
 
   // Check that the cookie changes are dispatched before calling GetCookies.
@@ -996,7 +996,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DeleteTwo) {
   EXPECT_EQ("A=B; E=F", this->GetCookies(cs, this->http_www_foo_.url()));
 
   ASSERT_LE(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -1004,7 +1004,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DeleteTwo) {
   EXPECT_EQ("D", cookie_changes[0].cookie.Value());
 
   ASSERT_EQ(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[1].cause));
@@ -1037,15 +1037,15 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DeleteFiltering) {
   cookie_changes.clear();
 
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "A"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "A"));
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_bar_com_.url().host(), "C"));
+      this->FindAndDeleteCookie(cs, this->http_bar_com_.url().GetHost(), "C"));
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "E"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "E"));
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "G"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "G"));
   EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "I"));
+      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(), "I"));
   EXPECT_TRUE(this->FindAndDeleteCookie(cs, ".foo.com", "K"));
   this->DeliverChangeNotifications();
 
@@ -1053,7 +1053,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DeleteFiltering) {
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -1062,7 +1062,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DeleteFiltering) {
   EXPECT_EQ("I", cookie_changes[1].cookie.Name());
   EXPECT_EQ("J", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[1].cause));
@@ -1104,7 +1104,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, Overwrite) {
   this->DeliverChangeNotifications();
 
   ASSERT_LE(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -1112,7 +1112,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, Overwrite) {
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
 
   ASSERT_LE(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -1200,7 +1200,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteFiltering) {
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -1209,7 +1209,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteFiltering) {
   EXPECT_EQ("A", cookie_changes[1].cookie.Name());
   EXPECT_EQ("b", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_EQ(CookieChangeCause::INSERTED, cookie_changes[1].cause);
   EXPECT_TRUE(
@@ -1219,7 +1219,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteFiltering) {
   EXPECT_EQ("I", cookie_changes[2].cookie.Name());
   EXPECT_EQ("J", cookie_changes[2].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[2].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[2].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[2].cause));
@@ -1228,7 +1228,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteFiltering) {
   EXPECT_EQ("I", cookie_changes[3].cookie.Name());
   EXPECT_EQ("j", cookie_changes[3].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[3].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[3].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[3].cause));
@@ -1273,7 +1273,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteWithHttpOnly) {
   ASSERT_EQ(1u, cookie_changes.size());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_EQ("A", cookie_changes[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes[0].cookie.Value());
@@ -1293,7 +1293,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteWithHttpOnly) {
   this->DeliverChangeNotifications();
 
   ASSERT_LE(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -1302,7 +1302,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, OverwriteWithHttpOnly) {
   EXPECT_FALSE(cookie_changes[0].cookie.IsHttpOnly());
 
   ASSERT_LE(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -1573,13 +1573,13 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DifferentSubscriptionsDisjoint) {
   ASSERT_EQ(1u, cookie_changes_1.size());
   EXPECT_EQ("A", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes_1[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
 
   ASSERT_EQ(1u, cookie_changes_2.size());
   EXPECT_EQ("C", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("D", cookie_changes_2[0].cookie.Value());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
 }
 
@@ -1617,13 +1617,13 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DifferentSubscriptionsDomains) {
   ASSERT_EQ(1u, cookie_changes_1.size());
   EXPECT_EQ("A", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes_1[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
 
   ASSERT_EQ(1u, cookie_changes_2.size());
   EXPECT_EQ("C", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("D", cookie_changes_2[0].cookie.Value());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
 }
 
@@ -1662,21 +1662,21 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DifferentSubscriptionsPaths) {
   EXPECT_EQ("A", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes_1[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes_1[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
 
   ASSERT_LE(1u, cookie_changes_2.size());
   EXPECT_EQ("A", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes_2[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes_2[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
 
   ASSERT_LE(2u, cookie_changes_2.size());
   EXPECT_EQ("C", cookie_changes_2[1].cookie.Name());
   EXPECT_EQ("D", cookie_changes_2[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes_2[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_2[1].cookie.Domain());
 
   EXPECT_EQ(2u, cookie_changes_2.size());
@@ -1731,14 +1731,14 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DifferentSubscriptionsFiltering) {
   ASSERT_LE(1u, cookie_changes_1.size());
   EXPECT_EQ("A", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes_1[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
   EXPECT_EQ(1u, cookie_changes_1.size());
 
   ASSERT_LE(1u, cookie_changes_2.size());
   EXPECT_EQ("C", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("D", cookie_changes_2[0].cookie.Value());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
   EXPECT_EQ(1u, cookie_changes_2.size());
 
@@ -1746,14 +1746,14 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, DifferentSubscriptionsFiltering) {
   EXPECT_EQ("A", cookie_changes_3[0].cookie.Name());
   EXPECT_EQ("B", cookie_changes_3[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes_3[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_3[0].cookie.Domain());
 
   ASSERT_LE(2u, cookie_changes_3.size());
   EXPECT_EQ("E", cookie_changes_3[1].cookie.Name());
   EXPECT_EQ("F", cookie_changes_3[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes_3[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_3[1].cookie.Domain());
 
   EXPECT_EQ(2u, cookie_changes_3.size());
@@ -2000,7 +2000,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, InsertOne) {
 
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
@@ -2031,7 +2031,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, InsertTwo) {
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
@@ -2040,7 +2040,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, InsertTwo) {
   EXPECT_EQ("abc", cookie_changes[1].cookie.Name());
   EXPECT_EQ("hij", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -2083,7 +2083,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, InsertFiltering) {
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
@@ -2092,7 +2092,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, InsertFiltering) {
   EXPECT_EQ("abc", cookie_changes[1].cookie.Name());
   EXPECT_EQ("pqr", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -2126,14 +2126,14 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DeleteOne) {
   EXPECT_EQ(1u, cookie_changes.size());
   cookie_changes.clear();
 
-  EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "abc"));
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(),
+                                        "abc"));
   this->DeliverChangeNotifications();
 
   ASSERT_EQ(1u, cookie_changes.size());
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -2159,9 +2159,9 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DeleteTwo) {
   EXPECT_EQ(2u, cookie_changes.size());
   cookie_changes.clear();
 
-  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(),
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(),
                                         "abc", "/"));
-  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(),
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(),
                                         "abc", "/foo"));
   this->DeliverChangeNotifications();
 
@@ -2169,7 +2169,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DeleteTwo) {
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -2178,7 +2178,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DeleteTwo) {
   EXPECT_EQ("abc", cookie_changes[1].cookie.Name());
   EXPECT_EQ("hij", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[1].cause));
@@ -2213,15 +2213,15 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DeleteFiltering) {
   EXPECT_EQ(3u, cookie_changes.size());
   cookie_changes.clear();
 
-  EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(), "xyz"));
-  EXPECT_TRUE(
-      this->FindAndDeleteCookie(cs, this->http_bar_com_.url().host(), "abc"));
-  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(),
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(),
+                                        "xyz"));
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_bar_com_.url().GetHost(),
+                                        "abc"));
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(),
                                         "abc", "/foo/bar"));
-  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(),
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(),
                                         "abc", "/foo"));
-  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().host(),
+  EXPECT_TRUE(this->FindAndDeleteCookie(cs, this->http_www_foo_.url().GetHost(),
                                         "abc", "/"));
   EXPECT_TRUE(this->FindAndDeleteCookie(cs, ".foo.com", "abc", "/"));
   this->DeliverChangeNotifications();
@@ -2230,7 +2230,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DeleteFiltering) {
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("mno", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[0].cause));
@@ -2239,7 +2239,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DeleteFiltering) {
   EXPECT_EQ("abc", cookie_changes[1].cookie.Name());
   EXPECT_EQ("pqr", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::EXPLICIT, cookie_changes[1].cause));
@@ -2284,7 +2284,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, Overwrite) {
   EXPECT_LE(1u, cookie_changes.size());
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -2292,7 +2292,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, Overwrite) {
   EXPECT_LE(2u, cookie_changes.size());
   EXPECT_EQ("abc", cookie_changes[1].cookie.Name());
   EXPECT_EQ("ghi", cookie_changes[1].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -2393,7 +2393,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteFiltering) {
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("mno1", cookie_changes[0].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -2402,7 +2402,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteFiltering) {
   EXPECT_EQ("abc", cookie_changes[1].cookie.Name());
   EXPECT_EQ("mno2", cookie_changes[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -2411,7 +2411,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteFiltering) {
   EXPECT_EQ("abc", cookie_changes[2].cookie.Name());
   EXPECT_EQ("pqr1", cookie_changes[2].cookie.Value());
   EXPECT_EQ("/", cookie_changes[2].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[2].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[2].cause));
@@ -2420,7 +2420,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteFiltering) {
   EXPECT_EQ("abc", cookie_changes[3].cookie.Name());
   EXPECT_EQ("pqr2", cookie_changes[3].cookie.Value());
   EXPECT_EQ("/", cookie_changes[3].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[3].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[3].cause));
@@ -2467,7 +2467,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteWithHttpOnly) {
   ASSERT_EQ(1u, cookie_changes.size());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[0].cause));
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_EQ("abc", cookie_changes[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes[0].cookie.Value());
@@ -2487,7 +2487,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteWithHttpOnly) {
   this->DeliverChangeNotifications();
 
   ASSERT_LE(1u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[0].cookie.Domain());
   EXPECT_TRUE(this->MatchesCause(CookieChangeCause::OVERWRITE,
                                  cookie_changes[0].cause));
@@ -2496,7 +2496,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, OverwriteWithHttpOnly) {
   EXPECT_FALSE(cookie_changes[0].cookie.IsHttpOnly());
 
   ASSERT_LE(2u, cookie_changes.size());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes[1].cookie.Domain());
   EXPECT_TRUE(
       this->MatchesCause(CookieChangeCause::INSERTED, cookie_changes[1].cause));
@@ -2794,13 +2794,13 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DifferentSubscriptionsDisjoint) {
   ASSERT_EQ(1u, cookie_changes_1.size());
   EXPECT_EQ("abc", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes_1[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
 
   ASSERT_EQ(1u, cookie_changes_2.size());
   EXPECT_EQ("ghi", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("jkl", cookie_changes_2[0].cookie.Value());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
 }
 
@@ -2840,13 +2840,13 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DifferentSubscriptionsDomains) {
   ASSERT_EQ(1u, cookie_changes_1.size());
   EXPECT_EQ("abc", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes_1[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
 
   ASSERT_EQ(1u, cookie_changes_2.size());
   EXPECT_EQ("abc", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("ghi", cookie_changes_2[0].cookie.Value());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
 }
 
@@ -2886,13 +2886,13 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DifferentSubscriptionsNames) {
   ASSERT_EQ(1u, cookie_changes_1.size());
   EXPECT_EQ("abc", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes_1[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
 
   ASSERT_EQ(1u, cookie_changes_2.size());
   EXPECT_EQ("ghi", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("jkl", cookie_changes_2[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
 }
 
@@ -2934,21 +2934,21 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DifferentSubscriptionsPaths) {
   EXPECT_EQ("abc", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes_1[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes_1[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
 
   ASSERT_LE(1u, cookie_changes_2.size());
   EXPECT_EQ("abc", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes_2[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes_2[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
 
   ASSERT_LE(2u, cookie_changes_2.size());
   EXPECT_EQ("abc", cookie_changes_2[1].cookie.Name());
   EXPECT_EQ("ghi", cookie_changes_2[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes_2[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_2[1].cookie.Domain());
 
   EXPECT_EQ(2u, cookie_changes_2.size());
@@ -3027,21 +3027,21 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DifferentSubscriptionsFiltering) {
   ASSERT_LE(1u, cookie_changes_1.size());
   EXPECT_EQ("abc", cookie_changes_1[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes_1[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_1[0].cookie.Domain());
   EXPECT_EQ(1u, cookie_changes_1.size());
 
   ASSERT_LE(1u, cookie_changes_2.size());
   EXPECT_EQ("hij", cookie_changes_2[0].cookie.Name());
   EXPECT_EQ("mno", cookie_changes_2[0].cookie.Value());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_2[0].cookie.Domain());
   EXPECT_EQ(1u, cookie_changes_2.size());
 
   ASSERT_LE(1u, cookie_changes_3.size());
   EXPECT_EQ("abc", cookie_changes_3[0].cookie.Name());
   EXPECT_EQ("stu", cookie_changes_3[0].cookie.Value());
-  EXPECT_EQ(this->http_bar_com_.url().host(),
+  EXPECT_EQ(this->http_bar_com_.url().GetHost(),
             cookie_changes_3[0].cookie.Domain());
   EXPECT_EQ(1u, cookie_changes_3.size());
 
@@ -3049,14 +3049,14 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, DifferentSubscriptionsFiltering) {
   EXPECT_EQ("abc", cookie_changes_4[0].cookie.Name());
   EXPECT_EQ("def", cookie_changes_4[0].cookie.Value());
   EXPECT_EQ("/", cookie_changes_4[0].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_4[0].cookie.Domain());
 
   ASSERT_LE(2u, cookie_changes_4.size());
   EXPECT_EQ("abc", cookie_changes_4[1].cookie.Name());
   EXPECT_EQ("vwx", cookie_changes_4[1].cookie.Value());
   EXPECT_EQ("/foo", cookie_changes_4[1].cookie.Path());
-  EXPECT_EQ(this->http_www_foo_.url().host(),
+  EXPECT_EQ(this->http_www_foo_.url().GetHost(),
             cookie_changes_4[1].cookie.Domain());
 
   EXPECT_EQ(2u, cookie_changes_4.size());

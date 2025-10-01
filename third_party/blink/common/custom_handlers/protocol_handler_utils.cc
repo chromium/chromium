@@ -52,7 +52,7 @@ URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
     if (user_url.rfind(kToken) != index) {
       return URLSyntaxErrorCode::kInvalidUrl;
     }
-    if (GURL(user_url).query().find(kToken) == std::string::npos) {
+    if (GURL(user_url).GetQuery().find(kToken) == std::string::npos) {
       return URLSyntaxErrorCode::kInvalidUrl;
     }
   }
@@ -124,9 +124,9 @@ bool IsAllowedCustomHandlerURL(const GURL& url,
       url.SchemeIsHTTPOrHTTPS() ||
       security_level == ProtocolHandlerSecurityLevel::kSameOrigin ||
       (security_level == ProtocolHandlerSecurityLevel::kExtensionFeatures &&
-       CommonSchemeRegistry::IsExtensionScheme(url.scheme())) ||
+       CommonSchemeRegistry::IsExtensionScheme(url.GetScheme())) ||
       (security_level == ProtocolHandlerSecurityLevel::kIsolatedAppFeatures &&
-       CommonSchemeRegistry::IsIsolatedAppScheme(url.scheme()));
+       CommonSchemeRegistry::IsIsolatedAppScheme(url.GetScheme()));
   return has_valid_scheme && network::IsUrlPotentiallyTrustworthy(url);
 }
 

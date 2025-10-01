@@ -71,7 +71,7 @@ bool CheckPermissions(const Extension* extension,
     // Firstly, if the event is for a URL, the Extension must have permission
     // to access that URL.
     if (!event.event_url.is_empty() &&
-        event.event_url.host() != extension->id() &&  // event for self is ok
+        event.event_url.GetHost() != extension->id() &&  // event for self is ok
         !extension->permissions_data()
              ->active_permissions()
              .HasEffectiveAccessToURL(event.event_url)) {

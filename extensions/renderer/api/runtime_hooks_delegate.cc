@@ -195,7 +195,8 @@ RequestResult RuntimeHooksDelegate::GetURL(
   // as part of the path, there should be no way this could conceivably fail.
   DCHECK(url.is_valid());
 
-  if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, url.path())) {
+  if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension,
+                                                      url.GetPath())) {
     GURL::Replacements replacements;
     replacements.SetHostStr(extension->guid());
     url = url.ReplaceComponents(replacements);

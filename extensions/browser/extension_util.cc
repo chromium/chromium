@@ -244,7 +244,7 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
   // only handles a subset of the urls.
   if (!use_blocking_api) {
     if (file_url.SchemeIs(kExtensionScheme)) {
-      std::string path = file_url.path();
+      std::string path = file_url.GetPath();
       base::TrimString(path, "/", &path);  // Remove first slash
       *file_path = extension->path().AppendASCII(path);
       return true;
@@ -252,7 +252,7 @@ bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
     return false;
   }
 
-  std::string path = file_url.path();
+  std::string path = file_url.GetPath();
   ExtensionResource resource;
 
   if (SharedModuleInfo::IsImportedPath(path)) {
@@ -382,7 +382,7 @@ ExtensionId GetExtensionIdForSiteInstance(
 
   // Navigating to a disabled (or uninstalled or not-yet-installed) extension
   // will set the site URL to chrome-extension://invalid.
-  ExtensionId maybe_extension_id = site_url.host();
+  ExtensionId maybe_extension_id = site_url.GetHost();
   if (maybe_extension_id == "invalid") {
     return ExtensionId();
   }
@@ -403,7 +403,7 @@ std::string GetExtensionIdFromFrame(
     return std::string();
   }
 
-  return site.host();
+  return site.GetHost();
 }
 
 bool CanRendererHostExtensionOrigin(int render_process_id,

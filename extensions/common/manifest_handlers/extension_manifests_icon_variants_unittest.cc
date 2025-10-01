@@ -297,7 +297,7 @@ TEST_F(IconVariantsManifestTest, GetIconMethods) {
                                     extension_misc::EXTENSION_ICON_BITTY,
                                     ExtensionIconSet::Match::kExactly,
                                     test_case.color_scheme.value());
-    EXPECT_EQ(test_case.expected, icon_url.path().substr(1));
+    EXPECT_EQ(test_case.expected, icon_url.GetPath().substr(1));
   }
 }
 
@@ -369,19 +369,19 @@ TEST_F(IconVariantsManifestTest, GetIconUrlWithSpecialChars) {
   const GURL& icon_url = IconsInfo::GetIconURL(
       extension.get(), extension_misc::EXTENSION_ICON_BITTY,
       ExtensionIconSet::Match::kExactly);
-  EXPECT_EQ("%23icon_variants.16.png", icon_url.path().substr(1));
+  EXPECT_EQ("%23icon_variants.16.png", icon_url.GetPath().substr(1));
 
   const GURL& icon_url_light = IconsInfo::GetIconURL(
       extension.get(), extension_misc::EXTENSION_ICON_BITTY,
       ExtensionIconSet::Match::kExactly,
       ExtensionIconVariant::ColorScheme::kLight);
-  EXPECT_EQ("%23icon_variants.16.png", icon_url_light.path().substr(1));
+  EXPECT_EQ("%23icon_variants.16.png", icon_url_light.GetPath().substr(1));
 
   const GURL& icon_url_dark = IconsInfo::GetIconURL(
       extension.get(), extension_misc::EXTENSION_ICON_BITTY,
       ExtensionIconSet::Match::kExactly,
       ExtensionIconVariant::ColorScheme::kDark);
-  EXPECT_EQ("%23icon_variants.16.dark.png", icon_url_dark.path().substr(1));
+  EXPECT_EQ("%23icon_variants.16.dark.png", icon_url_dark.GetPath().substr(1));
 }
 
 }  // namespace extensions

@@ -230,7 +230,7 @@ void ManifestFetchData::AddAssociatedTask(ExtensionDownloaderTask task) {
 
 void ManifestFetchData::UpdateFullUrl(const std::string& base_query_params) {
   std::string query =
-      full_url_.has_query() ? full_url_.query() + "&" : std::string();
+      full_url_.has_query() ? full_url_.GetQuery() + "&" : std::string();
   query += base_query_params;
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);

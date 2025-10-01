@@ -533,7 +533,7 @@ SimpleUrlPatternMatcher::SimpleUrlPatternMatcher(
 bool SimpleUrlPatternMatcher::Match(const GURL& url) const {
   return protocol_.Match(url.GetScheme()) &&
          username_.Match(url.GetUsername()) &&
-         password_.Match(url.password()) && hostname_.Match(url.GetHost()) &&
+         password_.Match(url.GetPassword()) && hostname_.Match(url.GetHost()) &&
          port_.Match(url.GetPort()) && pathname_.Match(url.GetPath()) &&
          search_.Match(url.GetQuery()) && hash_.Match(url.GetRef());
 }

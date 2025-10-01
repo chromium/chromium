@@ -378,7 +378,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   EXPECT_THAT(request0.headers.GetHeader("Authorization"),
               Optional(std::string("MultiBearer token1:id1,token2:id2")));
   EXPECT_EQ("source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result",
-            request0.url.query());
+            request0.url.GetQuery());
 
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK, std::string());
   EXPECT_FALSE(auth.HasPendingFetch());
@@ -390,7 +390,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
 
   const network::ResourceRequest& request1 = received_requests_.at(1);
   EXPECT_EQ("source=ChromiumBrowser&reuseCookies=1&externalCcResult=cc_result",
-            request1.url.query());
+            request1.url.GetQuery());
 }
 
 TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBinding) {
@@ -412,7 +412,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginEnableOamlCookieBinding) {
   EXPECT_EQ(
       "source=ChromiumBrowser&reuseCookies=0&externalCcResult=cc_result&oaml_"
       "cookie_binding=1",
-      request.url.query());
+      request.url.GetQuery());
 }
 
 TEST_F(GaiaAuthFetcherTest, MultiloginRequestMultiOAuthFormat) {
