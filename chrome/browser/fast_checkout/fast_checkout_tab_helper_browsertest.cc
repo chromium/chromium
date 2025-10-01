@@ -84,7 +84,7 @@ class FastCheckoutTabHelperBrowserTest : public AndroidBrowserTest {
   void NavigateToUrl(const GURL& url) {
     ASSERT_TRUE(content::NavigateToURL(
         GetActiveWebContents(),
-        embedded_test_server()->GetURL(url.host(), url.path())));
+        embedded_test_server()->GetURL(url.GetHost(), url.GetPath())));
     content::RunAllTasksUntilIdle();
   }
 

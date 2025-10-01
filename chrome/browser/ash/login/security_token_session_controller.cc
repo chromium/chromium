@@ -118,7 +118,7 @@ bool SanitizeDomain(const std::string& domain, std::string& sanitized_domain) {
     return false;
   if (!url.has_host())
     return false;
-  sanitized_domain = url.host();
+  sanitized_domain = url.GetHost();
   return true;
 }
 

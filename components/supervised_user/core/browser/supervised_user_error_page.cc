@@ -86,7 +86,7 @@ std::string BuildErrorPageHtmlWithoutApprovals(const GURL& url,
   load_time_data.Set("blockPageMessage",
                      l10n_util::FormatString(
                          l10n_util::GetStringUTF16(IDS_NO_APPROVALS_MESSAGE),
-                         {base::UTF8ToUTF16(url.host())}, nullptr));
+                         {base::UTF8ToUTF16(url.GetHost())}, nullptr));
   load_time_data.Set("learnMore", l10n_util::GetStringUTF8(
                                       IDS_NO_APPROVALS_LEARN_MORE_BUTTON));
   load_time_data.Set("backButton",

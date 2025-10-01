@@ -2261,7 +2261,7 @@ TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
   EXPECT_TRUE(web_view->current_url().SchemeIsFile());
   const base::FilePath video_html_full_path =
       base::FilePath(kTestDlcRootPath).Append(kTimeOfDayVideoHtmlSubPath);
-  EXPECT_EQ(web_view->current_url().path(), video_html_full_path.value());
+  EXPECT_EQ(web_view->current_url().GetPath(), video_html_full_path.value());
   std::string video_file_requested;
   ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
                                          &video_file_requested));
@@ -2291,7 +2291,7 @@ TEST_F(AmbientControllerTest, RendersCorrectViewForVideo) {
       GetContainerView()->GetViewByID(kAmbientVideoWebView));
   ASSERT_TRUE(web_view);
   EXPECT_TRUE(web_view->current_url().SchemeIsFile());
-  EXPECT_EQ(web_view->current_url().path(), video_html_full_path.value());
+  EXPECT_EQ(web_view->current_url().GetPath(), video_html_full_path.value());
   ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
                                          &video_file_requested));
   EXPECT_EQ(video_file_requested, kTimeOfDayCloudsVideo);

@@ -1384,7 +1384,7 @@ IN_PROC_BROWSER_TEST_F(SharedWorkerOnAndroidBrowserOriginTrialTest, Basic) {
             {content_type, kOriginTrialToken}, {});
 
         URLLoaderInterceptor::WriteResponse(
-            "content/test/data" + params->url_request.url.path(),
+            "content/test/data" + params->url_request.url.GetPath(),
             params->client.get(), &headers, std::optional<net::SSLInfo>(),
             params->url_request.url);
 

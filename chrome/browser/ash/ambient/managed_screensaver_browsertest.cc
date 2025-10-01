@@ -148,7 +148,7 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = https_server_.GetURL(request.relative_url);
-    auto path = absolute_url.path();
+    auto path = absolute_url.GetPath();
     if (!path.ends_with(kTestLargeImage) &&
         !path.ends_with(kTestInvalidImage)) {
       return nullptr;

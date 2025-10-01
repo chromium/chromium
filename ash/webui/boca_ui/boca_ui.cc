@@ -127,7 +127,7 @@ void BocaUI::Create(
       web_ui()->GetWebContents()->GetBrowserContext();
   CHECK(context);
   const std::string host_name =
-      web_ui()->GetWebContents()->GetVisibleURL().host();
+      web_ui()->GetWebContents()->GetVisibleURL().GetHost();
   auto auth_handler = std::make_unique<WebviewAuthHandler>(
       std::make_unique<WebviewAuthDelegate>(), context, host_name);
   auto* const profile = Profile::FromWebUI(web_ui());

@@ -114,7 +114,7 @@ bool UploadViaHttp(const std::string& base_url,
   // Upload using httplib. The normal Chromium way (SimpleURLLoader) needs a lot
   // of browser stuff to be set up before it can be used, so we use the
   // standalone httplib in this test binary.
-  std::string host = upload_url.host();
+  std::string host = upload_url.GetHost();
   httplib::Client cli(host.c_str(), upload_url.EffectiveIntPort());
   if (!cli.is_valid()) {
     LOG(ERROR) << "httplib::Client setup error";

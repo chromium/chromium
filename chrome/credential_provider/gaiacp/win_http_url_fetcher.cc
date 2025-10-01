@@ -309,7 +309,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   // Open a connection to the server.
   ScopedWinHttpHandle connect;
   {
-    std::string host = url_.host();
+    std::string host = url_.GetHost();
     ScopedWinHttpHandle::Handle connect_tmp = ::WinHttpConnect(
         session_.Get(), A2CW(host.c_str()), INTERNET_DEFAULT_PORT, 0);
     if (!connect_tmp) {
@@ -335,7 +335,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
 
   {
     bool use_post = !body_.empty();
-    std::string path = url_.path();
+    std::string path = url_.GetPath();
     std::string path_for_request = url_.PathForRequest();
     ScopedWinHttpHandle::Handle request = ::WinHttpOpenRequest(
         connect.Get(), use_post ? L"POST" : L"GET",

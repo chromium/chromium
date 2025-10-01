@@ -67,7 +67,7 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
     std::vector<extensions::EntryInfo> entries;
     std::ranges::transform(
         file_urls, std::back_inserter(entries), [](const GURL& file_url) {
-          return extensions::EntryInfo(base::FilePath(file_url.path()),
+          return extensions::EntryInfo(base::FilePath(file_url.GetPath()),
                                        "application/octet-stream",
                                        /*is_directory=*/false);
         });
@@ -88,7 +88,7 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
                            [&](const GURL& url) {
                              return storage::FileSystemURL::CreateForTest(
                                  storage_key, storage::kFileSystemTypeLocal,
-                                 base::FilePath::FromUTF8Unsafe(url.path()));
+                                 base::FilePath::FromUTF8Unsafe(url.GetPath()));
                            });
 
     return ExecuteVirtualTask(

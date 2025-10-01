@@ -36,7 +36,7 @@ AndroidIntentHelper::~AndroidIntentHelper() {
 
 bool IsAndroidIntent(const GURL& url) {
   return url.SchemeIs(kAndroidIntentScheme) ||
-         base::StartsWith(url.ref(), kAndroidIntentPrefix,
+         base::StartsWith(url.GetRef(), kAndroidIntentPrefix,
                           base::CompareCase::SENSITIVE);
 }
 

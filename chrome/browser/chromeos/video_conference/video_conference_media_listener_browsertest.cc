@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
     web_contents->GetController().GetLastCommittedEntry()->SetURL(GURL(url));
 
     // Verify that the url is indeed changed.
-    EXPECT_EQ(web_contents->GetURL().host(), app_id);
+    EXPECT_EQ(web_contents->GetURL().GetHost(), app_id);
 
     // Access video.
     auto stop_capture_callback = StartCapture(

@@ -87,7 +87,7 @@ FakeOriginTestServerMixin::FakeOriginTestServerMixin(
 
   // Generate SSL certificates for `origin_` on HTTPS.
   if (SchemeTypeOf(origin_) == EmbeddedTestServer::TYPE_HTTPS) {
-    server_.SetCertHostnames({origin_.host()});
+    server_.SetCertHostnames({origin_.GetHost()});
   }
 }
 

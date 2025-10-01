@@ -1459,7 +1459,7 @@ void InputMethodManagerImpl::OverrideKeyboardKeyset(ImeKeyset keyset) {
   if (!url.has_ref()) {
     return;
   }
-  std::string overridden_ref = url.ref();
+  std::string overridden_ref = url.GetRef();
 
   auto id_start = overridden_ref.find("id=");
   if (id_start == std::string::npos) {

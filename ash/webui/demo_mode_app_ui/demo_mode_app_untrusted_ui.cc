@@ -74,7 +74,7 @@ void DemoModeAppUntrustedUI::SourceDataFromComponent(
   GURL full_url =
       GURL(kChromeUntrustedUIDemoModeAppURL + resource_path_or_root);
   // Trim leading slash from path
-  std::string path = full_url.path().substr(1);
+  std::string path = full_url.GetPath().substr(1);
 
   base::FilePath absolute_resource_path = component_path.AppendASCII(path);
 

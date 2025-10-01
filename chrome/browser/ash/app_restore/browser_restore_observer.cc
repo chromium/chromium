@@ -160,7 +160,7 @@ void BrowserRestoreObserver::RestoreUrls(Browser* browser) {
     // asking us to open such a URL should really ask the handler directly.
     bool handled_by_chrome =
         ProfileIOData::IsHandledURL(url) ||
-        (registry && registry->IsHandledProtocol(url.scheme()));
+        (registry && registry->IsHandledProtocol(url.GetScheme()));
     if (!handled_by_chrome) {
       continue;
     }

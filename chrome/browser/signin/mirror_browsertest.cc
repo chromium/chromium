@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
   embedded_test_server()->RegisterRequestMonitor(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request) {
         base::AutoLock auto_lock(lock);
-        header_map[request.GetURL().path()] = request.headers;
+        header_map[request.GetURL().GetPath()] = request.headers;
       }));
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
   https_server.RegisterRequestMonitor(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request) {
         base::AutoLock auto_lock(lock);
-        header_map[request.GetURL().path()] = request.headers;
+        header_map[request.GetURL().GetPath()] = request.headers;
       }));
   ASSERT_TRUE(https_server.Start());
 
@@ -222,12 +222,12 @@ IN_PROC_BROWSER_TEST_F(MirrorBrowserTest, MirrorRequestHeader) {
     base::AutoLock auto_lock(lock);
 
     // Check if header exists and X-Chrome-Connected is correctly provided.
-    ASSERT_EQ(1u, header_map.count(test_case.original_url.path()));
+    ASSERT_EQ(1u, header_map.count(test_case.original_url.GetPath()));
     if (test_case.original_url_expects_header) {
-      ASSERT_TRUE(header_map[test_case.original_url.path()].count(
+      ASSERT_TRUE(header_map[test_case.original_url.GetPath()].count(
           signin::kChromeConnectedHeader));
     } else {
-      ASSERT_FALSE(header_map[test_case.original_url.path()].count(
+      ASSERT_FALSE(header_map[test_case.original_url.GetPath()].count(
           signin::kChromeConnectedHeader));
     }
 

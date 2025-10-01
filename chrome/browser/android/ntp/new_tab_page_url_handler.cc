@@ -38,15 +38,15 @@ bool HandleAndroidNativePageURL(GURL* url,
 #endif
 
   if (url->SchemeIs(content::kChromeUIScheme)) {
-    if (url->host() == chrome::kChromeUINewTabHost) {
+    if (url->GetHost() == chrome::kChromeUINewTabHost) {
       *url = GURL(chrome::kChromeUINativeNewTabURL);
       return true;
     }
   }
 
   if (url->SchemeIs(chrome::kChromeNativeScheme) &&
-      url->host() == kChromeUIBookmarksHost) {
-    std::string ref = url->ref();
+      url->GetHost() == kChromeUIBookmarksHost) {
+    std::string ref = url->GetRef();
     if (!ref.empty()) {
       *url = GURL(std::string(kChromeUINativeBookmarksURL)
                       .append(kBookmarkFolderPath)

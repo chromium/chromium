@@ -223,7 +223,7 @@ std::string GetShareUrlFromAlternateUrl(const GURL& alternate_url) {
   // sharing dialog for files and folders (add ?userstoinvite="" to the URL).
   GURL::Replacements replacements;
   std::string new_query =
-      (alternate_url.has_query() ? alternate_url.query() + "&" : "") +
+      (alternate_url.has_query() ? alternate_url.GetQuery() + "&" : "") +
       "userstoinvite=%22%22";
   replacements.SetQueryStr(new_query);
 

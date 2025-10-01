@@ -60,8 +60,9 @@ const DetachedResourceRequest::Motivation kMotivation =
 // Sets a cookies, then responds with HTTP code 302.
 std::unique_ptr<HttpResponse> SetCookieAndRedirect(const HttpRequest& request) {
   const GURL& url = request.GetURL();
-  if (url.path() != kSetCookieAndRedirect || !url.has_query())
+  if (url.GetPath() != kSetCookieAndRedirect || !url.has_query()) {
     return nullptr;
+  }
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   RequestQuery query = net::test_server::ParseQuery(url);
@@ -86,8 +87,9 @@ std::unique_ptr<HttpResponse> SetCookieAndRedirect(const HttpRequest& request) {
 // Redirects a given amount of times, then responds with HTTP code 204.
 std::unique_ptr<HttpResponse> ManyRedirects(const HttpRequest& request) {
   const GURL& url = request.GetURL();
-  if (url.path() != kManyRedirects || !url.has_query())
+  if (url.GetPath() != kManyRedirects || !url.has_query()) {
     return nullptr;
+  }
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   RequestQuery query = net::test_server::ParseQuery(url);
@@ -124,8 +126,9 @@ std::unique_ptr<HttpResponse> ManyRedirects(const HttpRequest& request) {
 std::unique_ptr<HttpResponse> SetCookieAndNoContent(
     const HttpRequest& request) {
   const GURL& url = request.GetURL();
-  if (url.path() != kSetCookieAndNoContent)
+  if (url.GetPath() != kSetCookieAndNoContent) {
     return nullptr;
+  }
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->AddCustomHeader("Set-Cookie", std::string(kCookieFromNoContent) +
@@ -139,8 +142,9 @@ std::unique_ptr<HttpResponse> SetCookieAndNoContent(
 std::unique_ptr<HttpResponse> LargeHeadersAndResponseSize(
     const HttpRequest& request) {
   const GURL& url = request.GetURL();
-  if (url.path() != kLargeHeadersAndResponseSize)
+  if (url.GetPath() != kLargeHeadersAndResponseSize) {
     return nullptr;
+  }
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   // Maximum header size ios 256kB, stay below it.
@@ -148,7 +152,7 @@ std::unique_ptr<HttpResponse> LargeHeadersAndResponseSize(
   response->set_code(net::HTTP_OK);
 
   uint32_t length;
-  CHECK(base::StringToUint(request.GetURL().query(), &length));
+  CHECK(base::StringToUint(request.GetURL().GetQuery(), &length));
   response->set_content(std::string(length, 'a'));
   return response;
 }
@@ -157,8 +161,9 @@ std::unique_ptr<HttpResponse> LargeHeadersAndResponseSize(
 std::unique_ptr<HttpResponse> LargeResponseAndCookie(
     const HttpRequest& request) {
   const GURL& url = request.GetURL();
-  if (url.path() != kLargeResponseAndCookie)
+  if (url.GetPath() != kLargeResponseAndCookie) {
     return nullptr;
+  }
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->AddCustomHeader("Set-Cookie", kCookieFromLargeResponse);
@@ -178,8 +183,9 @@ void WatchPathAndReportHeaders(const std::string& path,
                                HttpRequest::HeaderMap* headers,
                                base::OnceClosure closure,
                                const HttpRequest& request) {
-  if (request.GetURL().path() != path)
+  if (request.GetURL().GetPath() != path) {
     return;
+  }
   if (expected_requests && --*expected_requests)
     return;
   if (headers)

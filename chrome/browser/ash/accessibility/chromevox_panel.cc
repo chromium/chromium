@@ -50,7 +50,7 @@ class ChromeVoxPanel::ChromeVoxPanelWebContentsObserver
       content::NavigationHandle* navigation_handle) override {
     // The ChromeVox panel uses the URL fragment to communicate state
     // to this panel host.
-    std::string fragment = web_contents()->GetLastCommittedURL().ref();
+    std::string fragment = web_contents()->GetLastCommittedURL().GetRef();
     if (fragment == kDisableSpokenFeedbackURLFragment)
       AccessibilityManager::Get()->EnableSpokenFeedback(false);
     else if (fragment == kFullscreenURLFragment)

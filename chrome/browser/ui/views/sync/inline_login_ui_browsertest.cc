@@ -776,7 +776,7 @@ class HtmlRequestTracker {
 
  private:
   static GURL StripParams(const GURL& url) {
-    return url.GetWithEmptyPath().Resolve(url.path());
+    return url.GetWithEmptyPath().Resolve(url.GetPath());
   }
 
   // Given a URL, gives the parameters of each request made to it.

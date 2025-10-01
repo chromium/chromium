@@ -32,7 +32,7 @@ bool IsLinkLikelyPersonalized(const GURL& url) {
       };
 
   for (const auto& [domain, path_prefix] : kBlocklist) {
-    if (url.DomainIs(domain) && base::StartsWith(url.path(), path_prefix)) {
+    if (url.DomainIs(domain) && base::StartsWith(url.GetPath(), path_prefix)) {
       return true;
     }
   }

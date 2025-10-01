@@ -174,7 +174,7 @@ void RecordUmaResult(TimeZoneRequestResult result, unsigned retries) {
 GURL TimeZoneRequestURL(const GURL& url,
                         const Geoposition& geoposition,
                         bool sensor) {
-  std::string query(url.query());
+  std::string query(url.GetQuery());
   query += base::StringPrintf(
       "%s=%f,%f", kLocationString, geoposition.latitude, geoposition.longitude);
   if (url == DefaultTimezoneProviderURL()) {

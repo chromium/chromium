@@ -98,7 +98,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   Profile* profile = Profile::FromWebUI(web_ui);
 
   // Features the background page does not need to query:
-  if (web_ui->GetWebContents()->GetVisibleURL().path() != "/background") {
+  if (web_ui->GetWebContents()->GetVisibleURL().GetPath() != "/background") {
     // Flags for showing or hiding educational content about some feature.
     bool isEditorSwitchAllowed = false;
     if (chromeos::features::IsOrcaEnabled()) {

@@ -25,9 +25,9 @@ NSURL* NSURLWithGURL(const GURL& url) {
   // ref. This function manually encodes those components, and then passes the
   // result to NSURL.
   GURL::Replacements replacements;
-  std::string escaped_path = base::EscapeNSURLPrecursor(url.path());
-  std::string escaped_query = base::EscapeNSURLPrecursor(url.query());
-  std::string escaped_ref = base::EscapeNSURLPrecursor(url.ref());
+  std::string escaped_path = base::EscapeNSURLPrecursor(url.GetPath());
+  std::string escaped_query = base::EscapeNSURLPrecursor(url.GetQuery());
+  std::string escaped_ref = base::EscapeNSURLPrecursor(url.GetRef());
   if (!escaped_path.empty()) {
     replacements.SetPathStr(escaped_path);
   }

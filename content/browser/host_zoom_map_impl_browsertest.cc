@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
   // At the default level, there should be no adjustment.
   EXPECT_DOUBLE_EQ(host_zoom_map_impl_->GetDefaultZoomLevel(),
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.scheme(), url_.host()));
+                       url_.GetScheme(), url_.GetHost()));
 
   host_zoom_map_impl_->SetShouldAdjustForOSLevelForTesting(true);
 
@@ -112,17 +112,17 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
   host_zoom_map_impl_->SetSystemFontScaleForTesting(1.30);
   EXPECT_DOUBLE_EQ(1.44,
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.scheme(), url_.host()));
+                       url_.GetScheme(), url_.GetHost()));
 
   host_zoom_map_impl_->SetSystemFontScaleForTesting(0.85);
   EXPECT_DOUBLE_EQ(-0.89,
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.scheme(), url_.host()));
+                       url_.GetScheme(), url_.GetHost()));
 
   host_zoom_map_impl_->SetSystemFontScaleForTesting(1.15);
   EXPECT_DOUBLE_EQ(0.77,
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.scheme(), url_.host()));
+                       url_.GetScheme(), url_.GetHost()));
 }
 
 // Same as above test but without the OS-level adjustment.
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
   // At the default level, there should be no adjustment.
   EXPECT_DOUBLE_EQ(host_zoom_map_impl_->GetDefaultZoomLevel(),
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                       url_.scheme(), url_.host()));
+                       url_.GetScheme(), url_.GetHost()));
 
   host_zoom_map_impl_->SetShouldAdjustForOSLevelForTesting(false);
 
@@ -140,15 +140,15 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTest,
   // Zoom level should remain zero because we are ignoring OS setting.
   host_zoom_map_impl_->SetSystemFontScaleForTesting(1.30);
   EXPECT_DOUBLE_EQ(0, host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                          url_.scheme(), url_.host()));
+                          url_.GetScheme(), url_.GetHost()));
 
   host_zoom_map_impl_->SetSystemFontScaleForTesting(0.85);
   EXPECT_DOUBLE_EQ(0, host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                          url_.scheme(), url_.host()));
+                          url_.GetScheme(), url_.GetHost()));
 
   host_zoom_map_impl_->SetSystemFontScaleForTesting(1.15);
   EXPECT_DOUBLE_EQ(0, host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
-                          url_.scheme(), url_.host()));
+                          url_.GetScheme(), url_.GetHost()));
 }
 
 #endif

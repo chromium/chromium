@@ -443,7 +443,7 @@ double HostZoomMapImpl::GetZoomLevelForWebContents(
   GURL url = GetURLForRenderFrameHost(rfh_id);
 
 #if BUILDFLAG(IS_ANDROID)
-  return GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
+  return GetZoomLevelForHostAndSchemeAndroid(url.GetScheme(),
                                              net::GetHostOrSpecFromURL(url));
 #else
   return GetZoomLevelForHostAndScheme(url.GetScheme(),

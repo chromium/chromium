@@ -97,8 +97,8 @@ ContinueBrowsingChip::ContinueBrowsingChip(
     favicon->SetImage(ui::ImageModel::FromImage(metadata.favicon));
   }
 
-  auto* url_label = header_view->AddChildView(
-      std::make_unique<views::Label>(base::UTF8ToUTF16(metadata.url.host())));
+  auto* url_label = header_view->AddChildView(std::make_unique<views::Label>(
+      base::UTF8ToUTF16(metadata.url.GetHost())));
   url_label->SetAutoColorReadabilityEnabled(false);
   url_label->SetSubpixelRenderingEnabled(false);
   url_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(

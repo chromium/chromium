@@ -60,8 +60,8 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {
   // Just check path on URLs relative to the local server, since its port
   // changes.
   ASSERT_EQ(3u, result.size());
-  EXPECT_EQ("/rss.xml", result[0].path());
-  EXPECT_EQ("/atom.xml", result[1].path());
+  EXPECT_EQ("/rss.xml", result[0].GetPath());
+  EXPECT_EQ("/atom.xml", result[1].GetPath());
   EXPECT_EQ(GURL("https://some/path.xml"), result[2]);
 
   ASSERT_TRUE(base::TimeTicks::IsHighResolution())
@@ -88,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromBody) {
   // Just check path on URLs relative to the local server, since its port
   // changes.
   ASSERT_EQ(3u, result.size());
-  EXPECT_EQ("/rss-in-body.xml", result[0].path());
-  EXPECT_EQ("/atom-in-body.xml", result[1].path());
+  EXPECT_EQ("/rss-in-body.xml", result[0].GetPath());
+  EXPECT_EQ("/atom-in-body.xml", result[1].GetPath());
   EXPECT_EQ(GURL("https://some/path-in-body.xml"), result[2]);
 
   ASSERT_TRUE(base::TimeTicks::IsHighResolution())

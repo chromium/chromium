@@ -86,7 +86,7 @@ void PaymentLinkManager::TriggerPaymentLinkPushPayment(
   initiate_payment_request_details_ =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
-      page_url.host();
+      page_url.GetHost();
   initiate_payment_request_details_->payment_link_ = payment_link_url.spec();
 
   client_->SetUiEventListener(base::BindRepeating(

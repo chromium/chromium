@@ -189,7 +189,7 @@ GURL LinkHandlerModel::RewriteUrlFromQueryIfAvailable(const GURL& url) {
                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
     return url;
   }
-  if (!url.has_path() || url.path() != kPathToFind) {
+  if (!url.has_path() || url.GetPath() != kPathToFind) {
     return url;
   }
 

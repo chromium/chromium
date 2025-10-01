@@ -77,7 +77,7 @@ void OomInterventionTabHelper::DeclineIntervention() {
 
   if (decider_) {
     DCHECK(!web_contents()->GetBrowserContext()->IsOffTheRecord());
-    const std::string& host = web_contents()->GetVisibleURL().host();
+    const std::string& host = web_contents()->GetVisibleURL().GetHost();
     decider_->OnInterventionDeclined(host);
   }
 }
@@ -184,7 +184,7 @@ void OomInterventionTabHelper::OnCrashDumpProcessed(
 
   if (decider_) {
     DCHECK(!web_contents()->GetBrowserContext()->IsOffTheRecord());
-    const std::string& host = web_contents()->GetVisibleURL().host();
+    const std::string& host = web_contents()->GetVisibleURL().GetHost();
     decider_->OnOomDetected(host);
   }
 }
@@ -228,7 +228,7 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
        purge_v8_memory_enabled) &&
       decider_) {
     DCHECK(!web_contents()->GetBrowserContext()->IsOffTheRecord());
-    const std::string& host = web_contents()->GetVisibleURL().host();
+    const std::string& host = web_contents()->GetVisibleURL().GetHost();
     if (!decider_->CanTriggerIntervention(host)) {
       return;
     }

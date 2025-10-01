@@ -653,7 +653,7 @@ void OnCookiesReceived(network::mojom::CookieManager* cookie_manager,
                        const GURL& domain,
                        const std::vector<net::CanonicalCookie>& cookies) {
   for (const auto& cookie : cookies) {
-    if (cookie.IsDomainMatch(domain.host())) {
+    if (cookie.IsDomainMatch(domain.GetHost())) {
       cookie_manager->DeleteCanonicalCookie(cookie, base::DoNothing());
     }
   }

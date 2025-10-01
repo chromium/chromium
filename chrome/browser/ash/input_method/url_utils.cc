@@ -36,12 +36,12 @@ bool IsSubDomainWithPathPrefix(const GURL& url,
                                std::string_view domain,
                                std::string_view path_prefix) {
   return IsSubDomain(url, domain) && url.has_path() &&
-         base::StartsWith(url.path(), path_prefix);
+         base::StartsWith(url.GetPath(), path_prefix);
 }
 
 // Checks if url is a file with a matching extension
 bool HasFileExtension(const GURL& url, std::string_view extension) {
-  return base::EndsWith(url.path(), base::StrCat({".", extension}),
+  return base::EndsWith(url.GetPath(), base::StrCat({".", extension}),
                         base::CompareCase::INSENSITIVE_ASCII);
 }
 

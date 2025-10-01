@@ -117,7 +117,7 @@ void ExtensibleEnterpriseSSOProvider::FetchOrigins(
 void ExtensibleEnterpriseSSOProvider::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
-  auto metrics = std::make_unique<Metrics>(url.host());
+  auto metrics = std::make_unique<Metrics>(url.GetHost());
   NSURL* nativeUrl = net::NSURLWithGURL(url);
   ASAuthorizationSingleSignOnProvider* auth_provider =
       [ASAuthorizationSingleSignOnProvider

@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, URLParameters) {
   ASSERT_TRUE(webview_gurl.has_query());
 
   // Split the query string into a map of keys to values.
-  std::string query_str = webview_gurl.query();
+  std::string query_str = webview_gurl.GetQuery();
   url::Component query(0, query_str.length());
   url::Component key;
   url::Component value;

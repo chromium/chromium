@@ -556,7 +556,7 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
 
   // Reset for urls matching "example.com".
   history->ResetHeuristicData(base::BindRepeating(
-      [](const GURL& url) { return url.host() == "www.example.com"; }));
+      [](const GURL& url) { return url.GetHost() == "www.example.com"; }));
 
   // The counter for url1 should be reset. It should take
   // `kHeuristicGrantThreshold` more grants to trigger auto-grant.

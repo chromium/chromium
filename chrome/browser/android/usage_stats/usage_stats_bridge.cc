@@ -317,7 +317,7 @@ void UsageStatsBridge::OnHistoryDeletions(
       std::vector<std::string> domains;
       domains.reserve(urls.value().size());
       for (const auto& gurl : urls.value()) {
-        domains.push_back(gurl.host());
+        domains.push_back(gurl.GetHost());
       }
       Java_UsageStatsBridge_onHistoryDeletedForDomains(
           env, j_this_, ToJavaArrayOfStrings(env, domains));

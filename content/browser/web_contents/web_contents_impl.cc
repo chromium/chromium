@@ -9038,7 +9038,7 @@ double WebContentsImpl::GetPendingZoomLevel(RenderWidgetHostImpl* rwh) {
   }
 #if BUILDFLAG(IS_ANDROID)
   return HostZoomMapForRenderFrameHost(rfh)
-      ->GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
+      ->GetZoomLevelForHostAndSchemeAndroid(url.GetScheme(),
                                             net::GetHostOrSpecFromURL(url));
 #else
   return HostZoomMapForRenderFrameHost(rfh)->GetZoomLevelForHostAndScheme(

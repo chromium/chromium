@@ -43,7 +43,7 @@ void FaviconFetcher::OnFaviconDownloaded(
   } else {
     LOG(WARNING)
         << "Unable to obtain a favicon image with the required specs for "
-        << url.host();
+        << url.GetHost();
     Destroy();
   }
 }

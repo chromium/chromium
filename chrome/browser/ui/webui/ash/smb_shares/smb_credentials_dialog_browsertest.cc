@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(SmbCredentialsDialogTest, CloseDialog) {
 
   content::WebContents* dialog_contents = observer.GetWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(dialog_contents));
-  EXPECT_EQ(dialog_contents->GetLastCommittedURL().host(),
+  EXPECT_EQ(dialog_contents->GetLastCommittedURL().GetHost(),
             chrome::kChromeUISmbCredentialsHost);
   ASSERT_TRUE(content::ExecJs(dialog_contents, "chrome.send('dialogClose');"));
 
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(SmbCredentialsDialogTest, ShowSameMountId) {
 
   content::WebContents* dialog_contents = observer.GetWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(dialog_contents));
-  EXPECT_EQ(dialog_contents->GetLastCommittedURL().host(),
+  EXPECT_EQ(dialog_contents->GetLastCommittedURL().GetHost(),
             chrome::kChromeUISmbCredentialsHost);
   ASSERT_TRUE(content::ExecJs(dialog_contents, "chrome.send('dialogClose');"));
 
@@ -86,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(SmbCredentialsDialogTest, SubmitCredentials) {
 
   content::WebContents* dialog_contents = observer.GetWebContents();
   ASSERT_TRUE(content::WaitForLoadStop(dialog_contents));
-  EXPECT_EQ(dialog_contents->GetLastCommittedURL().host(),
+  EXPECT_EQ(dialog_contents->GetLastCommittedURL().GetHost(),
             chrome::kChromeUISmbCredentialsHost);
   ASSERT_TRUE(content::ExecJs(dialog_contents,
                               R"xxx(

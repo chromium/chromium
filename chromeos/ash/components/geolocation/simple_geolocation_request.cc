@@ -164,7 +164,7 @@ GURL GeolocationRequestURL(const GURL& url) {
   if (api_key.empty())
     return url;
 
-  std::string query(url.query());
+  std::string query(url.GetQuery());
   if (!query.empty())
     query += "&";
   query += "key=" + base::EscapeQueryParamValue(api_key, true);

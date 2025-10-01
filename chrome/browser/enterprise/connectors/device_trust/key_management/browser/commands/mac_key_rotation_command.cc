@@ -204,7 +204,7 @@ void MacKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
   // TODO(b/351201459): When IsDTCKeyRotationUploadedBySharedAPI is fully
   // launched, ignore `dm_server_url` and `dm_token`.
   if (!IsDTCKeyRotationUploadedBySharedAPI()) {
-    if (!ValidRotationCommand(dm_server_url.host())) {
+    if (!ValidRotationCommand(dm_server_url.GetHost())) {
       SYSLOG(ERROR)
           << "Device trust key rotation failed. The server URL is invalid.";
       std::move(callback).Run(KeyRotationCommand::Status::FAILED);

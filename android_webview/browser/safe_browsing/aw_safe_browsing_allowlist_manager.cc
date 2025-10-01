@@ -123,7 +123,7 @@ bool AddRuleToAllowlist(std::string_view rule, TrieNode* root) {
     return false;
   }
 
-  bool has_path = test_url.has_path() && test_url.path() != "/";
+  bool has_path = test_url.has_path() && test_url.GetPath() != "/";
   // Verify that it is a hostname.
   if (!test_url.has_host() || has_path || test_url.has_port() ||
       test_url.has_query() || test_url.has_password() ||

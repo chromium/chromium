@@ -175,7 +175,7 @@ bool ShouldHideIrrelevantApp(
 }
 
 bool IsExternalURLAllowed(const GURL& url) {
-  if (url.scheme() != kAllowedScheme) {
+  if (url.GetScheme() != kAllowedScheme) {
     return false;
   }
   for (auto& allowed_url : kURLAllowlistRegex) {

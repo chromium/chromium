@@ -200,7 +200,7 @@ std::vector<base::SafeBaseName> GetBaseNamesForIntent(
   std::vector<base::SafeBaseName> base_names;
   for (const auto& file : intent.files) {
     std::optional<base::SafeBaseName> optional_base_name =
-        base::SafeBaseName::Create(file->url.path());
+        base::SafeBaseName::Create(file->url.GetPath());
 
     // Launch requires that every file have a base name.
     if (!optional_base_name.has_value() ||

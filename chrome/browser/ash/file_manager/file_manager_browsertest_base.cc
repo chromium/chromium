@@ -2262,7 +2262,7 @@ static bool ShouldInspect(content::DevToolsAgentHost* host) {
   // TODO(crbug.com/v8/10820): Add background_page back in once
   // coverage can be collected when a background_page and app
   // share the same v8 isolate.
-  if (host->GetURL().host() == ash::file_manager::kChromeUIFileManagerHost &&
+  if (host->GetURL().GetHost() == ash::file_manager::kChromeUIFileManagerHost &&
       host->GetType() == "page") {
     return true;
   }
@@ -4220,7 +4220,7 @@ base::FilePath FileManagerBrowserTestBase::MaybeMountCrostini(
     const std::vector<std::string>& mount_options) {
   GURL source_url(source_path);
   DCHECK(source_url.is_valid());
-  if (source_url.scheme() != "sftp") {
+  if (source_url.GetScheme() != "sftp") {
     return {};
   }
   if (source_path != crostini_volume_->source_path()) {
@@ -4235,7 +4235,7 @@ base::FilePath FileManagerBrowserTestBase::MaybeMountGuestOs(
     const std::vector<std::string>& mount_options) {
   GURL source_url(source_path);
   DCHECK(source_url.is_valid());
-  if (source_url.scheme() != "sftp") {
+  if (source_url.GetScheme() != "sftp") {
     return {};
   }
   if (!guest_os_volumes_.contains(source_path)) {

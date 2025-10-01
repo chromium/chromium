@@ -1078,23 +1078,23 @@ TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities1;
-  filter_authorities1.emplace_back(kTestUrl.host(), 0);
+  filter_authorities1.emplace_back(kTestUrl.GetHost(), 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kTestUrl.path(), arc::PatternType::kPrefix);
+  patterns.emplace_back(kTestUrl.GetPath(), arc::PatternType::kPrefix);
 
-  auto filter = arc::IntentFilter(package_name, {arc::kIntentActionView},
-                                  std::move(filter_authorities1),
-                                  std::move(patterns), {kTestUrl.scheme()}, {});
+  auto filter = arc::IntentFilter(
+      package_name, {arc::kIntentActionView}, std::move(filter_authorities1),
+      std::move(patterns), {kTestUrl.GetScheme()}, {});
   std::vector<arc::IntentFilter> filters;
   filters.push_back(std::move(filter));
 
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities2;
-  filter_authorities2.emplace_back(kTestUrl.host(), 0);
+  filter_authorities2.emplace_back(kTestUrl.GetHost(), 0);
   constexpr arc::PatternType kInvalidPatternType =
       static_cast<arc::PatternType>(5);
   ASSERT_FALSE(arc::IsKnownPatternType(kInvalidPatternType));
   std::vector<arc::IntentFilter::PatternMatcher> invalid_pattern;
-  invalid_pattern.emplace_back(kTestUrl.path(), kInvalidPatternType);
+  invalid_pattern.emplace_back(kTestUrl.GetPath(), kInvalidPatternType);
 
   auto invalid_filter = arc::IntentFilter(
       package_name, {arc::kIntentActionView}, std::move(filter_authorities2),

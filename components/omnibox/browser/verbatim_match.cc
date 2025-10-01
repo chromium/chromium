@@ -130,7 +130,7 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
     // Disallow non-navigable schemes to be default. This prevents javascript:
     // snippets from being accidentally executed upon paste, refine, edit, etc.
     match.allowed_to_be_default_match &=
-        kAndroidNavigableSchemes.contains(destination_url.scheme());
+        kAndroidNavigableSchemes.contains(destination_url.GetScheme());
 #endif
 
     // NOTE: Don't set match.inline_autocompletion to something non-empty here;

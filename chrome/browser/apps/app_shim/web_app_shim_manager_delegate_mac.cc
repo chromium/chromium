@@ -122,7 +122,7 @@ void UserChoiceDialogCompleted(
         allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed;
     if (protocol_url) {
       provider->scheduler().UpdateProtocolHandlerUserApproval(
-          app_id, protocol_url->scheme(), approval_state,
+          app_id, protocol_url->GetScheme(), approval_state,
           std::move(persist_done));
     } else {
       DCHECK(is_file_launch);
@@ -307,7 +307,7 @@ void WebAppShimManagerDelegate::LaunchApp(
     // Validate that the scheme is something that could be registered by the PWA
     // via the manifest.
     if (!provider->registrar_unsafe().IsRegisteredLaunchProtocol(
-            app_id, url.scheme())) {
+            app_id, url.GetScheme())) {
       DLOG(ERROR) << "Protocol is not a valid custom handler scheme.";
       continue;
     }
@@ -335,12 +335,13 @@ void WebAppShimManagerDelegate::LaunchApp(
     // unless the user has granted or denied permission to this protocol scheme
     // previously.
     web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-    if (registrar.IsDisallowedLaunchProtocol(app_id, protocol_url.scheme())) {
+    if (registrar.IsDisallowedLaunchProtocol(app_id,
+                                             protocol_url.GetScheme())) {
       CancelAppLaunch(profile, app_id);
       return;
     }
 
-    if (!registrar.IsAllowedLaunchProtocol(app_id, protocol_url.scheme())) {
+    if (!registrar.IsAllowedLaunchProtocol(app_id, protocol_url.GetScheme())) {
       ShowWebAppProtocolLaunchDialog(
           std::move(protocol_url), profile, app_id,
           base::BindOnce(&UserChoiceDialogCompleted, std::move(params),

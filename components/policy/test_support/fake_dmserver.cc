@@ -647,9 +647,9 @@ void FakeDMServer::TriggerShutdown() {
 bool FakeDMServer::WriteURLToPipe(base::ScopedFD&& startup_pipe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(fake_dmserver_main_sequence_checker_);
   GURL server_url = EmbeddedPolicyTestServer::GetServiceURL();
-  std::string server_data =
-      base::StringPrintf("{\"host\": \"%s\", \"port\": %s}",
-                         server_url.host().c_str(), server_url.port().c_str());
+  std::string server_data = base::StringPrintf(
+      "{\"host\": \"%s\", \"port\": %s}", server_url.GetHost().c_str(),
+      server_url.GetPort().c_str());
 
   base::File pipe_writer(startup_pipe.release());
   if (!pipe_writer.WriteAtCurrentPosAndCheck(base::as_byte_span(server_data))) {
@@ -664,13 +664,13 @@ std::unique_ptr<net::test_server::HttpResponse> FakeDMServer::HandleRequest(
     const net::test_server::HttpRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(embedded_server_sequence_checker_);
   GURL url = request.GetURL();
-  if (url.path() == "/test/exit") {
+  if (url.GetPath() == "/test/exit") {
     LOG(INFO) << "Stopping the FakeDMServer";
     std::move(shut_down_on_main_task_runner_).Run();
     return policy::CreateHttpResponse(net::HTTP_OK, "Policy Server exited.");
   }
 
-  if (url.path() == "/test/ping") {
+  if (url.GetPath() == "/test/ping") {
     return policy::CreateHttpResponse(net::HTTP_OK, "Pong.");
   }
 

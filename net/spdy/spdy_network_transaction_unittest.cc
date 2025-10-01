@@ -3073,7 +3073,7 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
   GURL url = request_.url;
   std::set<std::string> dns_aliases({"alias1", "alias2", "alias3"});
   helper.session_deps()->host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
-      url.host(), "127.0.0.1", dns_aliases);
+      url.GetHost(), "127.0.0.1", dns_aliases);
 
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyGet(url.spec().c_str(), 1, DEFAULT_PRIORITY));
@@ -3110,7 +3110,7 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
 
   // A new SPDY session should have been created.
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
-  SpdySessionKey key1(HostPortPair(url.host(), 443), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key1(HostPortPair(url.GetHost(), 443), PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       socket_tag_1, NetworkAnonymizationKey(),
                       SecureDnsPolicy::kAllow,
@@ -3133,7 +3133,7 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
   request2.load_flags = 0;
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key2(HostPortPair(url.host(), 443), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key2(HostPortPair(url.GetHost(), 443), PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       socket_tag_2, NetworkAnonymizationKey(),
                       SecureDnsPolicy::kAllow,
@@ -3203,9 +3203,9 @@ TEST_P(SpdyNetworkTransactionTest,
   std::set<std::string> dns_aliases2({"example.net", "example.com"});
 
   helper.session_deps()->host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
-      url1.host(), "127.0.0.1", dns_aliases1);
+      url1.GetHost(), "127.0.0.1", dns_aliases1);
   helper.session_deps()->host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
-      url2.host(), "127.0.0.1", dns_aliases2);
+      url2.GetHost(), "127.0.0.1", dns_aliases2);
 
   spdy::SpdySerializedFrame req1(
       spdy_util_.ConstructSpdyGet(url1.spec().c_str(), 1, DEFAULT_PRIORITY));
@@ -3261,7 +3261,7 @@ TEST_P(SpdyNetworkTransactionTest,
 
   // A new SPDY session should have been created.
   EXPECT_EQ(1u, helper.GetSpdySessionCount());
-  SpdySessionKey key1(HostPortPair(url1.host(), 443), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key1(HostPortPair(url1.GetHost(), 443), PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       socket_tag_1, NetworkAnonymizationKey(),
                       SecureDnsPolicy::kAllow,
@@ -3280,7 +3280,7 @@ TEST_P(SpdyNetworkTransactionTest,
   request2.load_flags = 0;
   request2.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key2(HostPortPair(url2.host(), 443), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key2(HostPortPair(url2.GetHost(), 443), PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       socket_tag_1, NetworkAnonymizationKey(),
                       SecureDnsPolicy::kAllow,
@@ -3326,7 +3326,7 @@ TEST_P(SpdyNetworkTransactionTest,
   request3.load_flags = 0;
   request3.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key3(HostPortPair(url2.host(), 443), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key3(HostPortPair(url2.GetHost(), 443), PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       socket_tag_2, NetworkAnonymizationKey(),
                       SecureDnsPolicy::kAllow,
@@ -3375,7 +3375,7 @@ TEST_P(SpdyNetworkTransactionTest,
   request4.load_flags = 0;
   request4.traffic_annotation =
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-  SpdySessionKey key4(HostPortPair(url1.host(), 443), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key4(HostPortPair(url1.GetHost(), 443), PRIVACY_MODE_DISABLED,
                       ProxyChain::Direct(), SessionUsage::kDestination,
                       socket_tag_2, NetworkAnonymizationKey(),
                       SecureDnsPolicy::kAllow,

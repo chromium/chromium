@@ -26,10 +26,11 @@ std::string RemoveAppShortcutLabel(const std::string& id) {
 }
 
 std::optional<std::string> GetDriveId(const GURL& url) {
-  if (url.host() != "docs.google.com")
+  if (url.GetHost() != "docs.google.com") {
     return std::nullopt;
+  }
 
-  std::string path = url.path();
+  std::string path = url.GetPath();
 
   // Extract everything between /d/ and the next slash.
   // For example, /presentation/d/abcdefg/edit -> abcdefg.

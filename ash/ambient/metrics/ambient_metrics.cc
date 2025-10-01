@@ -114,7 +114,7 @@ void GetAmbientVideoPlaybackMetrics(
   // metrics data without using any elaborate frameworks or permissions
   // (ex: a WebUI).
   std::string serialized_playback_metrics =
-      net::UnescapePercentEncodedUrl(web_view->GetVisibleURL().ref());
+      net::UnescapePercentEncodedUrl(web_view->GetVisibleURL().GetRef());
   if (serialized_playback_metrics.empty()) {
     // This can legitimately happen if the ambient video is still being loaded
     // and it's still unclear whether playback has started successfully or

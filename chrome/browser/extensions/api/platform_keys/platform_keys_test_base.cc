@@ -71,7 +71,7 @@ void PlatformKeysTestBase::SetUp() {
   embedded_test_server()->ServeFilesFromDirectory(test_data_dir);
 
   net::EmbeddedTestServer::ServerCertificateConfig gaia_cert_config;
-  gaia_cert_config.dns_names = {GaiaUrls::GetInstance()->gaia_url().host()};
+  gaia_cert_config.dns_names = {GaiaUrls::GetInstance()->gaia_url().GetHost()};
   gaia_server_.SetSSLConfig(gaia_cert_config);
   gaia_server_.RegisterRequestHandler(base::BindRepeating(
       &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
@@ -98,7 +98,7 @@ void PlatformKeysTestBase::SetUpCommandLine(base::CommandLine* command_line) {
       command_line);
 
   const GURL gaia_url =
-      gaia_server_.GetURL(GaiaUrls::GetInstance()->gaia_url().host(), "/");
+      gaia_server_.GetURL(GaiaUrls::GetInstance()->gaia_url().GetHost(), "/");
   command_line->AppendSwitchASCII(::switches::kGaiaUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kLsoUrl, gaia_url.spec());
   command_line->AppendSwitchASCII(::switches::kGoogleApisUrl, gaia_url.spec());

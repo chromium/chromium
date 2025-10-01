@@ -73,7 +73,7 @@ void ExtensionJSBrowserTest::SetUpOnMainThread() {
         base::BindRepeating([](content::DevToolsAgentHost* host) {
           const auto& ext_ids = GetExtensionIdsToCollectCoverage();
           for (const auto& ext_id : ext_ids) {
-            if (base::Contains(host->GetURL().path(), ext_id) &&
+            if (base::Contains(host->GetURL().GetPath(), ext_id) &&
                 host->GetType() == "background_page") {
               return true;
             }

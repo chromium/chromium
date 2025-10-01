@@ -1659,7 +1659,7 @@ void RenderViewContextMenu::AppendLinkItems() {
     // little sense.
     const bool button_like_link =
         current_url_.EqualsIgnoringRef(params_.link_url) &&
-        params_.link_url.has_ref() && params_.link_url.ref().empty();
+        params_.link_url.has_ref() && params_.link_url.GetRef().empty();
     if ((system_app_ || in_system_web_dialog) && button_like_link) {
       show_open_in_new_tab = false;
       show_open_in_new_window = false;

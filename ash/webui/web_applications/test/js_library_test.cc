@@ -35,7 +35,7 @@ constexpr char kUntrustedSystemAppTestURL[] =
 
 bool IsSystemAppTestURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
-         url.host() == kSystemAppTestHost;
+         url.GetHost() == kSystemAppTestHost;
 }
 
 void HandleRequest(const std::string& url_path,

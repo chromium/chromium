@@ -188,7 +188,8 @@ void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
     return;
   }
 
-  if (allowed_arc_schemes_.find(gurl.scheme()) != allowed_arc_schemes_.end()) {
+  if (allowed_arc_schemes_.find(gurl.GetScheme()) !=
+      allowed_arc_schemes_.end()) {
     g_open_url_delegate->OpenUrlFromArc(gurl);
   }
 }
@@ -199,8 +200,8 @@ void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Converts |url| to a fixed-up one and checks validity.
   const GURL gurl(url_formatter::FixupURL(url, /*desired_tld=*/std::string()));
-  if (!gurl.is_valid() ||
-      allowed_arc_schemes_.find(gurl.scheme()) == allowed_arc_schemes_.end()) {
+  if (!gurl.is_valid() || allowed_arc_schemes_.find(gurl.GetScheme()) ==
+                              allowed_arc_schemes_.end()) {
     std::move(callback).Run(mojo::NullRemote());
     return;
   }

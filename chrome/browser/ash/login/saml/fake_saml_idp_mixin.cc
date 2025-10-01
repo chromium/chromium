@@ -296,19 +296,24 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
 
 FakeSamlIdpMixin::RequestType FakeSamlIdpMixin::ParseRequestTypeFromRequestPath(
     const GURL& request_url) const {
-  std::string request_path = request_url.path();
+  std::string request_path = request_url.GetPath();
 
-  if (request_path == GetSamlPageUrl().path())
+  if (request_path == GetSamlPageUrl().GetPath()) {
     return RequestType::kLogin;
-  if (request_path == GetSamlAuthPageUrl().path())
+  }
+  if (request_path == GetSamlAuthPageUrl().GetPath()) {
     return RequestType::kLoginAuth;
-  if (request_path == GetSamlWithDeviceAttestationUrl().path())
+  }
+  if (request_path == GetSamlWithDeviceAttestationUrl().GetPath()) {
     return RequestType::kLoginWithDeviceAttestation;
-  if (request_path == GetSamlWithDeviceTrustUrl().path())
+  }
+  if (request_path == GetSamlWithDeviceTrustUrl().GetPath()) {
     return RequestType::kLoginWithDeviceTrust;
-  if (request_path == GetSamlWithCheckDeviceAnswerUrl().path())
+  }
+  if (request_path == GetSamlWithCheckDeviceAnswerUrl().GetPath()) {
     return RequestType::kLoginCheckDeviceAnswer;
-  if (request_path == GetLinkedPageUrl().path()) {
+  }
+  if (request_path == GetLinkedPageUrl().GetPath()) {
     return RequestType::kLinkedPage;
   }
 
@@ -320,7 +325,7 @@ std::unique_ptr<HttpResponse> FakeSamlIdpMixin::BuildResponseForLogin(
     const GURL& request_url) const {
   const std::string relay_state = GetRelayState(request);
   return BuildHTMLResponse(login_html_template_, relay_state,
-                           GetSamlAuthPageUrl().path());
+                           GetSamlAuthPageUrl().GetPath());
 }
 
 std::unique_ptr<HttpResponse> FakeSamlIdpMixin::BuildResponseForLoginAuth(
@@ -421,7 +426,7 @@ std::unique_ptr<HttpResponse> FakeSamlIdpMixin::BuildResponseForLinkedPage(
     const HttpRequest& request,
     const GURL& request_url) const {
   return BuildHTMLResponse(login_html_template_, "linked",
-                           GetLinkedPageUrl().path());
+                           GetLinkedPageUrl().GetPath());
 }
 
 std::unique_ptr<net::test_server::HttpResponse>

@@ -170,7 +170,7 @@ bool IsValidCustomScheme(const std::wstring& scheme) {
 // be retrieved in the HKCR registry subkey method implemented below. We call
 // AssocQueryString with the new Win8-only flag ASSOCF_IS_PROTOCOL instead.
 std::u16string GetAppForSchemeUsingAssocQuery(const GURL& url) {
-  const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
+  const std::wstring url_scheme = base::ASCIIToWide(url.GetScheme());
   if (!IsValidCustomScheme(url_scheme)) {
     return std::u16string();
   }
@@ -192,7 +192,7 @@ std::u16string GetAppForSchemeUsingAssocQuery(const GURL& url) {
 }
 
 std::u16string GetAppForSchemeUsingRegistry(const GURL& url) {
-  const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
+  const std::wstring url_scheme = base::ASCIIToWide(url.GetScheme());
   if (!IsValidCustomScheme(url_scheme)) {
     return std::u16string();
   }

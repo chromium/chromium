@@ -286,7 +286,7 @@ bool IsProxyError(NetworkStateInformer::State state,
 
 // Path without the leading slash, as expected by authenticator.js.
 std::string GetPath(const GURL& url) {
-  return url.path().substr(1);
+  return url.GetPath().substr(1);
 }
 
 std::string GenerateDeviceId() {

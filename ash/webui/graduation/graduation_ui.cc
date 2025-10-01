@@ -144,7 +144,7 @@ void GraduationUI::BindInterface(
       web_ui()->GetWebContents()->GetBrowserContext();
   CHECK(context);
   const std::string host_name =
-      web_ui()->GetWebContents()->GetVisibleURL().host();
+      web_ui()->GetWebContents()->GetVisibleURL().GetHost();
   ui_handler_ = std::make_unique<GraduationUiHandler>(
       std::move(receiver),
       std::make_unique<WebviewAuthHandler>(context, host_name),

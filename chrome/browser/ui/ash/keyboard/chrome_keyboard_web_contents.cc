@@ -109,7 +109,7 @@ class ChromeKeyboardContentsDelegate : public content::WebContentsDelegate,
     if (origin.SchemeIs(extensions::kExtensionScheme)) {
       const extensions::ExtensionRegistry* registry =
           extensions::ExtensionRegistry::Get(web_contents->GetBrowserContext());
-      extension = registry->enabled_extensions().GetByID(origin.host());
+      extension = registry->enabled_extensions().GetByID(origin.GetHost());
       DCHECK(extension);
     }
     MediaCaptureDevicesDispatcher::GetInstance()->ProcessMediaAccessRequest(

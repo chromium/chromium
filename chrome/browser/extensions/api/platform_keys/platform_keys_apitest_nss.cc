@@ -394,7 +394,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleFileRequest(
   if (request.method != net::test_server::METHOD_GET) {
     return nullptr;
   }
-  const std::string& relative_path = request.GetURL().path();
+  const std::string& relative_path = request.GetURL().GetPath();
   if (!relative_path.starts_with("/")) {
     return nullptr;
   }

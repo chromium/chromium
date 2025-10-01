@@ -181,7 +181,7 @@ void BorealisMOTDDialog::OnDialogClosed(const std::string& json_retval) {
 }
 
 void BorealisMOTDDialog::OnLoadingStateChanged(content::WebContents* source) {
-  if (source->GetURL().ref() == kClientActionDismiss) {
+  if (source->GetURL().GetRef() == kClientActionDismiss) {
     source->ClosePage();
   }
 }

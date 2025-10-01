@@ -47,7 +47,7 @@ std::string ItemIdFromAppId(const std::string& app_id) {
   // Convert chrome-extension://<id> to just <id>.
   if (base::StartsWith(app_id, extensions::kExtensionScheme)) {
     GURL url(app_id);
-    return url.host();
+    return url.GetHost();
   }
   return app_id;
 }

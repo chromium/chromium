@@ -178,7 +178,7 @@ void TerminalSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
   // skip first '/' in path.
-  std::string path = url.path().substr(1);
+  std::string path = url.GetPath().substr(1);
   if (path.empty()) {
     path = "html/terminal.html";
   }

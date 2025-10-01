@@ -185,7 +185,7 @@ VideoConferenceWebApp* VideoConferenceMediaListener::GetOrCreateVcWebApp(
       return nullptr;
     }
 
-    if (ShouldSkipId(contents->GetURL().host())) {
+    if (ShouldSkipId(contents->GetURL().GetHost())) {
       return nullptr;
     }
 

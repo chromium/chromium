@@ -213,8 +213,8 @@ void AssetDomainListIncludeHandler::OnJsonParseResult(
       GURL parsed_domain = GURL(*domain);
       if (parsed_domain.is_valid() &&
           network::IsUrlPotentiallyTrustworthy(parsed_domain) &&
-          !parsed_domain.host().empty()) {
-        domains.push_back(parsed_domain.host());
+          !parsed_domain.GetHost().empty()) {
+        domains.push_back(parsed_domain.GetHost());
       }
     }
   }

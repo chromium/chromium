@@ -273,7 +273,7 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
 
 #if BUILDFLAG(IS_CHROMEOS)
   UMATextToSpeechSource source = UMATextToSpeechSource::kOther;
-  const std::string host = source_url().host();
+  const std::string host = source_url().GetHost();
   if (host == extension_misc::kSelectToSpeakExtensionId) {
     source = UMATextToSpeechSource::kSelectToSpeak;
   } else if (host == extension_misc::kChromeVoxExtensionId) {

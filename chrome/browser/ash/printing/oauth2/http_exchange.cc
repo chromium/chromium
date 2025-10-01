@@ -373,7 +373,7 @@ bool HttpExchange::ParamURLGet(const std::string& name,
     return false;
   }
   GURL gurl(node->GetString());
-  if (gurl.is_valid() && gurl.IsStandard() && gurl.scheme() == "https") {
+  if (gurl.is_valid() && gurl.IsStandard() && gurl.GetScheme() == "https") {
     // Success!
     if (value) {
       *value = gurl;

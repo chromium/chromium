@@ -489,10 +489,10 @@ TEST_P(SimpleGeolocationAPIKeyTest, TestCorrectAPIKeysAreUsed) {
   const GURL request_url = requests_monitor.last_request_url();
   ASSERT_TRUE(request_url.has_query());
   EXPECT_EQ(is_separate_api_keys_enabled_,
-            request_url.query().find(GOOGLE_API_KEY_CROS_SYSTEM_GEO) !=
+            request_url.GetQuery().find(GOOGLE_API_KEY_CROS_SYSTEM_GEO) !=
                 std::string::npos);
   EXPECT_EQ(is_separate_api_keys_enabled_,
-            request_url.query().find(GOOGLE_API_KEY) == std::string::npos);
+            request_url.GetQuery().find(GOOGLE_API_KEY) == std::string::npos);
   EXPECT_EQ(1U, url_factory_.attempts());
 }
 

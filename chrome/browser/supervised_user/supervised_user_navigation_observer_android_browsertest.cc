@@ -86,7 +86,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.GetURL().path() != "/search") {
+          if (request.GetURL().GetPath() != "/search") {
             return nullptr;
           }
           // HTTP 200 OK with empty response body.
@@ -308,7 +308,7 @@ IN_PROC_BROWSER_TEST_F(
   // This expectation verifies that the help center page was attempted to be
   // loaded (test don't have internet)
   EXPECT_EQ(web_contents()->GetTitle(),
-            base::UTF8ToUTF16(help_center_url.host()));
+            base::UTF8ToUTF16(help_center_url.GetHost()));
 }
 
 // Clicks the back button on the interstitial page and verifies that the

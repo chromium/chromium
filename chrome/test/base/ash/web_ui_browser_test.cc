@@ -405,7 +405,7 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
       std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
           test_factory_.get(), ChromeWebUIControllerFactory::GetInstance());
 
-  test_factory_->AddFactoryOverride(DummyUrl().host(),
+  test_factory_->AddFactoryOverride(DummyUrl().GetHost(),
                                     mock_provider_.Pointer());
   test_factory_->AddFactoryOverride(content::kChromeUIResourcesHost,
                                     mock_provider_.Pointer());
@@ -414,7 +414,7 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
 void BaseWebUIBrowserTest::TearDownOnMainThread() {
   logging::SetLogMessageHandler(nullptr);
 
-  test_factory_->RemoveFactoryOverride(DummyUrl().host());
+  test_factory_->RemoveFactoryOverride(DummyUrl().GetHost());
   // |factory_registration_| must be reset before |test_factory_| to remove
   // any pointers to |test_factory_| from the factory registry before its
   // destruction.

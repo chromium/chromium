@@ -102,7 +102,7 @@ bool DevUiLoaderThrottle::ShouldInstallDevUiDfm(const GURL& url) {
   }
 #endif
   return url.SchemeIs(content::kChromeUIScheme) &&
-         IsWebUiHostInDevUiDfm(url.host());
+         IsWebUiHostInDevUiDfm(url.GetHost());
 }
 
 // static

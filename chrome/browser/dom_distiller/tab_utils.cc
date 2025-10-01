@@ -174,8 +174,8 @@ void StartNavigationToDistillerViewer(content::WebContents* web_contents,
   content::HostZoomMap* host_zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents);
   if (host_zoom_map) {
-    host_zoom_map->SetZoomLevelForHostAndScheme(viewer_url.scheme(),
-                                                viewer_url.host(), 0.0);
+    host_zoom_map->SetZoomLevelForHostAndScheme(viewer_url.GetScheme(),
+                                                viewer_url.GetHost(), 0.0);
   }
 #endif
 }

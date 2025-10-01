@@ -344,7 +344,7 @@ TestingUpdateManifestProvider::HandleRequest(
     const net::test_server::HttpRequest& request) {
   base::AutoLock auto_lock(lock_);
   const GURL url("http://localhost" + request.relative_url);
-  if (url.path() != relative_update_url_) {
+  if (url.GetPath() != relative_update_url_) {
     return nullptr;
   }
 

@@ -552,7 +552,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
 
     GURL windows_url = GaiaUrls::GetInstance()->embedded_setup_windows_url();
     // Redirect to specified gaia endpoint path for GCPW:
-    std::string windows_endpoint_path = windows_url.path().substr(1);
+    std::string windows_endpoint_path = windows_url.GetPath().substr(1);
     // Redirect to specified gaia endpoint path for GCPW:
     std::string gcpw_endpoint_path;
     if (net::GetValueForKeyInQuery(

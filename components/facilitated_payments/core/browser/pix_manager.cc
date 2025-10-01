@@ -80,7 +80,7 @@ void PixManager::OnPixCodeCopiedToClipboard(
     return;
   }
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
-      render_frame_host_url.host();
+      render_frame_host_url.GetHost();
   pix_payment_page_origin_ = render_frame_host_origin;
   // Trigger Pix code validation.
   utility_process_validator_.ValidatePixCode(

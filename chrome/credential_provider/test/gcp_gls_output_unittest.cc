@@ -252,7 +252,7 @@ GcpUsingChromeTest::GaiaHtmlResponseHandler(
   // When the "/embedded/setup/chrome" is requested on the gaia web site
   // (accounts.google.com) then the embedded server can send a page with scripts
   // that can force immediate signin.
-  if (request.GetURL().path().find("/embedded/setup/chrome") == 0) {
+  if (request.GetURL().GetPath().find("/embedded/setup/chrome") == 0) {
     // This is the  header that is sent by Gaia that the inline sign in page
     // listens to in order to fill the information abou the email and Gaia ID.
     http_response->AddCustomHeader("google-accounts-signin",
@@ -301,14 +301,14 @@ GcpUsingChromeTest::GoogleApisHtmlResponseHandler(
   // All other Google API requests will be ignored with a 404 error.
 
   TestGoogleApiResponse* api_response = nullptr;
-  if (request.GetURL().path().find("/oauth2/v2/tokeninfo") == 0) {
+  if (request.GetURL().GetPath().find("/oauth2/v2/tokeninfo") == 0) {
     api_response = &token_info_response_;
-  } else if (request.GetURL().path().find("/oauth2/v1/userinfo") == 0) {
+  } else if (request.GetURL().GetPath().find("/oauth2/v1/userinfo") == 0) {
     // User info should never be requested before the mdm id token request is
     // made.
     EXPECT_TRUE(mdm_token_response_.response_given_);
     api_response = &user_info_response_;
-  } else if (request.GetURL().path().find("/oauth2/v4/token") == 0) {
+  } else if (request.GetURL().GetPath().find("/oauth2/v4/token") == 0) {
     // Does the request want an auth_code for signin or is it the second request
     // made to get the id token.
     if (request.content.find("grant_type=authorization_code") ==

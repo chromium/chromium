@@ -66,7 +66,7 @@ class DriveFsNativeMessageHost : public extensions::NativeMessageHost,
 
       std::move(create_native_host_callback_)
           .Run(drivefs::mojom::ExtensionConnectionParams::New(
-                   GURL(kDriveFsNativeMessageHostOrigins[0]).host()),
+                   GURL(kDriveFsNativeMessageHostOrigins[0]).GetHost()),
                drivefs_remote_.BindNewPipeAndPassReceiver(),
                std::move(extension_port));
     }

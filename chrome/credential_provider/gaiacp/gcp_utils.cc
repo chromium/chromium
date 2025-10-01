@@ -1266,7 +1266,7 @@ HRESULT SetGaiaEndpointCommandLineIfNeeded(const wchar_t* override_registry_key,
       command_line->AppendSwitchASCII(switches::kGaiaUrl,
                                       endpoint_url.GetWithEmptyPath().spec());
       command_line->AppendSwitchASCII(kGcpwEndpointPathSwitch,
-                                      endpoint_url.path().substr(1));
+                                      endpoint_url.GetPath().substr(1));
     }
     return S_OK;
   }

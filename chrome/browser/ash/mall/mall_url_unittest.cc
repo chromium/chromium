@@ -42,10 +42,10 @@ TEST_F(MallUrlTest, GetMallLaunchUrl) {
 
   GURL launch_url = GetMallLaunchUrl(device_info.Get());
 
-  ASSERT_EQ(launch_url.host(), GURL(chromeos::kAppMallBaseUrl).host());
+  ASSERT_EQ(launch_url.GetHost(), GURL(chromeos::kAppMallBaseUrl).GetHost());
 
   std::vector<std::string> query_parts = base::SplitString(
-      launch_url.query(), "=&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      launch_url.GetQuery(), "=&", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   ASSERT_EQ(query_parts[0], "origin");
   ASSERT_EQ(query_parts[1], "chrome%3A%2F%2Fmall");

@@ -570,7 +570,7 @@ TestSystemWebAppInstallation::SetUpAppThatCapturesNavigation() {
             return info;
           })));
   auto factory = std::make_unique<TestSystemWebAppWebUIControllerFactory>(
-      kInitiatingAppUrl.host());
+      kInitiatingAppUrl.GetHost());
   installation->web_ui_controller_factories_.push_back(std::move(factory));
 
   return base::WrapUnique(installation);

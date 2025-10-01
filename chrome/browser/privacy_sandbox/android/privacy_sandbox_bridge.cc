@@ -209,7 +209,7 @@ JNI_PrivacySandboxBridge_GetRelatedWebsiteSetOwner(
     return nullptr;
   }
 
-  return ConvertUTF8ToJavaString(env, rwsOwner->GetURL().host());
+  return ConvertUTF8ToJavaString(env, rwsOwner->GetURL().GetHost());
 }
 
 static jboolean JNI_PrivacySandboxBridge_IsPartOfManagedRelatedWebsiteSet(

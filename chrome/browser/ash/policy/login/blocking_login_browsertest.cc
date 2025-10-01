@@ -152,7 +152,7 @@ class BlockingLoginTest
     std::unique_ptr<net::test_server::HttpResponse> response;
 
     GaiaUrls* gaia = GaiaUrls::GetInstance();
-    if (request.relative_url == gaia->oauth2_token_url().path() ||
+    if (request.relative_url == gaia->oauth2_token_url().GetPath() ||
         base::StartsWith(request.relative_url, kDMRegisterRequest,
                          base::CompareCase::SENSITIVE) ||
         base::StartsWith(request.relative_url, kDMPolicyRequest,

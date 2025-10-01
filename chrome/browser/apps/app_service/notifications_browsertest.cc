@@ -291,7 +291,7 @@ class AppNotificationsWebNotificationTest
     return std::make_unique<message_center::Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
         std::u16string(), std::u16string(), ui::ImageModel(),
-        base::UTF8ToUTF16(origin.host()), origin,
+        base::UTF8ToUTF16(origin.GetHost()), origin,
         message_center::NotifierId(origin),
         message_center::RichNotificationData(), nullptr);
   }

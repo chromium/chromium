@@ -236,10 +236,11 @@ content::LanguageInstallStatus VoicePackInstallStatusFromString(
 bool CanUseEnhancedNetworkVoices(const GURL& source_url, Profile* profile) {
   // Currently only Select-to-speak and its settings page can use Enhanced
   // Network voices.
-  if (source_url.host() != extension_misc::kSelectToSpeakExtensionId &&
+  if (source_url.GetHost() != extension_misc::kSelectToSpeakExtensionId &&
       source_url != chrome::GetOSSettingsUrl(
-                        chromeos::settings::mojom::kSelectToSpeakSubpagePath))
+                        chromeos::settings::mojom::kSelectToSpeakSubpagePath)) {
     return false;
+  }
 
   // Check if these voices are disallowed by policy.
   if (!profile->GetPrefs()->GetBoolean(

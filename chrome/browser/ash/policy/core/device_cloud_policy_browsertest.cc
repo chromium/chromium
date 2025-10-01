@@ -346,7 +346,7 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
   // Intercepts the request for the test extension update manifest.
   std::unique_ptr<net::test_server::HttpResponse> InterceptUpdateManifest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != kTestExtensionUpdateManifestPath) {
+    if (request.GetURL().GetPath() != kTestExtensionUpdateManifestPath) {
       return nullptr;
     }
 

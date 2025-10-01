@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
   content::WebContents* const restored_web_contents =
       restored_browser->GetTabStripModel()->GetActiveWebContents();
   ASSERT_TRUE(restored_web_contents);
-  ASSERT_EQ(restored_web_contents->GetVisibleURL().path(),
+  ASSERT_EQ(restored_web_contents->GetVisibleURL().GetPath(),
             kTestUrlRelativePath);
 
   Browser* const manual_browser =
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(AshSessionRestorePageLoadMetricsObserverTest,
   content::WebContents* const restored_web_contents =
       tab_strip_model->GetActiveWebContents();
   ASSERT_TRUE(restored_web_contents);
-  ASSERT_EQ(restored_web_contents->GetVisibleURL().path(),
+  ASSERT_EQ(restored_web_contents->GetVisibleURL().GetPath(),
             kTestUrlRelativePath);
   const int restored_tab_index = tab_strip_model->active_index();
   ASSERT_TRUE(AddTabAtIndexToBrowser(

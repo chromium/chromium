@@ -148,7 +148,7 @@ class ManageMirrorSyncDialogTest : public InProcessBrowserTest {
     ManageMirrorSyncDialog::Show(browser()->profile());
     dialog_contents_ = observer.GetWebContents();
     EXPECT_TRUE(content::WaitForLoadStop(dialog_contents_));
-    EXPECT_EQ(dialog_contents_->GetLastCommittedURL().host(),
+    EXPECT_EQ(dialog_contents_->GetLastCommittedURL().GetHost(),
               chrome::kChromeUIManageMirrorSyncHost);
   }
 

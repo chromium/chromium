@@ -180,8 +180,8 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
     const SystemWebAppDelegate& delegate,
     bool force_update,
     bool is_disabled) {
-  DCHECK(delegate.GetInstallUrl().scheme() == content::kChromeUIScheme ||
-         delegate.GetInstallUrl().scheme() ==
+  DCHECK(delegate.GetInstallUrl().GetScheme() == content::kChromeUIScheme ||
+         delegate.GetInstallUrl().GetScheme() ==
              content::kChromeUIUntrustedScheme);
 
   web_app::ExternalInstallOptions install_options(

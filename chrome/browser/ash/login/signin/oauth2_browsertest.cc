@@ -461,7 +461,7 @@ class OAuth2Test : public OobeBaseTest {
   void InterceptRequest(const HttpRequest& request) {
     const GURL request_url =
         GURL("http://localhost").Resolve(request.relative_url);
-    auto it = request_deferers_.find(request_url.path());
+    auto it = request_deferers_.find(request_url.GetPath());
     if (it == request_deferers_.end())
       return;
 
@@ -736,7 +736,7 @@ class FakeGoogle {
     // The scheme and host of the URL is actually not important but required to
     // get a valid GURL in order to parse `request.relative_url`.
     GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-    std::string request_path = request_url.path();
+    std::string request_path = request_url.GetPath();
     std::unique_ptr<BasicHttpResponse> http_response(new BasicHttpResponse());
     if (request_path == kHelloPagePath) {  // Serving "google" page.
       start_event_.Signal();

@@ -91,7 +91,7 @@ void MediaAppPageHandler::SubmitForm(const GURL& url,
                                      SubmitFormCallback callback) {
   // We only intend for this API to be used with lens, so crash if used for
   // something else.
-  if (url.host() != lensHost) {
+  if (url.GetHost() != lensHost) {
     mojo::ReportBadMessage(
         base::StrCat({"SubmitForm API only works with ", lensHost}));
   }

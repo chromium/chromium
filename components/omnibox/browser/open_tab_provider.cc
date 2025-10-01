@@ -45,7 +45,7 @@ int Score(const AutocompleteInput& input,
   // tabs.
   if (input.current_page_classification() ==
           ::metrics::OmniboxEventProto::ANDROID_HUB &&
-      tab.url.scheme().starts_with(content::kChromeUIScheme)) {
+      tab.url.GetScheme().starts_with(content::kChromeUIScheme)) {
     return 0;
   }
 #endif

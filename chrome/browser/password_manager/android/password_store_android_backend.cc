@@ -78,7 +78,7 @@ std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
   if (form.scheme == PasswordForm::Scheme::kHtml &&
       !affiliations::IsValidAndroidFacetURI(form.signon_realm)) {
     // Check federated matches and matches for exact signon realm.
-    return form.url.host();
+    return form.url.GetHost();
   }
   // Check matches for exact signon realm.
   return form.signon_realm;

@@ -312,8 +312,8 @@ TEST_F(ShortcutInfoTest, ShortcutItemsPopulated) {
   info_.UpdateFromManifest(manifest_);
 
   ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
-  EXPECT_EQ(info_.best_shortcut_icon_urls[0].path(), "/i1_3");
-  EXPECT_EQ(info_.best_shortcut_icon_urls[1].path(), "/i2_2");
+  EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i1_3");
+  EXPECT_EQ(info_.best_shortcut_icon_urls[1].GetPath(), "/i2_2");
   EXPECT_FALSE(info_.best_shortcut_icon_urls[2].is_valid());
 }
 
@@ -340,8 +340,8 @@ TEST_F(ShortcutInfoTest, FindMaskableSplashIcon) {
 
   info_.UpdateBestSplashIcon(manifest_);
 
-    EXPECT_EQ(info_.splash_image_url.path(), "/icon_144.png");
-    EXPECT_TRUE(info_.is_splash_image_maskable);
+  EXPECT_EQ(info_.splash_image_url.GetPath(), "/icon_144.png");
+  EXPECT_TRUE(info_.is_splash_image_maskable);
 }
 
 TEST_F(ShortcutInfoTest, SplashIconFallbackToAny) {
@@ -354,7 +354,7 @@ TEST_F(ShortcutInfoTest, SplashIconFallbackToAny) {
 
   info_.UpdateBestSplashIcon(manifest_);
 
-  EXPECT_EQ(info_.splash_image_url.path(), "/icon_144.png");
+  EXPECT_EQ(info_.splash_image_url.GetPath(), "/icon_144.png");
   EXPECT_FALSE(info_.is_splash_image_maskable);
 }
 

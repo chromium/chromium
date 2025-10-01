@@ -99,7 +99,7 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
     embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.GetURL().path() != "/search") {
+          if (request.GetURL().GetPath() != "/search") {
             return nullptr;
           }
           // HTTP 200 OK with empty response body.

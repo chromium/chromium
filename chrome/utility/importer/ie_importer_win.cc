@@ -522,8 +522,9 @@ void IEImporter::ImportHistory() {
 
       GURL url(base::AsStringPiece16(url_string));
       // Skips the URLs that are invalid or have other schemes.
-      if (!url.is_valid() || !base::Contains(kSchemes, url.scheme()))
+      if (!url.is_valid() || !base::Contains(kSchemes, url.GetScheme())) {
         continue;
+      }
 
       user_data_importer::ImporterURLRow row(url);
       row.title = base::AsString16(title_string);
@@ -696,8 +697,9 @@ void IEImporter::ParseFavoritesFolder(
     // which URLs IE has as default, to some another sites.
     // We expect that users will never themselves create bookmarks having this
     // hostname.
-    if (url.host() == "go.microsoft.com")
+    if (url.GetHost() == "go.microsoft.com") {
       continue;
+    }
     // Read favicon.
     UpdateFaviconMap(shortcut, url, url_locator.Get(), &favicon_map);
 

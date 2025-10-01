@@ -51,7 +51,8 @@ void UrlHandlerServiceProvider::Start(
 }
 
 bool UrlHandlerServiceProvider::UrlAllowed(const GURL& gurl) const {
-  return gurl.is_valid() && base::Contains(allowed_url_schemes_, gurl.scheme());
+  return gurl.is_valid() &&
+         base::Contains(allowed_url_schemes_, gurl.GetScheme());
 }
 
 void UrlHandlerServiceProvider::OpenUrl(

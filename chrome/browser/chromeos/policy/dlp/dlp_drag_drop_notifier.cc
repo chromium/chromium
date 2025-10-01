@@ -24,7 +24,7 @@ void DlpDragDropNotifier::NotifyBlockedAction(
   DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
 
   ShowBlockBubble(l10n_util::GetStringFUTF16(
       IDS_POLICY_DLP_CLIPBOARD_BLOCKED_ON_PASTE, host_name));
@@ -40,7 +40,7 @@ void DlpDragDropNotifier::WarnOnDrop(
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
 
   auto proceed_cb = base::BindOnce(&DlpDragDropNotifier::ProceedPressed,
                                    base::Unretained(this));

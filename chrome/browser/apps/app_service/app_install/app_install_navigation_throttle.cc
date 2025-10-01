@@ -191,7 +191,7 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
 
   // We accept `cros-apps:install-app` or `cros-apps://install-app`, when parsed
   // with an opaque path (no host, path starts with //) or not.
-  if (url.host() != kAppInstallHost && url.path_piece() != kAppInstallHost &&
+  if (url.GetHost() != kAppInstallHost && url.path_piece() != kAppInstallHost &&
       url.path_piece() != kAppInstallPath) {
     return content::NavigationThrottle::PROCEED;
   }

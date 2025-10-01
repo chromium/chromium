@@ -33,7 +33,7 @@ TEST_F(AmbientVideoViewTest, NavigatesToCorrectURL) {
   ASSERT_THAT(web_view, NotNull());
   EXPECT_FALSE(web_view->init_params_for_testing().enable_wake_locks);
   EXPECT_TRUE(web_view->current_url().SchemeIsFile());
-  EXPECT_THAT(web_view->current_url().path(), Eq("/path/to/html"));
+  EXPECT_THAT(web_view->current_url().GetPath(), Eq("/path/to/html"));
   std::string video_file_requested;
   ASSERT_TRUE(net::GetValueForKeyInQuery(web_view->current_url(), "video_file",
                                          &video_file_requested));

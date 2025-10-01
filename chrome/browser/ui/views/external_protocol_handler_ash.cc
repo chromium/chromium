@@ -119,7 +119,7 @@ void OnArcHandled(const GURL& url,
     new ExternalProtocolDialog(web_contents.get(), url,
                                base::UTF8ToUTF16(registration->name()),
                                initiating_origin, initiator_document);
-  } else if (url.scheme() == url::kTelScheme) {
+  } else if (url.GetScheme() == url::kTelScheme) {
     new ExternalProtocolNoHandlersTelSchemeDialog(parent_window);
   }
 }

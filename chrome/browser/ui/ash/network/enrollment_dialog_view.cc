@@ -155,7 +155,7 @@ bool ShowEnrollmentDialog(const std::string& network_guid,
            enrollment_uri_list.begin();
        iter != enrollment_uri_list.end(); ++iter) {
     GURL uri(*iter);
-    if (uri.IsStandard() || uri.scheme() == extensions::kExtensionScheme) {
+    if (uri.IsStandard() || uri.GetScheme() == extensions::kExtensionScheme) {
       // If this is a "standard" scheme, like http, ftp, etc., then open that in
       // the enrollment dialog.
       NET_LOG(EVENT) << "Showing enrollment dialog for: "

@@ -70,7 +70,7 @@ const GURL& GetGoogleContactsBaseUrl() {
 }
 
 GURL GetCalendarEventUrl(const manta::proto::NewEventAction& event) {
-  std::string query = GetCalendarEventTemplateUrl().query();
+  std::string query = GetCalendarEventTemplateUrl().GetQuery();
   CHECK(!query.empty());
   if (!event.title().empty()) {
     query += "&text=";

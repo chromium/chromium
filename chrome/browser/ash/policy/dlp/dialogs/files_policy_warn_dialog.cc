@@ -53,7 +53,7 @@ std::u16string GetDestinationURL(DlpFileDestination destination) {
   DCHECK(destination.url()->is_valid());
   GURL gurl = *destination.url();
   if (gurl.has_host()) {
-    return base::UTF8ToUTF16(gurl.host());
+    return base::UTF8ToUTF16(gurl.GetHost());
   }
   return base::UTF8ToUTF16(gurl.spec());
 }

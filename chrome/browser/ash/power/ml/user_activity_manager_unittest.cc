@@ -1290,7 +1290,7 @@ TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
 
   const UserActivityEvent::Features& features = events[0].features();
   EXPECT_EQ(features.source_id(), source_id1);
-  EXPECT_EQ(features.tab_domain(), url1_.host());
+  EXPECT_EQ(features.tab_domain(), url1_.GetHost());
   EXPECT_FALSE(features.tab_domain().empty());
   EXPECT_EQ(features.engagement_score(), 90);
   EXPECT_FALSE(features.has_form_entry());
@@ -1337,7 +1337,7 @@ TEST_F(UserActivityManagerTest, DISABLED_MultiBrowsersAndTabs) {
 
   const UserActivityEvent::Features& features = events[0].features();
   EXPECT_EQ(features.source_id(), source_id3);
-  EXPECT_EQ(features.tab_domain(), url3_.host());
+  EXPECT_EQ(features.tab_domain(), url3_.GetHost());
   EXPECT_EQ(features.engagement_score(), 0);
   EXPECT_FALSE(features.has_form_entry());
 

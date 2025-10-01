@@ -390,7 +390,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 }
 
 std::string GetDisplayType(const GURL& url) {
-  std::string path = url.path().size() ? url.path().substr(1) : "";
+  std::string path = url.GetPath().size() ? url.GetPath().substr(1) : "";
 
   constexpr auto kKnownDisplayTypes = base::MakeFixedFlatSet<std::string_view>(
       {OobeUI::kAppLaunchSplashDisplay, OobeUI::kGaiaSigninDisplay,

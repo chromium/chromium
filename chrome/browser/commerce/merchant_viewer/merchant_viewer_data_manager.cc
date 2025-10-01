@@ -99,7 +99,7 @@ void MerchantViewerDataManager::DeleteMerchantViewerDataForOrigins(
         "MerchantViewer.DataManager.ForceClearMerchantsForOrigins", true);
   } else {
     auto deleted_hostnames =
-        base::MakeFlatSet<std::string>(deleted_origins, {}, &GURL::host);
+        base::MakeFlatSet<std::string>(deleted_origins, {}, &GURL::GetHost);
     LOG(ERROR) << "Clearing " << deleted_hostnames.size() << " merchants.";
     proto_db_->LoadAllEntries(base::BindOnce(
         &MerchantViewerDataManager::OnLoadAllEntriesForOriginsCallback,

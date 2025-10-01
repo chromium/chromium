@@ -54,7 +54,7 @@ void CrackUrl(const GURL& url,
     *is_https = url.SchemeIs(url::kHttpsScheme);
   }
   if (host) {
-    *host = url.host();
+    *host = url.GetHost();
   }
   if (port) {
     *port = url.EffectiveIntPort();

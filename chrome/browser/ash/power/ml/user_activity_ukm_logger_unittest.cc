@@ -158,7 +158,7 @@ TEST_F(UserActivityUkmLoggerTest, BasicLogging) {
       user_activity_event.mutable_features();
   features->set_source_id(recorder_.GetNewSourceID());
   const GURL kUrl1 = GURL("https://example1.com/");
-  features->set_tab_domain(kUrl1.host());
+  features->set_tab_domain(kUrl1.GetHost());
   features->set_engagement_score(90);
   features->set_has_form_entry(false);
 

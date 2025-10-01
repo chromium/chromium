@@ -1726,7 +1726,7 @@ void AwContents::PrimaryPageChanged(content::Page& page) {
   // the issue for the context.
   prerender_handles_.clear();
 
-  std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
+  std::string scheme = page.GetMainDocument().GetLastCommittedURL().GetScheme();
   const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();
   std::string etld_plus1 =
       net::registry_controlled_domains::GetDomainAndRegistry(

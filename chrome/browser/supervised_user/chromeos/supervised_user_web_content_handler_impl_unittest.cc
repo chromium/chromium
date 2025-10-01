@@ -71,7 +71,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()));
+              RecordLocalWebsiteApproval(url.GetHost()));
 
   auto result = std::make_unique<ash::ParentAccessDialog::Result>();
   result->status = ash::ParentAccessDialog::Result::Status::kApproved;
@@ -116,7 +116,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()))
+              RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
   auto result = std::make_unique<ash::ParentAccessDialog::Result>();
@@ -159,7 +159,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()))
+              RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
   auto result = std::make_unique<ash::ParentAccessDialog::Result>();
@@ -199,7 +199,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
   testing::NiceMock<MockSupervisedUserSettingsService>
       supervisedUserSettingsServiceMock;
   EXPECT_CALL(supervisedUserSettingsServiceMock,
-              RecordLocalWebsiteApproval(url.host()))
+              RecordLocalWebsiteApproval(url.GetHost()))
       .Times(0);
 
   auto result = std::make_unique<ash::ParentAccessDialog::Result>();

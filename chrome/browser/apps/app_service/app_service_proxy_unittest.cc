@@ -985,7 +985,7 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
   app->handles_intents = true;
   auto intent_filter = std::make_unique<apps::IntentFilter>();
   intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
-                                         kTestUrl.scheme(),
+                                         kTestUrl.GetScheme(),
                                          apps::PatternMatchType::kLiteral);
   intent_filter->activity_name = "name 1";
   intent_filter->activity_label = "same label";

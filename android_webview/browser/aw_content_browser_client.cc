@@ -405,7 +405,7 @@ bool AwContentBrowserClient::IsHandledURL(const GURL& url) {
     return true;
   }
 
-  const std::string scheme = url.scheme();
+  const std::string scheme = url.GetScheme();
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
   static const char* const kProtocolList[] = {
       url::kHttpScheme,         url::kHttpsScheme,

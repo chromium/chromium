@@ -1957,7 +1957,7 @@ std::map<base::FilePath, int> AppShimManager::GetProfilesWithMatchingHandlers(
 
     if (protocol_handler_url.is_valid() &&
         base::Contains(handler_info.protocol_handlers,
-                       protocol_handler_url.scheme())) {
+                       protocol_handler_url.GetScheme())) {
       count++;
     }
 

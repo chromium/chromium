@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockDisabledBrowserTest,
     TestNavigationObserver navigation_observer(shell()->web_contents(), 1);
     navigation_observer.Wait();
     EXPECT_EQ("NotSupportedError",
-              shell()->web_contents()->GetLastCommittedURL().ref());
+              shell()->web_contents()->GetLastCommittedURL().GetRef());
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)

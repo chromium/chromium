@@ -378,7 +378,7 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
 
   fidl::InterfaceHandle<fuchsia::io::Node> file_handle;
   net::Error open_result = OpenFileFromDirectory(
-      request.url.DeprecatedGetOriginAsURL().host(),
+      request.url.DeprecatedGetOriginAsURL().GetHost(),
       base::FilePath(requested_path), file_handle.NewRequest());
   if (open_result != net::OK) {
     mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
@@ -392,7 +392,7 @@ void ContentDirectoryLoaderFactory::CreateLoaderAndStart(
   // ContentDirectoryURLLoader::Start().
   fidl::InterfaceHandle<fuchsia::io::Node> metadata_handle;
   open_result = OpenFileFromDirectory(
-      request.url.DeprecatedGetOriginAsURL().host(),
+      request.url.DeprecatedGetOriginAsURL().GetHost(),
       base::FilePath(base::StrCat({requested_path, "._metadata"})),
       metadata_handle.NewRequest());
   if (open_result != net::OK) {

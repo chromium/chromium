@@ -111,7 +111,7 @@ void DlpClipboardNotifier::NotifyBlockedAction(
   DCHECK(data_src.has_value());
   DCHECK(data_src->GetURL());
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
   if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardBlockCrostiniToastId,
@@ -153,7 +153,7 @@ void DlpClipboardNotifier::WarnOnPaste(
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
   if (data_dst.has_value()) {
     if (data_dst->type() == ui::EndpointType::kCrostini) {
       ShowToast(kClipboardWarnCrostiniToastId,
@@ -214,7 +214,7 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
   CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 
   const std::u16string host_name =
-      base::UTF8ToUTF16(data_src->GetURL()->host());
+      base::UTF8ToUTF16(data_src->GetURL()->GetHost());
 
   auto proceed_cb =
       base::BindOnce(&DlpClipboardNotifier::BlinkProceedPressed,

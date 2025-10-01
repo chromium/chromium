@@ -124,7 +124,7 @@ bool IsInternalWebsite(const std::optional<GURL>& url) {
   if (!url) {
     return false;
   }
-  std::string host = url->host();
+  std::string host = url->GetHost();
   for (const size_t hash_code : kHashedInternalUrls) {
     if (hash_code == base::PersistentHash(host)) {
       return true;
@@ -140,7 +140,7 @@ bool AtDomainWithPathPrefix(const std::optional<GURL>& url,
     return false;
   }
   return url->DomainIs(domain) && url->has_path() &&
-         base::StartsWith(url->path(), prefix);
+         base::StartsWith(url->GetPath(), prefix);
 }
 
 template <size_t N>

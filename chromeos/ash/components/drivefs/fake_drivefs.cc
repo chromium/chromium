@@ -60,7 +60,7 @@ base::FilePath MaybeMountDriveFs(
     const std::vector<std::string>& mount_options) {
   GURL source_url(source_path);
   DCHECK(source_url.is_valid());
-  if (source_url.scheme() != "drivefs") {
+  if (source_url.GetScheme() != "drivefs") {
     return {};
   }
   std::string datadir_suffix;

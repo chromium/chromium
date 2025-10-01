@@ -349,7 +349,7 @@ void NavigationControllerImpl::LoadUrl(std::string url,
     params_converted.extra_headers = base::JoinString(extra_headers, "\n");
   }
 
-  if (validated_url.scheme() == url::kDataScheme) {
+  if (validated_url.GetScheme() == url::kDataScheme) {
     params_converted.load_type = content::NavigationController::LOAD_TYPE_DATA;
   }
 
