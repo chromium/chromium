@@ -4,7 +4,10 @@
 
 import {$} from 'chrome://resources/js/util.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {millisecondsToString} from './util.js';
+import '/strings.m.js';
+
 
 /**
  * CSS classes added / removed in JS to trigger styling changes.
@@ -148,6 +151,7 @@ export class ClientRenderer {
     }
 
     this.hiddenKeys = ['component_id', 'component_type', 'owner_id'];
+    this.revision = loadTimeData.getString('revision');
 
     document.body.classList.add(ClientRendererCss.NO_PLAYERS_SELECTED);
   }
@@ -584,17 +588,62 @@ export class ClientRenderer {
       const valueCell = row.insertCell(-1);
 
       keyCell.appendChild(document.createTextNode(key));
+      valueCell.appendChild(this.createValueCellContent_(key, value));
+    }
+  }
 
-      try {
-        if (key === 'kHlsBufferedRanges') {
-          throw new Error('Do Not Render As JSON');
-        }
-        const pre = document.createElement('pre');
-        pre.textContent = JSON.stringify(value, null, 2);
-        valueCell.appendChild(pre);
-      } catch (e) {
-        valueCell.appendChild(document.createTextNode(JSON.stringify(value)));
+  applyCodeSearchLinkage_(status_obj) {
+    if (status_obj.hasOwnProperty('stack')) {
+      status_obj['stack'] = status_obj['stack'].map(e => {
+        if (typeof(e) === 'string') return e;
+        return '~{' + e['file'] + '%' + e['line'] + '}~';
+      });
+    }
+    if (status_obj.hasOwnProperty('cause')) {
+      status_obj['cause'] = this.applyCodeSearchLinkage_(status_obj['cause']);
+    }
+    return status_obj;
+  }
+
+  createValueCellContent_(key, value) {
+    // This is a bit of a hack, but it's the only way to get the stack trace
+    // to link to the code search.
+    const urlPrefix = 'https://source.chromium.org/chromium/chromium/src/+/main:';
+
+    const re = new RegExp('~{([^%]*)%([0-9]+)}~', 'g');
+    try {
+      if (key === 'kHlsBufferedRanges') {
+        return document.createTextNode(JSON.stringify(value));
       }
+      const pre = document.createElement('pre');
+      const text = JSON.stringify(this.applyCodeSearchLinkage_(value), null, 2);
+      let lastIndex = 0;
+      for (const match of text.matchAll(re)) {
+        if (match.index > lastIndex) {
+          pre.appendChild(
+              document.createTextNode(text.substring(lastIndex, match.index)));
+        }
+        const a = document.createElement('a');
+        a.href = urlPrefix + match[1] + ';l=' + match[2];
+
+        // Building locally gives a commit hash of 80 zeros separated in the
+        // middle by a dash.
+        if (!this.revision.startsWith('0000000')) {
+          a.href += ';drc=' + this.revision;
+        }
+
+        a.textContent = match[1] + '#' + match[2];
+        a.target = '_blank';
+        a.rel = 'noopener';
+        pre.appendChild(a);
+        lastIndex = match.index + match[0].length;
+      }
+      if (lastIndex < text.length) {
+        pre.appendChild(document.createTextNode(text.substring(lastIndex)));
+      }
+      return pre;
+    } catch (e) {
+      return document.createTextNode(JSON.stringify(value));
     }
   }
 
@@ -613,17 +662,8 @@ export class ClientRenderer {
 
       const valueCell = row.insertCell(-1);
       valueCell.classList.add('log-value');
-      try {
-        if (event.key === 'kHlsBufferedRanges') {
-          throw new Error('Do Not Render As JSON');
-        }
-        const pre = document.createElement('pre');
-        pre.textContent = JSON.stringify(event.value, null, 2);
-        valueCell.appendChild(pre);
-      } catch (e) {
-        valueCell.appendChild(
-            document.createTextNode(JSON.stringify(event.value)));
-      }
+      valueCell.appendChild(
+          this.createValueCellContent_(event.key, event.value));
 
       if (event.key.toLowerCase().includes('error')) {
         row.classList.add('log-error');
