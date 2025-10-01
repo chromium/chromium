@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,6 +25,7 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
 
+import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ListView;
 
@@ -33,11 +35,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -60,9 +64,12 @@ public class ListMenuUtilsUnitTest {
 
     @Mock private OnClickListener mItemClickListener;
     @Mock private Runnable mDismissDialog;
+    @Mock private View mParentView;
+    @Mock private ListView mHeaderListView;
     @Mock private ListView mListView;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
 
+    private final ModelList mHeaderModelList = new ModelList();
     private final ModelList mModelList = new ModelList();
     private ListItem mListItemWithModelClickCallback;
     private ListItem mSubmenuLevel1;
@@ -125,6 +132,7 @@ public class ListMenuUtilsUnitTest {
         mModelList.add(mListItemWithoutModelClickCallback);
 
         when(mListView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
+        when(mParentView.getContext()).thenReturn(ApplicationProvider.getApplicationContext());
     }
 
     @Test
@@ -184,12 +192,9 @@ public class ListMenuUtilsUnitTest {
 
     @Test
     public void getItemList_submenuNavigation_withStaticHeader() {
-        // Set up the header model list
-        ModelList headerModelList = new ModelList();
-
         // Begin test
         setupCallbacksRecursively(
-                headerModelList,
+                mHeaderModelList,
                 mModelList,
                 mDismissDialog,
                 /* flyoutController= */ null,
@@ -199,12 +204,12 @@ public class ListMenuUtilsUnitTest {
         assertEquals(
                 "Expected header section to have 1 header for submenu level 0",
                 1,
-                headerModelList.size());
+                mHeaderModelList.size());
         assertEquals(
                 "Expected content section to have 2 children for submenu level 0",
                 2,
                 mModelList.size());
-        ListItem header = headerModelList.get(0);
+        ListItem header = mHeaderModelList.get(0);
         assertEquals(
                 "Expected header element after clicking into submenu level 0 to have header type",
                 SUBMENU_HEADER,
@@ -221,7 +226,7 @@ public class ListMenuUtilsUnitTest {
         assertEquals(
                 "Expected header section to be empty after returning to root",
                 0,
-                headerModelList.size());
+                mHeaderModelList.size());
         assertEquals("Expected root level to have 2 items", 2, mModelList.size());
         assertEquals(
                 "Expected 1st element of root level to be submenu level 0",
@@ -237,7 +242,7 @@ public class ListMenuUtilsUnitTest {
         assertEquals(
                 "Expected header section to still have 1 header for submenu level 0",
                 1,
-                headerModelList.size());
+                mHeaderModelList.size());
         assertEquals(
                 "Expected content section to still have 2 elements for submenu level 0",
                 2,
@@ -245,7 +250,7 @@ public class ListMenuUtilsUnitTest {
         assertEquals(
                 "Expected 1st element of header section to be submenu level 0 parent",
                 SUBMENU_LEVEL_0,
-                getTitle(headerModelList.get(0)));
+                getTitle(mHeaderModelList.get(0)));
         assertEquals(
                 "Expected 1st element of content section to be submenu level 0 parent",
                 SUBMENU_LEVEL_1,
@@ -259,13 +264,13 @@ public class ListMenuUtilsUnitTest {
         assertEquals(
                 "Expected there to be a header after navigating into submenu 1",
                 1,
-                headerModelList.size());
+                mHeaderModelList.size());
         assertEquals(
                 "Expected there to be one child after navigating into submenu 1",
                 1,
                 mModelList.size());
         // Assert correctness of contents
-        ListItem mSubmenuLevel1Header = headerModelList.get(0);
+        ListItem mSubmenuLevel1Header = mHeaderModelList.get(0);
         assertEquals(
                 "Expected header type to be SUBMENU_HEADER",
                 SUBMENU_HEADER,
@@ -273,7 +278,7 @@ public class ListMenuUtilsUnitTest {
         assertEquals(
                 "Expected title to be submenu header 1",
                 SUBMENU_LEVEL_1,
-                getTitle(headerModelList.get(0)));
+                getTitle(mHeaderModelList.get(0)));
         assertEquals(
                 "Expected content element to be correct child",
                 mListItemWithModelClickCallback,
@@ -330,6 +335,53 @@ public class ListMenuUtilsUnitTest {
         verify(mListObserver, never()).onItemMoved(any(), anyInt(), anyInt());
         verify(mListObserver, times(1)).onItemRangeChanged(mModelList, 0, 2, null);
         verify(mListObserver, times(1)).onItemRangeInserted(mModelList, 2, 1);
+    }
+
+    @Test
+    public void submenuNavigation_a11y_withHeader() {
+        AccessibilityListObserver observer =
+                new AccessibilityListObserver(
+                        mParentView, mHeaderListView, mListView, mHeaderModelList, mModelList);
+        setupCallbacksRecursively(
+                mHeaderModelList,
+                mModelList,
+                mDismissDialog,
+                /* flyoutController= */ null,
+                /* drillDownOverrideValue= */ true);
+        mModelList.addObserver(observer);
+        // Click into submenu 0
+        activateClickListener(mSubmenuLevel0);
+        // Assert correct a11y behavior
+        verify(mParentView).setAccessibilityPaneTitle(SUBMENU_LEVEL_0);
+        InOrder inOrder = inOrder(mParentView, mHeaderListView, mListView);
+        inOrder.verify(mListView).setSelection(0);
+        inOrder.verify(mHeaderListView).setSelection(0);
+        inOrder.verify(mParentView).requestFocus();
+    }
+
+    @Test
+    public void submenuNavigation_a11y_noHeader() {
+        AccessibilityListObserver observer =
+                new AccessibilityListObserver(
+                        mParentView,
+                        /* headerView= */ null,
+                        mListView,
+                        mHeaderModelList,
+                        mModelList);
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                mModelList,
+                mDismissDialog,
+                /* flyoutController= */ null,
+                /* drillDownOverrideValue= */ true);
+        mModelList.addObserver(observer);
+        // Click into submenu 0
+        activateClickListener(mSubmenuLevel0);
+        // Assert correct a11y behavior
+        verify(mParentView).setAccessibilityPaneTitle(SUBMENU_LEVEL_0);
+        InOrder inOrder = inOrder(mParentView, mListView);
+        inOrder.verify(mListView).setSelection(0);
+        inOrder.verify(mParentView).requestFocus();
     }
 
     private void activateClickListener(ListItem item) {
