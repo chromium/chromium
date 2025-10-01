@@ -5695,11 +5695,10 @@ crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-both.html
 crbug.com/359279545 [ Win ] http/tests/html/translated-oopif-scrollbar-both.html [ Failure Pass ]
 crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-vertical.html [ Failure ]
 crbug.com/359279545 [ Mac ] http/tests/html/translated-oopif-scrollbar-horizontal.html [ Failure ]
-crbug.com/359279545 [ Mac ] compositing/video/video-subpixel.html [ Failure ]
+crbug.com/359279545 compositing/video/video-subpixel.html [ Failure Pass ]
 
 # Failures need to be investigated.
 crbug.com/359279545 [ Linux ] http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
-crbug.com/359279545 [ Linux ] compositing/video/video-subpixel.html [ Failure ]
 crbug.com/359279545 [ Win ] http/tests/html/scaled-oopif-text-not-blurry.html [ Failure ]
 
 # Sheriff 2019-02-01, 2019-02-19
@@ -6442,6 +6441,7 @@ crbug.com/415323248 crbug.com/415292402 crbug.com/413189476 virtual/fledge-biddi
 crbug.com/417924844 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynyn.html [ Skip Timeout ]
 crbug.com/417816138 virtual/close-watcher/external/wpt/close-watcher/iframes/dialog-same-origin-ynn.html [ Skip Timeout ]
 crbug.com/417870384 virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-promise-scheduled-render.html [ Failure Pass ]
+crbug.com/417870384 external/wpt/long-animation-frame/tentative/loaf-promise-scheduled-render.html [ Failure Pass ]
 crbug.com/387374119 external/wpt/wasm/core/simd/simd_f64x2_cmp.wast.js.html [ Pass Timeout ]
 
 # Do not retry slow tests that also timeouts
