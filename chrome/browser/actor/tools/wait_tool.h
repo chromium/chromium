@@ -28,7 +28,7 @@ class WaitTool : public Tool {
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       std::optional<ObservationDelayController::PageStabilityConfig>
-          page_stability_config) const override;
+          page_stability_config) override;
   tabs::TabHandle GetTargetTab() const override;
 
   static void SetNoDelayForTesting();

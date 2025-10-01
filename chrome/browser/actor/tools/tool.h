@@ -78,7 +78,7 @@ class Tool {
   // loading navigation to settle.
   virtual std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       std::optional<ObservationDelayController::PageStabilityConfig>
-          page_stability_config) const = 0;
+          page_stability_config) = 0;
 
   // Gives the tool an opportunity to update the task's state before being
   // invoked.

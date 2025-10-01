@@ -118,9 +118,11 @@ class TestObservationDelayController : public ObservationDelayController {
   TestObservationDelayController(
       RenderFrameHost& target_frame,
       TaskId task_id,
+      AggregatedJournal& journal,
       std::optional<PageStabilityConfig> page_stability_config)
       : ObservationDelayController(target_frame,
                                    task_id,
+                                   journal,
                                    page_stability_config) {
     // Ensure the monitor is created in the renderer before returning. This
     // ensures the PageStabilityMonitor captures the initial state at the
@@ -199,10 +201,6 @@ class ObservationDelayControllerTest : public InProcessBrowserTest {
         std::make_unique<net::test_server::ControllableHttpResponse>(
             embedded_test_server(), kFetchPath);
 
-    journal_entry_ = journal_.CreatePendingAsyncEntry(
-        GURL(), actor::TaskId(), mojom::JournalTrack::kActor,
-        "ObservationDelay", {});
-
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
@@ -244,9 +242,7 @@ class ObservationDelayControllerTest : public InProcessBrowserTest {
     return *fetch_response_;
   }
 
-  actor::AggregatedJournal::PendingAsyncEntry& journal_entry() {
-    return *journal_entry_;
-  }
+  actor::AggregatedJournal& journal() { return journal_; }
 
   void RespondToFetchRequest(std::string_view text) {
     fetch_response_->Send(net::HTTP_OK, /*content_type=*/"text/html",
@@ -323,14 +319,14 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
-                                            PageStabilityConfig());
+                                            journal(), PageStabilityConfig());
 
   // Initiate a fetch to block page stability.
   ASSERT_TRUE(InitiateFetchRequest());
 
   // Start waiting on the controller. It should be blocked in page stability.
   TestFuture<void> result;
-  controller.Wait(journal_entry(), result.GetCallback());
+  controller.Wait(result.GetCallback());
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
 
   TestNavigationManager manager(web_contents(), url2);
@@ -356,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
-                                            PageStabilityConfig());
+                                            journal(), PageStabilityConfig());
 
   // Perform a same-document navigation. The page has a navigation handler
   // that will initiate a fetch from this event.
@@ -364,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   // Start waiting on the controller. It should be blocked in page stability.
   TestFuture<void> result;
-  controller.Wait(journal_entry(), result.GetCallback());
+  controller.Wait(result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());
@@ -389,14 +385,14 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, LoadAfterStability) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   TestObservationDelayController controller(*main_frame(), actor::TaskId(),
-                                            PageStabilityConfig());
+                                            journal(), PageStabilityConfig());
 
   ASSERT_TRUE(InitiateFetchRequest());
 
   // Start waiting, since a fetch is in progress we should be waiting for page
   // stability.
   TestFuture<void> result;
-  controller.Wait(journal_entry(), result.GetCallback());
+  controller.Wait(result.GetCallback());
 
   ASSERT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
   EXPECT_FALSE(result.IsReady());

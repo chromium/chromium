@@ -227,7 +227,6 @@ void ToolController::DidFinishToolInvoke(mojom::ActionResultPtr result) {
 
   if (observation_delayer_->web_contents()) {
     observation_delayer_->Wait(
-        *active_state_->journal_entry,
         base::BindOnce(&ToolController::PostInvokeTool,
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
   } else {

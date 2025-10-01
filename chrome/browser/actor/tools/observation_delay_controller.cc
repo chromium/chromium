@@ -14,8 +14,10 @@
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/common/actor.mojom-data-view.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
@@ -44,15 +46,24 @@ base::TimeDelta GetCompletionTimeout() {
 ObservationDelayController::ObservationDelayController(
     content::RenderFrameHost& target_frame,
     TaskId task_id,
+    AggregatedJournal& journal,
     std::optional<PageStabilityConfig> page_stability_config)
     : content::WebContentsObserver(
-          WebContents::FromRenderFrameHost(&target_frame)) {
+          WebContents::FromRenderFrameHost(&target_frame)),
+      journal_(journal),
+      task_id_(task_id) {
   CHECK(web_contents());
+  const bool may_use_page_stability = page_stability_config.has_value();
 
-  if (page_stability_config.has_value()) {
+  journal.Log(GURL::EmptyGURL(), task_id, mojom::JournalTrack::kActor,
+              "ObservationDelay: Created",
+              JournalDetailsBuilder()
+                  .Add("May Use PageStability", may_use_page_stability)
+                  .Build());
+
+  if (may_use_page_stability) {
     CHECK_NE(features::kActorGeneralPageStabilityMode.Get(),
              features::ActorGeneralPageStabilityMode::kDisabled);
-
     // Note: It's important that the PageStabilityMonitor be created on the same
     // interface as tool invocation since it relies on being created before a
     // tool is invoked.
@@ -73,14 +84,12 @@ ObservationDelayController::ObservationDelayController(
 
 ObservationDelayController::~ObservationDelayController() = default;
 
-void ObservationDelayController::Wait(
-    AggregatedJournal::PendingAsyncEntry& parent_journal_entry,
-    ReadyCallback callback) {
-  journal_entry_ = parent_journal_entry.GetJournal().CreatePendingAsyncEntry(
-      GURL::EmptyGURL(), parent_journal_entry.GetTaskId(),
-      mojom::JournalTrack::kActor, "ObservationDelay", {});
-
+void ObservationDelayController::Wait(ReadyCallback callback) {
   ready_callback_ = std::move(callback);
+
+  wait_journal_entry_ = journal_->CreatePendingAsyncEntry(
+      GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+      "ObservationDelay: Wait", {});
 
   PostMoveToStateClosure(State::kDidTimeout, GetCompletionTimeout()).Run();
 
@@ -97,6 +106,8 @@ void ObservationDelayController::OnMonitorDisconnected() {
   if (state_ == State::kInitial) {
     // If Wait hasn't been called, don't enter the state machine yet. Resetting
     // the remote will skip the page stability state.
+    journal_->Log(GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+                  "ObservationDelay: Monitor Disconnect Before Wait", {});
     return;
   }
 
@@ -110,17 +121,13 @@ void ObservationDelayController::MoveToState(State new_state) {
 
   DCheckStateTransition(state_, new_state);
 
-  // TODO(bokan): This can be null if the PageStabilityMonitor disconnects prior
-  // to calling Wait. Create journal_entry_ from constructor.
-  if (journal_entry_) {
-    journal_entry_->GetJournal().Log(
-        GURL::EmptyGURL(), journal_entry_->GetTaskId(),
-        mojom::JournalTrack::kActor, "ObservationDelayState",
-        JournalDetailsBuilder()
-            .Add("old_state", StateToString(state_))
-            .Add("new_state", StateToString(new_state))
-            .Build());
-  }
+  inner_journal_entry_.reset();
+  journal_->Log(GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+                "ObservationDelay: State Change",
+                JournalDetailsBuilder()
+                    .Add("old_state", StateToString(state_))
+                    .Add("new_state", StateToString(new_state))
+                    .Build());
 
   SetState(new_state);
 
@@ -140,6 +147,9 @@ void ObservationDelayController::MoveToState(State new_state) {
       break;
     }
     case State::kWaitForLoadCompletion: {
+      inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
+          GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+          "WaitForLoadCompletion", {});
       page_stability_monitor_remote_.reset();
 
       if (web_contents()->IsLoading()) {
@@ -152,6 +162,9 @@ void ObservationDelayController::MoveToState(State new_state) {
       break;
     }
     case State::kWaitForVisualStateUpdate: {
+      inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
+          GURL::EmptyGURL(), task_id_, mojom::JournalTrack::kActor,
+          "WaitForVisualStateUpdate", {});
       // Adapt since InsertVisualStateCallback takes a bool-taking callback.
       auto callback =
           base::BindOnce([](base::OnceClosure post_move_to_done,
@@ -172,6 +185,7 @@ void ObservationDelayController::MoveToState(State new_state) {
       // The state machine is never entered until Wait is called so a callback
       // must be provided.
       CHECK(ready_callback_);
+      wait_journal_entry_.reset();
       PostFinishedTask(std::move(ready_callback_));
       break;
     }

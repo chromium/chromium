@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -49,13 +50,13 @@ class ObservationDelayController : public content::WebContentsObserver {
   ObservationDelayController(
       content::RenderFrameHost& target_frame,
       TaskId task_id,
+      AggregatedJournal& journal,
       std::optional<PageStabilityConfig> page_stability_config);
   ~ObservationDelayController() override;
 
   // Note: Callback will always be executed asynchronously. It may be run after
   // this object is deleted so must manage its own lifetime.
-  void Wait(AggregatedJournal::PendingAsyncEntry& parent_journal_entry,
-            ReadyCallback callback);
+  void Wait(ReadyCallback callback);
 
   // content::WebContentsObserver
   void DidStopLoading() override;
@@ -92,7 +93,16 @@ class ObservationDelayController : public content::WebContentsObserver {
       base::TimeDelta delay = base::TimeDelta());
 
   ReadyCallback ready_callback_;
-  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry_;
+  base::raw_ref<AggregatedJournal> journal_;
+  TaskId task_id_;
+
+  // Async entry for entire duration after Wait is called.
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> wait_journal_entry_;
+
+  // Async entry for nested inner states. Note that this is only created for
+  // states after PageStability to avoid nesting issues - PageStabilityMonitor
+  // provides its own async entries.
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> inner_journal_entry_;
   base::TimeDelta page_stability_start_delay_;
 
   base::WeakPtrFactory<ObservationDelayController> weak_ptr_factory_{this};

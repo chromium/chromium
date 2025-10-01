@@ -436,7 +436,7 @@ std::string PageTool::JournalEvent() const {
 
 std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer(
     std::optional<ObservationDelayController::PageStabilityConfig>
-        page_stability_config) const {
+        page_stability_config) {
   CHECK(has_completed_time_of_use_);
 
   RenderFrameHost* frame = GetFrame();
@@ -445,8 +445,8 @@ std::unique_ptr<ObservationDelayController> PageTool::GetObservationDelayer(
   // this method.
   CHECK(frame);
 
-  return std::make_unique<ObservationDelayController>(*frame, task_id(),
-                                                      page_stability_config);
+  return std::make_unique<ObservationDelayController>(
+      *frame, task_id(), journal(), page_stability_config);
 }
 
 void PageTool::UpdateTaskBeforeInvoke(ActorTask& task,

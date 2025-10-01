@@ -47,7 +47,7 @@ class TabManagementTool : public Tool,
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       std::optional<ObservationDelayController::PageStabilityConfig>
-          page_stability_config) const override;
+          page_stability_config) override;
   void UpdateTaskAfterInvoke(ActorTask& task,
                              mojom::ActionResultPtr result,
                              InvokeCallback callback) const override;

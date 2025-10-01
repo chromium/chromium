@@ -37,7 +37,7 @@ class WindowManagementTool : public Tool, public BrowserListObserver {
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
       std::optional<ObservationDelayController::PageStabilityConfig>
-          page_stability_config) const override;
+          page_stability_config) override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
                               InvokeCallback callback) const override;
   void UpdateTaskAfterInvoke(ActorTask& task,
