@@ -24,9 +24,9 @@
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
@@ -75,84 +75,97 @@ FaviconURL::IconType IconTypeFromContentIconType(
   NOTREACHED();
 }
 
-// Creates a CRWSessionStorage instance from protobuf message.
-// TODO(crbug.com/40245950): remove when ContentWebState supports serialization
-// using protobuf message format directly.
-CRWSessionStorage* CreateSessionStorage(
-    WebStateID unique_identifier,
-    proto::WebStateMetadataStorage metadata,
-    WebState::WebStateStorageLoader storage_loader,
-    base::Time creation_time) {
-  // Load the data from disk, as it is required to create the CRWSessionStorage,
-  // or return an empty WebStateStorage if no storage value exists.
-  // As https://crrev.com/c/6377364 changed the way that WebState data is loaded
-  // from WebStateStorageLoader, the following has also been updated based on
-  // WebStateImpl::SerializedData::LoadStorage().
-  auto storage_optional = std::move(storage_loader).Run();
-  GURL page_visible_url = GURL(metadata.active_page().page_url());
-  proto::WebStateStorage storage;
-  if (storage_optional.has_value()) {
-    storage = std::move(storage_optional).value();
-  } else if (page_visible_url.is_valid()) {
-    const std::u16string page_title =
-        base::UTF8ToUTF16(metadata.active_page().page_title());
-    storage = CreateWebStateStorage(
-        NavigationManager::WebLoadParams(page_visible_url), page_title, false,
-        UserAgentType::AUTOMATIC, creation_time);
-  } else {
-    storage = proto::WebStateStorage();
-  }
-
-  *storage.mutable_metadata() = std::move(metadata);
-
-  return [[CRWSessionStorage alloc] initWithProto:storage
-                                 uniqueIdentifier:unique_identifier
-                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
-}
-
 }  // namespace
 
 // Stores ContentWebstate serialized state.
 class ContentWebState::SerializedState {
  public:
-  SerializedState(CRWSessionStorage* session_storage,
-                  NativeSessionFetcher session_fetcher)
-      : session_storage_(session_storage) {}
+  // Returns a new instance built from `session_storage`.
+  static std::unique_ptr<SerializedState> FromSessionStorage(
+      CRWSessionStorage* session_storage) {
+    DCHECK(session_storage);
+    proto::WebStateMetadataStorage metadata;
+    [session_storage serializeMetadataToProto:metadata];
 
-  SerializedState(web::WebStateID unique_identifier,
-                  proto::WebStateMetadataStorage metadata,
-                  WebStateStorageLoader storage_loader,
-                  NativeSessionFetcher session_fetcher)
-      : session_storage_(CreateSessionStorage(unique_identifier,
-                                              std::move(metadata),
-                                              std::move(storage_loader),
-                                              base::Time::Now())) {}
+    return base::WrapUnique(
+        new SerializedState(session_storage, std::move(metadata),
+                            base::BindOnce(
+                                [](CRWSessionStorage* session_storage)
+                                    -> std::optional<proto::WebStateStorage> {
+                                  proto::WebStateStorage storage;
+                                  [session_storage serializeToProto:storage];
+                                  return storage;
+                                },
+                                session_storage)));
+  }
+
+  // Returns a new instance built from `metadata` and `storage_loader`.
+  static std::unique_ptr<SerializedState> FromStorage(
+      proto::WebStateMetadataStorage metadata,
+      WebStateStorageLoader storage_loader) {
+    return base::WrapUnique(new SerializedState(nil, std::move(metadata),
+                                                std::move(storage_loader)));
+  }
 
   // Returns the current navigation title from serialized data.
-  const std::u16string& GetTitle() const {
-    const NSInteger index = session_storage_.lastCommittedItemIndex;
-    if (0 <= index &&
-        static_cast<NSUInteger>(index) < session_storage_.itemStorages.count) {
-      return session_storage_.itemStorages[index].title;
-    }
-
-    return base::EmptyString16();
-  }
+  const std::u16string& GetTitle() const { return cached_title_; }
 
   // Returns the number of navigation items from serialized data.
-  int GetNavigationItemCount() const {
-    return session_storage_.itemStorages.count;
-  }
+  int GetNavigationItemCount() const { return navigation_item_count_; }
 
-  CRWSessionStorage* session_storage() { return session_storage_; }
+  // Loads from disk the `web::proto::WebStateStorage` and returns it.
+  web::proto::WebStateStorage LoadStorage() {
+    web::proto::WebStateStorage storage;
+    if (auto optional_storage = std::move(storage_loader_).Run()) {
+      storage = std::move(optional_storage).value();
+    } else {
+      const GURL page_visible_url = GURL(metadata_.active_page().page_url());
+      if (page_visible_url.is_valid()) {
+        storage = CreateWebStateStorage(
+            NavigationManager::WebLoadParams(page_visible_url),
+            base::UTF8ToUTF16(metadata_.active_page().page_title()),
+            /* created_with_opener= */ false,
+            /* user_agent= */ UserAgentType::AUTOMATIC,
+            web::TimeFromProto(metadata_.creation_time()));
+      }
+    }
+
+    *storage.mutable_metadata() = std::move(metadata_);
+    return storage;
+  }
 
   // Serializes metadata to `metadata`.
   void SerializeMetadata(web::proto::WebStateMetadataStorage& metadata) {
-    [session_storage_ serializeMetadataToProto:metadata];
+    metadata = metadata_;
+  }
+
+  // Returns the `CRWSessionStorage`. Can only be called if the constructed
+  // with a `CRWSessionStorage` object.
+  CRWSessionStorage* session_storage() {
+    DCHECK(session_storage_);
+    return session_storage_;
   }
 
  private:
+  // Private constructor.
+  SerializedState(CRWSessionStorage* session_storage,
+                  proto::WebStateMetadataStorage metadata,
+                  WebStateStorageLoader storage_loader)
+      : session_storage_(session_storage),
+        metadata_(std::move(metadata)),
+        storage_loader_(std::move(storage_loader)) {
+    navigation_item_count_ = metadata_.navigation_item_count();
+    if (metadata_.has_active_page()) {
+      cached_title_ = base::UTF8ToUTF16(metadata_.active_page().page_title());
+    }
+  }
+
   CRWSessionStorage* session_storage_;
+
+  std::u16string cached_title_;
+  int navigation_item_count_ = 0;
+  proto::WebStateMetadataStorage metadata_;
+  WebStateStorageLoader storage_loader_;
 };
 
 ContentWebState::ContentWebState(const CreateParams& params)
@@ -161,24 +174,20 @@ ContentWebState::ContentWebState(const CreateParams& params)
 ContentWebState::ContentWebState(const CreateParams& params,
                                  CRWSessionStorage* session_storage,
                                  NativeSessionFetcher session_fetcher)
-    : ContentWebState(
-          params,
-          session_storage.uniqueIdentifier,
-          std::make_unique<SerializedState>(session_storage,
-                                            std::move(session_fetcher))) {}
+    : ContentWebState(params,
+                      session_storage.uniqueIdentifier,
+                      SerializedState::FromSessionStorage(session_storage)) {}
 
 ContentWebState::ContentWebState(BrowserState* browser_state,
                                  WebStateID unique_identifier,
                                  proto::WebStateMetadataStorage metadata,
                                  WebStateStorageLoader storage_loader,
                                  NativeSessionFetcher session_fetcher)
-    : ContentWebState(
-          CreateParams(browser_state),
-          unique_identifier,
-          std::make_unique<SerializedState>(unique_identifier,
-                                            std::move(metadata),
-                                            std::move(storage_loader),
-                                            std::move(session_fetcher))) {}
+    : ContentWebState(CreateParams(browser_state),
+                      unique_identifier,
+                      SerializedState::FromStorage(std::move(metadata),
+                                                   std::move(storage_loader))) {
+}
 
 ContentWebState::ContentWebState(
     const CreateParams& params,
@@ -311,12 +320,10 @@ bool ContentWebState::IsRealized() const {
 
 WebState* ContentWebState::ForceRealizedWithPolicy(RealizationPolicy policy) {
   if (serialized_state_) {
-    web::proto::WebStateStorage storage;
-    CRWSessionStorage* session_storage = serialized_state_->session_storage();
-    [session_storage serializeToProto:storage];
+    auto serialized_state = std::exchange(serialized_state_, nullptr);
+    web::proto::WebStateStorage storage = serialized_state->LoadStorage();
     ExtractContentSessionStorage(this, web_contents_->GetController(),
                                  GetBrowserState(), std::move(storage));
-    serialized_state_.reset();
 
     // Notify all observers that the WebState has become realized but take
     // care to not notify any observer that is registered while iterating.
