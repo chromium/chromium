@@ -19,7 +19,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -40,7 +39,6 @@ import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.OverscrollAction;
 import org.chromium.ui.OverscrollRefreshHandler;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
-import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -286,7 +284,7 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
     public boolean start(
             @OverscrollAction int type, @BackGestureEventSwipeEdge int initiatingEdge) {
         mSwipeType = type;
-        if (type == OverscrollAction.PULL_TO_REFRESH && isRefreshOnOverscrollSupported()) {
+        if (type == OverscrollAction.PULL_TO_REFRESH) {
             if (mSwipeRefreshLayout == null) initSwipeRefreshLayout(mTab.getContext());
             assumeNonNull(mSwipeRefreshLayout);
             attachSwipeRefreshLayoutIfNecessary();
@@ -427,28 +425,5 @@ public class SwipeRefreshHandler extends TabWebContentsUserData
                 "Android.OverscrollFromBottom.BottomControlsStatus",
                 sample,
                 BottomControlsStatus.NUM_TOTAL);
-    }
-
-    /**
-     * Checks to see if page refresh on overscroll is supported Wrapped so we can stub behavior in
-     * tests.
-     *
-     * <p>Currently, overscroll to refresh is disabled if a precision pointer device is attached.
-     * For example, this will disable it for touch screen when a mouse is attaached. However
-     * long-term, the plan is to selectively enable for things such as touchscreen only.
-     *
-     * <p>TODO(crbug.com/412465463): enable overscroll refresh for touch even when precision pointer
-     * is attached
-     *
-     * @return true if page refresh on overscroll is supported.
-     */
-    @VisibleForTesting
-    boolean isRefreshOnOverscrollSupported() {
-        // TODO(https://crbug.com/422413654) Remove this after long-term fix
-        if (DeviceInfo.isDesktop()) {
-            return !DeviceInput.supportsPrecisionPointer();
-        } else {
-            return true;
-        }
     }
 }

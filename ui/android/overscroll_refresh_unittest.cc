@@ -102,7 +102,7 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
   bool refresh_allowed_ = false;
 };
 
-TEST_F(OverscrollRefreshTest, TriggerPullToRefresh) {
+TEST_F(OverscrollRefreshTest, TriggerPullToRefreshWithTouchscreen) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
 
   EXPECT_FALSE(effect.IsActive());
@@ -143,6 +143,38 @@ TEST_F(OverscrollRefreshTest, TriggerPullToRefresh) {
   EXPECT_FALSE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullReleased());
   EXPECT_TRUE(GetAndResetRefreshAllowed());
+}
+
+TEST_F(OverscrollRefreshTest, RefreshNotTriggeredWithTouchpad) {
+  OverscrollRefresh effect(this, kDefaultEdgeWidth);
+
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+
+  effect.OnScrollBegin(kStartPos);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+
+  // The initial scroll should not be consumed, as it should first be offered
+  // to content.
+  gfx::Vector2dF scroll_up(0, 10);
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(scroll_up));
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
+
+  // The unconsumed, overscrolling scroll from a touchpad will not trigger the
+  // effect.
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_up,
+                        blink::WebGestureDevice::kTouchpad);
+  EXPECT_FALSE(effect.IsActive());
+  EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
+  EXPECT_FALSE(GetAndResetPullStarted());
+
+  // Further scrolls will not be consumed.
+  EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 50)));
+  effect.OnScrollEnd(gfx::Vector2dF());
+  EXPECT_FALSE(GetAndResetPullStarted());
+  EXPECT_FALSE(GetAndResetPullReleased());
 }
 
 TEST_F(OverscrollRefreshTest, RefreshNotTriggeredIfInitialYOffsetIsNotZero) {

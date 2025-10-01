@@ -90,7 +90,10 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
   OverscrollAction type = OverscrollAction::kNone;
   std::optional<BackGestureEventSwipeEdge> overscroll_edge;
   if (in_y_direction) {
-    if (behavior.y != cc::OverscrollBehavior::Type::kAuto) {
+    if (behavior.y != cc::OverscrollBehavior::Type::kAuto ||
+        // Pull-to-refresh should only work on touchscreen overscrolls. In
+        // particular, not by touchpad or mousewheel scrolls.
+        source_device != blink::WebGestureDevice::kTouchscreen) {
       Reset();
       return;
     }
