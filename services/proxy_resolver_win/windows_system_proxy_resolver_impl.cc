@@ -92,7 +92,7 @@ bool GetProxyChainFromWinHttpResultEntry(
   if (!base::WideToUTF8(host_wide.data(), host_wide.length(), &host))
     return false;
 
-  net::HostPortPair host_and_port(host, result_entry.ProxyPort);
+  net::HostPortPair host_and_port(std::move(host), result_entry.ProxyPort);
   *out_proxy_chain = net::ProxyChain(scheme, host_and_port);
   return true;
 }

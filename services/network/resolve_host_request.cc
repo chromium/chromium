@@ -24,14 +24,13 @@ namespace network {
 
 namespace {
 
-// Attempts URL canonicalization, but if unable, returns `host` without change.
-std::string MaybeCanonicalizeHost(std::string host) {
+// Attempts URL canonicalization, but if unable, leaves `host_port_pair` alone.
+void TryToCanonicalizeHost(net::HostPortPair& host_port_pair) {
   url::CanonHostInfo info;
-  std::string canonicalized = net::CanonicalizeHost(host, &info);
-  if (info.family == url::CanonHostInfo::BROKEN) {
-    return host;
-  } else {
-    return canonicalized;
+  std::string canonicalized =
+      net::CanonicalizeHost(host_port_pair.host(), &info);
+  if (info.family != url::CanonHostInfo::BROKEN) {
+    host_port_pair.set_host(canonicalized);
   }
 }
 
@@ -49,8 +48,8 @@ ResolveHostRequest::ResolveHostRequest(
 
   if (host->is_host_port_pair()) {
     // net::HostResolver expects canonicalized hostnames.
-    net::HostPortPair host_port_pair = host->get_host_port_pair();
-    host_port_pair.set_host(MaybeCanonicalizeHost(host_port_pair.host()));
+    net::HostPortPair& host_port_pair = host->get_host_port_pair();
+    TryToCanonicalizeHost(host_port_pair);
     internal_request_ = resolver->CreateRequest(
         host_port_pair, network_anonymization_key,
         net::NetLogWithSource::Make(

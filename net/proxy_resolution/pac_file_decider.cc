@@ -280,7 +280,7 @@ int PacFileDecider::DoQuickCheck() {
   HostResolver* host_resolver =
       pac_file_fetcher_->GetRequestContext()->host_resolver();
   resolve_request_ = host_resolver->CreateRequest(
-      HostPortPair(host, 80),
+      HostPortPair(std::move(host), 80),
       pac_file_fetcher_->isolation_info().network_anonymization_key(), net_log_,
       parameters);
 

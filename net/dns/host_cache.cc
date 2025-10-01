@@ -496,8 +496,10 @@ HostCache::Entry HostCache::Entry::CopyWithDefaultPort(uint16_t port) const {
   }
 
   for (HostPortPair& hostname : copy.hostnames_) {
+    // Hostnames are mutable, unlike IPEndPoints, so can overwrite only the
+    // ports.
     if (hostname.port() == 0) {
-      hostname = HostPortPair(hostname.host(), port);
+      hostname.set_port(port);
     }
   }
 
