@@ -56,14 +56,14 @@
   return self;
 }
 
+- (void)dealloc {
+  [self disconnect];
+}
+
 #pragma mark - Public
 
 - (void)disconnect {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserver.get());
-    _webStateObserver.reset();
-    _webState = nullptr;
-  }
+  [self detachFromWebState];
 }
 
 - (BOOL)isLensAvailableForProfile {
@@ -109,6 +109,24 @@
 
 - (void)webStateDidStopLoading:(web::WebState*)webState {
   [self.consumer pageLoadStatusChanged];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  [self detachFromWebState];
+}
+
+#pragma mark - Private
+
+// Stops observing the associated WebState, resets it and resets the observation
+// bridge.
+- (void)detachFromWebState {
+  if (_webState) {
+    if (_webStateObserver) {
+      _webState->RemoveObserver(_webStateObserver.get());
+    }
+    _webState = nullptr;
+  }
+  _webStateObserver.reset();
 }
 
 @end
