@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -265,6 +266,32 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
   recent_tab_sub_menu_model.ExecuteCommand(
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, 0);
   EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+
+  // Check that we arrive at the expected page.
+  EXPECT_EQ(GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kPeopleSubPage),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest,
+                       LogMenuMetricsForRecentTabsSeeDeviceTabs) {
+  Init();
+  FakeIconDelegate fake_delegate;
+  AppMenuIconController app_menu_icon_controller(browser()->profile(),
+                                                 &fake_delegate);
+  TestLogMetricsAppMenuModel app_menu_model(nullptr, browser(),
+                                            &app_menu_icon_controller);
+  app_menu_model.Init();
+  RecentTabsSubMenuModel recent_tab_sub_menu_model(nullptr, browser());
+  recent_tab_sub_menu_model.RegisterLogMenuMetricsCallback(
+      base::BindRepeating(&TestLogMetricsAppMenuModel::CallLogMenuMetrics,
+                          base::Unretained(&app_menu_model)));
+  recent_tab_sub_menu_model.ExecuteCommand(IDC_RECENT_TABS_SEE_DEVICE_TABS, 0);
+  EXPECT_EQ(1, app_menu_model.log_metrics_call_count());
+
+  // Check that we arrive at the expected page.
+  EXPECT_EQ(GURL(chrome::kChromeUIHistoryURL)
+                .Resolve(chrome::kChromeUIHistorySyncedTabs),
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
 // Test disabled "Recently closed" header with no foreign tabs.
@@ -282,8 +309,7 @@ IN_PROC_BROWSER_TEST_F(RecentTabsSubMenuModelTest, NoTabs) {
       {ui::MenuModel::TYPE_COMMAND, false},   // Recently closed
       {ui::MenuModel::TYPE_SEPARATOR, true},  // <separator>
       {ui::MenuModel::TYPE_TITLE, false},     // Your devices
-      {ui::MenuModel::TYPE_COMMAND,
-       true},  // Sign in to see tabs from other devices
+      {ui::MenuModel::TYPE_COMMAND, true},    // See tabs from other devices
 
   };
 

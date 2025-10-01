@@ -874,6 +874,7 @@ features through Chrome Labs. -->
     <variant name="SafetyHubNotificationOpenSafetyHub"/>
     <variant name="SafetyHubNotificationPasswordCheck"/>
     <variant name="SavePage"/>
+    <variant name="SeeDeviceTabs"/>
     <variant name="SendToDevices"/>
     <variant name="SetBrowserAsDefault"/>
     <variant name="Settings"/>

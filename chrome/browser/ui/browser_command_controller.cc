@@ -977,6 +977,10 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ShowSettingsSubPage(browser_->GetBrowserForOpeningWebUi(),
                           chrome::kPeopleSubPage);
       break;
+    case IDC_RECENT_TABS_SEE_DEVICE_TABS:
+      ShowHistorySubPage(browser_->GetBrowserForOpeningWebUi(),
+                         kChromeUIHistorySyncedTabs);
+      break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       ShowBookmarkManager(browser_->GetBrowserForOpeningWebUi());
       break;
@@ -1544,6 +1548,10 @@ void BrowserCommandController::InitCommandState() {
                              !profile()->IsIncognitoProfile()));
   command_updater_.UpdateCommandEnabled(
       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
+      (!guest_session && !profile()->IsSystemProfile() &&
+       !profile()->IsIncognitoProfile()));
+  command_updater_.UpdateCommandEnabled(
+      IDC_RECENT_TABS_SEE_DEVICE_TABS,
       (!guest_session && !profile()->IsSystemProfile() &&
        !profile()->IsIncognitoProfile()));
 #if !BUILDFLAG(IS_CHROMEOS)
