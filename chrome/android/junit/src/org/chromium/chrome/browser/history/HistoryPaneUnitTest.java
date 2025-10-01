@@ -38,7 +38,6 @@ import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -49,7 +48,10 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link HistoryPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.HISTORY_PANE_ANDROID, SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
+@EnableFeatures({
+    ChromeFeatureList.HISTORY_PANE_ANDROID,
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+})
 public class HistoryPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

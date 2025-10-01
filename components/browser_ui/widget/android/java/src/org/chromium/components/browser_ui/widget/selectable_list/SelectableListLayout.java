@@ -329,6 +329,7 @@ public class SelectableListLayout<E> extends FrameLayout
         mToolbarShadow.init(
                 getContext().getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_TOP);
 
+        mToolbar.hasSearchTextSupplier().addObserver((hasText) -> onBackPressStateChanged());
         delegate.addObserver(this);
         setToolbarShadowVisibility();
 
@@ -567,8 +568,9 @@ public class SelectableListLayout<E> extends FrameLayout
 
     /**
      * Called when the user presses the back key. Note that this method is not called automatically.
-     * The embedding UI must call this method
-     * when a backpress is detected for the event to be handled.
+     * The embedding UI must call this method when a backpress is detected for the event to be
+     * handled.
+     *
      * @return Whether this event is handled.
      */
     public boolean onBackPressed() {
@@ -578,9 +580,16 @@ public class SelectableListLayout<E> extends FrameLayout
             return true;
         }
 
-        if (mToolbar.isSearching() && !mToolbar.isLargeScreenWithKeyboard()) {
-            mToolbar.hideSearchView();
-            return true;
+        if (mToolbar.isSearching()) {
+            if (mToolbar.isLargeScreenWithKeyboard()) {
+                if (mToolbar.hasSearchText()) {
+                    mToolbar.clearSearch();
+                    return true;
+                }
+            } else {
+                mToolbar.hideSearchView();
+                return true;
+            }
         }
 
         return false;
@@ -603,8 +612,18 @@ public class SelectableListLayout<E> extends FrameLayout
             mBackPressStateSupplier.set(false);
             return;
         }
+
+        boolean canHandleSearch = false;
+        if (mToolbar.isSearching()) {
+            if (mToolbar.isLargeScreenWithKeyboard()) {
+                canHandleSearch = mToolbar.hasSearchText();
+            } else {
+                canHandleSearch = true;
+            }
+        }
+
         mBackPressStateSupplier.set(
-                mToolbar.getSelectionDelegate().isSelectionEnabled() || mToolbar.isSearching());
+                mToolbar.getSelectionDelegate().isSelectionEnabled() || canHandleSearch);
     }
 
     public RecyclerView getRecyclerViewForTesting() {

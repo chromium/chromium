@@ -313,7 +313,8 @@ public class NativePageFactory {
                     tab.getProfile(),
                     mBottomSheetController,
                     mCurrentTabSupplier,
-                    url);
+                    url,
+                    mBackPressManager);
         }
 
         protected NativePage buildRecentTabsPage(Tab tab) {

@@ -66,6 +66,8 @@ public class BookmarkPage extends BasicNativePage {
 
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         initWithView(mBookmarkManagerCoordinator.getView());
+
+        setBackPressHandler(mBookmarkManagerCoordinator, backPressManager);
     }
 
     @Override

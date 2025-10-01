@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
 
 import java.util.function.Supplier;
@@ -45,7 +46,7 @@ import java.util.function.Supplier;
  * </ol>
  */
 @NullMarked
-public class BackPressManager implements Destroyable {
+public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
 
@@ -260,9 +261,11 @@ public class BackPressManager implements Destroyable {
 
     /**
      * Register the handler to intercept the back gesture.
+     *
      * @param handler Implementer of {@link BackPressHandler}.
      * @param type The {@link Type} of the handler.
      */
+    @Override
     public void addHandler(BackPressHandler handler, @Type int type) {
         assert mHandlers[type] == null : "Each type can have at most one handler";
         mHandlers[type] = handler;
@@ -277,6 +280,7 @@ public class BackPressManager implements Destroyable {
      *
      * @param handler {@link BackPressHandler} to be removed.
      */
+    @Override
     public void removeHandler(BackPressHandler handler) {
         for (int i = 0; i < mHandlers.length; i++) {
             if (mHandlers[i] == handler) {

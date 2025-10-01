@@ -43,7 +43,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.HISTORY_PANE_ANDROID)
+@EnableFeatures({
+    ChromeFeatureList.HISTORY_PANE_ANDROID,
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
+})
 public class HistoryPaneTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =

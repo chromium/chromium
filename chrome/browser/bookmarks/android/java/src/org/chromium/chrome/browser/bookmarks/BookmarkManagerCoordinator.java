@@ -390,18 +390,10 @@ public class BookmarkManagerCoordinator
     @Override
     public void onViewAttachedToWindow(View view) {
         mMediator.onAttachedToWindow();
-
-        if (mBackPressManager != null) {
-            mBackPressManager.addHandler(this, BackPressHandler.Type.NATIVE_PAGE);
-        }
     }
 
     @Override
     public void onViewDetachedFromWindow(View view) {
-        if (mBackPressManager != null) {
-            mBackPressManager.removeHandler(this);
-        }
-
         mMediator.onDetachedFromWindow();
     }
 

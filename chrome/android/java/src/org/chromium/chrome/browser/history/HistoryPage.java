@@ -10,6 +10,7 @@ import android.net.Uri;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -46,7 +47,8 @@ public class HistoryPage extends BasicNativePage {
             Profile profile,
             BottomSheetController bottomSheetController,
             Supplier<@Nullable Tab> tabSupplier,
-            String url) {
+            String url,
+            BackPressManager backPressManager) {
         super(host);
 
         Uri uri = Uri.parse(url);
@@ -71,6 +73,8 @@ public class HistoryPage extends BasicNativePage {
         mTitle = host.getContext().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());
+
+        setBackPressHandler(mHistoryManager, backPressManager);
     }
 
     @Override
