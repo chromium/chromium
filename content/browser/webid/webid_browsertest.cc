@@ -978,6 +978,78 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, MultipleRegisteredIdps) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 0);
 }
 
+// Verify that if an IDP is registered but has no pushed accounts, the FedCM
+// call fails.
+IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryNoPushedAccounts) {
+  GURL configURL = GURL(BaseIdpUrl());
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  auto mock = std::make_unique<
+      ::testing::NiceMock<MockIdentityRequestDialogController>>();
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  MockIdentityRequestDialogController* controller =
+      static_cast<MockIdentityRequestDialogController*>(
+          test_browser_client_->GetIdentityRequestDialogControllerForTests());
+
+  // Expects the account chooser to be opened. Selects the first account.
+  EXPECT_CALL(*controller, RequestIdPRegistrationPermision)
+      .WillOnce(::testing::WithArg<1>(
+          [](base::OnceCallback<void(bool accepted)> callback) {
+            std::move(callback).Run(true);
+          }));
+
+  // We navigate to the IdP's configURL so that we can run
+  // the script below with the IdP's origin as the top level
+  // first party context.
+  EXPECT_TRUE(NavigateToURL(shell(), configURL));
+
+  std::string script = R"(
+        (async () => {
+          await IdentityProvider.register(')" +
+                       configURL.spec() + R"(');
+          // The permission was accepted if the promise resolves.
+          return true;
+        }) ()
+    )";
+
+  EXPECT_EQ(true, EvalJs(shell(), script));
+
+  // Assert that the IdP was added to the Registry.
+  const std::vector<GURL>& registeredIdPs =
+      sharing_context()->GetRegisteredIdPs();
+  EXPECT_NE(std::find(registeredIdPs.begin(), registeredIdPs.end(), configURL),
+            registeredIdPs.end());
+
+  // Do not push accounts.
+
+  // Navigate to the RP.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/title1.html")));
+
+  std::string get_script = R"(
+        (async () => {
+          var {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                nonce: "1234",
+                configURL: "any",
+                clientId: "https://rp.example",
+              }]
+            }
+          });
+          return token;
+        }) ()
+    )";
+
+  SetTestIdentityRequestDialogController("not_real_account");
+
+  std::string expected_error = "NetworkError: Error retrieving a token.";
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), get_script)));
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsRequestSent", 0);
+}
+
 IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest,
                        RegistrationFailsWithInvalidLoginUrl) {
   GURL configURL = GURL(BaseIdpUrl());
