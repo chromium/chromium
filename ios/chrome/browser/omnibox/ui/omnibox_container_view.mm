@@ -45,6 +45,12 @@ const CGFloat kThumbnailImageLeadingMargin = 9;
 const CGFloat kLeadingImageLeadingMarginLensOverlay = 12;
 const CGFloat kLeadingImageTrailingMarginLensOverlay = 9;
 
+/// Size of the leading image when presented in AIM Prototype.
+const CGFloat kLeadingImageSizeAIM = 22;
+// The leading image margins when presented in AIM Prototype.
+const CGFloat kLeadingImageLeadingMarginAIM = 7;
+const CGFloat kLeadingImageTrailingMarginAIM = 11;
+
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextInputViewClearButtonTrailingOffset = 4;
 /// The maximum number of lines for the text view before it starts scrolling.
@@ -63,17 +69,30 @@ bool UseTextView(OmniboxPresentationContext presentation_context) {
 }
 
 /// Creates and configures the leading image view.
-UIImageView* CreateLeadingImageView(UIColor* icon_tint) {
+UIImageView* CreateLeadingImageView(
+    UIColor* icon_tint,
+    OmniboxPresentationContext presentation_context) {
   UIImageView* leading_image_view = [[UIImageView alloc] init];
   leading_image_view.translatesAutoresizingMaskIntoConstraints = NO;
-  leading_image_view.contentMode = UIViewContentModeCenter;
   leading_image_view.tintColor = icon_tint;
-  [NSLayoutConstraint activateConstraints:@[
-    [leading_image_view.widthAnchor
-        constraintEqualToConstant:kOmniboxLeadingImageSize],
-    [leading_image_view.heightAnchor
-        constraintEqualToConstant:kOmniboxLeadingImageSize],
-  ]];
+  if (presentation_context == OmniboxPresentationContext::kAIMPrototype) {
+    leading_image_view.contentMode = UIViewContentModeScaleAspectFit;
+    [NSLayoutConstraint activateConstraints:@[
+      [leading_image_view.widthAnchor
+          constraintEqualToConstant:kLeadingImageSizeAIM],
+      [leading_image_view.heightAnchor
+          constraintEqualToConstant:kLeadingImageSizeAIM],
+    ]];
+  } else {
+    leading_image_view.contentMode = UIViewContentModeCenter;
+    [NSLayoutConstraint activateConstraints:@[
+      [leading_image_view.widthAnchor
+          constraintEqualToConstant:kOmniboxLeadingImageSize],
+      [leading_image_view.heightAnchor
+          constraintEqualToConstant:kOmniboxLeadingImageSize],
+    ]];
+  }
+
   return leading_image_view;
 }
 
@@ -163,7 +182,7 @@ UIButton* CreateClearButton() {
   self = [super initWithFrame:frame];
   if (self) {
     _presentationContext = presentationContext;
-    _leadingImageView = CreateLeadingImageView(iconTint);
+    _leadingImageView = CreateLeadingImageView(iconTint, presentationContext);
     self.clearButton = CreateClearButton();
     [self createAndAddTextInputViewWithTextColor:textColor
                                    textInputTint:textInputTint];
@@ -182,10 +201,13 @@ UIButton* CreateClearButton() {
     NSLayoutAnchor* referenceCenterYAnchor =
         _textInputView.viewForVerticalAlignment.centerYAnchor;
 
-    CGFloat leadingImageLeadingOffset =
-        _presentationContext == OmniboxPresentationContext::kLensOverlay
-            ? kLeadingImageLeadingMarginLensOverlay
-            : kOmniboxLeadingImageViewEdgeOffset;
+    CGFloat leadingImageLeadingOffset = kOmniboxLeadingImageViewEdgeOffset;
+    if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
+      leadingImageLeadingOffset = kLeadingImageLeadingMarginLensOverlay;
+    } else if (_presentationContext ==
+               OmniboxPresentationContext::kAIMPrototype) {
+      leadingImageLeadingOffset = kLeadingImageLeadingMarginAIM;
+    }
 
     [NSLayoutConstraint activateConstraints:@[
       [_leadingImageView.leadingAnchor
@@ -223,10 +245,14 @@ UIButton* CreateClearButton() {
                          constant:kThumbnailImageTrailingMargin];
     }
 
-    CGFloat textInputViewLeadingOffset =
-        _presentationContext == OmniboxPresentationContext::kLensOverlay
-            ? kLeadingImageTrailingMarginLensOverlay
-            : kOmniboxTextFieldLeadingOffsetImage;
+    CGFloat textInputViewLeadingOffset = kOmniboxTextFieldLeadingOffsetImage;
+    if (_presentationContext == OmniboxPresentationContext::kLensOverlay) {
+      textInputViewLeadingOffset = kLeadingImageTrailingMarginLensOverlay;
+    } else if (_presentationContext ==
+               OmniboxPresentationContext::kAIMPrototype) {
+      textInputViewLeadingOffset = kLeadingImageTrailingMarginAIM;
+    }
+
     _textInputViewLeadingToIconConstraint = [_textInputView.leadingAnchor
         constraintEqualToAnchor:_leadingImageView.trailingAnchor
                        constant:textInputViewLeadingOffset];

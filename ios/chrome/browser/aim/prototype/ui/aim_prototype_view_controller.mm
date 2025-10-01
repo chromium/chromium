@@ -48,7 +48,7 @@ const CGFloat kAIMButtonWidth = 94.0f;
 /// The spacing for the horizontal buttons stack view.
 const CGFloat kButtonsStackViewSpacing = 6.0f;
 /// The spacing for the main vertical input plate stack view.
-const CGFloat kInputPlateStackViewSpacing = 16.0f;
+const CGFloat kInputPlateStackViewSpacing = 10.0f;
 /// The vertical padding for the input plate stack view.
 const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
 /// The leading padding for the input plate stack view.
