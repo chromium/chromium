@@ -225,17 +225,6 @@ source_set("font_provider_implementation") {
   frameworks = [ "Foundation.framework" ]
 }
 
-# Compatibility target.
-# TODO(crbug.com/448228341): Remove after internal is updated.
-source_set("passkey_keychain_provider_header") {
-  sources = [ "passkey_keychain_provider.h" ]
-  deps = [
-    "//ios/chrome/common/credential_provider:passkey_keychain_provider_header",
-  ]
-  assert_no_deps = [ "//ios/chrome/browser/*" ]
-  frameworks = [ "Foundation.framework" ]
-}
-
 source_set("account_verification_provider") {
   public_deps = [ ":account_verification_provider_header" ]
   deps = [ ios_account_verification_provider_target ]
