@@ -35,6 +35,18 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 
+// TODO(crbug.com/425715421): Fix drag and drop on Wayland.
+#if BUILDFLAG(IS_OZONE)
+#define SKIP_FOR_WAYLAND()                                                \
+  if (!ui::OzonePlatform::GetInstance()                                   \
+           ->GetPlatformProperties()                                      \
+           .supports_split_view_drag_and_drop) {                          \
+    GTEST_SKIP() << "Skipping DnD test on Wayland (crbug.com/425715421)"; \
+  }
+#else
+#define SKIP_FOR_WAYLAND()
+#endif
+
 MultiContentsDropTargetView* GetDropTargetView(BrowserView& browser_view) {
   return views::AsViewClass<MultiContentsDropTargetView>(
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -246,6 +258,8 @@ class MultiContentsViewTabDragEntrypointsUiParamTest
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
                        DragAndDrop) {
+  SKIP_FOR_WAYLAND();
+
   BrowserView& browser_view = GetBrowserView();
   const auto drop_side = GetParam();
 
@@ -272,6 +286,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 
 IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
                        ShowAndHideDropTarget) {
+  SKIP_FOR_WAYLAND();
+
   BrowserView& browser_view = GetBrowserView();
   const auto drop_side = GetParam();
 
@@ -295,6 +311,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewTabDragEntrypointsUiParamTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewTabDragEntrypointsUiTest,
                        DragAndDropDisabled) {
+  SKIP_FOR_WAYLAND();
+
   BrowserView& browser_view = GetBrowserView();
 
   // Disable drag and drop.
