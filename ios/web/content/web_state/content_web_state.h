@@ -229,6 +229,14 @@ class ContentWebState : public WebState,
       content::WebContents* source) override;
 
  private:
+  // Store serialized state.
+  class SerializedState;
+
+  // Private constructor.
+  ContentWebState(const CreateParams& params,
+                  WebStateID unique_identifier,
+                  std::unique_ptr<SerializedState> serialized_state);
+
   // Helper method to register notification observers.
   void RegisterNotificationObservers();
   void OnKeyboardShow(NSNotification* notification);
@@ -236,7 +244,7 @@ class ContentWebState : public WebState,
 
   raw_ptr<WebStateDelegate> delegate_ = nullptr;
   CRCWebViewportContainerView* web_view_;
-  CRWSessionStorage* session_storage_;
+  std::unique_ptr<SerializedState> serialized_state_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<content::WebContents> child_web_contents_;
   std::unique_ptr<web::SessionCertificatePolicyCache> certificate_policy_cache_;

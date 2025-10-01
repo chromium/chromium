@@ -112,14 +112,58 @@ CRWSessionStorage* CreateSessionStorage(
 
 }  // namespace
 
+// Stores ContentWebstate serialized state.
+class ContentWebState::SerializedState {
+ public:
+  SerializedState(CRWSessionStorage* session_storage,
+                  NativeSessionFetcher session_fetcher)
+      : session_storage_(session_storage) {}
+
+  SerializedState(web::WebStateID unique_identifier,
+                  proto::WebStateMetadataStorage metadata,
+                  WebStateStorageLoader storage_loader,
+                  NativeSessionFetcher session_fetcher)
+      : session_storage_(CreateSessionStorage(unique_identifier,
+                                              std::move(metadata),
+                                              std::move(storage_loader),
+                                              base::Time::Now())) {}
+
+  CRWSessionStorage* session_storage() { return session_storage_; }
+
+ private:
+  CRWSessionStorage* session_storage_;
+};
+
 ContentWebState::ContentWebState(const CreateParams& params)
-    : ContentWebState(params, nil, base::ReturnValueOnce<NSData*>(nil)) {}
+    : ContentWebState(params, WebStateID::NewUnique(), nullptr) {}
 
 ContentWebState::ContentWebState(const CreateParams& params,
                                  CRWSessionStorage* session_storage,
                                  NativeSessionFetcher session_fetcher)
-    : unique_identifier_(session_storage ? session_storage.uniqueIdentifier
-                                         : WebStateID::NewUnique()) {
+    : ContentWebState(
+          params,
+          session_storage.uniqueIdentifier,
+          std::make_unique<SerializedState>(session_storage,
+                                            std::move(session_fetcher))) {}
+
+ContentWebState::ContentWebState(BrowserState* browser_state,
+                                 WebStateID unique_identifier,
+                                 proto::WebStateMetadataStorage metadata,
+                                 WebStateStorageLoader storage_loader,
+                                 NativeSessionFetcher session_fetcher)
+    : ContentWebState(
+          CreateParams(browser_state),
+          unique_identifier,
+          std::make_unique<SerializedState>(unique_identifier,
+                                            std::move(metadata),
+                                            std::move(storage_loader),
+                                            std::move(session_fetcher))) {}
+
+ContentWebState::ContentWebState(
+    const CreateParams& params,
+    WebStateID unique_identifier,
+    std::unique_ptr<SerializedState> serialized_state)
+    : unique_identifier_(unique_identifier) {
   content::BrowserContext* browser_context =
       ContentBrowserContext::FromBrowserState(params.browser_state);
   scoped_refptr<content::SiteInstance> site_instance;
@@ -161,25 +205,13 @@ ContentWebState::ContentWebState(const CreateParams& params,
 
   [web_view_ addSubview:web_contents_view];
 
-  session_storage_ = session_storage;
+  serialized_state_ = std::move(serialized_state);
 
   creation_time_ = base::Time::Now();
   last_active_time_ = params.last_active_time.value_or(creation_time_);
 
   RegisterNotificationObservers();
 }
-
-ContentWebState::ContentWebState(BrowserState* browser_state,
-                                 WebStateID unique_identifier,
-                                 proto::WebStateMetadataStorage metadata,
-                                 WebStateStorageLoader storage_loader,
-                                 NativeSessionFetcher session_fetcher)
-    : ContentWebState(CreateParams(browser_state),
-                      CreateSessionStorage(unique_identifier,
-                                           std::move(metadata),
-                                           std::move(storage_loader),
-                                           base::Time::Now()),
-                      base::ReturnValueOnce<NSData*>(nil)) {}
 
 ContentWebState::~ContentWebState() {
   WebContentsObserver::Observe(nullptr);
@@ -248,14 +280,16 @@ void ContentWebState::SetDelegate(WebStateDelegate* delegate) {
 }
 
 bool ContentWebState::IsRealized() const {
-  return session_storage_ == nil;
+  return serialized_state_ != nullptr;
 }
 
 WebState* ContentWebState::ForceRealizedWithPolicy(RealizationPolicy policy) {
-  if (session_storage_) {
+  if (serialized_state_) {
+    CRWSessionStorage* session_storage = serialized_state_->session_storage();
     ExtractContentSessionStorage(this, web_contents_->GetController(),
-                                 GetBrowserState(), session_storage_);
-    session_storage_ = nil;
+                                 GetBrowserState(), session_storage);
+    serialized_state_.reset();
+
     // Notify all observers that the WebState has become realized but take
     // care to not notify any observer that is registered while iterating.
     NotifyWebStateRealized(observers_);
@@ -354,8 +388,8 @@ ContentWebState::GetSessionCertificatePolicyCache() {
 }
 
 CRWSessionStorage* ContentWebState::BuildSessionStorage() const {
-  if (session_storage_) {
-    return session_storage_;
+  if (serialized_state_) {
+    return serialized_state_->session_storage();
   }
   return BuildContentSessionStorage(this, navigation_manager_.get());
 }
@@ -385,21 +419,22 @@ bool ContentWebState::ContentIsHTML() const {
 }
 
 const std::u16string& ContentWebState::GetTitle() const {
-  if (session_storage_) {
-    const NSUInteger index = session_storage_.lastCommittedItemIndex;
-    if (index > 0u && index <= session_storage_.itemStorages.count) {
-      return session_storage_.itemStorages[index].title;
+  if (serialized_state_) {
+    CRWSessionStorage* session_storage = serialized_state_->session_storage();
+    const NSUInteger index = session_storage.lastCommittedItemIndex;
+    if (index > 0u && index <= session_storage.itemStorages.count) {
+      return session_storage.itemStorages[index].title;
     }
   }
   return web_contents_->GetTitle();
 }
 
 bool ContentWebState::IsLoading() const {
-  return session_storage_ ? false : web_contents_->IsLoading();
+  return serialized_state_ ? false : web_contents_->IsLoading();
 }
 
 double ContentWebState::GetLoadingProgress() const {
-  return session_storage_ ? 0.0 : web_contents_->GetLoadProgress();
+  return serialized_state_ ? 0.0 : web_contents_->GetLoadProgress();
 }
 
 bool ContentWebState::IsVisible() const {
@@ -440,8 +475,9 @@ void ContentWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
 }
 
 int ContentWebState::GetNavigationItemCount() const {
-  if (session_storage_) {
-    return session_storage_.itemStorages.count;
+  if (serialized_state_) {
+    CRWSessionStorage* session_storage = serialized_state_->session_storage();
+    return session_storage.itemStorages.count;
   }
 
   return navigation_manager_->GetItemCount();
