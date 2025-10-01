@@ -526,7 +526,7 @@ centipede_linux_asan_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     clusterfuzz_archive_name_prefix = "centipede",
     console_short_name = "cent",
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
     gn_extra_configs = [
         "chromeos_codecs",
         "pdf_xfa",
