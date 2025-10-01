@@ -80,13 +80,13 @@ function compareBuffersWithConstraints(should, actual, expected, options) {
       .beLessThanOrEqualTo(thresholdDiffCount);
 }
 
-// TODO(saqlain): compareBuffersWithConstraintsModern() is the
+// TODO(saqlain): compareBuffersWithConstraints_W3CTH() is the
 // testharness.js-compatible version of compareBuffersWithConstraints().
 // It replaces the old audit.js-style assertions with
 // standard testharness.js assertions. Once all audit.js tests are migrated,
 // rename this to testTailTime() and delete the old one.
 
-function compareBuffersWithConstraintsModern(actual, expected, options) {
+function compareBuffersWithConstraints_W3CTH(actual, expected, options) {
   if (!options)
     options = {};
 
