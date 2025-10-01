@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_update_identity_view.h"
@@ -57,7 +55,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
-#include "ui/views/test/dialog_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -67,12 +64,8 @@
 namespace web_app {
 namespace {
 
-using base::BucketsAre;
-
 constexpr char kUpdateDialogLoadingTimeHistogram[] =
     "WebApp.UpdateReviewDialog.TriggerToShowTime";
-constexpr char kAppUpdateDialogResultHistogram[] =
-    "WebApp.PredictableUpdateDialog.Result";
 
 class WebAppUpdateReviewDialog : public DialogBrowserTest {
  public:
@@ -130,32 +123,17 @@ class WebAppUpdateReviewDialog : public DialogBrowserTest {
   }
 
  protected:
-  void ClickIgnoreButtonOnDialog(views::Widget* dialog_widget) {
-    views::test::WidgetDestroyedWaiter destroyed_waiter(dialog_widget);
-    views::ElementTrackerViews* tracker_views =
-        views::ElementTrackerViews::GetInstance();
-    ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForWidget(dialog_widget);
-    views::Button* button = tracker_views->GetUniqueViewAs<views::Button>(
-        kWebAppUpdateReviewIgnoreButton, context);
-    views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
-    destroyed_waiter.Wait();
-  }
-
   SkBitmap old_icon_;
   SkBitmap new_icon_;
   WebAppIdentityUpdate update_;
   std::string app_id_;
   base::test::TestFuture<WebAppIdentityUpdateResult> dialog_result_;
-  base::HistogramTester tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, InvokeUi_NameChange) {
-  base::UserActionTester user_action_tester;
+  base::HistogramTester histogram_tester;
   ShowAndVerifyUi();
-  tester_.ExpectTotalCount(kUpdateDialogLoadingTimeHistogram, 1);
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount("PredictableAppUpdateDialogShown"));
+  histogram_tester.ExpectTotalCount(kUpdateDialogLoadingTimeHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
@@ -222,8 +200,18 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog,
   ASSERT_TRUE(dialog_widget != nullptr);
   ASSERT_FALSE(dialog_widget->IsClosed());
 
+  // Find the "Ignore" button and click it.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(dialog_widget);
+  views::ElementTrackerViews* tracker_views =
+      views::ElementTrackerViews::GetInstance();
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog_widget);
+  views::Button* button = tracker_views->GetUniqueViewAs<views::Button>(
+      kWebAppUpdateReviewIgnoreButton, context);
+  views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
+  destroyed_waiter.Wait();
+
   // Verify dialog is closed, and the ignore result is obtained.
-  ClickIgnoreButtonOnDialog(dialog_widget);
   EXPECT_FALSE(
       browser()->GetBrowserView().GetProperty(kIsPwaUpdateDialogShowingKey));
   EXPECT_EQ(dialog_result_.Get(), WebAppIdentityUpdateResult::kIgnore);
@@ -243,6 +231,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialog, ShowWhileAlreadyShowing) {
                                         update_result.GetCallback());
   EXPECT_TRUE(update_result.Wait());
   EXPECT_EQ(update_result.Get(), WebAppIdentityUpdateResult::kUnexpectedError);
+
   dialog_widget->Close();
 }
 
@@ -310,7 +299,7 @@ class WebAppUpdateReviewDialogFromMenuItem : public WebAppUpdateReviewDialog {
     WebAppMenuModel model(/*provider=*/nullptr, app_browser);
     model.Init();
     model.ExecuteCommand(IDC_WEB_APP_UPGRADE_DIALOG, /*event_flags=*/0);
-    dialog_widget_ = update_dialog_waiter.WaitIfNeededAndGet()->GetWeakPtr();
+    dialog_widget_ = update_dialog_waiter.WaitIfNeededAndGet();
     ASSERT_TRUE(dialog_widget_ != nullptr);
   }
 
@@ -326,25 +315,36 @@ class WebAppUpdateReviewDialogFromMenuItem : public WebAppUpdateReviewDialog {
                 gfx::test::IsCloseToBitmap(
                     LoadExpectedBitmapFromDisk(GetFromIconFilePath()),
                     /*max_per_channel_deviation=*/3));
+
+    // The to icon on the dialog are obtained by loading the test icon, resizing
+    // and then masking it to show on the dialog. This leads to a loss of
+    // quality, which can cause comparing with icons stored on the disk flaky.
+    // To prevent that, the comparison constraints of how much pixels can differ
+    // by has been loosened for the to icon. The from icon is not masked and is
+    // just resized, which is why it has a more strict constraint for
+    // difference.
     EXPECT_THAT(icons.to_icon_bitmap,
                 gfx::test::IsCloseToBitmap(
                     LoadExpectedBitmapFromDisk(GetToIconFilePath()),
                     /*max_per_channel_deviation=*/5));
 
-    tester_.ExpectBucketCount("WrenchMenu.MenuAction",
-                              MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG, 1);
-
     return true;
   }
 
- protected:
+  // Clean up the raw pointers to prevent them from dangling. It's fine to
+  // skip calling of DialogBrowserTest::DismissUi() because we don't really
+  // need to "close" the UX, that will be cleaned up as part of the test
+  // teardown.
+  void DismissUi() override { dialog_widget_ = nullptr; }
+
+ private:
   // Returns the collection of views in `dialog_widget_` corresponding to
   // element identifier `id`.
   std::vector<views::View*> GetViewsFromDialog(ui::ElementIdentifier id) {
     views::ElementTrackerViews* tracker_views =
         views::ElementTrackerViews::GetInstance();
     ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForWidget(dialog_widget_.get());
+        views::ElementTrackerViews::GetContextForWidget(dialog_widget_);
     return tracker_views->GetAllMatchingViews(id, context);
   }
 
@@ -386,7 +386,7 @@ class WebAppUpdateReviewDialogFromMenuItem : public WebAppUpdateReviewDialog {
   // only be 2 names on the dialog.
   DialogNames GetNamesFromDialog() {
     DialogNames names;
-    std::vector<views::View*> name_labels =
+    auto name_labels =
         GetViewsFromDialog(web_app::WebAppUpdateIdentityView::kNameLabelId);
     EXPECT_EQ(2u, name_labels.size());
 
@@ -401,7 +401,7 @@ class WebAppUpdateReviewDialogFromMenuItem : public WebAppUpdateReviewDialog {
   // only be 2 icons on the dialog.
   DialogIcons GetIconsFromDialog() {
     DialogIcons icons;
-    std::vector<views::View*> icon_labels =
+    auto icon_labels =
         GetViewsFromDialog(web_app::WebAppUpdateIdentityView::kIconLabelId);
     EXPECT_EQ(2u, icon_labels.size());
 
@@ -416,39 +416,14 @@ class WebAppUpdateReviewDialogFromMenuItem : public WebAppUpdateReviewDialog {
   }
 
   std::u16string old_name_;
-  base::WeakPtr<views::Widget> dialog_widget_;
+  raw_ptr<views::Widget> dialog_widget_ = nullptr;
   OsIntegrationTestOverrideBlockingRegistration override_registration_;
   base::test::ScopedFeatureList feature_list_{
       features::kWebAppPredictableAppUpdating};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialogFromMenuItem, InvokeUi) {
-  // TODO(crbug.com/448421951): Investigate the exact point where
-  // ShowAndVerifyUi() crashes.
-  ShowUi("");
-  VerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialogFromMenuItem, Accept) {
-  ShowUi("");
-  views::test::AcceptDialog(dialog_widget_.get());
-  EXPECT_THAT(tester_.GetAllSamples(kAppUpdateDialogResultHistogram),
-              BucketsAre(base::Bucket(WebAppIdentityUpdateResult::kAccept, 1)));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialogFromMenuItem, CancelUninstall) {
-  ShowUi("");
-  views::test::CancelDialog(dialog_widget_.get());
-  EXPECT_THAT(
-      tester_.GetAllSamples(kAppUpdateDialogResultHistogram),
-      BucketsAre(base::Bucket(WebAppIdentityUpdateResult::kUninstallApp, 1)));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppUpdateReviewDialogFromMenuItem, Ignore) {
-  ShowUi("");
-  ClickIgnoreButtonOnDialog(dialog_widget_.get());
-  EXPECT_THAT(tester_.GetAllSamples(kAppUpdateDialogResultHistogram),
-              BucketsAre(base::Bucket(WebAppIdentityUpdateResult::kIgnore, 1)));
+  ShowAndVerifyUi();
 }
 
 }  // namespace

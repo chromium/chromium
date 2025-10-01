@@ -49,24 +49,19 @@ struct WebAppIdentityUpdate {
   std::optional<GURL> new_start_url = std::nullopt;
 };
 
-// The result of the predictable app updating dialog closing, either from an
-// explicit user action or a system behavior.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 enum class WebAppIdentityUpdateResult {
   // The user accepted the update.
-  kAccept = 0,
+  kAccept,
   // The user wants to uninstall the app instead of update it.
-  kUninstallApp = 1,
+  kUninstallApp,
   // The user wants to ignore this update.
-  kIgnore = 2,
+  kIgnore,
   // The app was uninstalled while the dialog was open, as so it was
   // automatically closed.
-  kAppUninstalledDuringDialog = 3,
+  kAppUninstalledDuringDialog,
   // The dialog was closed without user action, likely due to another dialog
   // being present, shutdown, or other factors.
-  kUnexpectedError = 4,
-  kMaxValue = kUnexpectedError
+  kUnexpectedError
 };
 
 using UpdateReviewDialogCallback =

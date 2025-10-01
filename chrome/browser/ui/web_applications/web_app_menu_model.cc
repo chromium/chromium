@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
@@ -115,7 +114,8 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case IDC_WEB_APP_UPGRADE_DIALOG:
       CHECK(base::FeatureList::IsEnabled(
           features::kWebAppPredictableAppUpdating));
-      LogMenuAction(MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG);
+      // TODO(crbug.com/432252208): Log menu action for predictable app
+      // updating.
       browser()->app_controller()->CreateMetadataAndTriggerAppUpdateDialog(
           base::TimeTicks::Now());
       break;
