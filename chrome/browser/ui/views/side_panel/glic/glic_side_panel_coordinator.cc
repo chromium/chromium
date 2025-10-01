@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
+#include "base/functional/callback.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -87,12 +88,12 @@ void GlicSidePanelCoordinator::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  state_observers_.Notify(&StateObserver::VisibilityChanged, false);
+  visibility_changed_callbacks_.Notify(false);
 }
 
 void GlicSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  state_observers_.Notify(&StateObserver::VisibilityChanged, true);
+  visibility_changed_callbacks_.Notify(true);
 }
 
 void GlicSidePanelCoordinator::OnGlicEnabledChanged() {
@@ -141,6 +142,11 @@ std::unique_ptr<views::View> GlicSidePanelCoordinator::CreateView(
   return glic_container;
 }
 
+base::CallbackListSubscription GlicSidePanelCoordinator::AddVisibilityCallback(
+    base::RepeatingCallback<void(bool isShowing)> callback) {
+  return visibility_changed_callbacks_.Add(std::move(callback));
+}
+
 void GlicSidePanelCoordinator::SetContentsView(
     std::unique_ptr<views::View> contents_view) {
   if (!glic_container_tracker_) {
@@ -154,14 +160,6 @@ void GlicSidePanelCoordinator::SetContentsView(
 
 int GlicSidePanelCoordinator::GetPreferredWidth() {
   return features::kGlicSidePanelMinWidth.Get();
-}
-
-void GlicSidePanelCoordinator::AddObserver(StateObserver* observer) {
-  state_observers_.AddObserver(observer);
-}
-
-void GlicSidePanelCoordinator::RemoveObserver(StateObserver* observer) {
-  state_observers_.RemoveObserver(observer);
 }
 
 }  // namespace glic

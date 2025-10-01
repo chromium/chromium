@@ -69,7 +69,12 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
 
   auto* glic_side_panel_coordinator =
       tab_->GetTabFeatures()->glic_side_panel_coordinator();
-  coordinator_observation_.Observe(glic_side_panel_coordinator);
+
+  panel_visibility_subscription_ =
+      glic_side_panel_coordinator->AddVisibilityCallback(
+          base::BindRepeating(&GlicInactiveSidePanelUi::VisibilityChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
+
   glic_side_panel_coordinator->SetContentsView(CreateView(tab_));
 }
 
@@ -82,7 +87,12 @@ GlicInactiveSidePanelUi::GlicInactiveSidePanelUi(
 
   auto* glic_side_panel_coordinator =
       tab_->GetTabFeatures()->glic_side_panel_coordinator();
-  coordinator_observation_.Observe(glic_side_panel_coordinator);
+
+  panel_visibility_subscription_ =
+      glic_side_panel_coordinator->AddVisibilityCallback(
+          base::BindRepeating(&GlicInactiveSidePanelUi::VisibilityChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
+
   glic_side_panel_coordinator->SetContentsView(CreateView(tab_));
 }
 

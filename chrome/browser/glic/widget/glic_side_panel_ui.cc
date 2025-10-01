@@ -30,7 +30,11 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
   }
   auto* glic_side_panel_coordinator =
       tab_->GetTabFeatures()->glic_side_panel_coordinator();
-  coordinator_observation_.Observe(glic_side_panel_coordinator);
+
+  panel_visibility_subscription_ =
+      glic_side_panel_coordinator->AddVisibilityCallback(base::BindRepeating(
+          &GlicSidePanelUi::VisibilityChanged, weak_ptr_factory_.GetWeakPtr()));
+
   glic_side_panel_coordinator->SetContentsView(CreateView(profile_));
   panel_state_.kind = mojom::PanelState_Kind::kAttached;
 }

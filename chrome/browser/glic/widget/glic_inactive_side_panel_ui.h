@@ -18,8 +18,7 @@ class GlicSidePanelUi;
 
 // A GlicUiEmbedder for inactive Glic instances. This will show a
 // blurred screenshot of the previously active UI.
-class GlicInactiveSidePanelUi : public GlicUiEmbedder,
-                                public GlicSidePanelCoordinator::StateObserver {
+class GlicInactiveSidePanelUi : public GlicUiEmbedder {
  public:
   static std::unique_ptr<GlicInactiveSidePanelUi> From(
       const GlicSidePanelUi& active_ui,
@@ -37,8 +36,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   void Close() override;
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
 
-  // GlicSidePanelCoordinator::StateObserver:
-  void VisibilityChanged(bool visible) override;
+  void VisibilityChanged(bool visible);
 
   void OnScreenshotCaptured(gfx::Image screenshot);
 
@@ -48,13 +46,11 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   void UpdateImageView();
   void OnImageBlurred(gfx::ImageSkia blurred_image);
 
-  base::ScopedObservation<GlicSidePanelCoordinator,
-                          GlicSidePanelCoordinator::StateObserver>
-      coordinator_observation_{this};
   base::WeakPtr<tabs::TabInterface> tab_;
   bool is_showing_ = false;
   gfx::ImageSkia screenshot_;
   views::ViewTracker image_view_tracker_;
+  base::CallbackListSubscription panel_visibility_subscription_;
   base::WeakPtrFactory<GlicInactiveSidePanelUi> weak_ptr_factory_{this};
 };
 
