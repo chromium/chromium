@@ -31,6 +31,7 @@
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-forward.h"
+#include "v8/include/v8-initialization.h"
 #include "v8/include/v8-wasm.h"
 
 using testing::ElementsAre;
@@ -545,6 +546,8 @@ TEST_F(AuctionV8HelperTest, NoTime) {
 // Make sure the when CreateContext() is used, there's no access to the time,
 // which mitigates Specter-style attacks.
 TEST_F(AuctionV8HelperTest, NoTemporal) {
+  // Force on Temporal support in V8 to avoid false negative test result.
+  v8::V8::SetFlagsFromString("--harmony_temporal");
   v8::Local<v8::Context> context = helper_->CreateContext();
   v8::Context::Scope context_scope(context);
 
