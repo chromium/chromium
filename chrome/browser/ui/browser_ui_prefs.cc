@@ -105,10 +105,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   registry->RegisterIntegerPref(prefs::kSessionRestoreInfoBarTimesShown, 0);
-  registry->RegisterIntegerPref(
-      prefs::kSessionRestoreTurnOffFromRestartInfoBarTimesShown, 0);
-  registry->RegisterIntegerPref(
-      prefs::kSessionRestoreTurnOffFromSessionInfoBarTimesShown, 0);
   registry->RegisterBooleanPref(prefs::kSessionRestorePrefChanged, false);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 

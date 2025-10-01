@@ -31,9 +31,6 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
     kNone,
     // Infobar message displayed for turning off session restore from restart.
     kTurnOffFromRestart,
-    // Infobar message displayed for turning off session restore from restored
-    // session.
-    kTurnOffFromSession,
     // Infobar message displayed for turning on session restore.
     kTurnOnSessionRestore,
   };

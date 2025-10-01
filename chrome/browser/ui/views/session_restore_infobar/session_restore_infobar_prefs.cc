@@ -10,24 +10,7 @@
 
 namespace session_restore_infobar {
 
-void IncrementInfoBarShownCount(
-    PrefService* prefs,
-    SessionRestoreInfoBarDelegate::InfobarMessageType type) {
-  if (type ==
-      SessionRestoreInfoBarDelegate::InfobarMessageType::kTurnOffFromRestart) {
-    prefs->SetInteger(
-        prefs::kSessionRestoreTurnOffFromRestartInfoBarTimesShown,
-        prefs->GetInteger(
-            prefs::kSessionRestoreTurnOffFromRestartInfoBarTimesShown) +
-            1);
-  } else if (type == SessionRestoreInfoBarDelegate::InfobarMessageType::
-                         kTurnOffFromSession) {
-    prefs->SetInteger(
-        prefs::kSessionRestoreTurnOffFromSessionInfoBarTimesShown,
-        prefs->GetInteger(
-            prefs::kSessionRestoreTurnOffFromSessionInfoBarTimesShown) +
-            1);
-  }
+void IncrementInfoBarShownCount(PrefService* prefs) {
   prefs->SetInteger(
       prefs::kSessionRestoreInfoBarTimesShown,
       prefs->GetInteger(prefs::kSessionRestoreInfoBarTimesShown) + 1);

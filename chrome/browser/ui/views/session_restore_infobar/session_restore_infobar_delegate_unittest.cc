@@ -123,10 +123,6 @@ INSTANTIATE_TEST_SUITE_P(
             "SessionRestore.InfoBar.TurnOffFromRestart"},
         SessionRestoreInfoBarTestParams{
             SessionRestoreInfoBarDelegate::InfobarMessageType::
-                kTurnOffFromSession,
-            "SessionRestore.InfoBar.TurnOffFromSession"},
-        SessionRestoreInfoBarTestParams{
-            SessionRestoreInfoBarDelegate::InfobarMessageType::
                 kTurnOnSessionRestore,
             "SessionRestore.InfoBar.TurnOnSessionRestore"}));
 
