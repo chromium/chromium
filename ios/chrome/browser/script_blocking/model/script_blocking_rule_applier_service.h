@@ -74,7 +74,8 @@ class ScriptBlockingRuleApplierService
   void OnContentRuleListDataUpdated() override;
 
   // privacy_sandbox::TrackingProtectionSettingsObserver:
-  void OnTrackingProtectionExceptionsChanged() override;
+  void OnTrackingProtectionExceptionsChanged(
+      const GURL& first_party_url) override;
   void OnFpProtectionEnabledChanged() override;
 
   // Determines the rules to be applied based on the current state and

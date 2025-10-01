@@ -30,6 +30,10 @@
 namespace privacy_sandbox {
 namespace {
 
+MATCHER_P(IsSameSite, site, "") {
+  return net::SchemefulSite::IsSameSite(site, arg);
+}
+
 class MockTrackingProtectionSettingsObserver
     : public TrackingProtectionSettingsObserver {
  public:
@@ -38,7 +42,10 @@ class MockTrackingProtectionSettingsObserver
   MOCK_METHOD(void, OnFpProtectionEnabledChanged, (), (override));
   MOCK_METHOD(void, OnBlockAllThirdPartyCookiesChanged, (), (override));
   MOCK_METHOD(void, OnTrackingProtection3pcdChanged, (), (override));
-  MOCK_METHOD(void, OnTrackingProtectionExceptionsChanged, (), (override));
+  MOCK_METHOD(void,
+              OnTrackingProtectionExceptionsChanged,
+              (const GURL&),
+              (override));
 };
 
 class TrackingProtectionSettingsTest : public testing::Test {
@@ -322,11 +329,13 @@ TEST_F(TrackingProtectionSettingsTest,
   MockTrackingProtectionSettingsObserver observer;
   tracking_protection_settings()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnTrackingProtectionExceptionsChanged());
+  EXPECT_CALL(observer,
+              OnTrackingProtectionExceptionsChanged(IsSameSite(GetTestUrl())));
   tracking_protection_settings()->AddTrackingProtectionException(GetTestUrl());
   testing::Mock::VerifyAndClearExpectations(&observer);
 
-  EXPECT_CALL(observer, OnTrackingProtectionExceptionsChanged());
+  EXPECT_CALL(observer,
+              OnTrackingProtectionExceptionsChanged(IsSameSite(GetTestUrl())));
   tracking_protection_settings()->RemoveTrackingProtectionException(
       GetTestUrl());
   testing::Mock::VerifyAndClearExpectations(&observer);
@@ -337,7 +346,8 @@ TEST_F(TrackingProtectionSettingsTest,
   MockTrackingProtectionSettingsObserver observer;
   tracking_protection_settings()->AddObserver(&observer);
 
-  EXPECT_CALL(observer, OnTrackingProtectionExceptionsChanged());
+  EXPECT_CALL(observer,
+              OnTrackingProtectionExceptionsChanged(IsSameSite(GetTestUrl())));
   host_content_settings_map()->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(),
       ContentSettingsPattern::FromURLToSchemefulSitePattern(GetTestUrl()),

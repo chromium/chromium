@@ -104,7 +104,8 @@ void ScriptBlockingRuleApplierService::OnContentRuleListDataUpdated() {
       FingerprintingProtectionRuleListApplyTrigger::kComponentUpdate);
 }
 
-void ScriptBlockingRuleApplierService::OnTrackingProtectionExceptionsChanged() {
+void ScriptBlockingRuleApplierService::OnTrackingProtectionExceptionsChanged(
+    const GURL& first_party_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BuildAndApplyRules(
       FingerprintingProtectionRuleListApplyTrigger::kExceptionsChanged);

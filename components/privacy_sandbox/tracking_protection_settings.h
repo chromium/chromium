@@ -109,7 +109,7 @@ class TrackingProtectionSettings : public KeyedService,
   void OnTrackingProtection3pcdPrefChanged();
   void OnIpProtectionPrefChanged();
   void OnFpProtectionPrefChanged();
-  void OnTrackingProtectionExceptionsChanged();
+  void OnTrackingProtectionExceptionsChanged(const GURL& first_party_url);
 
   base::ObserverList<TrackingProtectionSettingsObserver>::Unchecked observers_;
   PrefChangeRegistrar pref_change_registrar_;
