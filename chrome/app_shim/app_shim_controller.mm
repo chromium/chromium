@@ -371,6 +371,10 @@ bool AppShimController::FindOrLaunchChrome() {
         LOG(FATAL) << "Failed to open process with PID: " << chrome_pid;
       }
     }
+    if (chrome_to_connect_to_.terminated) {
+      LOG(FATAL) << "Process with PID " << chrome_pid
+                 << " has already terminated.";
+    }
 
     return true;
   }
@@ -458,6 +462,10 @@ NSRunningApplication* AppShimController::FindChromeFromSingletonLock(
     LOG(WARNING) << "Singleton lock pid " << pid << " invalid.";
     return nil;
   }
+  if (process_from_lock.terminated) {
+    LOG(WARNING) << "Singleton lock pid " << pid << " already terminated.";
+    return nil;
+  }
 
   // Check the process' bundle id. As above, the specified pid could have been
   // reused by some other process.
@@ -477,7 +485,12 @@ void AppShimController::PollForChromeReady(
   // If the Chrome process we planned to connect to is not running anymore,
   // quit.
   if (chrome_to_connect_to_ && chrome_to_connect_to_.terminated) {
-    LOG(FATAL) << "Running chrome instance terminated before connecting.";
+    if (chrome_launched_by_app_) {
+      LOG(FATAL) << "Running chrome instance launched by shim terminated "
+                    "before connecting.";
+    } else {
+      LOG(FATAL) << "Running chrome instance terminated before connecting.";
+    }
   }
 
   // If we launched a Chrome process and it has terminated, then that most
