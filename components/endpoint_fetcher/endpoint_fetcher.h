@@ -154,6 +154,8 @@ class EndpointFetcher {
     std::optional<UploadProgressCallback> upload_progress_callback;
 
     // Authentication-specific parameters
+    std::optional<signin::OAuthConsumerId> oauth_consumer_id;
+    // TODO(crbug.com/425896213): Remove oauth_consumer_name and oauth_scopes.
     std::optional<std::string> oauth_consumer_name;
     signin::ScopeSet oauth_scopes;
     std::optional<signin::ConsentLevel> consent_level;
@@ -260,6 +262,11 @@ class EndpointFetcher {
       }
 
       // Authentication-specific builder methods
+      Builder& SetOAuthConsumerId(signin::OAuthConsumerId id) {
+        request_params_->oauth_consumer_id = id;
+        return *this;
+      }
+
       Builder& SetOauthConsumerName(const std::string& name) {
         request_params_->oauth_consumer_name = name;
         return *this;

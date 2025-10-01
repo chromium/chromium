@@ -38,10 +38,9 @@ public class DataSharingNetworkLoaderImplTest {
     @Test
     public void testLoadUrl() {
         mDataSharingNetworkLoader.loadUrl(
-                GURL.emptyGURL(), null, null, DataSharingRequestType.CREATE_GROUP, null);
+                GURL.emptyGURL(), null, DataSharingRequestType.CREATE_GROUP, null);
         shadowOf(Looper.getMainLooper()).idle();
         verify(mDataSharingNetworkLoaderJniMock, times(1))
-                .loadUrl(
-                        1, GURL.emptyGURL(), null, null, DataSharingRequestType.CREATE_GROUP, null);
+                .loadUrl(1, GURL.emptyGURL(), null, DataSharingRequestType.CREATE_GROUP, null);
     }
 }

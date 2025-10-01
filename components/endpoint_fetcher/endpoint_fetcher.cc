@@ -86,8 +86,9 @@ EndpointFetcher::RequestParams::Builder::Build() {
   // Perform consistency checks based on AuthType before building.
   switch (request_params_->auth_type_) {
     case OAUTH:
-      DCHECK(request_params_->oauth_consumer_name.has_value() &&
-             !request_params_->oauth_consumer_name->empty())
+      DCHECK(request_params_->oauth_consumer_id.has_value() ||
+             (request_params_->oauth_consumer_name.has_value() &&
+              !request_params_->oauth_consumer_name->empty()))
           << "OAUTH requests require oauth_consumer_name.";
       DCHECK(!request_params_->oauth_scopes.empty())
           << "OAUTH requests require oauth_scopes.";
@@ -158,12 +159,21 @@ void EndpointFetcher::Fetch(EndpointFetcherCallback endpoint_fetcher_callback) {
           &EndpointFetcher::OnAuthTokenFetched, weak_ptr_factory_.GetWeakPtr(),
           std::move(endpoint_fetcher_callback));
 
-      access_token_fetcher_ = std::make_unique<
-          signin::PrimaryAccountAccessTokenFetcher>(
-          request_params_.oauth_consumer_name.value(), identity_manager_,
-          request_params_.oauth_scopes, std::move(token_callback),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          *request_params_.consent_level);
+      if (request_params_.oauth_consumer_id.has_value()) {
+        access_token_fetcher_ = std::make_unique<
+            signin::PrimaryAccountAccessTokenFetcher>(
+            request_params_.oauth_consumer_id.value(), identity_manager_,
+            std::move(token_callback),
+            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+            *request_params_.consent_level);
+      } else {
+        access_token_fetcher_ = std::make_unique<
+            signin::PrimaryAccountAccessTokenFetcher>(
+            request_params_.oauth_consumer_name.value(), identity_manager_,
+            request_params_.oauth_scopes, std::move(token_callback),
+            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+            *request_params_.consent_level);
+      }
       break;
     }
     case CHROME_API_KEY:
