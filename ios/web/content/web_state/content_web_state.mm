@@ -146,6 +146,11 @@ class ContentWebState::SerializedState {
 
   CRWSessionStorage* session_storage() { return session_storage_; }
 
+  // Serializes metadata to `metadata`.
+  void SerializeMetadata(web::proto::WebStateMetadataStorage& metadata) {
+    [session_storage_ serializeMetadataToProto:metadata];
+  }
+
  private:
   CRWSessionStorage* session_storage_;
 };
@@ -251,18 +256,20 @@ content::WebContents* ContentWebState::GetWebContents() {
 }
 
 void ContentWebState::SerializeToProto(proto::WebStateStorage& storage) const {
-  // TODO(crbug.com/40245950): implement directly instead of serialising to
-  // CRWSessionStorage and then converting to protobuf message format.
   DCHECK(IsRealized());
-  CRWSessionStorage* session_storage = BuildSessionStorage();
-  storage.set_has_opener(created_with_opener_);
-  [session_storage serializeToProto:storage];
+  SerializeContentStorage(this, navigation_manager_.get(), storage);
 }
 
 void ContentWebState::SerializeMetadataToProto(
-    proto::WebStateMetadataStorage& storage) const {
-  CRWSessionStorage* session_storage = BuildSessionStorage();
-  [session_storage serializeMetadataToProto:storage];
+    proto::WebStateMetadataStorage& metadata) const {
+  if (serialized_state_) {
+    serialized_state_->SerializeMetadata(metadata);
+    return;
+  }
+
+  proto::WebStateStorage storage;
+  SerializeToProto(storage);
+  metadata = std::move(*storage.mutable_metadata());
 }
 
 WebStateDelegate* ContentWebState::GetDelegate() {
@@ -270,13 +277,16 @@ WebStateDelegate* ContentWebState::GetDelegate() {
 }
 
 std::unique_ptr<WebState> ContentWebState::Clone() const {
-  CreateParams params(GetBrowserState());
-  params.last_active_time = base::Time::Now();
-  CRWSessionStorage* session_storage = BuildSessionStorage();
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = WebStateID::NewUnique();
+  proto::WebStateStorage storage;
+  SerializeToProto(storage);
+
+  proto::WebStateMetadataStorage metadata;
+  std::swap(metadata, *storage.mutable_metadata());
   auto clone = std::make_unique<ContentWebState>(
-      params, session_storage, base::ReturnValueOnce<NSData*>(nil));
+      GetBrowserState(), WebStateID::NewUnique(), std::move(metadata),
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
+      base::ReturnValueOnce<NSData*>(nil));
+
   IgnoreOverRealizationCheck();
   clone->ForceRealized();
   return clone;
@@ -301,9 +311,11 @@ bool ContentWebState::IsRealized() const {
 
 WebState* ContentWebState::ForceRealizedWithPolicy(RealizationPolicy policy) {
   if (serialized_state_) {
+    web::proto::WebStateStorage storage;
     CRWSessionStorage* session_storage = serialized_state_->session_storage();
+    [session_storage serializeToProto:storage];
     ExtractContentSessionStorage(this, web_contents_->GetController(),
-                                 GetBrowserState(), session_storage);
+                                 GetBrowserState(), std::move(storage));
     serialized_state_.reset();
 
     // Notify all observers that the WebState has become realized but take
@@ -407,7 +419,12 @@ CRWSessionStorage* ContentWebState::BuildSessionStorage() const {
   if (serialized_state_) {
     return serialized_state_->session_storage();
   }
-  return BuildContentSessionStorage(this, navigation_manager_.get());
+
+  web::proto::WebStateStorage storage;
+  SerializeContentStorage(this, navigation_manager_.get(), storage);
+  return [[CRWSessionStorage alloc] initWithProto:storage
+                                 uniqueIdentifier:unique_identifier_
+                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
 }
 
 void ContentWebState::LoadData(NSData* data,
