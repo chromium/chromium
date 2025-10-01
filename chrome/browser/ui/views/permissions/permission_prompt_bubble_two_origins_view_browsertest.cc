@@ -177,5 +177,3 @@ IN_PROC_BROWSER_TEST_F(PermissionPromptBubbleTwoOriginsViewBrowserTest,
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "Learn more", link);
 }
 
-// TODO(b/276716358): Add behavior tests to ensure the prompt works and updates
-// the content setting accordingly when accepted/declined.
