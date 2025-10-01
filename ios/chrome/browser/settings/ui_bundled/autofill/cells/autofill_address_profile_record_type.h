@@ -14,6 +14,7 @@ typedef NS_ENUM(NSInteger, AutofillAddressProfileRecordType) {
   AutofillAccountProfile,
   AutofillAccountHomeProfile,
   AutofillAccountWorkProfile,
+  AutofillAccountNameEmailProfile,
   AutofillLocalProfile
 };
 

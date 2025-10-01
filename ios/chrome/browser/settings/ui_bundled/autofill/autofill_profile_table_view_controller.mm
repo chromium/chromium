@@ -318,6 +318,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableSupportForNameAndEmail) &&
+      autofillProfile.record_type() ==
+          autofill::AutofillProfile::RecordType::kAccountNameEmail) {
+    item.autofillProfileRecordType =
+        AutofillAddressProfileRecordType::AutofillAccountNameEmailProfile;
+  }
+
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessibilityIdentifier = title;
   item.GUID = guid;
@@ -824,6 +832,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL hasAccountProfile = NO;
   BOOL hasHomeProfile = NO;
   BOOL hasWorkProfile = NO;
+  BOOL hasNameEmailProfile = NO;
   int profileCount = 0;
 
   for (NSIndexPath* indexPath in indexPaths) {
@@ -848,6 +857,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       case AutofillAccountWorkProfile:
         hasWorkProfile = YES;
         break;
+      case AutofillAccountNameEmailProfile:
+        hasNameEmailProfile = YES;
+        break;
     }
   }
 
@@ -856,12 +868,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  NSString* deletionConfirmationString =
-      [self getDeletionConfirmationStringForProfileCount:profileCount
-                                         hasLocalProfile:hasLocalProfile
-                                       hasAccountProfile:hasAccountProfile
-                                      hasHomeWorkProfile:(hasHomeProfile ||
-                                                          hasWorkProfile)];
+  BOOL hasHomeWorkNameEmailProfile =
+      (hasHomeProfile || hasWorkProfile || hasNameEmailProfile);
+  NSString* deletionConfirmationString = [self
+      getDeletionConfirmationStringForProfileCount:profileCount
+                                   hasLocalProfile:hasLocalProfile
+                                 hasAccountProfile:hasAccountProfile
+                       hasHomeWorkNameEmailProfile:hasHomeWorkNameEmailProfile];
 
   _deletionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
@@ -885,8 +898,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           : l10n_util::GetPluralNSStringF(
                 IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
                 profileCount);
-  if ((hasHomeProfile || hasWorkProfile) && !hasLocalProfile &&
-      !hasAccountProfile) {
+  if (hasHomeWorkNameEmailProfile && !hasLocalProfile && !hasAccountProfile) {
     confirmationButtonText = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_AUTOFILL_REMOVE_ADDRESS_CONFIRMATION_BUTTON);
     [_deletionSheetCoordinator
@@ -897,9 +909,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
                     [weakSelf dismissDeletionSheet];
                     OpenNewTabCommand* command = [OpenNewTabCommand
                         commandWithURLFromChrome:
-                            GURL(hasHomeProfile
-                                     ? kGoogleMyAccountHomeAddressURL
-                                     : kGoogleMyAccountWorkAddressURL)];
+                            GURL(hasHomeProfile ? kGoogleMyAccountHomeAddressURL
+                                 : hasWorkProfile
+                                     ? kGoogleMyAccountWorkAddressURL
+                                     : kGoogleAccountNameEmailAddressEditURL)];
                     [weakSelf.applicationHandler
                         closePresentedViewsAndOpenURL:command];
                   }
@@ -927,11 +940,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Returns the deletion confirmation message string based on
 // `profileCount` and if it the source has any local, account or home/work
 // profiles.
-- (NSString*)
-    getDeletionConfirmationStringForProfileCount:(int)profileCount
-                                 hasLocalProfile:(BOOL)hasLocalProfile
-                               hasAccountProfile:(BOOL)hasAccountProfile
-                              hasHomeWorkProfile:(BOOL)hasHomeWorkProfile {
+- (NSString*)getDeletionConfirmationStringForProfileCount:(int)profileCount
+                                          hasLocalProfile:(BOOL)hasLocalProfile
+                                        hasAccountProfile:
+                                            (BOOL)hasAccountProfile
+                              hasHomeWorkNameEmailProfile:
+                                  (BOOL)hasHomeWorkNameEmailProfile {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHomeAndWork)) {
     if (hasAccountProfile) {
@@ -948,12 +962,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
         profileCount);
   }
 
-  if (hasLocalProfile && hasAccountProfile && hasHomeWorkProfile) {
+  if (hasLocalProfile && hasAccountProfile && hasHomeWorkNameEmailProfile) {
     return l10n_util::GetNSString(
         IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ACCOUNT_HOME_WORK_ADDRESS_CONFIRMATION_TITLE);
   }
 
-  if (hasLocalProfile && hasHomeWorkProfile) {
+  if (hasLocalProfile && hasHomeWorkNameEmailProfile) {
     return l10n_util::GetNSString(
         IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_HOME_WORK_ADDRESS_CONFIRMATION_TITLE);
   }
@@ -964,7 +978,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::SysNSStringToUTF16(_userEmail));
   }
 
-  if (hasAccountProfile && hasHomeWorkProfile) {
+  if (hasAccountProfile && hasHomeWorkNameEmailProfile) {
     return l10n_util::GetNSString(
         IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_HOME_WORK_ADDRESS_CONFIRMATION_TITLE);
   }
@@ -975,7 +989,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         base::SysNSStringToUTF16(_userEmail));
   }
 
-  if (hasHomeWorkProfile) {
+  if (hasHomeWorkNameEmailProfile) {
     return l10n_util::GetNSString(
         IDS_IOS_SETTINGS_AUTOFILL_DELETE_HOME_WORK_ADDRESS_CONFIRMATION_TITLE);
   }
