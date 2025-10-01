@@ -1178,6 +1178,7 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
   BackgroundRefreshAppAgent* refreshAgent =
       [[BackgroundRefreshAppAgent alloc] init];
   refreshAgent.startupInformation = self;
+  refreshAgent.audience = _appState;
   [_appState addAgent:refreshAgent];
   // Register background refresh providers.
   [refreshAgent addAppRefreshProvider:[[TestRefresher alloc]
