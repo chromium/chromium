@@ -1,5 +1,9 @@
 # Orderfile
 
+[TOC]
+
+## Background
+
 An orderfile is a list of symbols that defines an ordering of functions. One can
 make a static linker, such as LLD, respect this ordering when generating a
 binary.
