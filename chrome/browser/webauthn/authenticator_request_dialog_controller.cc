@@ -430,23 +430,6 @@ std::optional<int> FindIndexOfFirstMechanismOfType(
   return std::nullopt;
 }
 
-// Returns `true` if there are credentials in `mechanisms`, and they all
-// correspond to Windows Hello.
-bool AreAllCredentialsWindowsHello(const std::vector<Mechanism>& mechanisms) {
-  std::vector<const Mechanism::Credential*> credentials;
-  for (const auto& mech : mechanisms) {
-    if (std::holds_alternative<Mechanism::Credential>(mech.type)) {
-      credentials.push_back(&std::get<Mechanism::Credential>(mech.type));
-    }
-  }
-  if (credentials.empty()) {
-    return false;
-  }
-  return std::ranges::all_of(credentials, [](const auto* cred) {
-    return cred->value().source == AuthenticatorType::kWinNative;
-  });
-}
-
 }  // namespace
 
 AuthenticatorRequestDialogController::EphemeralState::EphemeralState() =
@@ -905,10 +888,16 @@ void AuthenticatorRequestDialogController::
         }
       }
     }
-    // If a request includes credentials from Windows Hello only, jump directly
-    // to Windows. There is little point Chrome UI as an extra step.
+    // If a request only includes mechanisms that can be serviced by the Windows
+    // API and local credentials, there is no point showing Chrome UI as an
+    // extra step. Jump to Windows instead.
     if (transport_availability_.has_win_native_api_authenticator &&
-        AreAllCredentialsWindowsHello(model_->mechanisms)) {
+        std::ranges::all_of(model_->mechanisms, [](const auto& mech) {
+          return std::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
+                 (std::holds_alternative<Mechanism::Credential>(mech.type) &&
+                  std::get<Mechanism::Credential>(mech.type).value().source ==
+                      AuthenticatorType::kWinNative);
+        })) {
       ephemeral_state_.did_invoke_platform_despite_no_priority_mechanism_ =
           true;
       StartWinNativeApi();
@@ -2279,13 +2268,6 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
     }
     // If one of the passkeys is a valid default, go to that.
     if (!has_password && !multiple_distinct_creds && best_cred.has_value() &&
-        // Do not set Windows Hello credentials as priority mechanisms. Doing so
-        // narrows the allow-list to that specific credential. But, since
-        // Windows also handles other mechanisms, it's better to avoid narrowing
-        // the allow list.
-        // `StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection()`
-        // will jump to Windows if all the credentials are Windows Hello.
-        best_cred->second->source != AuthenticatorType::kWinNative &&
         (best_cred->second->source != AuthenticatorType::kEnclave ||
          CanDefaultToEnclave(Profile::FromBrowserContext(
                                  GetRenderFrameHost()->GetBrowserContext())
