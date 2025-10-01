@@ -31,8 +31,6 @@ XRFrameTransport::XRFrameTransport(
 XRFrameTransport::~XRFrameTransport() = default;
 
 void XRFrameTransport::PresentChange() {
-  frame_copier_ = nullptr;
-
   // Ensure we don't wait for a frame separator fence when rapidly exiting and
   // re-entering presentation, cf. https://crbug.com/855722.
   waiting_for_previous_frame_fence_ = false;
@@ -65,7 +63,7 @@ bool XRFrameTransport::DrawingIntoSharedBuffer() {
   }
 }
 
-void XRFrameTransport::FramePreImage(gpu::gles2::GLES2Interface* gl) {
+void XRFrameTransport::FramePreImage(XRFrameTransportDelegate* delegate) {
   frame_wait_time_ = base::TimeDelta();
 
   // If we're expecting a fence for the previous frame and it hasn't arrived
@@ -77,80 +75,23 @@ void XRFrameTransport::FramePreImage(gpu::gles2::GLES2Interface* gl) {
   // failed), send it to the GPU service process and ask it to do an
   // asynchronous server wait.
   if (previous_frame_fence_) {
-    DVLOG(3) << "CreateClientGpuFenceCHROMIUM";
-    GLuint id = gl->CreateClientGpuFenceCHROMIUM(
-        previous_frame_fence_->AsClientGpuFence());
-    gl->WaitGpuFenceCHROMIUM(id);
-    gl->DestroyGpuFenceCHROMIUM(id);
-    previous_frame_fence_.reset();
-  }
-}
-
-void XRFrameTransport::FramePreImageWebGPU(
-    scoped_refptr<DawnControlClientHolder> dawn_control_client) {
-  frame_wait_time_ = base::TimeDelta();
-
-  // If we're expecting a fence for the previous frame and it hasn't arrived
-  // yet, wait for it to be received.
-  if (waiting_for_previous_frame_fence_) {
-    frame_wait_time_ += WaitForGpuFenceReceived();
-  }
-  // If we have a GpuFence (it may be missing if WaitForIncomingMethodCall
-  // failed), send it to the GPU service process and ask it to do an
-  // asynchronous server wait.
-  if (previous_frame_fence_) {
-    DVLOG(3) << "CreateClientGpuFenceCHROMIUM";
-
-    // TODO(crbug.com/359418629): Wait on previous_frame_fence_ like the WebGL
-    // path does.
-
+    delegate->WaitOnFence(previous_frame_fence_.get());
     previous_frame_fence_.reset();
   }
 }
 
 void XRFrameTransport::FrameSubmitMissing(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
-    gpu::gles2::GLES2Interface* gl,
+    XRFrameTransportDelegate* delegate,
     int16_t vr_frame_id) {
   TRACE_EVENT0("gpu", "FrameSubmitMissing");
-  gpu::SyncToken sync_token;
-  // https://crbug.com/1132837 : Apparently the GL context is sometimes null
-  // when reaching this method. Avoid a crash in that case, but do send the mojo
-  // message to ensure the XR session stays in sync.
-  if (gl) {
-    gl->GenSyncTokenCHROMIUM(sync_token.GetData());
-  }
-  vr_presentation_provider->SubmitFrameMissing(vr_frame_id, sync_token);
-}
-
-void XRFrameTransport::FrameSubmitMissingWebGPU(
-    device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
-    scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    int16_t vr_frame_id) {
-  TRACE_EVENT0("gpu", "FrameSubmitMissingWebGPU");
-  gpu::SyncToken sync_token;
-
-  if (dawn_control_client) {
-    auto context_provider_weak_ptr =
-        dawn_control_client->GetContextProviderWeakPtr();
-    if (context_provider_weak_ptr) {
-      WebGraphicsContext3DProvider& context_provider =
-          context_provider_weak_ptr->ContextProvider();
-
-      gpu::webgpu::WebGPUInterface* webgpu = context_provider.WebGPUInterface();
-      TRACE_EVENT0("gpu", "GenSyncTokenCHROMIUM");
-      webgpu->GenSyncTokenCHROMIUM(sync_token.GetData());
-    }
-  }
-
-  vr_presentation_provider->SubmitFrameMissing(vr_frame_id, sync_token);
+  vr_presentation_provider->SubmitFrameMissing(vr_frame_id,
+                                               delegate->GenerateSyncToken());
 }
 
 bool XRFrameTransport::FrameSubmit(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
-    gpu::gles2::GLES2Interface* gl,
-    gpu::SharedImageInterface* sii,
-    DrawingBuffer::Client* drawing_buffer_client,
+    XRFrameTransportDelegate* delegate,
     scoped_refptr<StaticBitmapImage> image_ref,
     int16_t vr_frame_id) {
   DCHECK(transport_options_);
@@ -162,23 +103,19 @@ bool XRFrameTransport::FrameSubmit(
     TRACE_EVENT0("gpu", "XRFrameTransport::CopyImage");
     // Update last_transfer_succeeded_ value. This should usually complete
     // without waiting.
-    if (transport_options_->wait_for_transfer_notification)
+    if (transport_options_->wait_for_transfer_notification) {
       WaitForPreviousTransfer();
-    if (!frame_copier_ || !last_transfer_succeeded_) {
-      frame_copier_ = std::make_unique<ImageToBufferCopier>(gl, sii);
     }
+
     auto [gpu_memory_buffer_handle, sync_token] =
-        frame_copier_->CopyImage(image_ref.get());
-    drawing_buffer_client->DrawingBufferClientRestoreTexture2DBinding();
-    drawing_buffer_client->DrawingBufferClientRestoreFramebufferBinding();
-    drawing_buffer_client->DrawingBufferClientRestoreRenderbufferBinding();
+        delegate->CopyImage(image_ref, last_transfer_succeeded_);
 
     // We can fail to obtain a GMB handle if we don't have GPU support, or
     // for some out-of-memory situations.
     // TODO(billorr): Consider whether we should just drop the frame or exit
     // presentation.
     if (gpu_memory_buffer_handle.is_null()) {
-      FrameSubmitMissing(vr_presentation_provider, gl, vr_frame_id);
+      FrameSubmitMissing(vr_presentation_provider, delegate, vr_frame_id);
       // We didn't actually submit anything, so don't set
       // the waiting_for_previous_frame_transfer_ and related state.
       return false;
@@ -211,14 +148,16 @@ bool XRFrameTransport::FrameSubmit(
     // rendering. This is used if submitting fully rendered frames to GVR, but
     // is susceptible to bad GPU scheduling if the new frame competes with the
     // previous frame's incomplete rendering.
-    if (waiting_for_previous_frame_render_)
+    if (waiting_for_previous_frame_render_) {
       frame_wait_time_ += WaitForPreviousRenderToFinish();
+    }
 
     // Save a reference to the image to keep it alive until next frame,
     // but first wait for the transfer to finish before overwriting it.
     // Usually this check is satisfied without waiting.
-    if (transport_options_->wait_for_transfer_notification)
+    if (transport_options_->wait_for_transfer_notification) {
       WaitForPreviousTransfer();
+    }
     previous_image_ = std::move(image_ref);
 
     // Create mailbox and sync token for transfer.
@@ -234,10 +173,9 @@ bool XRFrameTransport::FrameSubmit(
              device::mojom::blink::XRPresentationTransportMethod::
                  DRAW_INTO_TEXTURE_MAILBOX) {
     TRACE_EVENT0("gpu", "XRFrameTransport::SubmitFrameDrawnIntoTexture");
-    gpu::SyncToken sync_token;
-    {
-      TRACE_EVENT0("gpu", "GenSyncTokenCHROMIUM");
-      gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+    gpu::SyncToken sync_token = delegate->GenerateSyncToken();
+    if (!sync_token.HasData()) {
+      return false;
     }
     if (waiting_for_previous_frame_render_) {
       frame_wait_time_ += WaitForPreviousRenderToFinish();
@@ -245,55 +183,6 @@ bool XRFrameTransport::FrameSubmit(
     vr_presentation_provider->SubmitFrameDrawnIntoTexture(
         vr_frame_id, sync_token, frame_wait_time_);
   } else {
-    NOTREACHED() << "Unimplemented frame transport method";
-  }
-
-  // Set the expected notifications the next frame should wait for.
-  waiting_for_previous_frame_transfer_ =
-      transport_options_->wait_for_transfer_notification;
-  waiting_for_previous_frame_render_ =
-      transport_options_->wait_for_render_notification;
-  waiting_for_previous_frame_fence_ = transport_options_->wait_for_gpu_fence;
-  return true;
-}
-
-bool XRFrameTransport::FrameSubmitWebGPU(
-    device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
-    scoped_refptr<DawnControlClientHolder> dawn_control_client,
-    wgpu::Device device,
-    int16_t vr_frame_id) {
-  CHECK(transport_options_);
-
-  if (transport_options_->transport_method ==
-      device::mojom::blink::XRPresentationTransportMethod::
-          DRAW_INTO_TEXTURE_MAILBOX) {
-    TRACE_EVENT0("gpu", "XRFrameTransport::SubmitFrameDrawnIntoTexture");
-
-    gpu::SyncToken sync_token;
-    {
-      auto context_provider_weak_ptr =
-          dawn_control_client->GetContextProviderWeakPtr();
-      if (!context_provider_weak_ptr) {
-        return false;
-      }
-
-      WebGraphicsContext3DProvider& context_provider =
-          context_provider_weak_ptr->ContextProvider();
-
-      gpu::webgpu::WebGPUInterface* webgpu = context_provider.WebGPUInterface();
-      TRACE_EVENT0("gpu", "GenSyncTokenCHROMIUM");
-      webgpu->GenSyncTokenCHROMIUM(sync_token.GetData());
-    }
-
-    if (waiting_for_previous_frame_render_) {
-      frame_wait_time_ += WaitForPreviousRenderToFinish();
-    }
-
-    vr_presentation_provider->SubmitFrameDrawnIntoTexture(
-        vr_frame_id, sync_token, frame_wait_time_);
-  } else {
-    // WebGPU sessions don't support SUBMIT_AS_TEXTURE_HANDLE or
-    // SUBMIT_AS_MAILBOX_HOLDER yet.
     NOTREACHED() << "Unimplemented frame transport method";
   }
 

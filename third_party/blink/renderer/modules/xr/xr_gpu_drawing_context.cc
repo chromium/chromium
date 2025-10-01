@@ -4,17 +4,10 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_gpu_drawing_context.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_gpu_projection_layer_init.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
-#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
-#include "third_party/blink/renderer/modules/xr/xr_session.h"
-#include "third_party/blink/renderer/modules/xr/xr_system.h"
-#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
-#include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_gpu_frame_transport_delegate.h"
 
 namespace blink {
 
@@ -26,10 +19,7 @@ XRGPUDrawingContext::XRGPUDrawingContext(
       color_swap_chain_(color_swap_chain),
       depth_stencil_swap_chain_(depth_stencil_swap_chain) {
   CHECK(color_swap_chain_);
-}
-
-enum XRGraphicsBinding::Api XRGPUDrawingContext::GraphicsApi() const {
-  return XRGraphicsBinding::Api::kWebGPU;
+  transport_delegate_ = MakeGarbageCollected<XrGpuFrameTransportDelegate>(this);
 }
 
 uint16_t XRGPUDrawingContext::TextureWidth() const {
@@ -69,11 +59,36 @@ void XRGPUDrawingContext::OnFrameEnd() {
   }
 }
 
+XRSession* XRGPUDrawingContext::session() const {
+  return color_swap_chain_->layer()->session();
+}
+
+scoped_refptr<StaticBitmapImage>
+XRGPUDrawingContext::TransferToStaticBitmapImage() {
+  // TransferToStaticBitmapImage is only used with SUBMIT_AS_TEXTURE_HANDLE,
+  // which we don't support.
+  NOTREACHED();
+}
+
+XRFrameTransportDelegate* XRGPUDrawingContext::GetTransportDelegate() {
+  return transport_delegate_;
+}
+
+scoped_refptr<DawnControlClientHolder>
+XRGPUDrawingContext::GetDawnControlClient() const {
+  if (!device_) {
+    return nullptr;
+  }
+  return device_->GetDawnControlClient();
+}
+
 void XRGPUDrawingContext::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(color_swap_chain_);
   visitor->Trace(depth_stencil_swap_chain_);
+  visitor->Trace(transport_delegate_);
   XRLayerDrawingContext::Trace(visitor);
+  XRGpuFrameTransportContext::Trace(visitor);
 }
 
 }  // namespace blink

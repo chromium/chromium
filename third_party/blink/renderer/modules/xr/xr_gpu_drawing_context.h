@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GPU_DRAWING_CONTEXT_H_
 
 #include "third_party/blink/renderer/modules/xr/xr_layer_drawing_context.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_gpu_frame_transport_delegate.h"
 
 namespace blink {
 
@@ -13,15 +14,15 @@ class GPUDevice;
 class XRCompositionLayer;
 class XRGPUBinding;
 class XRGPUSwapChain;
+class XRSession;
 
-class XRGPUDrawingContext final : public XRLayerDrawingContext {
+class XRGPUDrawingContext final : public XRLayerDrawingContext,
+                                  public XRGpuFrameTransportContext {
  public:
   XRGPUDrawingContext(XRGPUBinding*,
                       XRGPUSwapChain* color_swap_chain,
                       XRGPUSwapChain* depth_stencil_swap_chain);
-  ~XRGPUDrawingContext() = default;
-
-  enum XRGraphicsBinding::Api GraphicsApi() const override;
+  ~XRGPUDrawingContext() override = default;
 
   uint16_t TextureWidth() const override;
   uint16_t TextureHeight() const override;
@@ -33,6 +34,14 @@ class XRGPUDrawingContext final : public XRLayerDrawingContext {
   void OnFrameEnd() override;
 
   bool TextureWasQueried() const override;
+
+  // XrLayerClient overrides.
+  XRSession* session() const override;
+  scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  XRFrameTransportDelegate* GetTransportDelegate() override;
+
+  // XRGpuFrameTransportContext overrides.
+  scoped_refptr<DawnControlClientHolder> GetDawnControlClient() const override;
 
   GPUDevice* device() { return device_; }
 
@@ -47,6 +56,7 @@ class XRGPUDrawingContext final : public XRLayerDrawingContext {
   Member<GPUDevice> device_;
   Member<XRGPUSwapChain> color_swap_chain_;
   Member<XRGPUSwapChain> depth_stencil_swap_chain_;
+  Member<XrGpuFrameTransportDelegate> transport_delegate_;
 };
 
 }  // namespace blink

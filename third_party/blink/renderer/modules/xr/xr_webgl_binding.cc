@@ -215,7 +215,7 @@ XRProjectionLayer* XRWebGLBinding::createProjectionLayer(
   }
 
   auto* drawing_context = MakeGarbageCollected<XRWebGLDrawingContext>(
-      this, color_swap_chain, depth_stencil_swap_chain);
+      webgl_context_, color_swap_chain, depth_stencil_swap_chain);
 
   return MakeGarbageCollected<XRProjectionLayer>(this, drawing_context);
 }

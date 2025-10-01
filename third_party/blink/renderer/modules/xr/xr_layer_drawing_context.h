@@ -5,18 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_LAYER_DRAWING_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_LAYER_DRAWING_CONTEXT_H_
 
-#include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_composition_layer.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
-class XRCompositionLayer;
-
-class XRLayerDrawingContext : public GarbageCollected<XRLayerDrawingContext> {
+class XRLayerDrawingContext : public GarbageCollected<XRLayerDrawingContext>,
+                              public XrLayerClient {
  public:
-  virtual enum XRGraphicsBinding::Api GraphicsApi() const = 0;
-
   virtual void OnFrameStart() = 0;
   virtual void OnFrameEnd() = 0;
 

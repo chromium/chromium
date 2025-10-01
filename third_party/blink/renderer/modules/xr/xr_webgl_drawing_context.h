@@ -6,31 +6,24 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_DRAWING_CONTEXT_H_
 
 #include "third_party/blink/renderer/modules/xr/xr_layer_drawing_context.h"
-#include "third_party/blink/renderer/modules/xr/xr_webgl_layer_client.h"
 
 namespace blink {
 
 class WebGLRenderingContextBase;
-class XRWebGLBinding;
 class XRWebGLSwapChain;
 class XRCompositionLayer;
+class XRWebGLFrameTransportDelegate;
 
-class XRWebGLDrawingContext final : public XRLayerDrawingContext,
-                                    public XRWebGLLayerClient {
+class XRWebGLDrawingContext final : public XRLayerDrawingContext {
  public:
-  XRWebGLDrawingContext(XRWebGLBinding*,
+  XRWebGLDrawingContext(WebGLRenderingContextBase*,
                         XRWebGLSwapChain* color_swap_chain,
                         XRWebGLSwapChain* depth_stencil_swap_chain);
-  ~XRWebGLDrawingContext() = default;
+  ~XRWebGLDrawingContext() override = default;
 
-  enum XRGraphicsBinding::Api GraphicsApi() const override;
-
-  // XRWebGLLayerClient implementation.
-  const XRLayer* layer() const override;
-  WebGLRenderingContextBase* context() const override {
-    return webgl_context_.Get();
-  }
+  XRSession* session() const override;
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage() override;
+  XRFrameTransportDelegate* GetTransportDelegate() override;
 
   uint16_t TextureWidth() const override;
   uint16_t TextureHeight() const override;
@@ -54,6 +47,7 @@ class XRWebGLDrawingContext final : public XRLayerDrawingContext,
   Member<WebGLRenderingContextBase> webgl_context_;
   Member<XRWebGLSwapChain> color_swap_chain_;
   Member<XRWebGLSwapChain> depth_stencil_swap_chain_;
+  Member<XRWebGLFrameTransportDelegate> transport_delegate_;
 };
 
 }  // namespace blink

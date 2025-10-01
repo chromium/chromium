@@ -23,14 +23,15 @@
 #include "third_party/blink/renderer/modules/xr/xr_gpu_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_client.h"
 #include "third_party/blink/renderer/modules/xr/xr_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_drawing_context.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
-#include "third_party/blink/renderer/modules/xr/xr_webgl_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport_delegate.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/transform.h"
@@ -640,36 +641,20 @@ double XRFrameProvider::UpdateImmersiveFrameTime(
   return high_res_now_ms;
 }
 
-void XRFrameProvider::SubmitCompositionLayer(XRCompositionLayer* layer) {
-  CHECK(layer);
-  CHECK(layer->drawing_context());
-
-  if (layer->drawing_context()->GraphicsApi() ==
-      XRGraphicsBinding::Api::kWebGL) {
-    auto* drawing_context =
-        static_cast<XRWebGLDrawingContext*>(layer->drawing_context());
-    SubmitWebGLLayer(drawing_context, drawing_context->TextureWasQueried());
-  } else {
-    SubmitWebGPULayer(layer);
-  }
-}
-
-void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayerClient* layer_client,
-                                       bool was_changed) {
-  CHECK(layer_client);
+void XRFrameProvider::SubmitLayer(XrLayerClient* client, bool was_changed) {
+  CHECK(client);
+  XRFrameTransportDelegate* delegate = client->GetTransportDelegate();
+  CHECK(delegate);
   CHECK(immersive_session_);
-  const XRLayer* layer = layer_client->layer();
-  CHECK(layer);
+  CHECK(client->session());
 
-  CHECK_EQ(layer->session(), immersive_session_);
-  CHECK_EQ(layer->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGL);
-  if (!immersive_presentation_provider_.is_bound())
+  CHECK_EQ(client->session(), immersive_session_);
+  if (!immersive_presentation_provider_.is_bound()) {
     return;
+  }
 
-  TRACE_EVENT1("gpu", "XRFrameProvider::SubmitWebGLLayer", "frame", frame_id_);
+  TRACE_EVENT1("gpu", "XRFrameProvider::SubmitLayer", "frame", frame_id_);
   DVLOG(3) << __func__ << ": frame=" << frame_id_;
-
-  WebGLRenderingContextBase* webgl_context = layer_client->context();
 
   if (frame_id_ < 0) {
     // There is no valid frame_id_, and the browser side is not currently
@@ -684,47 +669,38 @@ void XRFrameProvider::SubmitWebGLLayer(XRWebGLLayerClient* layer_client,
     // Just tell the device side that there was no submitted frame instead of
     // executing the implicit end-of-frame submit.
     frame_transport_->FrameSubmitMissing(immersive_presentation_provider_.get(),
-                                         webgl_context->ContextGL(), frame_id_);
+                                         delegate, frame_id_);
     dropped_frames_++;
 
     return;
   }
 
-  frame_transport_->FramePreImage(webgl_context->ContextGL());
+  frame_transport_->FramePreImage(delegate);
 
-  if (frame_transport_->DrawingIntoSharedBuffer()) {
-    // Image is written to shared buffer already. Just submit with a
-    // placeholder.
-    scoped_refptr<StaticBitmapImage> image_ref;
-    DVLOG(3) << __func__ << ": FrameSubmit for SharedBuffer mode";
-    bool succeeded = frame_transport_->FrameSubmit(
-        immersive_presentation_provider_.get(), webgl_context->ContextGL(),
-        webgl_context->SharedImageInterface(), webgl_context,
-        std::move(image_ref), frame_id_);
-    succeeded ? num_frames_++ : dropped_frames_++;
-    if (succeeded) {
-      submit_frame_time_.StartTimer();
+  // When drawing into the shared buffer, the image will already be in that.
+  // We can use an empty placeholder in that case to simplify our logic.
+  // Otherwise, we need to copy and validate the image_ref.
+  scoped_refptr<StaticBitmapImage> image_ref;
+  if (!frame_transport_->DrawingIntoSharedBuffer()) {
+    CHECK_NE(client->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGPU)
+        << "WebGPU layers only support shared buffer submission modes";
+
+    image_ref = client->TransferToStaticBitmapImage();
+
+    if (!image_ref) {
+      return;
     }
 
-    return;
+    // Hardware-accelerated rendering should always be texture backed. Don't
+    // attempt to render if using an unexpected drawing path.
+    if (!image_ref->IsTextureBacked()) {
+      NOTREACHED() << "WebXR requires hardware-accelerated texture rendering";
+    }
   }
 
-  scoped_refptr<StaticBitmapImage> image_ref =
-      layer_client->TransferToStaticBitmapImage();
-
-  if (!image_ref)
-    return;
-
-  // Hardware-accelerated rendering should always be texture backed. Ensure this
-  // is the case, don't attempt to render if using an unexpected drawing path.
-  if (!image_ref->IsTextureBacked()) {
-    NOTREACHED() << "WebXR requires hardware-accelerated rendering to texture";
-  }
-
-  bool succeeded = frame_transport_->FrameSubmit(
-      immersive_presentation_provider_.get(), webgl_context->ContextGL(),
-      webgl_context->SharedImageInterface(), webgl_context,
-      std::move(image_ref), frame_id_);
+  bool succeeded =
+      frame_transport_->FrameSubmit(immersive_presentation_provider_.get(),
+                                    delegate, std::move(image_ref), frame_id_);
 
   succeeded ? num_frames_++ : dropped_frames_++;
   if (succeeded) {
@@ -770,69 +746,6 @@ void XRFrameProvider::UpdateWebGLLayerViewports(XRWebGLLayer* layer) {
 
   immersive_presentation_provider_->UpdateLayerBounds(
       frame_id_, left_coords, right_coords, gfx::Size(width, height));
-}
-
-void XRFrameProvider::SubmitWebGPULayer(XRCompositionLayer* layer) {
-  CHECK(layer);
-  CHECK(immersive_session_);
-  CHECK_EQ(layer->session(), immersive_session_);
-  CHECK_EQ(layer->session()->GraphicsApi(), XRGraphicsBinding::Api::kWebGPU);
-  if (!immersive_presentation_provider_.is_bound()) {
-    return;
-  }
-
-  // A static_cast is safe here because the drawing context type was already
-  // checked by SubmitCompositionLayer.
-  auto* drawing_context =
-      static_cast<XRGPUDrawingContext*>(layer->drawing_context());
-  CHECK(drawing_context);
-
-  bool was_queried = drawing_context->TextureWasQueried();
-
-  TRACE_EVENT1("gpu", "XRFrameProvider::SubmitWebGPULayer", "frame", frame_id_);
-  DVLOG(3) << __func__ << ": frame=" << frame_id_;
-
-  GPUDevice* device = drawing_context->device();
-
-  if (frame_id_ < 0) {
-    // There is no valid frame_id_, and the browser side is not currently
-    // expecting a frame to be submitted. That can happen for the first
-    // immersive frame if the animation loop submits without a preceding
-    // immersive GetFrameData response, in that case frame_id_ is -1 (see
-    // https://crbug.com/855722).
-    return;
-  }
-
-  if (!was_queried) {
-    // Just tell the device side that there was no submitted frame instead of
-    // executing the implicit end-of-frame submit.
-    frame_transport_->FrameSubmitMissingWebGPU(
-        immersive_presentation_provider_.get(), device->GetDawnControlClient(),
-        frame_id_);
-    dropped_frames_++;
-    return;
-  }
-
-  frame_transport_->FramePreImageWebGPU(device->GetDawnControlClient());
-
-  if (!frame_transport_->DrawingIntoSharedBuffer()) {
-    NOTREACHED()
-        << "WebXR/WebGPU bindings only supports the DRAW_INTO_TEXTURE_MAILBOX "
-        << "XRPresentationTransportMethod at this time.";
-  }
-
-  DVLOG(3) << __func__ << ": FrameSubmitWebGPU for SharedBuffer mode";
-  bool succeeded = frame_transport_->FrameSubmitWebGPU(
-      immersive_presentation_provider_.get(), device->GetDawnControlClient(),
-      device->GetHandle(), frame_id_);
-  succeeded ? num_frames_++ : dropped_frames_++;
-  if (succeeded) {
-    submit_frame_time_.StartTimer();
-  }
-
-  // Reset our frame id, since anything we'd want to do (resizing/etc) can
-  // no-longer happen to this frame.
-  frame_id_ = -1;
 }
 
 // TODO(bajones): This only works because we're restricted to a single layer at

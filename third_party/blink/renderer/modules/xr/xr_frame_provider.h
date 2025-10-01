@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/xr/average_timer.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/xr_frame_transport_delegate.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -29,8 +30,7 @@ class XRProjectionLayer;
 class XRSession;
 class XRSystem;
 class XRWebGLLayer;
-class XRWebGLLayerClient;
-class XRCompositionLayer;
+class XrLayerClient;
 
 // This class manages requesting and dispatching frame updates, which includes
 // pose information for a given XRDevice.
@@ -62,9 +62,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
 
   void OnNonImmersiveVSync(double high_res_now_ms);
 
-  void SubmitCompositionLayer(XRCompositionLayer*);
+  void SubmitLayer(XrLayerClient*, bool was_changed);
 
-  void SubmitWebGLLayer(XRWebGLLayerClient*, bool was_changed);
   void UpdateWebGLLayerViewports(XRWebGLLayer*);
 
   // Used for both WebGPU and WebGL layers.
@@ -90,8 +89,6 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
     kInline = 0,
     kImmersive = 1,
   };
-
-  void SubmitWebGPULayer(XRCompositionLayer*);
 
   void OnImmersiveFrameData(device::mojom::blink::XRFrameDataPtr data);
   void OnNonImmersiveFrameData(XRSession* session,

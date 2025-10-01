@@ -114,7 +114,8 @@ void XRCompositionLayer::OnFrameEnd() {
     }
   }
 
-  frame_provider->SubmitCompositionLayer(this);
+  frame_provider->SubmitLayer(drawing_context_,
+                              drawing_context_->TextureWasQueried());
 }
 
 void XRCompositionLayer::Trace(Visitor* visitor) const {
