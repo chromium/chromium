@@ -17,16 +17,6 @@ const CGFloat kAppearanceAnimationDuration = 0.3f;
 
 @implementation ToolbarProgressBar
 
-- (void)setProgress:(float)progress
-           animated:(BOOL)animated
-         completion:(void (^)(BOOL finished))completion {
-  [UIView animateWithDuration:animated ? kAppearanceAnimationDuration : 0
-                   animations:^{
-                     [self setProgress:progress animated:animated];
-                   }
-                   completion:completion];
-}
-
 - (void)setHidden:(BOOL)hidden
          animated:(BOOL)animated
        completion:(void (^)(BOOL finished))userCompletion {
@@ -39,6 +29,9 @@ const CGFloat kAppearanceAnimationDuration = 0.3f;
       userCompletion(YES);
     }
     return;
+  }
+  if (!hidden) {
+    self.hidden = NO;
   }
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kAppearanceAnimationDuration

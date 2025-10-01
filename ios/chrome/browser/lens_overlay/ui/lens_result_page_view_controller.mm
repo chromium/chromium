@@ -386,7 +386,7 @@ const CGFloat kGrabberTopPadding = 5;
 
 - (void)setLoadingProgress:(float)progress {
   [self updateProgressBarVisibilityForProgress:progress];
-  [_progressBar setProgress:progress animated:YES completion:nil];
+  [_progressBar setProgress:progress animated:YES];
 }
 
 - (void)updateProgressBarVisibilityForProgress:(float)progress {
