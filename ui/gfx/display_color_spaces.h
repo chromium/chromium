@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/buffer_types.h"
@@ -60,6 +61,12 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   // |color_space| is the default (invalid) color space, then initialize to
   // sRGB.
   DisplayColorSpaces(const ColorSpace& color_space, BufferFormat buffer_format);
+
+  // Initialize as |color_space| and |format| (which must be single-plane) for
+  // all settings. If |color_space| is the default (invalid) color space, then
+  // initialize to sRGB.
+  DisplayColorSpaces(const ColorSpace& color_space,
+                     viz::SharedImageFormat format);
 
   // Set the color space and buffer format for the final output surface when the
   // specified content is being displayed.
