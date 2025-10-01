@@ -322,6 +322,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case autofill::AutofillProfile::RecordType::kAccountNameEmail:
       item.autofillProfileRecordType =
           AutofillAddressProfileRecordType::AutofillAccountNameEmailProfile;
+      item.detailText = base::SysUTF16ToNSString(
+          autofillProfile.GetInfo(autofill::EMAIL_ADDRESS, locale));
       break;
 
     default:
