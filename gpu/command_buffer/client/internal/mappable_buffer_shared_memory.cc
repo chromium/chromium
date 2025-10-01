@@ -110,6 +110,23 @@ MappableBufferSharedMemory::CreateFromHandle(gfx::GpuMemoryBufferHandle handle,
       base::WritableSharedMemoryMapping(), offset, stride));
 }
 
+std::unique_ptr<MappableBufferSharedMemory>
+MappableBufferSharedMemory::CreateFromMapping(
+    base::WritableSharedMemoryMapping shared_memory_mapping,
+    const gfx::Size& size,
+    viz::SharedImageFormat format) {
+  CHECK(shared_memory_mapping.IsValid());
+  std::optional<size_t> stride =
+      viz::SharedMemoryRowSizeForSharedImageFormat(format, 0, size.width());
+  if (!stride) {
+    return nullptr;
+  }
+
+  return base::WrapUnique(new MappableBufferSharedMemory(
+      size, format, base::UnsafeSharedMemoryRegion(),
+      std::move(shared_memory_mapping), /*offset=*/0, stride.value()));
+}
+
 // static
 base::OnceClosure MappableBufferSharedMemory::AllocateForTesting(
     const gfx::Size& size,

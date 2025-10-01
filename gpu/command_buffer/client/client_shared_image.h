@@ -116,9 +116,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
 
     static std::unique_ptr<ScopedMapping> Create(
         SharedImageMetadata metadata_,
-        base::WritableSharedMemoryMapping* mapping);
-    static std::unique_ptr<ScopedMapping> Create(
-        SharedImageMetadata metadata_,
         MappableBuffer* mappable_buffer,
         bool is_already_mapped);
     static void StartCreateAsync(
@@ -396,7 +393,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   SyncToken destruction_sync_token_;
 
   std::unique_ptr<MappableBuffer> mappable_buffer_;
-  base::WritableSharedMemoryMapping shared_memory_mapping_;
   std::optional<gfx::BufferUsage> buffer_usage_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 

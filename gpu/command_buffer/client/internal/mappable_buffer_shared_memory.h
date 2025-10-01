@@ -65,6 +65,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferSharedMemory
       const gfx::Size& size,
       viz::SharedImageFormat format);
 
+  static std::unique_ptr<MappableBufferSharedMemory> CreateFromMapping(
+      base::WritableSharedMemoryMapping shared_memory_mapping,
+      const gfx::Size& size,
+      viz::SharedImageFormat format);
+
   MappableBufferSharedMemory(
       const gfx::Size& size,
       viz::SharedImageFormat format,
