@@ -237,6 +237,7 @@ def _run_prompt_eval_tests(args: argparse.Namespace) -> int:
     """
     configs_to_run = _get_tests_to_run(args.shard_index, args.total_shards,
                                        args.filter)
+    configs_to_run = configs_to_run * (args.isolated_script_test_repeat + 1)
     if len(configs_to_run) == 0:
         logging.info('No tests to run after filtering and sharding')
         return 1
@@ -395,6 +396,10 @@ def _parse_args() -> argparse.Namespace:
                        type=int,
                        default=0,
                        help='Number of times to retry a failed test.')
+    group.add_argument('--isolated-script-test-repeat',
+                       type=int,
+                       default=0,
+                       help='The number of times to repeat each test.')
 
     return parser.parse_args()
 

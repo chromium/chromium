@@ -480,6 +480,7 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.args.parallel_workers = 1
         self.args.gemini_cli_bin = None
         self.args.promptfoo_bin = None
+        self.args.isolated_script_test_repeat = 0
 
     def _setUpPatches(self):
         """Set up patches for the tests."""
@@ -714,6 +715,23 @@ class RunPromptEvalTestsUnittest(unittest.TestCase):
         self.assertEqual(self.mock_worker_pool.call_args[0][2].gemini_cli_bin,
                          pathlib.Path('/custom/gemini'))
 
+    def test_run_prompt_eval_tests_with_repeat(self):
+        """Tests that tests are repeated correctly."""
+        self.args.isolated_script_test_repeat = 3
+        self.mock_get_tests_to_run.return_value = [
+            pathlib.Path('/test/a.yaml')
+        ]
+        self.mock_worker_pool.return_value.wait_for_all_queued_tests.\
+            return_value = []
+
+        with self.assertLogs(level='INFO') as cm:
+            returncode = eval_prompts._run_prompt_eval_tests(self.args)
+            self.assertIn('Successfully ran 4 tests', cm.output[-1])
+
+        self.mock_worker_pool.return_value.queue_tests.assert_called_once_with(
+            [pathlib.Path('/test/a.yaml')] * 4)
+        self.assertEqual(returncode, 0)
+
 
 class ParseArgsUnittest(unittest.TestCase):
     """Unit tests for the `_parse_args` function."""
@@ -743,6 +761,7 @@ class ParseArgsUnittest(unittest.TestCase):
         self.assertIsNone(args.gemini_cli_bin)
         self.assertEqual(args.parallel_workers, 1)
         self.assertEqual(args.retries, 0)
+        self.assertEqual(args.isolated_script_test_repeat, 0)
 
     def test_parse_args_all_checkout_args(self):
         """Tests that all checkout arguments are parsed correctly."""
@@ -809,11 +828,13 @@ class ParseArgsUnittest(unittest.TestCase):
     def test_parse_args_all_test_runner_args(self):
         """Tests that all test runner arguments are parsed correctly."""
         self.mock_argv[:] = [
-            'eval_prompts.py', '--parallel-workers', '4', '--retries', '2'
+            'eval_prompts.py', '--parallel-workers', '4', '--retries', '2',
+            '--isolated-script-test-repeat', '3'
         ]
         args = eval_prompts._parse_args()
         self.assertEqual(args.parallel_workers, 4)
         self.assertEqual(args.retries, 2)
+        self.assertEqual(args.isolated_script_test_repeat, 3)
 
     def test_parse_args_promptfoo_bin(self):
         """Tests --promptfoo-bin."""
