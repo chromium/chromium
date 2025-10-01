@@ -1208,6 +1208,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/android_webview/tools/orderfiles/arm': {
+      'packages': [
+          {
+              'package': 'chromium/android_webview/tools/orderfiles/arm',
+              'version': 'P-oTL3gaTu66Rfl7KSEEFRcd7t36HWHTwx_Dqqf2th4C',
+          },
+      ],
+      'condition': 'checkout_android',
+      'dep_type': 'cipd',
+  },
+
   'src/android_webview/tools/orderfiles/arm64': {
       'packages': [
           {
