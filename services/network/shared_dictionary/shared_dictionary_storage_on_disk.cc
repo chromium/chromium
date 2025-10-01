@@ -17,6 +17,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/types/expected.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/io_buffer.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
@@ -24,7 +25,6 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "url/scheme_host_port.h"
 
 namespace network {
@@ -73,7 +73,7 @@ std::set<mojom::RequestDestination> ToRequestDestinationSet(
 
 SharedDictionaryStorageOnDisk::WrappedDictionaryInfo::WrappedDictionaryInfo(
     net::SharedDictionaryInfo info,
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher)
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher)
     : net::SharedDictionaryInfo(std::move(info)),
       matcher_(std::move(matcher)),
       match_dest_(ToRequestDestinationSet(match_dest_string())) {}
@@ -218,7 +218,7 @@ SharedDictionaryStorageOnDisk::CreateWriter(
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id,
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher) {
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) {
   CHECK(matcher);
   if (!manager_) {
     return base::unexpected(
@@ -265,9 +265,9 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
     const url::SchemeHostPort scheme_host_port =
         url::SchemeHostPort(info.url());
     const std::string match = info.match();
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher;
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher;
     auto matcher_create_result =
-        SimpleUrlPatternMatcher::Create(match, info.url());
+        url_pattern::SimpleUrlPatternMatcher::Create(match, info.url());
     if (!matcher_create_result.has_value()) {
       continue;
     }
@@ -285,7 +285,7 @@ void SharedDictionaryStorageOnDisk::OnDatabaseRead(
 }
 
 void SharedDictionaryStorageOnDisk::OnDictionaryWritten(
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher,
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher,
     net::SharedDictionaryInfo info) {
   WrappedDictionaryInfo wrapped_info(std::move(info), std::move(matcher));
   const url::SchemeHostPort scheme_host_port =

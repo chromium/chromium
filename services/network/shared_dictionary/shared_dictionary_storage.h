@@ -26,6 +26,10 @@ class HttpResponseHeaders;
 class SharedDictionary;
 }  // namespace net
 
+namespace url_pattern {
+class SimpleUrlPatternMatcher;
+}
+
 namespace network {
 namespace mojom {
 enum class FetchResponseType : int32_t;
@@ -35,7 +39,6 @@ enum class SharedDictionaryError : int32_t;
 }  // namespace mojom
 
 class SharedDictionaryWriter;
-class SimpleUrlPatternMatcher;
 
 // Shared Dictionary Storage manages dictionaries for a particular
 // net::SharedDictionaryIsolationKey.
@@ -87,14 +90,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   // Called to create a SharedDictionaryWriter.
   virtual base::expected<scoped_refptr<SharedDictionaryWriter>,
                          mojom::SharedDictionaryError>
-  CreateWriter(const GURL& url,
-               base::Time last_fetch_time,
-               base::Time response_time,
-               base::TimeDelta expiration,
-               const std::string& match,
-               const std::set<mojom::RequestDestination>& match_dest,
-               const std::string& id,
-               std::unique_ptr<SimpleUrlPatternMatcher> matcher) = 0;
+  CreateWriter(
+      const GURL& url,
+      base::Time last_fetch_time,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
+      std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) = 0;
 
   // If the matching dictionary is already registered, this method updates the
   // `last_fetch_time` of the registered dictionary, and returns true.

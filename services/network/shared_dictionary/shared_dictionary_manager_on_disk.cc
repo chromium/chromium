@@ -15,13 +15,13 @@
 #include "base/task/thread_pool.h"
 #include "base/token.h"
 #include "base/unguessable_token.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/shared_dictionary/shared_dictionary_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 
 namespace network {
 namespace {

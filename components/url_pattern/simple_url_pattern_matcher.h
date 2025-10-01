@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SIMPLE_URL_PATTERN_MATCHER_H_
-#define SERVICES_NETWORK_SHARED_DICTIONARY_SIMPLE_URL_PATTERN_MATCHER_H_
+#ifndef COMPONENTS_URL_PATTERN_SIMPLE_URL_PATTERN_MATCHER_H_
+#define COMPONENTS_URL_PATTERN_SIMPLE_URL_PATTERN_MATCHER_H_
 
 #include <memory>
 #include <string>
@@ -22,15 +22,17 @@ namespace re2 {
 class RE2;
 }
 
-namespace network {
+namespace url_pattern {
 
 // This class partially implements URL Pattern spec which is needed for
 // Dictionary URL matching of Compression Dictionary Transport.
 // https://urlpattern.spec.whatwg.org/
 // https://www.ietf.org/archive/id/draft-ietf-httpbis-compression-dictionary-01.html#name-dictionary-url-matching
+// It's also used in blink's inspector. The inspector uses it with string inputs
+// instead of JS objects, which makes blink::SafeUrlPattern impractical.
 //
-// This class can be created from a constructor string and a base URL.
-// And can run the `test` method of URLPattern only with a URL.
+// This class can be created from a constructor string and a base URL
+// and can run the `test` method of URLPattern only with a URL.
 //
 // This class doesn't support regexp groups, because this class is used in the
 // network service, and there is a security concern in allowing user-defined
@@ -47,12 +49,12 @@ namespace network {
 // ServiceWorker static routing API. But if we will have more usecases of
 // URLPattern, we may need to consider combining those logics.
 // Context: https://crrev.com/c/5209732/comment/2d53e11c_e4b8c868/
-class COMPONENT_EXPORT(NETWORK_SERVICE) SimpleUrlPatternMatcher {
+class SimpleUrlPatternMatcher {
  public:
   // This class partially represents `URLPatternInit` in the URL Pattern spec.
   // https://urlpattern.spec.whatwg.org/#dictdef-urlpatterninit
   // The only difference is that this class doesn't have a `baseURL` field.
-  class COMPONENT_EXPORT(NETWORK_SERVICE) PatternInit {
+  class PatternInit {
    public:
     PatternInit(std::optional<std::string> protocol,
                 std::optional<std::string> username,
@@ -92,7 +94,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SimpleUrlPatternMatcher {
 
   // This class represents `component` struct in the URL Pattern spec.
   // https://urlpattern.spec.whatwg.org/#component
-  class COMPONENT_EXPORT(NETWORK_SERVICE) Component {
+  class Component {
    public:
     // Compile a component from a pattern.
     // https://urlpattern.spec.whatwg.org/#compile-a-component
@@ -183,6 +185,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SimpleUrlPatternMatcher {
   Component hash_;
 };
 
-}  // namespace network
+}  // namespace url_pattern
 
-#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SIMPLE_URL_PATTERN_MATCHER_H_
+#endif  // COMPONENTS_URL_PATTERN_SIMPLE_URL_PATTERN_MATCHER_H_

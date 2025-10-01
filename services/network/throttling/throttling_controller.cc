@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/http/http_request_info.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "services/network/throttling/network_conditions.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/throttling/throttling_network_interceptor.h"
@@ -129,8 +129,8 @@ void ThrottlingController::ThrottlingProfile::SetNetworkConditions(
   // same time. If this grows too large me need to build maps from the
   // conditions here.
   for (auto& [pattern, network_conditions] : conditions) {
-    auto pattern_matcher =
-        SimpleUrlPatternMatcher::Create(pattern, GURL("https://*"));
+    auto pattern_matcher = url_pattern::SimpleUrlPatternMatcher::Create(
+        pattern, GURL("https://*"));
     if (!pattern.empty() &&
         (!pattern_matcher.has_value() || !*pattern_matcher)) {
       continue;

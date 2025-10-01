@@ -27,6 +27,10 @@ namespace net {
 class IOBuffer;
 }  // namespace net
 
+namespace url_pattern {
+class SimpleUrlPatternMatcher;
+}
+
 namespace network {
 namespace cors {
 class CorsURLLoaderSharedDictionaryTest;
@@ -34,7 +38,6 @@ class CorsURLLoaderSharedDictionaryTest;
 
 class SharedDictionaryInMemory;
 class SharedDictionaryManagerInMemory;
-class SimpleUrlPatternMatcher;
 
 // A SharedDictionaryStorage which is managed by
 // SharedDictionaryManagerInMemory.
@@ -43,18 +46,19 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   // This class is used to keep the dictionary information in memory.
   class DictionaryInfo {
    public:
-    DictionaryInfo(const GURL& url,
-                   base::Time last_fetch_time,
-                   base::Time response_time,
-                   base::TimeDelta expiration,
-                   const std::string& match,
-                   std::set<mojom::RequestDestination> match_dest,
-                   const std::string& id,
-                   base::Time last_used_time,
-                   scoped_refptr<net::IOBuffer> data,
-                   size_t size,
-                   const net::SHA256HashValue& hash,
-                   std::unique_ptr<SimpleUrlPatternMatcher> matcher);
+    DictionaryInfo(
+        const GURL& url,
+        base::Time last_fetch_time,
+        base::Time response_time,
+        base::TimeDelta expiration,
+        const std::string& match,
+        std::set<mojom::RequestDestination> match_dest,
+        const std::string& id,
+        base::Time last_used_time,
+        scoped_refptr<net::IOBuffer> data,
+        size_t size,
+        const net::SHA256HashValue& hash,
+        std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher);
 
     DictionaryInfo(const DictionaryInfo&) = delete;
     DictionaryInfo& operator=(const DictionaryInfo&) = delete;
@@ -76,7 +80,9 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     const base::Time& last_used_time() const { return last_used_time_; }
     size_t size() const { return dictionary_->size(); }
     const net::SHA256HashValue& hash() const { return dictionary_->hash(); }
-    const SimpleUrlPatternMatcher* matcher() const { return matcher_.get(); }
+    const url_pattern::SimpleUrlPatternMatcher* matcher() const {
+      return matcher_.get();
+    }
 
     void set_response_time(base::Time response_time) {
       response_time_ = response_time;
@@ -100,7 +106,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
     std::string match_;
     std::set<mojom::RequestDestination> match_dest_;
     base::Time last_used_time_;
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher_;
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher_;
 
     scoped_refptr<SharedDictionaryInMemory> dictionary_;
   };
@@ -126,14 +132,15 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       override;
   base::expected<scoped_refptr<SharedDictionaryWriter>,
                  mojom::SharedDictionaryError>
-  CreateWriter(const GURL& url,
-               base::Time last_fetch_time,
-               base::Time response_time,
-               base::TimeDelta expiration,
-               const std::string& match,
-               const std::set<mojom::RequestDestination>& match_dest,
-               const std::string& id,
-               std::unique_ptr<SimpleUrlPatternMatcher> matcher) override;
+  CreateWriter(
+      const GURL& url,
+      base::Time last_fetch_time,
+      base::Time response_time,
+      base::TimeDelta expiration,
+      const std::string& match,
+      const std::set<mojom::RequestDestination>& match_dest,
+      const std::string& id,
+      std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) override;
   bool UpdateLastFetchTimeIfAlreadyRegistered(
       const GURL& url,
       base::Time response_time,
@@ -173,7 +180,7 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
       base::Time response_time,
       base::TimeDelta expiration,
       const std::string& match,
-      std::unique_ptr<SimpleUrlPatternMatcher> matcher,
+      std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher,
       const std::set<mojom::RequestDestination>& match_dest,
       const std::string& id,
       SharedDictionaryWriterInMemory::Result result,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 
 #include <algorithm>
 #include <memory>
@@ -24,7 +24,7 @@
 #include "url/gurl.h"
 #include "url/url_util.h"
 
-namespace network {
+namespace url_pattern {
 
 namespace {
 
@@ -540,4 +540,4 @@ bool SimpleUrlPatternMatcher::Match(const GURL& url) const {
 
 SimpleUrlPatternMatcher::~SimpleUrlPatternMatcher() = default;
 
-}  // namespace network
+}  // namespace url_pattern

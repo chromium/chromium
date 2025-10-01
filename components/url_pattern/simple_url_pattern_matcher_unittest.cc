@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 
 #include <string>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace network {
+namespace url_pattern {
 
 namespace {
 
@@ -424,4 +424,4 @@ TEST_F(SimpleUrlPatternMatcherTest, Create) {
     }
   }
 }
-}  // namespace network
+}  // namespace url_pattern

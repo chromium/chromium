@@ -14,6 +14,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/io_buffer.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
@@ -24,7 +25,6 @@
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -260,7 +260,7 @@ SharedDictionaryStorage::MaybeCreateWriter(
   }
 
   auto matcher_create_result =
-      SimpleUrlPatternMatcher::Create(info->match, url);
+      url_pattern::SimpleUrlPatternMatcher::Create(info->match, url);
   if (!matcher_create_result.has_value()) {
     return base::unexpected(
         mojom::SharedDictionaryError::kWriteErrorInvalidMatchField);

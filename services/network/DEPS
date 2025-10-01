@@ -15,6 +15,7 @@ include_rules = [
   "+components/privacy_sandbox/privacy_sandbox_features.h",
   "+components/privacy_sandbox/masked_domain_list",
   "+components/url_matcher",
+  "+components/url_pattern",
   "+components/version_info",
   "+components/web_package",
   # FakeSSLClientSocket

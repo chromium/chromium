@@ -11,11 +11,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_in_memory.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "url/scheme_host_port.h"
 
 namespace network {
@@ -116,7 +116,7 @@ SharedDictionaryStorageInMemory::CreateWriter(
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id,
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher) {
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher) {
   CHECK(matcher);
   return base::MakeRefCounted<SharedDictionaryWriterInMemory>(base::BindOnce(
       &SharedDictionaryStorageInMemory::OnDictionaryWritten,
@@ -155,7 +155,7 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher,
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher,
     const std::set<mojom::RequestDestination>& match_dest,
     const std::string& id,
     SharedDictionaryWriterInMemory::Result result,
@@ -189,7 +189,7 @@ SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
     scoped_refptr<net::IOBuffer> data,
     size_t size,
     const net::SHA256HashValue& hash,
-    std::unique_ptr<SimpleUrlPatternMatcher> matcher)
+    std::unique_ptr<url_pattern::SimpleUrlPatternMatcher> matcher)
     : url_(url),
       last_fetch_time_(last_fetch_time),
       response_time_(response_time),

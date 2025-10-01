@@ -15,8 +15,8 @@
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/url_pattern/simple_url_pattern_matcher.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
-#include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 #include "services/network/throttling/network_conditions.h"
 
 namespace network {
@@ -70,7 +70,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingController {
     InterceptorMatcher& operator=(InterceptorMatcher&&);
 
     using Pattern =
-        std::pair<std::string, std::unique_ptr<SimpleUrlPatternMatcher>>;
+        std::pair<std::string,
+                  std::unique_ptr<url_pattern::SimpleUrlPatternMatcher>>;
     std::vector<Pattern> patterns;
     std::unique_ptr<ThrottlingNetworkInterceptor> interceptor;
     NetworkConditions conditions;
