@@ -524,6 +524,7 @@ GlicInstanceImpl::EmbedderEntry& GlicInstanceImpl::BindTab(
   EmbedderEntry& new_entry = it->second;
   auto* helper = GlicInstanceHelper::From(tab);
   CHECK(helper);
+  helper->SetInstanceId(id_);
   new_entry.destruction_subscription = helper->SubscribeToDestruction(
       base::BindRepeating(&GlicInstanceImpl::OnBoundTabDestroyed,
                           weak_ptr_factory_.GetWeakPtr()));

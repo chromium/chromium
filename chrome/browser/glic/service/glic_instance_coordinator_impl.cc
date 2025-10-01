@@ -370,15 +370,11 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
     return instance;
   }
 
-  auto* helper = GlicInstanceHelper::From(tab);
-  CHECK(helper);
-
   // Create a new conversation and instance.
   auto* new_instance = CreateGlicInstance();
   if (tab) {
     new_instance->sharing_manager().PinTabs({tab->GetHandle()});
   }
-  helper->SetInstanceId(new_instance->id());
   return new_instance;
 }
 
@@ -470,10 +466,6 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   if (current_instance && current_instance != target_instance) {
     current_instance->UnbindTab(tab);
   }
-
-  auto* helper = GlicInstanceHelper::From(tab);
-  CHECK(helper);
-  helper->SetInstanceId(target_instance->id());
 
   target_instance->Show(GlicInstanceImpl::EmbedderType::kSidePanel, tab);
 
