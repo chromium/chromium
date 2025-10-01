@@ -1876,6 +1876,14 @@
     "expiry_milestone": 145
   },
   {
+  "name": "confirmation-button-swap-order",
+  "owners": [
+    "pabouchard@google.com",
+    "bling-mony-pod@google.com"
+  ],
+  "expiry_milestone": 145
+  },
+  {
     "name": "content-notification-experiment",
     "owners": [ "tinazwang@google.com", "chrome-sherlock@google.com"],
     "expiry_milestone": 135

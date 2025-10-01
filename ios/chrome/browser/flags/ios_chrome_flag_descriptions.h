@@ -369,6 +369,9 @@ extern const char kFeedbackIncludeVariationsDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+extern const char kConfirmationButtonSwapOrderName[];
+extern const char kConfirmationButtonSwapOrderDescription[];
+
 extern const char kAnimatedDefaultBrowserPromoInFREName[];
 extern const char kAnimatedDefaultBrowserPromoInFREDescription[];
 

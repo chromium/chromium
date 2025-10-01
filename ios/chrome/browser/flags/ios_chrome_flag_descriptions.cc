@@ -636,6 +636,12 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+const char kConfirmationButtonSwapOrderName[] =
+    "Swap Button Order in confirmation alerts";
+const char kConfirmationButtonSwapOrderDescription[] =
+    "Swaps the positions of the primary and secondary buttons in the "
+    "confirmation alerts, so that the primary button is placed at the bottom.";
+
 const char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";
 const char kAnimatedDefaultBrowserPromoInFREDescription[] =

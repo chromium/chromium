@@ -872,6 +872,15 @@ extern const std::string_view
 // Returns whether 'kFRESignInSecondaryActionLabelUpdate' is enabled.
 bool FRESignInSecondaryActionLabelUpdate();
 
+// Feature flag to change the button order in the confirmation alerts, placing
+// the primary CTA below the secondary button.
+BASE_DECLARE_FEATURE(kConfirmationButtonSwapOrder);
+
+// Checks if the button order in the confirmation alerts should be swapped
+// (primary button at the bottom), based on the `kConfirmationButtonSwapOrder`
+// flag.
+bool IsConfirmationButtonSwapOrderEnabled();
+
 // Enables Profile-specific push notification handling logic. When enabled, this
 // routes incoming notifications to the PushNotificationClientManager associated
 // with the current Profile, rather than using a single global manager. This
