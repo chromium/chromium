@@ -53,8 +53,8 @@ double ChiSquared(const std::vector<size_t>& bucket_key_counts) {
   // https://en.wikipedia.org/wiki/Hash_function#Testing_and_measurement:
   // "n is the number of keys, m is the number of buckets, and b[j] is the
   // number of items in bucket j."
-  const size_t n =
-      std::accumulate(bucket_key_counts.begin(), bucket_key_counts.end(), 0u);
+  const size_t n = std::accumulate(bucket_key_counts.begin(),
+                                   bucket_key_counts.end(), size_t{0});
   const size_t m = bucket_key_counts.size();
   DCHECK(m);
 
