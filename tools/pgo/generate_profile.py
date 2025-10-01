@@ -73,6 +73,7 @@ class Benchmark:
     args: List[str]
     enable_features: List[str] = field(default_factory=list)
     disable_features: List[str] = field(default_factory=list)
+    pageset_repeat: int = 1
 
     def ReplaceStoryArg(self, story: str):
         copy_args = [a for a in self.args if not IsStoryFlag(a)]
@@ -318,7 +319,10 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
 
     benchmark_args = benchmark.ProduceArgs(disabled_features)
 
-    _LOGGER.info(f"Running benchmark: {' '.join(benchmark_args)}")
+    pageset_repeat_str = (f' with pageset_repeat={benchmark.pageset_repeat}'
+                          if benchmark.pageset_repeat != 1 else '')
+    _LOGGER.info(
+        f"Running benchmark: {' '.join(benchmark_args)}{pageset_repeat_str}")
 
     # Include the first 2 args since per-story benchmarks use [name, --story=s].
     name = '_'.join(benchmark_args[:2])
@@ -352,6 +356,7 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
     cmd = ['vpython3', 'tools/perf/run_benchmark'] + benchmark_args + [
         f'--chromium-output-directory={args.builddir}',
         '--assert-gpu-compositing',
+        f'--pageset-repeat={benchmark.pageset_repeat}',
         # Abort immediately when any story fails, since a failed story fails to
         # produce valid profdata. Fail fast and rely on repeats to get a valid
         # profdata.
