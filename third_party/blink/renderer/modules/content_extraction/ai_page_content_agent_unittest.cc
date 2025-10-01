@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-data-view.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
@@ -16,9 +17,11 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -446,6 +449,27 @@ TEST_F(AIPageContentAgentTest, ImageWithAriaLabel) {
   EXPECT_EQ("hello", image_node.content_attributes->label);
 }
 
+TEST_F(AIPageContentAgentTest, ImageIsAdRelated) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <img id='ads'></img>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  To<HTMLImageElement>(document.getElementById(AtomicString("ads")))
+      ->SetIsAdRelated();
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  auto& image_node = *root.children_nodes[0];
+  EXPECT_TRUE(image_node.content_attributes->is_ad_related);
+}
+
 TEST_F(AIPageContentAgentTest, ImageNoAltText) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -641,9 +665,48 @@ TEST_F(AIPageContentAgentTest, IFrameWithContent) {
 
   EXPECT_EQ(iframe_attributes.attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_FALSE(iframe_attributes.iframe_data->likely_ad_frame);
+  EXPECT_FALSE(iframe_attributes.is_ad_related);
 
   const auto& iframe_root = *iframe.children_nodes[0];
   CheckTextNode(*iframe_root.children_nodes[0], "inside iframe");
+}
+
+TEST_F(AIPageContentAgentTest, IFrameAds) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <iframe src='about:blank'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* iframe_element =
+      To<HTMLIFrameElement>(helper_.LocalMainFrame()
+                                ->GetFrame()
+                                ->GetDocument()
+                                ->getElementsByTagName(AtomicString("iframe"))
+                                ->item(0));
+  ASSERT_TRUE(iframe_element);
+
+  // Mark iframe's ad evidence.
+  blink::FrameAdEvidence ad_evidence;
+  ad_evidence.set_created_by_ad_script(
+      blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
+  ad_evidence.set_is_complete();
+  To<LocalFrame>(iframe_element->ContentFrame())->SetAdEvidence(ad_evidence);
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& iframe = *root.children_nodes[0];
+  const auto& iframe_attributes = *iframe.content_attributes;
+
+  EXPECT_EQ(iframe_attributes.attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_TRUE(iframe_attributes.iframe_data->likely_ad_frame);
+  EXPECT_TRUE(iframe_attributes.is_ad_related);
 }
 
 TEST_F(AIPageContentAgentTest, CrossSiteIframeIncluded) {

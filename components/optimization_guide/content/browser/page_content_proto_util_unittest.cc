@@ -301,6 +301,7 @@ TEST(PageContentProtoUtilTest, ConvertImageInfo) {
   auto root_content = CreatePageContent();
   auto image_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kImage);
+  image_node->content_attributes->is_ad_related = true;
   image_node->content_attributes->image_info =
       blink::mojom::AIPageContentImageInfo::New();
   image_node->content_attributes->image_info->image_caption = "image caption";
@@ -322,6 +323,10 @@ TEST(PageContentProtoUtilTest, ConvertImageInfo) {
                 .content_attributes()
                 .attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE);
+  EXPECT_TRUE(page_content.proto.root_node()
+                  .children_nodes(0)
+                  .content_attributes()
+                  .is_ad_related());
   const auto& image_data = page_content.proto.root_node()
                                .children_nodes(0)
                                .content_attributes()
@@ -636,8 +641,9 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
       blink::mojom::AIPageContentIframeContent::NewLocalFrameData(
           std::move(frame_data));
 
-  root_content->root_node->children_nodes.back()
-      ->content_attributes->iframe_data = std::move(iframe_data);
+  auto& iframe_node = root_content->root_node->children_nodes.back();
+  iframe_node->content_attributes->is_ad_related = true;
+  iframe_node->content_attributes->iframe_data = std::move(iframe_data);
 
   AIPageContentMap page_content_map;
   page_content_map[main_frame_token] = std::move(root_content);
@@ -679,6 +685,10 @@ TEST(PageContentProtoUtilTest, ConvertIframeData) {
                 .content_attributes()
                 .attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+  EXPECT_TRUE(page_content.proto.root_node()
+                  .children_nodes(0)
+                  .content_attributes()
+                  .is_ad_related());
   const auto& proto_iframe_data = page_content.proto.root_node()
                                       .children_nodes(0)
                                       .content_attributes()

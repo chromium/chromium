@@ -500,6 +500,10 @@ struct AIPageContentAttributes {
   // If this node is a label associated with an input node, provides the
   // dom_node_id for the corresponding input node.
   int32? label_for_dom_node_id;
+
+  // Indicates whether the contents of this element have been determined to be
+  // an ad.
+  bool is_ad_related;
 };
 
 // A semantic chunk of information on a page. It can represent text, structured

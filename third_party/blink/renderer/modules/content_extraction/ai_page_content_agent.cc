@@ -1402,6 +1402,8 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
   AddNodeGeometry(object, attributes);
   AddLabel(object, attributes);
 
+  attributes.is_ad_related = element && element->IsAdRelated();
+
   return content_node;
 }
 

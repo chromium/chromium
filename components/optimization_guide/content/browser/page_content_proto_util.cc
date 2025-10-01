@@ -615,6 +615,8 @@ base::expected<void, std::string> ConvertAttributes(
         *mojom_attributes.label_for_dom_node_id);
   }
 
+  proto_attributes->set_is_ad_related(mojom_attributes.is_ad_related);
+
   return base::ok();
 }
 
