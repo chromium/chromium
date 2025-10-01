@@ -24,12 +24,6 @@ namespace storage {
 
 namespace {
 
-// The name for the implicit/default bucket before V10.
-constexpr char kDefaultNamePreV10[] = "default";
-
-// Quota type for deprecated persistent quota.
-constexpr int kDeprecatedPersistentQuotaType = 1;
-
 // Quota type for deprecated temporary quota.
 constexpr int kDeprecatedTemporaryQuotaType = 0;
 
@@ -40,17 +34,9 @@ bool QuotaDatabaseMigrations::UpgradeSchema(QuotaDatabase& quota_database) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
   DCHECK_EQ(0, quota_database.db_->transaction_nesting());
 
-  // Reset tables for versions lower than 9 since they are unsupported.
-  if (quota_database.meta_table_->GetVersionNumber() < 9) {
+  // Reset tables for versions lower than 10 since they are unsupported.
+  if (quota_database.meta_table_->GetVersionNumber() < 10) {
     return false;
-  }
-
-  if (quota_database.meta_table_->GetVersionNumber() == 9) {
-    bool success = MigrateFromVersion9ToVersion10(quota_database);
-    RecordMigrationHistogram(/*old_version=*/9, /*new_version=*/10, success);
-    if (!success) {
-      return false;
-    }
   }
 
   if (quota_database.meta_table_->GetVersionNumber() == 10) {
@@ -72,54 +58,6 @@ void QuotaDatabaseMigrations::RecordMigrationHistogram(int old_version,
                     base::NumberToString(old_version), "ToV",
                     base::NumberToString(new_version)}),
       success);
-}
-
-bool QuotaDatabaseMigrations::MigrateFromVersion9ToVersion10(
-    QuotaDatabase& quota_database) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_database.sequence_checker_);
-
-  sql::Database* db = quota_database.db_.get();
-  sql::Transaction transaction(db);
-  if (!transaction.Begin()) {
-    return false;
-  }
-
-  // Update the default bucket name to '_default'.
-  // See https://github.com/WICG/storage-buckets/issues/91
-  // clang-format off
-  static constexpr char kUpdateDefaultBucketNameSql[] =
-      "UPDATE buckets "
-        "SET name = ? "
-        "WHERE name = ? ";
-  // clang-format on
-  sql::Statement update_statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kUpdateDefaultBucketNameSql));
-  update_statement.BindString(0, kDefaultBucketName);
-  update_statement.BindString(1, kDefaultNamePreV10);
-  if (!update_statement.Run()) {
-    return false;
-  }
-
-  // Delete quota table (see crbug.com/1175113).
-  static constexpr char kDeleteQuotaHostTableSql[] = "DROP TABLE quota";
-  if (!db->Execute(kDeleteQuotaHostTableSql)) {
-    return false;
-  }
-
-  // Delete buckets with persistent type (see crbug.com/1175113).
-  static constexpr char kDeletePersistentTypeBuckets[] =
-      "DELETE FROM buckets WHERE type = ? ";
-  sql::Statement delete_statement(
-      db->GetCachedStatement(SQL_FROM_HERE, kDeletePersistentTypeBuckets));
-  delete_statement.BindInt(0, kDeprecatedPersistentQuotaType);
-  if (!delete_statement.Run()) {
-    return false;
-  }
-
-  // Mark database as up to date.
-  return quota_database.meta_table_->SetVersionNumber(10) &&
-         quota_database.meta_table_->SetCompatibleVersionNumber(10) &&
-         transaction.Commit();
 }
 
 bool QuotaDatabaseMigrations::MigrateFromVersion10ToVersion11(
