@@ -9,8 +9,6 @@
 #include <memory>
 #include <type_traits>
 
-#include "base/memory/scoped_refptr.h"
-
 namespace base {
 
 namespace internal {
