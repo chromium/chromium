@@ -5098,6 +5098,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "fedcm-error-attribute",
+    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
+     "expiry_milestone": 150
+   },
+  {
     "name": "fedcm-idp-registration",
     "owners": [ "goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 145
@@ -5118,10 +5123,20 @@
     "expiry_milestone": 145
   },
   {
+    "name": "fedcm-nonce-in-params",
+    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
+     "expiry_milestone": 150
+   },
+  {
     "name": "fedcm-segmentation-platform",
     "owners": ["tanzachary@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 145
   },
+  {
+    "name": "fedcm-well-known-endpoint-validation",
+    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
+     "expiry_milestone": 150
+   },
   {
     "name": "fedcm-without-well-known-enforcement",
     "owners": ["yigu@chromium.org", "web-identity-eng@google.com"],

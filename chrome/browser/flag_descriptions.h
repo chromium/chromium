@@ -1236,6 +1236,9 @@ extern const char kFedCmAutofillDescription[];
 extern const char kFedCmDelegationName[];
 extern const char kFedCmDelegationDescription[];
 
+extern const char kFedCmErrorAttributeName[];
+extern const char kFedCmErrorAttributeDescription[];
+
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];
 
@@ -1247,6 +1250,12 @@ extern const char kFedCmLightweightModeDescription[];
 
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
+
+extern const char kFedCmNonceInParamsName[];
+extern const char kFedCmNonceInParamsDescription[];
+
+extern const char kFedCmWellKnownEndpointValidationName[];
+extern const char kFedCmWellKnownEndpointValidationDescription[];
 
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];

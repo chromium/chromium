@@ -2117,6 +2117,11 @@ const char kFedCmDelegationName[] = "FedCM with delegation support";
 const char kFedCmDelegationDescription[] =
     "Enables IdPs to delegate presentation to the browser.";
 
+const char kFedCmErrorAttributeName[] = "FedCmErrorAttribute";
+const char kFedCmErrorAttributeDescription[] =
+    "Enables the spec-compliant 'error' attribute in IdentityCredentialError "
+    "while deprecating the legacy 'code' attribute.";
+
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";
@@ -2125,15 +2130,26 @@ const char kFedCmIframeOriginName[] = "FedCmIframeOrigin";
 const char kFedCmIframeOriginDescription[] =
     "Allows showing iframe origins in the FedCM UI, if requested by the IDP.";
 
+const char kFedCmLightweightModeName[] = "FedCmLightweightMode";
+const char kFedCmLightweightModeDescription[] =
+    "Enables IdPs to store user profile information using the login status "
+    "API.";
+
 const char kFedCmMetricsEndpointName[] = "FedCmMetricsEndpoint";
 const char kFedCmMetricsEndpointDescription[] =
     "Allows the FedCM API to send performance measurement to the metrics "
     "endpoint on the identity provider side. Requires FedCM to be enabled.";
 
-const char kFedCmLightweightModeName[] = "FedCmLightweightMode";
-const char kFedCmLightweightModeDescription[] =
-    "Enables IdPs to store user profile information using the login status "
-    "API.";
+const char kFedCmNonceInParamsName[] = "FedCmNonceInParams";
+const char kFedCmNonceInParamsDescription[] =
+    "Removes nonce as an explicit parameter of the FedCM API. When enabled, a "
+    "nonce may be passed in params.";
+
+const char kFedCmWellKnownEndpointValidationName[] =
+    "FedCmWellKnownEndpointValidation";
+const char kFedCmWellKnownEndpointValidationDescription[] =
+    "When enabled, accounts_endpoint and login_url must be present in "
+    ".well-known/web-identity if client_metadata is used.";
 
 const char kFedCmWithoutWellKnownEnforcementName[] =
     "FedCmWithoutWellKnownEnforcement";

@@ -405,28 +405,36 @@ BASE_FEATURE(kFedCmAutofill, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables usage of the FedCM Delegation API.
 BASE_FEATURE(kFedCmDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the spec-compliant 'error' attribute in IdentityCredentialError while
+// deprecating the legacy 'code' attribute.
+BASE_FEATURE(kFedCmErrorAttribute, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM IdP Registration API.
-BASE_FEATURE(kFedCmIdPRegistration,
-             "FedCmIdPregistration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFedCmIdPRegistration, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // For cross-site iframes, sends the top-level origin to the IDP and parses
 // an optional returned boolean indicating whether it is part of the same
 // client to allow for UI decisions based on the boolean.
 BASE_FEATURE(kFedCmIframeOrigin, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables Lightweight FedCM Mode
+BASE_FEATURE(kFedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Nonce usage in Params
+BASE_FEATURE(kFedCmNonceInParams, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether FedCM requires explicit endpoint declaration in well-known
+// files when client_metadata is used. When enabled, accounts_endpoint and
+// login_url must be present in .well-known/web-identity for privacy validation.
+BASE_FEATURE(kFedCmWellKnownEndpointValidation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables Lightweight FedCM Mode
-BASE_FEATURE(kFedCmLightweightMode, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables Nonce usage in Params
-BASE_FEATURE(kFedCmNonceInParams, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables browser-side focus verification when crossing fenced boundaries.
 BASE_FEATURE(kFencedFramesEnforceFocus, base::FEATURE_DISABLED_BY_DEFAULT);
