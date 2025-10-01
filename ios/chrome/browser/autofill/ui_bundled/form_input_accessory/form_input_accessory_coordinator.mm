@@ -108,6 +108,8 @@ const base::Feature* FetchIPHFeatureFromEnum(
       return &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
     case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
       return &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
+    case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+      return &feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature;
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();
   }
@@ -440,6 +442,10 @@ bool CanReloadInputViews() {
       case SuggestionFeatureForIPH::kHomeAndWorkAddressSuggestion:
         tracker->NotifyEvent(
             "home_work_address_create_suggestion_feature_used");
+        break;
+      case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+        tracker->NotifyEvent(
+            "account_name_email_create_suggestion_feature_used");
         break;
       case SuggestionFeatureForIPH::kUnknown:
         NOTREACHED();
@@ -932,6 +938,12 @@ bool CanReloadInputViews() {
           IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION);
       voiceOverText = l10n_util::GetNSString(
           IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION_SCREENREADER);
+      break;
+    case SuggestionFeatureForIPH::kAccountNameEmailSuggestion:
+      text = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION);
+      voiceOverText = l10n_util::GetNSString(
+          IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION_SCREENREADER);
       break;
     case SuggestionFeatureForIPH::kUnknown:
       NOTREACHED();

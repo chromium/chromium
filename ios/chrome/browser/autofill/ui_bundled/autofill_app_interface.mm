@@ -455,6 +455,11 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
                      autofill::AutofillProfile::RecordType::kAccountHome);
 }
 
++ (void)saveExampleAccountNameEmailProfile {
+  AddAutofillProfile([self personalDataManager],
+                     autofill::AutofillProfile::RecordType::kAccountNameEmail);
+}
+
 + (NSString*)exampleProfileName {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   std::u16string name = profile.GetInfo(

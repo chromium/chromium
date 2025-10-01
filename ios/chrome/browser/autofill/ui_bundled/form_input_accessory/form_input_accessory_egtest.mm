@@ -289,6 +289,13 @@ void SlowlyTypeText(NSString* text) {
         feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature.name;
   }
 
+  if ([self isRunningTest:@selector(testAccountNameEmailIPH)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableSupportForNameAndEmail);
+    config.iph_feature_enabled =
+        feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature.name;
+  }
+
   if ([self isRunningTest:@selector(testReFillAddressFieldsOnForm)]) {
     config.features_enabled.push_back(kAutofillRefillForFormsIos);
     config.features_enabled.push_back(
@@ -951,6 +958,30 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
       IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION));
 
   // Ensure the Home and Work suggestion IPH appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
+}
+
+// Tests the IPH feature for account name and email profile.
+- (void)testAccountNameEmailIPH {
+  // Delete the profile that is added on `-setUp`.
+  [AutofillAppInterface clearProfilesStore];
+  // Store one address.
+  [AutofillAppInterface saveExampleAccountNameEmailProfile];
+
+  [self loadAddressPage];
+
+  // Synchronization off because the tap on element 'kFormZip' completes only
+  // after the IPH has already disappeared. This leads to a subsequent error
+  // when trying to verify that the IPH appeared.
+  ScopedSynchronizationDisabler disabler;
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
+
+  id<GREYMatcher> iph_chip = grey_text(
+      l10n_util::GetNSString(IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION));
+
+  // Ensure the Name and Email suggestion IPH appears.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
 }
 
