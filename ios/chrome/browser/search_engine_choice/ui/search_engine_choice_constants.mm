@@ -12,10 +12,6 @@ const CGFloat kIPadSearchEngineChoiceScreenPreferredHeight = 760.;
 
 NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
     @"SearchEngineChoiceTitleAccessibilityIdentifier";
-NSString* const kSearchEngineChoiceSubtitle1AccessibilityIdentifier =
-    @"SearchEngineChoiceSubtitle1AccessibilityIdentifier";
-NSString* const kSearchEngineChoiceSubtitle2AccessibilityIdentifier =
-    @"SearchEngineChoiceSubtitle2AccessibilityIdentifier";
 NSString* const kSnippetSearchEngineOneLineChevronIdentifierPrefix =
     @"SnippetSearchEngineOneLineChevronIdentifierPrefix";
 NSString* const kSnippetSearchEngineExpandedChevronIdentifierPrefix =

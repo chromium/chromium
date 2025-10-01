@@ -20,10 +20,6 @@ extern const CGFloat kIPadSearchEngineChoiceScreenPreferredHeight;
 
 // Accessibility identifier for the choice screen title.
 extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;
-// Accessibility identifier for the choice screen subtitle 1.
-extern NSString* const kSearchEngineChoiceSubtitle1AccessibilityIdentifier;
-// Accessibility identifier for the choice screen subtitle 2.
-extern NSString* const kSearchEngineChoiceSubtitle2AccessibilityIdentifier;
 // Prefix for the SnippetSearchEngineButton accessibility identifier.
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;
 // Prefix for the chevron accessibility identifier in SnippetSearchEngineButton,

@@ -105,24 +105,23 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
                                                        UIView* referenceView,
                                                        CGFloat y) {
   CGPoint point = CGPointMake(0, y);
-  CGPoint point_with_main_view_reference =
-      [mainView convertPoint:point fromView:referenceView];
-  return point_with_main_view_reference.y;
+  CGPoint pointWithMainViewReference = [mainView convertPoint:point
+                                                     fromView:referenceView];
+  return pointWithMainViewReference.y;
 }
 
-UITextView* CreateSubtitleTextView(NSString* accessiblity_identifier) {
-  UITextView* subtitle_text_view = [[UITextView alloc] init];
-  subtitle_text_view.backgroundColor = nil;
-  subtitle_text_view.adjustsFontForContentSizeCategory = YES;
+UITextView* CreateSubtitleTextView() {
+  UITextView* subtitleTextView = [[UITextView alloc] init];
+  subtitleTextView.backgroundColor = nil;
+  subtitleTextView.adjustsFontForContentSizeCategory = YES;
   // Disable and hide scrollbar.
-  subtitle_text_view.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
-  subtitle_text_view.scrollEnabled = NO;
-  subtitle_text_view.showsVerticalScrollIndicator = NO;
-  subtitle_text_view.showsHorizontalScrollIndicator = NO;
-  subtitle_text_view.editable = NO;
-  subtitle_text_view.translatesAutoresizingMaskIntoConstraints = NO;
-  subtitle_text_view.accessibilityIdentifier = accessiblity_identifier;
-  return subtitle_text_view;
+  subtitleTextView.textContainerInset = UIEdgeInsetsMake(0, 0, 0, 0);
+  subtitleTextView.scrollEnabled = NO;
+  subtitleTextView.showsVerticalScrollIndicator = NO;
+  subtitleTextView.showsHorizontalScrollIndicator = NO;
+  subtitleTextView.editable = NO;
+  subtitleTextView.translatesAutoresizingMaskIntoConstraints = NO;
+  return subtitleTextView;
 }
 
 // Returns the distance between subtitles according the system font size based
@@ -317,8 +316,7 @@ CGFloat GetSubtitleMarginDistance() {
   learnMoreAttributedString.accessibilityLabel =
       l10n_util::GetNSString(self.subtitle1LearnMoreA11yStringID);
   [subtitle1Text appendAttributedString:learnMoreAttributedString];
-  UITextView* subtitle1TextView = CreateSubtitleTextView(
-      kSearchEngineChoiceSubtitle1AccessibilityIdentifier);
+  UITextView* subtitle1TextView = CreateSubtitleTextView();
   [scrollContentView addSubview:subtitle1TextView];
   subtitle1TextView.attributedText = subtitle1Text;
   // The text alignment needs to be set after the setting the attributed text.
@@ -338,8 +336,7 @@ CGFloat GetSubtitleMarginDistance() {
                   [UIColor colorNamed:kGrey800Color],
               NSFontAttributeName : subtitleFont,
             }];
-    subtitle2TextView = CreateSubtitleTextView(
-        kSearchEngineChoiceSubtitle2AccessibilityIdentifier);
+    subtitle2TextView = CreateSubtitleTextView();
     [scrollContentView addSubview:subtitle2TextView];
     subtitle2TextView.attributedText = subtitle2Text;
     // The text alignment needs to be set after the setting the attributed text.

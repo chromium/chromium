@@ -90,10 +90,7 @@ source_set("unit_tests") {
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [
-    "search_engine_choice_egtest.mm",
-    "search_engine_choice_taiyaki_egtest.mm",
-  ]
+  sources = [ "search_engine_choice_egtest.mm" ]
   deps = [
     "//base",
     "//base/test:test_support",
@@ -101,7 +98,6 @@ source_set("eg2_tests") {
     "//components/regional_capabilities",
     "//components/search_engines",
     "//components/signin/public/base:signin_switches",
-    "//components/variations",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/search_engine_choice/test:earl_grey_ui_test_util",
     "//ios/chrome/browser/search_engine_choice/ui:constants",
