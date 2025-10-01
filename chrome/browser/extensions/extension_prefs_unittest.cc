@@ -38,6 +38,7 @@
 #include "extensions/browser/install_tracker.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -45,6 +46,8 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using base::Time;
 using extensions::mojom::APIPermissionID;

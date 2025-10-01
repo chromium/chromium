@@ -22,6 +22,7 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -29,6 +30,8 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 

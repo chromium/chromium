@@ -9,6 +9,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "chrome/common/webui_url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
@@ -17,6 +18,8 @@
 #include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/common/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

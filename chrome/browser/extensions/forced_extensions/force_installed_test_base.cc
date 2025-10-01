@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -16,8 +16,11 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

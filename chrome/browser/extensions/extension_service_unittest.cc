@@ -141,6 +141,7 @@
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "extensions/browser/updater/null_extension_cache.h"
 #include "extensions/browser/zipfile_installer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -193,6 +194,8 @@
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 // The blocklist tests rely on the safe-browsing database.
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)

@@ -9,8 +9,11 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_test_base.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

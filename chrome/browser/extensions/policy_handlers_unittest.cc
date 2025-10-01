@@ -31,6 +31,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -42,6 +43,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 

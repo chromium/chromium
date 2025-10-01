@@ -10,10 +10,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/common/chrome_features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

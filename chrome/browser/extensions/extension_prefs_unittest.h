@@ -11,7 +11,10 @@
 
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace user_prefs {
 class PrefRegistrySyncable;
