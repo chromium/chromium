@@ -1898,21 +1898,66 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
   // Parse the prelude.
-  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
-  const CSSParserToken& name_token = stream.Peek();
-  String name = name_token.Value().ToString();
-  stream.ConsumeIncludingWhitespace();
-  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (stream.Peek().GetType() != kLeftParenthesisToken) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
+    return nullptr;
+  }
+
+  wtf_size_t header_start_offset = stream.LookAheadOffset();
+
+  // TODO(crbug.com/436805487): Figure out where whitespace is allowed and not.
+  // And how about multiple routes in one rule?
+  String route_name;
+  RoutePreposition preposition = RoutePreposition::kAt;
+  bool header_valid = [&] {
+    CSSParserTokenStream::BlockGuard header_guard(stream);
+    if (stream.Peek().GetType() != kIdentToken) {
+      return false;
+    }
+
+    String first_string =
+        stream.ConsumeIncludingWhitespace().Value().ToString();
+    if (stream.Peek().GetType() == kColonToken) {
+      if (first_string == "at") {
+        preposition = RoutePreposition::kAt;
+      } else if (first_string == "from") {
+        preposition = RoutePreposition::kFrom;
+      } else if (first_string == "to") {
+        preposition = RoutePreposition::kTo;
+      } else {
+        return false;
+      }
+      stream.ConsumeIncludingWhitespace();
+      if (stream.Peek().GetType() != kIdentToken) {
+        return false;
+      }
+      route_name = stream.ConsumeIncludingWhitespace().Value().ToString();
+      return stream.AtEnd();
+    }
+    if (stream.AtEnd()) {
+      route_name = first_string;
+      return true;
+    }
+    return false;
+  }();
+
+  if (!header_valid) {
+    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
+    return nullptr;
+  }
+
   if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream,
                                              CSSAtRuleID::kCSSAtRuleRoute)) {
     return nullptr;
   }
 
+  wtf_size_t header_end_offset = stream.LookAheadOffset();
+
   // Parse the body.
-  CSSParserTokenStream::BlockGuard guard(stream);
+  CSSParserTokenStream::BlockGuard body_guard(stream);
   if (observer_) {
-    observer_->StartRuleHeader(StyleRule::kRoute, prelude_offset_start);
-    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleHeader(StyleRule::kRoute, header_start_offset);
+    observer_->EndRuleHeader(header_end_offset);
     observer_->StartRuleBody(stream.Offset());
   }
 
@@ -1924,7 +1969,8 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(
     observer_->EndRuleBody(stream.Offset());
   }
 
-  return MakeGarbageCollected<StyleRuleRoute>(name, std::move(rules));
+  return MakeGarbageCollected<StyleRuleRoute>(route_name, preposition,
+                                              std::move(rules));
 }
 
 StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(

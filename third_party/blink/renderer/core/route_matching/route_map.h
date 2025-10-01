@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ROUTE_MATCHING_ROUTE_MAP_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/route_matching/route_preposition.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -79,15 +81,36 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   ParseResult ParseRoutes(const String& route_map_text);
 
-  bool MatchesRoute(const String& route) const;
+  bool MatchesRoute(const String& route_name, RoutePreposition) const;
 
-  // Re-match all routes. Return true if any route changed state.
-  bool UpdateActiveRoutes();
+  // Re-match all routes. Schedule for re-evaluation of CSS rules if something
+  // changed.
+  void UpdateActiveRoutes();
 
-  HashSet<String> GetActiveRoutes() const;
+  HashSet<String> GetActiveRoutes(RoutePreposition) const;
+
+  // Set the URLs that we're navigating between at the start of navigation. This
+  // is used to match @route "from" (and "to") rules.
+  void OnNavigationStart(const KURL& previous_url, const KURL& next_url) {
+    previous_url_ = previous_url;
+    next_url_ = next_url;
+    UpdateActiveRoutes();
+  }
+
+  // Clear the URL that we're navigating between when the navigation is
+  // complete.
+  void OnNavigationDone() {
+    previous_url_ = KURL();
+    next_url_ = KURL();
+    UpdateActiveRoutes();
+  }
 
  private:
   HeapHashMap<String, Member<Route>> routes_;
+
+  // Only set while navigating from one URL to another one.
+  KURL previous_url_;
+  KURL next_url_;
 };
 
 }  // namespace blink

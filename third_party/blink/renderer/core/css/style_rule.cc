@@ -990,12 +990,17 @@ void StyleRuleContainer::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 StyleRuleRoute::StyleRuleRoute(const String& name,
+                               RoutePreposition preposition,
                                HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleCondition(kRoute, std::move(child_rules)), name_(name) {}
+    : StyleRuleCondition(kRoute, std::move(child_rules)),
+      name_(name),
+      preposition_(preposition) {}
 
 StyleRuleRoute::StyleRuleRoute(const StyleRuleRoute& other,
                                HeapVector<Member<StyleRuleBase>> child_rules)
-    : StyleRuleCondition(kRoute, std::move(child_rules)), name_(other.name_) {}
+    : StyleRuleCondition(kRoute, std::move(child_rules)),
+      name_(other.name_),
+      preposition_(other.preposition_) {}
 
 StyleRuleStartingStyle::StyleRuleStartingStyle(
     HeapVector<Member<StyleRuleBase>> rules)

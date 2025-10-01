@@ -965,7 +965,8 @@ void RuleSet::AddChildRules(StyleRule* parent_rule,
     } else if (auto* route_rule = DynamicTo<StyleRuleRoute>(rule)) {
       if (const auto* route_map =
               RouteMap::Get(medium.GetMediaValues().GetDocument())) {
-        if (route_map->MatchesRoute(route_rule->GetName())) {
+        if (route_map->MatchesRoute(route_rule->GetName(),
+                                    route_rule->GetPreposition())) {
           AddChildRules(parent_rule, route_rule->ChildRules(), medium, mixins,
                         add_rule_flags, container_query, cascade_layer,
                         style_scope, apply_mixins_stack);
@@ -1236,8 +1237,10 @@ void RuleSet::AddRulesFromSheet(const StyleSheetContents* sheet,
 
   if (const auto* route_map = RouteMap::Get(medium.GetDocument())) {
     // In case there are multiple style sheets, we only need to do this once:
-    if (active_routes_.empty()) {
-      active_routes_ = route_map->GetActiveRoutes();
+    if (at_routes_.empty() && from_routes_.empty() && to_routes_.empty()) {
+      at_routes_ = route_map->GetActiveRoutes(RoutePreposition::kAt);
+      from_routes_ = route_map->GetActiveRoutes(RoutePreposition::kFrom);
+      to_routes_ = route_map->GetActiveRoutes(RoutePreposition::kTo);
     }
   }
 
@@ -1769,13 +1772,15 @@ bool RuleSet::DidMediaQueryResultsChange(
 }
 
 bool RuleSet::DidRoutesChange(const Document* document) const {
-  if (const RouteMap* route_map = RouteMap::Get(document)) {
-    HashSet<String> current_routes = route_map->GetActiveRoutes();
-    if (current_routes != active_routes_) {
-      return true;
-    }
+  const RouteMap* map = RouteMap::Get(document);
+  if (!map) {
+    return false;
   }
-  return false;
+  HashSet<String> at_routes = map->GetActiveRoutes(RoutePreposition::kAt);
+  HashSet<String> from_routes = map->GetActiveRoutes(RoutePreposition::kFrom);
+  HashSet<String> to_routes = map->GetActiveRoutes(RoutePreposition::kTo);
+  return at_routes != at_routes_ || from_routes != from_routes_ ||
+         to_routes != to_routes_;
 }
 
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {

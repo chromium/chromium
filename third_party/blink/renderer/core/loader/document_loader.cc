@@ -137,7 +137,6 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
@@ -1196,18 +1195,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     // navigation was initiated in the main world.
     heuristics->SameDocumentNavigationCommitted(new_url,
                                                 soft_navigation_context);
-  }
-
-  // Notify the style engine that routes may have changed because of the URL
-  // change. The `frame_` check is needed, even though there's a check further
-  // up -- it may be reset after that check.
-  //
-  // See
-  // https://github.com/WICG/declarative-partial-updates#part-2-route-matching
-  if (frame_) {
-    if (auto* routemap = RouteMap::Get(frame_->GetDocument())) {
-      routemap->UpdateActiveRoutes();
-    }
   }
 }
 

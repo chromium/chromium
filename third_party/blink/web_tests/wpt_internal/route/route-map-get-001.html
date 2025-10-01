@@ -19,7 +19,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
-  test(()=> {
+  promise_test(async t => {
     const routeMap = document.routeMap;
     assert_true(routeMap instanceof RouteMap, "routeMap should be RouteMap");
     const r1 = routeMap.get("r1");
@@ -34,7 +34,9 @@
 
     history.pushState(0, null, "different-url");
 
-    assert_true(r1.matches);
-    assert_true(r2.matches);
+    window.onpageshow = t.step_func_done(() => {
+      assert_true(r1.matches);
+      assert_true(r2.matches);
+    });
   }, "document.routeMap");
 </script>

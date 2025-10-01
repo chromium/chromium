@@ -807,7 +807,15 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Member<StyleRulePositionTry>> position_try_rules_;
   HeapVector<MediaQuerySetResult> media_query_set_results_;
   HeapVector<Member<StyleRuleFunction>> function_rules_;
-  HashSet<String> active_routes_;
+
+  // Names of routes we're currently at.
+  HashSet<String> at_routes_;
+
+  // Names of routes we're navigating away from.
+  HashSet<String> from_routes_;
+
+  // Names of routes we're navigating to.
+  HashSet<String> to_routes_;
 
   // Whether there is a ruleset bucket for rules with a selector on
   // the style attribute (which is rare, but allowed). If so, the caller

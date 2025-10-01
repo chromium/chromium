@@ -15,6 +15,24 @@
 
 namespace blink {
 
+namespace {
+
+bool MatchesPatterns(Document& document,
+                     const KURL& url,
+                     const HeapVector<Member<URLPattern>>& patterns) {
+  V8URLPatternInput* url_pattern_input =
+      MakeGarbageCollected<V8URLPatternInput>(url.GetString());
+  v8::Isolate* isolate = document.GetExecutionContext()->GetIsolate();
+  for (const URLPattern* pattern : patterns) {
+    if (pattern->test(isolate, url_pattern_input, IGNORE_EXCEPTION)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // anonymous namespace
+
 void Route::Trace(Visitor* v) const {
   v->Trace(document_);
   v->Trace(patterns_);
@@ -35,23 +53,28 @@ void Route::AddPattern(URLPattern* pattern) {
   patterns_.push_back(pattern);
 }
 
-bool Route::UpdateMatchStatus() {
-  V8URLPatternInput* url_pattern_input =
-      MakeGarbageCollected<V8URLPatternInput>(document_->Url().GetString());
-  v8::Isolate* isolate = document_->GetExecutionContext()->GetIsolate();
-  bool matches_now = false;
-  for (const URLPattern* pattern : patterns_) {
-    if (pattern->test(isolate, url_pattern_input, IGNORE_EXCEPTION)) {
-      matches_now = true;
-      break;
-    }
-  }
-  if (matches_ == matches_now) {
-    return false;
+bool Route::UpdateMatchStatus(const KURL& previous_url, const KURL& next_url) {
+  bool matches_at = MatchesPatterns(*document_, document_->Url(), patterns_);
+
+  // If a previous/next URL are set, we're moving from one route to another.
+  // Both need to be set, or none of them should be set.
+  DCHECK_EQ(previous_url.IsNull(), next_url.IsNull());
+
+  bool matches_from = !previous_url.IsNull() &&
+                      MatchesPatterns(*document_, previous_url, patterns_);
+  bool matches_to =
+      !next_url.IsNull() && MatchesPatterns(*document_, next_url, patterns_);
+  bool from_changed = matches_from_ != matches_from;
+  bool to_changed = matches_to_ != matches_to;
+
+  matches_from_ = matches_from;
+  matches_to_ = matches_to;
+  if (matches_at_ == matches_at) {
+    return from_changed || to_changed;
   }
 
-  matches_ = matches_now;
-  AtomicString type(matches_ ? "activate" : "deactivate");
+  matches_at_ = matches_at;
+  AtomicString type(matches_at_ ? "activate" : "deactivate");
   auto* event = MakeGarbageCollected<RouteEvent>(type);
   event->SetTarget(this);
   DispatchEvent(*event);

@@ -168,29 +168,33 @@ RouteMap::ParseResult RouteMap::ParseRoutes(const String& route_map_text) {
   return ParseResult(ParseResult::kSuccess);
 }
 
-bool RouteMap::MatchesRoute(const String& route) const {
-  const auto it = routes_.find(route);
+bool RouteMap::MatchesRoute(const String& route_name,
+                            RoutePreposition preposition) const {
+  const auto it = routes_.find(route_name);
   if (it == routes_.end()) {
     return false;
   }
-  return it->value->matches();
+
+  Route& route = *it->value;
+  return route.Matches(preposition);
 }
 
-bool RouteMap::UpdateActiveRoutes() {
+void RouteMap::UpdateActiveRoutes() {
   bool changed = false;
   for (const auto& entry : routes_) {
-    changed = entry.value->UpdateMatchStatus() || changed;
+    Route& route = *entry.value;
+    changed = route.UpdateMatchStatus(previous_url_, next_url_) || changed;
   }
   if (changed) {
     GetDocument().GetStyleEngine().RoutesMayHaveChanged();
   }
-  return changed;
 }
 
-HashSet<String> RouteMap::GetActiveRoutes() const {
+HashSet<String> RouteMap::GetActiveRoutes(RoutePreposition preposition) const {
   HashSet<String> active_routes;
   for (const auto& entry : routes_) {
-    if (entry.value->matches()) {
+    Route& route = *entry.value;
+    if (route.Matches(preposition)) {
       active_routes.insert(entry.key);
     }
   }

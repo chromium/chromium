@@ -25,19 +25,23 @@
     assert_equals(getComputedStyle(target).width, "7px");
   }, "Initially no match");
 
-  test(()=> {
+  promise_test(async t => {
     history.pushState(0, null, "match-later");
-    sheetElm.sheet.insertRule("@route r1 { #target { width: 100px; } }", 1);
-    assert_equals(getComputedStyle(target).width, "100px");
+    sheetElm.sheet.insertRule("@route (r1) { #target { width: 100px; } }", 1);
+    window.onpageshow = t.step_func_done(() => {
+      assert_equals(getComputedStyle(target).width, "100px");
+    });
   }, "New URL, add route rule");
 
-  test(()=> {
+  promise_test(async t => {
     sheetElm.sheet.deleteRule(1);
+    document.body.offsetTop;
     assert_equals(getComputedStyle(target).width, "7px");
   }, "Remove route rule");
 
-  test(()=> {
-    sheetElm.sheet.insertRule("@route r1 { #target { width: 200px; } }", 1);
+  promise_test(async t => {
+    sheetElm.sheet.insertRule("@route (r1) { #target { width: 200px; } }", 1);
+    document.body.offsetTop;
     assert_equals(getComputedStyle(target).width, "200px");
   }, "Add route rule again");
 </script>

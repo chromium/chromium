@@ -456,4 +456,37 @@ TEST_F(StyleRuleTest, RouteRuleDisabled) {
   EXPECT_FALSE(rule);
 }
 
+TEST_F(StyleRuleTest, RouteRule) {
+  ScopedRouteMatchingForTest enabled(true);
+  StyleRuleBase* rule =
+      css_test_helpers::ParseRule(GetDocument(), "@route (sixtysix) {}");
+  auto* route_rule = DynamicTo<StyleRuleRoute>(rule);
+
+  ASSERT_TRUE(route_rule);
+  EXPECT_EQ(route_rule->GetName(), "sixtysix");
+  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kAt);
+
+  route_rule = DynamicTo<StyleRuleRoute>(
+      css_test_helpers::ParseRule(GetDocument(), "@route (from: sixtysix) {}"));
+  EXPECT_EQ(route_rule->GetName(), "sixtysix");
+  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kFrom);
+
+  route_rule = DynamicTo<StyleRuleRoute>(
+      css_test_helpers::ParseRule(GetDocument(), "@route (to: sixtysix) {}"));
+  EXPECT_EQ(route_rule->GetName(), "sixtysix");
+  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kTo);
+
+  route_rule = DynamicTo<StyleRuleRoute>(
+      css_test_helpers::ParseRule(GetDocument(), "@route (at: sixtysix) {}"));
+  EXPECT_EQ(route_rule->GetName(), "sixtysix");
+  EXPECT_EQ(route_rule->GetPreposition(), RoutePreposition::kAt);
+
+  rule =
+      css_test_helpers::ParseRule(GetDocument(), "@route (below: sixtysix) {}");
+  EXPECT_FALSE(rule);
+
+  rule = css_test_helpers::ParseRule(GetDocument(), "@route (at: ) {}");
+  EXPECT_FALSE(rule);
+}
+
 }  // namespace blink

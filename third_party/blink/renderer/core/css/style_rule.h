@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_nesting_type.h"
 #include "third_party/blink/renderer/core/css/style_scope.h"
+#include "third_party/blink/renderer/core/route_matching/route_preposition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -600,11 +601,13 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
 class StyleRuleRoute : public StyleRuleCondition {
  public:
   StyleRuleRoute(const String& name,
+                 RoutePreposition,
                  HeapVector<Member<StyleRuleBase>> child_rules);
   StyleRuleRoute(const StyleRuleRoute&) = delete;
   StyleRuleRoute(const StyleRuleRoute&, HeapVector<Member<StyleRuleBase>>);
 
   const String& GetName() const { return name_; }
+  RoutePreposition GetPreposition() const { return preposition_; }
 
   void TraceAfterDispatch(Visitor* v) const {
     StyleRuleCondition::TraceAfterDispatch(v);
@@ -612,6 +615,7 @@ class StyleRuleRoute : public StyleRuleCondition {
 
  private:
   String name_;
+  RoutePreposition preposition_;
 };
 
 class StyleRuleStartingStyle : public StyleRuleGroup {
