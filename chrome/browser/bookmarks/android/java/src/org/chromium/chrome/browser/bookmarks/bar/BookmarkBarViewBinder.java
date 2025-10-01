@@ -41,9 +41,9 @@ class BookmarkBarViewBinder {
         } else if (key == BookmarkBarProperties.VISIBILITY) {
             view.setVisibility(model.get(BookmarkBarProperties.VISIBILITY));
         } else if (key == BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST) {
-            ImageView overflowButton = view.findViewById(R.id.bookmark_bar_overflow_button);
-            if (overflowButton != null) {
-                overflowButton.setImageTintList(
+            ImageView overflowIcon = view.findViewById(R.id.bookmark_bar_overflow_icon);
+            if (overflowIcon != null) {
+                overflowIcon.setImageTintList(
                         model.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
             }
         } else if (key == BookmarkBarProperties.DIVIDER_COLOR) {
