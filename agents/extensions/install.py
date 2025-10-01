@@ -102,10 +102,13 @@ def get_global_extension_dir() -> Path:
     return Path.home() / '.gemini' / 'extensions'
 
 
-def _run_command(command: list[str]) -> None:
+def _run_command(command: list[str], skip_prompt: bool = False) -> None:
     """Runs a command and handles errors."""
     try:
-        subprocess.run(command, check=True)
+        if skip_prompt:
+            subprocess.run(command, check=True, input='y\n', encoding='utf-8')
+        else:
+            subprocess.run(command, check=True)
     except FileNotFoundError:
         print(
             f"Error: Command '{command[0]}' not found. Is 'gemini' in your "
@@ -288,6 +291,11 @@ def main() -> None:
 
     update_parser = subparsers.add_parser('update', help='Update extensions.')
     update_parser.add_argument(
+        '--skip-prompt',
+        action='store_true',
+        help='Skip any interactive prompts.',
+    )
+    update_parser.add_argument(
         'extensions',
         nargs='*',
         help=('A list of extension directory names to update. If not '
@@ -342,9 +350,10 @@ def main() -> None:
                 cmd.extend(['install', '--path', str(source_dir / extension)])
             else:
                 cmd.extend(['link', str(source_dir / extension)])
-            _run_command(cmd)
+            _run_command(cmd, skip_prompt=args.skip_prompt)
         elif args.command == 'update':
-            _run_command([gemini_cmd, 'extensions', 'update', extension])
+            _run_command([gemini_cmd, 'extensions', 'update', extension],
+                         skip_prompt=args.skip_prompt)
         elif args.command == 'remove':
             if '_' in extension:
                 # gemini rejects extension names with _ in them so if they're
