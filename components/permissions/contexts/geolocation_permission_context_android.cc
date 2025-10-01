@@ -135,11 +135,9 @@ void GeolocationPermissionContextAndroid::RequestPermission(
   }
 
   DCHECK(render_frame_host);
-  PermissionStatus status =
-      GeolocationPermissionContext::GetPermissionStatus(
-          *request_data->resolver, render_frame_host,
-          request_data->requesting_origin, request_data->embedding_origin)
-          .status;
+  PermissionStatus status = GeolocationPermissionContext::GetPermissionStatus(
+                                *request_data, render_frame_host)
+                                .status;
   if (!request_data->IsEmbeddedPermissionElementInitiated() &&
       status == PermissionStatus::GRANTED &&
       ShouldRepromptUserForPermissions(web_contents,

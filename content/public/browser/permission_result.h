@@ -53,6 +53,10 @@ enum class PermissionStatusSource {
   // The status is the result of a permission being temporarily overridden by an
   // actor operating on the tab.
   ACTOR_OVERRIDE,
+
+  // The status is the result of a permission being granted based on a
+  // heuristic.
+  HEURISTIC_GRANT,
 };
 
 struct CONTENT_EXPORT PermissionResult {

@@ -18,6 +18,7 @@
 #include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace permissions {
 namespace {
@@ -38,6 +39,12 @@ namespace {
 // The "prompt_disposition" key was added in M96. Any older entry will be
 // missing that key. The value is backed by the PermissionPromptDisposition
 // enum.
+//
+// Website settings are used to store data related to heuristic grants. This
+// data is stored per-origin and per-permission type, and includes:
+// - kTempGrantCountKey: Stores the number of temporary grants for a permission.
+// - kAutoGrantHeuristicallyKey: Stores the timestamp when an auto-grant
+//   started taking effect. This auto-grant has a 7-day expiration.
 constexpr char kPermissionActionEntryActionKey[] = "action";
 constexpr char kPermissionActionEntryTimestampKey[] = "time";
 constexpr char kPermissionActionEntryPromptDispositionKey[] =
@@ -57,7 +64,8 @@ constexpr char kTempGrantCountKey[] = "temp_grant_count";
 constexpr char kAutoGrantHeuristicallyKey[] = "auto_grant_heuristically_days";
 
 std::string GetContentTypeString(ContentSettingsType content_type) {
-  CHECK(content_type == ContentSettingsType::GEOLOCATION);
+  CHECK(content_type == ContentSettingsType::GEOLOCATION &&
+        base::FeatureList::IsEnabled(blink::features::kGeolocationElement));
   return PermissionUtil::GetPermissionString(content_type);
 }
 
@@ -216,24 +224,10 @@ void PermissionActionsHistory::ClearHistory(const base::Time& delete_begin,
   }
 }
 
-bool PermissionActionsHistory::CheckAutoGrantAndRecordTemporaryGrant(
+bool PermissionActionsHistory::RecordTemporaryGrantAndSetAutoGrantIfNecessary(
     const GURL& url,
     ContentSettingsType permission) {
-  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
-  base::Value::Dict* permission_dict =
-      EnsurePermissionDict(dict, GetContentTypeString(permission));
-
-  std::optional<base::Time> auto_grant_time =
-      base::ValueToTime(permission_dict->Find(kAutoGrantHeuristicallyKey));
-
   int current_count = GetTemporaryGrantCount(url, permission, settings_map_);
-
-  if (auto_grant_time.has_value() && (base::Time::Now() - *auto_grant_time) >
-                                         kAutoGrantHeuristicallyExpiration) {
-    ResetHeuristicData(url, permission);
-    current_count = 0;
-  }
-
   if (current_count >= kHeuristicGrantThreshold) {
     SetAutoGrantHeuristically(url, permission);
     return true;
@@ -258,12 +252,50 @@ void PermissionActionsHistory::SetAutoGrantHeuristically(
   NotifyAutoGrantedHeuristically(request_origin, permission);
 }
 
+bool PermissionActionsHistory::CheckHeuristicallyAutoGranted(
+    const GURL& request_origin,
+    ContentSettingsType permission,
+    bool needs_update) {
+  base::Value::Dict dict =
+      GetOriginActionHistoryData(settings_map_, request_origin);
+  base::Value::Dict* permission_dict =
+      EnsurePermissionDict(dict, GetContentTypeString(permission));
+
+  std::optional<base::Time> auto_grant_time =
+      base::ValueToTime(permission_dict->Find(kAutoGrantHeuristicallyKey));
+  if (!auto_grant_time.has_value()) {
+    return false;
+  }
+
+  if (base::Time::Now() - *auto_grant_time >
+      kAutoGrantHeuristicallyExpiration) {
+    ResetHeuristicData(request_origin, permission);
+    return false;
+  }
+
+  if (needs_update) {
+    permission_dict->Set(kAutoGrantHeuristicallyKey,
+                         base::TimeToValue(base::Time::Now()));
+    settings_map_->SetWebsiteSettingDefaultScope(
+        request_origin, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+        base::Value(std::move(dict)));
+  }
+
+  return true;
+}
+
 void PermissionActionsHistory::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
 }
 
 void PermissionActionsHistory::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
+}
+
+int PermissionActionsHistory::GetTemporaryGrantCountForTesting(
+    const GURL& request_origin,
+    ContentSettingsType permission) {
+  return GetTemporaryGrantCount(request_origin, permission, settings_map_);
 }
 
 std::vector<PermissionActionsHistory::Entry>

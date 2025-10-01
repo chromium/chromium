@@ -161,6 +161,14 @@ class PermissionRequest {
   // element.
   bool IsEmbeddedPermissionElementInitiated() const;
 
+  // Whether the request was initiated by the user clicking on the geolocation
+  // element.
+  bool IsGeolocationElementInitiated() const;
+
+  // Returns if a request can be auto-granted heuristically. No prompt will be
+  // shown for the request.
+  bool IsEligibleForHeuristicAutoGrant() const;
+
   // Returns the position of the element that caused the prompt to open.
   std::optional<gfx::Rect> GetAnchorElementPosition() const;
 

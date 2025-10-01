@@ -182,6 +182,14 @@ bool PermissionRequest::IsEmbeddedPermissionElementInitiated() const {
   return data_->IsEmbeddedPermissionElementInitiated();
 }
 
+bool PermissionRequest::IsGeolocationElementInitiated() const {
+  return data_->IsGeolocationElementInitiated();
+}
+
+bool PermissionRequest::IsEligibleForHeuristicAutoGrant() const {
+  return data_->IsEligibleForHeuristicAutoGrant();
+}
+
 std::optional<gfx::Rect> PermissionRequest::GetAnchorElementPosition() const {
   return data_->GetAnchorElementPosition();
 }

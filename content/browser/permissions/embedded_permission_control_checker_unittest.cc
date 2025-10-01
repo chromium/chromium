@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -202,7 +203,20 @@ TEST_F(EmbeddedPermissionControlCheckerTest,
   pending_client_2->ExpectEmbeddedPermissionControlRegistered();
 }
 
-TEST_F(EmbeddedPermissionControlCheckerTest, DecouplePermissionSources) {
+class GeolocationEmbeddedPermissionControlCheckerTest
+    : public EmbeddedPermissionControlCheckerTest {
+ public:
+  GeolocationEmbeddedPermissionControlCheckerTest() = default;
+  GeolocationEmbeddedPermissionControlCheckerTest(
+      const GeolocationEmbeddedPermissionControlCheckerTest&) = delete;
+  ~GeolocationEmbeddedPermissionControlCheckerTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_{blink::features::kGeolocationElement};
+};
+
+TEST_F(GeolocationEmbeddedPermissionControlCheckerTest,
+       DecouplePermissionSources) {
   // Register `kMaxPEPCPerPage` clients for the permission element source.
   std::vector<std::unique_ptr<MockEmbeddedPermissionControlClient>>
       permission_clients(kMaxPEPCPerPage);

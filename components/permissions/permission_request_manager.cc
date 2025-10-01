@@ -33,6 +33,7 @@
 #include "components/permissions/constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
@@ -1193,6 +1194,20 @@ void PermissionRequestManager::CurrentRequestsDecided(
 
     PermissionUmaUtil::RecordEmbargoStatus(RecordActionAndGetEmbargoStatus(
         browser_context, request.get(), permission_action));
+    if (request->IsEligibleForHeuristicAutoGrant()) {
+      PermissionActionsHistory* actions_history =
+          PermissionsClient::Get()->GetPermissionActionsHistory(
+              browser_context);
+      if (permission_action == PermissionAction::GRANTED_ONCE) {
+        actions_history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+            request->requesting_origin(), request->GetContentSettingsType());
+      } else if (permission_action == PermissionAction::DISMISSED) {
+        actions_history->ResetHeuristicData(request->requesting_origin(),
+                                            request->GetContentSettingsType());
+      }
+      // TODO(crbug.com/446603274): Record metrics of geolocation PEPC
+      // request.
+    }
   }
 
   if (ShouldFinalizeRequestAfterDecided(permission_action)) {

@@ -687,6 +687,7 @@ bool PermissionUtil::CanPermissionRequestIgnoreStatus(
     case content::PermissionStatusSource::FENCED_FRAME:
     case content::PermissionStatusSource::INSECURE_ORIGIN:
     case content::PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
+    case content::PermissionStatusSource::HEURISTIC_GRANT:
       return false;
     case content::PermissionStatusSource::MULTIPLE_DISMISSALS:
     case content::PermissionStatusSource::MULTIPLE_IGNORES:

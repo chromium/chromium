@@ -76,6 +76,20 @@ struct PermissionRequestData {
            embedded_permission_request_descriptor->geolocation;
   }
 
+  bool IsEligibleForHeuristicAutoGrant() const {
+    return embedded_permission_request_descriptor &&
+           embedded_permission_request_descriptor->geolocation &&
+           !embedded_permission_request_descriptor->geolocation->autolocate;
+  }
+
+  std::optional<bool> GetGeolocationAutolocate() const {
+    if (embedded_permission_request_descriptor &&
+        embedded_permission_request_descriptor->geolocation) {
+      return embedded_permission_request_descriptor->geolocation->autolocate;
+    }
+    return std::nullopt;
+  }
+
   std::optional<gfx::Rect> GetAnchorElementPosition() const {
     if (embedded_permission_request_descriptor) {
       return embedded_permission_request_descriptor->element_position;

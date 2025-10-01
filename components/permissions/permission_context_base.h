@@ -110,6 +110,12 @@ class PermissionContextBase : public content_settings::Observer {
       std::unique_ptr<PermissionRequestData> request_data,
       BrowserPermissionCallback callback);
 
+  // Called in a permission request flow, to retrieve the current permission
+  // status with given a request_data. |render_frame_host| may be nullptr.
+  content::PermissionResult GetPermissionStatus(
+      const PermissionRequestData& request_data,
+      content::RenderFrameHost* render_frame_host) const;
+
   // Returns whether the permission has been granted, denied etc. given a
   // PermissionResolver. |render_frame_host| may be nullptr if the call is
   // coming from a context other than a specific frame.
