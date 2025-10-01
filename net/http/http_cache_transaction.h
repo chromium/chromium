@@ -705,7 +705,6 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   std::string method_;
   RequestPriority priority_;
   NetLogWithSource net_log_;
-  HttpRequestHeaders request_headers_copy_;
   // If extra_headers specified a "if-modified-since" or "if-none-match",
   // `external_validation_` contains the value of those headers.
   std::optional<http_cache_util::ValidationHeaders> external_validation_;
