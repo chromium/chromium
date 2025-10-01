@@ -388,6 +388,57 @@ void CloseSelectedTabAndRecordTabCountMetric(Browser* browser) {
   browser->tab_strip_model()->CloseSelectedTabs();
 }
 
+void MoveGroupToWindowImpl(Browser* source,
+                           Browser* target,
+                           tab_groups::TabGroupId group) {
+  CHECK(source->tab_strip_model()->group_model()->ContainsTabGroup(group));
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(source->profile());
+
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
+  if (tab_group_service && tab_group_service->GetGroup(group)) {
+    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
+  }
+
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      source->tab_strip_model()->DetachTabGroupForInsertion(group);
+  target->tab_strip_model()->InsertDetachedTabGroupAt(std::move(detached_group),
+                                                      0);
+
+  target->window()->Show();
+}
+
+void MoveTabsToWindowImpl(Browser* source,
+                          Browser* target,
+                          const std::vector<int>& tab_indices) {
+  if (tab_indices.empty()) {
+    return;
+  }
+
+  int indices_size = tab_indices.size();
+  int active_index = source->tab_strip_model()->active_index();
+  for (int i = 0; i < indices_size; i++) {
+    // Adjust tab index to account for tabs already moved.
+    int adjusted_index = tab_indices[i] - i;
+    bool pinned = source->tab_strip_model()->IsTabPinned(adjusted_index);
+    std::unique_ptr<tabs::TabModel> tab_model =
+        source->tab_strip_model()->DetachTabAtForInsertion(adjusted_index);
+
+    int add_types = pinned ? AddTabTypes::ADD_PINNED : 0;
+    // The last tab made active takes precedence, so activate the last active
+    // tab, with a fallback for the first tab (i == 0) if the active tab isn’t
+    // in the set of tabs being moved.
+    if (i == 0 || tab_indices[i] == active_index) {
+      add_types = add_types | AddTabTypes::ADD_ACTIVE;
+    }
+
+    target->tab_strip_model()->AddTab(std::move(tab_model), -1,
+                                      ui::PAGE_TRANSITION_TYPED, add_types);
+  }
+  target->window()->Show();
+}
+
 }  // namespace
 
 using base::UserMetricsAction;
@@ -1254,20 +1305,7 @@ void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group) {
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(browser->profile());
-  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
-
-  if (tab_group_service && tab_group_service->GetGroup(group)) {
-    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
-  }
-
-  std::unique_ptr<DetachedTabCollection> detached_group =
-      browser->tab_strip_model()->DetachTabGroupForInsertion(group);
-  new_browser->tab_strip_model()->InsertDetachedTabGroupAt(
-      std::move(detached_group), 0);
-
-  new_browser->window()->Show();
+  MoveGroupToWindowImpl(browser, new_browser, group);
 }
 
 void MoveTabsToNewWindow(Browser* browser,
@@ -1288,7 +1326,7 @@ void MoveTabsToNewWindow(Browser* browser,
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
-  MoveTabsToExistingWindow(browser, new_browser, tab_indices);
+  MoveTabsToWindowImpl(browser, new_browser, tab_indices);
 }
 
 bool CanCloseTabsToRight(const Browser* browser) {
@@ -1351,52 +1389,13 @@ bool CanDuplicateTabAt(const Browser* browser, int index) {
 void MoveTabsToExistingWindow(Browser* source,
                               Browser* target,
                               const std::vector<int>& tab_indices) {
-  if (tab_indices.empty()) {
-    return;
-  }
-
-  int indices_size = tab_indices.size();
-  int active_index = source->tab_strip_model()->active_index();
-  for (int i = 0; i < indices_size; i++) {
-    // Adjust tab index to account for tabs already moved.
-    int adjusted_index = tab_indices[i] - i;
-    bool pinned = source->tab_strip_model()->IsTabPinned(adjusted_index);
-    std::unique_ptr<tabs::TabModel> tab_model =
-        source->tab_strip_model()->DetachTabAtForInsertion(adjusted_index);
-
-    int add_types = pinned ? AddTabTypes::ADD_PINNED : 0;
-    // The last tab made active takes precedence, so activate the last active
-    // tab, with a fallback for the first tab (i == 0) if the active tab isn’t
-    // in the set of tabs being moved.
-    if (i == 0 || tab_indices[i] == active_index) {
-      add_types = add_types | AddTabTypes::ADD_ACTIVE;
-    }
-
-    target->tab_strip_model()->AddTab(
-        std::move(tab_model), -1, ui::PAGE_TRANSITION_TYPED, add_types);
-  }
-  target->window()->Show();
+  MoveTabsToWindowImpl(source, target, tab_indices);
 }
 
 void MoveGroupToExistingWindow(Browser* source,
                                Browser* target,
                                tab_groups::TabGroupId group) {
-  CHECK(source->tab_strip_model()->group_model()->ContainsTabGroup(group));
-
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(source->profile());
-
-  std::unique_ptr<tab_groups::ScopedLocalObservationPauser> observation_pauser;
-  if (tab_group_service && tab_group_service->GetGroup(group)) {
-    observation_pauser = tab_group_service->CreateScopedLocalObserverPauser();
-  }
-
-  std::unique_ptr<DetachedTabCollection> detached_group =
-      source->tab_strip_model()->DetachTabGroupForInsertion(group);
-  target->tab_strip_model()->InsertDetachedTabGroupAt(std::move(detached_group),
-                                                      0);
-
-  target->window()->Show();
+  MoveGroupToWindowImpl(source, target, group);
 }
 
 void PinTab(Browser* browser) {

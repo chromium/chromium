@@ -429,6 +429,55 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToNewWindow) {
                                            tab_groups::TabGroupColorId::kGrey));
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveGroupToExistingWindow) {
+  auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
+    for (unsigned int i = 0; i < num_tabs; ++i) {
+      chrome::NewTab(browser);
+    }
+  };
+
+  // Prepare the source browser with a few tabs and a tab group.
+  AddTabs(browser(), 3);
+  std::vector<int> indices = {1, 2};
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup(indices);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(
+      group_id,
+      tab_groups::TabGroupVisualData(u"Test Group ExistingWindow",
+                                     tab_groups::TabGroupColorId::kBlue));
+
+  // Prepare the target browser (existing window).
+  Browser* target_browser =
+      Browser::Create(Browser::CreateParams(browser()->profile(), true));
+  ASSERT_TRUE(target_browser);
+  AddTabs(target_browser, 1);
+
+  // Perform the move to the existing window.
+  chrome::MoveGroupToExistingWindow(browser(), target_browser, group_id);
+
+  // Verify the source window no longer contains the tab group.
+  EXPECT_FALSE(
+      browser()->tab_strip_model()->group_model()->ContainsTabGroup(group_id));
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2u);
+
+  // Verify the target window received the tab group with correct properties.
+  EXPECT_TRUE(
+      target_browser->tab_strip_model()->group_model()->ContainsTabGroup(
+          group_id));
+  EXPECT_EQ(target_browser->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group_id)
+                ->ListTabs()
+                .length(),
+            2u);
+  EXPECT_EQ(*target_browser->tab_strip_model()
+                 ->group_model()
+                 ->GetTabGroup(group_id)
+                 ->visual_data(),
+            tab_groups::TabGroupVisualData(u"Test Group ExistingWindow",
+                                           tab_groups::TabGroupColorId::kBlue));
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, MoveToExistingWindow) {
   auto AddTabs = [](Browser* browser, unsigned int num_tabs) {
     for (unsigned int i = 0; i < num_tabs; ++i) {
