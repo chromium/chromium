@@ -643,6 +643,12 @@ class NavigationController {
   // Gets the BackForwardCache for this NavigationController.
   virtual BackForwardCache& GetBackForwardCache() = 0;
 
+  // Determines whether to override user agent in the next navigation. This
+  // decision depends on the last committed entry if the given `option` is
+  // `NavigationController::UserAgentOverrideOption::INHERIT`.
+  virtual bool ShouldOverrideUserAgentInNextNavigation(
+      NavigationController::UserAgentOverrideOption option) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class NavigationControllerImpl;

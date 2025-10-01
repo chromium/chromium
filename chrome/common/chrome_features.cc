@@ -1648,6 +1648,11 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
 BASE_FEATURE(kWebium, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Enables the User-Agent override fix for SearchPrefetch. This will work only
+// if enabled together with `kPreloadingRespectUserAgentOverride`.
+BASE_FEATURE(kRespectUserAgentOverrideInSearchPrefetch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Restricts the WebUI scripts able to use the generated code cache according to
 // embedder-specified heuristics.
 BASE_FEATURE(kRestrictedWebUICodeCache, base::FEATURE_DISABLED_BY_DEFAULT);

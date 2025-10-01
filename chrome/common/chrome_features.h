@@ -1233,6 +1233,9 @@ BASE_DECLARE_FEATURE(kWebium);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kRespectUserAgentOverrideInSearchPrefetch);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kRestrictedWebUICodeCache);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<std::string> kRestrictedWebUICodeCacheResources;

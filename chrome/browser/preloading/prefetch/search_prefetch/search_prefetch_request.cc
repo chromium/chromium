@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,17 +29,20 @@
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -47,6 +51,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/origin.h"
@@ -87,7 +92,22 @@ class CheckForCancelledOrPausedDelegate
 };
 
 // Computes the user agent value that should set for the User-Agent header.
-std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
+std::string GetUserAgentValue(const GURL& request_url,
+                              content::WebContents& web_contents) {
+  if (web_contents.GetDelegate() &&
+      base::FeatureList::IsEnabled(
+          features::kRespectUserAgentOverrideInSearchPrefetch)) {
+    blink::UserAgentOverride ua_override = web_contents.GetUserAgentOverride();
+    if (!ua_override.ua_string_override.empty()) {
+      const content::NavigationController::UserAgentOverrideOption option =
+          web_contents.GetDelegate()->ShouldOverrideUserAgentForPreloading(
+              request_url);
+      if (web_contents.GetController().ShouldOverrideUserAgentInNextNavigation(
+              option)) {
+        return ua_override.ua_string_override;
+      }
+    }
+  }
   return embedder_support::GetUserAgent();
 }
 
@@ -199,7 +219,9 @@ SearchPrefetchRequest::NetworkAnnotationForPrefetch() {
         })");
 }
 
-bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
+bool SearchPrefetchRequest::StartPrefetchRequest(
+    Profile* profile,
+    content::WebContents& web_contents) {
   TRACE_EVENT0("loading", "SearchPrefetchRequest::StartPrefetchRequest");
   time_start_prefetch_request_ = base::TimeTicks::Now();
 
@@ -247,7 +269,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kUserAgent,
-      GetUserAgentValue(resource_request->headers));
+      GetUserAgentValue(prefetch_url_, web_contents));
   if (!base::FeatureList::IsEnabled(
           blink::features::kRemovePurposeHeaderForPrefetch)) {
     resource_request->headers.SetHeader(blink::kPurposeHeaderName,

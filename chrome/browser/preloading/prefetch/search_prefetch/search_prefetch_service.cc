@@ -461,7 +461,7 @@ bool SearchPrefetchService::MaybePrefetchURL(
                          base::Unretained(this)));
 
   DCHECK(prefetch_request);
-  if (!prefetch_request->StartPrefetchRequest(profile_)) {
+  if (!prefetch_request->StartPrefetchRequest(profile_, *web_contents)) {
     recorder.reason_ = SearchPrefetchEligibilityReason::kThrottled;
     // We don't consider Throttled as an ineligibility reason is because we
     // can't replicate this behaviour in our other experiment group. To prevent

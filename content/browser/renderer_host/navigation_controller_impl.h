@@ -162,6 +162,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   void DeleteNavigationEntries(
       const DeletionPredicate& deletionPredicate) override;
   BackForwardCacheImpl& GetBackForwardCache() override;
+  bool ShouldOverrideUserAgentInNextNavigation(
+      NavigationController::UserAgentOverrideOption option) override;
 
   // Discards the pending entry if any. If this is caused by a navigation
   // committing a new entry, `commit_details` will contain the committed
@@ -512,12 +514,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // url in the navigation API.
   void DidChangeReferrerPolicy(FrameTreeNode* node,
                                network::mojom::ReferrerPolicy referrer_policy);
-
-  // Determines whether to override user agent in the next navigation. This
-  // decision depends on the last committed entry if the given `option` is
-  // `NavigationController::UserAgentOverrideOption::INHERIT`.
-  bool ShouldOverrideUserAgentInNextNavigation(
-      NavigationController::UserAgentOverrideOption option);
 
   base::WeakPtr<NavigationControllerImpl> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
