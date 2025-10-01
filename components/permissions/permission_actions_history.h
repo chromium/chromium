@@ -103,6 +103,11 @@ class PermissionActionsHistory : public KeyedService {
   // example when the user manually resets permissions.
   void ResetHeuristicData(const GURL& url, ContentSettingsType permission);
 
+  // Same as above, but cleans the slate for all permissions and for all URLs
+  // matching |filter|.
+  void ResetHeuristicData(
+      base::RepeatingCallback<bool(const GURL& url)> filter);
+
   // Sets the heuristic auto grant for |permission| on |request_origin| and
   // notifies observers.
   void SetAutoGrantHeuristically(const GURL& request_origin,

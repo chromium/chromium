@@ -44,6 +44,7 @@
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
@@ -745,6 +746,14 @@ void PageInfo::OnSitePermissionChanged(
     delegate_->GetPermissionDecisionAutoblocker()->RemoveEmbargoAndResetCounts(
         site_url_, type);
   }
+
+  // Also clear heuristic grant data if user removes the granted state.
+  if (setting && (info->delegate().IsBlocked(*setting) ||
+                  info->delegate().IsUndecided(*setting))) {
+    delegate_->GetPermissionActionsHistory()->ResetHeuristicData(site_url_,
+                                                                 type);
+  }
+
   using Constraints = content_settings::ContentSettingConstraints;
   Constraints constraints;
   if (is_one_time) {

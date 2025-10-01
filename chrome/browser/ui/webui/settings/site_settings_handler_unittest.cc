@@ -52,6 +52,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -98,6 +99,7 @@
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -2252,6 +2254,61 @@ TEST_F(SiteSettingsHandlerTest, ResetCategoryPermissionForEmbargoedOrigins) {
         kPermissionNotifications, profile(), web_ui(),
         /*incognito=*/false, &exceptions);
     ASSERT_TRUE(exceptions.empty());
+  }
+}
+
+TEST_F(SiteSettingsHandlerTest, ClearHeuristicData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(blink::features::kGeolocationElement);
+  constexpr char kOrigin[] = "https://www.example.com:443";
+  auto* permission_actions_history =
+      PermissionActionsHistoryFactory::GetForProfile(profile());
+
+  {
+    // Grant a temporary permission to create heuristic data.
+    permission_actions_history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+        GURL(kOrigin), ContentSettingsType::GEOLOCATION);
+
+    // Verify that heuristic data exists.
+    EXPECT_EQ(1, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
+
+    // Reset permission for the origin.
+    base::Value::List reset_args;
+    reset_args.Append(kOrigin);
+    reset_args.Append(std::string());
+    reset_args.Append(kGeolocation);
+    reset_args.Append(false);  // Incognito.
+    handler()->HandleResetCategoryPermissionForPattern(reset_args);
+
+    // Heuristic data for the given origin should be cleared.
+    EXPECT_EQ(0, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
+  }
+
+  const auto kContentSettings = std::to_array<ContentSetting>({
+      CONTENT_SETTING_BLOCK,
+      CONTENT_SETTING_ASK,
+  });
+  for (const ContentSetting content_setting : kContentSettings) {
+    // Grant a temporary permission to create heuristic data.
+    permission_actions_history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+        GURL(kOrigin), ContentSettingsType::GEOLOCATION);
+
+    // Verify that heuristic data exists.
+    EXPECT_EQ(1, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
+
+    base::Value::List reset_args;
+    reset_args.Append(kOrigin);
+    reset_args.Append(kGeolocation);
+    reset_args.Append(
+        content_settings::ContentSettingToString(content_setting));
+    handler()->HandleSetOriginPermissions(reset_args);
+
+    // Heuristic data for the given origin should be cleared.
+    EXPECT_EQ(0, permission_actions_history->GetTemporaryGrantCountForTesting(
+                     GURL(kOrigin), ContentSettingsType::GEOLOCATION));
   }
 }
 

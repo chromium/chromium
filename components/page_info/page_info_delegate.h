@@ -25,6 +25,7 @@ enum class PermissionType;
 namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionDecisionAutoBlocker;
+class PermissionActionsHistory;
 }  // namespace permissions
 
 namespace safe_browsing {
@@ -103,6 +104,9 @@ class PageInfoDelegate {
 
   virtual permissions::PermissionDecisionAutoBlocker*
   GetPermissionDecisionAutoblocker() = 0;
+
+  virtual permissions::PermissionActionsHistory*
+  GetPermissionActionsHistory() = 0;
 
   // Service for managing SSL error page bypasses. Used to revoke bypass
   // decisions by users.

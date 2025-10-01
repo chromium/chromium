@@ -45,6 +45,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -83,6 +84,7 @@
 #include "components/permissions/contexts/bluetooth_chooser_context.h"
 #include "components/permissions/features.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
@@ -1650,6 +1652,12 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
           ->RemoveEmbargoAndResetCounts(origin, content_type);
     }
 
+    // Clear heuristic data if the new setting isn't allow.
+    if (setting != CONTENT_SETTING_ALLOW) {
+      PermissionActionsHistoryFactory::GetForProfile(profile_)
+          ->ResetHeuristicData(origin, content_type);
+    }
+
     content_settings::ContentSettingConstraints constraints;
 
     // Enable last-visit tracking for eligible permissions granted from
@@ -1805,11 +1813,13 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
     }
   }
 
-  // End embargo if currently active.
+  // End embargo and heuristic data if currently active.
   auto url = GURL(primary_pattern_string);
   if (url.is_valid()) {
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile)
         ->RemoveEmbargoAndResetCounts(url, content_type);
+    PermissionActionsHistoryFactory::GetForProfile(profile_)
+        ->ResetHeuristicData(url, content_type);
   }
 
   if (content_type == ContentSettingsType::NOTIFICATIONS) {
@@ -1871,6 +1881,15 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
     if (url.is_valid()) {
       PermissionDecisionAutoBlockerFactory::GetForProfile(target_profile)
           ->RemoveEmbargoAndResetCounts(url, content_type);
+    }
+  }
+
+  // Clear heuristic data if the new setting isn't allow.
+  if (setting != CONTENT_SETTING_ALLOW) {
+    GURL url(primary_pattern.ToString());
+    if (url.is_valid()) {
+      PermissionActionsHistoryFactory::GetForProfile(target_profile)
+          ->ResetHeuristicData(url, content_type);
     }
   }
 

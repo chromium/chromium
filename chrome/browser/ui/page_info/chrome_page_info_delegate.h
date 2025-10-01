@@ -23,6 +23,7 @@ class PageSpecificContentSettings;
 namespace permissions {
 class ObjectPermissionContextBase;
 class PermissionDecisionAutoBlocker;
+class PermissionActionsHistory;
 }  // namespace permissions
 
 namespace safe_browsing {
@@ -81,6 +82,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   std::u16string GetSubjectName(const GURL& url) override;
   permissions::PermissionDecisionAutoBlocker* GetPermissionDecisionAutoblocker()
       override;
+  permissions::PermissionActionsHistory* GetPermissionActionsHistory() override;
   StatefulSSLHostStateDelegate* GetStatefulSSLHostStateDelegate() override;
   HostContentSettingsMap* GetContentSettings() override;
   bool IsSubresourceFilterActivated(const GURL& site_url) override;

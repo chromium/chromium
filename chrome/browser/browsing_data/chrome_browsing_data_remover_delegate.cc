@@ -940,6 +940,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     PermissionDecisionAutoBlockerFactory::GetForProfile(profile_)
         ->RemoveEmbargoAndResetCounts(filter);
+    PermissionActionsHistoryFactory::GetForProfile(profile_)
+        ->ResetHeuristicData(filter);
   }
 
   //////////////////////////////////////////////////////////////////////////////

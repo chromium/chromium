@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -452,8 +453,12 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
       history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
           url, ContentSettingsType::NOTIFICATIONS),
       "");
-  EXPECT_DEATH_IF_SUPPORTED(
-      history->ResetHeuristicData(url, ContentSettingsType::NOTIFICATIONS), "");
+  EXPECT_DEATH_IF_SUPPORTED(history->SetAutoGrantHeuristically(
+                                url, ContentSettingsType::NOTIFICATIONS),
+                            "");
+  EXPECT_DEATH_IF_SUPPORTED(history->CheckHeuristicallyAutoGranted(
+                                url, ContentSettingsType::NOTIFICATIONS),
+                            "");
 }
 
 TEST_F(PermissionActionHistoryHeuristicGrantTest, HeuristicGrantExpiration) {
@@ -529,6 +534,46 @@ TEST_F(PermissionActionHistoryHeuristicGrantTest,
   task_environment_.AdvanceClock(base::Days(2));
   EXPECT_FALSE(history->CheckHeuristicallyAutoGranted(url, permission,
                                                       /*needs_update*/ false));
+}
+
+TEST_F(PermissionActionHistoryHeuristicGrantTest,
+       HeuristicGrantResetWithFilter) {
+  GURL url1("https://www.example.com");
+  GURL url2("https://www.google.com");
+  ContentSettingsType permission = ContentSettingsType::GEOLOCATION;
+  auto* history = GetPermissionActionsHistory();
+
+  // Grant url1 and url2 twice.
+  EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+      url1, permission));
+  EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+      url1, permission));
+
+  EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+      url2, permission));
+  EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+      url2, permission));
+
+  // Reset for urls matching "example.com".
+  history->ResetHeuristicData(base::BindRepeating(
+      [](const GURL& url) { return url.host() == "www.example.com"; }));
+
+  // The counter for url1 should be reset. It should take
+  // `kHeuristicGrantThreshold` more grants to trigger auto-grant.
+  for (int i = 0; i < kHeuristicGrantThreshold; ++i) {
+    EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+        url1, permission));
+  }
+  EXPECT_TRUE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+      url1, permission));
+
+  // The counter for url2 should not be reset. It was granted twice, so it
+  // needs one more grant to reach the threshold.
+  EXPECT_FALSE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+      url2, permission));
+  // The next one should auto-grant.
+  EXPECT_TRUE(history->RecordTemporaryGrantAndSetAutoGrantIfNecessary(
+      url2, permission));
 }
 
 }  // namespace permissions

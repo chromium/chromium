@@ -63,12 +63,6 @@ constexpr base::TimeDelta kAutoGrantHeuristicallyExpiration = base::Days(7);
 constexpr char kTempGrantCountKey[] = "temp_grant_count";
 constexpr char kAutoGrantHeuristicallyKey[] = "auto_grant_heuristically_days";
 
-std::string GetContentTypeString(ContentSettingsType content_type) {
-  CHECK(content_type == ContentSettingsType::GEOLOCATION &&
-        base::FeatureList::IsEnabled(blink::features::kGeolocationElement));
-  return PermissionUtil::GetPermissionString(content_type);
-}
-
 base::Value::Dict GetOriginActionHistoryData(HostContentSettingsMap* settings,
                                              const GURL& origin_url) {
   base::Value website_setting = settings->GetWebsiteSetting(
@@ -81,8 +75,11 @@ base::Value::Dict GetOriginActionHistoryData(HostContentSettingsMap* settings,
 }
 
 base::Value::Dict* EnsurePermissionDict(base::Value::Dict& origin_dict,
-                                        const std::string& permission) {
-  return origin_dict.EnsureDict(permission);
+                                        ContentSettingsType content_type) {
+  CHECK(content_type == ContentSettingsType::GEOLOCATION &&
+        base::FeatureList::IsEnabled(blink::features::kGeolocationElement));
+  return origin_dict.EnsureDict(
+      PermissionUtil::GetPermissionString(content_type));
 }
 
 // Record incrementally by one the number of temporary grants for `permission`
@@ -91,9 +88,7 @@ int RecordTemporaryGrantCount(const GURL& url,
                               ContentSettingsType permission,
                               HostContentSettingsMap* settings_map) {
   base::Value::Dict dict = GetOriginActionHistoryData(settings_map, url);
-
-  base::Value::Dict* permission_dict =
-      EnsurePermissionDict(dict, GetContentTypeString(permission));
+  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
 
   std::optional<int> value = permission_dict->FindInt(kTempGrantCountKey);
   int current_count = value.value_or(0);
@@ -112,8 +107,7 @@ int GetTemporaryGrantCount(const GURL& url,
                            ContentSettingsType permission,
                            HostContentSettingsMap* settings_map) {
   base::Value::Dict dict = GetOriginActionHistoryData(settings_map, url);
-  base::Value::Dict* permission_dict =
-      EnsurePermissionDict(dict, GetContentTypeString(permission));
+  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
 
   std::optional<int> value = permission_dict->FindInt(kTempGrantCountKey);
   return value.value_or(0);
@@ -127,16 +121,6 @@ PermissionActionsHistory::PermissionActionsHistory(
     : pref_service_(pref_service), settings_map_(settings_map) {}
 
 PermissionActionsHistory::~PermissionActionsHistory() = default;
-void PermissionActionsHistory::ResetHeuristicData(
-    const GURL& url,
-    ContentSettingsType permission) {
-  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
-  dict.Remove(GetContentTypeString(permission));
-
-  settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
-      base::Value(std::move(dict)));
-}
 
 std::vector<PermissionActionsHistory::Entry>
 PermissionActionsHistory::GetHistory(const base::Time& begin,
@@ -237,13 +221,40 @@ bool PermissionActionsHistory::RecordTemporaryGrantAndSetAutoGrantIfNecessary(
   return false;
 }
 
+void PermissionActionsHistory::ResetHeuristicData(
+    const GURL& url,
+    ContentSettingsType permission) {
+  base::Value::Dict dict = GetOriginActionHistoryData(settings_map_, url);
+  if (dict.empty()) {
+    return;
+  }
+
+  dict.Remove(PermissionUtil::GetPermissionString(permission));
+  settings_map_->SetWebsiteSettingDefaultScope(
+      url, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+      base::Value(std::move(dict)));
+}
+
+void PermissionActionsHistory::ResetHeuristicData(
+    base::RepeatingCallback<bool(const GURL& url)> filter) {
+  for (const auto& site : settings_map_->GetSettingsForOneType(
+           ContentSettingsType::PERMISSION_ACTIONS_HISTORY)) {
+    GURL origin(site.primary_pattern.ToString());
+
+    if (origin.is_valid() && filter.Run(origin)) {
+      settings_map_->SetWebsiteSettingDefaultScope(
+          origin, GURL(), ContentSettingsType::PERMISSION_ACTIONS_HISTORY,
+          base::Value());
+    }
+  }
+}
+
 void PermissionActionsHistory::SetAutoGrantHeuristically(
     const GURL& request_origin,
     ContentSettingsType permission) {
   base::Value::Dict dict =
       GetOriginActionHistoryData(settings_map_, request_origin);
-  base::Value::Dict* permission_dict =
-      EnsurePermissionDict(dict, GetContentTypeString(permission));
+  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
   permission_dict->Set(kAutoGrantHeuristicallyKey,
                        base::TimeToValue(base::Time::Now()));
   settings_map_->SetWebsiteSettingDefaultScope(
@@ -258,8 +269,7 @@ bool PermissionActionsHistory::CheckHeuristicallyAutoGranted(
     bool needs_update) {
   base::Value::Dict dict =
       GetOriginActionHistoryData(settings_map_, request_origin);
-  base::Value::Dict* permission_dict =
-      EnsurePermissionDict(dict, GetContentTypeString(permission));
+  base::Value::Dict* permission_dict = EnsurePermissionDict(dict, permission);
 
   std::optional<base::Time> auto_grant_time =
       base::ValueToTime(permission_dict->Find(kAutoGrantHeuristicallyKey));
