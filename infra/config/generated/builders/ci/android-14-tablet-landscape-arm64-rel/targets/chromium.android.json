@@ -2154,7 +2154,6 @@
       {
         "args": [
           "--webview-process-mode=multiple",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.14.webview_instrumentation_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

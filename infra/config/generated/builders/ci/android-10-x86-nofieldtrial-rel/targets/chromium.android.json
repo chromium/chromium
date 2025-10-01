@@ -3194,7 +3194,6 @@
           "--webview-process-mode=multiple",
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.webview_instrumentation_test_apk.filter",
           "--use-persistent-shell",
           "--disable-field-trial-config",
           "--skia-gold-consider-unsupported",
