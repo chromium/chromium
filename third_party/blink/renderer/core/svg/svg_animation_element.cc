@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -92,9 +91,7 @@ static bool ParseKeyTimes(const String& string,
   string.Split(';', true, parse_list);
   for (unsigned n = 0; n < parse_list.size(); ++n) {
     String time_string = parse_list[n].StripWhiteSpace();
-    if (RuntimeEnabledFeatures::
-            SmilKeyTimesKeyPointsAllowTrailingSemicolonEnabled() &&
-        time_string.empty()) {
+    if (time_string.empty()) {
       // Tolerate trailing ';'
       if (n == parse_list.size() - 1) {
         continue;
