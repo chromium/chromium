@@ -944,12 +944,17 @@ const char kGlicSkipReloadAfterNavigation[] =
     "glic-skip-reload-after-navigation";
 // Whether additional logging is enabled in the glic api host.
 const char kGlicHostLogging[] = "glic-host-logging";
+
+// List of URL patterns in the glic webview to redirect to an admin blocked
+// panel, as a space-separated list.
+const char kGlicAdminRedirectPatterns[] = "glic-admin-redirect-patterns";
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Writes open and installed web apps for each profile to the specified file
-// without launching a new browser window or tab. Pass a absolute file path to
-// specify where to output the information. Can be used together with optional
+// without launching a new browser window or tab. Pass a absolute file path
+// to specify where to output the information. Can be used together with
+// optional
 // --profile-base-name switch to only write information for a given profile.
 const char kListApps[] = "list-apps";
 

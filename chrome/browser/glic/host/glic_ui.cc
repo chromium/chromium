@@ -156,13 +156,17 @@ GlicUI::GlicUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddBoolean("enableWebClientUnresponsiveMetrics",
                      base::FeatureList::IsEnabled(
                          features::kGlicWebClientUnresponsiveMetrics));
+  std::string admin_blocked_redirect_patterns;
   if (base::FeatureList::IsEnabled(features::kGlicCaaGuestError)) {
-    source->AddString(
-        "adminBlockedRedirectOrigins",
-        "https://access.workspace.google.com https://admin.google.com");
-  } else {
-    source->AddString("adminBlockedRedirectOrigins", "");
+    admin_blocked_redirect_patterns = command_line->GetSwitchValueASCII(
+        ::switches::kGlicAdminRedirectPatterns);
+    if (admin_blocked_redirect_patterns.empty()) {
+      admin_blocked_redirect_patterns =
+          features::kGlicCaaGuestRedirectPatterns.Get();
+    }
   }
+  source->AddString("adminBlockedRedirectPatterns",
+                    admin_blocked_redirect_patterns);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

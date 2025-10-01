@@ -349,12 +349,14 @@ export class WebviewController {
   }
 
   private urlMatchesAdminBlockedUrl(url: string) {
-    const adminBlockedRedirectOrigins =
-        loadTimeData.getString('adminBlockedRedirectOrigins');
-    if (adminBlockedRedirectOrigins &&
-        adminBlockedRedirectOrigins.split(' ').some(
-            origin => matcherForOrigin(origin.trim())?.test(url))) {
-      console.warn(`CAA error page detected.`);
+    const adminBlockedRedirectPatterns =
+        loadTimeData.getString('adminBlockedRedirectPatterns');
+    if (!adminBlockedRedirectPatterns) {
+      return false;
+    }
+    if (adminBlockedRedirectPatterns.split(' ').some(
+            pattern => new URLPattern(pattern.trim()).test(url))) {
+      console.warn(`Admin blocked error page detected.`);
       return true;
     }
     return false;

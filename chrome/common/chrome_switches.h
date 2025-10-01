@@ -295,6 +295,7 @@ extern const char kGlicAutomation[];
 extern const char kGlicDev[];
 extern const char kGlicSkipReloadAfterNavigation[];
 extern const char kGlicHostLogging[];
+extern const char kGlicAdminRedirectPatterns[];
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

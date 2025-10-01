@@ -639,10 +639,16 @@ class GlicApiUiRedirectTest : public test::InteractiveGlicTest,
         embedded_https_test_server().GetURL("/echo").ReplaceComponents(
             replacements);
 
+    GURL::Replacements pattern_replacements;
+    pattern_replacements.SetPathStr("/echo");
+    pattern_replacements.SetQueryStr("*");
+
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kGlicDebugWebview, {}},
         {features::kGlicCaaGuestError,
-         {{"glic-caa-link-url", destination_url_.spec()}}}};
+         {{"glic-caa-link-url", destination_url_.spec()},
+          {"glic-caa-redirect-patterns",
+           admin_url.ReplaceComponents(pattern_replacements).spec()}}}};
 
     redirect_features_.InitWithFeaturesAndParameters(enabled_features,
                                                      /*disabled_features=*/{});

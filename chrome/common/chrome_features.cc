@@ -674,6 +674,10 @@ extern const base::FeatureParam<std::string> kGlicCaaLinkUrl{
     &kGlicCaaGuestError, "glic-caa-link-url", "https://gemini.google.com/"};
 extern const base::FeatureParam<std::string> kGlicCaaLinkText{
     &kGlicCaaGuestError, "glic-caa-link-text", "gemini.google.com"};
+extern const base::FeatureParam<std::string> kGlicCaaGuestRedirectPatterns{
+    &kGlicCaaGuestError, "glic-caa-redirect-patterns",
+    "https://access.workspace.google.com https://admin.google.com "
+    "https://accounts.google.com/info/servicerestricted"};
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 // Force Privacy Guide to be available even if it would be unavailable
