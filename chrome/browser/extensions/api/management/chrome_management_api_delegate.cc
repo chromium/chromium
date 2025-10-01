@@ -44,7 +44,7 @@ class ManagementUninstallFunctionUninstallDialogDelegate
         (function->extension() &&
          function->extension()->id() == kWebStoreAppId) ||
         function->source_url().DomainIs(
-            extension_urls::GetNewWebstoreLaunchURL().host());
+            extension_urls::GetNewWebstoreLaunchURL().GetHost());
     UninstallSource source;
     UninstallReason reason;
     if (uninstall_from_webstore) {

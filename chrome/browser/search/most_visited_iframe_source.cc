@@ -42,7 +42,7 @@ void MostVisitedIframeSource::StartDataRequest(
     content::URLDataSource::GotDataCallback callback) {
   // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
   // available.
-  const std::string path(url.path());
+  const std::string path(url.GetPath());
 
   if (path == kTitleHTMLPath) {
     SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_HTML,
@@ -84,7 +84,7 @@ bool MostVisitedIframeSource::ShouldServiceRequest(
   return InstantService::ShouldServiceRequest(url, browser_context,
                                               render_process_id) &&
          url.SchemeIs(chrome::kChromeSearchScheme) &&
-         url.host_piece() == GetSource() && ServesPath(url.path());
+         url.host_piece() == GetSource() && ServesPath(url.GetPath());
 }
 
 bool MostVisitedIframeSource::ShouldDenyXFrameOptions() {

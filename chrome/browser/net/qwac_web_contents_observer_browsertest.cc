@@ -43,7 +43,7 @@ class ResponseHandlerBase {
 
   std::unique_ptr<net::test_server::HttpResponse> ServeResponse(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != expected_path_) {
+    if (request.GetURL().GetPath() != expected_path_) {
       return nullptr;
     }
 
@@ -120,7 +120,7 @@ std::unique_ptr<net::test_server::HttpResponse> ServeRedirectWithQwacHeader(
     const std::string& redirect_url,
     const std::string& qwac_link_url,
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != expected_path) {
+  if (request.GetURL().GetPath() != expected_path) {
     return nullptr;
   }
 
@@ -137,7 +137,7 @@ std::unique_ptr<net::test_server::HttpResponse> ServeRedirectWithQwacHeader(
 std::unique_ptr<net::test_server::HttpResponse> FailTestIfPathRequested(
     const std::string& expected_path,
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() != expected_path) {
+  if (request.GetURL().GetPath() != expected_path) {
     return nullptr;
   }
 

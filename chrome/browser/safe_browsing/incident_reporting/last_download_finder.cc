@@ -232,7 +232,7 @@ void PopulateNonBinaryDetailsFromRow(
           .AsUTF8Unsafe());
   details->set_length(download.received_bytes);
   if (download.url_chain.back().has_host())
-    details->set_host(download.url_chain.back().host());
+    details->set_host(download.url_chain.back().GetHost());
   details->set_url_spec_sha256(
       crypto::SHA256HashString(download.url_chain.back().spec()));
 }

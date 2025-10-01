@@ -23,17 +23,17 @@
 // static
 GURL DevToolsUI::GetProxyURL(const std::string& frontend_url) {
   GURL url(frontend_url);
-  if (url.scheme() == content::kChromeDevToolsScheme &&
-      url.host() == chrome::kChromeUIDevToolsHost) {
+  if (url.GetScheme() == content::kChromeDevToolsScheme &&
+      url.GetHost() == chrome::kChromeUIDevToolsHost) {
     return GURL();
   }
-  if (!url.is_valid() || url.host() != kRemoteFrontendDomain) {
+  if (!url.is_valid() || url.GetHost() != kRemoteFrontendDomain) {
     return GURL();
   }
   return GURL(base::StringPrintf(
       "%s://%s/%s/%s?%s", content::kChromeDevToolsScheme,
       chrome::kChromeUIDevToolsHost, chrome::kChromeUIDevToolsRemotePath,
-      url.path().substr(1).c_str(), url.query().c_str()));
+      url.GetPath().substr(1).c_str(), url.GetQuery().c_str()));
 }
 
 // static

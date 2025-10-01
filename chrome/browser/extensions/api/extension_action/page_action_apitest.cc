@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
       << "Clicking on the page action should have caused a popup to be added.";
 
   ASSERT_STREQ("/a_popup.html",
-               page_action->GetPopupUrl(tab_id).path().c_str());
+               page_action->GetPopupUrl(tab_id).GetPath().c_str());
 
   // Now change the popup from a_popup.html to a_second_popup.html .
   // Load a page which removes the popup using chrome.pageAction.setPopup().
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, AddPopup) {
 
   ASSERT_TRUE(page_action->HasPopup(tab_id));
   ASSERT_STREQ("/another_popup.html",
-               page_action->GetPopupUrl(tab_id).path().c_str());
+               page_action->GetPopupUrl(tab_id).GetPath().c_str());
 }
 
 // Test that calling chrome.pageAction.setPopup() can remove a popup.

@@ -238,8 +238,9 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != "/mock_translate_script.js")
+    if (request.GetURL().GetPath() != "/mock_translate_script.js") {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);

@@ -45,7 +45,7 @@ base::Value::List GetHandlersAsListValue(
                       handler.GetProtocolDisplayName());
     handler_value.Set("protocol", handler.protocol());
     handler_value.Set("spec", handler.url().spec());
-    handler_value.Set("host", handler.url().host());
+    handler_value.Set("host", handler.url().GetHost());
     if (registry) {
       handler_value.Set("is_default", registry->IsDefault(handler));
     }

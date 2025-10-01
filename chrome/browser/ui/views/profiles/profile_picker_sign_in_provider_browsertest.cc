@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
           EXPECT_NE(browser()->profile()->GetPath(), provider_profile_path);
 
           EXPECT_TRUE(url.spec().starts_with(kExpectedSigninBaseUrl));
-          EXPECT_THAT(url.query(), HasSubstr("flow=promo"));
+          EXPECT_THAT(url.GetQuery(), HasSubstr("flow=promo"));
 
           std::move(callback).Run();
         });
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
           EXPECT_EQ(browser()->profile()->GetPath(), provider_profile_path);
 
           EXPECT_TRUE(url.spec().starts_with(kExpectedSigninBaseUrl));
-          EXPECT_THAT(url.query(), HasSubstr("flow=promo"));
+          EXPECT_THAT(url.GetQuery(), HasSubstr("flow=promo"));
 
           std::move(callback).Run();
         });

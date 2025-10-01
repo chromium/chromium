@@ -119,7 +119,7 @@ GURL CreateFileURL(const base::FilePath::CharType file_name[] =
                        FILE_PATH_LITERAL("title1.html")) {
   GURL file_url =
       ui_test_utils::GetTestUrl(base::FilePath(), base::FilePath(file_name));
-  EXPECT_EQ(url::kFileScheme, file_url.scheme());
+  EXPECT_EQ(url::kFileScheme, file_url.GetScheme());
 
   return file_url;
 }
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(popup_iframe);
 
   // Not allowed to navigate top frame to filesystem URL.
-  EXPECT_EQ("", popup_iframe->GetLastCommittedURL().scheme());
+  EXPECT_EQ("", popup_iframe->GetLastCommittedURL().GetScheme());
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
       OpenPopup(browser(), fs_url);
   ASSERT_TRUE(popup_iframe_web_contents);
 
-  EXPECT_EQ("", popup_iframe_web_contents->GetLastCommittedURL().scheme());
+  EXPECT_EQ("", popup_iframe_web_contents->GetLastCommittedURL().GetScheme());
 
   content::RenderFrameHost* popup_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(

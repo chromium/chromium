@@ -1299,7 +1299,7 @@ TEST_F(TemplateURLServiceTest, RepairPrepopulatedSearchEngines) {
   // The keyword wasn't reverted.
   EXPECT_EQ(u"trash", google->short_name());
   EXPECT_EQ("www.google.com",
-            google->GenerateSearchURL(model()->search_terms_data()).host());
+            google->GenerateSearchURL(model()->search_terms_data()).GetHost());
 
   // Bing was repaired, verify that the NORMAL prepopulated engine is still back
   // even though the bing extension outranks the prepopulated engin.

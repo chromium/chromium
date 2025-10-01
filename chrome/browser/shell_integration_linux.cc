@@ -303,7 +303,7 @@ base::FilePath GetDesktopFileForDefaultSchemeHandler(base::Environment* env,
   argv.push_back(shell_integration_linux::kXdgSettings);
   argv.push_back("get");
   argv.push_back(shell_integration_linux::kXdgSettingsDefaultSchemeHandler);
-  argv.push_back(url.scheme());
+  argv.push_back(url.GetScheme());
   argv.push_back(chrome::GetDesktopName(env));
 
   std::string desktop_file_name;

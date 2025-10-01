@@ -390,7 +390,7 @@ apps::IntentFilterPtr CreateIntentFilterFromOrigin(
                              : apps::PatternMatchType::kLiteral);
 
   intent_filter->AddSingleValueCondition(apps::ConditionType::kPath,
-                                         extended_scope.path(),
+                                         extended_scope.GetPath(),
                                          apps::PatternMatchType::kPrefix);
 
   return intent_filter;
@@ -1874,14 +1874,14 @@ void WebAppPublisherHelper::LaunchAppFromProtocolCheckingUserPermission(
   GURL protocol_url = *params.protocol_handler_launch_url;
 
   WebAppRegistrar& registrar = provider_->registrar_unsafe();
-  if (!registrar.IsRegisteredLaunchProtocol(app_id, protocol_url.scheme()) ||
-      registrar.IsDisallowedLaunchProtocol(app_id, protocol_url.scheme())) {
+  if (!registrar.IsRegisteredLaunchProtocol(app_id, protocol_url.GetScheme()) ||
+      registrar.IsDisallowedLaunchProtocol(app_id, protocol_url.GetScheme())) {
     std::move(callback).Run(nullptr);
     return;
   }
 
   if (!registrar.IsAllowedLaunchProtocol(params.app_id,
-                                         protocol_url.scheme())) {
+                                         protocol_url.GetScheme())) {
     provider_->ui_manager().ShowWebAppProtocolLaunchDialog(
         protocol_url, app_id,
         base::BindOnce(&WebAppPublisherHelper::OnProtocolHandlerDialogCompleted,
@@ -1961,7 +1961,7 @@ void WebAppPublisherHelper::OnProtocolHandlerDialogCompleted(
     ApiApprovalState approval_state =
         allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed;
     provider_->scheduler().UpdateProtocolHandlerUserApproval(
-        params.app_id, params.protocol_handler_launch_url->scheme(),
+        params.app_id, params.protocol_handler_launch_url->GetScheme(),
         approval_state, base::DoNothing());
   }
   if (!allowed) {

@@ -64,7 +64,7 @@ tabs::TabInterface* GetTabInterface(content::WebContents* web_contents) {
 
 bool IsNTP(const GURL& url) {
   return (url.SchemeIs(content::kChromeUIScheme) &&
-          url.host() == chrome::kChromeUINewTabHost) ||
+          url.GetHost() == chrome::kChromeUINewTabHost) ||
          search::IsNTPURL(url) || search::IsSplitViewNewTabPage(url);
 }
 

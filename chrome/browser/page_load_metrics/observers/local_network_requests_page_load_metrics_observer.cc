@@ -66,7 +66,8 @@ bool GetIPAndPort(
       *resource_ip = net::IPAddress::IPv4Localhost();
       ip_exists = true;
     } else {
-      ip_exists = net::ParseURLHostnameToAddress(final_url.host(), resource_ip);
+      ip_exists =
+          net::ParseURLHostnameToAddress(final_url.GetHost(), resource_ip);
     }
     *resource_port = final_url.EffectiveIntPort();
   }

@@ -88,8 +88,8 @@ GURL GetURLWithGoogleHost(net::EmbeddedTestServer* server,
                           const std::string& relative_url) {
   GURL server_base_url = server->base_url();
   GURL base_url =
-      GURL(base::StrCat({server_base_url.scheme(), "://", kGoogleHost, ":",
-                         server_base_url.port()}));
+      GURL(base::StrCat({server_base_url.GetScheme(), "://", kGoogleHost, ":",
+                         server_base_url.GetPort()}));
   EXPECT_TRUE(base_url.is_valid()) << base_url.possibly_invalid_spec();
   return base_url.Resolve(relative_url);
 }
@@ -171,7 +171,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     net::EmbeddedTestServer::ServerCertificateConfig hints_server_cert_config;
     hints_server_cert_config.dns_names = {
         GURL(optimization_guide::kOptimizationGuideServiceGetHintsDefaultURL)
-            .host()};
+            .GetHost()};
     hints_server_->SetSSLConfig(hints_server_cert_config);
     hints_server_->ServeFilesFromSourceDirectory("chrome/test/data/previews");
     hints_server_->RegisterRequestHandler(base::BindRepeating(
@@ -202,7 +202,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
         hints_server_
             ->GetURL(GURL(optimization_guide::
                               kOptimizationGuideServiceGetHintsDefaultURL)
-                         .host(),
+                         .GetHost(),
                      "/")
             .spec());
     cmd->AppendSwitchASCII("force-variation-ids", "4");
@@ -225,7 +225,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
     const optimization_guide::HintsComponentInfo& component_info =
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
-            optimization_guide::proto::NOSCRIPT, {hint_setup_url.host()}, "*");
+            optimization_guide::proto::NOSCRIPT, {hint_setup_url.GetHost()},
+            "*");
 
     base::HistogramTester histogram_tester;
 
@@ -415,7 +416,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
       optimization_guide::proto::Hint* hint = get_hints_response.add_hints();
       hint->set_key_representation(optimization_guide::proto::HOST);
-      hint->set_key(search_results_page_url_.host());
+      hint->set_key(search_results_page_url_.GetHost());
       hint->add_allowlisted_optimizations()->set_optimization_type(
           optimization_guide::proto::OptimizationType::NOSCRIPT);
       optimization_guide::proto::PageHint* page_hint = hint->add_page_hints();
@@ -1049,7 +1050,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherBrowserTest,
     // Navigate to a host not in the seeded site engagement service; it
     // should be recorded as a race for both the host and the URL.
     base::flat_set<std::string> expected_request;
-    expected_request.insert(GURL(full_url).host());
+    expected_request.insert(GURL(full_url).GetHost());
     expected_request.insert(GURL(full_url).spec());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
@@ -1155,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(
     // Navigate to a host not in the seeded site engagement service; it
     // should be recorded as a race for both the host and the URL.
     base::flat_set<std::string> expected_request;
-    expected_request.insert(GURL(full_url).host());
+    expected_request.insert(GURL(full_url).GetHost());
     expected_request.insert(GURL(full_url).spec());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
@@ -1185,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(
     // Navigate to a host that was recently fetched. It
     // should be recorded as covered by the hints fetcher.
     base::flat_set<std::string> expected_request;
-    expected_request.insert(GURL(full_url).host());
+    expected_request.insert(GURL(full_url).GetHost());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
 
@@ -1247,7 +1248,7 @@ IN_PROC_BROWSER_TEST_F(
     // Navigate to a host not in the seeded site engagement service; it
     // should be recorded as a race for both the host and the URL.
     base::flat_set<std::string> expected_request;
-    expected_request.insert(GURL(full_url).host());
+    expected_request.insert(GURL(full_url).GetHost());
     expected_request.insert(GURL(full_url).spec());
     SetExpectedHintsRequestForHostsAndUrls(expected_request);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
@@ -1396,9 +1397,9 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageBrowserTest,
   // were pushed via kFetchHintsOverride switch above.
   base::flat_set<std::string> expected_hosts_and_urls;
   // Unique hosts.
-  expected_hosts_and_urls.insert(GURL("https://foo.com").host());
-  expected_hosts_and_urls.insert(GURL("https://example.com").host());
-  expected_hosts_and_urls.insert(GURL("https://example3.com").host());
+  expected_hosts_and_urls.insert(GURL("https://foo.com").GetHost());
+  expected_hosts_and_urls.insert(GURL("https://example.com").GetHost());
+  expected_hosts_and_urls.insert(GURL("https://example3.com").GetHost());
   // Unique URLs.
   expected_hosts_and_urls.insert("https://foo.com/");
   expected_hosts_and_urls.insert(
@@ -1587,7 +1588,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
 
   // Technically the results page counts as a navigation URL.
   base::flat_set<std::string> srp_request;
-  srp_request.insert(GURL(search_results_page_url()).host());
+  srp_request.insert(GURL(search_results_page_url()).GetHost());
   srp_request.insert(GURL(search_results_page_url()).spec());
   SetExpectedHintsRequestForHostsAndUrls(srp_request);
   EXPECT_EQ(1u, count_hints_requests_received());
@@ -1612,7 +1613,7 @@ IN_PROC_BROWSER_TEST_F(HintsFetcherSearchPageDisabledBrowserTest,
   ResetCountHintsRequestsReceived();
   std::string full_url = "https://foo.com/test/";
   base::flat_set<std::string> expected_request;
-  expected_request.insert(GURL(full_url).host());
+  expected_request.insert(GURL(full_url).GetHost());
   expected_request.insert(GURL(full_url).spec());
   SetExpectedHintsRequestForHostsAndUrls(expected_request);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(full_url)));
@@ -1929,7 +1930,7 @@ IN_PROC_BROWSER_TEST_F(ProactivePersonalizationHintsFetcherBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), full_url));
 
   base::flat_set<std::string> expected_request;
-  expected_request.insert(full_url.host());
+  expected_request.insert(full_url.GetHost());
   expected_request.insert(full_url.spec());
   SetExpectedHintsRequestForHostsAndUrls(expected_request);
   EXPECT_EQ(1u, count_hints_requests_received());
@@ -2010,7 +2011,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), full_url));
 
   base::flat_set<std::string> expected_request;
-  expected_request.insert(full_url.host());
+  expected_request.insert(full_url.GetHost());
   expected_request.insert(full_url.spec());
   SetExpectedHintsRequestForHostsAndUrls(expected_request);
   EXPECT_EQ(1u, count_hints_requests_received());

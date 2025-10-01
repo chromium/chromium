@@ -462,7 +462,7 @@ TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultBlock) {
   block_state = ExternalProtocolHandler::GetBlockState("ie.http", nullptr,
                                                        profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::BLOCK, block_state);
-  EXPECT_EQ("mk", GURL("mk:@FooBar:ie.http:res://foo.bar/baz").scheme());
+  EXPECT_EQ("mk", GURL("mk:@FooBar:ie.http:res://foo.bar/baz").GetScheme());
   block_state =
       ExternalProtocolHandler::GetBlockState("mk", nullptr, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::BLOCK, block_state);

@@ -1119,8 +1119,8 @@ class ChromeWebUIServiceWorkerTest : public ChromeServiceWorkerTest {
   // it. Returns the result of registering the Service Worker.
   blink::ServiceWorkerStatusCode CreateWebUIAndRegisterServiceWorker(
       const GURL& base_url) {
-    auto webui_config =
-        std::make_unique<TestWebUIConfig>(base_url.scheme(), base_url.host());
+    auto webui_config = std::make_unique<TestWebUIConfig>(base_url.GetScheme(),
+                                                          base_url.GetHost());
     if (base_url.SchemeIs(content::kChromeUIScheme)) {
       content::WebUIConfigMap::GetInstance().AddWebUIConfig(
           std::move(webui_config));
@@ -1154,8 +1154,8 @@ class ChromeWebUIServiceWorkerTest : public ChromeServiceWorkerTest {
   // otherwise it returns the error string.
   content::EvalJsResult CreateWebUIAndRegisterServiceWorkerInJavaScript(
       const GURL& base_url) {
-    auto webui_config =
-        std::make_unique<TestWebUIConfig>(base_url.scheme(), base_url.host());
+    auto webui_config = std::make_unique<TestWebUIConfig>(base_url.GetScheme(),
+                                                          base_url.GetHost());
     if (base_url.SchemeIs(content::kChromeUIScheme)) {
       content::WebUIConfigMap::GetInstance().AddWebUIConfig(
           std::move(webui_config));
@@ -1382,8 +1382,9 @@ class ChromeServiceWorkerNavigationPreloadTest : public InProcessBrowserTest {
     // Intercept requests to the "test" endpoint.
     GURL url = request.base_url;
     url = url.Resolve(request.relative_url);
-    if (url.path() != "/service_worker/test")
+    if (url.GetPath() != "/service_worker/test") {
       return nullptr;
+    }
 
     // Stash the request for testing. We'd typically prefer to echo back the
     // request and test the resulting page contents, but that becomes

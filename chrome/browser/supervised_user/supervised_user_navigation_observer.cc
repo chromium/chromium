@@ -380,7 +380,7 @@ void SupervisedUserNavigationObserver::MaybeShowInterstitial(
           reason);
   supervised_user_interstitials_[frame_id] = std::move(interstitial);
 
-  bool already_requested = base::Contains(requested_hosts_, url.host());
+  bool already_requested = base::Contains(requested_hosts_, url.GetHost());
   bool is_main_frame =
       frame_id == web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId();
 
@@ -437,7 +437,7 @@ void SupervisedUserNavigationObserver::RequestUrlAccessRemote(
   interstitial->RequestUrlAccessRemote(
       base::BindOnce(&SupervisedUserNavigationObserver::RequestCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     interstitial->url().host()));
+                     interstitial->url().GetHost()));
 }
 
 void SupervisedUserNavigationObserver::RequestUrlAccessLocal(

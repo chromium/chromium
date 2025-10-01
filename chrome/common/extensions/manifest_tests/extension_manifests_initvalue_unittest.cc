@@ -124,7 +124,7 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
   EXPECT_EQ("1.0.0.0", extension->VersionString());
   EXPECT_EQ("my extension", extension->name());
   EXPECT_EQ(extension->name(), extension->short_name());
-  EXPECT_EQ(extension->id(), extension->url().host());
+  EXPECT_EQ(extension->id(), extension->url().GetHost());
   EXPECT_EQ(extension->path(), path);
   EXPECT_EQ(path, extension->path());
 
@@ -136,9 +136,9 @@ TEST_F(InitValueManifestTest, InitFromValueValid) {
   // Test with an options page.
   extension = LoadAndExpectSuccess("init_valid_options.json");
   EXPECT_EQ(extensions::kExtensionScheme,
-            OptionsPageInfo::GetOptionsPage(extension.get()).scheme());
+            OptionsPageInfo::GetOptionsPage(extension.get()).GetScheme());
   EXPECT_EQ("/options.html",
-            OptionsPageInfo::GetOptionsPage(extension.get()).path());
+            OptionsPageInfo::GetOptionsPage(extension.get()).GetPath());
 
   // Test optional short_name field.
   extension = LoadAndExpectSuccess("init_valid_short_name.json");

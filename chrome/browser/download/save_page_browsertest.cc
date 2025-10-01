@@ -1166,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest,
   web_contents->GetPrimaryMainFrame()
       ->ForEachRenderFrameHostWithAction(
           [web_contents, &did_kill_a_process](RenderFrameHost* frame) {
-            if (frame->GetLastCommittedURL().host() == "bar.com") {
+            if (frame->GetLastCommittedURL().GetHost() == "bar.com") {
               RenderProcessHost* process_to_kill = frame->GetProcess();
               EXPECT_NE(web_contents->GetPrimaryMainFrame()
                             ->GetProcess()

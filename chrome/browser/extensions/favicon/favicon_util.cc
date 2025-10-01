@@ -102,7 +102,7 @@ bool ParseFaviconPath(const GURL& url, chrome::ParsedFaviconPath* parsed) {
   if (!url.has_query()) {
     return false;
   }
-  return chrome::ParseFaviconPath("?" + url.query(),
+  return chrome::ParseFaviconPath("?" + url.GetQuery(),
                                   chrome::FaviconUrlFormat::kFavicon2, parsed);
 }
 

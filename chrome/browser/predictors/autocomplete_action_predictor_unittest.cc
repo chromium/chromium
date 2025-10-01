@@ -465,7 +465,7 @@ TEST_P(AutocompleteActionPredictorTest, DeleteOldIdsFromCaches) {
     all_ids.push_back(row_id);
 
     bool exclude_url =
-        base::StartsWith(TestUrlDb()[i].url.path(), "/d",
+        base::StartsWith(TestUrlDb()[i].url.GetPath(), "/d",
                          base::CompareCase::SENSITIVE) ||
         (TestUrlDb()[i].days_from_now > maximum_days_to_keep_entry());
 

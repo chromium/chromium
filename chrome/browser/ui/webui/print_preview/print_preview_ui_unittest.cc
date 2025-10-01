@@ -83,7 +83,9 @@ class TestPrintPreviewUIConfig
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override {
     return true;
   }
-  bool ShouldHandleURL(const GURL& url) override { return url.path() == "/"; }
+  bool ShouldHandleURL(const GURL& url) override {
+    return url.GetPath() == "/";
+  }
 };
 
 }  // namespace

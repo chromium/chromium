@@ -126,7 +126,7 @@ void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
     if (!entry_url.is_valid()) {
       NOTREACHED();
     }
-    if (entry_url.host() == override_url.host()) {
+    if (entry_url.GetHost() == override_url.GetHost()) {
       dict->Set(kActive, true);
       dict->Set(kEntry, spec);
       return;
@@ -158,13 +158,15 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
     if (!override_url.is_valid())
       continue;
 
-    if (!all_extensions->GetByID(override_url.host()))
+    if (!all_extensions->GetByID(override_url.GetHost())) {
       continue;
+    }
 
     // If we've already seen this extension, remove the entry. Only retain the
     // most recent entry for each extension.
-    if (!seen_hosts.insert(override_url.host()).second)
+    if (!seen_hosts.insert(override_url.GetHost()).second) {
       continue;
+    }
 
     migrated.Append(val.Clone());
   }
@@ -308,14 +310,16 @@ const Extension* ValidateOverrideURL(const base::Value* override_url_value,
   const std::string* const_override =
       override_url_value->GetDict().FindString(kEntry);
   std::string override = *const_override;
-  if (!source_url.query().empty())
-    override += "?" + source_url.query();
-  if (!source_url.ref().empty())
-    override += "#" + source_url.ref();
+  if (!source_url.GetQuery().empty()) {
+    override += "?" + source_url.GetQuery();
+  }
+  if (!source_url.GetRef().empty()) {
+    override += "#" + source_url.GetRef();
+  }
   *override_url = GURL(override);
   if (!override_url->is_valid())
     return nullptr;
-  return extensions.GetByID(override_url->host());
+  return extensions.GetByID(override_url->GetHost());
 }
 
 // Fetches each list in the overrides dictionary and runs |callback| on it.
@@ -495,7 +499,7 @@ const extensions::Extension* ExtensionWebUI::GetExtensionControllingURL(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(browser_context)
           ->enabled_extensions()
-          .GetByID(mutable_url.host());
+          .GetByID(mutable_url.GetHost());
   DCHECK(extension);
 
   return extension;
@@ -568,8 +572,9 @@ void ExtensionWebUI::GetFaviconForURL(
     Profile* profile,
     const GURL& page_url,
     favicon_base::FaviconResultsCallback callback) {
-  const Extension* extension = extensions::ExtensionRegistry::Get(
-      profile)->enabled_extensions().GetByID(page_url.host());
+  const Extension* extension =
+      extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
+          page_url.GetHost());
   if (!extension) {
     RunFaviconCallbackAsync(std::move(callback), gfx::Image());
     return;

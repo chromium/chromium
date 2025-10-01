@@ -157,10 +157,10 @@ LookalikeUrlService::CheckUrlForLookalikes(
   LookalikeUrlCheckResult result;
 
   // Don't warn on non-HTTP(s) sites or non-public domains.
-  if (!url.SchemeIsHTTPOrHTTPS() || net::HostStringIsLocalhost(url.host()) ||
-      net::IsHostnameNonUnique(url.host()) ||
-      lookalikes::GetETLDPlusOne(url.host()).empty() ||
-      lookalikes::IsSafeTLD(url.host())) {
+  if (!url.SchemeIsHTTPOrHTTPS() || net::HostStringIsLocalhost(url.GetHost()) ||
+      net::IsHostnameNonUnique(url.GetHost()) ||
+      lookalikes::GetETLDPlusOne(url.GetHost()).empty() ||
+      lookalikes::IsSafeTLD(url.GetHost())) {
     return result;
   }
 
@@ -311,17 +311,17 @@ void LookalikeUrlService::CheckSafetyTipStatusWithEngagedSites(
 
 bool LookalikeUrlService::IsIgnored(const GURL& url) const {
   return warning_dismissed_etld1s_.count(
-             GetETLDPlusOneWithPrivateRegistries(url.host())) > 0;
+             GetETLDPlusOneWithPrivateRegistries(url.GetHost())) > 0;
 }
 
 void LookalikeUrlService::SetUserIgnore(const GURL& url) {
   warning_dismissed_etld1s_.insert(
-      GetETLDPlusOneWithPrivateRegistries(url.host()));
+      GetETLDPlusOneWithPrivateRegistries(url.GetHost()));
 }
 
 void LookalikeUrlService::OnUIDisabledFirstVisit(const GURL& url) {
   warning_dismissed_etld1s_.insert(
-      GetETLDPlusOneWithPrivateRegistries(url.host()));
+      GetETLDPlusOneWithPrivateRegistries(url.GetHost()));
 }
 
 void LookalikeUrlService::ResetWarningDismissedETLDPlusOnesForTesting() {

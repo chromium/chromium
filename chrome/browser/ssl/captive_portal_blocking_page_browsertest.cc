@@ -198,7 +198,7 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
     ExpectWiFiSSID expect_wifi_ssid,
     ExpectLoginURL expect_login_url) {
   TestInterstitial(is_wifi_connection, wifi_ssid, login_url, expect_wifi,
-                   expect_wifi_ssid, expect_login_url, login_url.host());
+                   expect_wifi_ssid, expect_login_url, login_url.GetHost());
 }
 
 void CaptivePortalBlockingPageTest::InsertThrottle(

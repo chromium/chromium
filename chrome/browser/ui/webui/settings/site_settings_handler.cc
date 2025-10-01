@@ -462,7 +462,7 @@ std::map<std::string, std::pair<std::string, int>> GetRwsMap(
       auto rws_owner = privacy_sandbox_service->GetRelatedWebsiteSetOwner(
           schemeful_site.GetURL());
       if (rws_owner.has_value()) {
-        rws_owner_to_members[rws_owner->GetURL().host()].insert(etld_plus1);
+        rws_owner_to_members[rws_owner->GetURL().GetHost()].insert(etld_plus1);
       }
     }
   }
@@ -2074,7 +2074,7 @@ void SiteSettingsHandler::SendZoomLevels() {
         std::string origin_for_favicon = host_or_spec;
         std::string display_name = host_or_spec;
 
-        if (host_or_spec == unreachable_web_data_url.host()) {
+        if (host_or_spec == unreachable_web_data_url.GetHost()) {
           display_name =
               l10n_util::GetStringUTF8(IDS_ZOOMLEVELS_CHROME_ERROR_PAGES_LABEL);
         }
@@ -2117,7 +2117,7 @@ void SiteSettingsHandler::HandleRemoveZoomLevel(const base::Value::List& args) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (url.is_valid() && url.scheme() == webapps::kIsolatedAppScheme) {
+  if (url.is_valid() && url.GetScheme() == webapps::kIsolatedAppScheme) {
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> iwa_url_info =
         web_app::IsolatedWebAppUrlInfo::Create(url);
     if (!iwa_url_info.has_value()) {
@@ -2129,7 +2129,7 @@ void SiteSettingsHandler::HandleRemoveZoomLevel(const base::Value::List& args) {
     auto* host_zoom_map =
         content::HostZoomMap::GetForStoragePartition(iwa_storage_partition);
     double default_level = host_zoom_map->GetDefaultZoomLevel();
-    host_zoom_map->SetZoomLevelForHost(url.host(), default_level);
+    host_zoom_map->SetZoomLevelForHost(url.GetHost(), default_level);
     return;
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -2359,7 +2359,7 @@ void SiteSettingsHandler::GetHostCookies(
     std::optional<std::string> partition_etld_plus1 = std::nullopt;
     std::optional<GroupingKey> partition_grouping_key = std::nullopt;
     if (cookie->IsPartitioned()) {
-      partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().host();
+      partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().GetHost();
       partition_grouping_key =
           GroupingKey::CreateFromEtldPlus1(*partition_etld_plus1);
     }

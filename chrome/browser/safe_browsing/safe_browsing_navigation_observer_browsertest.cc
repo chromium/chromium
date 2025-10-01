@@ -465,7 +465,7 @@ class SBNavigationObserverBrowserTest : public InProcessBrowserTest {
         host_to_ip_map();
     ASSERT_EQ(1U, actual_host_ip_map->size());
     auto ip_list =
-        (*actual_host_ip_map)[embedded_test_server()->base_url().host()];
+        (*actual_host_ip_map)[embedded_test_server()->base_url().GetHost()];
     ASSERT_EQ(1U, ip_list.size());
     EXPECT_EQ(embedded_test_server()->host_port_pair().host(),
               ip_list.back().ip);
@@ -2007,7 +2007,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, AddIPMapping) {
       browser(), embedded_test_server()->GetURL(kSingleFrameTestURL)));
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
   auto* ip_map = host_to_ip_map();
-  std::string test_server_host(embedded_test_server()->base_url().host());
+  std::string test_server_host(embedded_test_server()->base_url().GetHost());
   ip_map->clear();
   ip_map->insert(
       std::make_pair(test_server_host, std::vector<ResolvedIPAddress>()));
@@ -2025,7 +2025,7 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest, IPListDedup) {
   GURL initial_url = embedded_test_server()->GetURL(kSingleFrameTestURL);
   auto* ip_map = host_to_ip_map();
   ip_map->clear();
-  std::string test_server_host(embedded_test_server()->base_url().host());
+  std::string test_server_host(embedded_test_server()->base_url().GetHost());
   ip_map->insert(
       std::make_pair(test_server_host, std::vector<ResolvedIPAddress>()));
   base::Time yesterday(base::Time::Now() - base::Days(1));
@@ -3114,11 +3114,11 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   // Add URLs to the Safe Browsing allowlist.
   base::Value::List allowlist;
-  allowlist.Append(initial_url.host());
-  allowlist.Append(multi_frame_test_url.host());
-  allowlist.Append(iframe_url.host());
-  allowlist.Append(iframe_retargeting_url.host());
-  allowlist.Append(download_url.host());
+  allowlist.Append(initial_url.GetHost());
+  allowlist.Append(multi_frame_test_url.GetHost());
+  allowlist.Append(iframe_url.GetHost());
+  allowlist.Append(iframe_retargeting_url.GetHost());
+  allowlist.Append(download_url.GetHost());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
@@ -3188,9 +3188,9 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   // Add URLs to the Safe Browsing allowlist.
   base::Value::List allowlist;
-  allowlist.Append(initial_url.host());
-  allowlist.Append(download_url.host());
-  allowlist.Append(request_url.host());
+  allowlist.Append(initial_url.GetHost());
+  allowlist.Append(download_url.GetHost());
+  allowlist.Append(request_url.GetHost());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
@@ -3222,8 +3222,8 @@ IN_PROC_BROWSER_TEST_F(SBNavigationObserverBrowserTest,
 
   // Add URLs to the Safe Browsing allowlist.
   base::Value::List allowlist;
-  allowlist.Append(initial_url.host());
-  allowlist.Append(download_url.host());
+  allowlist.Append(initial_url.GetHost());
+  allowlist.Append(download_url.GetHost());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 

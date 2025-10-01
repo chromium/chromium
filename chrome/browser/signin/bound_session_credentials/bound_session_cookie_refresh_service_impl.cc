@@ -147,7 +147,7 @@ GetThrottlerParamsForRequestCoverage(
   // Note: This is needed to ensure the correctness of metrics in case of
   // outages.
   return chrome::mojom::BoundSessionThrottlerParams::New(
-      controller->scope_url().host(), controller->scope_url().path(),
+      controller->scope_url().GetHost(), controller->scope_url().GetPath(),
       base::Time());
 }
 

@@ -1486,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/empty.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile2));
   new_browser = FindOneOtherBrowserForProfile(&profile2, nullptr);
@@ -1494,7 +1494,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/form.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
@@ -1603,7 +1603,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("/empty.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
 
   // profile_home2 was not launched since it would've only opened the home page.
   ASSERT_EQ(0u, chrome::GetBrowserCount(&profile_home2));
@@ -2370,14 +2370,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   ASSERT_TRUE(new_browser);
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   EXPECT_EQ("/title1.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile2));
   new_browser = FindOneOtherBrowserForProfile(&profile2, nullptr);
   ASSERT_TRUE(new_browser);
   tab_strip = new_browser->tab_strip_model();
   EXPECT_EQ("/title2.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
 }
 
 class StartupBrowserCreatorTestWithGuestParam
@@ -2650,7 +2650,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
 
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   EXPECT_EQ("/title1.html",
-            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath());
 
   // Now get the app, it should just be the other browser from this profile.
   new_browser = FindOneOtherBrowserForProfile(&profile1, new_browser);

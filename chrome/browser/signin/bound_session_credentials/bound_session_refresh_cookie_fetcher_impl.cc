@@ -57,7 +57,8 @@ bool IsExpectedCookie(
     CHECK(cookie_ptr->cookie_or_line->is_cookie());
     const net::CanonicalCookie& cookie =
         cookie_ptr->cookie_or_line->get_cookie();
-    return (cookie.Name() == cookie_name) && cookie.IsDomainMatch(url.host());
+    return (cookie.Name() == cookie_name) &&
+           cookie.IsDomainMatch(url.GetHost());
   }
   return false;
 }

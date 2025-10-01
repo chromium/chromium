@@ -17,7 +17,7 @@
 namespace {
 
 bool IsHostAllowedInIncognito(const GURL& url) {
-  std::string scheme = url.scheme();
+  std::string scheme = url.GetScheme();
   std::string_view host = url.host_piece();
   if (scheme != content::kChromeUIScheme) {
     return true;
@@ -53,7 +53,7 @@ bool IsHostAllowedInIncognito(const GURL& url) {
 }  // namespace
 
 bool IsURLAllowedInIncognito(const GURL& url) {
-  if (url.scheme() == content::kViewSourceScheme) {
+  if (url.GetScheme() == content::kViewSourceScheme) {
     // A view-source URL is allowed in incognito mode only if the URL itself
     // is allowed in incognito mode. Remove the "view-source:" from the start
     // of the URL and validate the rest.

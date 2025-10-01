@@ -172,7 +172,7 @@ class CookieControlsBubbleViewControllerBrowserTest
         .WillByDefault(testing::Return(empty_reloading_view()));
 
     EXPECT_CALL(*mock_bubble_view(),
-                UpdateSubtitle(base::ASCIIToUTF16(url.host())));
+                UpdateSubtitle(base::ASCIIToUTF16(url.GetHost())));
     view_controller_ = std::make_unique<CookieControlsBubbleViewController>(
         mock_bubble_view(), controller_.get(), web_contents);
   }

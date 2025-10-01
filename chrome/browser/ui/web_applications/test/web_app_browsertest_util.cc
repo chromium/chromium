@@ -230,7 +230,7 @@ Browser* LaunchWebAppBrowser(Profile* profile,
 
   // Some tests load the "/hung" url, which never finishes loading. Thus exclude
   // that case from waiting for loading to stop.
-  bool will_url_finish_loading = start_url.path() != "/hung";
+  bool will_url_finish_loading = start_url.GetPath() != "/hung";
   if (will_url_finish_loading) {
     content::WaitForLoadStop(web_contents);
   }
@@ -294,7 +294,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile,
 
   // Some tests load the "/hung" url, which never finishes loading. Thus exclude
   // that case from waiting for loading to stop.
-  bool will_url_finish_loading = start_url.path() != "/hung";
+  bool will_url_finish_loading = start_url.GetPath() != "/hung";
   if (will_url_finish_loading) {
     content::WaitForLoadStop(web_contents);
   }

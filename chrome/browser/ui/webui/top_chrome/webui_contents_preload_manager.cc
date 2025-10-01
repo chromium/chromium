@@ -416,7 +416,7 @@ RequestResult WebUIContentsPreloadManager::Request(
   // TODO(325836830): allow navigations between WebUIs.
   if (preloaded_web_contents_ &&
       preloaded_web_contents_->GetBrowserContext() == browser_context &&
-      (preloaded_web_contents_->GetURL().host() == webui_url.host() ||
+      (preloaded_web_contents_->GetURL().GetHost() == webui_url.GetHost() ||
        preloaded_web_contents_->GetURL().IsAboutBlank() ||
        webui_url.IsAboutBlank())) {
     preload_result = WebUIPreloadResult::kHit;
@@ -433,7 +433,7 @@ RequestResult WebUIContentsPreloadManager::Request(
 
   // Navigate to path if the request URL has a different path.
   if (!is_navigation_disabled_for_test_ &&
-      webui_url.path() != web_contents_ret->GetURL().path()) {
+      webui_url.GetPath() != web_contents_ret->GetURL().GetPath()) {
     CHECK(url::IsSameOriginWith(webui_url, web_contents_ret->GetURL()));
     LoadURLForContents(web_contents_ret.get(), webui_url);
   }

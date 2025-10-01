@@ -781,7 +781,7 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
   scoped_refptr<DevToolsAgentHost> FindExtensionHost(const std::string& id) {
     for (auto& host : DevToolsAgentHost::GetOrCreateAll()) {
       if (host->GetType() == DevToolsAgentHost::kTypeServiceWorker &&
-          host->GetURL().host() == id) {
+          host->GetURL().GetHost() == id) {
         return host;
       }
     }
@@ -857,7 +857,7 @@ class WorkerDevToolsTest : public InProcessBrowserTest {
 
     void DevToolsAgentHostCreated(DevToolsAgentHost* host) override {
       if (host->GetType() == DevToolsAgentHost::kTypeSharedWorker &&
-          host->GetURL().path().rfind(path_) != std::string::npos) {
+          host->GetURL().GetPath().rfind(path_) != std::string::npos) {
         *out_host_ = host;
         content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                                      std::move(quit_));
@@ -874,7 +874,7 @@ class WorkerDevToolsTest : public InProcessBrowserTest {
       const char* path) {
     for (auto& host : DevToolsAgentHost::GetOrCreateAll()) {
       if (host->GetType() == DevToolsAgentHost::kTypeSharedWorker &&
-          host->GetURL().path().rfind(path) != std::string::npos) {
+          host->GetURL().GetPath().rfind(path) != std::string::npos) {
         return host;
       }
     }
@@ -1262,8 +1262,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_EQ(extensions_instance->GetProcess(),
             data_frame_rfh->GetSiteInstance()->GetProcess());
 
-  EXPECT_EQ(web_url.host(),
-            web_frame_rfh->GetSiteInstance()->GetSiteURL().host());
+  EXPECT_EQ(web_url.GetHost(),
+            web_frame_rfh->GetSiteInstance()->GetSiteURL().GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
 
@@ -1281,8 +1281,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   web_frame_rfh = ChildFrameAt(panel_frame_rfh, 2);
 
   EXPECT_EQ(about_blank_url, web_frame_rfh->GetLastCommittedURL());
-  EXPECT_EQ(web_url.host(),
-            web_frame_rfh->GetSiteInstance()->GetSiteURL().host());
+  EXPECT_EQ(web_url.GetHost(),
+            web_frame_rfh->GetSiteInstance()->GetSiteURL().GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
 
@@ -1379,8 +1379,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
             devtools_extension_devtools_page_rfh->GetSiteInstance());
   EXPECT_EQ(extensions_instance,
             devtools_sidebar_pane_extension_rfh->GetSiteInstance());
-  EXPECT_EQ(web_url.host(),
-            http_iframe_rfh->GetSiteInstance()->GetSiteURL().host());
+  EXPECT_EQ(web_url.GetHost(),
+            http_iframe_rfh->GetSiteInstance()->GetSiteURL().GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
@@ -1454,8 +1454,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_TRUE(
       devtools_instance->GetSiteURL().SchemeIs(content::kChromeDevToolsScheme));
   EXPECT_NE(devtools_instance, extensions_instance);
-  EXPECT_EQ(web_url.host(),
-            http_iframe_rfh->GetSiteInstance()->GetSiteURL().host());
+  EXPECT_EQ(web_url.GetHost(),
+            http_iframe_rfh->GetSiteInstance()->GetSiteURL().GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
@@ -2250,7 +2250,7 @@ namespace {
 
 bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
   const GURL& url = params->url_request.url;
-  if (!base::EndsWith(url.path(), kPushTestResource,
+  if (!base::EndsWith(url.GetPath(), kPushTestResource,
                       base::CompareCase::SENSITIVE)) {
     return false;
   }
@@ -2272,7 +2272,7 @@ bool InterceptURLLoad(content::URLLoaderInterceptor::RequestParams* params) {
   load_timing.send_end = base::TimeTicks::Now();
   load_timing.receive_headers_end = base::TimeTicks::Now();
   load_timing.push_start = start_time - base::Milliseconds(100);
-  if (url.query() != kPushUseNullEndTime) {
+  if (url.GetQuery() != kPushUseNullEndTime) {
     load_timing.push_end = base::TimeTicks::Now();
   }
 
@@ -3048,7 +3048,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
                                   "  window.abc = 239;\n"
                                   "  console.log(abc);\n"
                                   "</script>");
-  test_factory.AddFactoryOverride(GURL("chrome://foo/dummyurl").host(),
+  test_factory.AddFactoryOverride(GURL("chrome://foo/dummyurl").GetHost(),
                                   &mock_provider);
 
   ASSERT_TRUE(
@@ -3079,7 +3079,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestRawHeadersWithRedirectAndHSTS) {
       browser()->profile()->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
-      https_url.host(), expiry, include_subdomains, run_loop.QuitClosure());
+      https_url.GetHost(), expiry, include_subdomains, run_loop.QuitClosure());
   run_loop.Run();
 
   OpenDevToolsWindow(kArbitraryPage, false);
@@ -4105,7 +4105,7 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
 
 bool hasQueryParam(WebContents* wc, std::string query_param) {
   return std::string::npos !=
-         wc->GetLastCommittedURL().query().find(query_param);
+         wc->GetLastCommittedURL().GetQuery().find(query_param);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, NotBeBlockedByFeatureFlag) {

@@ -249,18 +249,18 @@ class IESiteListModeRule : public Rule {
          StringFindInsensitiveASCII(original_rule, "https://").begin() ==
              original_rule.begin() ||
          url.SchemeIsFile())) {
-      scheme_ = url.scheme();
+      scheme_ = url.GetScheme();
     }
 
     if (url.has_host())
-      host_ = url.host();
+      host_ = url.GetHost();
 
     if (url.has_port())
       port_ = url.IntPort();
 
     // Make sure |path_| always has at least the leading slash.
     if (url.has_path() && !url.path_piece().empty())
-      path_ = base::ToLowerASCII(url.path());
+      path_ = base::ToLowerASCII(url.GetPath());
     else
       path_ = "/";
   }

@@ -1493,7 +1493,7 @@ class WebAppPolicyForceUnregistrationTest : public WebAppTest {
                                             /*start_url=*/manifest_id);
     // The name of the app should also change, otherwise on Mac and Windows, the
     // shortcuts are stored as name(1) and gets wiped out with name.
-    info->title = base::UTF8ToUTF16(manifest_id.host());
+    info->title = base::UTF8ToUTF16(manifest_id.GetHost());
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
     info->icon_bitmaps.any = std::move(icon_map);
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>

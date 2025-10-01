@@ -460,7 +460,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTest,
         // simplicity's sake as this test doesn't serve webstore url and
         // the url doesn't commit.
         const GURL& url = contents.contents->GetVisibleURL();
-        if (url.host() == extension_urls::GetNewWebstoreLaunchURL().host()) {
+        if (url.GetHost() ==
+            extension_urls::GetNewWebstoreLaunchURL().GetHost()) {
           run_loop_.Quit();
           return;
         }

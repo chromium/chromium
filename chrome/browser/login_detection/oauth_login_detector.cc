@@ -50,7 +50,7 @@ bool DoesAnyQueryParamExist(const std::set<std::string>& request_params,
     if (!check_ref) {
       continue;
     }
-    std::string url_ref = url.ref();
+    std::string url_ref = url.GetRef();
     base::flat_map<std::string, std::string> url_map = SplitUrl(url_ref);
     if (url_map.contains(param)) {
       return true;

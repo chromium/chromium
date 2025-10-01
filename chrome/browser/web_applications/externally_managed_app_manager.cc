@@ -489,10 +489,10 @@ void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(
   if (url.is_empty()) {
     return;
   }
-  if (url.scheme() == content::kChromeUIScheme) {
+  if (url.GetScheme() == content::kChromeUIScheme) {
     return;
   }
-  if (url.scheme() == content::kChromeUIUntrustedScheme) {
+  if (url.GetScheme() == content::kChromeUIUntrustedScheme) {
     return;
   }
 

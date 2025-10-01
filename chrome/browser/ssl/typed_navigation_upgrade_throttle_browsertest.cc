@@ -111,7 +111,7 @@ enum class UpgradeExpectation {
 };
 
 std::string GetURLWithoutScheme(const GURL& url) {
-  return url.spec().substr(url.scheme().size() + strlen("://"));
+  return url.spec().substr(url.GetScheme().size() + strlen("://"));
 }
 
 GURL MakeHttpsURL(const std::string& url_without_scheme) {
@@ -126,7 +126,7 @@ GURL MakeURLWithPort(const std::string& url_without_scheme,
                      const std::string& scheme,
                      int port) {
   GURL url(scheme + "://" + url_without_scheme);
-  DCHECK(!url.port().empty());
+  DCHECK(!url.GetPort().empty());
 
   GURL::Replacements replacements;
   const std::string port_str = base::NumberToString(port);
@@ -239,7 +239,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
         params->url_request.url == MakeHttpURL(kNonUniqueHostname1) ||
         params->url_request.url == MakeHttpURL(kNonUniqueHostname2) ||
         params->url_request.url == GURL("http://127.0.0.1") ||
-        params->url_request.url.host() == kGoogleSearchHost) {
+        params->url_request.url.GetHost() == kGoogleSearchHost) {
       std::string headers =
           "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
       std::string body = "<html><title>Success</title>Hello world</html>";
@@ -435,7 +435,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
       }
     } else {
       // The user entered a search query.
-      EXPECT_EQ("www.google.com", contents->GetLastCommittedURL().host());
+      EXPECT_EQ("www.google.com", contents->GetLastCommittedURL().GetHost());
       EXPECT_FALSE(base::Contains(enumerator.urls(), https_url));
     }
 
@@ -819,7 +819,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   base::HistogramTester histograms;
   // Type "site-with-bad-https.com".
   const GURL http_url = MakeHttpURL(kSiteWithBadHttps);
-  TypeUrlAndExpectHttpFallback(http_url.host(), histograms);
+  TypeUrlAndExpectHttpFallback(http_url.GetHost(), histograms);
 
   histograms.ExpectTotalCount(kEventHistogram, 2);
   histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
@@ -831,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   // URL and navigate directly to it. Histograms shouldn't change.
   // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
-  TypeUrlAndExpectNoUpgrade(http_url.host(), false);
+  TypeUrlAndExpectNoUpgrade(http_url.GetHost(), false);
 
   histograms.ExpectTotalCount(kEventHistogram, 2);
   histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
@@ -854,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(
   base::HistogramTester histograms;
   // Type "site-with-bad-https.com".
   const GURL http_url = MakeHttpURL(kSiteWithBadHttps);
-  TypeUrlAndExpectHttpFallback(http_url.host(), histograms,
+  TypeUrlAndExpectHttpFallback(http_url.GetHost(), histograms,
                                /*ctrl_enter=*/true);
 
   histograms.ExpectTotalCount(kEventHistogram, 2);
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_P(
   // URL and navigate directly to it. Histograms shouldn't change.
   // TODO(crbug.com/40165447): We should try the https URL after a certain
   // time has passed.
-  TypeUrlAndExpectNoUpgrade(http_url.host(), false);
+  TypeUrlAndExpectNoUpgrade(http_url.GetHost(), false);
 
   histograms.ExpectTotalCount(kEventHistogram, 2);
   histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);
@@ -934,7 +934,7 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleFastTimeoutBrowserTest,
 
   // Type "site-with-slow-https.com".
   const GURL url = MakeHttpsURL(kSiteWithSlowHttps);
-  TypeUrlAndExpectHttpFallback(url.host(), histograms);
+  TypeUrlAndExpectHttpFallback(url.GetHost(), histograms);
 
   histograms.ExpectTotalCount(kEventHistogram, 2);
   histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadStarted, 1);

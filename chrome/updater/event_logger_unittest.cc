@@ -229,7 +229,7 @@ TEST_F(EventLoggerTest, DoPostRequest) {
   SetRequestHandler(base::BindLambdaForTesting(
       [this](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
         GURL absolute_url = test_server_->GetURL(request.relative_url);
-        if (absolute_url.path() != "/event-logging") {
+        if (absolute_url.GetPath() != "/event-logging") {
           return nullptr;
         }
 

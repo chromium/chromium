@@ -222,7 +222,7 @@ scoped_refptr<content::DevToolsAgentHost> FindExtensionHost(
     const std::string& id) {
   for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
     if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker &&
-        host->GetURL().host() == id) {
+        host->GetURL().GetHost() == id) {
       return host;
     }
   }
@@ -234,7 +234,8 @@ scoped_refptr<content::DevToolsAgentHost> FindExtensionHost(
 scoped_refptr<content::DevToolsAgentHost> FindBackgroundPageHost(
     const std::string& path) {
   for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
-    if (host->GetType() == "background_page" && host->GetURL().path() == path) {
+    if (host->GetType() == "background_page" &&
+        host->GetURL().GetPath() == path) {
       return host;
     }
   }
@@ -247,7 +248,7 @@ scoped_refptr<content::DevToolsAgentHost> FindPageHost(
     const std::string& path) {
   for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
     if (host->GetType() == content::DevToolsAgentHost::kTypePage &&
-        host->GetURL().path() == path) {
+        host->GetURL().GetPath() == path) {
       return host;
     }
   }

@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetVisibleURL()
-                .query(),
+                .GetQuery(),
             "p=first_mode");
 
   histograms()->ExpectBucketCount("interstitial.https_first_mode.interaction",

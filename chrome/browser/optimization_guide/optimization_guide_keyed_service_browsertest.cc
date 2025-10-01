@@ -317,7 +317,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
     const HintsComponentInfo& component_info =
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
-            proto::NOSCRIPT, {url_with_hints_.host()}, "simple.html");
+            proto::NOSCRIPT, {url_with_hints_.GetHost()}, "simple.html");
 
     OptimizationHintsComponentUpdateListener::GetInstance()
         ->MaybeUpdateHintsComponent(component_info);

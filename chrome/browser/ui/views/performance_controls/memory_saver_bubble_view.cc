@@ -134,10 +134,10 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
 
   if (!is_guest && !profile->IsIncognitoProfile()) {
     dialog_model_builder.SetSubtitle(
-        base::UTF8ToUTF16(web_contents->GetURL().host()));
+        base::UTF8ToUTF16(web_contents->GetURL().GetHost()));
     const bool is_site_excluded = performance_manager::user_tuning::prefs::
         IsSiteInTabDiscardExceptionsList(profile->GetPrefs(),
-                                         web_contents->GetURL().host());
+                                         web_contents->GetURL().GetHost());
     AddCancelButton(&dialog_model_builder, bubble_delegate, is_site_excluded);
   }
 

@@ -52,7 +52,7 @@ const char kServiceWorkerFileName[] = "newtab-serviceworker.js";
 bool MatchesOrigin(const GURL& my_url, const GURL& other_url) {
   return my_url.scheme_piece() == other_url.scheme_piece() &&
          my_url.host_piece() == other_url.host_piece() &&
-         my_url.port() == other_url.port();
+         my_url.GetPort() == other_url.GetPort();
 }
 
 }  // namespace
@@ -120,11 +120,11 @@ bool IsMatchingServiceWorker(const GURL& my_url, const GURL& document_url) {
   }
 
   // The paths up to the filenames should be the same.
-  std::string my_path_without_filename = my_url.path();
+  std::string my_path_without_filename = my_url.GetPath();
   my_path_without_filename = my_path_without_filename.substr(
       0, my_path_without_filename.length() - my_filename.length());
   std::string document_filename = document_url.ExtractFileName();
-  std::string document_path_without_filename = document_url.path();
+  std::string document_path_without_filename = document_url.GetPath();
   document_path_without_filename = document_path_without_filename.substr(
       0, document_path_without_filename.length() - document_filename.length());
 
@@ -366,7 +366,7 @@ bool HandleNewTabURLRewrite(GURL* url,
   }
 
   if (!(url->SchemeIs(content::kChromeUIScheme) &&
-        url->host() == chrome::kChromeUINewTabHost)) {
+        url->GetHost() == chrome::kChromeUINewTabHost)) {
     return false;
   }
 

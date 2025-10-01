@@ -98,7 +98,7 @@ class WindowedNetworkObserver {
 
     const std::string& data =
         (resource_request.method == "GET")
-            ? GetLookupContent(resource_request.url.path())
+            ? GetLookupContent(resource_request.url.GetPath())
             : network::GetUploadData(resource_request);
 
     if (expected_upload_data_.Matches(data))
@@ -132,7 +132,7 @@ class AutofillServerTest : public InProcessBrowserTest {
         [](const std::map<std::string, std::string>* pages,
            const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          auto it = pages->find(request.GetURL().path());
+          auto it = pages->find(request.GetURL().GetPath());
           if (it == pages->end()) {
             return nullptr;
           }

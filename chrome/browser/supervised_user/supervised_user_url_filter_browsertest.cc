@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, DontShowInterstitialTwice) {
   // Set the host as blocked through manual blocklisting, should not change the
   // interstitial state.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.host(), /*allowlist=*/false);
+      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
   EXPECT_EQ(tab, tab_strip->GetActiveWebContents());
 }
 
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, GoBackOnDontProceed) {
 
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.host(), /*allowlist=*/false);
+      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
 
   content::TestNavigationObserver block_observer(web_contents);
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest,
 
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.host(), /*allowlist=*/false);
+      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
 
   // Verify that there is no crash when closing the blocked tab
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
 
   // Set the host as blocked and wait for the interstitial to appear.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.host(), /*allowlist=*/false);
+      browser()->profile(), test_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsBlocked());
 
   content::TestNavigationObserver block_observer(web_contents);
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   ASSERT_TRUE(ShownPageIsInterstitial(browser()));
 
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.host(), /*allowlist=*/true);
+      browser()->profile(), test_url.GetHost(), /*allowlist=*/true);
   ASSERT_TRUE(GetUrlFilter()->GetFilteringBehavior(test_url).IsAllowed());
 
   content::TestNavigationObserver unblock_observer(web_contents);
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
 
   // Set the host as allowed.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), allowed_url.host(), /*allowlist=*/true);
+      browser()->profile(), allowed_url.GetHost(), /*allowlist=*/true);
   EXPECT_TRUE(GetUrlFilter()->GetFilteringBehavior(allowed_url).IsAllowed());
   EXPECT_TRUE(GetUrlFilter()
                   ->GetFilteringBehavior(allowed_url.GetWithEmptyPath())
@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
 
   // Set the host as allowed.
   supervised_user_test_util::SetManualFilterForHost(
-      browser()->profile(), test_url.host(), /*allowlist=*/true);
+      browser()->profile(), test_url.GetHost(), /*allowlist=*/true);
   EXPECT_TRUE(GetUrlFilter()
                   ->GetFilteringBehavior(test_url.GetWithEmptyPath())
                   .IsAllowed());

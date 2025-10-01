@@ -213,8 +213,8 @@ class StartupWebAppCreator
       GURL potential_protocol(arg);
 #endif  // BUILDFLAG(IS_WIN)
       if (potential_protocol.is_valid() &&
-          registrar.IsRegisteredLaunchProtocol(app_id_,
-                                               potential_protocol.scheme())) {
+          registrar.IsRegisteredLaunchProtocol(
+              app_id_, potential_protocol.GetScheme())) {
         protocol_url = std::move(potential_protocol);
         break;
       }
@@ -225,7 +225,8 @@ class StartupWebAppCreator
     }
 
     // Check if the user has already disallowed this app to launch the protocol.
-    if (registrar.IsDisallowedLaunchProtocol(app_id_, protocol_url.scheme())) {
+    if (registrar.IsDisallowedLaunchProtocol(app_id_,
+                                             protocol_url.GetScheme())) {
       // If disallowed, return `kHandled` to signal that the launch is spoken
       // for, but do not launch a browser or app window. `this` will be deleted.
       return LaunchResult::kHandled;
@@ -239,7 +240,7 @@ class StartupWebAppCreator
                        base::WrapRefCounted(this));
 
     // Check if we have permission to launch the app directly.
-    if (registrar.IsAllowedLaunchProtocol(app_id_, protocol_url_.scheme())) {
+    if (registrar.IsAllowedLaunchProtocol(app_id_, protocol_url_.GetScheme())) {
       std::move(launch_callback)
           .Run(/*allowed=*/true, /*remember_user_choice=*/false);
     } else {
@@ -309,7 +310,7 @@ class StartupWebAppCreator
                                               ? ApiApprovalState::kAllowed
                                               : ApiApprovalState::kDisallowed;
         provider_->scheduler().UpdateProtocolHandlerUserApproval(
-            app_id_, protocol_url_.scheme(), approval_state,
+            app_id_, protocol_url_.GetScheme(), approval_state,
             std::move(persist_callback));
       } else {
         DCHECK(!file_launch_infos_.empty());

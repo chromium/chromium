@@ -827,7 +827,7 @@ bool HandleNewTabPageLocationOverride(
     GURL* url,
     content::BrowserContext* browser_context) {
   if (!url->SchemeIs(content::kChromeUIScheme) ||
-      url->host() != chrome::kChromeUINewTabHost) {
+      url->GetHost() != chrome::kChromeUINewTabHost) {
     return false;
   }
 
@@ -1070,7 +1070,7 @@ void LaunchURL(
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
   if (protocol_handler_registry &&
-      protocol_handler_registry->IsHandledProtocol(url.scheme())) {
+      protocol_handler_registry->IsHandledProtocol(url.GetScheme())) {
     return;
   }
 
@@ -1784,7 +1784,7 @@ ChromeContentBrowserClient::GetStoragePartitionConfigForSite(
     // The host in an extension site URL is the extension_id.
     CHECK(site.has_host());
     return extensions::util::GetStoragePartitionConfigForExtensionId(
-        site.host(), browser_context);
+        site.GetHost(), browser_context);
   }
 #endif
 
@@ -2104,7 +2104,7 @@ bool ChromeContentBrowserClient::DoesWebUIUrlRequireProcessLock(
   // embeds those tiles, should be locked.  This allows most visited tiles to
   // stay in their parent (i.e., third-party NTP's) process.
   if (url.SchemeIs(chrome::kChromeSearchScheme) &&
-      url.host() == chrome::kChromeSearchMostVisitedHost) {
+      url.GetHost() == chrome::kChromeSearchMostVisitedHost) {
     return false;
   }
 
@@ -2324,7 +2324,7 @@ bool ChromeContentBrowserClient::ShouldStayInParentProcessForNTP(
   //
   // TODO(crbug.com/41261582): clean up the logic for detecting NTP.
   return url.SchemeIs(chrome::kChromeSearchScheme) &&
-         url.host() == chrome::kChromeSearchMostVisitedHost &&
+         url.GetHost() == chrome::kChromeSearchMostVisitedHost &&
          search::IsNTPURL(parent_site_url);
 }
 
@@ -7028,7 +7028,7 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   // Rewrite chrome://help to chrome://settings/help.
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->host() == chrome::kChromeUIHelpHost) {
+      url->GetHost() == chrome::kChromeUIHelpHost) {
     *url = ReplaceURLHostAndPath(*url, chrome::kChromeUISettingsHost,
                                  chrome::kChromeUIHelpHost);
   }
@@ -7038,8 +7038,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
   // Rewrite chrome://settings/autofill to chrome://settings/yourSavedInfo.
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->host() == chrome::kChromeUISettingsHost &&
-      url->path() == chrome::kChromeUIAutofillPath &&
+      url->GetHost() == chrome::kChromeUISettingsHost &&
+      url->GetPath() == chrome::kChromeUIAutofillPath &&
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoSettingsPage)) {
     GURL::Replacements replacements;
@@ -7052,8 +7052,8 @@ bool ChromeContentBrowserClient::HandleWebUI(
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->host() == chrome::kChromeUISettingsHost &&
-      url->path() == chrome::kChromeUICertificateRedirectPath) {
+      url->GetHost() == chrome::kChromeUISettingsHost &&
+      url->GetPath() == chrome::kChromeUICertificateRedirectPath) {
     *url = GURL(chrome::kChromeUICertificateManagerDialogURL);
     return true;
   }
@@ -7062,14 +7062,14 @@ bool ChromeContentBrowserClient::HandleWebUI(
 #if !BUILDFLAG(IS_ANDROID)
   // Redirect from deprecated trackingProtection subpage to cookies.
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->host() == chrome::kChromeUISettingsHost &&
-      url->path() == chrome::kTrackingProtectionSubPagePath) {
+      url->GetHost() == chrome::kChromeUISettingsHost &&
+      url->GetPath() == chrome::kTrackingProtectionSubPagePath) {
     GURL::Replacements replacements;
     replacements.SetPathStr(chrome::kCookiesSubPagePath);
     *url = url->ReplaceComponents(replacements);
     base::UmaHistogramBoolean("Settings.Cookies.TrackingProtectionRedirect",
                               true);
-  } else if (url->path() == chrome::kCookiesSubPagePath) {
+  } else if (url->GetPath() == chrome::kCookiesSubPagePath) {
     base::UmaHistogramBoolean("Settings.Cookies.TrackingProtectionRedirect",
                               false);
   }
@@ -7144,7 +7144,7 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
   // displayed URL when rewriting chrome://settings/certificates to
   // chrome://certificate-manager
   if (url->SchemeIs(content::kChromeUIScheme) &&
-      url->host() == chrome::kChromeUICertificateManagerHost) {
+      url->GetHost() == chrome::kChromeUICertificateManagerHost) {
     return true;
   }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
@@ -7152,7 +7152,7 @@ bool ChromeContentBrowserClient::HandleWebUIReverse(
   // No need to actually reverse-rewrite the URL, but return true to update the
   // displayed URL when rewriting chrome://help to chrome://settings/help.
   return url->SchemeIs(content::kChromeUIScheme) &&
-         url->host() == chrome::kChromeUISettingsHost;
+         url->GetHost() == chrome::kChromeUISettingsHost;
 }
 
 void ChromeContentBrowserClient::AddExtraPart(
@@ -7803,7 +7803,7 @@ bool ChromeContentBrowserClient::AreV8OptimizationsDisabledForSite(
   // Only disable optimizations for schemes that might actually load web
   // content.
   auto* policy = ChildProcessSecurityPolicy::GetInstance();
-  if (!site_url.is_empty() && !policy->IsWebSafeScheme(site_url.scheme())) {
+  if (!site_url.is_empty() && !policy->IsWebSafeScheme(site_url.GetScheme())) {
     return false;
   }
 

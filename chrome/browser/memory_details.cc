@@ -92,7 +92,7 @@ void UpdateProcessTypeAndTitles(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!is_webui && extension_set) {
-    const Extension* extension = extension_set->GetByID(page_url.host());
+    const Extension* extension = extension_set->GetByID(page_url.GetHost());
     if (extension) {
       process.titles.push_back(base::UTF8ToUTF16(extension->name()));
       process.renderer_type = ProcessMemoryInformation::RENDERER_EXTENSION;

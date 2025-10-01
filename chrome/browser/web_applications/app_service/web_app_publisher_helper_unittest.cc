@@ -298,7 +298,7 @@ TEST_F(WebAppPublisherHelperTest,
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kLiteral);
-    EXPECT_EQ(condition.condition_values[0]->value, app->scope().scheme());
+    EXPECT_EQ(condition.condition_values[0]->value, app->scope().GetScheme());
   }
 
   {
@@ -317,7 +317,7 @@ TEST_F(WebAppPublisherHelperTest,
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::PatternMatchType::kPrefix);
-    EXPECT_EQ(condition.condition_values[0]->value, app->scope().path());
+    EXPECT_EQ(condition.condition_values[0]->value, app->scope().GetPath());
   }
 }
 

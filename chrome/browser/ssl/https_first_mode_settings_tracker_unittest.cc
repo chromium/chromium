@@ -594,7 +594,7 @@ TEST_F(HttpsFirstModeSettingsTrackerSiteEngagementHeuristicTest,
   ASSERT_TRUE(state);
 
   GURL http_url("http://site.test");
-  state->SetHttpsEnforcementForHost(http_url.host(), /*enforce=*/true,
+  state->SetHttpsEnforcementForHost(http_url.GetHost(), /*enforce=*/true,
                                     profile()->GetDefaultStoragePartition());
 
   // The heuristic should clean up the enforcement list and remove non-unique

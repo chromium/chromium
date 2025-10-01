@@ -396,7 +396,7 @@ class ReduceAcceptLanguageBrowserTest : public policy::PolicyTest {
             "/subresource_simple.jpg",
             "/subresource_redirect_style.css",
         });
-    const std::string path = params->url_request.url.path();
+    const std::string path = params->url_request.url.GetPath();
     if (base::Contains(kSubresourcePaths, path)) {
       base::StrAppend(&headers, {BuildSubresourceResponseHeader()});
     } else {
@@ -574,7 +574,7 @@ IN_PROC_BROWSER_TEST_F(DisableFeatureReduceAcceptLanguageBrowserTest,
   // network stack.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
                                                std::nullopt);
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 // Browser tests that using Enterprise policy to control ReduceAcceptLanguage
@@ -672,7 +672,7 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
                                                  "en-US,en;q=0.9");
     VerifyNavigatorLanguages({"zh"});
   }
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
@@ -698,7 +698,7 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageEnterprisePolicyBrowserTest,
                                                  "en-US,en;q=0.9");
     VerifyNavigatorLanguages({"zh"});
   }
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
 }
 
 // Tests same origin requests with the ReduceAcceptLanguage feature enabled.
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
 
   // Initial request.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginImgUrl(), "es");
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Ensure no restart happens.
@@ -1191,7 +1191,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   // * simple_request_url: one fetch for initially adding header.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 3);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   // Disable script for first party origin.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
@@ -1204,7 +1204,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   // navigation should use the language after negotiation which is en-US.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
                                                "en-US,en;q=0.9");
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 2);
   // One store for same_origin_img_url main frame.
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_simple.jpg");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subresource_simple.jpg");
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
@@ -1272,7 +1272,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
@@ -1340,7 +1340,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
@@ -1374,7 +1374,7 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 }
 
 class ThirdPartyReduceAcceptLanguageBrowserTest
@@ -1476,7 +1476,7 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
   // One store for same_origin_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple_3p.html");
 }
 
 IN_PROC_BROWSER_TEST_P(ThirdPartyReduceAcceptLanguageBrowserTest,
@@ -1639,7 +1639,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple_3p.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
@@ -1678,7 +1678,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReduceAcceptLanguageBrowserTest,
   // One store for cross_region_fenced_frame_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ("/subframe_simple.html", LastRequestUrl().path());
+  EXPECT_EQ("/subframe_simple.html", LastRequestUrl().GetPath());
 }
 
 // Browser tests verify redirect same origin with different cases.
@@ -2608,7 +2608,7 @@ class SameOriginReduceAcceptLanguageDeprecationOTBrowserTest
     // Verify the first request opt-in deprecation origin trial.
     NavigateAndVerifyAcceptLanguageOfLastRequest(url,
                                                  expect_opt_in_fq_language);
-    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+    EXPECT_EQ(LastRequestUrl().GetPath(), last_request_path);
 
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
     // Ensure restart happen once.
@@ -2630,14 +2630,14 @@ class SameOriginReduceAcceptLanguageDeprecationOTBrowserTest
     SetOriginTrialFirstPartyToken(kInvalidOriginToken);
     NavigateAndVerifyAcceptLanguageOfLastRequest(url,
                                                  expect_opt_out_fq_language);
-    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+    EXPECT_EQ(LastRequestUrl().GetPath(), last_request_path);
     VerifyNavigatorLanguages({user_accept_languages[0]});
 
     // Verify the second request has invalid deprecation origin trial token, it
     // should continue to reduce the Accept-Language.
     NavigateAndVerifyAcceptLanguageOfLastRequest(
         url, expect_reduced_accept_language);
-    EXPECT_EQ(LastRequestUrl().path(), last_request_path);
+    EXPECT_EQ(LastRequestUrl().GetPath(), last_request_path);
   }
 
   void VerifySameOriginRequestNoRestart(
@@ -3067,7 +3067,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageDeprecationOTBrowserTest,
   // Persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple_3p.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple_3p.html");
 
   // For the second request, we expect no reduced Accept-Language send once
   // the deprecation origin trial takes effect.
@@ -3213,7 +3213,7 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
     VerifyNavigatorLanguages(
         {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
   }
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_simple.html");
+  EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Expect a total count of 3. The histogram is recorded once during initial

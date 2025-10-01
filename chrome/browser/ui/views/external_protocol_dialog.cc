@@ -209,9 +209,9 @@ void ExternalProtocolDialog::OnDialogAccepted() {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
 
-    ExternalProtocolHandler::SetBlockState(url_.scheme(), *initiating_origin_,
-                                           ExternalProtocolHandler::DONT_BLOCK,
-                                           profile);
+    ExternalProtocolHandler::SetBlockState(
+        url_.GetScheme(), *initiating_origin_,
+        ExternalProtocolHandler::DONT_BLOCK, profile);
   }
 
   ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(

@@ -20,7 +20,7 @@ const char kHelpCenterConnectionHelpUrl[] =
 
 void RedirectToBundledHelp(content::WebContents* web_contents) {
   GURL::Replacements replacements;
-  std::string error_code = web_contents->GetLastCommittedURL().ref();
+  std::string error_code = web_contents->GetLastCommittedURL().GetRef();
   replacements.SetRefStr(error_code);
   web_contents->GetController().LoadURL(
       GURL(security_interstitials::kChromeUIConnectionHelpURL)

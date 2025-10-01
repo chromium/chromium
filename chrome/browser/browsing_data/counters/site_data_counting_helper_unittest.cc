@@ -55,7 +55,7 @@ class SiteDataCountingHelperTest : public testing::Test {
       GURL url(url_string);
       std::unique_ptr<net::CanonicalCookie> cookie =
           net::CanonicalCookie::CreateSanitizedCookie(
-              url, "name", "A=1", url.host(), url.path(), creation_time,
+              url, "name", "A=1", url.GetHost(), url.GetPath(), creation_time,
               base::Time(), creation_time, url.SchemeIsCryptographic(), false,
               net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
               std::nullopt, /*status=*/nullptr);

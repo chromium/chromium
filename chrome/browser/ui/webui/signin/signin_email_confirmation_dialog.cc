@@ -128,7 +128,8 @@ void SigninEmailConfirmationDialog::ShowDialog() {
   // zoom setting.
   const GURL dialog_url = GetDialogContentURL();
   content::HostZoomMap::Get(dialog_web_contents->GetSiteInstance())
-      ->SetZoomLevelForHostAndScheme(dialog_url.scheme(), dialog_url.host(), 0);
+      ->SetZoomLevelForHostAndScheme(dialog_url.GetScheme(),
+                                     dialog_url.GetHost(), 0);
 
   dialog_observer_ =
       std::make_unique<DialogWebContentsObserver>(dialog_web_contents, this);

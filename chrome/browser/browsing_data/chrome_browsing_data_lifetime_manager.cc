@@ -403,7 +403,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
         std::string domain = GetDomainAndRegistry(
             url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
         if (domain.empty()) {
-          domain = url.host();  // IP address or internal hostname.
+          domain = url.GetHost();  // IP address or internal hostname.
         }
         filter_builder->AddRegisterableDomain(domain);
       }

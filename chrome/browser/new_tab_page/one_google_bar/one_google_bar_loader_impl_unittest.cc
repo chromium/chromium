@@ -159,27 +159,27 @@ TEST_F(OneGoogleBarLoaderImplTest, RequestUrlContainsLanguage) {
   // Make sure the request URL contains the "hl=" query param.
   std::string expected_query =
       base::StringPrintf("hl=%s&async=fixed:0", kApplicationLocale);
-  EXPECT_EQ(expected_query, last_request_url().query());
+  EXPECT_EQ(expected_query, last_request_url().GetQuery());
 }
 
 TEST_F(OneGoogleBarLoaderImplTest, RequestUrlWithAdditionalQueryParams) {
   one_google_bar_loader()->SetAdditionalQueryParams({{"test", ""}, {"hl", ""}});
   EXPECT_EQ("hl=&test=",
-            one_google_bar_loader()->GetLoadURLForTesting().query());
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
 
   one_google_bar_loader()->SetAdditionalQueryParams(
       {{"test", ""}, {"hl", ""}, {"async", ""}});
   EXPECT_EQ("async=&hl=&test=",
-            one_google_bar_loader()->GetLoadURLForTesting().query());
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
 
   one_google_bar_loader()->SetAdditionalQueryParams({{"test", ""}});
   EXPECT_EQ(base::StringPrintf("hl=%s&test=", kApplicationLocale),
-            one_google_bar_loader()->GetLoadURLForTesting().query());
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
 
   one_google_bar_loader()->SetAdditionalQueryParams(
       {{"test", ""}, {"async", ""}});
   EXPECT_EQ(base::StringPrintf("hl=%s&async=&test=", kApplicationLocale),
-            one_google_bar_loader()->GetLoadURLForTesting().query());
+            one_google_bar_loader()->GetLoadURLForTesting().GetQuery());
 }
 
 TEST_F(OneGoogleBarLoaderImplTest, RequestReturns) {

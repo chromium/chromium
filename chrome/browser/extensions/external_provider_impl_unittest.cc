@@ -226,7 +226,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
       const net::test_server::HttpRequest& request) {
     GURL url = test_server_->GetURL(request.relative_url);
     for (const TestServerExtension& test_extension : kTestServerExtensions) {
-      if (url.path() == test_extension.update_path) {
+      if (url.GetPath() == test_extension.update_path) {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_code(net::HTTP_OK);
         response->set_content(CreateUpdateManifest(
@@ -237,7 +237,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         response->set_content_type("text/xml");
         return std::move(response);
       }
-      if (url.path() == test_extension.app_path) {
+      if (url.GetPath() == test_extension.app_path) {
         base::FilePath test_data_dir;
         base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
         std::string contents;

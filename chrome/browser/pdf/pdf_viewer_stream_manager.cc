@@ -530,11 +530,11 @@ void PdfViewerStreamManager::DidFinishNavigation(
         // zoom not affecting the browser UI.
         const GURL pdf_extension_url = stream_info->stream()->handler_url();
         CHECK_EQ(pdf_extension_url, navigation_handle->GetURL());
-        CHECK_EQ(extensions::kExtensionScheme, pdf_extension_url.scheme());
+        CHECK_EQ(extensions::kExtensionScheme, pdf_extension_url.GetScheme());
         content::HostZoomMap::Get(
             navigation_handle->GetRenderFrameHost()->GetSiteInstance())
-            ->SetZoomLevelForHostAndScheme(pdf_extension_url.scheme(),
-                                           pdf_extension_url.host(), 0);
+            ->SetZoomLevelForHostAndScheme(pdf_extension_url.GetScheme(),
+                                           pdf_extension_url.GetHost(), 0);
         // Set ZoomController on the extension host.
         zoom::ZoomController::CreateForWebContentsAndRenderFrameHost(
             web_contents(),

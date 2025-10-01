@@ -123,7 +123,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithJS(
     base::OnceClosure done_callback,
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  if (request_url.path() != path) {
+  if (request_url.GetPath() != path) {
     return nullptr;
   }
 
@@ -1999,7 +1999,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
   // URLLoaderInterceptor callback
   static bool InterceptRequest(
       content::URLLoaderInterceptor::RequestParams* params) {
-    if (params->url_request.url.path() == "/index.html") {
+    if (params->url_request.url.GetPath() == "/index.html") {
       content::URLLoaderInterceptor::WriteResponse(
           "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n\n",
           R"(
@@ -2040,7 +2040,7 @@ class OnDeviceTranslationCrossOriginBrowserTest
           params->client.get(),
           /*ssl_info=*/std::nullopt, params->url_request.url);
       return true;
-    } else if (params->url_request.url.path() == "/frame.html") {
+    } else if (params->url_request.url.GetPath() == "/frame.html") {
       content::URLLoaderInterceptor::WriteResponse(
           "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n\n",
           R"(

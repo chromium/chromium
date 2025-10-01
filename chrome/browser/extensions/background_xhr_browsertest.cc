@@ -372,7 +372,7 @@ class BackgroundFetchWebstoreTest : public BackgroundFetchPolicyTest,
     // Override the test server SSL config with the webstore domain under test
     // and another non-webstore domain used in the tests.
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {GetParam().host(), "google.com"};
+    cert_config.dns_names = {GetParam().GetHost(), "google.com"};
     embedded_test_server()->SetSSLConfig(cert_config);
     // Add the extensions directory to the test server as it has a /webstore/
     // directory to serve files from, which the webstore hosted app requires as
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(BackgroundFetchWebstoreTest, FetchToWebstore) {
 IN_PROC_BROWSER_TEST_P(BackgroundFetchWebstoreTest, FetchToWebstorePolicy) {
   {
     ExtensionManagementPolicyUpdater pref(&policy_provider_);
-    pref.AddPolicyAllowedHost("*", "*://" + GetParam().host());
+    pref.AddPolicyAllowedHost("*", "*://" + GetParam().GetHost());
   }
 
   const Extension* extension = LoadFetchExtension("<all_urls>");

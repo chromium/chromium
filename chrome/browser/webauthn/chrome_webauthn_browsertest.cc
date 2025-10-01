@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
   auto virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();
   const GURL url = extension->GetResourceURL(kPageFile);
-  auto extension_id = url.host();
+  auto extension_id = url.GetHost();
   virtual_device_factory->mutable_state()->InjectRegistration(
       kCredentialID, "chrome-extension://" + extension_id);
 

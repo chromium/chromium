@@ -831,7 +831,7 @@ IsolatedWebAppBuilder::HandleRequest(
     const net::test_server::HttpRequest& request) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  std::string path = request.GetURL().path();
+  std::string path = request.GetURL().GetPath();
   if (path == kManifestPath) {
     response->set_code(net::HTTP_OK);
     response->set_content_type("application/manifest+json");

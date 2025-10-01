@@ -362,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   GURL new_tab_url(
       "www.foo.com::/server-redirect?http%3A%2F%2Fbar.com%2Ftitle2.html");
   EXPECT_TRUE(new_tab_url.is_valid());
-  EXPECT_EQ("www.foo.com", new_tab_url.scheme());
+  EXPECT_EQ("www.foo.com", new_tab_url.GetScheme());
 
   // Navigate to an initial page, to ensure we have a committed document
   // from which to perform a context menu initiated navigation.
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     SCOPED_TRACE(testing::Message() << "kTestUrl = " << kTestUrl);
     GURL test_url(kTestUrl);
     EXPECT_TRUE(test_url.is_valid());
-    EXPECT_EQ("o.o", test_url.scheme());
+    EXPECT_EQ("o.o", test_url.GetScheme());
 
     // Set the test URL.
     const char kUrlSettingTemplate[] = R"(
@@ -849,8 +849,9 @@ IN_PROC_BROWSER_TEST_F(
   //    popup SiteInstance).
   EXPECT_EQ(old_subframe_site_instance.get(), popup->GetSiteInstance());
   EXPECT_NE(url::kAboutBlankURL,
-            popup->GetSiteInstance()->GetSiteURL().scheme());
-  EXPECT_NE(url::kDataScheme, popup->GetSiteInstance()->GetSiteURL().scheme());
+            popup->GetSiteInstance()->GetSiteURL().GetScheme());
+  EXPECT_NE(url::kDataScheme,
+            popup->GetSiteInstance()->GetSiteURL().GetScheme());
   if (content::AreAllSitesIsolatedForTesting()) {
     EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
@@ -989,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_NE(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_NE(old_popup_site_instance.get(), popup->GetSiteInstance());
     EXPECT_EQ(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
+              popup->GetSiteInstance()->GetSiteURL().GetScheme());
 
     // Verify that full isolation results in a separate process for each
     // SiteInstance. Otherwise they share a process because none of the sites
@@ -1002,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(opener->GetSiteInstance(), popup->GetSiteInstance());
     EXPECT_EQ(old_popup_site_instance.get(), popup->GetSiteInstance());
     EXPECT_NE(url::kDataScheme,
-              popup->GetSiteInstance()->GetSiteURL().scheme());
+              popup->GetSiteInstance()->GetSiteURL().GetScheme());
 
     EXPECT_FALSE(opener->GetSiteInstance()->RequiresDedicatedProcess());
     EXPECT_FALSE(popup->GetSiteInstance()->RequiresDedicatedProcess());
@@ -2900,7 +2901,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationForOAuthSitesBrowserTest,
   // oauthprovider.com without worrying that corresponding test files exist.
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() == "oauthprovider.com") {
+        if (params->url_request.url.GetHost() == "oauthprovider.com") {
           content::URLLoaderInterceptor::WriteResponse(
               "chrome/test/data/title2.html", params->client.get());
           return true;

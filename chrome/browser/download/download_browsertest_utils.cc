@@ -368,7 +368,7 @@ bool DownloadTestBase::RunSizeTest(Browser* browser,
 
   // TODO(ahendrickson) -- |expected_title_in_progress| and
   // |expected_title_finished| need to be checked.
-  base::FilePath filename = base::FilePath::FromUTF8Unsafe(url.path());
+  base::FilePath filename = base::FilePath::FromUTF8Unsafe(url.GetPath());
   std::u16string expected_title_in_progress(
       base::ASCIIToUTF16(partial_indication) + filename.LossyDisplayName());
   std::u16string expected_title_finished(base::ASCIIToUTF16(total_indication) +

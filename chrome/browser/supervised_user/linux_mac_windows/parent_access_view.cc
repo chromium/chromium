@@ -73,7 +73,7 @@ void OverrideZoomFactor(content::WebContents* web_contents,
   double zoom_factor = 1;
   content::HostZoomMap* zoom_map =
       content::HostZoomMap::GetForWebContents(web_contents);
-  zoom_map->SetZoomLevelForHost(pacp_url.host(),
+  zoom_map->SetZoomLevelForHost(pacp_url.GetHost(),
                                 blink::ZoomFactorToZoomLevel(zoom_factor));
 }
 

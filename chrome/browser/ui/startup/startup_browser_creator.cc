@@ -508,7 +508,7 @@ bool MaybeLaunchAppShortcutWindow(const base::CommandLine& command_line,
   if (!url.is_empty() && url.is_valid()) {
     content::ChildProcessSecurityPolicy* policy =
         content::ChildProcessSecurityPolicy::GetInstance();
-    if (policy->IsWebSafeScheme(url.scheme()) ||
+    if (policy->IsWebSafeScheme(url.GetScheme()) ||
         url.SchemeIs(url::kFileScheme)) {
       const content::WebContents* web_contents =
           apps::OpenExtensionAppShortcutWindow(profile, url);

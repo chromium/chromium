@@ -304,8 +304,8 @@ class SearchPreloadBrowserTestBase : public PlatformBrowserTest,
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
       const net::test_server::HttpRequest& request) {
     const bool is_prefetch =
-        request.GetURL().query().find("pf=cs") != std::string::npos ||
-        request.GetURL().query().find("pf=op") != std::string::npos;
+        request.GetURL().GetQuery().find("pf=cs") != std::string::npos ||
+        request.GetURL().GetQuery().find("pf=op") != std::string::npos;
     CHECK_EQ(is_prefetch,
              request.headers.find(blink::kSecPurposeHeaderName) !=
                      request.headers.end() &&

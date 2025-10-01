@@ -604,7 +604,7 @@ class SSLUITestBase : public InProcessBrowserTest,
 
     base::StringPairs replacement_text_frame_left;
     replacement_text_frame_left.push_back(
-        make_pair("REPLACE_WITH_HTTP_PORT", http_url.port()));
+        make_pair("REPLACE_WITH_HTTP_PORT", http_url.GetPort()));
     replacement_text_frame_left.push_back(
         make_pair("REPLACE_WITH_GOOD_HTTPS_PAGE", good_https_url.spec()));
     replacement_text_frame_left.push_back(
@@ -1339,14 +1339,14 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialCrossSiteNavigation) {
 
   // First navigate to an OK page.
   GURL initial_url = https_server_.GetURL("/ssl/google.html");
-  ASSERT_EQ("127.0.0.1", initial_url.host());
+  ASSERT_EQ("127.0.0.1", initial_url.GetHost());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
 
   // Navigate from 127.0.0.1 to localhost so it triggers a
   // cross-site navigation to make sure http://crbug.com/5800 is gone.
   GURL cross_site_url = https_server_mismatched_.GetURL("/ssl/google.html");
-  ASSERT_EQ("localhost", cross_site_url.host());
+  ASSERT_EQ("localhost", cross_site_url.GetHost());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cross_site_url));
   // An SSL interstitial should be showing.
   ssl_test_util::CheckAuthenticationBrokenState(
@@ -1805,7 +1805,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestBrowserUseClientCertStore) {
   // Visit a HTTPS page which requires client certs.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                             https_url, 1);
-  EXPECT_EQ("pass", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", tab->GetLastCommittedURL().GetRef());
 }
 
 // Tests that requests from service workers can also use certificates
@@ -1989,7 +1989,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthSigningFails) {
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                             https_url, 1);
   // Page should not load successfully.
-  EXPECT_EQ("", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("", tab->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthContinueWithoutCert) {
@@ -2015,7 +2015,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestClientAuthContinueWithoutCert) {
                                                             https_url, 1);
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   // Page should not load successfully.
-  EXPECT_EQ("", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("", tab->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
@@ -2051,11 +2051,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   // Visit a HTTPS page which requires client certs.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                             https_url, 1);
-  EXPECT_EQ("pass", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", tab->GetLastCommittedURL().GetRef());
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), GURL("about:blank"), 1);
-  EXPECT_EQ("", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("", tab->GetLastCommittedURL().GetRef());
 
   // Now use a ClientCertStoreStub that always returns an empty list.
   ProfileNetworkContextServiceFactory::GetForContext(browser()->profile())
@@ -2066,11 +2066,11 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   // due to the socket still being open, or due to the SSL client auth cache).
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                             https_url, 1);
-  EXPECT_EQ("pass", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", tab->GetLastCommittedURL().GetRef());
 
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
       browser(), GURL("about:blank"), 1);
-  EXPECT_EQ("", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("", tab->GetLastCommittedURL().GetRef());
 
   // Send an OnClientCertStoreChanged notification.
   net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
@@ -2081,7 +2081,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestCertDBChangedFlushesClientAuthCache) {
   // the CertDBChanged observer.
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(),
                                                             https_url, 1);
-  EXPECT_EQ("", tab->GetLastCommittedURL().ref());
+  EXPECT_EQ("", tab->GetLastCommittedURL().GetRef());
 }
 
 // Open a page with a HTTPS error in a tab with no prior navigation (through a
@@ -3798,7 +3798,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestLearnMoreLinkContainsErrorCode) {
                 ->tab_strip_model()
                 ->GetActiveWebContents()
                 ->GetVisibleURL()
-                .ref(),
+                .GetRef(),
             base::NumberToString(net::ERR_CERT_DATE_INVALID));
 }
 
@@ -3907,7 +3907,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialLinksOpenInNewTab) {
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(new_tab);
-  EXPECT_EQ(mock_help_center_url.host(), new_tab->GetLastCommittedURL().host());
+  EXPECT_EQ(mock_help_center_url.GetHost(),
+            new_tab->GetLastCommittedURL().GetHost());
 }
 
 // Verifies that switching tabs, while showing interstitial page, will not
@@ -3948,9 +3949,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITestReduceSubresourceNotifications,
   ASSERT_TRUE(https_server_.Start());
 
   std::string https_server_expired_host =
-      https_server_expired_.GetURL("/ssl/google.html").host();
+      https_server_expired_.GetURL("/ssl/google.html").GetHost();
   std::string https_server_host =
-      https_server_.GetURL("/ssl/google.html").host();
+      https_server_.GetURL("/ssl/google.html").GetHost();
   ASSERT_EQ(https_server_expired_host, https_server_host);
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -3987,9 +3988,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(https_server_.Start());
 
   std::string https_server_expired_host =
-      https_server_expired_.GetURL("/ssl/google.html").host();
+      https_server_expired_.GetURL("/ssl/google.html").GetHost();
   std::string https_server_host =
-      https_server_.GetURL("/ssl/google.html").host();
+      https_server_.GetURL("/ssl/google.html").GetHost();
   ASSERT_EQ(https_server_expired_host, https_server_host);
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -4166,9 +4167,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertNavigation) {
   ASSERT_TRUE(https_server_.Start());
 
   std::string https_server_expired_host =
-      https_server_expired_.GetURL("/ssl/google.html").host();
+      https_server_expired_.GetURL("/ssl/google.html").GetHost();
   std::string https_server_host =
-      https_server_.GetURL("/ssl/google.html").host();
+      https_server_.GetURL("/ssl/google.html").GetHost();
   ASSERT_EQ(https_server_expired_host, https_server_host);
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -4205,9 +4206,9 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertSubresource) {
   ASSERT_TRUE(https_server_.Start());
 
   std::string https_server_expired_host =
-      https_server_expired_.GetURL("/ssl/google.html").host();
+      https_server_expired_.GetURL("/ssl/google.html").GetHost();
   std::string https_server_host =
-      https_server_.GetURL("/ssl/google.html").host();
+      https_server_.GetURL("/ssl/google.html").GetHost();
   ASSERT_EQ(https_server_expired_host, https_server_host);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -4248,7 +4249,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByGoodCertSubresource) {
 IN_PROC_BROWSER_TEST_F(SSLUITest, BadCertFollowedByBlobUrl) {
   ASSERT_TRUE(https_server_expired_.Start());
   std::string https_server_host =
-      https_server_expired_.GetURL("/ssl/google.html").host();
+      https_server_expired_.GetURL("/ssl/google.html").GetHost();
 
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
@@ -6086,8 +6087,9 @@ std::unique_ptr<net::test_server::HttpResponse> FormActionHTTPRedirectHandler(
     const net::EmbeddedTestServer* test_server,
     const net::test_server::HttpRequest& request) {
   GURL absolute_url = test_server->GetURL(request.relative_url);
-  if (absolute_url.path() != "/redirect_to_http")
+  if (absolute_url.GetPath() != "/redirect_to_http") {
     return nullptr;
+  }
   GURL::Replacements replacements;
   replacements.SetHostStr("example.org");
   replacements.SetSchemeStr("http");

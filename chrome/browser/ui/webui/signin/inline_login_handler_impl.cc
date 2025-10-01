@@ -519,7 +519,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::Value::Dict& params) {
 
   const GURL& url = GaiaUrls::GetInstance()->embedded_signin_url();
   params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.Set("gaiaPath", url.path().substr(1));
+  params.Set("gaiaPath", url.GetPath().substr(1));
 
 #if BUILDFLAG(IS_WIN)
   if (reason == HandlerSigninReason::kFetchLstOnly) {

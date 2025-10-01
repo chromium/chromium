@@ -694,15 +694,17 @@ TEST_F(AppServiceProxyPreferredAppsTest, PreferredAppsOverlapSupportedLink) {
   GURL filter_url_3 = GURL("https://www.abc.com/abc");
 
   auto intent_filter_1 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);
-  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.GetScheme(),
                                PatternMatchType::kLiteral, intent_filter_1);
-  apps_util::AddConditionValue(ConditionType::kAuthority, filter_url_2.host(),
+  apps_util::AddConditionValue(ConditionType::kAuthority,
+                               filter_url_2.GetHost(),
                                PatternMatchType::kLiteral, intent_filter_1);
 
   auto intent_filter_2 = apps_util::MakeIntentFilterForUrlScope(filter_url_3);
-  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.scheme(),
+  apps_util::AddConditionValue(ConditionType::kScheme, filter_url_2.GetScheme(),
                                PatternMatchType::kLiteral, intent_filter_2);
-  apps_util::AddConditionValue(ConditionType::kAuthority, filter_url_2.host(),
+  apps_util::AddConditionValue(ConditionType::kAuthority,
+                               filter_url_2.GetHost(),
                                PatternMatchType::kLiteral, intent_filter_2);
 
   auto intent_filter_3 = apps_util::MakeIntentFilterForUrlScope(filter_url_1);

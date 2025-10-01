@@ -243,7 +243,7 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     ASSERT_FALSE(apps().empty());
     content::StoredPaymentApp* app = nullptr;
     for (const auto& it : apps()) {
-      if (it.second->scope.path() == scope) {
+      if (it.second->scope.GetPath() == scope) {
         app = it.second.get();
         break;
       }

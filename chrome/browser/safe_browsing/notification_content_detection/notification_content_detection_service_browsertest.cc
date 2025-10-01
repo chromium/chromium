@@ -144,7 +144,7 @@ class NotificationContentDetectionBrowserTest
 
     // Set up allowlisted and non-allowlisted URLs.
     SetNotificationsGlobalCacheListDomainsForTesting(
-        {GURL(kAllowlistedUrl).host()});
+        {GURL(kAllowlistedUrl).GetHost()});
     SetURLHighConfidenceAllowlistMatch(GURL(kAllowlistedUrl),
                                        /*match_allowlist=*/true);
     SetURLHighConfidenceAllowlistMatch(GURL(kNonAllowlistedUrl),

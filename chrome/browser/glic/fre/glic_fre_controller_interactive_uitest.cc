@@ -403,7 +403,7 @@ class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
     fre_server_.RegisterRequestHandler(base::BindRepeating(
         [](const GURL& url, const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          if (request.relative_url == url.path()) {
+          if (request.relative_url == url.GetPath()) {
             auto response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
             response->set_code(net::HTTP_BAD_GATEWAY);

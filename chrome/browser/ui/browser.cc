@@ -338,7 +338,7 @@ const extensions::Extension* GetExtensionForOrigin(
 
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
-          security_origin.host());
+          security_origin.GetHost());
   DCHECK(extension);
   return extension;
 #else

@@ -133,7 +133,7 @@ base::FilePath GetDownloadFilePath(const base::FilePath& download_directory,
 void MaybeAppendAuthUserParameter(const std::string& authuser, GURL* url) {
   if (authuser.empty())
     return;
-  std::string old_query = url->query();
+  std::string old_query = url->GetQuery();
   url::Component query(0, old_query.length());
   url::Component key, value;
   // Ensure that the URL doesn't already specify an authuser parameter.

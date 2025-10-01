@@ -1059,7 +1059,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl) {
   RunUntilIdle();
   GURL change_password_url(
       *delegate().GetInsecureCredentials().at(0).change_password_url);
-  EXPECT_EQ(change_password_url.path(),
+  EXPECT_EQ(change_password_url.GetPath(),
             password_manager::kWellKnownChangePasswordPath);
 }
 
@@ -1078,7 +1078,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
 
   EXPECT_FALSE(delegate().GetInsecureCredentials().at(0).change_password_url);
   EXPECT_EQ(GURL(*delegate().GetInsecureCredentials().at(1).change_password_url)
-                .path(),
+                .GetPath(),
             password_manager::kWellKnownChangePasswordPath);
 }
 

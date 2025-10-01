@@ -879,10 +879,11 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectDebugURL) {
   const GURL debug_url(chrome::kChromeUILocalStateURL);
   GURL dest_url = debug_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
-  EXPECT_EQ(chrome::kChromeUIInternalDebugPagesDisabledHost, dest_url.host());
+  EXPECT_EQ(chrome::kChromeUIInternalDebugPagesDisabledHost,
+            dest_url.GetHost());
   std::string query_param_name("host=");
   EXPECT_EQ(query_param_name + chrome::kChromeUILocalStateURL + "/",
-            dest_url.query());
+            dest_url.GetQuery());
 
   // Enable the internal only uis pref.
   TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(

@@ -760,7 +760,8 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
   // explaining to the user that they are signing in to Chrome.
   EXPECT_TRUE(base::StartsWith(tab->GetVisibleURL().spec(), sync_url.spec(),
                                base::CompareCase::INSENSITIVE_ASCII));
-  EXPECT_NE(tab->GetVisibleURL().query().find("flow=promo"), std::string::npos);
+  EXPECT_NE(tab->GetVisibleURL().GetQuery().find("flow=promo"),
+            std::string::npos);
 }
 
 IN_PROC_BROWSER_TEST_P(SigninUiUtilTest,

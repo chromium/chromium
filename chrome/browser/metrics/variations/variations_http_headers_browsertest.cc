@@ -509,26 +509,26 @@ VariationsHttpHeadersBrowserTest::RequestHandler(
   // --> https://www.example.com:<port>/
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-  if (request.relative_url == GetGoogleRedirectUrl1().path()) {
+  if (request.relative_url == GetGoogleRedirectUrl1().GetPath()) {
     http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
     http_response->AddCustomHeader("Location", GetGoogleRedirectUrl2().spec());
-  } else if (request.relative_url == GetGoogleRedirectUrl2().path()) {
+  } else if (request.relative_url == GetGoogleRedirectUrl2().GetPath()) {
     http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
     http_response->AddCustomHeader("Location", GetExampleUrl().spec());
-  } else if (request.relative_url == GetExampleUrl().path()) {
+  } else if (request.relative_url == GetExampleUrl().GetPath()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content("hello");
     http_response->set_content_type("text/html");
-  } else if (request.relative_url == GetGoogleIframeUrl().path()) {
+  } else if (request.relative_url == GetGoogleIframeUrl().GetPath()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content("hello");
     http_response->set_content_type("text/html");
-  } else if (request.relative_url == GetGoogleSubresourceUrl().path()) {
+  } else if (request.relative_url == GetGoogleSubresourceUrl().GetPath()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content("");
     http_response->set_content_type("image/png");
   } else if (request.relative_url ==
-             GetGoogleSubresourceFetchingWorkerUrl().path()) {
+             GetGoogleSubresourceFetchingWorkerUrl().GetPath()) {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content(R"(
       self.addEventListener('message', async (e) => {

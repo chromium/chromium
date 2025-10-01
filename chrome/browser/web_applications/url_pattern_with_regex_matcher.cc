@@ -71,14 +71,14 @@ UrlPatternWithRegexMatcher& UrlPatternWithRegexMatcher::operator=(
     UrlPatternWithRegexMatcher&& other) = default;
 
 bool UrlPatternWithRegexMatcher::Match(const GURL& url) const {
-  return MatchScopePart(protocol_scope_set_, url.scheme()) &&
-         MatchScopePart(username_scope_set_, url.username()) &&
-         MatchScopePart(password_scope_set_, url.password()) &&
-         MatchScopePart(hostname_scope_set_, url.host()) &&
-         MatchScopePart(port_scope_set_, url.port()) &&
-         MatchScopePart(pathname_scope_set_, url.path()) &&
-         MatchScopePart(search_scope_set_, url.query()) &&
-         MatchScopePart(hash_scope_set_, url.ref());
+  return MatchScopePart(protocol_scope_set_, url.GetScheme()) &&
+         MatchScopePart(username_scope_set_, url.GetUsername()) &&
+         MatchScopePart(password_scope_set_, url.GetPassword()) &&
+         MatchScopePart(hostname_scope_set_, url.GetHost()) &&
+         MatchScopePart(port_scope_set_, url.GetPort()) &&
+         MatchScopePart(pathname_scope_set_, url.GetPath()) &&
+         MatchScopePart(search_scope_set_, url.GetQuery()) &&
+         MatchScopePart(hash_scope_set_, url.GetRef());
 }
 
 }  // namespace web_app

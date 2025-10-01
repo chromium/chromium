@@ -144,8 +144,8 @@ std::string DeviceTrustBrowserTestBase::GetChallengeResponseHeader() {
   // Validate that the two requests contain expected information. URLs' paths
   // have to be used for comparison due to how the HostResolver is replacing
   // domains with '127.0.0.1' in tests.
-  EXPECT_EQ(initial_attestation_request_->GetURL().path(),
-            GetRedirectUrl().path());
+  EXPECT_EQ(initial_attestation_request_->GetURL().GetPath(),
+            GetRedirectUrl().GetPath());
   EXPECT_EQ(
       initial_attestation_request_->headers.find(kDeviceTrustHeader)->second,
       kDeviceTrustHeaderValue);
@@ -159,8 +159,8 @@ std::string DeviceTrustBrowserTestBase::GetChallengeResponseHeader() {
 
   ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
 
-  EXPECT_EQ(challenge_response_request_->GetURL().path(),
-            GetRedirectLocationUrl().path());
+  EXPECT_EQ(challenge_response_request_->GetURL().GetPath(),
+            GetRedirectLocationUrl().GetPath());
   return challenge_response_request_->headers
       .find(kVerifiedAccessResponseHeader)
       ->second;

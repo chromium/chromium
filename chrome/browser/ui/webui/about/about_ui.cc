@@ -586,5 +586,5 @@ AboutUI::AboutUI(content::WebUI* web_ui, const GURL& url)
 #endif
 
   content::URLDataSource::Add(
-      profile, std::make_unique<AboutUIHTMLSource>(url.host(), profile));
+      profile, std::make_unique<AboutUIHTMLSource>(url.GetHost(), profile));
 }

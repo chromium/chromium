@@ -309,7 +309,7 @@ void QwacWebContentsObserver::DidFinishNavigation(
       url_loader_factory.BindNewPipeAndPassReceiver());
 
   QwacStatus::CreateForPage(
-      page, navigation_handle->GetURL().host(),
+      page, navigation_handle->GetURL().GetHost(),
       navigation_handle->GetSSLInfo()->cert, std::move(full_qwac_url),
       /*initiator=*/render_frame_host->GetLastCommittedOrigin(),
       std::move(url_loader_factory));

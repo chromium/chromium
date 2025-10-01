@@ -40,11 +40,11 @@ std::vector<std::string> GetSupportedLinks(const std::string& app_id,
     return std::vector<std::string>();
   }
 
-  std::string scope_str(app_scope.host());
+  std::string scope_str(app_scope.GetHost());
   if (app_scope.has_port()) {
-    scope_str += ":" + app_scope.port();
+    scope_str += ":" + app_scope.GetPort();
   }
-  scope_str += app_scope.path();
+  scope_str += app_scope.GetPath();
   if (scope_str.back() == '/') {
     scope_str = scope_str + "*";
   } else {

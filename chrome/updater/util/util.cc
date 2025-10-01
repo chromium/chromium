@@ -248,7 +248,7 @@ std::string GetUpdaterUserAgent(const base::Version& updater_version) {
 GURL AppendQueryParameter(const GURL& url,
                           const std::string& name,
                           const std::string& value) {
-  std::string query(url.query());
+  std::string query(url.GetQuery());
 
   if (!query.empty()) {
     query += "&";

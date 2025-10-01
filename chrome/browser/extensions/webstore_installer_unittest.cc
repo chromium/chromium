@@ -32,7 +32,7 @@ TEST(WebstoreInstallerTest, PlatformParams) {
   std::string source = "inline";
   GURL url = WebstoreInstaller::GetWebstoreInstallURL(
       id, WebstoreInstaller::INSTALL_SOURCE_INLINE);
-  std::string query = url.query();
+  std::string query = url.GetQuery();
   EXPECT_TRUE(
       Contains(query, StringPrintf("os=%s", UpdateQueryParams::GetOS())));
   EXPECT_TRUE(

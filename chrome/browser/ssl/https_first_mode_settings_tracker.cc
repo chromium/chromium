@@ -152,7 +152,7 @@ GURL GetHttpUrlFromHttps(const GURL& https_url) {
     // TODO(crbug.com/40904694): Remove this exception.
     if (https_url != GURL(security_interstitials::HttpsOnlyModeBlockingPage::
                               kLearnMoreLink)) {
-      DCHECK(!https_url.port().empty());
+      DCHECK(!https_url.GetPort().empty());
       upgrade_url.SetPortStr(port_str);
     }
   }
@@ -514,7 +514,7 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
             kHttpAddThreshold.Get() &&
         !base::Contains(enabled_origins, origin) &&
         !net::IsHostnameNonUnique(origin.host_piece())) {
-      state->SetHttpsEnforcementForHost(origin.host(), /*enforced=*/true,
+      state->SetHttpsEnforcementForHost(origin.GetHost(), /*enforced=*/true,
                                         partition);
     }
   }
@@ -530,7 +530,7 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
         engagement_service->GetScore(GetHttpUrlFromHttps(origin)) >=
             kHttpRemoveThreshold.Get() ||
         net::IsHostnameNonUnique(origin.host_piece())) {
-      state->SetHttpsEnforcementForHost(origin.host(), /*enforced=*/false,
+      state->SetHttpsEnforcementForHost(origin.GetHost(), /*enforced=*/false,
                                         partition);
     }
   }

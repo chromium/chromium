@@ -341,7 +341,7 @@ void GlicFreController::ExceededTimeoutError() {
 
 void GlicFreController::OnLinkClicked(const GURL& url) {
   if (url.DomainIs("support.google.com")) {
-    if (url.path().find("13594961") != std::string::npos) {
+    if (url.GetPath().find("13594961") != std::string::npos) {
       base::RecordAction(
           base::UserMetricsAction("Glic.Fre.PrivacyNoticeLinkOpened"));
     } else {

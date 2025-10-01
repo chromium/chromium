@@ -27,7 +27,7 @@ bool GlicMediaLinkHelper::MaybeReplaceNavigation(const GURL& target) {
   // Handle embedded YT first, since it's experimental.  For any YT target, let
   // the embed helper figure out if it applies to any frame.
   if (base::FeatureList::IsEnabled(kMediaLinkEmbedHelper)) {
-    if (target.host() == youtube_host && YouTubeEmbedHelper(target)) {
+    if (target.GetHost() == youtube_host && YouTubeEmbedHelper(target)) {
       return true;
     }
   }
@@ -36,11 +36,11 @@ bool GlicMediaLinkHelper::MaybeReplaceNavigation(const GURL& target) {
       web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
 
   // Insist that the target and the focused contents have the same host.
-  if (target.host() != committed_url.host()) {
+  if (target.GetHost() != committed_url.GetHost()) {
     return false;
   }
 
-  if (target.host() == youtube_host) {
+  if (target.GetHost() == youtube_host) {
     return YouTubeHelper(target);
   }
 
@@ -76,13 +76,13 @@ std::optional<std::string> GlicMediaLinkHelper::ExtractVideoNameIfExists(
   // part of the path if it's "...youtube.com/embed/video name here".
   // Extract it and return it, or else {} if there's no match.
   std::string video_name;
-  if (url.path() == "/watch") {
+  if (url.GetPath() == "/watch") {
     if (net::GetValueForKeyInQuery(url, "v", &video_name) &&
         !video_name.empty()) {
       return video_name;
     }
-  } else if (base::StartsWith(url.path(), "/embed/")) {
-    video_name = url.path().substr(strlen("/embed/"));
+  } else if (base::StartsWith(url.GetPath(), "/embed/")) {
+    video_name = url.GetPath().substr(strlen("/embed/"));
     if (!video_name.empty()) {
       return video_name;
     }
@@ -106,7 +106,7 @@ bool GlicMediaLinkHelper::YouTubeEmbedHelper(const GURL& target) {
   // Unlike normal helpers, this hasn't been checked yet.  We just figured out
   // the frame now.
   const auto& last_committed_url = media_session_rfh->GetLastCommittedURL();
-  if (last_committed_url.host() != target.host()) {
+  if (last_committed_url.GetHost() != target.GetHost()) {
     // Mediasession is not controlling YT.
     return false;
   }

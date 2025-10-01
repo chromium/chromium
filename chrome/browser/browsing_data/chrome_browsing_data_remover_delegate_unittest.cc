@@ -4807,7 +4807,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTpcdMetadataTest,
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
       BrowsingDataFilterBuilder::Create(
           BrowsingDataFilterBuilder::Mode::kPreserve));
-  filter->AddRegisterableDomain(GURL(primary_pattern_spec).host());
+  filter->AddRegisterableDomain(GURL(primary_pattern_spec).GetHost());
   ASSERT_TRUE(filter->MatchesMostOriginsAndDomains());
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               content::BrowsingDataRemover::DATA_TYPE_COOKIES,

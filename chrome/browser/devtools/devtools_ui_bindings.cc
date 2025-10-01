@@ -350,7 +350,7 @@ std::string SanitizeEndpoint(const std::string& value) {
 
 std::string SanitizeRemoteBase(const std::string& value) {
   GURL url(value);
-  std::string path = url.path();
+  std::string path = url.GetPath();
   std::vector<std::string> parts =
       base::SplitString(path, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   std::string revision = parts.size() > 2 ? parts[2] : "";
@@ -364,7 +364,7 @@ std::string SanitizeRemoteBase(const std::string& value) {
 std::string SanitizeRemoteFrontendURL(const std::string& value) {
   GURL url(base::UnescapeBinaryURLComponent(
       value, base::UnescapeRule::REPLACE_PLUS_WITH_SPACE));
-  std::string path = url.path();
+  std::string path = url.GetPath();
   std::vector<std::string> parts =
       base::SplitString(path, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   std::string revision = parts.size() > 2 ? parts[2] : "";
@@ -466,7 +466,7 @@ GURL SanitizeFrontendURL(const GURL& url,
       }
     }
     if (url.has_ref() && url.ref_piece().find('\'') == std::string_view::npos) {
-      fragment = '#' + url.ref();
+      fragment = '#' + url.GetRef();
     }
   }
   std::string query =
@@ -666,13 +666,13 @@ DevToolsUIBindings::FrontendWebContentsObserver::
 GURL DevToolsUIBindings::SanitizeFrontendURL(const GURL& url) {
   return ::SanitizeFrontendURL(url, content::kChromeDevToolsScheme,
                                chrome::kChromeUIDevToolsHost,
-                               SanitizeFrontendPath(url.path()), true);
+                               SanitizeFrontendPath(url.GetPath()), true);
 }
 
 // static
 bool DevToolsUIBindings::IsValidFrontendURL(const GURL& url) {
   if (url.SchemeIs(content::kChromeUIScheme) &&
-      url.host() == content::kChromeUITracingHost && !url.has_query() &&
+      url.GetHost() == content::kChromeUITracingHost && !url.has_query() &&
       !url.has_ref()) {
     return true;
   }
@@ -682,7 +682,7 @@ bool DevToolsUIBindings::IsValidFrontendURL(const GURL& url) {
 
 bool DevToolsUIBindings::IsValidRemoteFrontendURL(const GURL& url) {
   return ::SanitizeFrontendURL(url, url::kHttpsScheme, kRemoteFrontendDomain,
-                               url.path(), true)
+                               url.GetPath(), true)
              .spec() == url.spec();
 }
 
@@ -1229,14 +1229,14 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
     // committed URL of that frame, and use the loader associated with that
     // frame to allow nested frames with different schemes to load files.
     if (allow_web_ui_scheme && target_tab &&
-        target_tab->GetLastCommittedURL().scheme() == gurl.scheme()) {
+        target_tab->GetLastCommittedURL().GetScheme() == gurl.GetScheme()) {
       std::vector<std::string> allowed_webui_hosts;
       content::RenderFrameHost* frame_host =
           web_contents()->GetPrimaryMainFrame();
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
           content::CreateWebUIURLLoaderFactory(
-              frame_host, target_tab->GetLastCommittedURL().scheme(),
+              frame_host, target_tab->GetLastCommittedURL().GetScheme(),
               std::move(allowed_webui_hosts));
       url_loader_factory = network::SharedURLLoaderFactory::Create(
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(

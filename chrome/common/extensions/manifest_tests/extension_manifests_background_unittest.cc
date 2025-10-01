@@ -54,9 +54,8 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
             background_scripts[1u].relative_path().value());
 
   EXPECT_TRUE(BackgroundInfo::HasBackgroundPage(extension.get()));
-  EXPECT_EQ(
-      std::string("/") + kGeneratedBackgroundPageFilename,
-      BackgroundInfo::GetBackgroundURL(extension.get()).path());
+  EXPECT_EQ(std::string("/") + kGeneratedBackgroundPageFilename,
+            BackgroundInfo::GetBackgroundURL(extension.get()).GetPath());
 
   manifest->SetByDottedPath("background.page", "monkey.html");
   LoadAndExpectError(ManifestData(std::move(*manifest), ""),
@@ -90,7 +89,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPage) {
       LoadAndExpectSuccess("background_page.json"));
   ASSERT_TRUE(extension.get());
   EXPECT_EQ("/foo.html",
-            BackgroundInfo::GetBackgroundURL(extension.get()).path());
+            BackgroundInfo::GetBackgroundURL(extension.get()).GetPath());
   EXPECT_TRUE(BackgroundInfo::AllowJSAccess(extension.get()));
 }
 

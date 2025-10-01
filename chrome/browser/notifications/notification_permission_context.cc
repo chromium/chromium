@@ -112,7 +112,7 @@ ContentSetting NotificationPermissionContext::GetPermissionStatusForExtension(
       extensions::ExtensionRegistry::Get(
           Profile::FromBrowserContext(browser_context()))
           ->enabled_extensions()
-          .GetByID(origin.host());
+          .GetByID(origin.GetHost());
 
   if (!extension || !extension->permissions_data()->HasAPIPermission(
                         extensions::mojom::APIPermissionID::kNotifications)) {

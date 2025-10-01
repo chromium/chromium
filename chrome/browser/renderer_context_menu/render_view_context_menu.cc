@@ -1551,9 +1551,9 @@ ChromeComposeClient* RenderViewContextMenu::GetChromeComposeClient() const {
 void RenderViewContextMenu::AppendDeveloperItems() {
   // Do not Show Inspect Element for DevTools unless DevTools runs with the
   // debugFrontend query param.
-  bool hide_developer_items =
-      IsDevToolsURL(params_.page_url) &&
-      params_.page_url.query().find("debugFrontend=true") == std::string::npos;
+  bool hide_developer_items = IsDevToolsURL(params_.page_url) &&
+                              params_.page_url.GetQuery().find(
+                                  "debugFrontend=true") == std::string::npos;
   if (hide_developer_items) {
     return;
   }
@@ -2388,7 +2388,7 @@ void RenderViewContextMenu::AppendSearchProvider() {
   } else {
     if ((selection_navigation_url_ != params_.link_url) &&
         ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-            selection_navigation_url_.scheme())) {
+            selection_navigation_url_.GetScheme())) {
       menu_model_.AddItem(
           IDC_CONTENT_CONTEXT_GOTOURL,
           l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_GOTOURL,
@@ -2568,7 +2568,7 @@ void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {
   for (size_t i = 0; i < handlers.size() && i <= max; i++) {
     protocol_handler_submenu_model_.AddItem(
         IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST + i,
-        base::UTF8ToUTF16(handlers[i].url().host()));
+        base::UTF8ToUTF16(handlers[i].url().GetHost()));
   }
   protocol_handler_submenu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   protocol_handler_submenu_model_.AddItem(
@@ -2895,7 +2895,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE:
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE:
       return navigation_allowed && params_.src_url.is_valid() &&
-             (params_.src_url.scheme() != content::kChromeUIScheme);
+             (params_.src_url.GetScheme() != content::kChromeUIScheme);
 
     case IDC_CONTENT_CONTEXT_COPYIMAGE:
       return params_.has_image_contents;
@@ -3619,7 +3619,7 @@ void RenderViewContextMenu::RemoveObserverForTesting(
 custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList
 RenderViewContextMenu::GetHandlersForLinkUrl() {
   custom_handlers::ProtocolHandlerRegistry::ProtocolHandlerList handlers =
-      protocol_handler_registry_->GetHandlersFor(params_.link_url.scheme());
+      protocol_handler_registry_->GetHandlersFor(params_.link_url.GetScheme());
   std::sort(handlers.begin(), handlers.end());
   return handlers;
 }
@@ -3778,7 +3778,7 @@ bool RenderViewContextMenu::IsSaveLinkAsEnabled() const {
   }
 
   return params_.link_url.is_valid() &&
-         ProfileIOData::IsHandledProtocol(params_.link_url.scheme());
+         ProfileIOData::IsHandledProtocol(params_.link_url.GetScheme());
 }
 
 bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
@@ -3797,7 +3797,7 @@ bool RenderViewContextMenu::IsSaveAsEnabled() const {
 
   bool can_save = (params_.media_flags & ContextMenuData::kMediaCanSave) &&
                   url.is_valid() &&
-                  ProfileIOData::IsHandledProtocol(url.scheme());
+                  ProfileIOData::IsHandledProtocol(url.GetScheme());
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Do not save the preview PDF on the print preview page.
   can_save =

@@ -55,8 +55,8 @@ GURL GetUnsafeRequestOrigin(const content::WebContents::Getter& wc_getter) {
 
 bool IsOriginAllowedServerFallback(const GURL& url) {
   // Allow chrome-untrusted://data-sharing to use Google server fallback.
-  if (url.scheme() == content::kChromeUIUntrustedScheme &&
-      url.host() == chrome::kChromeUIUntrustedDataSharingHost) {
+  if (url.GetScheme() == content::kChromeUIUntrustedScheme &&
+      url.GetHost() == chrome::kChromeUIUntrustedDataSharingHost) {
     return true;
   }
   GURL history_url(chrome::kChromeUIHistoryURL);

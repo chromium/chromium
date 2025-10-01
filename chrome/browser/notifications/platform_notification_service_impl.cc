@@ -591,7 +591,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
       notification_data.title, notification_data.body,
       ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(
           notification_resources.notification_icon)),
-      base::UTF8ToUTF16(origin.host()), origin, notifier_id, optional_fields,
+      base::UTF8ToUTF16(origin.GetHost()), origin, notifier_id, optional_fields,
       nullptr /* delegate */);
 
   notification.set_context_message(DisplayNameForContextMessage(origin));
@@ -694,7 +694,7 @@ std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
   if (origin.SchemeIs(extensions::kExtensionScheme)) {
     const extensions::Extension* extension =
         extensions::ExtensionRegistry::Get(profile_)->GetExtensionById(
-            origin.host(), extensions::ExtensionRegistry::EVERYTHING);
+            origin.GetHost(), extensions::ExtensionRegistry::EVERYTHING);
     DCHECK(extension);
 
     return base::UTF8ToUTF16(extension->name());

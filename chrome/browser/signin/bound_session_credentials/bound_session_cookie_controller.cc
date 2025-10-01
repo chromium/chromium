@@ -56,7 +56,8 @@ BoundSessionCookieController::bound_session_throttler_params() const {
   }
 
   return chrome::mojom::BoundSessionThrottlerParams::New(
-      scope_url().host(), scope_url().path(), min_cookie_expiration_time());
+      scope_url().GetHost(), scope_url().GetPath(),
+      min_cookie_expiration_time());
 }
 
 base::flat_set<std::string> BoundSessionCookieController::bound_cookie_names()

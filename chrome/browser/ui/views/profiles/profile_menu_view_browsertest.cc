@@ -652,7 +652,7 @@ class ProfileMenuViewSignoutTestWithNetwork
       bool has_network_error,
       const net::test_server::HttpRequest& request) {
     if (!net::test_server::ShouldHandle(
-            request, GaiaUrls::GetInstance()->service_logout_url().path())) {
+            request, GaiaUrls::GetInstance()->service_logout_url().GetPath())) {
       return nullptr;
     }
 

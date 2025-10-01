@@ -226,7 +226,7 @@ class WebSocketBrowserConnectToTest : public WebSocketBrowserTest {
   // Supply a ws: or wss: URL to connect to. Serves connect_to.html from the
   // server's default host.
   void ConnectTo(const GURL& url) {
-    ConnectTo(server().base_url().host(), url);
+    ConnectTo(server().base_url().GetHost(), url);
   }
   void ConnectTo(const std::string& host, const GURL& url) {
     ConnectTo(host, url, "/websocket/connect_to.html");

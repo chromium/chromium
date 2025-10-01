@@ -90,7 +90,7 @@ GURL UpgradeUrlToHttps(const GURL& url) {
   if (https_port_for_testing) {
     // Only reached in testing, where the original URL will always have a
     // non-default port.
-    DCHECK(!url.port().empty());
+    DCHECK(!url.GetPort().empty());
     upgrade_url.SetPortStr(port_str);
   }
 
@@ -348,7 +348,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // HTTPS-First Strict Mode does not exempt these hosts in order to ensure that
   // Chrome shows the HTTP interstitial before navigation to them. Potentially,
   // these could fast-fail instead and skip directly to the interstitial.
-  if (net::IsHostnameNonUnique(tentative_resource_request.url.host())) {
+  if (net::IsHostnameNonUnique(tentative_resource_request.url.GetHost())) {
     if (ShouldExemptNonUniqueHostnames(*interstitial_state_)) {
       RecordNavigationRequestSecurityLevel(
           NavigationRequestSecurityLevel::kNonUniqueHostname);
@@ -363,7 +363,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // to have publicly-trusted certificates. Similarly to non-unique hostnames,
   // strict mode does not exempt these in order to ensure that Chrome shows the
   // HTTP interstitial before navigation to them.
-  if (net::GetSuperdomain(tentative_resource_request.url.host()).empty()) {
+  if (net::GetSuperdomain(tentative_resource_request.url.GetHost()).empty()) {
     // Record this as a fallback event so that we don't auto-enable HFM due to
     // the typically secure user heuristic and start showing interstitials on
     // it.
@@ -389,7 +389,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   if (!IsStrictInterstitialEnabled(*interstitial_state_) &&
       ShouldExcludeNavigationFromUpgrades(navigation_ui_data_, web_contents)) {
     if (state) {
-      state->AllowHttpForHost(tentative_resource_request.url.host(),
+      state->AllowHttpForHost(tentative_resource_request.url.GetHost(),
                               storage_partition);
     }
     std::move(callback).Run({});
@@ -414,7 +414,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
 
   CHECK(tentative_resource_request.trusted_params);
   network_context->IsHSTSActiveForHost(
-      tentative_resource_request.url.host(),
+      tentative_resource_request.url.GetHost(),
       tentative_resource_request.trusted_params->isolation_info
           .IsOutermostMainFrameRequest(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -551,13 +551,14 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // StatefulSSLHostStateDelegate can be null during tests.
   auto* storage_partition =
       web_contents->GetPrimaryMainFrame()->GetStoragePartition();
-  if (state && state->IsHttpAllowedForHost(
-                   tentative_resource_request.url.host(), storage_partition)) {
+  if (state &&
+      state->IsHttpAllowedForHost(tentative_resource_request.url.GetHost(),
+                                  storage_partition)) {
     // Renew the allowlist expiration for this host as the user is still
     // actively using it. This means that the allowlist entry will stay
     // valid until the user stops visiting this host for the entire
     // expiration period (one week).
-    state->AllowHttpForHost(tentative_resource_request.url.host(),
+    state->AllowHttpForHost(tentative_resource_request.url.GetHost(),
                             storage_partition);
 
     RecordNavigationRequestSecurityLevel(
@@ -651,7 +652,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
       // StatefulSSLHostStateDelegate can be null during tests.
       if (state) {
         state->AllowHttpForHost(
-            tab_helper->fallback_url().host(),
+            tab_helper->fallback_url().GetHost(),
             web_contents->GetPrimaryMainFrame()->GetStoragePartition());
       }
       // Also record this fallback event so that we can auto-enable HFM based on
@@ -755,8 +756,8 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // only results in potentially show an extra HFM warning before the net error.
   if (IsInterstitialEnabled(*interstitial_state_) &&
       IsHttpsFirstModeExemptedError(status.error_code) &&
-      !net::IsHostnameNonUnique(request.url.host()) &&
-      !net::GetSuperdomain(request.url.host()).empty()) {
+      !net::IsHostnameNonUnique(request.url.GetHost()) &&
+      !net::GetSuperdomain(request.url.GetHost()).empty()) {
     tab_helper->set_is_exempt_error(true);
     return false;
   }
@@ -787,7 +788,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     // StatefulSSLHostStateDelegate can be null during tests.
     if (state) {
       state->AllowHttpForHost(
-          tab_helper->fallback_url().host(),
+          tab_helper->fallback_url().GetHost(),
           web_contents->GetPrimaryMainFrame()->GetStoragePartition());
     }
 

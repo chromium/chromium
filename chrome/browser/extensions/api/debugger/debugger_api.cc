@@ -141,8 +141,8 @@ void DebuggeeFromDebuggerSession(Debuggee& dst, const DebuggerSession& src) {
 #if BUILDFLAG(ENABLE_PDF)
 // Returns whether `url` is the URL for the built-in PDF extension.
 bool IsPdfExtensionUrl(const GURL& url) {
-  return url.scheme() == kExtensionScheme &&
-         url.host() == extension_misc::kPdfExtensionId;
+  return url.GetScheme() == kExtensionScheme &&
+         url.GetHost() == extension_misc::kPdfExtensionId;
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -952,13 +952,13 @@ base::Value::Dict SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
     if (tab_id != api::tabs::TAB_ID_NONE) {
       dictionary.Set(kTargetTabIdField, tab_id);
     } else {
-      dictionary.Set(kTargetExtensionIdField, host->GetURL().host());
+      dictionary.Set(kTargetExtensionIdField, host->GetURL().GetHost());
     }
     target_type = kTargetTypePage;
 // TODO(crbug.com/405218860): Support background pages on desktop Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   } else if (type == ChromeDevToolsManagerDelegate::kTypeBackgroundPage) {
-    dictionary.Set(kTargetExtensionIdField, host->GetURL().host());
+    dictionary.Set(kTargetExtensionIdField, host->GetURL().GetHost());
     target_type = kTargetTypeBackgroundPage;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   } else if (type == DevToolsAgentHost::kTypeServiceWorker ||

@@ -124,7 +124,7 @@ class RecentActivityBubbleDialogViewInteractiveUiTest
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     GURL absolute_url = embedded_test_server()->GetURL(request.relative_url);
-    if (absolute_url.path() != avatar_url_) {
+    if (absolute_url.GetPath() != avatar_url_) {
       return nullptr;
     }
 

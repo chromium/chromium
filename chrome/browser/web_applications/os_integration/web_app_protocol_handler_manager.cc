@@ -39,7 +39,7 @@ std::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(
   std::vector<ProtocolHandler> handlers = GetAppProtocolHandlers(app_id);
 
   for (const auto& handler : handlers) {
-    if (handler.protocol() == protocol_url.scheme()) {
+    if (handler.protocol() == protocol_url.GetScheme()) {
       return handler.TranslateUrl(protocol_url);
     }
   }

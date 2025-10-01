@@ -336,7 +336,7 @@ DefaultSchemeClientWorker::DefaultSchemeClientWorker(const std::string& scheme)
 
 DefaultSchemeClientWorker::DefaultSchemeClientWorker(const GURL& url)
     : DefaultWebClientWorker("DefaultSchemeClient"),
-      scheme_(url.scheme()),
+      scheme_(url.GetScheme()),
       url_(url) {}
 
 void DefaultSchemeClientWorker::StartCheckIsDefaultAndGetDefaultClientName(

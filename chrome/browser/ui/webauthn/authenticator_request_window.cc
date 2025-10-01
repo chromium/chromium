@@ -149,13 +149,13 @@ class PasskeyResetWebContentsObserver : public content::WebContentsObserver {
       return;
     }
     status_ = Status::kStarted;
-    if (url.path() == GURL(kGpmPasskeyResetSuccessUrl).path()) {
+    if (url.GetPath() == GURL(kGpmPasskeyResetSuccessUrl).GetPath()) {
       status_ = Status::kSuccess;
-    } else if (url.path() == GURL(kGpmPasskeyResetFailUrl).path()) {
+    } else if (url.GetPath() == GURL(kGpmPasskeyResetFailUrl).GetPath()) {
       status_ = Status::kFail;
     }
 
-    MaybeRunCallback(url.has_ref() ? url.ref() : "");
+    MaybeRunCallback(url.has_ref() ? url.GetRef() : "");
   }
 
   Status status() const { return status_; }

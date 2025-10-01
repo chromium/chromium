@@ -241,7 +241,7 @@ void ValidateSitesWithRws(
       // Ensure that the `rwsOwner` is set correctly and aligned with
       // |related_website_sets| mapping of site group owners.
       std::string owner_etldplus1 =
-          related_website_sets[schemeful_site].GetURL().host();
+          related_website_sets[schemeful_site].GetURL().GetHost();
       ASSERT_EQ(owner_etldplus1, *site_group.FindString("rwsOwner"));
       if (owner_etldplus1 == "google.com") {
         ASSERT_EQ(2, *site_group.FindInt("rwsNumMembers"));

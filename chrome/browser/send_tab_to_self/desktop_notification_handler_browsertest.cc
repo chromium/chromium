@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest,
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kDesktopNotificationGuid,
       kDesktopNotificationTitle16, kDesktopNotificationDeviceInfoWithPrefix,
-      ui::ImageModel(), base::UTF8ToUTF16(url.host()), url,
+      ui::ImageModel(), base::UTF8ToUTF16(url.GetHost()), url,
       message_center::NotifierId(url), optional_fields, /*delegate=*/nullptr);
 
   SendTabToSelfEntry entry(kDesktopNotificationGuid, url,

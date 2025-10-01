@@ -102,7 +102,7 @@ void SSLErrorControllerClient::Proceed() {
     // Notifies the browser process when a certificate exception is allowed.
     web_contents->SetAlwaysSendSubresourceNotifications();
 
-    state->AllowCert(request_url_.host(), *ssl_info_.cert.get(), cert_error_,
+    state->AllowCert(request_url_.GetHost(), *ssl_info_.cert.get(), cert_error_,
                      InterstitialRenderFrameHost()->GetStoragePartition());
     Reload();
   }

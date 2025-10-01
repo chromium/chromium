@@ -23,7 +23,7 @@ LensMediaLinkHandler::~LensMediaLinkHandler() = default;
 bool LensMediaLinkHandler::MaybeReplaceNavigation(const GURL& target) {
   auto* media_session = GetMediaSessionIfExists();
   const GURL& page_url = web_contents()->GetLastCommittedURL();
-  if (!media_session || target.host() != kYoutubeHost) {
+  if (!media_session || target.GetHost() != kYoutubeHost) {
     return false;
   }
 
@@ -43,7 +43,7 @@ bool LensMediaLinkHandler::MaybeReplaceNavigation(const GURL& target) {
   }
 
   // If no embed is found, fall back to the main page's URL.
-  if (!source_video_id && page_url.host() == kYoutubeHost) {
+  if (!source_video_id && page_url.GetHost() == kYoutubeHost) {
     source_video_id = ExtractVideoNameIfExists(page_url);
   }
 

@@ -200,7 +200,7 @@ TEST_F(ClassifyUrlNavigationThrottleUnsupervisedUserTest,
 TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   GURL allowed_url(kExampleURL);
   supervised_user_test_util::SetManualFilterForHost(
-      profile(), allowed_url.host(), /*allowlist=*/true);
+      profile(), allowed_url.GetHost(), /*allowlist=*/true);
 
   std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
       CreateNavigationThrottle(allowed_url);
@@ -221,7 +221,7 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
        BlocklistedUrlsRecordedInBlockManualBucket) {
   GURL blocked_url(kExampleURL);
   supervised_user_test_util::SetManualFilterForHost(
-      profile(), blocked_url.host(), /*allowlist=*/false);
+      profile(), blocked_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(GetSupervisedUserURLFilter()
                   ->GetFilteringBehavior(blocked_url)
                   .IsBlocked());

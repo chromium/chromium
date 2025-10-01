@@ -46,8 +46,8 @@ bool OnRequest(omnibox::AimEligibilityResponse response,
                content::URLLoaderInterceptor::RequestParams* params) {
   const GURL& url = params->url_request.url;
 
-  if (!url.DomainIs("google.com") || url.path() != "/async/folae" ||
-      url.query() != "async=_fmt:pb") {
+  if (!url.DomainIs("google.com") || url.GetPath() != "/async/folae" ||
+      url.GetQuery() != "async=_fmt:pb") {
     return false;
   }
 

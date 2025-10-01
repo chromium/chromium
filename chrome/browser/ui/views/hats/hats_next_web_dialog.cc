@@ -145,7 +145,8 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
       content::NavigationHandle* navigation_handle) override {
     if (navigation_handle->IsSameDocument() &&
         navigation_handle->IsRendererInitiated()) {
-      dialog_->OnSurveyStateUpdateReceived(navigation_handle->GetURL().ref());
+      dialog_->OnSurveyStateUpdateReceived(
+          navigation_handle->GetURL().GetRef());
     }
   }
 
@@ -396,7 +397,7 @@ HatsNextWebDialog::HatsNextWebDialog(
   // Override the default zoom level for ths HaTS dialog. Its size should align
   // with native UI elements, rather than web content.
   content::HostZoomMap::GetDefaultForBrowserContext(otr_profile_)
-      ->SetZoomLevelForHost(hats_survey_url_.host(),
+      ->SetZoomLevelForHost(hats_survey_url_.GetHost(),
                             blink::ZoomFactorToZoomLevel(1.0f));
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));

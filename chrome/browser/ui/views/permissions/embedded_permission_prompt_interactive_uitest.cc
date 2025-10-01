@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   TestAskBlockAllowFlow(
       "microphone", {ContentSettingsType::MEDIASTREAM_MIC},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed microphone for this site",
            u"You previously didn't allow microphone for this site"}),
       std::vector<std::u16string>({u"Use your microphones"}));
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   TestAskBlockAllowFlow(
       "camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed camera for this site",
            u"You previously didn't allow camera for this site"}),
       std::vector<std::u16string>({u"Use your cameras"}));
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
   TestAskBlockAllowFlow(
       "geolocation", {permissions::PermissionUtil::GetGeolocationType()},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed location for this site",
            u"You previously didn't allow location for this site"}),
       std::vector<std::u16string>({u"Know your location"}));
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
       {ContentSettingsType::MEDIASTREAM_CAMERA,
        ContentSettingsType::MEDIASTREAM_MIC},
       std::vector<std::u16string>(
-          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().port()) + u" wants to",
+          {u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
            u"You have allowed camera and microphone for this site",
            u"You previously didn't allow camera and microphone for this site"}),
       std::vector<std::u16string>({u"Use your cameras"}),

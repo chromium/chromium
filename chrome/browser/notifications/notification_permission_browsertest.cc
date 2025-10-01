@@ -47,7 +47,7 @@ class StoragePartitioningChromeContentBrowserClient
   content::StoragePartitionConfig GetStoragePartitionConfigForSite(
       content::BrowserContext* browser_context,
       const GURL& site) override {
-    if (site.host() == partitioned_host_) {
+    if (site.GetHost() == partitioned_host_) {
       return content::StoragePartitionConfig::Create(
           browser_context, partitioned_host_, /*partition_name=*/"",
           /*in_memory=*/false);

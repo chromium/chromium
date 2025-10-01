@@ -94,7 +94,7 @@ void GetIwaSourceForRequestImpl(
     if (const auto& source =
             IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents)
                 .source()) {
-      if (request.url.path() == kInstallPagePath) {
+      if (request.url.GetPath() == kInstallPagePath) {
         std::move(callback).Run(
             GeneratedResponse{.response_body = kInstallPageContent});
       } else {

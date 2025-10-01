@@ -169,7 +169,7 @@ class TranslateBubbleViewUITest
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != "/mock_translate_script.js") {
+    if (request.GetURL().GetPath() != "/mock_translate_script.js") {
       return nullptr;
     }
 

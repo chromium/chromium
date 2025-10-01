@@ -100,7 +100,7 @@ Matcher GetTargetURLMatcher(GURL target_url) {
                     << "]";
       return false;
     }
-    return GetHeaderMatcher({{"Host", target_url.host()}}).Run(request);
+    return GetHeaderMatcher({{"Host", target_url.GetHost()}}).Run(request);
   });
 }
 

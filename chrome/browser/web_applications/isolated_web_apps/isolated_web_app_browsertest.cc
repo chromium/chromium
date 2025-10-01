@@ -966,7 +966,7 @@ class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // Replace the host in |request.GetURL()| with the value from the Host
     // header, as GetURL()'s host will be 127.0.0.1.
-    std::string host = GURL("https://" + GetHeader(request, "Host")).host();
+    std::string host = GURL("https://" + GetHeader(request, "Host")).GetHost();
     GURL::Replacements replace_host;
     replace_host.SetHostStr(host);
     GURL url = request.GetURL().ReplaceComponents(replace_host);

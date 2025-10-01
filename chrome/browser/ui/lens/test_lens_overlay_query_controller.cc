@@ -201,7 +201,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
       GURL(lens::features::GetLensOverlayUploadChunkEndpointURL());
   bool is_chunk_request =
       chunk_endpoint_url.GetWithEmptyPath() == fetch_url.GetWithEmptyPath() &&
-      chunk_endpoint_url.path() == fetch_url.path();
+      chunk_endpoint_url.GetPath() == fetch_url.GetPath();
   bool is_cluster_info_request =
       fetch_url == GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
 

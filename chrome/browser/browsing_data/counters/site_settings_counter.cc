@@ -101,7 +101,7 @@ void SiteSettingsCounter::Count() {
   auto handlers =
       handler_registry_->GetUserDefinedHandlers(period_start, period_end);
   for (const custom_handlers::ProtocolHandler& handler : handlers)
-    hosts.insert(handler.url().host());
+    hosts.insert(handler.url().GetHost());
 
   std::vector<std::string> never_prompt_sites =
       ChromeTranslateClient::CreateTranslatePrefs(pref_service_)

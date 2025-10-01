@@ -237,7 +237,7 @@ typedef std::map<std::string, TemplateURL*> HostPathMap;
 // Returns the key for the map built by BuildHostPathMap. If url_string is not
 // a valid URL, an empty string is returned, otherwise host+path is returned.
 static std::string HostPathKeyForURL(const GURL& url) {
-  return url.is_valid() ? url.host() + url.path() : std::string();
+  return url.is_valid() ? url.GetHost() + url.GetPath() : std::string();
 }
 
 // Builds the key to use in HostPathMap for the specified TemplateURL. Returns

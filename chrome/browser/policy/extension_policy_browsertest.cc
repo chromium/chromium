@@ -186,7 +186,7 @@ void RegisterURLReplacingHandler(net::EmbeddedTestServer* test_server,
          const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
         GURL url = test_server->GetURL(request.relative_url);
-        if (url.path() != match_path) {
+        if (url.GetPath() != match_path) {
           return nullptr;
         }
 
@@ -674,22 +674,22 @@ class ExtensionRequestInterceptor {
       return true;
     }
     // Mock out requests to the Web Store.
-    if (params->url_request.url.host() == "clients2.google.com" &&
-        params->url_request.url.path() == "/service/update2/crx") {
+    if (params->url_request.url.GetHost() == "clients2.google.com" &&
+        params->url_request.url.GetPath() == "/service/update2/crx") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good2_update_manifest.xml",
           params->client.get());
       return true;
     }
 
-    if (params->url_request.url.path() == "/good_update_manifest.xml") {
+    if (params->url_request.url.GetPath() == "/good_update_manifest.xml") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good2_update_manifest.xml",
           params->client.get());
       return true;
     }
 
-    if (params->url_request.url.path() ==
+    if (params->url_request.url.GetPath() ==
         "/good_prodversionmin_update_manifest.xml") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good_prodversionmin_update_manifest.xml",
@@ -697,17 +697,17 @@ class ExtensionRequestInterceptor {
       return true;
     }
 
-    if (params->url_request.url.path() == "/extensions/good_v1.crx") {
+    if (params->url_request.url.GetPath() == "/extensions/good_v1.crx") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good_v1.crx", params->client.get());
       return true;
     }
-    if (params->url_request.url.path() == "/extensions/good2.crx") {
+    if (params->url_request.url.GetPath() == "/extensions/good2.crx") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good2.crx", params->client.get());
       return true;
     }
-    if (params->url_request.url.path() == "/extensions/good3.crx") {
+    if (params->url_request.url.GetPath() == "/extensions/good3.crx") {
       content::URLLoaderInterceptor::WriteResponse(
           "chrome/test/data/extensions/good3.crx", params->client.get());
       return true;
@@ -778,14 +778,14 @@ bool WriteManifestResponse(content::URLLoaderInterceptor::RequestParams* params,
                            const std::string& crx_name,
                            const std::string& version,
                            const base::FilePath& install_crx_path) {
-  if (params->url_request.url.path() == update_manifest_name) {
+  if (params->url_request.url.GetPath() == update_manifest_name) {
     content::URLLoaderInterceptor::WriteResponse(
         GetUpdateManifestHeader(), GetUpdateManifestBody(id, crx_name, version),
         params->client.get());
     return true;
   }
 
-  if (params->url_request.url.path() == "/" + crx_name) {
+  if (params->url_request.url.GetPath() == "/" + crx_name) {
     content::URLLoaderInterceptor::WriteResponse(install_crx_path,
                                                  params->client.get());
     return true;
@@ -1801,7 +1801,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelistOffline) {
   {
     interceptor.set_interceptor_hook(base::BindLambdaForTesting(
         [&](content::URLLoaderInterceptor::RequestParams* params) {
-          if (params->url_request.url.path() !=
+          if (params->url_request.url.GetPath() !=
               "/extensions/good_v1_update_manifest.xml") {
             return false;
           }
@@ -2031,7 +2031,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionMinimumVersionRequired) {
   base::RunLoop first_update_extension_runloop;
   interceptor.set_interceptor_hook(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() != "update.extension") {
+        if (params->url_request.url.GetHost() != "update.extension") {
           return false;
         }
 
@@ -2116,7 +2116,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   base::AtomicRefCount update_extension_count;
   interceptor.set_interceptor_hook(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() == "update.extension" &&
+        if (params->url_request.url.GetHost() == "update.extension" &&
             update_extension_count.IsZero()) {
           content::URLLoaderInterceptor::WriteResponse(
               "chrome/test/data/extensions/good2_update_manifest.xml",

@@ -76,7 +76,7 @@ void IsolatedWebAppTestUpdateServer::RemoveBundle(
 std::unique_ptr<net::test_server::HttpResponse>
 IsolatedWebAppTestUpdateServer::HandleRequest(
     const net::test_server::HttpRequest& request) {
-  auto resource = storage_.GetResource(request.GetURL().path());
+  auto resource = storage_.GetResource(request.GetURL().GetPath());
   if (!resource) {
     return HttpNotFound();
   }

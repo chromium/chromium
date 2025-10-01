@@ -176,7 +176,7 @@ class PrivacySandboxSettingsBrowserTest
       const net::test_server::HttpRequest& request) {
     const GURL& url = request.GetURL();
 
-    if (url.path() == "/clear_site_data_header_cookies") {
+    if (url.GetPath() == "/clear_site_data_header_cookies") {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
       response->AddCustomHeader("Clear-Site-Data", "\"cookies\"");
       response->set_code(net::HTTP_OK);

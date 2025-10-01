@@ -22,8 +22,9 @@ constexpr const char kExampleURL[] = "www.example.com";
 void MonitorModuleRequest(bool* seen_module_request,
                           const net::test_server::HttpRequest& request) {
   const GURL url = request.GetURL();
-  if (url.SchemeIsCryptographic() && url.path() == "/hello_module.js")
+  if (url.SchemeIsCryptographic() && url.GetPath() == "/hello_module.js") {
     *seen_module_request = true;
+  }
 }
 
 }  // namespace

@@ -124,7 +124,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
     url_loader_interceptor_ =
         std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
             [](content::URLLoaderInterceptor::RequestParams* params) {
-              if (params->url_request.url.host() == "example.com") {
+              if (params->url_request.url.GetHost() == "example.com") {
                 content::URLLoaderInterceptor::WriteResponse(
                     "content/test/data/simple_page.html", params->client.get());
                 return true;

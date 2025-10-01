@@ -188,7 +188,7 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
 
   static GURL UpperCaseScheme(const GURL& origin) {
     std::string spec{origin.spec()};
-    for (size_t i = 0; i < origin.scheme().length(); i++) {
+    for (size_t i = 0; i < origin.GetScheme().length(); i++) {
       spec[i] = base::ToUpperASCII(spec[i]);
     }
     return GURL{spec};

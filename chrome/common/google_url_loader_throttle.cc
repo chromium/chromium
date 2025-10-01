@@ -57,7 +57,8 @@ RequestBoundSessionStatus GetRequestSingleBoundSessionStatus(
   }
 
   if (!throttler_params->path.empty() &&
-      !net::cookie_util::IsOnPath(throttler_params->path, request_url.path())) {
+      !net::cookie_util::IsOnPath(throttler_params->path,
+                                  request_url.GetPath())) {
     return RequestBoundSessionStatus::kNotCovered;
   }
 

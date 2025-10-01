@@ -173,7 +173,7 @@ SyncConfirmationUI::SyncConfirmationUI(content::WebUI* web_ui)
                                  &strings);
   source->AddLocalizedStrings(strings);
 
-  if (url.query().find("debug") != std::string::npos) {
+  if (url.GetQuery().find("debug") != std::string::npos) {
     // Not intended to be hooked to anything. The dialog will not initialize it
     // so we force it here.
     InitializeMessageHandlerWithBrowser(nullptr);

@@ -312,7 +312,8 @@ class DeepScanningRequestTest : public testing::Test {
   }
 
   void AddUrlToProfilePrefList(const char* pref_name, const GURL& url) {
-    ScopedListPrefUpdate(profile_->GetPrefs(), pref_name)->Append(url.host());
+    ScopedListPrefUpdate(profile_->GetPrefs(), pref_name)
+        ->Append(url.GetHost());
   }
 
   void SetFeatures(const std::vector<base::test::FeatureRef>& enabled,
@@ -2279,7 +2280,7 @@ TEST_F(DeepScanningRequestConnectorsFeatureTest,
                             ],
                             "block_until_verdict": 1
                           })",
-          download_url_.host().c_str()));
+          download_url_.GetHost().c_str()));
   EXPECT_FALSE(settings().has_value());
 }
 

@@ -600,7 +600,7 @@ ChromeExtensionsBrowserClient::CreateUpdateClient(
   std::optional<GURL> override_url;
   GURL update_url = extension_urls::GetWebstoreUpdateUrl();
   if (update_url != extension_urls::GetDefaultWebstoreUpdateUrl()) {
-    if (update_url.path() == kCrxUrlPath) {
+    if (update_url.GetPath() == kCrxUrlPath) {
       override_url = update_url.GetWithEmptyPath().Resolve(kJsonUrlPath);
     } else {
       override_url = update_url;

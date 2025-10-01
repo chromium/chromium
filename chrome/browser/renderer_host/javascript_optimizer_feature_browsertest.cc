@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(
       embedded_https_test_server().GetURL("sub.a.com", "/simple.html")));
 
   child_frame = content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
-  EXPECT_EQ(child_frame->GetLastCommittedURL().host(), "sub.a.com");
+  EXPECT_EQ(child_frame->GetLastCommittedURL().GetHost(), "sub.a.com");
   // True under site isolation but not origin isolation.
   EXPECT_TRUE(child_frame->GetProcess()->AreV8OptimizationsDisabled());
 }

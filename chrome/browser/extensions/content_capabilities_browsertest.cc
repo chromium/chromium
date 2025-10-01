@@ -55,7 +55,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
         test_data.AppendASCII("extensions/content_capabilities"));
     ASSERT_TRUE(embedded_https_test_server().Start());
     host_resolver()->AddRule("*",
-                             embedded_https_test_server().base_url().host());
+                             embedded_https_test_server().base_url().GetHost());
   }
 
   // Builds an extension manifest with the given content_capabilities matches

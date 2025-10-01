@@ -654,13 +654,13 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testRequestHeader) {
   auto find_request = [&](std::string_view path) {
     const auto it = std::ranges::find_if(
         embedded_test_server_requests_, [&](const auto& request) {
-          return request.GetURL().path() == path &&
-              request.method == net::test_server::METHOD_GET;
+          return request.GetURL().GetPath() == path &&
+                 request.method == net::test_server::METHOD_GET;
         });
     return it == embedded_test_server_requests_.end() ? nullptr : &(*it);
   };
 
-  auto* main_request = find_request(GetGuestURL().path());
+  auto* main_request = find_request(GetGuestURL().GetPath());
   ASSERT_TRUE(main_request);
   EXPECT_THAT(main_request->headers, request_header_matcher);
 

@@ -197,7 +197,7 @@ class SupervisedUserPendingStateNavigationTest
 
   void SetManualHost(const GURL& url, bool allowlist) {
     supervised_user_test_util::SetManualFilterForHost(browser()->profile(),
-                                                      url.host(), allowlist);
+                                                      url.GetHost(), allowlist);
   }
 
   content::RenderFrameHost* FindFrameByName(const std::string& name) {

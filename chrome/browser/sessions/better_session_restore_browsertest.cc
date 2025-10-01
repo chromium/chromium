@@ -119,7 +119,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) {
-              std::string path = params->url_request.url.path();
+              std::string path = params->url_request.url.GetPath();
               std::string path_prefix = std::string("/") + test_path_;
               for (auto& it : test_files_) {
                 std::string file = path_prefix + it;

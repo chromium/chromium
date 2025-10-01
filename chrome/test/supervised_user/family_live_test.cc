@@ -308,7 +308,7 @@ GURL FamilyLiveTest::GetRoutedUrl(std::string_view url_spec) const {
   GURL url(url_spec);
 
   for (std::string_view enabled_host : extra_enabled_hosts_) {
-    if (url.host() == enabled_host) {
+    if (url.GetHost() == enabled_host) {
       return url;
     }
   }

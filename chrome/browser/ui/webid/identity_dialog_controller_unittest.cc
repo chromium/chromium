@@ -226,7 +226,7 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
               result.ordered_labels = {result_label};
               if (this->optimization_guide_decider_) {
                 ASSERT_EQ(segmentation_platform::processing::ProcessedValue(
-                              web_contents()->GetLastCommittedURL().host()),
+                              web_contents()->GetLastCommittedURL().GetHost()),
                           input_context->GetMetadataArgument(
                               segmentation_platform::kFedCmHost));
                 ASSERT_EQ(segmentation_platform::processing::ProcessedValue(

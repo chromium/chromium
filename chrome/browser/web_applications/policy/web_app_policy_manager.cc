@@ -300,7 +300,7 @@ std::vector<std::string> WebAppPolicyManager::GetPolicyIds(
   if (web_app_registrar.IsIsolated(app_id) &&
       web_app_registrar.IsInstalledByPolicy(app_id)) {
     // This is an IWA - and thus, web_bundle_id == policy_id == URL hostname
-    return {web_app.start_url().host()};
+    return {web_app.start_url().GetHost()};
   }
 
   std::vector<std::string> policy_ids;

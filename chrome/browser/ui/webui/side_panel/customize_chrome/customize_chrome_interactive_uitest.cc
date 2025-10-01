@@ -123,7 +123,7 @@ class CustomizeChromeInteractiveTest
     return std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-              if (params->url_request.url.path() ==
+              if (params->url_request.url.GetPath() ==
                   "/cast/chromecast/home/wallpaper/collections") {
                 std::string headers =
                     "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
@@ -140,7 +140,7 @@ class CustomizeChromeInteractiveTest
                     headers, response_string, params->client.get(),
                     std::optional<net::SSLInfo>());
                 return true;
-              } else if (params->url_request.url.path() ==
+              } else if (params->url_request.url.GetPath() ==
                          "/cast/chromecast/home/wallpaper/collection-images") {
                 std::string headers =
                     "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";

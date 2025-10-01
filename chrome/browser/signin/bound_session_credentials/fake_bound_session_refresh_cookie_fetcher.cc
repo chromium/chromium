@@ -165,7 +165,7 @@ FakeBoundSessionRefreshCookieFetcher::CreateFakeCookie(
       net::CanonicalCookie::CreateSanitizedCookie(
           /*url=*/url_, /*name=*/cookie_name,
           /*value=*/kFakeCookieValue,
-          /*domain=*/url_.host(), /*path=*/"/",
+          /*domain=*/url_.GetHost(), /*path=*/"/",
           /*creation_time=*/now, /*expiration_time=*/cookie_expiration,
           /*last_access_time=*/now, /*secure=*/true,
           /*http_only=*/true, net::CookieSameSite::UNSPECIFIED,

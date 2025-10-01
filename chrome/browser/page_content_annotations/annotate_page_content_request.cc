@@ -294,7 +294,7 @@ void AnnotatedPageContentRequest::OnPageContentReceived(
   bool is_eligible_for_server_upload =
       !page_context_eligibility_ ||
       optimization_guide::IsPageContextEligible(
-          url.host(), url.path(),
+          url.GetHost(), url.GetPath(),
           optimization_guide::GetFrameMetadataFromPageContent(*page_content),
           page_context_eligibility_);
   cached_content_ = ExtractedPageContentResult{

@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
   // change is not considered as client redirect and the meta-refresh
   // won't have fired yet.
   ASSERT_EQ(0U, redirects.size());
-  EXPECT_EQ("myanchor", web_contents->GetLastCommittedURL().ref());
+  EXPECT_EQ("myanchor", web_contents->GetLastCommittedURL().GetRef());
 }
 
 // Tests a client->server->server redirect
@@ -222,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ServerReference) {
                      ->tab_strip_model()
                      ->GetActiveWebContents()
                      ->GetLastCommittedURL()
-                     .ref());
+                     .GetRef());
 }
 
 // Test that redirect from http:// to file:// :

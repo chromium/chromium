@@ -108,9 +108,9 @@ class TpcdTrialBrowserTest : public PlatformBrowserTest {
   }
 
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
-    std::string path = params->url_request.url.path().substr(1);
-    std::string host = params->url_request.url.host();
-    std::string query = params->url_request.url.query();
+    std::string path = params->url_request.url.GetPath().substr(1);
+    std::string host = params->url_request.url.GetHost();
+    std::string query = params->url_request.url.GetQuery();
 
     if (path.find("tpcd/") == 0) {
       content::URLLoaderInterceptor::WriteResponse(

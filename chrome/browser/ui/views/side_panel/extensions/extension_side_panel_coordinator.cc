@@ -316,7 +316,7 @@ void ExtensionSidePanelCoordinator::OnOpened() {
   // Dispatch all arguments to reach the router listener.
   service->DispatchOnOpenedEvent(extension_id,
                                  ExtensionTabUtil::GetWindowId(GetBrowser()),
-                                 tab_id, side_panel_url_.path());
+                                 tab_id, side_panel_url_.GetPath());
 }
 
 void ExtensionSidePanelCoordinator::OnClosed() {
@@ -332,7 +332,7 @@ void ExtensionSidePanelCoordinator::OnClosed() {
 
   // Dispatch all arguments to reach the router listener.
   service->DispatchOnClosedEvent(extension_id, window_id_.value(), tab_id,
-                                 side_panel_url_.path());
+                                 side_panel_url_.GetPath());
 }
 
 void ExtensionSidePanelCoordinator::HandleCloseExtensionSidePanel(

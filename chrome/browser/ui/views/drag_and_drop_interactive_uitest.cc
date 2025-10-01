@@ -1082,7 +1082,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   }
 
   void AssertTestPageIsLoaded() {
-    ASSERT_EQ(kTestPagePath, web_contents()->GetLastCommittedURL().path());
+    ASSERT_EQ(kTestPagePath, web_contents()->GetLastCommittedURL().GetPath());
   }
 
   std::unique_ptr<DragAndDropSimulator> drag_simulator_;

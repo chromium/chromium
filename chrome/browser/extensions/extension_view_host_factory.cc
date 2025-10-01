@@ -224,7 +224,7 @@ const Extension* GetExtensionForUrl(Profile* profile, const GURL& url) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   if (!registry)
     return nullptr;
-  std::string extension_id = url.host();
+  std::string extension_id = url.GetHost();
   return registry->enabled_extensions().GetByID(extension_id);
 }
 

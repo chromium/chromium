@@ -98,7 +98,7 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
       receivers_.GetCurrentTargetFrame();
   ExtensionId extension_id = util::GetExtensionIdFromFrame(render_frame_host);
   if (extension_id.empty())
-    extension_id = GURL(source).host();
+    extension_id = GURL(source).GetHost();
 
   content::BrowserContext* browser_context = web_contents_->GetBrowserContext();
   ErrorConsole::Get(browser_context)

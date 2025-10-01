@@ -254,7 +254,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayHomeworkPageActionIconViewTest,
 
   EXPECT_TRUE(new_tab_contents);
   content::WaitForLoadStop(new_tab_contents);
-  EXPECT_THAT(new_tab_contents->GetLastCommittedURL().query(),
+  EXPECT_THAT(new_tab_contents->GetLastCommittedURL().GetQuery(),
               MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+&lm=.+"));
 }
 

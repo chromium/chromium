@@ -308,7 +308,7 @@ std::unique_ptr<HttpResponse> HandleSignoutURL(const std::string& main_email,
 
   // Build signout header.
   int query_value;
-  EXPECT_TRUE(base::StringToInt(request.GetURL().query(), &query_value));
+  EXPECT_TRUE(base::StringToInt(request.GetURL().GetQuery(), &query_value));
   SignoutType signout_type = static_cast<SignoutType>(query_value);
   EXPECT_GE(signout_type, kSignoutTypeFirst);
   EXPECT_LT(signout_type, kSignoutTypeLast);

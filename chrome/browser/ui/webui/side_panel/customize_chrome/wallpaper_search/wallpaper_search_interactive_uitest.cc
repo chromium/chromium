@@ -213,7 +213,7 @@ class WallpaperSearchOptimizationGuideInteractiveTest
     return std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-              if (params->url_request.url.path() ==
+              if (params->url_request.url.GetPath() ==
                   "/chrome-wallpaper-search/descriptors_en-US.json") {
                 std::string headers =
                     "HTTP/1.1 200 OK\nContent-Type: application/json\n\n";
@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
           base::BindLambdaForTesting(
               [&](content::URLLoaderInterceptor::RequestParams* params)
                   -> bool {
-                if (params->url_request.url.path() ==
+                if (params->url_request.url.GetPath() ==
                     "/chrome-wallpaper-search/descriptors_en-US.json") {
                   if (offline) {
                     params->client->OnComplete(

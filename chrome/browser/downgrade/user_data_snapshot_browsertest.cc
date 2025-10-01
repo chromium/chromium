@@ -439,10 +439,10 @@ class TabsSnapshotTest : public UserDataSnapshotBrowserTestBase {
 
     // embedded_test_server() might return a different hostname.
     content::WaitForLoadStop(tab_strip->GetWebContentsAt(0));
-    EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path(),
+    EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().GetPath(),
               "/title1.html");
     content::WaitForLoadStop(tab_strip->GetWebContentsAt(1));
-    EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().path(),
+    EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetLastCommittedURL().GetPath(),
               "/title2.html");
   }
 };

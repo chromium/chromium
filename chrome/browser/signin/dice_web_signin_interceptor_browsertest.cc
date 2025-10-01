@@ -277,7 +277,7 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     network::TestURLLoaderFactory* loader_factory = test_url_loader_factory();
     loader_factory->SetInterceptor(base::BindLambdaForTesting(
         [loader_factory](const network::ResourceRequest& request) {
-          std::string path = request.url.path();
+          std::string path = request.url.GetPath();
           if (path == "/ListAccounts" || path == "/GetCheckConnectionInfo") {
             loader_factory->AddResponse(request.url.spec(), std::string());
             return;

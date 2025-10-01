@@ -20,7 +20,7 @@ bool DevToolsEndpoint::IsValid() const {
 }
 
 NetAddress DevToolsEndpoint::Address() const {
-  return NetAddress(server_url_.host(), server_url_.EffectiveIntPort());
+  return NetAddress(server_url_.GetHost(), server_url_.EffectiveIntPort());
 }
 
 std::string DevToolsEndpoint::GetBrowserDebuggerUrl() const {

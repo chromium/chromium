@@ -120,7 +120,7 @@ struct ExpectedReportWaiter {
       : expected_url(std::move(report_url)),
         response(std::make_unique<net::test_server::ControllableHttpResponse>(
             server,
-            expected_url.path())) {}
+            expected_url.GetPath())) {}
 
   GURL expected_url;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;

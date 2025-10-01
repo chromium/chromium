@@ -539,12 +539,12 @@ ContentSettingRPHBubbleModel::ContentSettingRPHBubbleModel(
   if (previous_handler_.IsEmpty()) {
     set_title(l10n_util::GetStringFUTF16(
         IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM,
-        base::UTF8ToUTF16(pending_handler_.url().host()), protocol));
+        base::UTF8ToUTF16(pending_handler_.url().GetHost()), protocol));
   } else {
     set_title(l10n_util::GetStringFUTF16(
         IDS_REGISTER_PROTOCOL_HANDLER_CONFIRM_REPLACE,
-        base::UTF8ToUTF16(pending_handler_.url().host()), protocol,
-        base::UTF8ToUTF16(previous_handler_.url().host())));
+        base::UTF8ToUTF16(pending_handler_.url().GetHost()), protocol,
+        base::UTF8ToUTF16(previous_handler_.url().GetHost())));
   }
 
   std::u16string radio_allow_label =

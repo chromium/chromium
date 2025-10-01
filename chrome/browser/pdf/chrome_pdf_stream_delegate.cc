@@ -135,7 +135,7 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
       return std::nullopt;
     }
 
-    CHECK_EQ(embedder_frame->GetLastCommittedURL().host(),
+    CHECK_EQ(embedder_frame->GetLastCommittedURL().GetHost(),
              extension_misc::kPdfExtensionId);
 
     original_url = stream->original_url();
@@ -158,7 +158,7 @@ std::optional<GURL> ChromePdfStreamDelegate::MapToOriginalUrl(
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   } else if (stream_url.GetWithEmptyPath() ==
              chrome::kChromeUIUntrustedPrintURL) {
-    CHECK_EQ(embedder_frame->GetLastCommittedURL().host(),
+    CHECK_EQ(embedder_frame->GetLastCommittedURL().GetHost(),
              chrome::kChromeUIPrintHost);
 
     // Print Preview doesn't have access to `chrome.mimeHandlerPrivate`, so just

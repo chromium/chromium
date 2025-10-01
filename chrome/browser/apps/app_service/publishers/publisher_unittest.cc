@@ -128,7 +128,7 @@ apps::IntentFilters CreateIntentFilters() {
 
   apps::ConditionValues values2;
   values2.push_back(std::make_unique<apps::ConditionValue>(
-      url.scheme(), apps::PatternMatchType::kLiteral));
+      url.GetScheme(), apps::PatternMatchType::kLiteral));
   filter->conditions.push_back(std::make_unique<apps::Condition>(
       apps::ConditionType::kScheme, std::move(values2)));
 
@@ -140,7 +140,7 @@ apps::IntentFilters CreateIntentFilters() {
 
   apps::ConditionValues values4;
   values4.push_back(std::make_unique<apps::ConditionValue>(
-      url.path(), apps::PatternMatchType::kPrefix));
+      url.GetPath(), apps::PatternMatchType::kPrefix));
   filter->conditions.push_back(std::make_unique<apps::Condition>(
       apps::ConditionType::kPath, std::move(values4)));
 

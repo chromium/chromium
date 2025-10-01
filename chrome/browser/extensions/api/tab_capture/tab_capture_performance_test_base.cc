@@ -260,7 +260,7 @@ TabCapturePerformanceTestBase::HandleRequest(
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content_type("text/html");
   const GURL& url = request.GetURL();
-  if (url.path() == kTestWebPagePath) {
+  if (url.GetPath() == kTestWebPagePath) {
     response->set_content(test_page_to_serve_);
   } else {
     response->set_code(net::HTTP_NOT_FOUND);

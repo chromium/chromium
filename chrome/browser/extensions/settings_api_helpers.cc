@@ -98,7 +98,7 @@ const Extension* GetExtensionOverridingNewTabPage(
   if (ntp_url.SchemeIs(kExtensionScheme)) {
     return ExtensionRegistry::Get(browser_context)
         ->enabled_extensions()
-        .GetByID(ntp_url.host());
+        .GetByID(ntp_url.GetHost());
   }
   return nullptr;
 }

@@ -990,8 +990,8 @@ IN_PROC_BROWSER_TEST_F(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title1.html")));
   GURL same_dir_resource = ui_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath(FILE_PATH_LITERAL("title2.html")));
-  ASSERT_EQ(url::kFileScheme, page_url.scheme());
-  ASSERT_EQ(url::kFileScheme, same_dir_resource.scheme());
+  ASSERT_EQ(url::kFileScheme, page_url.GetScheme());
+  ASSERT_EQ(url::kFileScheme, same_dir_resource.GetScheme());
 
   // Navigate to a file:// test page.
   ASSERT_TRUE(NavigateToURL(active_web_contents(), page_url));

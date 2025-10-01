@@ -1387,7 +1387,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // should work.
   GURL extension2_empty = extension2->GetResourceURL("empty.html");
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2, extension2_empty.path(), &initiator_origin));
+      extension2, extension2_empty.GetPath(), &initiator_origin));
   {
     content::RenderFrameDeletedObserver frame_deleted_observer(
         ChildFrameAt(main_frame, 0));
@@ -1404,7 +1404,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   // able to navigate to extension2's manifest.json.
   GURL extension2_manifest = extension2->GetResourceURL("manifest.json");
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2, extension2_manifest.path(), &initiator_origin));
+      extension2, extension2_manifest.GetPath(), &initiator_origin));
   {
     content::TestNavigationObserver nav_observer(tab, 1);
     EXPECT_TRUE(

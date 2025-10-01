@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
       net::registry_controlled_domains::GetDomainAndRegistry(
           url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
   NavigateFrameToUrl(url);           // 3p cookie write
-  NavigateFrameTo(url.host(), "/");  // 3p cookie read
+  NavigateFrameTo(url.GetHost(), "/");  // 3p cookie read
   observer.Wait();
   NavigateToUntrackedUrl();
 

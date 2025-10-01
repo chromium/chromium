@@ -273,7 +273,7 @@ TEST_F(PasswordCrossDomainConfirmationPopupControllerImplTest,
   EXPECT_EQ(controller().GetBodyText(),
             l10n_util::GetStringFUTF16(
                 IDS_PASSWORD_CROSS_DOMAIN_FILLING_WARNING_DESCRIPTION,
-                password_hostname, base::UTF8ToUTF16(domain.host())));
+                password_hostname, base::UTF8ToUTF16(domain.GetHost())));
 }
 
 }  // namespace password_manager

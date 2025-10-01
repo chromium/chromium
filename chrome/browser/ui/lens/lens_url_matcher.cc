@@ -155,14 +155,14 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
 
   // Check if the domain matches any of the hashed block filters. If it does,
   // return false to block this URL.
-  if (SubdomainsMatchHash(url.host())) {
+  if (SubdomainsMatchHash(url.GetHost())) {
     return false;
   }
 
   // Check if the path matches the path block matcher. If it does, return false
   // to block this URL.
   if (path_block_matcher_ && !path_block_matcher_->IsEmpty() &&
-      path_block_matcher_->Match(url.path(), &matches)) {
+      path_block_matcher_->Match(url.GetPath(), &matches)) {
     return false;
   }
 
@@ -177,7 +177,7 @@ bool LensUrlMatcher::IsMatch(const GURL& url) {
   // Finally, check if the path matches the path allow matcher. If it doesn't,
   // return false to block this URL.
   if (path_allow_matcher_ && !path_allow_matcher_->IsEmpty() &&
-      !path_allow_matcher_->Match(url.path(), &matches)) {
+      !path_allow_matcher_->Match(url.GetPath(), &matches)) {
     return false;
   }
 

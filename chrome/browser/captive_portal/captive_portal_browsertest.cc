@@ -1146,7 +1146,7 @@ void CaptivePortalBrowserTest::SetUpOnMainThread() {
 
 bool CaptivePortalBrowserTest::OnIntercept(
     content::URLLoaderInterceptor::RequestParams* params) {
-  if (params->url_request.url.path() == kMockHttpsBadCertPath &&
+  if (params->url_request.url.GetPath() == kMockHttpsBadCertPath &&
       intercept_bad_cert_) {
     CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
     ongoing_mock_requests_.emplace_back(std::move(*params));
@@ -1176,9 +1176,9 @@ bool CaptivePortalBrowserTest::OnIntercept(
 
   if (url_string == kMockHttpsUrl || url_string == kMockHttpsUrl2 ||
       url_string == kMockHttpsQuickTimeoutUrl ||
-      params->url_request.url.path() == kRedirectToMockHttpsPath) {
+      params->url_request.url.GetPath() == kRedirectToMockHttpsPath) {
     CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-    if (params->url_request.url.path() == kRedirectToMockHttpsPath) {
+    if (params->url_request.url.GetPath() == kRedirectToMockHttpsPath) {
       net::RedirectInfo redirect_info;
       redirect_info.new_url = GURL(kMockHttpsUrl);
       redirect_info.new_method = "GET";

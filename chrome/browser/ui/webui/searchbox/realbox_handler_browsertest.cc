@@ -190,10 +190,10 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithSearchStatsBrowserTest,
 
   // Verify the prefetch and prerender URLs.
   // Only the prefetch URL should have the "pf=cs".
-  EXPECT_TRUE(base::Contains(prefetch_url.query(), "pf=cs&"));
-  EXPECT_FALSE(base::Contains(prerender_url.query(), "pf=cs&"));
-  EXPECT_TRUE(base::Contains(prefetch_url.query(), "gs_lcrp="));
-  EXPECT_TRUE(base::Contains(prerender_url.query(), "gs_lcrp="));
+  EXPECT_TRUE(base::Contains(prefetch_url.GetQuery(), "pf=cs&"));
+  EXPECT_FALSE(base::Contains(prerender_url.GetQuery(), "pf=cs&"));
+  EXPECT_TRUE(base::Contains(prefetch_url.GetQuery(), "gs_lcrp="));
+  EXPECT_TRUE(base::Contains(prerender_url.GetQuery(), "gs_lcrp="));
 
   // The prefetch should match the prerender.
   EXPECT_TRUE(IsSearchDestinationMatch(GetCanonicalSearchURL(prefetch_url),
@@ -206,13 +206,13 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadWithoutSearchStatsBrowserTest,
 
   // Verify the prefetch and prerender URLs.
   // Only the prefetch URL should have the "pf=cs".
-  EXPECT_TRUE(base::Contains(prefetch_url.query(), "pf=cs&"));
-  EXPECT_FALSE(base::Contains(prerender_url.query(), "pf=cs&"));
+  EXPECT_TRUE(base::Contains(prefetch_url.GetQuery(), "pf=cs&"));
+  EXPECT_FALSE(base::Contains(prerender_url.GetQuery(), "pf=cs&"));
   // The prefetch URL should not have the "gs_lcrp" if
   // switches::kRemoveSearchboxStatsParamFromPrefetchRequests is true, while the
   // prerender URL should always have that.
-  EXPECT_FALSE(base::Contains(prefetch_url.query(), "gs_lcrp="));
-  EXPECT_TRUE(base::Contains(prerender_url.query(), "gs_lcrp="));
+  EXPECT_FALSE(base::Contains(prefetch_url.GetQuery(), "gs_lcrp="));
+  EXPECT_TRUE(base::Contains(prerender_url.GetQuery(), "gs_lcrp="));
 
   // The prefetch should match the prerender.
   EXPECT_TRUE(IsSearchDestinationMatch(GetCanonicalSearchURL(prefetch_url),

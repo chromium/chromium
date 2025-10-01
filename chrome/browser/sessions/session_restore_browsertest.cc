@@ -4538,7 +4538,7 @@ class SessionRestoreStaleSessionCookieDeletionTest : public SessionRestoreTest {
             ->GetCookieManagerForBrowserProcess();
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateUnsafeCookieForTesting(
-            name, "test", url.host(), "/",
+            name, "test", url.GetHost(), "/",
             /*creation=*/base::Time::Now(), expiration,
             /*last_access=*/last_access_and_update,
             /*last_update=*/last_access_and_update, /*secure=*/true,

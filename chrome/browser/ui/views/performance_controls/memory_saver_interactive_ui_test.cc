@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverChipInteractiveTest,
                                             ->tab_strip_model()
                                             ->GetActiveWebContents()
                                             ->GetURL()
-                                            .host();
+                                            .GetHost();
         EXPECT_TRUE(discard_exception.contains(current_site_host));
       })),
 

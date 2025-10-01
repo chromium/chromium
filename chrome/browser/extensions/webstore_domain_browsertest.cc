@@ -45,7 +45,7 @@ class WebstoreDomainBrowserTest : public ExtensionApiTest,
     // Override the test server SSL config with the webstore domain under test
     // and two other non-webstore domains used in the tests.
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
-    cert_config.dns_names = {GetParam().host(), "foo.com", "bar.com"};
+    cert_config.dns_names = {GetParam().GetHost(), "foo.com", "bar.com"};
     embedded_test_server()->SetSSLConfig(cert_config);
     // Add the extensions directory to the test server as it has a /webstore/
     // directory to serve files from, which the webstore hosted app requires as

@@ -60,7 +60,7 @@ const std::string_view* GetWebUIMetricsHostname(const GURL& webui_url) {
           {chrome::kChromeUIThemeHost, "Theme"},
           {chrome::kChromeUITopChromeDomain, "TopChrome"},
       });
-  return base::FindOrNull(kWebUIHostnames, webui_url.host());
+  return base::FindOrNull(kWebUIHostnames, webui_url.GetHost());
 }
 
 }  // namespace

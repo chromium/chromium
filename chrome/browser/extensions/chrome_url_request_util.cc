@@ -161,7 +161,7 @@ class ResourceBundleFileLoader : public network::mojom::URLLoader {
                        base::Unretained(read_mime_type)),
         base::BindOnce(&ResourceBundleFileLoader::OnMimeTypeRead,
                        weak_factory_.GetWeakPtr(), resource_id,
-                       request.url.host(), base::Owned(read_mime_type)));
+                       request.url.GetHost(), base::Owned(read_mime_type)));
   }
 
   void OnMimeTypeRead(int resource_id,

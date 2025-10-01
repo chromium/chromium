@@ -871,12 +871,12 @@ class NavCaptureParameterizedBrowserTest
     wildcard.name = "0";
 
     url_pattern.protocol.emplace_back(
-        PartType::kFixed, destination_page.scheme(), Modifier::kNone);
-    url_pattern.hostname.emplace_back(PartType::kFixed, destination_page.host(),
-                                      Modifier::kNone);
+        PartType::kFixed, destination_page.GetScheme(), Modifier::kNone);
+    url_pattern.hostname.emplace_back(
+        PartType::kFixed, destination_page.GetHost(), Modifier::kNone);
     // The path can be the destination url plus anything else.
-    url_pattern.pathname.emplace_back(PartType::kFixed, destination_page.path(),
-                                      Modifier::kNone);
+    url_pattern.pathname.emplace_back(
+        PartType::kFixed, destination_page.GetPath(), Modifier::kNone);
     url_pattern.pathname.push_back(wildcard);
     url_pattern.search.push_back(wildcard);
     url_pattern.hash.push_back(wildcard);

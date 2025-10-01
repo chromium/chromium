@@ -40,7 +40,7 @@ namespace {
 std::unique_ptr<HttpResponse> HandleRequest(const std::string& match_path,
                                             const std::string& osdd_xml_url,
                                             const HttpRequest& request) {
-  if (!match_path.empty() && request.GetURL().path() != match_path) {
+  if (!match_path.empty() && request.GetURL().GetPath() != match_path) {
     return nullptr;
   }
 

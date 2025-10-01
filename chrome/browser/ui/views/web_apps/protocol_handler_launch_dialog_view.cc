@@ -51,7 +51,7 @@ ProtocolHandlerLaunchDialogView::CreateAboveAppInfoView() {
       l10n_util::GetStringFUTF16(
           IDS_PROTOCOL_HANDLER_INTENT_PICKER_QUESTION,
           custom_handlers::ProtocolHandler::GetProtocolDisplayName(
-              url_.scheme())),
+              url_.GetScheme())),
       views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::TextStyle::STYLE_PRIMARY);
   open_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

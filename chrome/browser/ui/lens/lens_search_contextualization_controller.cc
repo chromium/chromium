@@ -894,8 +894,8 @@ void LensSearchContextualizationController::IsPageContextEligible(
   }
 
   std::move(callback).Run(optimization_guide::IsPageContextEligible(
-      main_frame_url.host(), main_frame_url.path(), std::move(frame_metadata),
-      page_context_eligibility_));
+      main_frame_url.GetHost(), main_frame_url.GetPath(),
+      std::move(frame_metadata), page_context_eligibility_));
 }
 
 void LensSearchContextualizationController::CreatePageContextEligibilityAPI() {
@@ -934,8 +934,8 @@ void LensSearchContextualizationController::OnPageContextEligibilityAPILoaded(
       pending_context_eligibility_params_) {
     std::move(page_context_eligibility_callback_)
         .Run(optimization_guide::IsPageContextEligible(
-            pending_context_eligibility_params_->main_frame_url.host(),
-            pending_context_eligibility_params_->main_frame_url.path(),
+            pending_context_eligibility_params_->main_frame_url.GetHost(),
+            pending_context_eligibility_params_->main_frame_url.GetPath(),
             std::move(pending_context_eligibility_params_->frame_metadata),
             page_context_eligibility_));
     pending_context_eligibility_params_.reset();

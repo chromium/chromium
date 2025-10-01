@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().path() == kClearCookiesPage) {
+        if (request.GetURL().GetPath() == kClearCookiesPage) {
           auto response =
               std::make_unique<net::test_server::BasicHttpResponse>();
           response->AddCustomHeader("Clear-Site-Data", "\"cookies\"");

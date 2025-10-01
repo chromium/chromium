@@ -173,7 +173,7 @@ const std::u16string ScreenshotCapturedBubble::GetFilenameForURL(
   }
 
   return base::ASCIIToUTF16(
-      base::StrCat({"chrome_screenshot_", url.host(), ".png"}));
+      base::StrCat({"chrome_screenshot_", url.GetHost(), ".png"}));
 }
 
 void ScreenshotCapturedBubble::DownloadButtonPressed() {

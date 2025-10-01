@@ -634,7 +634,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockSubFrame) {
   permission_creator()->SetPermissionResult(true);
   SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
   EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
-  std::string requested_host = permission_creator()->url_requests()[0].host();
+  std::string requested_host =
+      permission_creator()->url_requests()[0].GetHost();
 
   EXPECT_EQ(requested_host, kIframeHost2);
 
@@ -790,7 +791,8 @@ IN_PROC_BROWSER_TEST_F(
   permission_creator()->SetPermissionResult(true);
   SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
   EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
-  std::string requested_host = permission_creator()->url_requests()[0].host();
+  std::string requested_host =
+      permission_creator()->url_requests()[0].GetHost();
 
   // The trivial "www" subdomain is stripped for the url in the remote approval
   // request.
@@ -827,7 +829,8 @@ IN_PROC_BROWSER_TEST_F(
   permission_creator()->SetPermissionResult(true);
   SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
   EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
-  std::string requested_host = permission_creator()->url_requests()[0].host();
+  std::string requested_host =
+      permission_creator()->url_requests()[0].GetHost();
 
   // The trivial "www" subdomain has been stripped from the host in the
   // interstitial, because the conflicting entry in the blocklist is not a
@@ -860,7 +863,8 @@ IN_PROC_BROWSER_TEST_F(
   permission_creator()->SetPermissionResult(true);
   SendCommandToFrame(kRemoteUrlAccessCommand, blocked_frame_id);
   EXPECT_EQ(permission_creator()->url_requests().size(), 1u);
-  std::string requested_host = permission_creator()->url_requests()[0].host();
+  std::string requested_host =
+      permission_creator()->url_requests()[0].GetHost();
 
   // The stripping has been skipped for the url of the interstitial, because an
   // identical entry exists in the blocklist. The interstitial contains the full
@@ -885,7 +889,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
   auto blocked = GetBlockedFrames();
   EXPECT_EQ(blocked.size(), 1u);
-  EXPECT_EQ(kIframeHost1, GetBlockedFrameURL(blocked[0]).host());
+  EXPECT_EQ(kIframeHost1, GetBlockedFrameURL(blocked[0]).GetHost());
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
@@ -987,7 +991,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
 
   auto blocked_frames = GetBlockedFrames();
   EXPECT_EQ(blocked_frames.size(), 1u);
-  EXPECT_EQ(GetBlockedFrameURL(blocked_frames[0]).host(), "www.c.example2.com");
+  EXPECT_EQ(GetBlockedFrameURL(blocked_frames[0]).GetHost(),
+            "www.c.example2.com");
 }
 
 // The switches::kHostWindowBounds commandline flag doesn't appear to work

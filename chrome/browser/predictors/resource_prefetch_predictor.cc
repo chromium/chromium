@@ -323,8 +323,8 @@ void ResourcePrefetchPredictor::RecordPageRequestSummary(
     return;
   }
 
-  LearnRedirect(summary.initial_url.host(), summary.main_frame_url);
-  LearnOrigins(summary.main_frame_url.host(),
+  LearnRedirect(summary.initial_url.GetHost(), summary.main_frame_url);
+  LearnOrigins(summary.main_frame_url.GetHost(),
                summary.main_frame_url.DeprecatedGetOriginAsURL(),
                summary.origins);
 
@@ -438,7 +438,7 @@ void ResourcePrefetchPredictor::DeleteUrls(const history::URLRows& urls) {
   std::vector<std::string> hosts_to_delete;
   std::vector<GURL> urls_to_delete;
   for (const auto& it : urls) {
-    hosts_to_delete.emplace_back(it.url().host());
+    hosts_to_delete.emplace_back(it.url().GetHost());
     urls_to_delete.emplace_back(it.url());
   }
 
@@ -461,16 +461,16 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
     data.set_primary_key(key);
     data.set_last_visit_time(base::Time::Now().ToInternalValue());
     RedirectStat* redirect_to_add = data.add_redirect_endpoints();
-    redirect_to_add->set_url(final_redirect.host());
+    redirect_to_add->set_url(final_redirect.GetHost());
     redirect_to_add->set_number_of_hits(1);
-    redirect_to_add->set_url_scheme(final_redirect.scheme());
+    redirect_to_add->set_url_scheme(final_redirect.GetScheme());
     redirect_to_add->set_url_port(final_redirect.EffectiveIntPort());
   } else {
     data.set_last_visit_time(base::Time::Now().ToInternalValue());
 
     bool need_to_add = true;
     for (RedirectStat& redirect : *(data.mutable_redirect_endpoints())) {
-      const bool host_mismatch = redirect.url() != final_redirect.host();
+      const bool host_mismatch = redirect.url() != final_redirect.GetHost();
 
       // When the existing scheme in database is empty, then difference in
       // schemes is not considered a scheme mismatch. This case is treated
@@ -479,7 +479,7 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
       // as a mismatch, and simply update the scheme in the database.
       const bool url_scheme_mismatch =
           !redirect.url_scheme().empty() &&
-          redirect.url_scheme() != final_redirect.scheme();
+          redirect.url_scheme() != final_redirect.GetScheme();
 
       // When the existing port in database is empty, then difference in
       // ports is not considered a mismatch. This case is treated
@@ -498,7 +498,7 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
 
         // If existing scheme or port in database are empty, then update them.
         if (redirect.url_scheme().empty())
-          redirect.set_url_scheme(final_redirect.scheme());
+          redirect.set_url_scheme(final_redirect.GetScheme());
         if (!redirect.has_url_port())
           redirect.set_url_port(final_redirect.EffectiveIntPort());
       } else {
@@ -510,9 +510,9 @@ void ResourcePrefetchPredictor::LearnRedirect(const std::string& key,
 
     if (need_to_add) {
       RedirectStat* redirect_to_add = data.add_redirect_endpoints();
-      redirect_to_add->set_url(final_redirect.host());
+      redirect_to_add->set_url(final_redirect.GetHost());
       redirect_to_add->set_number_of_hits(1);
-      redirect_to_add->set_url_scheme(final_redirect.scheme());
+      redirect_to_add->set_url_scheme(final_redirect.GetScheme());
       redirect_to_add->set_url_port(final_redirect.EffectiveIntPort());
     }
   }

@@ -1711,7 +1711,7 @@ void ChromePasswordManagerClient::SetTestObserver(
 
 // static
 bool ChromePasswordManagerClient::CanShowBubbleOnURL(const GURL& url) {
-  std::string scheme = url.scheme();
+  std::string scheme = url.GetScheme();
   return (content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
               scheme) &&
 #if BUILDFLAG(ENABLE_EXTENSIONS)

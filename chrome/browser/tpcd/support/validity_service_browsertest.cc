@@ -249,8 +249,8 @@ class ValidityService3pTrialBrowserTest
 
   bool OnRequest(
       content::URLLoaderInterceptor::RequestParams* params) override {
-    std::string host = params->url_request.url.host();
-    std::string path = params->url_request.url.path().substr(1);
+    std::string host = params->url_request.url.GetHost();
+    std::string path = params->url_request.url.GetPath().substr(1);
 
     if (host != kTrialEnabledDomain || path != kTrialEnabledIframePath) {
       return false;
@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
 
-  NavigateToPageWithIFrame(kTrialEnabledSite.host(), "a.test");
+  NavigateToPageWithIFrame(kTrialEnabledSite.GetHost(), "a.test");
 
   // Create a |TPCD_TRIAL| setting for |iframe_url| under |top_level_url|
   // without actually enabling the "Tpcd" trial.
@@ -301,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
 
-  NavigateToPageWithIFrame(kTrialEnabledSiteSubdomain.host(), "a.test");
+  NavigateToPageWithIFrame(kTrialEnabledSiteSubdomain.GetHost(), "a.test");
 
   // Create a subdomain-matching |TPCD_TRIAL| setting for |grant_url|
   // (which |iframe_url| is a subdomain of) under |top_level_url| without
@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
   GURL iframe_url = GetIFrame()->GetLastCommittedURL();
   GURL grant_url = GURL(base::StrCat(
-      {"https://", kTrialEnabledSite.host(), ":", iframe_url.port()}));
+      {"https://", kTrialEnabledSite.GetHost(), ":", iframe_url.GetPort()}));
   CreateAndVerifyThirdPartyTrialGrant(grant_url, top_level_url,
                                       /*match_subdomains=*/true);
 
@@ -344,8 +344,9 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
 
   // Create a |TPCD_TRIAL| setting for |iframe_url| under |top_level_url|
   // without actually enabling the "Tpcd" trial.
-  GURL iframe_url = https_server_->GetURL(
-      kTrialEnabledSite.host(), "/set-cookie?name=value;Secure;SameSite=None");
+  GURL iframe_url =
+      https_server_->GetURL(kTrialEnabledSite.GetHost(),
+                            "/set-cookie?name=value;Secure;SameSite=None");
   CreateAndVerifyThirdPartyTrialGrant(iframe_url, top_level_url,
                                       /*match_subdomains=*/false);
 
@@ -379,10 +380,10 @@ IN_PROC_BROWSER_TEST_F(
   // (which |iframe_url| is a subdomain of) under |top_level_url| without
   // actually enabling the "Tpcd" trial.
   GURL iframe_url =
-      https_server_->GetURL(kTrialEnabledSiteSubdomain.host(),
+      https_server_->GetURL(kTrialEnabledSiteSubdomain.GetHost(),
                             "/set-cookie?name=value;Secure;SameSite=None");
   GURL grant_url = GURL(base::StrCat(
-      {"https://", kTrialEnabledSite.host(), ":", iframe_url.port()}));
+      {"https://", kTrialEnabledSite.GetHost(), ":", iframe_url.GetPort()}));
   CreateAndVerifyThirdPartyTrialGrant(grant_url, top_level_url,
                                       /*match_subdomains=*/true);
 
@@ -410,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService3pTrialBrowserTest,
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
 
-  NavigateToPageWithIFrame(kTrialEnabledSite.host(), "a.test");
+  NavigateToPageWithIFrame(kTrialEnabledSite.GetHost(), "a.test");
   GURL iframe_url = GetIFrame()->GetLastCommittedURL();
   GURL top_level_url =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
@@ -489,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
 
-  NavigateToPageWithIFrame(kTrialEnabledSite.host(), "a.test");
+  NavigateToPageWithIFrame(kTrialEnabledSite.GetHost(), "a.test");
   GURL iframe_url = GetIFrame()->GetLastCommittedURL();
   GURL top_level_url =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
@@ -640,8 +641,8 @@ class ValidityService1pTrialBrowserTest
 
   bool OnRequest(
       content::URLLoaderInterceptor::RequestParams* params) override {
-    std::string host = params->url_request.url.host();
-    std::string path = params->url_request.url.path().substr(1);
+    std::string host = params->url_request.url.GetHost();
+    std::string path = params->url_request.url.GetPath().substr(1);
 
     if (host != kTrialEnabledDomain || path != kTrialEnabledTopLevelPath) {
       return false;
@@ -665,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
 
-  NavigateToPageWithIFrame(kTrialEnabledSite.host(), "a.test");
+  NavigateToPageWithIFrame(kTrialEnabledSite.GetHost(), "a.test");
 
   // Create a |TOP_LEVEL_TPCD_TRIAL| setting for |top_level_url| without
   // actually enabling the "TopLevelTpcd" trial.
@@ -697,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
 
   // Navigate to |top_level_url|, which has a blank iframe.
   GURL top_level_url =
-      https_server_->GetURL(kTrialEnabledSite.host(), "/iframe_blank.html");
+      https_server_->GetURL(kTrialEnabledSite.GetHost(), "/iframe_blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents, top_level_url));
 
   // Create a |TOP_LEVEL_TPCD_TRIAL| setting for |top_level_url| without
@@ -727,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
   content_settings::CookieSettings* settings =
       CookieSettingsFactory::GetForProfile(GetProfile()).get();
 
-  NavigateToPageWithIFrame("a.test", kTrialEnabledSiteSubdomain.host());
+  NavigateToPageWithIFrame("a.test", kTrialEnabledSiteSubdomain.GetHost());
 
   // Create a subdomain-matching |TOP_LEVEL_TPCD_TRIAL| setting for |grant_url|
   // (which |top_level_url| is a subdomain of) without actually enabling the
@@ -736,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(ValidityService1pTrialBrowserTest,
       web_contents->GetPrimaryMainFrame()->GetLastCommittedURL();
   GURL iframe_url = GetIFrame()->GetLastCommittedURL();
   GURL grant_url = GURL(base::StrCat(
-      {"https://", kTrialEnabledSite.host(), ":", top_level_url.port()}));
+      {"https://", kTrialEnabledSite.GetHost(), ":", top_level_url.GetPort()}));
 
   CreateAndVerifyFirstPartyTrialGrant(grant_url,
                                       /*match_subdomains=*/true);

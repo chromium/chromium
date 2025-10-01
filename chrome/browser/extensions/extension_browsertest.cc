@@ -912,7 +912,7 @@ ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,
   ExtensionHost* result_host = nullptr;
   int num_hosts = 0;
   for (ExtensionHost* host : manager->background_hosts()) {
-    if (host->GetLastCommittedURL().path() == path) {
+    if (host->GetLastCommittedURL().GetPath() == path) {
       EXPECT_FALSE(result_host);
       result_host = host;
     }

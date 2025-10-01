@@ -231,7 +231,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
         [](const std::map<std::string, std::string>* pages,
            const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {
-          auto it = pages->find(request.GetURL().path());
+          auto it = pages->find(request.GetURL().GetPath());
           if (it == pages->end())
             return nullptr;
           auto response =

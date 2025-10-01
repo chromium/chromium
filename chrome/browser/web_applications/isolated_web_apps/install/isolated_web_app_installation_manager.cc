@@ -121,7 +121,7 @@ base::expected<url::Origin, std::string> ValidateProxyOrigin(const GURL& gurl) {
         {"Proxy URL must be HTTP or HTTPS: ", gurl.possibly_invalid_spec()}));
   }
 
-  if (gurl.path() != "/") {
+  if (gurl.GetPath() != "/") {
     return base::unexpected(base::StrCat(
         {"Non-origin URL provided: '", gurl.possibly_invalid_spec()}));
   }

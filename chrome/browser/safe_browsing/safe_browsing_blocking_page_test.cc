@@ -1590,7 +1590,7 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
   // Add test server domain into the enterprise allowlist.
   base::Value::List allowlist;
-  allowlist.Append(url.host());
+  allowlist.Append(url.GetHost());
   browser()->profile()->GetPrefs()->SetList(
       prefs::kSafeBrowsingAllowlistDomains, std::move(allowlist));
 
@@ -3164,7 +3164,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
       threat_info.set_verdict_type(RTLookupResponse::ThreatInfo::SAFE);
     }
     threat_info.set_cache_duration_sec(60);
-    threat_info.set_cache_expression_using_match_type(url.host());
+    threat_info.set_cache_expression_using_match_type(url.GetHost());
     threat_info.set_cache_expression_match_type(
         RTLookupResponse::ThreatInfo::COVERING_MATCH);
     *new_threat_info = threat_info;

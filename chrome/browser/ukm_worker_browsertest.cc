@@ -55,8 +55,9 @@ IN_PROC_BROWSER_TEST_F(UkmWorkerBrowserTest,
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().path() != "/shared_worker_script")
+        if (request.GetURL().GetPath() != "/shared_worker_script") {
           return nullptr;
+        }
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content_type("text/javascript");
         response->set_content(
@@ -178,8 +179,9 @@ IN_PROC_BROWSER_TEST_F(UkmWorkerBrowserTest,
   embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().path() != "/shared_worker_script")
+        if (request.GetURL().GetPath() != "/shared_worker_script") {
           return nullptr;
+        }
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->set_content_type("text/javascript");
         response->set_content(

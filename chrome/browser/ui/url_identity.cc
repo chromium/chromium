@@ -53,7 +53,7 @@ UrlIdentity CreateDefaultUrlIdentityFromUrl(const GURL& url,
     name = url_formatter::FormatUrlForSecurityDisplay(
         url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
   } else if (options.default_options.Has(DefaultFormatOptions::kHostname)) {
-    name = url_formatter::IDNToUnicode(url.host());
+    name = url_formatter::IDNToUnicode(url.GetHost());
   } else if (options.default_options.Has(
                  DefaultFormatOptions::kOmitSchemePathAndTrivialSubdomains)) {
     name = url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
@@ -78,7 +78,7 @@ UrlIdentity CreateChromeExtensionIdentityFromUrl(Profile* profile,
   DCHECK(extension_registry);
 
   const extensions::Extension* extension = nullptr;
-  extension = extension_registry->enabled_extensions().GetByID(url.host());
+  extension = extension_registry->enabled_extensions().GetByID(url.GetHost());
 
   if (!extension) {  // fallback to default
     return CreateDefaultUrlIdentityFromUrl(url, options);

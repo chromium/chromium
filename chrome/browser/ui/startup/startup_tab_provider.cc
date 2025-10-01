@@ -117,7 +117,7 @@ bool ValidateUrl(const GURL& url) {
 #endif
 
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  return policy->IsWebSafeScheme(url.scheme()) ||
+  return policy->IsWebSafeScheme(url.GetScheme()) ||
          url.SchemeIs(url::kFileScheme) || url_scheme_is_chrome ||
          url_points_to_an_approved_settings_page ||
          url.spec() == url::kAboutBlankURL;
@@ -368,7 +368,7 @@ StartupTabs StartupTabProviderImpl::GetPrivacySandboxTabsForState(
       std::ranges::any_of(other_startup_tabs, [&](const StartupTab& tab) {
         // The generic new tab URL is only suitable if the user has a Chrome
         // controlled New Tab Page.
-        if (tab.url.host() == chrome::kChromeUINewTabHost) {
+        if (tab.url.GetHost() == chrome::kChromeUINewTabHost) {
           return !HasExtensionNtpOverride(extension_registry) &&
                  IsChromeControlledNtpUrl(ntp_url);
         }

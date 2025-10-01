@@ -996,9 +996,9 @@ class FromGwsAbandonedPageLoadMetricsObserverWithCategoryBrowserTest
 
   GURL url_non_srp_with_category(const std::string& category) {
     GURL target = url_non_srp_2();
-    auto new_path = base::StrCat({target.path(), "?category=", category});
+    auto new_path = base::StrCat({target.GetPath(), "?category=", category});
 
-    GURL url(current_test_server()->GetURL(target.host(), new_path));
+    GURL url(current_test_server()->GetURL(target.GetHost(), new_path));
     EXPECT_FALSE(page_load_metrics::IsGoogleSearchResultUrl(url));
     return url;
   }

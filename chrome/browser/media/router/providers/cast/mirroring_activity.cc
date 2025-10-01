@@ -704,7 +704,7 @@ std::string MirroringActivity::GetRouteDescription(
     case MirroringActivity::MirroringType::kOffscreenTab:
       return l10n_util::GetStringFUTF8(
           IDS_MEDIA_ROUTER_PRESENTATION_ROUTE_DESCRIPTION,
-          base::UTF8ToUTF16(route().media_source().url().host()));
+          base::UTF8ToUTF16(route().media_source().url().GetHost()));
   }
 }
 

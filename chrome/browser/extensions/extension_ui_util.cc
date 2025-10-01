@@ -65,7 +65,7 @@ std::u16string GetEnabledExtensionNameForUrl(const GURL& url,
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);
   const extensions::Extension* extension =
-      extension_registry->enabled_extensions().GetByID(url.host());
+      extension_registry->enabled_extensions().GetByID(url.GetHost());
   return extension ? base::CollapseWhitespace(
                          base::UTF8ToUTF16(extension->name()), false)
                    : std::u16string();

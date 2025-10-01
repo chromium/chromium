@@ -447,7 +447,7 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
       // host (or a subdomain of the host) the download happened from.  There's
       // no way for us to verify that the app controls any other hosts.
       URLPattern pattern(UserScript::ValidUserScriptSchemes());
-      pattern.SetHost(download_url_.host());
+      pattern.SetHost(download_url_.GetHost());
       pattern.SetMatchSubdomains(true);
 
       const URLPatternSet& patterns = extension_->web_extent();

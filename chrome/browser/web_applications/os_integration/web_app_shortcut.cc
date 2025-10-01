@@ -403,9 +403,9 @@ base::FilePath GetOsIntegrationResourcesDirectoryForApp(
     return app_data_dir.AppendASCII(GenerateApplicationNameFromAppId(app_id));
   }
 
-  std::string host(url.host());
-  std::string scheme(url.has_scheme() ? url.scheme() : "http");
-  std::string port(url.has_port() ? url.port() : "80");
+  std::string host(url.GetHost());
+  std::string scheme(url.has_scheme() ? url.GetScheme() : "http");
+  std::string port(url.has_port() ? url.GetPort() : "80");
   std::string scheme_port(scheme + "_" + port);
 
 #if BUILDFLAG(IS_WIN)

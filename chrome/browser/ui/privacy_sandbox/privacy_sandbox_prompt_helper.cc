@@ -237,7 +237,7 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // Record the URL that the prompt was displayed over.
   uint32_t host_hash = base::Hash(navigation_handle->GetURL().IsAboutBlank()
                                       ? "about:blank"
-                                      : navigation_handle->GetURL().host());
+                                      : navigation_handle->GetURL().GetHost());
   base::UmaHistogramSparse(
       "Settings.PrivacySandbox.DialogDisplayHost",
       static_cast<base::HistogramBase::Sample32>(host_hash));

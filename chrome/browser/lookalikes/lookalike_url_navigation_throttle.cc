@@ -174,7 +174,7 @@ void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync() {
 void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckForURL(
     const GURL& url,
     const std::vector<DomainInfo>& engaged_sites) {
-  auto host = url.host();
+  auto host = url.GetHost();
   if (lookalike_cache_.count(host) > 0) {
     return;
   }
@@ -399,12 +399,12 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   base::TimeDelta first_url_get_domain_info_duration;
   bool first_is_lookalike;
 
-  if (first_url.host() == last_url.host()) {
+  if (first_url.GetHost() == last_url.GetHost()) {
     first_is_lookalike = false;
-  } else if (lookalike_cache_.count(first_url.host())) {
+  } else if (lookalike_cache_.count(first_url.GetHost())) {
     // Don't set a value for |first_url_get_domain_info_duration| as it was run
     // earlier and no longer represents cost to blocking the navigation.
-    const auto& tuple = lookalike_cache_[first_url.host()];
+    const auto& tuple = lookalike_cache_[first_url.GetHost()];
     first_is_lookalike = std::get<0>(tuple);
     first_match_type = std::get<1>(tuple);
     first_suggested_url = std::get<2>(tuple);
@@ -419,10 +419,10 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   base::TimeDelta last_url_get_domain_info_duration;
   bool last_is_lookalike;
 
-  if (lookalike_cache_.count(last_url.host())) {
+  if (lookalike_cache_.count(last_url.GetHost())) {
     // Don't set a value for |last_url_get_domain_info_duration| as it was run
     // earlier and no longer represents cost to blocking the navigation.
-    const auto& tuple = lookalike_cache_[last_url.host()];
+    const auto& tuple = lookalike_cache_[last_url.GetHost()];
     last_is_lookalike = std::get<0>(tuple);
     last_match_type = std::get<1>(tuple);
     last_suggested_url = std::get<2>(tuple);
@@ -441,7 +441,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   // If the first URL is a lookalike, but we ended up on the suggested site
   // anyway, don't warn.
   if (first_is_lookalike &&
-      last_url.DomainIs(GetETLDPlusOne(first_suggested_url.host()))) {
+      last_url.DomainIs(GetETLDPlusOne(first_suggested_url.GetHost()))) {
     first_is_lookalike = false;
   }
 
@@ -484,8 +484,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   LookalikeUrlMatchType match_type =
       first_is_lookalike ? first_match_type : last_match_type;
   std::string etld_plus_one = first_is_lookalike
-                                  ? GetETLDPlusOne(first_url.host())
-                                  : GetETLDPlusOne(last_url.host());
+                                  ? GetETLDPlusOne(first_url.GetHost())
+                                  : GetETLDPlusOne(last_url.GetHost());
   LookalikeActionType action_type =
       GetActionForMatchType(lookalikes::GetSafetyTipsRemoteConfigProto(),
                             chrome::GetChannel(), etld_plus_one, match_type);

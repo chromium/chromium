@@ -85,7 +85,7 @@ void WebSocket::Connect(net::CompletionOnceCallback callback) {
   net::IPAddress address;
   net::AddressList addresses;
   uint16_t port = static_cast<uint16_t>(url_.EffectiveIntPort());
-  if (ParseURLHostnameToAddress(url_.host(), &address)) {
+  if (ParseURLHostnameToAddress(url_.GetHost(), &address)) {
     addresses = net::AddressList::CreateFromIPAddress(address, port);
   } else {
     if (!ResolveHost(url_.HostNoBrackets(), port, &addresses)) {
@@ -100,7 +100,7 @@ void WebSocket::Connect(net::CompletionOnceCallback callback) {
     VLOG(0) << "resolved " << url_.HostNoBracketsPiece() << " to " << json;
   }
 
-  if (url_.host() == "localhost") {
+  if (url_.GetHost() == "localhost") {
     // Ensure that both localhost addresses are included.
     // See https://bugs.chromium.org/p/chromedriver/issues/detail?id=3316.
     // Put IPv4 address at front, followed by IPv6 address, since that is
@@ -172,9 +172,7 @@ void WebSocket::OnSocketConnect(int code) {
       "Pragma: no-cache\r\n"
       "Cache-Control: no-cache\r\n"
       "\r\n",
-      url_.path().c_str(),
-      url_.host().c_str(),
-      sec_key_.c_str());
+      url_.GetPath().c_str(), url_.GetHost().c_str(), sec_key_.c_str());
   VLOG(4) << "WebSocket::OnSocketConnect handshake\n" << handshake;
   Write(handshake);
   if (state_ == CLOSED) {

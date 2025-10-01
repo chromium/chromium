@@ -240,7 +240,7 @@ history::mojom::HistoryEntryPtr HistoryEntryToMojom(
   // When the domain is empty, use the scheme instead. This allows for a
   // sensible treatment of e.g. file: URLs when group by domain is on.
   if (domain.empty()) {
-    domain = base::UTF8ToUTF16(entry.url.scheme() + ":");
+    domain = base::UTF8ToUTF16(entry.url.GetScheme() + ":");
   }
 
   // The items which are to be written into result are also described in

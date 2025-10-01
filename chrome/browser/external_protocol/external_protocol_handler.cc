@@ -181,7 +181,7 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   g_browser_process->safe_browsing_service()->ReportExternalAppRedirect(
-      web_contents, url.scheme(), url.possibly_invalid_spec());
+      web_contents, url.GetScheme(), url.possibly_invalid_spec());
 #endif
 
   // |web_contents| is only passed in to find browser context. Do not assume
@@ -542,7 +542,7 @@ void ExternalProtocolHandler::LaunchUrl(
   if (web_contents)  // Maybe NULL during testing.
     profile = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   BlockState block_state = GetBlockStateWithDelegate(
-      escaped_url.scheme(), base::OptionalToPtr(initiating_origin),
+      escaped_url.GetScheme(), base::OptionalToPtr(initiating_origin),
       g_external_protocol_handler_delegate, profile);
   if (block_state == BLOCK) {
     AddMessageToConsole(

@@ -53,7 +53,7 @@ void CheckCanOpenURL(Browser* browser, const std::string& spec) {
 
   std::u16string blocked_page_title;
   if (url.has_host()) {
-    blocked_page_title = base::UTF8ToUTF16(url.host());
+    blocked_page_title = base::UTF8ToUTF16(url.GetHost());
   } else {
     // Local file paths show the full URL.
     blocked_page_title = base::UTF8ToUTF16(url.spec());

@@ -641,7 +641,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
       bound_session_throttler_params =
           service->GetBoundSessionThrottlerParams();
   ASSERT_EQ(bound_session_throttler_params.size(), 1U);
-  EXPECT_EQ(bound_session_throttler_params[0]->domain, kTestGoogleURL.host());
+  EXPECT_EQ(bound_session_throttler_params[0]->domain,
+            kTestGoogleURL.GetHost());
   EXPECT_EQ(bound_session_throttler_params[0]->path,
             kTestGoogleURL.path_piece());
 }

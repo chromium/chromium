@@ -122,7 +122,7 @@ class SupervisedUserParentAccessObserverTest
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (GetParam().redirect_to_target_url) {
       if (request.GetURL().has_query()) {
-        CHECK(request.GetURL().query().starts_with("result"));
+        CHECK(request.GetURL().GetQuery().starts_with("result"));
       }
       // Mock a url-redirection to the PACP target url.
       // Mimics the last url in a seriers of PACP re-directions.

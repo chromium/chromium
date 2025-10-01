@@ -36,7 +36,7 @@ void PotentialPasswordTheftSignalProcessor::ProcessSignal(
     const auto& rhc_signal =
         static_cast<const RemoteHostContactedSignal&>(signal);
     // Extract only the host portion of the remote host URLs.
-    std::string host_url = rhc_signal.remote_host_url().host();
+    std::string host_url = rhc_signal.remote_host_url().GetHost();
     extension_id = rhc_signal.extension_id();
     (remote_host_url_queue_[extension_id])
         .emplace_back(std::make_pair(host_url, signal_creation_time));

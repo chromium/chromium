@@ -412,7 +412,7 @@ const std::u16string QRCodeGeneratorBubble::GetQRCodeFilenameForURL(
     return u"qrcode_chrome.png";
   }
 
-  return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.host(), ".png"}));
+  return base::UTF8ToUTF16(base::StrCat({"qrcode_", url.GetHost(), ".png"}));
 }
 
 void QRCodeGeneratorBubble::SetQRCodeErrorForTesting(

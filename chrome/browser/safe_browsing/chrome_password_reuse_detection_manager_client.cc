@@ -306,7 +306,7 @@ void ChromePasswordReuseDetectionManagerClient::CheckProtectedPasswordEntry(
 
   // Extract the host part of an extension domain, which will be the extension
   // ID.
-  std::string host = domain_gurl.host();
+  std::string host = domain_gurl.GetHost();
   auto password_reuse_signal =
       std::make_unique<safe_browsing::PasswordReuseSignal>(host,
                                                            password_reuse_info);

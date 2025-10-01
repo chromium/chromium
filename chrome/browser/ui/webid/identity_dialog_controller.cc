@@ -406,7 +406,7 @@ void IdentityDialogController::RequestUiVolumeRecommendation(
   input_context->metadata_args.emplace(
       segmentation_platform::kFedCmHost,
       segmentation_platform::processing::ProcessedValue(
-          rp_web_contents_->GetLastCommittedURL().host()));
+          rp_web_contents_->GetLastCommittedURL().GetHost()));
   input_context->metadata_args.emplace(
       segmentation_platform::kFedCmUrl,
       segmentation_platform::processing::ProcessedValue(

@@ -98,7 +98,7 @@ std::u16string SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(
   // elements and update AutocompletePopup to look for keywords using the path.
   // See http://b/issue?id=863583.
   if (!(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme)) ||
-      (url.path().length() > 1)) {
+      (url.GetPath().length() > 1)) {
     return std::u16string();
   }
 

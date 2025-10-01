@@ -108,7 +108,7 @@ void ChromeExtensionsClient::FilterHostPermissions(
       // chrome://favicon is the only URL for chrome:// scheme that we
       // want to support. We want to deprecate the "chrome" scheme.
       // We should not add any additional "host" here.
-      if (GURL(chrome::kChromeUIFaviconURL).host() != i->host()) {
+      if (GURL(chrome::kChromeUIFaviconURL).GetHost() != i->host()) {
         continue;
       }
       permissions->insert(mojom::APIPermissionID::kFavicon);

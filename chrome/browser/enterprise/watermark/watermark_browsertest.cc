@@ -208,7 +208,7 @@ class FakeRealTimeUrlLookupService
         new_threat_info->mutable_matched_url_navigation_rule();
 
     // Only add a watermark for watermark.com URLs.
-    if (url.host() == "watermark.com") {
+    if (url.GetHost() == "watermark.com") {
       safe_browsing::MatchedUrlNavigationRule::WatermarkMessage wm;
       wm.set_watermark_message("custom_messge");
       wm.mutable_timestamp()->set_seconds(base::Time::Now().ToTimeT());

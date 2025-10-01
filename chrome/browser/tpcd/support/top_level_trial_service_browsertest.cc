@@ -147,8 +147,8 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
   };
 
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
-    std::string host = params->url_request.url.host();
-    std::string path = params->url_request.url.path().substr(1);
+    std::string host = params->url_request.url.GetHost();
+    std::string path = params->url_request.url.GetPath().substr(1);
 
     if (host != kTrialEnabledDomain && host != kTrialEnabledSubdomain &&
         host != kOtherTrialEnabledDomain) {
@@ -186,9 +186,9 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
                      GURL url,
                      mojo::Remote<network::mojom::URLLoaderClient> client) {
     redirect_url_loader_.reset();
-    std::string host = url.host();
-    std::string path = url.path().substr(1);
-    std::string query = url.query();
+    std::string host = url.GetHost();
+    std::string path = url.GetPath().substr(1);
+    std::string query = url.GetQuery();
 
     bool should_use_meta_tag = path.starts_with("meta_tag");
     bool should_include_critical_header = query == "critical";

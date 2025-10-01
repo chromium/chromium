@@ -427,7 +427,8 @@ CertificateViewerDialog* CertificateViewerDialog::ShowConstrained(
       dialog_ptr->delegate_->GetWebContents();
   const GURL dialog_url = dialog_ptr->GetDialogContentURL();
   content::HostZoomMap::Get(dialog_web_contents->GetSiteInstance())
-      ->SetZoomLevelForHostAndScheme(dialog_url.scheme(), dialog_url.host(), 0);
+      ->SetZoomLevelForHostAndScheme(dialog_url.GetScheme(),
+                                     dialog_url.GetHost(), 0);
   return dialog_ptr;  // For tests.
 }
 

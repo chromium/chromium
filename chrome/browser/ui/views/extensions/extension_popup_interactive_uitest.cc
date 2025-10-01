@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   // Navigate to an https site.
   const GURL secure_url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  EXPECT_EQ("https", secure_url.scheme());
+  EXPECT_EQ("https", secure_url.GetScheme());
 
   content::RenderFrameHost* frame =
       ui_test_utils::NavigateToURL(browser(), secure_url);

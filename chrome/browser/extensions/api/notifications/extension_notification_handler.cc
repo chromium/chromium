@@ -110,7 +110,7 @@ void ExtensionNotificationHandler::DisableNotifications(
     const GURL& origin,
     const std::optional<std::string>& notification_id) {
   message_center::NotifierId notifier_id(
-      message_center::NotifierType::APPLICATION, origin.host());
+      message_center::NotifierType::APPLICATION, origin.GetHost());
   NotifierStateTrackerFactory::GetForProfile(profile)->SetNotifierEnabled(
       notifier_id, false /* enabled */);
 }

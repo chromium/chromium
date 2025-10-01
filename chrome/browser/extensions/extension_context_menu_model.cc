@@ -161,7 +161,7 @@ bool IsExtensionRequiredByPolicy(const Extension* extension, Profile* profile) {
 }
 
 std::u16string GetCurrentSite(const GURL& url) {
-  return url_formatter::IDNToUnicode(url_formatter::StripWWW(url.host()));
+  return url_formatter::IDNToUnicode(url_formatter::StripWWW(url.GetHost()));
 }
 
 ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(

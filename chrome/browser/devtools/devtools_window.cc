@@ -1479,7 +1479,7 @@ void DevToolsWindow::WebContentsCreated(WebContents* source_contents,
                                         const GURL& target_url,
                                         WebContents* new_contents) {
   if (target_url.SchemeIs(content::kChromeDevToolsScheme) &&
-      target_url.path().rfind("device_mode_emulation_frame.html") !=
+      target_url.GetPath().rfind("device_mode_emulation_frame.html") !=
           std::string::npos) {
     CHECK(can_dock_);
 

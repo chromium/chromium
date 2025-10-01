@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
       << "popup.";
 
   ASSERT_STREQ("/a_popup.html",
-               browser_action->GetPopupUrl(tab_id).path().c_str());
+               browser_action->GetPopupUrl(tab_id).GetPath().c_str());
 
   // Now change the popup from a_popup.html to another_popup.html by loading
   // a page which removes the popup using chrome.browserAction.setPopup().
@@ -638,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiTestWithContextType, AddPopup) {
   ASSERT_TRUE(browser_action->HasPopup(tab_id));
   ASSERT_TRUE(browser_action->HasPopup(ExtensionAction::kDefaultTabId));
   ASSERT_STREQ("/another_popup.html",
-               browser_action->GetPopupUrl(tab_id).path().c_str());
+               browser_action->GetPopupUrl(tab_id).GetPath().c_str());
 }
 
 // Test that calling chrome.browserAction.setPopup() can remove a popup.

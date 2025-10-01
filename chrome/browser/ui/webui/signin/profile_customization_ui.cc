@@ -109,7 +109,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
                      GetProfileCustomizationStyle(url) ==
                          ProfileCustomizationStyle::kLocalProfileCreation);
 
-  if (url.query() == "debug") {
+  if (url.GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
     // so we force it here.
     Initialize(base::DoNothing());

@@ -78,8 +78,8 @@ base::Value PerformanceHandler::GetCurrentOpenSites() {
       WebContents* web_contents = tab_strip_model->GetWebContentsAt(tab_index);
       const GURL url = web_contents->GetLastCommittedURL();
       if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
-        last_active_time_host_pairs.insert(
-            std::make_pair(web_contents->GetLastActiveTimeTicks(), url.host()));
+        last_active_time_host_pairs.insert(std::make_pair(
+            web_contents->GetLastActiveTimeTicks(), url.GetHost()));
       }
     }
   }

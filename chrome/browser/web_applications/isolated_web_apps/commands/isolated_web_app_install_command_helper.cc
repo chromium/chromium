@@ -541,7 +541,7 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndGetVersion(
         iwa_version.GetString() + ")");
   }
 
-  std::string encoded_id = manifest.id.path();
+  std::string encoded_id = manifest.id.GetPath();
 
   if (encoded_id != "/") {
     // Recommend to use "/" for manifest id and not empty manifest id because

@@ -187,9 +187,10 @@ void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
   // Determining the origin of a file URL is left as an exercise to the reader
   // https://url.spec.whatwg.org/#concept-url-origin. Therefore, for URLs with a
   // file scheme which do not have an origin, we use the entire URL spec.
-  const std::u16string host = (origin.SchemeIsFile() && !origin.has_host())
-                                  ? base::UTF8ToUTF16(origin.spec())
-                                  : url_formatter::IDNToUnicode(origin.host());
+  const std::u16string host =
+      (origin.SchemeIsFile() && !origin.has_host())
+          ? base::UTF8ToUTF16(origin.spec())
+          : url_formatter::IDNToUnicode(origin.GetHost());
   origin_text_ = gfx::ElideText(host, gfx::FontList(),
                                 kBubbleOriginTextMaximumWidth, elide_behavior);
 

@@ -119,7 +119,7 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://webui-test 'self';");
   webui::EnableTrustedTypesCSP(source);
 
-  if (web_ui->GetWebContents()->GetVisibleURL().query() == "debug") {
+  if (web_ui->GetWebContents()->GetVisibleURL().GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
     // so we force it here.
     Initialize(CreateSampleBubbleParameters(), base::DoNothing(),

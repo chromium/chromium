@@ -133,7 +133,7 @@ bool ParseIconRestrictedUrl(const GURL& url,
   DCHECK(frame_token);
   DCHECK(rid);
   // Strip leading slash.
-  std::string raw_path = url.path();
+  std::string raw_path = url.GetPath();
   DCHECK_GT(raw_path.length(), (size_t) 0);
   DCHECK_EQ(raw_path[0], '/');
   raw_path = raw_path.substr(1);

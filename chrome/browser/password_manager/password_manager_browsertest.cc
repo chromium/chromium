@@ -335,7 +335,7 @@ void SubmitInjectedPasswordForm(content::WebContents* web_contents,
       "document.getElementById('password_field').value = 'pa55w0rd';"
       "document.getElementById('testform').submit();";
   PasswordsNavigationObserver observer(web_contents);
-  observer.SetPathToWaitFor(action_url.path());
+  observer.SetPathToWaitFor(action_url.GetPath());
   ASSERT_TRUE(content::ExecJs(frame, submit_form));
   ASSERT_TRUE(observer.Wait());
 }
@@ -1306,7 +1306,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   content::SimulateMouseClickOrTapElementWithId(WebContents(),
                                                 "input_submit_button");
   ASSERT_TRUE(submit_observer.Wait());
-  std::string query = WebContents()->GetLastCommittedURL().query();
+  std::string query = WebContents()->GetLastCommittedURL().GetQuery();
   EXPECT_THAT(query, testing::HasSubstr("random_secret"));
 }
 

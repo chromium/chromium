@@ -51,7 +51,7 @@ constexpr char kTestAuthLSIDCookie[] = "fake-auth-LSID-cookie";
 
 net::CanonicalCookie CreateCookie(const GURL& url, const std::string& name) {
   auto cookie = net::CanonicalCookie::CreateSanitizedCookie(
-      url, name, "test_value", "." + url.host(), "/", base::Time(),
+      url, name, "test_value", "." + url.GetHost(), "/", base::Time(),
       base::Time(), base::Time(), true, false,
       net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
       std::nullopt, nullptr);

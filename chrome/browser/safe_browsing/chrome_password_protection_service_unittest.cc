@@ -1692,7 +1692,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {
 
   // Add |trigger_url| to enterprise allowlist.
   base::Value::List allowlisted_domains;
-  allowlisted_domains.Append(trigger_url.host());
+  allowlisted_domains.Append(trigger_url.GetHost());
   profile()->GetPrefs()->SetList(prefs::kSafeBrowsingAllowlistDomains,
                                  std::move(allowlisted_domains));
   reused_password_type.set_account_type(

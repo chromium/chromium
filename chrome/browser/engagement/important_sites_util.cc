@@ -181,7 +181,8 @@ std::unordered_set<std::string> GetSuppressedImportantDomains(
   for (ContentSettingPatternSource& site :
        map->GetSettingsForOneType(ContentSettingsType::IMPORTANT_SITE_INFO)) {
     GURL origin(site.primary_pattern.ToString());
-    if (!origin.is_valid() || base::Contains(ignoring_domains, origin.host())) {
+    if (!origin.is_valid() ||
+        base::Contains(ignoring_domains, origin.GetHost())) {
       continue;
     }
 
@@ -189,7 +190,7 @@ std::unordered_set<std::string> GetSuppressedImportantDomains(
       continue;
 
     if (ShouldSuppressItem(site.setting_value.GetDict())) {
-      ignoring_domains.insert(origin.host());
+      ignoring_domains.insert(origin.GetHost());
     }
   }
   return ignoring_domains;

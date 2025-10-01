@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), youtube_url));
 
       CheckYouTubeRestricted(youtube_restrict_mode,
-                             urls_requested()[youtube_url.path()]);
+                             urls_requested()[youtube_url.GetPath()]);
     }
 
     {
@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
                        youtube_script);
 
       CheckYouTubeRestricted(youtube_restrict_mode,
-                             urls_requested()[youtube_script.path()]);
+                             urls_requested()[youtube_script.GetPath()]);
     }
 
     if (youtube_restrict_mode != safe_search_api::YOUTUBE_RESTRICT_OFF) {
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
                        youtube_script);
 
       CheckYouTubeRestricted(safe_search_api::YOUTUBE_RESTRICT_OFF,
-                             urls_requested()[youtube_script.path()]);
+                             urls_requested()[youtube_script.GetPath()]);
     }
   }
 }
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, AllowedDomainsForApps) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), google_url));
 
       CheckAllowedDomainsHeader(allowed_domain,
-                                urls_requested()[google_url.path()]);
+                                urls_requested()[google_url.GetPath()]);
     }
 
     {
@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, AllowedDomainsForApps) {
                        google_script);
 
       CheckAllowedDomainsHeader(allowed_domain,
-                                urls_requested()[google_script.path()]);
+                                urls_requested()[google_script.GetPath()]);
     }
 
     {
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, AllowedDomainsForApps) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), non_google_url));
 
       CheckAllowedDomainsHeader(std::string(),
-                                urls_requested()[non_google_url.path()]);
+                                urls_requested()[non_google_url.GetPath()]);
     }
   }
 }

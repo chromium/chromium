@@ -874,8 +874,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
       test_server()->GetURL(kActiveTabHost, "/title1.html");
   auto* web_contents = GetActiveWebContents();
   ASSERT_TRUE(NavigateToURL(web_contents, original_document_url));
-  EXPECT_EQ(kActiveTabHost,
-            web_contents->GetPrimaryMainFrame()->GetLastCommittedURL().host());
+  EXPECT_EQ(
+      kActiveTabHost,
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL().GetHost());
   SetCookies(kActiveTabHost);
   GURL extension_frame_url = extension->GetResourceURL("frame.html");
   ui_test_utils::NavigateToURLWithDisposition(

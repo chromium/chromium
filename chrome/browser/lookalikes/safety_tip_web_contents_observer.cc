@@ -122,7 +122,7 @@ void RecordSafetyTipStatusWithInitiatorOriginInfo(
     suffix = "SameOrigin";
   } else if (lookalikes::GetETLDPlusOne(
                  committed_initiator_origin.value().host()) ==
-             lookalikes::GetETLDPlusOne(current_url.host())) {
+             lookalikes::GetETLDPlusOne(current_url.GetHost())) {
     // The user has clicked on a link on a page, and it's bumped to another
     // page on the same eTLD+1. If that happens and this is a non-none and
     // non-ignored status, that implies that the first eTLD+1 load didn't

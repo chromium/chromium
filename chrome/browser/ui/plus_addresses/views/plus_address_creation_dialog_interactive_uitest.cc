@@ -197,8 +197,8 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> HandleRequestWithSuccess(
       const net::test_server::HttpRequest& request) {
     // Ignore unrecognized path.
-    if (request.GetURL().path() != kReservePath &&
-        request.GetURL().path() != kConfirmPath) {
+    if (request.GetURL().GetPath() != kReservePath &&
+        request.GetURL().GetPath() != kConfirmPath) {
       return nullptr;
     }
 
@@ -217,7 +217,7 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
     http_response->set_code(net::HTTP_OK);
     http_response->set_content_type("application/json");
     http_response->set_content(PlusAddressResponseContent(
-        request.GetURL().path() == kConfirmPath,
+        request.GetURL().GetPath() == kConfirmPath,
         is_refresh ? kFakePlusAddressRefresh : kFakePlusAddress));
     return http_response;
   }
@@ -844,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(PlusAddressCreationDialogUiVariationsOnboardingTest,
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().path() == kReservePath) {
+        if (request.GetURL().GetPath() == kReservePath) {
           std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
               new net::test_server::BasicHttpResponse);
           http_response->set_code(net::HTTP_OK);

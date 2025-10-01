@@ -53,13 +53,13 @@ bool HandleChromeAboutAndChromeSyncRewrite(
   if (!url->SchemeIs(content::kChromeUIScheme))
     return false;
 
-  std::string host(url->host());
+  std::string host(url->GetHost());
   if (host == chrome::kChromeUIAboutHost) {
     // Replace chrome://about with chrome://chrome-urls.
     host = chrome::kChromeUIChromeURLsHost;
   }
 
-  if (host != url->host()) {
+  if (host != url->GetHost()) {
     GURL::Replacements replacements;
     replacements.SetHostStr(host);
     *url = url->ReplaceComponents(replacements);

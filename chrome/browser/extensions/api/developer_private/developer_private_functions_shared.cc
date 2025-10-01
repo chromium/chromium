@@ -148,7 +148,7 @@ std::string GetETldPlusOne(const GURL& site) {
   std::string etld_plus_one =
       net::registry_controlled_domains::GetDomainAndRegistry(
           site, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return etld_plus_one.empty() ? site.host() : etld_plus_one;
+  return etld_plus_one.empty() ? site.GetHost() : etld_plus_one;
 }
 
 developer::SiteInfo CreateSiteInfo(const std::string& site,

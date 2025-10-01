@@ -316,8 +316,13 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, DISABLED_AppProcessRedirectBack) {
   // process.
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
   EXPECT_EQ("/extensions/api_test/app_process/path1/empty.html",
-            browser()->tab_strip_model()->GetWebContentsAt(2)->
-                GetController().GetLastCommittedEntry()->GetURL().path());
+            browser()
+                ->tab_strip_model()
+                ->GetWebContentsAt(2)
+                ->GetController()
+                .GetLastCommittedEntry()
+                ->GetURL()
+                .GetPath());
   EXPECT_EQ(browser()
                 ->tab_strip_model()
                 ->GetWebContentsAt(1)

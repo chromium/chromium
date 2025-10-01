@@ -358,7 +358,7 @@ class InlineLoginHelperBrowserTest : public DialogBrowserTest {
     oauth2_token_exchange_success_ =
         std::make_unique<net::test_server::ControllableHttpResponse>(
             embedded_test_server(),
-            GaiaUrls::GetInstance()->oauth2_token_url().path(),
+            GaiaUrls::GetInstance()->oauth2_token_url().GetPath(),
             /*relative_url_is_prefix=*/true);
 
     embedded_test_server()->StartAcceptingConnections();
@@ -670,12 +670,13 @@ class InlineLoginUISafeIframeBrowserTest : public InProcessBrowserTest {
     factory_registration_ =
         std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
             test_factory_.get(), ChromeWebUIControllerFactory::GetInstance());
-    test_factory_->AddFactoryOverride(content::GetWebUIURL("foo/").host(),
+    test_factory_->AddFactoryOverride(content::GetWebUIURL("foo/").GetHost(),
                                       &foo_provider_);
   }
 
   void TearDownOnMainThread() override {
-    test_factory_->RemoveFactoryOverride(content::GetWebUIURL("foo/").host());
+    test_factory_->RemoveFactoryOverride(
+        content::GetWebUIURL("foo/").GetHost());
     // |factory_registration_| must be reset before |test_factory_| to remove
     // any pointers to |test_factory_| from the factory registry before its
     // destruction.

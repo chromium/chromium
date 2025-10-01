@@ -215,7 +215,7 @@ class NotificationTelemetryServiceTest : public ::testing::TestWithParam<bool> {
 
   void SetAllowlistInfoForUrl(const GURL& scope, bool allowlisted) {
     if (IsGlobalCacheListFeatureEnabled() && allowlisted) {
-      SetNotificationsGlobalCacheListDomainsForTesting({scope.host()});
+      SetNotificationsGlobalCacheListDomainsForTesting({scope.GetHost()});
     } else if (!IsGlobalCacheListFeatureEnabled()) {
       database_manager()->SetAllowlistLookupDetailsForUrl(scope, allowlisted);
     }

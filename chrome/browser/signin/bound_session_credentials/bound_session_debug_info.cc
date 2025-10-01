@@ -16,8 +16,9 @@ BoundSessionDebugInfo BoundSessionDebugInfo::Create(
       base::JoinString(controller.bound_cookie_names(), ", ");
 
   return BoundSessionDebugInfo(
-      controller.session_id(), controller.scope_url().host(),
-      controller.scope_url().path(), controller.ShouldPauseThrottlingRequests(),
+      controller.session_id(), controller.scope_url().GetHost(),
+      controller.scope_url().GetPath(),
+      controller.ShouldPauseThrottlingRequests(),
       controller.min_cookie_expiration_time(), std::move(cookie_names_str),
       controller.refresh_url());
 }

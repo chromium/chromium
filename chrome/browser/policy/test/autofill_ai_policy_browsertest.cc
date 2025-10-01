@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_P(AutofillAiPolicyTest, SettingsNotDisabledByPolicy) {
       browser(),
       GURL(base::StrCat({"chrome://settings/", chrome::kAutofillAiSubPage}))));
   EXPECT_TRUE(content::WaitForLoadStop(GetWebContents()));
-  EXPECT_EQ(GetWebContents()->GetURL().path(),
+  EXPECT_EQ(GetWebContents()->GetURL().GetPath(),
             base::StrCat({"/", chrome::kAutofillAiSubPage}));
 }
 

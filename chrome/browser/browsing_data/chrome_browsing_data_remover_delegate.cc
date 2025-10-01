@@ -335,7 +335,7 @@ ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion(
     std::string domain = GetDomainAndRegistry(
         url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     if (domain.empty())
-      domain = url.host();
+      domain = url.GetHost();
     domains.insert(domain);
   }
   return {domains.begin(), domains.end()};

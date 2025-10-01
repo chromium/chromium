@@ -60,7 +60,7 @@ void GetEligibilityAndRunCallback(
       content &&
       (!page_context_eligibility ||
        optimization_guide::IsPageContextEligible(
-           url.host(), url.path(),
+           url.GetHost(), url.GetPath(),
            optimization_guide::GetFrameMetadataFromPageContent(*content),
            page_context_eligibility));
   std::move(callback).Run(is_eligible ? std::make_optional(content->proto)

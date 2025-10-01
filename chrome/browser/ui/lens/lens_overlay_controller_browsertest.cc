@@ -3341,7 +3341,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // different vsrid. Other params may be changed or unchanged.
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
-  EXPECT_EQ(new_tab->GetLastCommittedURL().path(), search_url.path());
+  EXPECT_EQ(new_tab->GetLastCommittedURL().GetPath(), search_url.GetPath());
   std::string gsc_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(new_tab->GetLastCommittedURL(),
                                           kChromeSidePanelParameterKey,

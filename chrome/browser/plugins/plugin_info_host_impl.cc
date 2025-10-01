@@ -142,11 +142,11 @@ bool IsPluginLoadingAccessibleResourceInWebView(
     return false;
   }
 
-  const std::string extension_id = resource.host();
+  const std::string extension_id = resource.GetHost();
   const extensions::Extension* extension =
       extension_registry->enabled_extensions().GetByID(extension_id);
   if (!extension || !extensions::WebviewInfo::IsResourceWebviewAccessible(
-                        extension, partition_id, resource.path())) {
+                        extension, partition_id, resource.GetPath())) {
     return false;
   }
 

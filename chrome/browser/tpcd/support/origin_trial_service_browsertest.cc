@@ -167,9 +167,9 @@ class TpcdOriginTrialBrowserTest : public PlatformBrowserTest {
   }
 
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
-    std::string host = params->url_request.url.host();
-    std::string path = params->url_request.url.path().substr(1);
-    std::string query = params->url_request.url.query();
+    std::string host = params->url_request.url.GetHost();
+    std::string path = params->url_request.url.GetPath().substr(1);
+    std::string query = params->url_request.url.GetQuery();
 
     if (host != kTrialEnabledDomain && host != kTrialEnabledSubdomain &&
         host != kOtherTrialEnabledDomain) {

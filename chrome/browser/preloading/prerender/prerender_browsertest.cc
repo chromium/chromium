@@ -981,7 +981,7 @@ class PrerenderPrewarmDefaultSearchEngineTest
 
   std::unique_ptr<net::test_server::HttpResponse> HandleDelayedResource(
       const net::test_server::HttpRequest& request) {
-    if (!base::Contains(request.GetURL().path(), "delayed_stylesheet.css")) {
+    if (!base::Contains(request.GetURL().GetPath(), "delayed_stylesheet.css")) {
       return nullptr;
     }
     return std::make_unique<content::SlowHttpResponse>(

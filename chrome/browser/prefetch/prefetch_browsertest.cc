@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, RedirectedPrefetch) {
           response->set_code(net::HTTP_MOVED_PERMANENTLY);
           response->AddCustomHeader(
               "Location", base::StringPrintf("https://example.com:%s%s",
-                                             request.GetURL().port().c_str(),
+                                             request.GetURL().GetPort().c_str(),
                                              kRedirectedPrefetchUrl));
           return response;
         } else if (request.relative_url ==

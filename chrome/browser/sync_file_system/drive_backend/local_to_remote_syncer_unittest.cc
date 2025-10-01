@@ -263,9 +263,9 @@ class LocalToRemoteSyncerTest : public testing::Test {
 TEST_F(LocalToRemoteSyncerTest, CreateFile) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   EXPECT_EQ(SYNC_STATUS_OK, RunLocalToRemoteSyncer(
       FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
@@ -294,9 +294,9 @@ TEST_F(LocalToRemoteSyncerTest, CreateFile) {
 TEST_F(LocalToRemoteSyncerTest, CreateFileOnMissingPath) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   // Run the syncer 3 times to create missing folder1 and folder2.
   EXPECT_EQ(SYNC_STATUS_RETRY, RunLocalToRemoteSyncer(
@@ -328,9 +328,9 @@ TEST_F(LocalToRemoteSyncerTest, CreateFileOnMissingPath) {
 TEST_F(LocalToRemoteSyncerTest, DeleteFile) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   EXPECT_EQ(SYNC_STATUS_OK, RunLocalToRemoteSyncer(
       FileChange(FileChange::FILE_CHANGE_ADD_OR_UPDATE,
@@ -362,9 +362,9 @@ TEST_F(LocalToRemoteSyncerTest, DeleteFile) {
 TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFileOnFolder) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   CreateRemoteFolder(app_root, "foo");
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());
@@ -386,9 +386,9 @@ TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFileOnFolder) {
 TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFolderOnFile) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   CreateRemoteFile(app_root, "foo", "data");
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());
@@ -411,9 +411,9 @@ TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFolderOnFile) {
 TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFileOnFile) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   CreateRemoteFile(app_root, "foo", "data");
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());
@@ -436,9 +436,9 @@ TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFileOnFile) {
 TEST_F(LocalToRemoteSyncerTest, Conflict_UpdateDeleteOnFile) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   const std::string file_id = CreateRemoteFile(app_root, "foo", "data");
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());
@@ -468,9 +468,9 @@ TEST_F(LocalToRemoteSyncerTest, Conflict_UpdateDeleteOnFile) {
 TEST_F(LocalToRemoteSyncerTest, Conflict_CreateDeleteOnFile) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   const std::string file_id = CreateRemoteFile(app_root, "foo", "data");
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());
@@ -498,9 +498,9 @@ TEST_F(LocalToRemoteSyncerTest, Conflict_CreateDeleteOnFile) {
 TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFolderOnFolder) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   const std::string folder_id = CreateRemoteFolder(app_root, "foo");
 
@@ -531,9 +531,9 @@ TEST_F(LocalToRemoteSyncerTest, Conflict_CreateFolderOnFolder) {
 TEST_F(LocalToRemoteSyncerTest, AppRootDeletion) {
   const GURL kOrigin("chrome-extension://example");
   const std::string sync_root = CreateSyncRoot();
-  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.host());
+  const std::string app_root = CreateRemoteFolder(sync_root, kOrigin.GetHost());
   InitializeMetadataDatabase();
-  RegisterApp(kOrigin.host(), app_root);
+  RegisterApp(kOrigin.GetHost(), app_root);
 
   DeleteResource(app_root);
   EXPECT_EQ(SYNC_STATUS_OK, ListChanges());

@@ -109,7 +109,7 @@ DesktopMediaID GetMediaForSelectionDialogBypass(
     WebContents* web_contents,
     const content::MediaStreamRequest& request) {
   // Only bypass for chrome:// URLs.
-  if (web_contents->GetLastCommittedURL().scheme() !=
+  if (web_contents->GetLastCommittedURL().GetScheme() !=
       content::kChromeUIScheme) {
     return DesktopMediaID();
   }
@@ -393,7 +393,7 @@ void DisplayMediaAccessHandler::BypassMediaSelectionDialog(
     const content::MediaStreamRequest& request,
     const DesktopMediaID& media_id,
     content::MediaResponseCallback callback) {
-  if (web_contents->GetLastCommittedURL().scheme() !=
+  if (web_contents->GetLastCommittedURL().GetScheme() !=
       content::kChromeUIScheme) {
     std::move(callback).Run(blink::mojom::StreamDevicesSet(),
                             MediaStreamRequestResult::NOT_SUPPORTED,

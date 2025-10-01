@@ -550,7 +550,7 @@ class TLS13EarlyDataPolicyTest : public SSLPolicyTest,
       const net::test_server::HttpRequest& request) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader("Connection", "close");
-    if (request.GetURL().path() == kEarlyDataCheckPath) {
+    if (request.GetURL().GetPath() == kEarlyDataCheckPath) {
       response->set_content_type("text/plain; charset=utf-8");
       if (request.ssl_info->early_data_accepted) {
         response->set_content(kEarlyDataAcceptedTitle);

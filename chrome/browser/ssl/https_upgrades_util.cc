@@ -195,7 +195,7 @@ bool ShouldExcludeUrlFromInterstitial(const HttpInterstitialState& state,
   // are excluded from interstitials. This also applies if one of the HFM
   // heuristics enabled Balanced Mode.
   return IsBalancedModeUniquelyEnabled(state) &&
-         (net::GetSuperdomain(url.host()).empty() ||
+         (net::GetSuperdomain(url.GetHost()).empty() ||
           (url.has_port() &&
            url.IntPort() != HttpsUpgradesInterceptor::GetHttpPortForTesting()));
 }

@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest, TestNoInterstitialInPrerender) {
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
     ASSERT_FALSE(state->HasAllowException(
-        kPrerenderUrl.host(),
+        kPrerenderUrl.GetHost(),
         web_contents()->GetPrimaryMainFrame()->GetStoragePartition()));
   }
 
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
     ASSERT_FALSE(state->HasAllowException(
-        kPrerenderUrl.host(),
+        kPrerenderUrl.GetHost(),
         web_contents()->GetPrimaryMainFrame()->GetStoragePartition()));
   }
 

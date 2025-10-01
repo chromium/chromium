@@ -103,8 +103,9 @@ class ChromeWorkerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<net::test_server::HttpResponse> CaptureHeaderHandler(
       const std::string& path,
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != path)
+    if (request.GetURL().GetPath() != path) {
       return nullptr;
+    }
     // Stash the HTTP request headers.
     header_map_ = request.headers;
     std::move(quit_closure_).Run();

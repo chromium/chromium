@@ -179,7 +179,7 @@ std::string CompressAndEncode(const std::string& serialized_proto) {
 }
 
 std::string GetURLRefWithoutTextFragment(const GURL& url) {
-  std::string url_ref = url.ref();
+  std::string url_ref = url.GetRef();
   auto fragment_start = url_ref.find_first_of(":~:");
   if (fragment_start != std::string::npos) {
     url_ref.resize(fragment_start);
@@ -453,8 +453,8 @@ bool HasCommonSearchQueryParameters(const GURL& url) {
 
 bool IsValidSearchResultsUrl(const GURL& url) {
   const GURL results_url(lens::features::GetLensOverlayResultsSearchURL());
-  return url.is_valid() && results_url.SchemeIs(url.scheme()) &&
-         results_url.path() == url.path() &&
+  return url.is_valid() && results_url.SchemeIs(url.GetScheme()) &&
+         results_url.GetPath() == url.GetPath() &&
          net::registry_controlled_domains::SameDomainOrHost(
              results_url, url,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -479,7 +479,7 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
   const GURL results_url(lens::features::GetLensOverlayResultsSearchURL());
   // The URL should always be valid, have the same domain or host, and share the
   // same scheme as the base search results URL.
-  if (!url.is_valid() || !results_url.SchemeIs(url.scheme()) ||
+  if (!url.is_valid() || !results_url.SchemeIs(url.GetScheme()) ||
       !net::registry_controlled_domains::SameDomainOrHost(
           results_url, url,
           net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
@@ -488,13 +488,13 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
 
   // We only allow paths from `/url` if they are redirecting to a search URL.
   std::string url_redirect_string;
-  if (url.path() == kUrlRedirectPath &&
+  if (url.GetPath() == kUrlRedirectPath &&
       net::GetValueForKeyInQuery(url, kUrlQueryParameterKey,
                                  &url_redirect_string)) {
     // The redirecting URL should be relative. Return false if not.
     GURL url_to_redirect_to = results_url.Resolve(url_redirect_string);
     if (!url_to_redirect_to.is_empty() && url_to_redirect_to.is_valid() &&
-        results_url.path() == url_to_redirect_to.path()) {
+        results_url.GetPath() == url_to_redirect_to.GetPath()) {
       // Decode the url if needed since it should be encoded.
       url_to_redirect_to = GURL(base::UnescapeURLComponent(
           url_to_redirect_to.spec(), base::UnescapeRule::SPACES));
@@ -560,10 +560,10 @@ bool IsLensTextSelectionType(
 
 bool URLsMatchWithoutTextFragment(const GURL& first_url,
                                   const GURL& second_url) {
-  return first_url.scheme() == second_url.scheme() &&
-         first_url.host() == second_url.host() &&
-         first_url.path() == second_url.path() &&
-         first_url.query() == second_url.query() &&
+  return first_url.GetScheme() == second_url.GetScheme() &&
+         first_url.GetHost() == second_url.GetHost() &&
+         first_url.GetPath() == second_url.GetPath() &&
+         first_url.GetQuery() == second_url.GetQuery() &&
          GetURLRefWithoutTextFragment(first_url) ==
              GetURLRefWithoutTextFragment(second_url);
 }
@@ -611,7 +611,7 @@ std::optional<base::TimeDelta> ExtractTimeInSecondsFromQueryIfExists(
 }
 
 std::optional<std::string> ExtractVideoNameIfExists(const GURL& url) {
-  if (url.host() != kYoutubeHost) {
+  if (url.GetHost() != kYoutubeHost) {
     return {};
   }
 
@@ -620,13 +620,13 @@ std::optional<std::string> ExtractVideoNameIfExists(const GURL& url) {
   // part of the path if it's "...youtube.com/embed/video name here".
   // Extract it and return it, or else {} if there's no match.
   std::string video_name;
-  if (url.path() == kYoutubeWatchPath) {
+  if (url.GetPath() == kYoutubeWatchPath) {
     if (net::GetValueForKeyInQuery(url, kVideoIdQueryParameter, &video_name) &&
         !video_name.empty()) {
       return video_name;
     }
-  } else if (base::StartsWith(url.path(), kYoutubeEmbedPathPrefix)) {
-    video_name = url.path().substr(strlen(kYoutubeEmbedPathPrefix));
+  } else if (base::StartsWith(url.GetPath(), kYoutubeEmbedPathPrefix)) {
+    video_name = url.GetPath().substr(strlen(kYoutubeEmbedPathPrefix));
     if (!video_name.empty()) {
       return video_name;
     }

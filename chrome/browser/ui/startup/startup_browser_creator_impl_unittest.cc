@@ -131,7 +131,7 @@ class FakeStartupTabProvider : public StartupTabProvider {
 // `testing::ElementsAreArray`.
 bool operator==(const StartupTab& actual_tab,
                 const std::string& expected_host) {
-  return actual_tab.url.host() == expected_host;
+  return actual_tab.url.GetHost() == expected_host;
 }
 
 class StartupBrowserCreatorImplTest : public testing::Test {
@@ -174,9 +174,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs) {
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
 
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
-  EXPECT_EQ("prefs", output.tabs[1].url.host());
-  EXPECT_EQ("pinned", output.tabs[2].url.host());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
+  EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
+  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
 
   // No onboarding if not enabled even if promo is allowed.
   output = impl.DetermineStartupTabs(
@@ -187,9 +187,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs) {
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
 
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
-  EXPECT_EQ("prefs", output.tabs[1].url.host());
-  EXPECT_EQ("pinned", output.tabs[2].url.host());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
+  EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
+  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
 }
 
 // Only the New Tab Page should appear in Incognito mode, skipping all the usual
@@ -260,7 +260,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_InitialPrefs) {
       /*privacy_sandbox_confirmation_required=*/true);
   EXPECT_EQ(Creator::LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(1U, output.tabs.size());
-  EXPECT_EQ("distribution", output.tabs[0].url.host());
+  EXPECT_EQ("distribution", output.tabs[0].url.GetHost());
 }
 
 // URLs specified on the command line should always appear, and should block
@@ -284,9 +284,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
   EXPECT_EQ(LaunchResult::kWithGivenUrls, output.launch_result);
 
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
-  EXPECT_EQ("cmd-line", output.tabs[1].url.host());
-  EXPECT_EQ("pinned", output.tabs[2].url.host());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
+  EXPECT_EQ("cmd-line", output.tabs[1].url.GetHost());
+  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
 
   // Also test that both incognito and crash recovery don't interfere with
   // command line tabs.
@@ -300,7 +300,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
   EXPECT_EQ(LaunchResult::kWithGivenUrls, output.launch_result);
 
   ASSERT_EQ(1U, output.tabs.size());
-  EXPECT_EQ("cmd-line", output.tabs[0].url.host());
+  EXPECT_EQ("cmd-line", output.tabs[0].url.GetHost());
 
   // Crash Recovery
   output = impl.DetermineStartupTabs(
@@ -311,7 +311,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_CommandLine) {
   EXPECT_EQ(LaunchResult::kWithGivenUrls, output.launch_result);
 
   ASSERT_EQ(1U, output.tabs.size());
-  EXPECT_EQ("cmd-line", output.tabs[0].url.host());
+  EXPECT_EQ("cmd-line", output.tabs[0].url.GetHost());
 }
 
 // New Tab Page should appear alongside pinned tabs and the reset trigger, but
@@ -331,9 +331,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewTabPage) {
       /*privacy_sandbox_confirmation_required=*/false);
   EXPECT_EQ(Creator::LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("reset-trigger", output.tabs[0].url.host());
-  EXPECT_EQ("new-tab", output.tabs[1].url.host());
-  EXPECT_EQ("pinned", output.tabs[2].url.host());
+  EXPECT_EQ("reset-trigger", output.tabs[0].url.GetHost());
+  EXPECT_EQ("new-tab", output.tabs[1].url.GetHost());
+  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -354,8 +354,8 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
       /*privacy_sandbox_confirmation_required=*/true);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(2U, output.tabs.size());
-  EXPECT_EQ("whats-new", output.tabs[0].url.host());
-  EXPECT_EQ("new-tab", output.tabs[1].url.host());
+  EXPECT_EQ("whats-new", output.tabs[0].url.GetHost());
+  EXPECT_EQ("new-tab", output.tabs[1].url.GetHost());
 
   // New features can appear with prefs/pinned.
   FakeStartupTabProvider provider_with_pinned(
@@ -368,9 +368,9 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
       /*privacy_sandbox_confirmation_required=*/true);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(3U, output.tabs.size());
-  EXPECT_EQ("whats-new", output.tabs[0].url.host());
-  EXPECT_EQ("prefs", output.tabs[1].url.host());
-  EXPECT_EQ("pinned", output.tabs[2].url.host());
+  EXPECT_EQ("whats-new", output.tabs[0].url.GetHost());
+  EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
+  EXPECT_EQ("pinned", output.tabs[2].url.GetHost());
 
   // Onboarding overrides What's New.
   base::CommandLine first_run_command_line(base::CommandLine::NO_PROGRAM);
@@ -413,8 +413,8 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_PrivacySandbox) {
       /*privacy_sandbox_confirmation_required=*/true);
   EXPECT_EQ(Creator::LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(2U, output.tabs.size());
-  EXPECT_EQ("new-tab", output.tabs[0].url.host());
-  EXPECT_EQ("privacy-sandbox", output.tabs[1].url.host());
+  EXPECT_EQ("new-tab", output.tabs[0].url.GetHost());
+  EXPECT_EQ("privacy-sandbox", output.tabs[1].url.GetHost());
 
   // The tab for the Privacy Sandbox should be added even if promotional tabs
   // are disabled.
@@ -425,8 +425,8 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_PrivacySandbox) {
       /*privacy_sandbox_confirmation_required=*/true);
   EXPECT_EQ(Creator::LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(2U, output.tabs.size());
-  EXPECT_EQ("new-tab", output.tabs[0].url.host());
-  EXPECT_EQ("privacy-sandbox", output.tabs[1].url.host());
+  EXPECT_EQ("new-tab", output.tabs[0].url.GetHost());
+  EXPECT_EQ("privacy-sandbox", output.tabs[1].url.GetHost());
 
   // A Privacy Sandbox tab should be able to appear alongside other
   // prefs/pinned/feature tabs.
@@ -440,10 +440,10 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_PrivacySandbox) {
       /*privacy_sandbox_confirmation_required=*/true);
   EXPECT_EQ(Creator::LaunchResult::kNormally, output.launch_result);
   ASSERT_EQ(4U, output.tabs.size());
-  EXPECT_EQ("whats-new", output.tabs[0].url.host());
-  EXPECT_EQ("prefs", output.tabs[1].url.host());
-  EXPECT_EQ("privacy-sandbox", output.tabs[2].url.host());
-  EXPECT_EQ("pinned", output.tabs[3].url.host());
+  EXPECT_EQ("whats-new", output.tabs[0].url.GetHost());
+  EXPECT_EQ("prefs", output.tabs[1].url.GetHost());
+  EXPECT_EQ("privacy-sandbox", output.tabs[2].url.GetHost());
+  EXPECT_EQ("pinned", output.tabs[3].url.GetHost());
 
   // Any onboarding tabs should prevent a Privacy Sandbox tab being added.
   FakeStartupTabProvider provider_with_onboarding(

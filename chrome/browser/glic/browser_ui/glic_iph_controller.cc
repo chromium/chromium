@@ -52,7 +52,7 @@ void GlicIphController::MaybeShowPromo() {
   }
   auto* const contents = tab->GetContents();
   if (!contents->GetURL().SchemeIsHTTPOrHTTPS() ||
-      contents->GetURL().host() == GetGuestURL().host() ||
+      contents->GetURL().GetHost() == GetGuestURL().GetHost() ||
       !contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return;
   }

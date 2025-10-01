@@ -68,7 +68,7 @@ void BoundSessionCookieObserver::OnGetCookieList(
 void BoundSessionCookieObserver::OnCookieChange(
     const net::CookieChangeInfo& change) {
   DCHECK_EQ(change.cookie.Name(), cookie_name_);
-  DCHECK(change.cookie.IsDomainMatch(url_.host()));
+  DCHECK(change.cookie.IsDomainMatch(url_.GetHost()));
   switch (change.cause) {
     // The cookie was inserted.
     case net::CookieChangeCause::INSERTED:

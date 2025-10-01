@@ -437,7 +437,8 @@ WebContents* PrintPreviewDialogController::CreatePrintPreviewDialog(
   // extension when iframed by the print preview dialog.
   GURL print_url(chrome::kChromeUIPrintURL);
   content::HostZoomMap::Get(preview_dialog->GetSiteInstance())
-      ->SetZoomLevelForHostAndScheme(print_url.scheme(), print_url.host(), 0);
+      ->SetZoomLevelForHostAndScheme(print_url.GetScheme(), print_url.GetHost(),
+                                     0);
   PrintViewManager::CreateForWebContents(preview_dialog);
 
   // Add an entry to the map.

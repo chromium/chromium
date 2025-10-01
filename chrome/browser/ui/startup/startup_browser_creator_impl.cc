@@ -245,7 +245,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // asking us to open such a URL should really ask the handler directly.
     bool handled_by_chrome =
         ProfileIOData::IsHandledURL(tab.url) ||
-        (registry && registry->IsHandledProtocol(tab.url.scheme()));
+        (registry && registry->IsHandledProtocol(tab.url.GetScheme()));
     if (process_startup == chrome::startup::IsProcessStartup::kNo &&
         !handled_by_chrome) {
       continue;

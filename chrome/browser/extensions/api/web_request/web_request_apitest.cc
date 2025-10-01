@@ -874,7 +874,7 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
     std::string status_line;
     std::string contents;
     GetFileContents(
-        test_root_dir_.AppendASCII(params->url_request.url.path().substr(1)),
+        test_root_dir_.AppendASCII(params->url_request.url.GetPath().substr(1)),
         &status_line, &contents);
     content::URLLoaderInterceptor::WriteResponse(status_line, contents,
                                                  params->client.get());
@@ -2010,7 +2010,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
     content::RenderFrameHostWrapper child_frame(
         ChildFrameAt(main_frame.get(), 0));
     ASSERT_TRUE(child_frame);
-    const std::string kChildHost = child_frame->GetLastCommittedURL().host();
+    const std::string kChildHost = child_frame->GetLastCommittedURL().GetHost();
 
     // The extension shouldn't be able to intercept the xhr requests since it
     // doesn't have any permissions.
@@ -2035,7 +2035,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       web_contents->GetPrimaryMainFrame());
   content::RenderFrameHostWrapper child_frame(
       ChildFrameAt(main_frame.get(), 0));
-  const std::string kChildHost = child_frame->GetLastCommittedURL().host();
+  const std::string kChildHost = child_frame->GetLastCommittedURL().GetHost();
 
   ASSERT_TRUE(child_frame);
   EXPECT_TRUE(
@@ -2902,7 +2902,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
     // The extension should see the request to the Web origin.
     EXPECT_TRUE(HasSeenWebRequestInBackgroundScript(extension, profile(),
-                                                    web_url.host()));
+                                                    web_url.GetHost()));
   }
 
   {
@@ -2919,7 +2919,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
     // The extension shouldn't see the request to the WebUI pages.
     EXPECT_FALSE(HasSeenWebRequestInBackgroundScript(extension, profile(),
-                                                     webui_url.host()));
+                                                     webui_url.GetHost()));
   }
 }
 
@@ -2956,7 +2956,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   navigation_observer.Wait();
   ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
   EXPECT_TRUE(HasSeenWebRequestInBackgroundScript(extension, profile(),
-                                                  web_url.host()));
+                                                  web_url.GetHost()));
 }
 
 // Tests that webRequest API can't inspect a chrome-untrusted:// main frame
@@ -2993,7 +2993,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   navigation_observer.Wait();
   ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
   EXPECT_FALSE(HasSeenWebRequestInBackgroundScript(extension, profile(),
-                                                   webui_url.host()));
+                                                   webui_url.GetHost()));
 }
 
 // Tests that webRequest API can't inspect a subframe inside chrome-untrusted://
@@ -3036,7 +3036,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   ASSERT_TRUE(navigation_observer.last_navigation_succeeded());
   EXPECT_FALSE(HasSeenWebRequestInBackgroundScript(extension, profile(),
-                                                   web_url.host()));
+                                                   web_url.GetHost()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

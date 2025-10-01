@@ -103,8 +103,8 @@ bool WebAppScope::IsInScope(const GURL& url, WebAppScopeOptions options) const {
   // in-scope.
   bool origin_matches = url::IsSameOriginWith(scope_, url);
   if (!origin_matches && options.allow_http_to_https_upgrade &&
-      scope_.scheme() == url::kHttpScheme &&
-      url.scheme() == url::kHttpsScheme) {
+      scope_.GetScheme() == url::kHttpScheme &&
+      url.GetScheme() == url::kHttpsScheme) {
     GURL::Replacements rep;
     rep.SetSchemeStr(url::kHttpsScheme);
     GURL secure_scope = scope_.ReplaceComponents(rep);
@@ -116,15 +116,15 @@ bool WebAppScope::IsInScope(const GURL& url, WebAppScopeOptions options) const {
   if (origin_matches) {
     // For scopes without paths, return 'true' early (allowing blobs to be in
     // scope).
-    if (!scope_.has_path() || scope_.path() == "/") {
+    if (!scope_.has_path() || scope_.GetPath() == "/") {
       return true;
     }
-    if (url.scheme() == url::kBlobScheme) {
+    if (url.GetScheme() == url::kBlobScheme) {
       // Same-origin blobs can only be in-scope in the above case where the
       // app scope doesn't have a path.
       return false;
     }
-    if (base::StartsWith(url.path(), scope_.path(),
+    if (base::StartsWith(url.GetPath(), scope_.GetPath(),
                          base::CompareCase::SENSITIVE)) {
       return true;
     }

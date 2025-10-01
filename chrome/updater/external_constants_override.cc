@@ -59,8 +59,8 @@ std::vector<GURL> GURLVectorFromStringList(
 // tests. To reduce the program's utility as a mule, crash if there is a
 // non-localhost override.
 GURL CheckURL(const GURL& url) {
-  CHECK(url.is_empty() || url.host() == "localhost" ||
-        url.host() == "127.0.0.1" || url.host() == "not_exist")
+  CHECK(url.is_empty() || url.GetHost() == "localhost" ||
+        url.GetHost() == "127.0.0.1" || url.GetHost() == "not_exist")
       << "Illegal URL override: " << url;
   return url;
 }

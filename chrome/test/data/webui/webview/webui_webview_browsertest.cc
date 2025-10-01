@@ -67,7 +67,7 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
     // Wait for the OOBE WebUI to be shown.
     ash::OobeScreenWaiter(ash::WelcomeView::kScreenId).Wait();
 #else
-    set_test_loader_host(GetWebViewEnabledWebUIURL().host());
+    set_test_loader_host(GetWebViewEnabledWebUIURL().GetHost());
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GetWebViewEnabledWebUIURL()));
 #endif

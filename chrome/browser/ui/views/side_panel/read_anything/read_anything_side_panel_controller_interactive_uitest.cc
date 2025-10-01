@@ -111,7 +111,7 @@ class ReadAnythingCUJTest : public InteractiveFeaturePromoTest {
     distillable_url_ =
         embedded_test_server()->GetURL(kDocumentWithNamedElement);
     non_distillable_url_ = GURL("chrome://blank");
-    a11y::SetDistillableDomainsForTesting({distillable_url_.host()});
+    a11y::SetDistillableDomainsForTesting({distillable_url_.GetHost()});
     feature_list_.InitWithExistingFeatures(
         {feature_engagement::kIPHReadingModeSidePanelFeature});
 

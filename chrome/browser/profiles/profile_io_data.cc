@@ -73,5 +73,5 @@ bool ProfileIOData::IsHandledURL(const GURL& url) {
     return true;
   }
 
-  return IsHandledProtocol(url.scheme());
+  return IsHandledProtocol(url.GetScheme());
 }

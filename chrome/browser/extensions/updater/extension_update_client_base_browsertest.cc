@@ -221,7 +221,7 @@ ExtensionUpdateClientBaseTest::WaitOnComponentUpdaterCompleteEvent(
 
 bool ExtensionUpdateClientBaseTest::OnRequest(
     content::URLLoaderInterceptor::RequestParams* params) {
-  if (params->url_request.url.host() != "localhost") {
+  if (params->url_request.url.GetHost() != "localhost") {
     return false;
   }
 

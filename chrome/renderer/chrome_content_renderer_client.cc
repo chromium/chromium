@@ -1620,7 +1620,7 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(
   if (target_url.SchemeIs(extensions::kExtensionScheme)) {
     const extensions::Extension* extension =
         extensions::RendererExtensionRegistry::Get()->GetByID(
-            target_url.host());
+            target_url.GetHost());
     if (!extension) {
       return false;
     }
@@ -1628,7 +1628,7 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(
             extension, target_url, request_initiator, upstream_url)) {
       return true;
     }
-    return extension->guid() == upstream_url.host();
+    return extension->guid() == upstream_url.GetHost();
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return true;
@@ -1667,7 +1667,7 @@ void ChromeContentRendererClient::AppendContentSecurityPolicy(
   // Append a minimum CSP to ensure the extension can't relax the default
   // applied CSP through means like Service Worker.
   const std::string* default_csp =
-      extensions::CSPInfo::GetMinimumCSPToAppend(*extension, gurl.path());
+      extensions::CSPInfo::GetMinimumCSPToAppend(*extension, gurl.GetPath());
   if (!default_csp)
     return;
 

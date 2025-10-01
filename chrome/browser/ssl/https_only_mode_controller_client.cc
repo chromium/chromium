@@ -61,7 +61,7 @@ void HttpsOnlyModeControllerClient::Proceed() {
     web_contents_->SetAlwaysSendSubresourceNotifications();
 
     state->AllowHttpForHost(
-        request_url_.host(),
+        request_url_.GetHost(),
         web_contents_->GetPrimaryMainFrame()->GetStoragePartition());
   }
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents_);

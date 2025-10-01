@@ -270,7 +270,7 @@ void ChromeAppDelegate::RenderFrameCreated(
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetForWebContents(web_contents);
     DCHECK(zoom_map);
-    zoom_map->SetZoomLevelForHost(web_contents->GetURL().host(), 0);
+    zoom_map->SetZoomLevelForHost(web_contents->GetURL().GetHost(), 0);
   }
 }
 

@@ -907,7 +907,7 @@ PrivacySandboxServiceImpl::GetRelatedWebsiteSetOwnerForDisplay(
     return std::nullopt;
   }
 
-  return url_formatter::IDNToUnicode(site_owner->GetURL().host());
+  return url_formatter::IDNToUnicode(site_owner->GetURL().GetHost());
 }
 
 bool PrivacySandboxServiceImpl::IsPartOfManagedRelatedWebsiteSet(

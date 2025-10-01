@@ -1765,7 +1765,7 @@ TEST_F(PageInfoTest, ReEnableWarnings) {
     base::HistogramTester histograms;
     StatefulSSLHostStateDelegate* ssl_state =
         StatefulSSLHostStateDelegateFactory::GetForProfile(profile());
-    const std::string host = GURL(test.url).host();
+    const std::string host = GURL(test.url).GetHost();
 
     ssl_state->RevokeUserAllowExceptionsHard(host);
     ResetMockUI();

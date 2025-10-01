@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
   https_server.RegisterRequestHandler(base::BindLambdaForTesting(
       [](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL().path() == "/html") {
+        if (request.GetURL().GetPath() == "/html") {
           auto http_response =
               std::make_unique<net::test_server::BasicHttpResponse>();
           http_response->set_code(net::HTTP_OK);
@@ -255,10 +255,10 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                                          "treat-as-public-address");
           http_response->set_content(content::JsReplace(
               "<html><head><script src=$1 defer></script></head></html>",
-              request.GetURL().query()));
+              request.GetURL().GetQuery()));
           return std::move(http_response);
         }
-        if (request.GetURL().path() == "/script") {
+        if (request.GetURL().GetPath() == "/script") {
           auto http_response =
               std::make_unique<net::test_server::BasicHttpResponse>();
           http_response->set_code(net::HTTP_OK);

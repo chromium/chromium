@@ -1274,7 +1274,7 @@ IN_PROC_BROWSER_TEST_F(
   // rest of the test to operate as if all URLs are using the default ports.
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url.host() == "site-with-good-https.com") {
+        if (params->url_request.url.GetHost() == "site-with-good-https.com") {
           std::string headers =
               "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
           std::string body = "<html><title>Success</title>Hello world</html>";

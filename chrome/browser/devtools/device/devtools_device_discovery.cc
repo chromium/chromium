@@ -563,7 +563,7 @@ DevToolsDeviceDiscovery::RemotePage::CreateTarget() {
 
   std::string port_num = browser_id_;
   if (type == "node") {
-    port_num = GURL(GetStringProperty(dict_, "webSocketDebuggerUrl")).port();
+    port_num = GURL(GetStringProperty(dict_, "webSocketDebuggerUrl")).GetPort();
   }
 
   agent_host_ = AgentHostDelegate::GetOrCreateAgentHost(

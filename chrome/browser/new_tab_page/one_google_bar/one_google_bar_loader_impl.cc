@@ -341,7 +341,7 @@ GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
     // Add the "async=" parameter. We can't use net::AppendQueryParameter for
     // this because we need the ":" to remain unescaped.
     if (param_pair.first == "async") {
-      std::string query = api_url.query() + "&async=" + param_pair.second;
+      std::string query = api_url.GetQuery() + "&async=" + param_pair.second;
       if (query.at(0) == '&') {
         query = query.substr(1);
       }

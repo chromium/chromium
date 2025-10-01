@@ -74,7 +74,7 @@ bool HostIsSafeToServe(GURL host_url,
                        std::string host_header_value,
                        const std::vector<net::IPAddress>& whitelisted_ips,
                        const std::vector<std::string>& allowed_origins) {
-  auto host = host_url.host();
+  auto host = host_url.GetHost();
   // Check if the origin is in the allowed origins.
   for (const std::string& allowed_origin : allowed_origins) {
     if (allowed_origin == kAnyHostPattern) {

@@ -334,7 +334,7 @@ void AskBeforeHttpDialogController::OnContinueButtonClicked(
     web_contents->SetAlwaysSendSubresourceNotifications();
 
     state->AllowHttpForHost(
-        request_url.host(),
+        request_url.GetHost(),
         web_contents->GetPrimaryMainFrame()->GetStoragePartition());
   }
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);

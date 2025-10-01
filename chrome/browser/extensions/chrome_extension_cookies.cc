@@ -169,7 +169,7 @@ void ChromeExtensionCookies::IOData::ClearCookies(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   net::CookieDeletionInfo delete_info;
-  delete_info.host = origin.host();
+  delete_info.host = origin.GetHost();
   GetOrCreateCookieStore()->DeleteAllMatchingInfoAsync(
       std::move(delete_info), std::move(done_callback));
 }

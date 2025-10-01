@@ -66,7 +66,7 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
   for (const std::string& str : kChromeLayerUrlsRegisteredAsSecure) {
     SCOPED_TRACE(str);
     GURL url(str);
-    EXPECT_TRUE(base::Contains(url::GetSecureSchemes(), url.scheme()));
+    EXPECT_TRUE(base::Contains(url::GetSecureSchemes(), url.GetScheme()));
     EXPECT_TRUE(network::IsUrlPotentiallyTrustworthy(url));
   }
 

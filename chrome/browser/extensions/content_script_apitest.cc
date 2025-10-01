@@ -1858,7 +1858,7 @@ GURL ContentScriptRelatedFrameTest::CreateBlobURL(
       content::EvalJs(host, kCreateBlobURL).ExtractString();
   GURL url(url_string);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url::kBlobScheme, url.scheme());
+  EXPECT_EQ(url::kBlobScheme, url.GetScheme());
   EXPECT_EQ(
       url::Origin::Create(host->GetLastCommittedURL()).GetURL(),
       url::Origin::Create(url).GetTupleOrPrecursorTupleIfOpaque().GetURL());
@@ -1886,7 +1886,7 @@ GURL ContentScriptRelatedFrameTest::CreateFilesystemURL(
       content::EvalJs(host, kCreateFilesystemURL).ExtractString();
   GURL url(url_string);
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(url::kFileSystemScheme, url.scheme());
+  EXPECT_EQ(url::kFileSystemScheme, url.GetScheme());
   EXPECT_EQ(
       url::Origin::Create(host->GetLastCommittedURL()).GetURL(),
       url::Origin::Create(url).GetTupleOrPrecursorTupleIfOpaque().GetURL());

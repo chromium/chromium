@@ -89,7 +89,7 @@ void SyncWorker::RegisterOrigin(const GURL& origin,
     PostInitializeTask();
 
   std::unique_ptr<RegisterAppTask> task(
-      new RegisterAppTask(context_.get(), origin.host()));
+      new RegisterAppTask(context_.get(), origin.GetHost()));
   if (task->CanFinishImmediately()) {
     std::move(callback).Run(SYNC_STATUS_OK);
     return;
@@ -106,7 +106,7 @@ void SyncWorker::EnableOrigin(const GURL& origin, SyncStatusCallback callback) {
   task_manager_->ScheduleTask(
       FROM_HERE,
       base::BindOnce(&SyncWorker::DoEnableApp, weak_ptr_factory_.GetWeakPtr(),
-                     origin.host()),
+                     origin.GetHost()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -117,7 +117,7 @@ void SyncWorker::DisableOrigin(const GURL& origin,
   task_manager_->ScheduleTask(
       FROM_HERE,
       base::BindOnce(&SyncWorker::DoDisableApp, weak_ptr_factory_.GetWeakPtr(),
-                     origin.host()),
+                     origin.GetHost()),
       SyncTaskManager::PRIORITY_HIGH, std::move(callback));
 }
 
@@ -126,10 +126,11 @@ void SyncWorker::UninstallOrigin(const GURL& origin,
                                  SyncStatusCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  task_manager_->ScheduleSyncTask(
-      FROM_HERE,
-      std::make_unique<UninstallAppTask>(context_.get(), origin.host(), flag),
-      SyncTaskManager::PRIORITY_HIGH, std::move(callback));
+  task_manager_->ScheduleSyncTask(FROM_HERE,
+                                  std::make_unique<UninstallAppTask>(
+                                      context_.get(), origin.GetHost(), flag),
+                                  SyncTaskManager::PRIORITY_HIGH,
+                                  std::move(callback));
 }
 
 void SyncWorker::ProcessRemoteChange(SyncFileCallback callback) {
