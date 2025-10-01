@@ -12,6 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/uuid.h"
+#include "base/version_info/channel.h"
+#include "components/contextual_tasks/internal/ai_thread_sync_bridge.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/sessions/core/session_id.h"
@@ -19,9 +21,10 @@
 
 namespace contextual_tasks {
 
-class ContextualTasksServiceImpl : public ContextualTasksService {
+class ContextualTasksServiceImpl : public ContextualTasksService,
+                                   public AiThreadSyncBridge::Observer {
  public:
-  ContextualTasksServiceImpl();
+  explicit ContextualTasksServiceImpl(version_info::Channel channel);
   ~ContextualTasksServiceImpl() override;
 
   // ContextualTasksService implementation.
@@ -51,6 +54,13 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
           context_callback) override;
   void AddObserver(ContextualTasksService::Observer* observer) override;
   void RemoveObserver(ContextualTasksService::Observer* observer) override;
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetAiThreadControllerDelegate() override;
+
+  // AiThreadSyncBridge::Observer implementation.
+  void OnThreadAddedOrUpdatedRemotely(
+      const std::vector<Thread>& threads) override;
+  void OnThreadRemovedRemotely(const std::vector<Thread>& threads) override;
 
   size_t GetSessionIdMapSizeForTesting() const;
 
@@ -66,6 +76,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService {
 
   // Obsevers of the model.
   base::ObserverList<ContextualTasksService::Observer> observers_;
+
+  std::unique_ptr<AiThreadSyncBridge> ai_thread_sync_bridge_;
 
   base::WeakPtrFactory<ContextualTasksServiceImpl> weak_ptr_factory_{this};
 };

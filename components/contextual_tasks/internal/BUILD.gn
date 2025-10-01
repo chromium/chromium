@@ -9,6 +9,8 @@ source_set("internal") {
   ]
 
   sources = [
+    "ai_thread_sync_bridge.cc",
+    "ai_thread_sync_bridge.h",
     "contextual_tasks_service_impl.cc",
     "contextual_tasks_service_impl.h",
   ]
@@ -18,6 +20,7 @@ source_set("internal") {
     "//components/contextual_tasks/public",
     "//components/keyed_service/core",
     "//components/sessions:session_id",
+    "//components/sync/model",
     "//url",
   ]
 }
@@ -29,6 +32,7 @@ source_set("unit_tests") {
 
   deps = [
     ":internal",
+    "//base",
     "//base/test:test_support",
     "//components/contextual_tasks/public",
     "//components/sessions:session_id",

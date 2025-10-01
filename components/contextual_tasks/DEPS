@@ -1,5 +1,7 @@
 include_rules = [
   "+components/keyed_service",
   "+components/sessions/core",
+  "+components/sync/base",
+  "+components/sync/model",
   "+url",
 ]

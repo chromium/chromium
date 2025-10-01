@@ -87,8 +87,13 @@ class MockContextualTasksService : public ContextualTasksService {
               GetMostRecentContextualTaskForSessionID,
               (SessionID session_id),
               (const, override));
+
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
+  MOCK_METHOD(base::WeakPtr<syncer::DataTypeControllerDelegate>,
+              GetAiThreadControllerDelegate,
+              (),
+              (override));
 };
 
 class ContextualTasksContextControllerImplTest : public testing::Test {

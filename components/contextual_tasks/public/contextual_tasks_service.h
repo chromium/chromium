@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -16,6 +17,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
+
+namespace syncer {
+class DataTypeControllerDelegate;
+}  // namespace syncer
 
 namespace contextual_tasks {
 
@@ -97,6 +102,9 @@ class ContextualTasksService : public KeyedService {
   // Add / remove observers.
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
+  // Returns DataTypeControllerDelegate for the contextual task thread datatype.
+  virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetAiThreadControllerDelegate() = 0;
 };
 
 }  // namespace contextual_tasks

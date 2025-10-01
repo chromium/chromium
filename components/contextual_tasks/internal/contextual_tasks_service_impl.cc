@@ -12,11 +12,21 @@
 #include "base/uuid.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/report_unrecoverable_error.h"
+#include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
 
-ContextualTasksServiceImpl::ContextualTasksServiceImpl() = default;
+ContextualTasksServiceImpl::ContextualTasksServiceImpl(
+    version_info::Channel channel) {
+  auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
+      syncer::AI_THREAD,
+      base::BindRepeating(&syncer::ReportUnrecoverableError, channel));
+  ai_thread_sync_bridge_ =
+      std::make_unique<AiThreadSyncBridge>(std::move(processor));
+}
 
 ContextualTasksServiceImpl::~ContextualTasksServiceImpl() {
   for (auto& observer : observers_) {
@@ -186,13 +196,26 @@ void ContextualTasksServiceImpl::GetContextForTask(
       base::BindOnce(std::move(context_callback), std::move(result)));
 }
 
-void ContextualTasksServiceImpl::AddObserver(Observer* observer) {
+void ContextualTasksServiceImpl::AddObserver(
+    ContextualTasksService::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void ContextualTasksServiceImpl::RemoveObserver(Observer* observer) {
+void ContextualTasksServiceImpl::RemoveObserver(
+    ContextualTasksService::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
+
+base::WeakPtr<syncer::DataTypeControllerDelegate>
+ContextualTasksServiceImpl::GetAiThreadControllerDelegate() {
+  return ai_thread_sync_bridge_->change_processor()->GetControllerDelegate();
+}
+
+void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
+    const std::vector<Thread>& threads) {}
+
+void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
+    const std::vector<Thread>& threads) {}
 
 size_t ContextualTasksServiceImpl::GetSessionIdMapSizeForTesting() const {
   return session_to_task_.size();

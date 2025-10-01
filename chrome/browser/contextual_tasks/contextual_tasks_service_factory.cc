@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "components/contextual_tasks/internal/contextual_tasks_service_impl.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -45,7 +46,7 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!base::FeatureList::IsEnabled(kContextualTasks)) {
     return nullptr;
   }
-  return std::make_unique<ContextualTasksServiceImpl>();
+  return std::make_unique<ContextualTasksServiceImpl>(chrome::GetChannel());
 }
 
 }  // namespace contextual_tasks
