@@ -60,6 +60,11 @@ AutofillSaveCardBottomSheetBridge*
 TestPaymentsAutofillClient::GetOrCreateAutofillSaveCardBottomSheetBridge() {
   return nullptr;
 }
+
+AutofillSaveIbanBottomSheetBridge*
+TestPaymentsAutofillClient::GetOrCreateAutofillSaveIbanBottomSheetBridge() {
+  return nullptr;
+}
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

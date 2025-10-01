@@ -69,6 +69,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
 #if BUILDFLAG(IS_ANDROID)
   AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge() override;
+  AutofillSaveIbanBottomSheetBridge*
+  GetOrCreateAutofillSaveIbanBottomSheetBridge() override;
 #endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void ShowWebauthnOfferDialog(

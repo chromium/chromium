@@ -100,7 +100,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge() override;
   AutofillSaveIbanBottomSheetBridge*
-  GetOrCreateAutofillSaveIbanBottomSheetBridge();
+  GetOrCreateAutofillSaveIbanBottomSheetBridge() override;
 #else   // !BUILDFLAG(IS_ANDROID)
   void ShowWebauthnOfferDialog(
       WebauthnDialogCallback offer_dialog_callback) override;

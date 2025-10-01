@@ -236,7 +236,7 @@ void ChromePaymentsAutofillClient::ConfirmAccountNameFixFlow(
                                      web_contents());
   card_name_fix_flow_controller_.Show(
       card_name_fix_flow_view_android, GetAccountHolderName(),
-      /*upload_save_card_callback=*/std::move(callback));
+      /*name_accepted_callback=*/std::move(callback));
 }
 
 void ChromePaymentsAutofillClient::ConfirmExpirationDateFixFlow(
@@ -249,7 +249,7 @@ void ChromePaymentsAutofillClient::ConfirmExpirationDateFixFlow(
               &card_expiration_date_fix_flow_controller_, web_contents());
   card_expiration_date_fix_flow_controller_.Show(
       card_expiration_date_fix_flow_view_android, card,
-      /*upload_save_card_callback=*/std::move(callback));
+      /*callback=*/std::move(callback));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

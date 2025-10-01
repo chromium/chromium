@@ -32,6 +32,7 @@ class AutofillOfferData;
 class AutofillOfferManager;
 enum class AutofillProgressDialogType;
 class AutofillSaveCardBottomSheetBridge;
+class AutofillSaveIbanBottomSheetBridge;
 class BnplIssuer;
 struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
@@ -300,6 +301,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // exist.
   virtual AutofillSaveCardBottomSheetBridge*
   GetOrCreateAutofillSaveCardBottomSheetBridge() = 0;
+
+  // Gets the AutofillSaveIbanBottomSheetBridge or creates one if it doesn't
+  // exist.
+  virtual AutofillSaveIbanBottomSheetBridge*
+  GetOrCreateAutofillSaveIbanBottomSheetBridge() = 0;
 #elif !BUILDFLAG(IS_IOS)  // && !BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40639086): Find a way to merge these two functions.
   // Shouldn't use WebauthnDialogState as that state is a purely UI state
