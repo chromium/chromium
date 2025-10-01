@@ -155,6 +155,7 @@ NSString* const kAutofillDataSymbol = @"wand.and.rays";
 NSString* const kSecureLocationBarSymbol = @"lock.fill";
 NSString* const kNavigateToTabSymbol = @"arrow.right.circle";
 NSString* const kRefineQuerySymbol = @"arrow.up.backward";
+NSString* const kRefineQueryDownSymbol = @"arrow.down.backward";
 NSString* const kLinkActionSymbol = @"link";
 NSString* const kQRCodeFinderActionSymbol = @"qrcode.viewfinder";
 NSString* const kNewTabActionSymbol = @"plus.square";

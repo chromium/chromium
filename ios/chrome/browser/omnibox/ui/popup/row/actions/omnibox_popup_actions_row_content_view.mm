@@ -147,6 +147,7 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
     _trailingButton.isAccessibilityElement = NO;
     _trailingButton.contentMode = UIViewContentModeScaleAspectFit;
+    _trailingButton.presentationContext = configuration.presentationContext;
 
     [_trailingButton addTarget:self
                         action:@selector(trailingButtonTapped)

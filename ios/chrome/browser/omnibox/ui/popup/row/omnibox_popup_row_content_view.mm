@@ -348,6 +348,9 @@ const CGFloat kTopGradientColorOpacity = 0.85;
   }
 
   // Trailing Button.
+  // Set the presentation context before the trailing icon type as it need the
+  // presentation context to correctly set up the trailing icon.
+  _trailingButton.presentationContext = configuration.presentationContext;
   _trailingButton.trailingIconType = configuration.trailingIconType;
   _trailingButton.isHighlighted = configuration.isBackgroundHighlighted;
   _textTrailingToButtonConstraint.active = !_trailingButton.hidden;

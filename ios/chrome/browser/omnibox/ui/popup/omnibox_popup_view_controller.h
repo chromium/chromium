@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/content_providing.h"
@@ -56,8 +57,10 @@ class LargeIconService;
 @property(nonatomic, strong)
     NSArray<id<AutocompleteSuggestionGroup>>* currentResult;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPresentationContext:
+    (OmniboxPresentationContext)presentationContext NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;

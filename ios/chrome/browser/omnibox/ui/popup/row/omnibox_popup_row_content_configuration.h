@@ -45,6 +45,8 @@ extern const CGFloat kOmniboxPopupCellMinimumHeight;
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 /// Image retriever for `OmniboxIconView`.
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
+/// The context in which the omnibox is presented.
+@property(nonatomic, assign) OmniboxPresentationContext presentationContext;
 
 /// Returns the default configuration for a list cell.
 + (instancetype)cellConfiguration;

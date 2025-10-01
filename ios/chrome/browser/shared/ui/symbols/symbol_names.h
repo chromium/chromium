@@ -153,6 +153,7 @@ extern NSString* const kAutofillDataSymbol;
 extern NSString* const kSecureLocationBarSymbol;
 extern NSString* const kNavigateToTabSymbol;
 extern NSString* const kRefineQuerySymbol;
+extern NSString* const kRefineQueryDownSymbol;
 extern NSString* const kLinkActionSymbol;
 extern NSString* const kQRCodeFinderActionSymbol;
 extern NSString* const kNewTabActionSymbol;

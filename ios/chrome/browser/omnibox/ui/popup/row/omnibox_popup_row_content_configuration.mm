@@ -159,6 +159,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   configuration.directionalLayoutMargin = self.directionalLayoutMargin;
   configuration.isPopoutOmnibox = self.isPopoutOmnibox;
   configuration.trailingIconType = self.trailingIconType;
+  configuration.presentationContext = _presentationContext;
   return configuration;
 }
 

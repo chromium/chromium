@@ -36,6 +36,8 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
   NSLayoutConstraint* _aimAnimationWidthConstraint;
   /// Height constraint for the aim animation view.
   NSLayoutConstraint* _aimAnimationHeightConstraint;
+  /// The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -131,13 +133,17 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
           [self setupSearchWithAimAnimationView];
         }
         break;
-      case TrailingIconType::kRefineQuery:
+      case TrailingIconType::kRefineQuery: {
+        NSString* iconName =
+            _presentationContext == OmniboxPresentationContext::kAIMPrototype
+                ? kRefineQueryDownSymbol
+                : kRefineQuerySymbol;
         icon = DefaultSymbolWithPointSize(
-            kRefineQuerySymbol,
-            kTrailingButtonIconPointSizeMedium * multiplier);
+            iconName, kTrailingButtonIconPointSizeMedium * multiplier);
         self.accessibilityIdentifier =
             kOmniboxPopupRowAppendAccessibilityIdentifier;
         break;
+      }
       case TrailingIconType::kOpenExistingTab:
         icon = DefaultSymbolWithPointSize(
             kNavigateToTabSymbol,

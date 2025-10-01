@@ -38,6 +38,7 @@ source_set("popup_ui") {
     "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/model/suggestions:ui_interface",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui:omnibox_popup_shared",
