@@ -344,11 +344,11 @@ class Host : public GlicSharingManagerProvider {
   std::optional<PanelWillOpenOptions> pending_panel_open_options_;
   mojom::WebUiState primary_webui_state_ = mojom::WebUiState::kUninitialized;
 
-  std::optional<PageHandlerInfo> handler_info_;
   // Owns the WebUI contents. May be null for glic hosts in chrome://glic tabs.
   // Keep profile alive as long as the glic web contents. This object should be
   // destroyed when the profile needs to be destroyed.
   std::unique_ptr<WebUIContentsContainer> contents_;
+  std::optional<PageHandlerInfo> handler_info_;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;
 
