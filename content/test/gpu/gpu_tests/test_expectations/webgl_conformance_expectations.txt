@@ -507,7 +507,7 @@ crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] conformance/rendering/color-mask-preserved-during-implicit-clears.html [ Failure ]
 crbug.com/420455918 [ amd-0x7340 angle-opengl asan mac release ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/420455918 [ amd-0x7340 angle-opengl debug mac no-asan ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
-crbug.com/436522727 [ mac amd graphite-enabled ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/436522727 [ amd-0x7340 debug graphite-enabled no-clang-coverage sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 ## Apple M2 ##
 
@@ -516,7 +516,8 @@ crbug.com/436522727 [ mac amd graphite-enabled ] conformance/extensions/khr-para
 crbug.com/425671158 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
 
 # WebGL: INVALID_ENUM: getShaderParameter
-crbug.com/444250724 [ mac angle-metal graphite-enabled intel-0x3e9b ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/444250724 [ angle-metal debug graphite-enabled intel-0x3e9b no-clang-coverage sonoma ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
+crbug.com/444250724 [ angle-metal graphite-enabled intel-0x3e9b no-clang-coverage release sequoia ] conformance/extensions/khr-parallel-shader-compile.html [ Failure ]
 
 ####################
 # Linux failures   #
