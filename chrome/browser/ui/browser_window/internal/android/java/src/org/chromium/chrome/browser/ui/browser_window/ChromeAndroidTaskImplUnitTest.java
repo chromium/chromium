@@ -142,8 +142,8 @@ public class ChromeAndroidTaskImplUnitTest {
         assertEquals(mockParams.getWindowType(), task.getBrowserWindowType());
         assertEquals(mockParams.getProfile(), task.getProfile());
         assertEquals(State.PENDING, task.getState());
-        assertEquals(1, task.getPendingId().getAsInt());
-        assertTrue(task.getId().isEmpty());
+        assertEquals(1, (int) task.getPendingId());
+        assertNull(task.getId());
         assertNull(task.getActivityWindowAndroidForTesting());
     }
 
@@ -200,7 +200,7 @@ public class ChromeAndroidTaskImplUnitTest {
         var chromeAndroidTask = createChromeAndroidTask(taskId);
 
         // Act & Assert.
-        assertEquals(taskId, chromeAndroidTask.getId().getAsInt());
+        assertEquals(taskId, (int) chromeAndroidTask.getId());
     }
 
     @Test
@@ -232,8 +232,8 @@ public class ChromeAndroidTaskImplUnitTest {
         task.setActivityWindowAndroid(activityWindowAndroid, mock(TabModel.class));
 
         // Assert.
-        assertEquals(taskId, task.getId().getAsInt());
-        assertTrue(task.getPendingId().isEmpty());
+        assertEquals(taskId, (int) task.getId());
+        assertNull(task.getPendingId());
         assertEquals(activityWindowAndroid, task.getActivityWindowAndroid());
     }
 

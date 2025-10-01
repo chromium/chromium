@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 import java.util.Set;
 
 /**
@@ -217,7 +216,7 @@ public interface TabModel extends SupportsTabModelObserver, TabList {
     int getPinnedTabsCount();
 
     /** Returns the native {@code SessionID} as returned by {@code tab_model.h:GetSessionId()}. */
-    OptionalInt getNativeSessionIdForTesting();
+    @Nullable Integer getNativeSessionIdForTesting();
 
     /**
      * Sets the mute setting for the sites of the provided tabs.

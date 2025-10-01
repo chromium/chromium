@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,7 +29,6 @@ import org.chromium.ui.base.KeyNavigationUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 /**
  * Base layout for common suggestion types. Includes support for a configurable suggestion content
@@ -171,8 +172,8 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         if (actionChipsView.onKeyDown(keyCode, event)) return true;
         if (KeyNavigationUtil.isEnter(event)) {
             if (!mActionButtonsHighlighter.isParkedAtSentinel()) {
-                OptionalInt selection = mActionButtonsHighlighter.getPosition();
-                return mActionButtons.get(selection.getAsInt()).performClick();
+                int selection = assumeNonNull(mActionButtonsHighlighter.getPosition());
+                return mActionButtons.get(selection).performClick();
             }
             return performClick();
         }

@@ -57,18 +57,18 @@ class PasswordsCheckPreferenceProperties {
             return PasswordsState.ERROR;
         }
 
-        if (passwordSafetyCheckResult.getBreachedCount().isPresent()
-                && passwordSafetyCheckResult.getBreachedCount().getAsInt() > 0) {
+        if (passwordSafetyCheckResult.getBreachedCount() != null
+                && passwordSafetyCheckResult.getBreachedCount() > 0) {
             // If there are some compromised credentials, then password state should be
             // COMPROMISED_EXIST regardless whether loading passwords is finished.
             return PasswordsState.COMPROMISED_EXIST;
         }
-        if (passwordSafetyCheckResult.getTotalPasswordsCount().isPresent()
-                && passwordSafetyCheckResult.getTotalPasswordsCount().getAsInt() == 0) {
+        if (passwordSafetyCheckResult.getTotalPasswordsCount() != null
+                && passwordSafetyCheckResult.getTotalPasswordsCount() == 0) {
             return PasswordsState.NO_PASSWORDS;
         }
-        if (!passwordSafetyCheckResult.getTotalPasswordsCount().isPresent()
-                || !passwordSafetyCheckResult.getBreachedCount().isPresent()) {
+        if (passwordSafetyCheckResult.getTotalPasswordsCount() == null
+                || passwordSafetyCheckResult.getBreachedCount() == null) {
             // If passwords loading or password check has not yet finished, then password state is
             // checking because there can be either no passwords at all or no breached credentials.
             assert false

@@ -13,8 +13,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
-import java.util.OptionalInt;
-
 /** Supports {@code browser_window_interface_iterator_android_unittest.cc}. */
 @NullMarked
 final class BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport {
@@ -30,10 +28,7 @@ final class BrowserWindowInterfaceIteratorAndroidNativeUnitTestSupport {
         var chromeAndroidTask =
                 ChromeAndroidTaskTrackerImpl.getInstance()
                         .obtainTask(
-                                BrowserWindowType.NORMAL,
-                                activityWindowAndroid,
-                                tabModel,
-                                OptionalInt.empty());
+                                BrowserWindowType.NORMAL, activityWindowAndroid, tabModel, null);
         return chromeAndroidTask.getOrCreateNativeBrowserWindowPtr();
     }
 

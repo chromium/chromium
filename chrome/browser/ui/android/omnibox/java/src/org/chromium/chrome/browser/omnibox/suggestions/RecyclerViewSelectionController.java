@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.OptionalInt;
-
 /** Selection manager for RecyclerViews. */
 @NullMarked
 public class RecyclerViewSelectionController extends SelectionController
@@ -59,9 +57,9 @@ public class RecyclerViewSelectionController extends SelectionController
 
     /** Retrieve currently selected element. */
     public @Nullable View getSelectedView() {
-        OptionalInt selection = getPosition();
-        if (selection.isEmpty()) return null;
-        return mLayoutManager.findViewByPosition(selection.getAsInt());
+        Integer selection = getPosition();
+        if (selection == null) return null;
+        return mLayoutManager.findViewByPosition(selection);
     }
 
     /** Returns whether item at specific position is focusable. */

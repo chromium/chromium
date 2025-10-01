@@ -14,7 +14,6 @@ import org.chromium.components.sync.SyncService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -36,24 +35,24 @@ public interface PasswordCheckController {
     }
 
     class PasswordCheckResult {
-        private OptionalInt mTotalPasswordsCount = OptionalInt.empty();
-        private OptionalInt mBreachedCount = OptionalInt.empty();
+        private @Nullable Integer mTotalPasswordsCount;
+        private @Nullable Integer mBreachedCount;
         private @Nullable Exception mError;
 
         public PasswordCheckResult(int totalPasswordsCount, int breachedCount) {
-            mTotalPasswordsCount = OptionalInt.of(totalPasswordsCount);
-            mBreachedCount = OptionalInt.of(breachedCount);
+            mTotalPasswordsCount = totalPasswordsCount;
+            mBreachedCount = breachedCount;
         }
 
         public PasswordCheckResult(Exception error) {
             mError = error;
         }
 
-        public OptionalInt getBreachedCount() {
+        public @Nullable Integer getBreachedCount() {
             return mBreachedCount;
         }
 
-        public OptionalInt getTotalPasswordsCount() {
+        public @Nullable Integer getTotalPasswordsCount() {
             return mTotalPasswordsCount;
         }
 

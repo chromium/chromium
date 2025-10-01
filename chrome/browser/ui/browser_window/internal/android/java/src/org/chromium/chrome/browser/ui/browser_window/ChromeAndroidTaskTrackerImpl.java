@@ -25,7 +25,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.OptionalInt;
 
 /** Implements {@link ChromeAndroidTaskTracker} as a singleton. */
 @NullMarked
@@ -67,7 +66,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
             @BrowserWindowType int browserWindowType,
             ActivityWindowAndroid activityWindowAndroid,
             TabModel tabModel,
-            OptionalInt pendingId) {
+            @Nullable Integer pendingId) {
         int taskId = getTaskId(activityWindowAndroid);
 
         synchronized (mTasksLock) {
@@ -79,8 +78,8 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 return existingTask;
             }
 
-            if (pendingId.isPresent()) {
-                ChromeAndroidTask pendingTask = mPendingTasks.remove(pendingId.getAsInt());
+            if (pendingId != null) {
+                ChromeAndroidTask pendingTask = mPendingTasks.remove(pendingId);
                 assert pendingTask != null : "Invalid pendingId provided.";
                 pendingTask.setActivityWindowAndroid(activityWindowAndroid, tabModel);
                 mTasks.put(taskId, pendingTask);

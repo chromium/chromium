@@ -76,8 +76,8 @@ public class ChromeAndroidTaskIntegrationTest {
         var tabModel = mFreshCtaTransitTestRule.getActivity().getCurrentTabModel();
 
         // Assert.
-        assertTrue(chromeAndroidTask.getSessionIdForTesting().isPresent());
-        assertTrue(tabModel.getNativeSessionIdForTesting().isPresent());
+        assertNotNull(chromeAndroidTask.getSessionIdForTesting());
+        assertNotNull(tabModel.getNativeSessionIdForTesting());
         assertEquals(
                 chromeAndroidTask.getSessionIdForTesting(),
                 tabModel.getNativeSessionIdForTesting());

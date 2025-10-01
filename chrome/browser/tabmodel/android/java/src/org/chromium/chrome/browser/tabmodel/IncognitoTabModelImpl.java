@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Set;
 
 /**
@@ -426,7 +425,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public OptionalInt getNativeSessionIdForTesting() {
+    public @Nullable Integer getNativeSessionIdForTesting() {
         return mDelegateModel.getNativeSessionIdForTesting();
     }
 

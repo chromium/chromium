@@ -353,7 +353,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -1337,10 +1336,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
                             getIntent(),
                             ChromeAndroidTaskTracker.EXTRA_PENDING_BROWSER_WINDOW_TASK_ID,
                             /* defaultValue= */ -1);
-            OptionalInt pendingId =
-                    pendingIdExtraValue == -1
-                            ? OptionalInt.empty()
-                            : OptionalInt.of(pendingIdExtraValue);
+            Integer pendingId = pendingIdExtraValue == -1 ? null : pendingIdExtraValue;
 
             return chromeAndroidTaskTracker.obtainTask(
                     BrowserWindowType.NORMAL, activityWindowAndroid, currentTabModel, pendingId);

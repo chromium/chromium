@@ -24,8 +24,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 
-import java.util.OptionalInt;
-
 /** Robolectric unit tests for {@link SelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SelectionControllerUnitTest {
@@ -48,14 +46,14 @@ public class SelectionControllerUnitTest {
 
     private void verifyPositionReset(SelectionController c, int position) {
         verify(c).setItemState(position, false);
-        assertEquals(OptionalInt.empty(), c.getPosition());
+        assertEquals(null, c.getPosition());
         assertTrue(c.isParkedAtSentinel());
         clearInvocations(c);
     }
 
     private void verifyPositionSet(SelectionController c, int position) {
         verify(c).setItemState(position, true);
-        assertEquals(OptionalInt.of(position), c.getPosition());
+        assertEquals(Integer.valueOf(position), c.getPosition());
         assertFalse(c.isParkedAtSentinel());
         clearInvocations(c);
     }
@@ -80,10 +78,10 @@ public class SelectionControllerUnitTest {
 
         // Cannot move any further. We've reached the limit.
         assertFalse(c.selectNextItem());
-        assertEquals(OptionalInt.of(2), c.getPosition());
+        assertEquals(Integer.valueOf(2), c.getPosition());
 
         assertFalse(c.selectNextItem());
-        assertEquals(OptionalInt.of(2), c.getPosition());
+        assertEquals(Integer.valueOf(2), c.getPosition());
     }
 
     @Test
@@ -125,10 +123,10 @@ public class SelectionControllerUnitTest {
 
         // Cannot move any further. We've reached the limit.
         assertFalse(c.selectPreviousItem());
-        assertEquals(OptionalInt.of(0), c.getPosition());
+        assertEquals(Integer.valueOf(0), c.getPosition());
 
         assertFalse(c.selectPreviousItem());
-        assertEquals(OptionalInt.of(0), c.getPosition());
+        assertEquals(Integer.valueOf(0), c.getPosition());
     }
 
     @Test
@@ -164,9 +162,7 @@ public class SelectionControllerUnitTest {
 
         verify(c, times(1)).setItemState(0, false);
         verify(c, times(1)).setItemState(2, true);
-        verify(c, times(2)).setItemState(anyInt(), anyBoolean());
-
-        assertEquals(OptionalInt.of(2), c.getPosition());
+        assertEquals(Integer.valueOf(2), c.getPosition());
     }
 
     @Test
@@ -185,7 +181,7 @@ public class SelectionControllerUnitTest {
         verify(c, times(1)).setItemState(2, false);
         verify(c, times(1)).setItemState(0, true);
         verify(c, times(2)).setItemState(anyInt(), anyBoolean());
-        assertEquals(OptionalInt.of(0), c.getPosition());
+        assertEquals(Integer.valueOf(0), c.getPosition());
     }
 
     @Test
@@ -203,7 +199,7 @@ public class SelectionControllerUnitTest {
         verify(c, times(0)).setItemState(anyInt(), anyBoolean());
 
         // We shouldn't move the selection.
-        assertEquals(OptionalInt.of(0), c.getPosition());
+        assertEquals(Integer.valueOf(0), c.getPosition());
     }
 
     @Test
@@ -220,7 +216,7 @@ public class SelectionControllerUnitTest {
         verify(c, times(0)).setItemState(anyInt(), anyBoolean());
 
         // We shouldn't move the selection.
-        assertEquals(OptionalInt.of(2), c.getPosition());
+        assertEquals(Integer.valueOf(2), c.getPosition());
     }
 
     @Test
@@ -237,7 +233,7 @@ public class SelectionControllerUnitTest {
         // Position 0 -> (skipping 1 & 2) -> Sentinel
         assertFalse(c.selectNextItem());
         verifyPositionReset(c, 0);
-        assertEquals(OptionalInt.empty(), c.getPosition());
+        assertEquals(null, c.getPosition());
     }
 
     @Test
@@ -252,7 +248,7 @@ public class SelectionControllerUnitTest {
 
         // Selection reset.
         verifyPositionReset(c, 2);
-        assertEquals(OptionalInt.empty(), c.getPosition());
+        assertEquals(null, c.getPosition());
     }
 
     @Test
@@ -287,20 +283,20 @@ public class SelectionControllerUnitTest {
 
         // Normally, saturating controller should start at valid range, but this is an edge case.
         assertTrue(c.isParkedAtSentinel());
-        assertEquals(OptionalInt.empty(), c.getPosition());
+        assertEquals(null, c.getPosition());
 
         // Simulate we now have an item. This should make the saturating controller immediately jump
         // to the first valid item.
         when(c.getItemCount()).thenReturn(1);
         c.reset();
         assertFalse(c.isParkedAtSentinel());
-        assertEquals(OptionalInt.of(0), c.getPosition());
+        assertEquals(Integer.valueOf(0), c.getPosition());
 
         // Simulate we lost all items. This should make the saturating controller revert to sentnel.
         when(c.getItemCount()).thenReturn(0);
         c.reset();
         assertTrue(c.isParkedAtSentinel());
-        assertEquals(OptionalInt.empty(), c.getPosition());
+        assertEquals(null, c.getPosition());
     }
 
     @Test

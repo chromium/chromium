@@ -20,8 +20,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController.Mode;
 
-import java.util.OptionalInt;
-
 /** Robolectric unit tests for {@link SimpleSelectionController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SimpleSelectionControllerUnitTest {
@@ -32,7 +30,7 @@ public class SimpleSelectionControllerUnitTest {
 
     private void verifyPositionSet(SelectionController c, int position) {
         verify(mListener).onSelectionChanged(position, true);
-        assertEquals(OptionalInt.of(position), c.getPosition());
+        assertEquals(Integer.valueOf(position), c.getPosition());
         assertFalse(c.isParkedAtSentinel());
         clearInvocations(mListener);
     }

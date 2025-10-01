@@ -417,10 +417,10 @@ class SafetyCheckMediator {
         PropertyModel passwordsCheckModel = getPasswordsCheckModelForStoreType(passwordStorageType);
         if (passwordsCheckModel == null) return;
 
-        if (passwordSafetyCheckResult.getBreachedCount().isPresent()) {
+        if (passwordSafetyCheckResult.getBreachedCount() != null) {
             passwordsCheckModel.set(
                     PasswordsCheckPreferenceProperties.COMPROMISED_PASSWORDS_COUNT,
-                    passwordSafetyCheckResult.getBreachedCount().getAsInt());
+                    passwordSafetyCheckResult.getBreachedCount());
         }
 
         @PasswordsState int passwordsState;
@@ -441,8 +441,8 @@ class SafetyCheckMediator {
 
     private @PasswordsState int getPasswordStateWhenInitialLoad(
             PasswordCheckResult passwordCheckResult) {
-        if (passwordCheckResult.getBreachedCount().isPresent()
-                && passwordCheckResult.getBreachedCount().getAsInt() > 0) {
+        if (passwordCheckResult.getBreachedCount() != null
+                && passwordCheckResult.getBreachedCount() > 0) {
             return PasswordsState.COMPROMISED_EXIST;
         }
         @PasswordsState

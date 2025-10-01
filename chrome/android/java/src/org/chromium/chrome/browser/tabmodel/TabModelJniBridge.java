@@ -45,7 +45,6 @@ import org.chromium.url.Origin;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Set;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
@@ -159,13 +158,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     @Override
-    public OptionalInt getNativeSessionIdForTesting() {
+    public @Nullable Integer getNativeSessionIdForTesting() {
         if (!isNativeInitialized()) {
-            return OptionalInt.empty();
+            return null;
         }
 
-        return OptionalInt.of(
-                TabModelJniBridgeJni.get().getSessionIdForTesting(mNativeTabModelJniBridge));
+        return TabModelJniBridgeJni.get().getSessionIdForTesting(mNativeTabModelJniBridge);
     }
 
     /**

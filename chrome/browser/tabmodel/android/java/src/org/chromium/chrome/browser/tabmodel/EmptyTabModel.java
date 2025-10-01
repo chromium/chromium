@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.OptionalInt;
 import java.util.Set;
 
 /** Singleton class intended to stub out Tab model before it has been created. */
@@ -263,8 +262,8 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public OptionalInt getNativeSessionIdForTesting() {
-        return OptionalInt.empty();
+    public @Nullable Integer getNativeSessionIdForTesting() {
+        return null;
     }
 
     @Override

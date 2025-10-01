@@ -14,8 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
-import java.util.OptionalInt;
-
 /** Java class for communicating with the native {@code AndroidBrowserWindow}. */
 @NullMarked
 final class AndroidBrowserWindow {
@@ -76,13 +74,12 @@ final class AndroidBrowserWindow {
         return mAndroidBaseWindow.getNativePtrForTesting();
     }
 
-    OptionalInt getNativeSessionIdForTesting() {
+    @Nullable Integer getNativeSessionIdForTesting() {
         if (mNativeAndroidBrowserWindow == 0) {
-            return OptionalInt.empty();
+            return null;
         }
 
-        return OptionalInt.of(
-                AndroidBrowserWindowJni.get().getSessionIdForTesting(mNativeAndroidBrowserWindow));
+        return AndroidBrowserWindowJni.get().getSessionIdForTesting(mNativeAndroidBrowserWindow);
     }
 
     @CalledByNative
