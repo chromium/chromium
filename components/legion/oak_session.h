@@ -1,0 +1,48 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_LEGION_OAK_SESSION_H_
+#define COMPONENTS_LEGION_OAK_SESSION_H_
+
+#include <cstdint>
+#include <vector>
+
+#include <optional>
+
+namespace legion {
+
+// Interface for Oak session management.
+// Handles cryptographic operations, including handshake, encryption, and decryption.
+class OakSession {
+ public:
+  // Placeholder for request/response data. Likely a serialized proto.
+  using Request = std::vector<uint8_t>;
+  using Response = std::vector<uint8_t>;
+
+  virtual ~OakSession() = default;
+
+  // Generates the initial handshake message.
+  // Returns std::nullopt on failure.
+  virtual std::optional<Request> GetHandshakeMessage() = 0;
+
+  // Processes the server's handshake response (e.g., keys).
+  // This should be called after the initial handshake message has been sent
+  // and a response has been received from the transport layer.
+  // Returns true on success.
+  virtual bool ProcessHandshakeResponse(const Response& response) = 0;
+
+  // Encrypts the given data.
+  // This should only be called after the handshake is complete.
+  // Returns std::nullopt on failure.
+  virtual std::optional<Response> Encrypt(const Request& data) = 0;
+
+  // Decrypts the given data.
+  // This should only be called after the handshake is complete.
+  // Returns std::nullopt on failure.
+  virtual std::optional<Request> Decrypt(const Response& data) = 0;
+};
+
+}  // namespace legion
+
+#endif  // COMPONENTS_LEGION_OAK_SESSION_H_
