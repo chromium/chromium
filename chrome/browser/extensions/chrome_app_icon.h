@@ -82,11 +82,6 @@ class ChromeAppIcon : public IconImage::Observer {
 
   const gfx::ImageSkia& image_skia() const { return image_skia_; }
   const std::string& app_id() const { return app_id_; }
-#if BUILDFLAG(IS_CHROMEOS)
-  // Returns whether the icon is badged because it's an extension app that has
-  // its Android analog installed.
-  bool has_chrome_badge() const { return has_chrome_badge_; }
-#endif
 
  private:
   const Extension* GetExtension();
@@ -107,12 +102,6 @@ class ChromeAppIcon : public IconImage::Observer {
   // Contains current icon image. This is static image with applied effects and
   // it is updated each time when `icon_` is updated.
   gfx::ImageSkia image_skia_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Whether the icon got badged because it's an extension app that has its
-  // Android analog installed.
-  bool has_chrome_badge_ = false;
-#endif
 
   const int resource_size_in_dip_;
 

@@ -154,10 +154,9 @@ void ChromeAppIcon::UpdateIcon() {
   Badge badge_type = Badge::kNone;
   bool app_launchable = util::IsAppLaunchable(app_id_, browser_context_);
 #if BUILDFLAG(IS_CHROMEOS)
-  has_chrome_badge_ = util::ShouldApplyChromeBadge(browser_context_, app_id_);
   if (!app_launchable) {
     badge_type = Badge::kBlocked;
-  } else if (has_chrome_badge_) {
+  } else if (util::ShouldApplyChromeBadge(browser_context_, app_id_)) {
     badge_type = Badge::kChrome;
   }
 #endif
