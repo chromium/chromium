@@ -46,14 +46,6 @@ void JNI_DomDistillerTabUtils_DistillCurrentPageAndViewIfSuccessful(
           jni_zero::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
-void JNI_DomDistillerTabUtils_DistillCurrentPageAndView(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& j_web_contents) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
-  ::DistillCurrentPageAndView(web_contents);
-}
-
 void JNI_DomDistillerTabUtils_DistillCurrentPage(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_source_web_contents) {

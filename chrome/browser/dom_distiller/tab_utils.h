@@ -18,11 +18,6 @@ void DistillCurrentPageAndViewIfSuccessful(
     content::WebContents* web_contents,
     base::OnceCallback<void(bool)> callback);
 
-// Creates a new WebContents and navigates it to view the URL of the current
-// page, while in the background starts distilling the current page. This method
-// takes ownership over the old WebContents after swapping in the new one.
-void DistillCurrentPageAndView(content::WebContents* old_web_contents);
-
 // Starts distillation in the `source_web_contents`. The viewer needs to be
 // created separately.
 void DistillCurrentPage(content::WebContents* source_web_contents);
