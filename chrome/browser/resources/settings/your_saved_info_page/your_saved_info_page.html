@@ -1,3 +1,39 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+  padding-top: 20px;
+  outline: none;
+  text-align: center;
+}
 
-<h2 id="yourSavedInfoPageTitle">Your Saved Info (Placeholder text)</h2>
+#subtitle {
+  font-size: 0.813rem;
+  line-height: 1.25rem;
+  margin: 8px auto 4px auto;
+  max-width: 400px;
+  text-align: center;
+}
+
+.section-header {
+  color: var(--cr-primary-text-color);
+  font-size: 0.88rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+  margin-top: var(--cr-section-vertical-margin);
+  outline: none;
+  padding-bottom: 4px;
+  padding-top: 8px;
+}
+</style>
+
+<h1 id="title">$i18n{yourSavedInfoPageTitle}</h1>
+<div id="subtitle" class="secondary">$i18n{yourSavedInfoPageDescription}</div>
+
+<h2 id="yourSavedInfoPageTitle" class="section-header">
+  $i18n{yourSavedInfoPageTitle}
+</h2>

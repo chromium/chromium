@@ -1228,6 +1228,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"autofillPageTitle", IDS_SETTINGS_AUTOFILL_AND_PASSWORDS},
       {"yourSavedInfoPageTitle", IDS_SETTINGS_YOUR_SAVED_INFO},
+      {"yourSavedInfoPageDescription",
+       IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION},
       {"passwordsDescription", IDS_SETTINGS_PASSWORD_MANAGER_DESCRIPTION},
       {"genericCreditCard", IDS_AUTOFILL_CC_GENERIC},
       {"creditCards", IDS_AUTOFILL_PAYMENT_METHODS},
