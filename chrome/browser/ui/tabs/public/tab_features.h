@@ -124,6 +124,12 @@ class ChromeWalletablePassClient;
 }  // namespace wallet
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+namespace web_app {
+class ProtocolHandlerPickerCoordinator;
+}  // namespace web_app
+#endif
+
 namespace tabs {
 
 class TabAlertController;
@@ -453,6 +459,11 @@ class TabFeatures {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<wallet::ChromeWalletablePassClient> walletable_pass_client_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<web_app::ProtocolHandlerPickerCoordinator>
+      protocol_handler_picker_coordinator_;
 #endif
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

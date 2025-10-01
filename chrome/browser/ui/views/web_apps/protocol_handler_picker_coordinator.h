@@ -13,7 +13,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -21,21 +22,27 @@
 namespace web_app {
 
 // This class manages the UI flow for picking a web app to handle a protocol
-// request. Its lifetime is tied to the WebContents it's attached to.
-class ProtocolHandlerPickerCoordinator
-    : public content::WebContentsUserData<ProtocolHandlerPickerCoordinator> {
+// request. Its lifetime is tied to the TabInterface it's attached to.
+class ProtocolHandlerPickerCoordinator {
  public:
-  ~ProtocolHandlerPickerCoordinator() override;
+  ProtocolHandlerPickerCoordinator(tabs::TabInterface& tab,
+                                   apps::AppServiceProxy* proxy);
+  ~ProtocolHandlerPickerCoordinator();
+
+  DECLARE_USER_DATA(ProtocolHandlerPickerCoordinator);
+  static ProtocolHandlerPickerCoordinator* From(tabs::TabInterface* tab);
 
   void ShowPicker(const GURL& protocol_url,
                   const std::vector<std::string>& app_ids,
                   const std::optional<url::Origin>& initiating_origin);
 
+  std::optional<std::string> FindPreferredApp(
+      const GURL& protocol_url,
+      const std::vector<std::string>& app_ids);
+
+  void LaunchApp(const GURL& protocol_url, const std::string& app_id);
+
  private:
-  friend class content::WebContentsUserData<ProtocolHandlerPickerCoordinator>;
-
-  explicit ProtocolHandlerPickerCoordinator(content::WebContents* web_contents);
-
   void GatherAppData(const GURL& protocol_url,
                      const std::vector<std::string>& app_ids,
                      const std::optional<url::Origin>& initiating_origin);
@@ -47,14 +54,16 @@ class ProtocolHandlerPickerCoordinator
                       std::optional<ProtocolHandlerPickerDialogResult> result);
   bool HasOpenDialogWidget() const;
 
-  const raw_ptr<apps::AppServiceProxy> proxy_;
+  const raw_ref<tabs::TabInterface> tab_;
+  ui::ScopedUnownedUserData<ProtocolHandlerPickerCoordinator>
+      scoped_unowned_user_data_;
+
+  const raw_ref<apps::AppServiceProxy> proxy_;
 
   // Owns the currently opened dialog for this tab.
   std::unique_ptr<views::Widget> dialog_;
 
   base::WeakPtrFactory<ProtocolHandlerPickerCoordinator> weak_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 // If there's a preferred app among `app_ids` for handling `protocol_url`,

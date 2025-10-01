@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/web_apps/protocol_handler_picker_dialog.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -31,40 +32,26 @@ namespace {
 
 constexpr int kIconSizeInDip = 32;
 
-void LaunchApp(apps::AppServiceProxy* proxy,
-               const std::string& app_id,
-               const GURL& protocol_url) {
-  apps::AppLaunchParams params(app_id,
-                               apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                               apps::LaunchSource::kFromProtocolHandler);
-  params.protocol_handler_launch_url = protocol_url;
-  proxy->LaunchAppWithParams(std::move(params));
-}
-
-void MaybeCloseWebContentsAsync(content::WebContents* web_contents) {
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  if (!tab) {
-    return;
-  }
+void MaybeCloseTabAsync(tabs::TabInterface& tab) {
   TabStripModel* tab_strip_model =
-      tab->GetBrowserWindowInterface()->GetTabStripModel();
+      tab.GetBrowserWindowInterface()->GetTabStripModel();
   // If there's more than one tab in the browser corresponding to the current
   // tab and the current tab still in the initial navigation state, it's
   // expected to be closed.
-  if (tab_strip_model->GetIndexOfTab(tab) != TabStripModel::kNoTab &&
+  if (tab_strip_model->GetIndexOfTab(&tab) != TabStripModel::kNoTab &&
       tab_strip_model->count() > 1 &&
-      web_contents->GetController().IsInitialNavigation()) {
+      tab.GetContents()->GetController().IsInitialNavigation()) {
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&content::WebContents::Close,
-                                  web_contents->GetWeakPtr()));
+        FROM_HERE,
+        base::BindOnce(&tabs::TabInterface::Close, tab.GetWeakPtr()));
   }
 }
 
 }  // namespace
 
 namespace web_app {
+
+DEFINE_USER_DATA(ProtocolHandlerPickerCoordinator);
 
 void ProtocolHandlerPickerCoordinator::ShowPicker(
     const GURL& protocol_url,
@@ -73,17 +60,42 @@ void ProtocolHandlerPickerCoordinator::ShowPicker(
   GatherAppData(protocol_url, app_ids, initiator_origin);
 }
 
-ProtocolHandlerPickerCoordinator::ProtocolHandlerPickerCoordinator(
-    content::WebContents* web_contents)
-    : content::WebContentsUserData<ProtocolHandlerPickerCoordinator>(
-          *web_contents),
-      proxy_(apps::AppServiceProxyFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-  CHECK(proxy_) << " AppServiceProxy must exist for this instance of "
-                   "WebContents; the caller is responsible for ensuring this.";
+std::optional<std::string> ProtocolHandlerPickerCoordinator::FindPreferredApp(
+    const GURL& protocol_url,
+    const std::vector<std::string>& app_ids) {
+  if (std::optional<std::string> app_id =
+          proxy_->PreferredAppsList().FindPreferredAppForUrl(protocol_url)) {
+    if (base::Contains(app_ids, *app_id)) {
+      return app_id;
+    }
+  }
+  return std::nullopt;
 }
 
+void ProtocolHandlerPickerCoordinator::LaunchApp(const GURL& protocol_url,
+                                                 const std::string& app_id) {
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               apps::LaunchSource::kFromProtocolHandler);
+  params.protocol_handler_launch_url = protocol_url;
+  proxy_->LaunchAppWithParams(std::move(params));
+}
+
+ProtocolHandlerPickerCoordinator::ProtocolHandlerPickerCoordinator(
+    tabs::TabInterface& tab,
+    apps::AppServiceProxy* proxy)
+    : tab_(tab),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this),
+      proxy_(*proxy) {}
+
 ProtocolHandlerPickerCoordinator::~ProtocolHandlerPickerCoordinator() = default;
+
+// static
+ProtocolHandlerPickerCoordinator* ProtocolHandlerPickerCoordinator::From(
+    tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
 
 void ProtocolHandlerPickerCoordinator::GatherAppData(
     const GURL& protocol_url,
@@ -123,7 +135,7 @@ void ProtocolHandlerPickerCoordinator::ShowPickerWithEntries(
     const GURL& protocol_url,
     const std::optional<url::Origin>& initiator_origin,
     ProtocolHandlerPickerDialogEntries app_entries) {
-  auto dialog_model = CreateProtocolHandlerPickerDialog(
+      auto dialog_model = CreateProtocolHandlerPickerDialog(
       protocol_url, app_entries, initiator_origin,
       base::BindOnce(&ProtocolHandlerPickerCoordinator::OnPickerClosed,
                      weak_factory_.GetWeakPtr(), protocol_url));
@@ -138,32 +150,34 @@ void ProtocolHandlerPickerCoordinator::OnPickerClosed(
     if (result->remember_choice) {
       // TODO(cbug.com/422422887): Store the user pref in PreferredAppsList.
     }
-    LaunchApp(proxy_, app_id, protocol_url);
+    LaunchApp(protocol_url, app_id);
   }
 
-  MaybeCloseWebContentsAsync(&GetWebContents());
+  MaybeCloseTabAsync(*tab_);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ProtocolHandlerPickerCoordinator);
 
 void LaunchProtocolUrlInPreferredApp(
     content::WebContents* web_contents,
     const GURL& protocol_url,
     const std::vector<std::string>& app_ids,
     const std::optional<url::Origin>& initiator_origin) {
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  if (std::optional<std::string> app_id =
-          proxy->PreferredAppsList().FindPreferredAppForUrl(protocol_url)) {
-    if (base::Contains(app_ids, *app_id)) {
-      LaunchApp(proxy, *app_id, protocol_url);
-      MaybeCloseWebContentsAsync(web_contents);
-      return;
-    }
+  auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return;
   }
 
-  ProtocolHandlerPickerCoordinator::GetOrCreateForWebContents(web_contents)
-      ->ShowPicker(protocol_url, app_ids, initiator_origin);
+  auto* picker_coordinator = ProtocolHandlerPickerCoordinator::From(tab);
+  CHECK(picker_coordinator)
+      << " The caller is responsible for making sure that the coordinator exists.";
+
+  if (std::optional<std::string> app_id =
+          picker_coordinator->FindPreferredApp(protocol_url, app_ids)) {
+    picker_coordinator->LaunchApp(protocol_url, *app_id);
+    MaybeCloseTabAsync(*tab);
+    return;
+  }
+
+  picker_coordinator->ShowPicker(protocol_url, app_ids, initiator_origin);
 }
 
 }  // namespace web_app

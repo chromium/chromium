@@ -112,6 +112,12 @@
 #include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator.h"
 
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
+#include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
+#endif
+
 namespace tabs {
 
 TabFeatures::TabFeatures() = default;
@@ -431,6 +437,15 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           tab, &tab);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    protocol_handler_picker_coordinator_ =
+        GetUserDataFactory()
+            .CreateInstance<web_app::ProtocolHandlerPickerCoordinator>(
+                tab, tab, apps::AppServiceProxyFactory::GetForProfile(profile));
+  }
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(

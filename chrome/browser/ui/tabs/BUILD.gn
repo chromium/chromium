@@ -577,6 +577,10 @@ if (!is_android) {
     if (is_win || is_mac || is_linux || is_chromeos) {
       deps += [ "//chrome/browser/wallet" ]
     }
+
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/apps/app_service" ]
+    }
   }
 
   # This is a separate component to avoid possible circular deps.
