@@ -20949,21 +20949,6 @@
             ]
         }
     ],
-    "ReportingEventsForAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnterpriseSecurityEventReportingOnAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "RequestMainFrameAfterFirstVideoFrame": [
         {
             "platforms": [
