@@ -68,7 +68,7 @@ export function getHtml(this: ContextMenuEntrypointElement) {
     ${this.showCreateImage_ ?
     html`<button id="createImage" class="dropdown-item"
         @click="${this.onCreateImageClick_}">
-      <cr-icon icon="composebox:createImage"></cr-icon>
+      <cr-icon icon="composebox:nanoBanana"></cr-icon>
       ${this.i18n('createImages')}
     </button>` : ''}
   </cr-action-menu>

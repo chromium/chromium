@@ -41,7 +41,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
           @click="${this.onDeepSearchClick_}">
       </composebox-tool-chip>
       <composebox-tool-chip
-          icon="composebox:createImage"
+          icon="composebox:nanoBanana"
           label="${this.i18n('createImages')}"
           ?visible="${this.inCreateImageMode_}"
           @click="${this.onCreateImageClick_}">
