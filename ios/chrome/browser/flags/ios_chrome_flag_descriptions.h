@@ -674,9 +674,6 @@ extern const char kOmniboxLocalHistoryZeroSuggestBeyondNTPDescription[];
 extern const char kOmniboxMaxURLMatchesName[];
 extern const char kOmniboxMaxURLMatchesDescription[];
 
-extern const char kOmniboxMaxZPSMatchesName[];
-extern const char kOmniboxMaxZPSMatchesDescription[];
-
 extern const char kOmniboxMiaZps[];
 extern const char kOmniboxMiaZpsDescription[];
 

@@ -7534,11 +7534,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-max-zps-matches",
-    "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone" : 130
-  },
-  {
     "name": "omnibox-mia-zps",
     "owners": [ "niharm@google.com", "mahmadi@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone" : 148
