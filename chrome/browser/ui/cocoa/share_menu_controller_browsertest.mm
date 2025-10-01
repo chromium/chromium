@@ -75,15 +75,11 @@ class ShareMenuControllerTest : public InProcessBrowserTest {
   }
 
  protected:
-  // Create a menu item for |service| and trigger it using
-  // the target/action of real menu items created by
-  // |controller_|
+  // Create a menu item for `service` and trigger it using the target/action of
+  // real menu items created by `controller_`.
   void PerformShare(NSSharingService* service) {
     NSMenuItem* menu_item = [controller_ menuItemForService:service];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    [menu_item.target performSelector:menu_item.action withObject:menu_item];
-#pragma clang diagnostic pop
+    [NSApp sendAction:menu_item.action to:menu_item.target from:menu_item];
   }
   GURL url_;
   ShareMenuController* __strong controller_;
