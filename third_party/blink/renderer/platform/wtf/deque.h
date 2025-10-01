@@ -27,11 +27,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DEQUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DEQUE_H_
 
@@ -105,11 +100,11 @@ class Deque {
 
   T& front() {
     DCHECK_NE(start_, end_);
-    return buffer_.Buffer()[start_];
+    return UNSAFE_TODO(buffer_.Buffer()[start_]);
   }
   const T& front() const {
     DCHECK_NE(start_, end_);
-    return buffer_.Buffer()[start_];
+    return UNSAFE_TODO(buffer_.Buffer()[start_]);
   }
   T TakeFirst();
 
@@ -126,14 +121,14 @@ class Deque {
   T& at(wtf_size_t i) {
     CHECK_LT(i, size());
     wtf_size_t right = buffer_.capacity() - start_;
-    return i < right ? buffer_.Buffer()[start_ + i]
-                     : buffer_.Buffer()[i - right];
+    return i < right ? UNSAFE_TODO(buffer_.Buffer()[start_ + i])
+                     : UNSAFE_TODO(buffer_.Buffer()[i - right]);
   }
   const T& at(wtf_size_t i) const {
     CHECK_LT(i, size());
     wtf_size_t right = buffer_.capacity() - start_;
-    return i < right ? buffer_.Buffer()[start_ + i]
-                     : buffer_.Buffer()[i - right];
+    return i < right ? UNSAFE_TODO(buffer_.Buffer()[start_ + i])
+                     : UNSAFE_TODO(buffer_.Buffer()[i - right]);
   }
 
   T& operator[](wtf_size_t i) { return at(i); }
@@ -371,16 +366,19 @@ inline Deque<T, InlineCapacity, Allocator>::Deque(const Deque& other)
       end_(other.end_) {
   const T* other_buffer = other.buffer_.Buffer();
   if (start_ <= end_) {
-    TypeOperations::UninitializedCopy(
-        other_buffer + start_, other_buffer + end_, buffer_.Buffer() + start_,
-        VectorOperationOrigin::kConstruction);
-  } else {
-    TypeOperations::UninitializedCopy(other_buffer, other_buffer + end_,
-                                      buffer_.Buffer(),
+    TypeOperations::UninitializedCopy(UNSAFE_TODO(other_buffer + start_),
+                                      UNSAFE_TODO(other_buffer + end_),
+                                      UNSAFE_TODO(buffer_.Buffer() + start_),
                                       VectorOperationOrigin::kConstruction);
+  } else {
     TypeOperations::UninitializedCopy(
-        other_buffer + start_, other_buffer + buffer_.capacity(),
-        buffer_.Buffer() + start_, VectorOperationOrigin::kConstruction);
+        other_buffer, UNSAFE_TODO(other_buffer + end_), buffer_.Buffer(),
+        VectorOperationOrigin::kConstruction);
+    TypeOperations::UninitializedCopy(
+        UNSAFE_TODO(other_buffer + start_),
+        UNSAFE_TODO(other_buffer + buffer_.capacity()),
+        UNSAFE_TODO(buffer_.Buffer() + start_),
+        VectorOperationOrigin::kConstruction);
   }
 }
 
@@ -408,17 +406,21 @@ Deque<T, InlineCapacity, Allocator>::operator=(Deque&& other) {
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline void Deque<T, InlineCapacity, Allocator>::DestroyAll() {
   if (start_ <= end_) {
-    TypeOperations::Destruct(buffer_.Buffer() + start_,
-                             buffer_.Buffer() + end_);
-    buffer_.ClearUnusedSlots(buffer_.Buffer() + start_,
-                             buffer_.Buffer() + end_);
+    TypeOperations::Destruct(UNSAFE_TODO(buffer_.Buffer() + start_),
+                             UNSAFE_TODO(buffer_.Buffer() + end_));
+    buffer_.ClearUnusedSlots(UNSAFE_TODO(buffer_.Buffer() + start_),
+                             UNSAFE_TODO(buffer_.Buffer() + end_));
   } else {
-    TypeOperations::Destruct(buffer_.Buffer(), buffer_.Buffer() + end_);
-    buffer_.ClearUnusedSlots(buffer_.Buffer(), buffer_.Buffer() + end_);
-    TypeOperations::Destruct(buffer_.Buffer() + start_,
-                             buffer_.Buffer() + buffer_.capacity());
-    buffer_.ClearUnusedSlots(buffer_.Buffer() + start_,
-                             buffer_.Buffer() + buffer_.capacity());
+    TypeOperations::Destruct(buffer_.Buffer(),
+                             UNSAFE_TODO(buffer_.Buffer() + end_));
+    buffer_.ClearUnusedSlots(buffer_.Buffer(),
+                             UNSAFE_TODO(buffer_.Buffer() + end_));
+    TypeOperations::Destruct(
+        UNSAFE_TODO(buffer_.Buffer() + start_),
+        UNSAFE_TODO(buffer_.Buffer() + buffer_.capacity()));
+    buffer_.ClearUnusedSlots(
+        UNSAFE_TODO(buffer_.Buffer() + start_),
+        UNSAFE_TODO(buffer_.Buffer() + buffer_.capacity()));
   }
 }
 
@@ -522,11 +524,13 @@ void Deque<T, InlineCapacity, Allocator>::ExpandCapacity() {
     } else {
       wtf_size_t new_start = buffer_.capacity() - (old_capacity - start_);
       TypeOperations::MoveOverlapping(
-          old_buffer + start_, old_buffer + old_capacity,
-          buffer_.Buffer() + new_start,
+          UNSAFE_TODO(old_buffer + start_),
+          UNSAFE_TODO(old_buffer + old_capacity),
+          UNSAFE_TODO(buffer_.Buffer() + new_start),
           VectorOperationOrigin::kRegularModification);
-      buffer_.ClearUnusedSlots(old_buffer + start_,
-                               old_buffer + std::min(old_capacity, new_start));
+      buffer_.ClearUnusedSlots(
+          UNSAFE_TODO(old_buffer + start_),
+          UNSAFE_TODO(old_buffer + std::min(old_capacity, new_start)));
       start_ = new_start;
     }
     return;
@@ -534,19 +538,24 @@ void Deque<T, InlineCapacity, Allocator>::ExpandCapacity() {
   buffer_.AllocateBuffer(new_capacity,
                          VectorOperationOrigin::kRegularModification);
   if (start_ <= end_) {
-    TypeOperations::Move(old_buffer + start_, old_buffer + end_,
-                         buffer_.Buffer() + start_,
+    TypeOperations::Move(UNSAFE_TODO(old_buffer + start_),
+                         UNSAFE_TODO(old_buffer + end_),
+                         UNSAFE_TODO(buffer_.Buffer() + start_),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(old_buffer + start_, old_buffer + end_);
+    buffer_.ClearUnusedSlots(UNSAFE_TODO(old_buffer + start_),
+                             UNSAFE_TODO(old_buffer + end_));
   } else {
-    TypeOperations::Move(old_buffer, old_buffer + end_, buffer_.Buffer(),
+    TypeOperations::Move(old_buffer, UNSAFE_TODO(old_buffer + end_),
+                         buffer_.Buffer(),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(old_buffer, old_buffer + end_);
+    buffer_.ClearUnusedSlots(old_buffer, UNSAFE_TODO(old_buffer + end_));
     wtf_size_t new_start = buffer_.capacity() - (old_capacity - start_);
-    TypeOperations::Move(old_buffer + start_, old_buffer + old_capacity,
-                         buffer_.Buffer() + new_start,
+    TypeOperations::Move(UNSAFE_TODO(old_buffer + start_),
+                         UNSAFE_TODO(old_buffer + old_capacity),
+                         UNSAFE_TODO(buffer_.Buffer() + new_start),
                          VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(old_buffer + start_, old_buffer + old_capacity);
+    buffer_.ClearUnusedSlots(UNSAFE_TODO(old_buffer + start_),
+                             UNSAFE_TODO(old_buffer + old_capacity));
     start_ = new_start;
   }
   buffer_.DeallocateBuffer(old_buffer);
@@ -570,7 +579,7 @@ template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename U>
 inline void Deque<T, InlineCapacity, Allocator>::push_back(U&& value) {
   ExpandCapacityIfNeeded();
-  T* new_element = &buffer_.Buffer()[end_];
+  T* new_element = &UNSAFE_TODO(buffer_.Buffer()[end_]);
   if (end_ == buffer_.capacity() - 1)
     end_ = 0;
   else
@@ -588,14 +597,14 @@ inline void Deque<T, InlineCapacity, Allocator>::push_front(U&& value) {
   else
     --start_;
   ConstructTraits<T, VectorTraits<T>, Allocator>::ConstructAndNotifyElement(
-      &buffer_.Buffer()[start_], std::forward<U>(value));
+      &UNSAFE_TODO(buffer_.Buffer()[start_]), std::forward<U>(value));
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename... Args>
 inline void Deque<T, InlineCapacity, Allocator>::emplace_back(Args&&... args) {
   ExpandCapacityIfNeeded();
-  T* new_element = &buffer_.Buffer()[end_];
+  T* new_element = &UNSAFE_TODO(buffer_.Buffer()[end_]);
   if (end_ == buffer_.capacity() - 1)
     end_ = 0;
   else
@@ -613,16 +622,16 @@ inline void Deque<T, InlineCapacity, Allocator>::emplace_front(Args&&... args) {
   else
     --start_;
   ConstructTraits<T, VectorTraits<T>, Allocator>::ConstructAndNotifyElement(
-      &buffer_.Buffer()[start_], std::forward<Args>(args)...);
+      &UNSAFE_TODO(buffer_.Buffer()[start_]), std::forward<Args>(args)...);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline void Deque<T, InlineCapacity, Allocator>::pop_front() {
   DCHECK(!empty());
-  TypeOperations::Destruct(&buffer_.Buffer()[start_],
-                           &buffer_.Buffer()[start_ + 1]);
-  buffer_.ClearUnusedSlots(&buffer_.Buffer()[start_],
-                           &buffer_.Buffer()[start_ + 1]);
+  TypeOperations::Destruct(&UNSAFE_TODO(buffer_.Buffer()[start_]),
+                           &UNSAFE_TODO(buffer_.Buffer()[start_ + 1]));
+  buffer_.ClearUnusedSlots(&UNSAFE_TODO(buffer_.Buffer()[start_]),
+                           &UNSAFE_TODO(buffer_.Buffer()[start_ + 1]));
   if (start_ == buffer_.capacity() - 1)
     start_ = 0;
   else
@@ -636,10 +645,10 @@ inline void Deque<T, InlineCapacity, Allocator>::pop_back() {
     end_ = buffer_.capacity() - 1;
   else
     --end_;
-  TypeOperations::Destruct(&buffer_.Buffer()[end_],
-                           &buffer_.Buffer()[end_ + 1]);
-  buffer_.ClearUnusedSlots(&buffer_.Buffer()[end_],
-                           &buffer_.Buffer()[end_ + 1]);
+  TypeOperations::Destruct(&UNSAFE_TODO(buffer_.Buffer()[end_]),
+                           &UNSAFE_TODO(buffer_.Buffer()[end_ + 1]));
+  buffer_.ClearUnusedSlots(&UNSAFE_TODO(buffer_.Buffer()[end_]),
+                           &UNSAFE_TODO(buffer_.Buffer()[end_ + 1]));
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
@@ -658,21 +667,26 @@ inline void Deque<T, InlineCapacity, Allocator>::erase(wtf_size_t position) {
     return;
 
   T* buffer = buffer_.Buffer();
-  TypeOperations::Destruct(&buffer[position], &buffer[position + 1]);
+  TypeOperations::Destruct(&UNSAFE_TODO(buffer[position]),
+                           &UNSAFE_TODO(buffer[position + 1]));
 
   // Find which segment of the circular buffer contained the remove element,
   // and only move elements in that part.
   if (position >= start_) {
     TypeOperations::MoveOverlapping(
-        buffer + start_, buffer + position, buffer + start_ + 1,
+        UNSAFE_TODO(buffer + start_), UNSAFE_TODO(buffer + position),
+        UNSAFE_TODO(buffer + start_ + 1),
         VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(buffer + start_, buffer + start_ + 1);
+    buffer_.ClearUnusedSlots(UNSAFE_TODO(buffer + start_),
+                             UNSAFE_TODO(buffer + start_ + 1));
     start_ = (start_ + 1) % buffer_.capacity();
   } else {
     TypeOperations::MoveOverlapping(
-        buffer + position + 1, buffer + end_, buffer + position,
+        UNSAFE_TODO(buffer + position + 1), UNSAFE_TODO(buffer + end_),
+        UNSAFE_TODO(buffer + position),
         VectorOperationOrigin::kRegularModification);
-    buffer_.ClearUnusedSlots(buffer + end_ - 1, buffer + end_);
+    buffer_.ClearUnusedSlots(UNSAFE_TODO(buffer + end_ - 1),
+                             UNSAFE_TODO(buffer + end_));
     end_ = (end_ - 1 + buffer_.capacity()) % buffer_.capacity();
   }
 }
@@ -731,7 +745,7 @@ inline void DequeIteratorBase<T, InlineCapacity, Allocator>::Decrement() {
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 inline T* DequeIteratorBase<T, InlineCapacity, Allocator>::After() const {
   CHECK_NE(index_, deque_->end_);
-  return &deque_->buffer_.Buffer()[index_];
+  return &UNSAFE_TODO(deque_->buffer_.Buffer()[index_]);
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
