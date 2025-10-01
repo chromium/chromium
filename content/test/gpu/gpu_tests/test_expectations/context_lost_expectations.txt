@@ -247,8 +247,6 @@ crbug.com/338574390 [ angle-metal graphite-enabled amd-0x7340 mac ] ContextLost_
 crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromQuantity [ Slow ]
 crbug.com/425745937 [ fuchsia web-engine-shell ] ContextLost_WebGLContextLostFromSelectElement [ Slow ]
 
-crbug.com/446113735 [ android android-pixel-10 ] ContextLost_WebGL2Blocked [ RetryOnFailure ]
-
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################

@@ -161,12 +161,6 @@ gl::GLContextAttribs GenerateGLContextAttribsForDecoder(
     attribs.client_minor_es_version = 0;
   }
 
-  if (gl::GetGlWorkarounds().disable_es3gl_context) {
-    // Forcefully disable ES3 contexts
-    attribs.client_major_es_version = 2;
-    attribs.client_minor_es_version = 0;
-  }
-
   if (IsES31ForTestingContextType(context_type)) {
     // Forcefully disable ES 3.1 contexts. Tests create contexts by initializing
     // the attributes directly.
@@ -195,10 +189,8 @@ gl::GLContextAttribs GenerateGLContextAttribsForCompositor(
     attribs.allow_client_arrays = true;
   }
 
-  bool force_es2_context = gl::GetGlWorkarounds().disable_es3gl_context;
-  if (features::UseGles2ForOopR() && use_passthrough_cmd_decoder) {
-    force_es2_context = true;
-  }
+  bool force_es2_context =
+      features::UseGles2ForOopR() && use_passthrough_cmd_decoder;
 
   attribs.client_major_es_version = force_es2_context ? 2 : 3;
   attribs.client_minor_es_version = 0;

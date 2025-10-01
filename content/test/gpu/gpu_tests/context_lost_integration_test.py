@@ -156,7 +156,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'worker-webgl-raf-after-gpu-crash.html'),
              ('ContextLost_OffscreenCanvasRecoveryAfterGPUCrash',
               'offscreencanvas_recovery_after_gpu_crash.html'),
-             ('ContextLost_WebGL2Blocked', 'webgl2-context-blocked.html'),
              ('ContextLost_WebGL2UnpackImageHeight',
               'webgl2-unpack-image-height.html'),
              ('ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext',
@@ -572,16 +571,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._KillGPUProcess(1, False)
     self._WaitForTabAndCheckCompletion()
     self._RestartBrowser('must restart after tests that kill the GPU process')
-
-  def _ContextLost_WebGL2Blocked(self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs(['--disable_es3_gl_context=1'])
-    self._NavigateAndWaitForLoad(test_path)
-    tab = self.tab
-    tab.EvaluateJavaScript('runTest()')
-    self._WaitForTabAndCheckCompletion()
-    # Attempting to create a WebGL 2.0 context when ES 3.0 is
-    # blocklisted should not cause the GPU process to crash.
-    self._CheckCrashCount(tab, 0)
 
   def _ContextLost_WebGL2UnpackImageHeight(self, test_path: str) -> None:
     self.RestartBrowserIfNecessaryWithArgs([

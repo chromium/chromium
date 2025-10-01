@@ -1423,19 +1423,6 @@
       ]
     },
     {
-      "id": 252,
-      "description": "Core profile doesn't work on NVidia GeForce GT 120",
-      "cr_bugs": [657817],
-      "os": {
-        "type": "macosx"
-      },
-      "vendor_id": "0x10de",
-      "device_id": ["0x0640"],
-      "features": [
-        "disable_es3_gl_context"
-      ]
-    },
-    {
       "id": 254,
       "description": "Limit MSAA quality samples to 4 and storage samples 2 on AMD Stoney",
       "cr_bugs": [875471],

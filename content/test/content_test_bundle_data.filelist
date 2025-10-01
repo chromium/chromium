@@ -7596,7 +7596,6 @@ data/gpu/webgl1_conformance_android_runtimes.json
 data/gpu/webgl1_conformance_linux_runtimes.json
 data/gpu/webgl1_conformance_mac_runtimes.json
 data/gpu/webgl1_conformance_win_runtimes.json
-data/gpu/webgl2-context-blocked.html
 data/gpu/webgl2-copytexsubimage2d-high-power-switch-does-not-crash.html
 data/gpu/webgl2-multisampling-high-power-switch-does-not-crash.html
 data/gpu/webgl2-multisampling-high-power-switch-loses-context.html

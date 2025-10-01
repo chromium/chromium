@@ -312,7 +312,6 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
   gl::GlWorkarounds workarounds = {
       .disable_d3d11 = is_enabled(DISABLE_D3D11),
       .disable_metal = is_enabled(DISABLE_METAL),
-      .disable_es3gl_context = is_enabled(DISABLE_ES3_GL_CONTEXT),
 #if BUILDFLAG(IS_WIN)
       .disable_direct_composition_video_overlays =
           is_enabled(DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS),
@@ -326,8 +325,7 @@ void SetProcessGlWorkaroundsFromGpuFeatures(
 // Adjust gpu feature status based on enabled gpu driver bug workarounds.
 void AdjustGpuFeatureStatusToWorkarounds(GpuFeatureInfo* gpu_feature_info,
                                          const GPUInfo& gpu_info) {
-  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_D3D11) ||
-      gpu_feature_info->IsWorkaroundEnabled(DISABLE_ES3_GL_CONTEXT)) {
+  if (gpu_feature_info->IsWorkaroundEnabled(DISABLE_D3D11)) {
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
         kGpuFeatureStatusBlocklisted;
   }
