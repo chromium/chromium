@@ -4363,7 +4363,14 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollWithTouchEvents) {
   MoveTouchPoint(0, 65, 10);
   SendTouchEvent();
   events = GetAndResetDispatchedMessages();
-  EXPECT_EQ("TouchMove", GetMessageNames(events));
+  // When `SendEmptyGestureScrollUpdate` is enabled, `TouchMove` events are
+  // queued and not dispatched immediately. Otherwise, the `TouchMove` is
+  // dispatched right away.
+  if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate)) {
+    EXPECT_EQ(0U, GetAndResetDispatchedMessages().size());
+  } else {
+    EXPECT_EQ("TouchMove", GetMessageNames(events));
+  }
   SendNotConsumedAcks(events);
 
   SimulateGestureScrollUpdateEvent(45, 0, 0);
@@ -4388,7 +4395,15 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollWithTouchEvents) {
   EXPECT_EQ(15.f, overscroll_delegate()->delta_x());
   EXPECT_EQ(0.f, overscroll_delegate()->delta_y());
   events = GetAndResetDispatchedMessages();
-  EXPECT_EQ("TouchMove", GetMessageNames(events));
+
+  // When `SendEmptyGestureScrollUpdate` is enabled, `TouchMove` events are
+  // queued and not dispatched immediately. Otherwise, the `TouchMove` is
+  // dispatched right away.
+  if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate)) {
+    EXPECT_EQ(0U, GetAndResetDispatchedMessages().size());
+  } else {
+    EXPECT_EQ("TouchMove", GetMessageNames(events));
+  }
   SendNotConsumedAcks(events);
 
   SimulateGestureScrollUpdateEvent(-10, 0, 0);
