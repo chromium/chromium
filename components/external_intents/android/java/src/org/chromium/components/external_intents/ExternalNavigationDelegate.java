@@ -92,13 +92,13 @@ public interface ExternalNavigationDelegate {
     boolean hasValidTab();
 
     /**
-     * @return Whether it's possible to close the current tab on launching on an incognito intent.
+     * @return Whether it's possible to close the current tab on launching on an intent.
      *     TODO(blundell): Investigate whether it would be feasible to change the //chrome
      *     implementation of this method to be identical to that of its implementation of
      *     ExternalNavigationDelegate#hasValidTab() and then eliminate this method in favor of
      *     ExternalNavigationHandler calling hasValidTab() if so.
      */
-    boolean canCloseTabOnIncognitoIntentLaunch();
+    boolean canCloseTabOnIntentLaunch();
 
     /* Invoked when the tab associated with this delegate should be closed. */
     void closeTab();
