@@ -640,9 +640,7 @@ BASE_FEATURE(kAndroidWindowPopupPredictFinalBounds,
 BASE_FEATURE(kAndroidWindowPopupResizeAfterSpawn,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidXRUsesSurfaceControl,
-             "AndroidWindowPopupResizeAfterSpawn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidXRUsesSurfaceControl, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidZoomIndicator, base::FEATURE_DISABLED_BY_DEFAULT);
 
