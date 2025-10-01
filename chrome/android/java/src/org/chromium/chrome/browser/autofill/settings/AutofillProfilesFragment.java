@@ -134,7 +134,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     public static final String GOOGLE_ACCOUNT_WORK_ADDRESS_EDIT_URL =
             "https://myaccount.google.com/address/work?utm_source=chrome&utm_campaign=manage_addresses";
     public static final String GOOGLE_ACCOUNT_NAME_EMAIL_ADDRESS_EDIT_URL =
-            "https://myaccount.google.com/personal-info";
+            "https://myaccount.google.com/personal-info?utm_source=chrome-settings&utm_medium=autofill";
 
     private @Nullable AddressEditorCoordinator mAddressEditor;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();

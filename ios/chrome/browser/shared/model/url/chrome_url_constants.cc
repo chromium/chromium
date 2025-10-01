@@ -155,7 +155,8 @@ const char kGoogleMyAccountWorkAddressURL[] =
     "work?utm_source=chrome&utm_campaign=manage_addresses";
 
 const char kGoogleAccountNameEmailAddressEditURL[] =
-    "https://myaccount.google.com/personal-info";
+    "https://myaccount.google.com/"
+    "personal-info?utm_source=chrome-settings&utm_medium=autofill";
 
 const char kReadingListReferrerURL[] =
     "chrome://do_not_consider_for_most_visited/reading_list";

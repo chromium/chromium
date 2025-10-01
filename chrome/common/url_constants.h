@@ -320,7 +320,8 @@ inline constexpr char kGoogleAccountWorkAddressURL[] =
 
 // URL of the change Google Account name page.
 inline constexpr char kGoogleAccountNameEmailAddressEditURL[] =
-    "https://myaccount.google.com/personal-info";
+    "https://myaccount.google.com/"
+    "personal-info?utm_source=chrome-settings&utm_medium=autofill";
 
 // URL of the two factor authentication setup required intersitial.
 inline constexpr char kGoogleTwoFactorIntersitialURL[] =
