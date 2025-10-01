@@ -39,7 +39,8 @@ found in the LICENSE file.
     <dimen name="keyboard_accessory_tab_icon_width">48dp</dimen>
     <dimen name="keyboard_accessory_tab_icon_spacing">12dp</dimen>
     <dimen name="keyboard_accessory_elevation">3dp</dimen>
-    <dimen name="keyboard_accessory_border_radius">24dp</dimen>
+    <dimen name="keyboard_accessory_corner_radius">24dp</dimen>
+    <dimen name="keyboard_accessory_corner_radius_redesign">14dp</dimen>
     <dimen name="all_passwords_bottom_sheet_padding">20dp</dimen>
     <dimen name="all_passwords_bottom_sheet_recycler_view_padding">6dp</dimen>
     <dimen name="all_passwords_bottom_sheet_search_view_bottom_padding">8dp</dimen>
