@@ -482,34 +482,39 @@ bool DateComponents::SetWeek(int year, int week_number) {
   return true;
 }
 
-double DateComponents::MillisecondsSinceEpochForTime() const {
+base::TimeDelta DateComponents::MillisecondsSinceEpochForTime() const {
   DCHECK(type_ == kTime || type_ == kDateTimeLocal);
   base::TimeDelta time = base::Hours(hour_);
   time += base::Minutes(minute_);
   time += base::Seconds(second_);
   time += base::Milliseconds(millisecond_);
-  return time.InMillisecondsF();
+  return time;
 }
 
 double DateComponents::MillisecondsSinceEpoch() const {
+  base::TimeDelta time;
   switch (type_) {
     case kDate:
-      return DateToDaysFrom1970(year_, month_, month_day_) * kMsPerDay;
-    case kDateTimeLocal:
-      return DateToDaysFrom1970(year_, month_, month_day_) * kMsPerDay +
-             MillisecondsSinceEpochForTime();
-    case kMonth:
-      return DateToDaysFrom1970(year_, month_, 1) * kMsPerDay;
-    case kTime:
-      return MillisecondsSinceEpochForTime();
-    case kWeek:
-      return (DateToDaysFrom1970(year_, 0, 1) + OffsetTo1stWeekStart(year_) +
-              (week_ - 1) * 7) *
-             kMsPerDay;
-    case kInvalid:
+      time = base::Days(DateToDaysFrom1970(year_, month_, month_day_));
       break;
+    case kDateTimeLocal:
+      time = base::Days(DateToDaysFrom1970(year_, month_, month_day_));
+      time += MillisecondsSinceEpochForTime();
+      break;
+    case kMonth:
+      time = base::Days(DateToDaysFrom1970(year_, month_, 1));
+      break;
+    case kTime:
+      time = MillisecondsSinceEpochForTime();
+      break;
+    case kWeek:
+      time = base::Days(DateToDaysFrom1970(year_, 0, 1) +
+                        OffsetTo1stWeekStart(year_) + (week_ - 1) * 7);
+      break;
+    case kInvalid:
+      NOTREACHED();
   }
-  NOTREACHED();
+  return time.InMillisecondsF();
 }
 
 double DateComponents::MonthsSinceEpoch() const {
