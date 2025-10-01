@@ -1101,21 +1101,6 @@
             ]
         }
     ],
-    "AndroidUseAdminsForEnterpriseInfo": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidUseAdminsForEnterpriseInfo"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidUseCorrectDisplayWorkArea": [
         {
             "platforms": [
