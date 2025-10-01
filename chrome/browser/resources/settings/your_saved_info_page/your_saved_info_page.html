@@ -37,3 +37,32 @@
 <h2 id="yourSavedInfoPageTitle" class="section-header">
   $i18n{yourSavedInfoPageTitle}
 </h2>
+
+<settings-section page-title="$i18n{yourSavedInfoRelatedServicesTitle}">
+  <div route-path="default">
+    <cr-link-row
+      id="passwordManagerButton"
+      label="$i18n{localPasswordManager}"
+      on-click="onPasswordManagerExternalLinkClick"
+      start-icon="cr20:password"
+      external
+    >
+    </cr-link-row>
+    <cr-link-row
+      id="walletButton"
+      label="$i18n{googleWalletTitle}"
+      on-click="onGoogleWalletExternalLinkClick"
+      start-icon="settings20:wallet"
+      external
+    >
+    </cr-link-row>
+    <cr-link-row
+      id="profileButton"
+      label="$i18n{googleAccount}"
+      on-click="onGoogleAccountExternalLinkClick"
+      start-icon="settings20:googleg"
+      external
+    >
+    </cr-link-row>
+  </div>
+</settings-section>

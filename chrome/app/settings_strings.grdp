@@ -414,6 +414,9 @@
   <message name="IDS_SETTINGS_YOUR_SAVED_INFO_DESCRIPTION" desc="Description of the 'Your saved info' page.">
     Manage your autofill info for faster browsing &#x2014; info like passwords, payment methods, addresses, and ID cards
   </message>
+  <message name="IDS_SETTINGS_RELATED_SERVICES_TITLE" desc="Title of the section allowing the user to access any related google services from the 'Your saved info' page.">
+    Related Google services
+  </message>
   <message name="IDS_PASSWORDS_PAGE_IMPORT_AUTHENTICATION_PROMPT_BIOMETRIC_SUFFIX" desc="Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message. Text for the dialog box that prompts the user for the biometric authentication before replacing passwords during Import.">
     replace existing passwords
   </message>
@@ -3700,7 +3703,9 @@
   <message name="IDS_SETTINGS_SIGNIN_CHROME_SIGNIN_OPTION_ALWAYS_ASK" desc="One of three options for the setting is called 'Sign in to Chrome when you sign in to other Google services'. When the user chooses this option, the user will be asked whether they want to sign in to Chrome after they sign in to a Google service (like Gmail) using Chrome. The verb tense should be descriptive, not imperative.">
     Ask every time
   </message>
-
+  <message name="IDS_SETTINGS_GOOGLE_ACCOUNT" desc="Label for the section that takes the user to the Google Account website from Related Google services.">
+    Google Account
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT" desc="Label for the button that takes the user to the Google Account website.">
       Manage your Google Account

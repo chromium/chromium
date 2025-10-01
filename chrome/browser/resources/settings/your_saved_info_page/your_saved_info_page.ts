@@ -15,6 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {PaymentsManagerImpl} from '../autofill_page/payments_manager_proxy.js';
 import type {PaymentsManagerProxy} from '../autofill_page/payments_manager_proxy.js';
 import type {AutofillManagerProxy, PersonalDataChangedListener} from '../autofill_page/autofill_manager_proxy.js';
+import {PasswordManagerImpl, PasswordManagerPage} from '../autofill_page/password_manager_proxy.js';
 import {AutofillManagerImpl} from '../autofill_page/autofill_manager_proxy.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
@@ -127,6 +128,29 @@ export class SettingsYourSavedInfoPageElement extends
           this.setPersonalDataListener_);
       this.setPersonalDataListener_ = null;
     }
+  }
+
+  /**
+   * Shows Password Manager page.
+   */
+  private onPasswordManagerExternalLinkClick() {
+    PasswordManagerImpl.getInstance().recordPasswordsPageAccessInSettings();
+    PasswordManagerImpl.getInstance().showPasswordManager(
+        PasswordManagerPage.PASSWORDS);
+  }
+
+  /**
+   * Opens Wallet page in a new tab.
+   */
+  private onGoogleWalletExternalLinkClick() {
+    window.open('https://wallet.google.com');
+  }
+
+  /**
+   * Opens Google Account page in a new tab.
+   */
+  private onGoogleAccountExternalLinkClick() {
+    window.open('https://myaccount.google.com');
   }
 }
 
