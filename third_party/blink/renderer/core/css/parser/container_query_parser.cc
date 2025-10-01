@@ -79,6 +79,9 @@ class SizeFeatureSet : public MediaQueryParser::FeatureSet {
            feature == media_feature_names::kAspectRatioMediaFeature ||
            feature == media_feature_names::kOrientationMediaFeature;
   }
+  bool IsAllowedWithValue(const AtomicString& feature) const override {
+    return true;
+  }
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
@@ -106,6 +109,9 @@ class StateFeatureSet : public MediaQueryParser::FeatureSet {
                              const ExecutionContext*) const override {
     return true;
   }
+  bool IsAllowedWithValue(const AtomicString& feature) const override {
+    return true;
+  }
   bool IsCaseSensitive(const AtomicString& feature) const override {
     return false;
   }
@@ -126,6 +132,9 @@ class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
   }
   bool IsAllowedWithoutValue(const AtomicString& feature,
                              const ExecutionContext*) const override {
+    return true;
+  }
+  bool IsAllowedWithValue(const AtomicString& feature) const override {
     return true;
   }
   bool IsCaseSensitive(const AtomicString& feature) const override {

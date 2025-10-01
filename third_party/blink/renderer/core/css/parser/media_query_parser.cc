@@ -37,11 +37,13 @@ bool MediaQueryParser::MediaQueryFeatureSet::IsAllowed(
       feature == media_feature_names::kScrollableMediaFeature ||
       (feature == media_feature_names::kDirectionMediaFeature &&
        RuntimeEnabledFeatures::CSSScrollDirectionContainerQueriesEnabled()) ||
-      CSSVariableParser::IsValidVariableName(feature)) {
+      (CSSVariableParser::IsValidVariableName(feature) &&
+       !RuntimeEnabledFeatures::CSSCustomMediaEnabled())) {
     return false;
   }
   return true;
 }
+
 bool MediaQueryParser::MediaQueryFeatureSet::IsAllowedWithoutValue(
     const AtomicString& feature,
     const ExecutionContext* execution_context) const {
@@ -105,6 +107,12 @@ bool MediaQueryParser::MediaQueryFeatureSet::IsAllowedWithoutValue(
          (RuntimeEnabledFeatures::
               DesktopPWAsAdditionalWindowingControlsEnabled() &&
           feature == media_feature_names::kResizableMediaFeature);
+}
+
+bool MediaQueryParser::MediaQueryFeatureSet::IsAllowedWithValue(
+    const AtomicString& feature) const {
+  return (!RuntimeEnabledFeatures::CSSCustomMediaEnabled() ||
+          !CSSVariableParser::IsValidVariableName(feature));
 }
 
 MediaQuerySet* MediaQueryParser::ParseMediaQuerySet(
@@ -308,14 +316,15 @@ AtomicString MediaQueryParser::ConsumeAllowedName(
   return name;
 }
 
-AtomicString MediaQueryParser::ConsumeUnprefixedName(
+AtomicString MediaQueryParser::ConsumeRangeContextFeatureName(
     CSSParserTokenStream& stream,
     const FeatureSet& feature_set) {
   AtomicString name = ConsumeAllowedName(stream, feature_set);
   if (name.IsNull()) {
     return name;
   }
-  if (name.StartsWith("min-") || name.StartsWith("max-")) {
+  if (name.StartsWith("min-") || name.StartsWith("max-") ||
+      name.StartsWith("--")) {
     return g_null_atom;
   }
   return name;
@@ -398,7 +407,8 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     }
 
     // <mf-plain> = <mf-name> : <mf-value>
-    if (!feature_name.IsNull() && stream.Peek().GetType() == kColonToken) {
+    if (!feature_name.IsNull() && stream.Peek().GetType() == kColonToken &&
+        feature_set.IsAllowedWithValue(feature_name)) {
       stream.ConsumeIncludingWhitespace();
 
       // NOTE: We do not check for stream.AtEnd() here, as an empty mf-value is
@@ -433,7 +443,8 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
 
   {
     // Try: <mf-name> <mf-comparison> <mf-value> (e.g., “width <= 10px”)
-    AtomicString feature_name = ConsumeUnprefixedName(stream, feature_set);
+    AtomicString feature_name =
+        ConsumeRangeContextFeatureName(stream, feature_set);
     if (!feature_name.IsNull() && !stream.AtEnd()) {
       MediaQueryOperator op = ConsumeComparison(stream);
       if (op != MediaQueryOperator::kNone) {
@@ -480,7 +491,8 @@ const MediaQueryExpNode* MediaQueryParser::ConsumeFeature(
     return nullptr;
   }
 
-  AtomicString feature_name = ConsumeUnprefixedName(stream, feature_set);
+  AtomicString feature_name =
+      ConsumeRangeContextFeatureName(stream, feature_set);
   if (feature_name.IsNull()) {
     return nullptr;
   }

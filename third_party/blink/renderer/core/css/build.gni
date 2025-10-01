@@ -915,6 +915,7 @@ blink_core_tests_css = [
   "parser/css_variable_parser_test.cc",
   "parser/find_length_of_declaration_list_test.cc",
   "parser/media_condition_test.cc",
+  "parser/media_query_parser_test.cc",
   "parser/sizes_attribute_parser_test.cc",
   "parser/sizes_math_function_parser_test.cc",
   "properties/computed_style_utils_test.cc",

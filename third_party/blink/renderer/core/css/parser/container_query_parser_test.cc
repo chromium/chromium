@@ -42,6 +42,9 @@ class ContainerQueryParserTest : public PageTestBase {
                                const ExecutionContext*) const override {
       return true;
     }
+    bool IsAllowedWithValue(const AtomicString& feature) const override {
+      return true;
+    }
     bool IsCaseSensitive(const AtomicString& feature) const override {
       return false;
     }
