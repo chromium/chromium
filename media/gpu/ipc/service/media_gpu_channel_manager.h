@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -17,6 +16,7 @@
 #include "build/build_config.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/video/video_decode_accelerator.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace gpu {
 class GpuChannel;
@@ -54,7 +54,7 @@ class MediaGpuChannelManager final {
 
  private:
   const raw_ptr<gpu::GpuChannelManager> channel_manager_;
-  std::unordered_map<int32_t, std::unique_ptr<MediaGpuChannel>>
+  absl::flat_hash_map<int32_t, std::unique_ptr<MediaGpuChannel>>
       media_gpu_channels_;
   std::map<base::UnguessableToken, int32_t> token_to_channel_;
   std::map<int32_t, base::UnguessableToken> channel_to_token_;

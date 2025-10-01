@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "base/containers/small_map.h"
@@ -16,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/service/image_decode_accelerator_worker.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -32,8 +32,8 @@ class VaapiImageDecoder;
 using VaapiImageDecoderVector = std::vector<std::unique_ptr<VaapiImageDecoder>>;
 
 using VaapiImageDecoderMap =
-    base::small_map<std::unordered_map<gpu::ImageDecodeAcceleratorType,
-                                       std::unique_ptr<VaapiImageDecoder>>>;
+    base::small_map<absl::flat_hash_map<gpu::ImageDecodeAcceleratorType,
+                                        std::unique_ptr<VaapiImageDecoder>>>;
 
 // This class uses the VAAPI to provide image decode acceleration. The
 // interaction with the VAAPI is done on |decoder_task_runner_|.

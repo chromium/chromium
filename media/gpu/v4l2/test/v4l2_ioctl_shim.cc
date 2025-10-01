@@ -16,7 +16,6 @@
 #include <sys/mman.h>
 
 #include <string_view>
-#include <unordered_map>
 
 #include "base/containers/contains.h"
 #include "base/files/file.h"
@@ -30,6 +29,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -48,7 +48,7 @@ constexpr char kMediaDevicePrefix[] = "/dev/media";
 // This map maintains a table with pairs of V4L2 request code
 // and corresponding name. New pair has to be added here
 // when new V4L2 request code has to be used.
-static const std::unordered_map<int, std::string>
+static const absl::flat_hash_map<int, std::string>
     kMapFromV4L2RequestCodeToString = {
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYCAP),
         V4L2_REQUEST_CODE_AND_STRING(VIDIOC_QUERYCTRL),
