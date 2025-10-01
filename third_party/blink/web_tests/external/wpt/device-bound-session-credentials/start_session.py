@@ -5,9 +5,9 @@ session_manager = importlib.import_module('device-bound-session-credentials.sess
 def main(request, response):
     test_session_manager = session_manager.find_for_request(request)
     extra_cookie_headers = test_session_manager.get_set_cookie_headers(test_session_manager.registration_extra_cookies, request)
-    if test_session_manager.get_registration_sends_challenge():
+    if test_session_manager.get_registration_sends_challenge_before_instructions():
         # Only send back a challenge on the first call.
-        test_session_manager.reset_registration_sends_challenge()
+        test_session_manager.reset_registration_sends_challenge_before_instructions()
         return (403, [('Secure-Session-Challenge', '"login_challenge_value"')] + extra_cookie_headers, "")
 
     jwt_header, jwt_payload, verified = jwt_helper.decode_jwt(request.headers.get("Secure-Session-Response").decode('utf-8'))
@@ -24,4 +24,7 @@ def main(request, response):
         return (400, response.headers + extra_cookie_headers, "")
 
     (code, headers, body) = test_session_manager.get_session_instructions_response(session_id, request)
-    return (code, headers + extra_cookie_headers, body)
+    headers += extra_cookie_headers
+    if test_session_manager.get_registration_sends_challenge_with_instructions():
+        headers.append(('Secure-Session-Challenge', f'"login_challenge_value";id="{session_id}"'))
+    return (code, headers, body)

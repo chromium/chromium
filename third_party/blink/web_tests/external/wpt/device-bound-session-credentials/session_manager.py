@@ -35,7 +35,8 @@ class SessionManager:
         self.should_refresh_end_session = False
         self.authorization_value = None
         self.scope_origin = None
-        self.registration_sends_challenge = False
+        self.registration_sends_challenge_before_instructions = False
+        self.registration_sends_challenge_with_instructions = False
         self.cookie_details = None
         self.session_to_cookie_details_map = {}
         self.session_to_early_challenge_map = {}
@@ -86,9 +87,13 @@ class SessionManager:
         if scope_origin is not None:
             self.scope_origin = scope_origin
 
-        registration_sends_challenge = configuration.get("registrationSendsChallenge")
-        if registration_sends_challenge is not None:
-            self.registration_sends_challenge = registration_sends_challenge
+        registration_sends_challenge_before_instructions = configuration.get("registrationSendsChallengeBeforeInstructions")
+        if registration_sends_challenge_before_instructions is not None:
+            self.registration_sends_challenge_before_instructions = registration_sends_challenge_before_instructions
+
+        registration_sends_challenge_with_instructions = configuration.get("registrationSendsChallengeWithInstructions")
+        if registration_sends_challenge_with_instructions is not None:
+            self.registration_sends_challenge_with_instructions = registration_sends_challenge_with_instructions
 
         cookie_details = configuration.get("cookieDetails")
         if cookie_details is not None:
@@ -165,11 +170,17 @@ class SessionManager:
     def get_authorization_value(self):
         return self.authorization_value
 
-    def get_registration_sends_challenge(self):
-        return self.registration_sends_challenge
+    def get_registration_sends_challenge_before_instructions(self):
+        return self.registration_sends_challenge_before_instructions
 
-    def reset_registration_sends_challenge(self):
-        self.registration_sends_challenge = False
+    def reset_registration_sends_challenge_before_instructions(self):
+        self.registration_sends_challenge_before_instructions = False
+
+    def get_registration_sends_challenge_with_instructions(self):
+        return self.registration_sends_challenge_with_instructions
+
+    def reset_registration_sends_challenge_with_instructions(self):
+        self.registration_sends_challenge_with_instructions = False
 
     def get_refresh_sends_challenge(self):
         return self.refresh_sends_challenge
