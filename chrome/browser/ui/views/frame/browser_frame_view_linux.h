@@ -38,6 +38,8 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;
   int GetTranslucentTopAreaHeight() const override;
+  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
+                               views::Label& window_title_label) const override;
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.

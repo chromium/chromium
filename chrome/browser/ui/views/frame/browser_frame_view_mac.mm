@@ -52,7 +52,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -312,6 +315,39 @@ void BrowserFrameViewMac::OnThemeChanged() {
   UpdateCaptionButtonPlaceholderContainerBackground();
   BrowserFrameView::OnThemeChanged();
 }
+
+void BrowserFrameViewMac::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  // LINT.IfChange(mac_title_padding_width_fraction)
+  static constexpr double kTitlePaddingWidthFraction = 0.1;
+  // LINT.ThenChange(//chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc:mac_title_padding_width_fraction)
+
+  gfx::Rect toolbar_bounds(0, 0, width(), available_space.height());
+  gfx::Rect title_bounds = available_space;
+
+  const int title_padding =
+      base::ClampRound(width() * kTitlePaddingWidthFraction);
+  title_bounds.Inset(gfx::Insets::VH(0, title_padding));
+
+  // Center in the container and make it fit in the available space.
+  int preferred_title_width =
+      window_title_label
+          .GetPreferredSize(views::SizeBounds(window_title_label.width(), {}))
+          .width();
+  toolbar_bounds.ClampToCenteredSize(
+      gfx::Size(preferred_title_width, toolbar_bounds.height()));
+  toolbar_bounds.AdjustToFit(title_bounds);
+
+  window_title_label.SetBoundsRect(toolbar_bounds);
+
+  // The background of the title area is always opaquely drawn, but when in
+  // immersive fullscreen, it is drawn in a way that isn't detected by the
+  // DCHECK in Label. As such, disable the DCHECK.
+  window_title_label.SetSkipSubpixelRenderingOpacityCheck(
+      browser_view()->IsImmersiveModeEnabled());
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewMac, views::FrameView implementation:
 

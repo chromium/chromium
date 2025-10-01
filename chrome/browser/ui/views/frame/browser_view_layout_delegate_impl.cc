@@ -60,6 +60,13 @@ int BrowserViewLayoutDelegateImplBase::GetTopInsetInBrowserView() const {
          browser_view_->y();
 }
 
+void BrowserViewLayoutDelegateImplBase::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  return GetFrameView()->LayoutWebAppWindowTitle(available_space,
+                                                 window_title_label);
+}
+
 bool BrowserViewLayoutDelegateImplBase::IsToolbarVisible() const {
   return browser_view_->IsToolbarVisible();
 }

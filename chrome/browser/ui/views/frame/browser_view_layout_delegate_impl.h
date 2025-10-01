@@ -26,6 +26,8 @@ class BrowserViewLayoutDelegateImplBase : public BrowserViewLayoutDelegate {
   bool ShouldDrawTabStrip() const override;
   bool GetBorderlessModeEnabled() const override;
   int GetTopInsetInBrowserView() const override;
+  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
+                               views::Label& window_title_label) const override;
   bool IsToolbarVisible() const override;
   bool IsBookmarkBarVisible() const override;
   bool IsContentsSeparatorEnabled() const override;

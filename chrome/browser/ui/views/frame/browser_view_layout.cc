@@ -514,8 +514,8 @@ void BrowserViewLayout::LayoutTitleBarForWebApp(gfx::Rect& available_bounds) {
     if (delegate_->ShouldDrawTabStrip()) {
       web_app_window_title_->SetVisible(false);
     } else {
-      browser_view_->browser_widget()->LayoutWebAppWindowTitle(
-          window_title_bounds, *web_app_window_title_);
+      delegate_->LayoutWebAppWindowTitle(window_title_bounds,
+                                         *web_app_window_title_);
     }
   }
 

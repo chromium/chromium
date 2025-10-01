@@ -134,11 +134,6 @@
 
 namespace {
 
-#if BUILDFLAG(IS_MAC)
-// Keep in sync with browser_frame_view_mac.mm
-constexpr double kTitlePaddingWidthFraction = 0.1;
-#endif
-
 template <typename T>
 T* GetLastVisible(const std::vector<T*>& views) {
   T* visible = nullptr;
@@ -459,6 +454,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
       helper()->frame_view()->width() - original_title_gap + narrow_title_gap;
 #if BUILDFLAG(IS_MAC)
   // Increase width to allow for title padding.
+  // LINT.IfChange(mac_title_padding_width_fraction)
+  static constexpr double kTitlePaddingWidthFraction = 0.1;
+  // LINT.ThenChange(//chrome/browser/ui/views/frame/browser_frame_view_mac.mm:mac_title_padding_width_fraction)
   narrow_width = base::checked_cast<int>(
       std::ceil(narrow_width / (1 - 2 * kTitlePaddingWidthFraction)));
 #endif

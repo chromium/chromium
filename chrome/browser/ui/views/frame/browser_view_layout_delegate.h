@@ -15,6 +15,10 @@ namespace gfx {
 class Rect;
 }
 
+namespace views {
+class Label;
+}
+
 // Delegate class to allow BrowserViewLayout to be decoupled from BrowserView
 // for testing.
 class BrowserViewLayoutDelegate {
@@ -26,6 +30,9 @@ class BrowserViewLayoutDelegate {
   virtual gfx::Rect GetBoundsForTabStripRegionInBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForToolbarInVerticalTabBrowserView() const = 0;
   virtual gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const = 0;
+  virtual void LayoutWebAppWindowTitle(
+      const gfx::Rect& available_space,
+      views::Label& window_title_label) const = 0;
   virtual int GetTopInsetInBrowserView() const = 0;
   virtual bool IsToolbarVisible() const = 0;
   virtual bool IsBookmarkBarVisible() const = 0;

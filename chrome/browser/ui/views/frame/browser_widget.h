@@ -38,7 +38,6 @@ class MenuModel;
 }
 
 namespace views {
-class Label;
 class MenuRunner;
 class View;
 }  // namespace views
@@ -74,13 +73,6 @@ class BrowserWidget : public views::Widget,
 
   // Initialize the frame (creates the underlying native window).
   void InitBrowserWidget();
-
-  // Lays out the window title for a web app within the given available space.
-  // Unlike the above GetBounds methods this is not just a method to return the
-  // bounds the title should occupy, since different implementations might also
-  // want to change other attributes of the title, such as alignment.
-  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
-                               views::Label& window_title_label) const;
 
   // Returns the FrameView of this frame.
   BrowserFrameView* GetFrameView() const;
