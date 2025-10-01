@@ -226,6 +226,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 #endif
 
   void MaybeSendFontRenderParams();
+  gpu::GpuProcessHostShmCount* GetShaderCacheShmCountForTesting();
 
  private:
   friend class GpuHostImplTestApi;

@@ -102,6 +102,12 @@ PersistentCacheSandboxedFileFactory::GetInstance() {
   return g_instance;
 }
 
+/* static */
+void PersistentCacheSandboxedFileFactory::SetInstanceForTesting(
+    PersistentCacheSandboxedFileFactory* factory) {
+  g_instance = factory;
+}
+
 PersistentCacheSandboxedFileFactory::PersistentCacheSandboxedFileFactory(
     const base::FilePath& cache_root_dir,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)

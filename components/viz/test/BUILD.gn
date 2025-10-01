@@ -67,6 +67,8 @@ viz_static_library("test_support") {
     "overlay_candidate_matchers.h",
     "paths.cc",
     "paths.h",
+    "stub_gpu_service.cc",
+    "stub_gpu_service.h",
     "stub_surface_client.cc",
     "stub_surface_client.h",
     "surface_id_allocator_set.cc",
@@ -119,6 +121,7 @@ viz_static_library("test_support") {
   public_deps = [
     ":buildflags",
     "//gpu/ipc:gl_in_process_context",
+    "//media:media_buildflags",
   ]
 
   if (enable_vulkan) {

@@ -39,6 +39,8 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
 
   static void CreateInstance(const base::FilePath& cache_root_dir);
   static PersistentCacheSandboxedFileFactory* GetInstance();
+  static void SetInstanceForTesting(
+      PersistentCacheSandboxedFileFactory* factory);
 
   PersistentCacheSandboxedFileFactory(
       const PersistentCacheSandboxedFileFactory&) = delete;

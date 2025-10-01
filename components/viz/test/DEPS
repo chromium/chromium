@@ -49,6 +49,10 @@ specific_include_rules = {
     "+mojo/core/embedder/embedder.h",
   ],
 
+  "stub_gpu_service\.h": [
+    "+media/media_buildflags.h",
+  ],
+
   "test_gpu_service_holder\.h": [
     "+gpu/ipc/gpu_in_process_thread_service.h",
     "+gpu/vulkan/buildflags.h",
