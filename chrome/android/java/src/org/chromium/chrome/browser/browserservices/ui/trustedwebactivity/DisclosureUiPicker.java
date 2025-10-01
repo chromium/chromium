@@ -43,6 +43,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final BaseNotificationManagerProxy mNotificationManagerProxy =
             BaseNotificationManagerProxyFactory.create();
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     public DisclosureUiPicker(
             Supplier<DisclosureInfobar> disclosureInfobar,
@@ -54,6 +55,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
         mDisclosureSnackbar = disclosureSnackbar;
         mDisclosureNotification = disclosureNotification;
         mIntentDataProvider = intentDataProvider;
+        mLifecycleDispatcher = lifecycleDispatcher;
         lifecycleDispatcher.register(this);
     }
 
@@ -71,6 +73,7 @@ public class DisclosureUiPicker implements NativeInitObserver {
         } else {
             areHeadsUpNotificationsEnabled(
                     (enabled) -> {
+                        if (mLifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
                         if (enabled) {
                             mDisclosureNotification.get().onStartWithNative();
                         } else {
