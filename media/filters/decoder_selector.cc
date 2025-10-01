@@ -74,12 +74,10 @@ template <DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::DecoderSelector(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     CreateDecodersCB create_decoders_cb,
-    MediaLog* media_log,
-    bool enable_priority_based_selection)
+    MediaLog* media_log)
     : task_runner_(std::move(task_runner)),
       create_decoders_cb_(std::move(create_decoders_cb)),
-      media_log_(media_log),
-      enable_priority_based_selection_(enable_priority_based_selection) {
+      media_log_(media_log) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -351,7 +349,7 @@ void DecoderSelector<StreamType>::FilterAndSortAvailableDecoders() {
     // selection based on resolution. Experiments show this greatly improves
     // rebuffering for src= playbacks without config changes, but doesn't help
     // and may hurt Media Source based playbacks.
-    if (!enable_priority_based_selection_ || stream_->SupportsConfigChanges()) {
+    if (stream_->SupportsConfigChanges()) {
       decoders_.push_back(std::move(decoder));
       continue;
     }

@@ -450,17 +450,13 @@ TEST_F(VideoDecoderBrokerTest, Decode_MultipleAccelerationPreferences) {
   ASSERT_EQ(3U, output_frames_.size());
   EXPECT_TRUE(IsPlatformDecoder());
 
+  // Reinitializing with a smaller resolution should use the software decoder.
   auto normal_config = media::TestVideoConfig::Normal(media::VideoCodec::kVP8);
   InitializeDecoder(normal_config);
-  // VideoDecoderBroker doesn't have any inherent preference for software
-  // decoders based on resolution, so we'll still end up with a hardware
-  // decoder even though this is a small size clip.
-  // TODO(crbug.com/361823989): We should update the VideoDecoderBroker to
-  // always enable resolution based priority in DecoderSelector.
-  DecodeBuffer(media::CreateFakeVideoBufferForTest(
-      normal_config, base::TimeDelta(), base::Milliseconds(33)));
+  DecodeBuffer(media::ReadTestDataFile("vp8-I-frame-320x120"));
   DecodeBuffer(media::DecoderBuffer::CreateEOSBuffer());
   ASSERT_EQ(4U, output_frames_.size());
+  EXPECT_FALSE(IsPlatformDecoder());
 
   ResetDecoder();
 }

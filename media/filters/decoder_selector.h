@@ -64,11 +64,9 @@ class MEDIA_EXPORT DecoderSelector {
   // `enable_priority_based_selection` allows the DecoderSelector to change the
   // order of which decoders are tried from FIFO order to an order based on
   // characteristics of each decoder and config (resolution, platform, etc).
-  // TODO(crbug.com/368085608): Remove this parameter after M137 goes stable.
   DecoderSelector(scoped_refptr<base::SequencedTaskRunner> task_runner,
                   CreateDecodersCB create_decoders_cb,
-                  MediaLog* media_log,
-                  bool enable_priority_based_selection = false);
+                  MediaLog* media_log);
 
   DecoderSelector(const DecoderSelector&) = delete;
   DecoderSelector& operator=(const DecoderSelector&) = delete;
@@ -154,8 +152,6 @@ class MEDIA_EXPORT DecoderSelector {
   // playback fails entirely, we have a root cause to point to, rather than
   // failing due to running out of more acceptable decoders.
   std::optional<DecoderStatus> decode_failure_reinit_cause_ = std::nullopt;
-
-  const bool enable_priority_based_selection_;
 
   // Indicates that the first decoder in `decoders_` is a platform decoder and
   // should maintain its place when FilterAndSortAvailableDecoders() runs.
