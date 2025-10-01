@@ -39,6 +39,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -852,6 +853,11 @@ class BLINK_PLATFORM_EXPORT Platform {
     return std::make_pair(base::TimeDelta(), base::TimeDelta());
   }
 #endif
+
+  // Memory Coordinator -------------------------------
+  // Invoked when the garbage collector is about to run its last GC before
+  // calling an OOM.
+  virtual void OnV8HeapLastResortGC() {}
 
  private:
   static void InitializeMainThreadCommon(

@@ -3077,6 +3077,7 @@ test("content_unittests") {
     "../renderer/media/batching_media_log_unittest.cc",
     "../renderer/media/inspector_media_event_handler_unittest.cc",
     "../renderer/media/renderer_webaudiodevice_impl_unittest.cc",
+    "../renderer/memory_coordinator/renderer_memory_coordinator_policy_unittest.cc",
     "../renderer/render_thread_impl_unittest.cc",
     "../renderer/service_worker/service_worker_provider_context_unittest.cc",
     "../renderer/service_worker/service_worker_subresource_loader_unittest.cc",

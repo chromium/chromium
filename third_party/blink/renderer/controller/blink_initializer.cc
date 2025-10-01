@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 #include "third_party/blink/renderer/controller/dev_tools_frontend_impl.h"
 #include "third_party/blink/renderer/controller/javascript_call_stack_generator.h"
+#include "third_party/blink/renderer/controller/memory_coordinator/v8_heap_memory_signal_generator.h"
 #include "third_party/blink/renderer/controller/memory_saver_controller.h"
 #include "third_party/blink/renderer/controller/performance_manager/renderer_resource_coordinator_impl.h"
 #include "third_party/blink/renderer/controller/performance_manager/v8_detailed_memory_reporter_impl.h"
@@ -173,6 +174,10 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   Partitions::InitializeArrayBufferPartition();
 }
 
+void InitializeCommonWithIsolate(v8::Isolate* isolate) {
+  V8HeapMemorySignalGenerator::Initialize(isolate);
+}
+
 }  // namespace
 
 // Function defined in third_party/blink/public/web/blink.h.
@@ -182,7 +187,8 @@ void Initialize(Platform* platform,
   DCHECK(binders);
   Platform::InitializeMainThread(platform, main_thread_scheduler);
   InitializeCommon(platform, binders);
-  V8Initializer::InitializeMainThread();
+  v8::Isolate* isolate = V8Initializer::InitializeMainThread();
+  InitializeCommonWithIsolate(isolate);
 }
 
 // Function defined in third_party/blink/public/web/blink.h.

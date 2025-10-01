@@ -24,6 +24,8 @@ class BASE_EXPORT RegisteredMemoryConsumer {
   friend bool operator==(const RegisteredMemoryConsumer& lhs,
                          const RegisteredMemoryConsumer& rhs) = default;
 
+  int memory_limit() const { return memory_consumer_->memory_limit(); }
+
  private:
   friend class MemoryConsumerRegistry;
 
