@@ -4,9 +4,7 @@
 
 #include "components/update_client/net/network_impl.h"
 
-#include <cstdint>
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -210,20 +208,9 @@ void NetworkFetcherImpl::OnResponseStartedCallback(
     ResponseStartedCallback response_started_callback,
     const GURL& final_url,
     const network::mojom::URLResponseHead& response_head) {
-  int64_t content_length = response_head.content_length;
-  // `response_head.content_length == -1` for gzip-compressed content, but if
-  // the server sends a Content-Length header, it can still be used to get
-  // the total number of bytes transferring.
-  if (content_length == -1 && response_head.headers) {
-    std::optional<base::ByteCount> length_bytes =
-        response_head.headers->GetContentLength();
-    if (length_bytes) {
-      content_length = length_bytes->InBytes();
-    }
-  }
   std::move(response_started_callback)
       .Run(response_head.headers ? response_head.headers->response_code() : -1,
-           content_length);
+           response_head.content_length);
 }
 
 void NetworkFetcherImpl::OnProgressCallback(ProgressCallback progress_callback,
