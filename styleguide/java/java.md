@@ -213,6 +213,20 @@ Banned. Use [`@IntDef`](#intdefs) instead.
 Java enums generate a lot of bytecode. Use constants where possible. When a
 custom type hierarchy is required, use explicit classes with inheritance.
 
+### Optional
+
+Avoid it if possible. Use `@Nullable` instead.
+
+## Rationale:
+
+`Optional` adds binary size overhead and requires an extra allocation for each
+use. It may still be a good choice if you need to distinguish between "null"
+and "unset", but prefer `null` or a sentinel value when possible. The same
+applies to `OptionalInt`, etc.
+
+[NullAway](#Nullability-Annotations) warnings will ensure that null checks are
+not missed.
+
 ### Finalizers
 
 In line with [Google's Java style guide] and [Android's Java style guide],
@@ -232,11 +246,12 @@ to ensure in debug builds and tests that `destroy()` is called.
 
 ## Nullability Annotations
 
-A migration to add `@NullMarked` to all Java files is currently underway
-([crbug.com/389129271]). See [nullaway.md] for how to use `@Nullable` and
-related annotations.
+All non-test Java files within the main repository should use `@NullMarked`.
+Tests are encouraged to use them, but there is currently no effort to annotate
+existing ones.
 
-[crbug.com/389129271]: https://crbug.com/389129271
+See [nullaway.md] for how to use `@Nullable` and related annotations.
+
 [nullaway.md]: nullaway.md
 
 ## Java Library APIs
