@@ -348,6 +348,20 @@ enum class AccountFieldsType {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmAccountFieldsType)
 
+// This enum describes what we received for
+// client_is_third_party_to_top_frame_origin. These values are persisted to
+// logs. Entries should not be renumbered and numeric values should never be
+// reused.
+// LINT.IfChange(CrossSiteIframeType)
+enum class CrossSiteIframeType {
+  kNoValueReceived = 0,
+  kIframeIsThirdParty = 1,
+  kIframeIsSameParty = 2,
+
+  kMaxValue = kIframeIsSameParty
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:FedCmCrossSiteIframeType)
+
 class CONTENT_EXPORT Metrics {
  public:
   explicit Metrics(const ukm::SourceId page_source_id);
@@ -665,6 +679,8 @@ void RecordReadyToShowAccountsSize(int size);
 // Records what kinds of fields we received in the accounts from the IDP.
 CONTENT_EXPORT void RecordAccountFieldsType(
     const std::vector<IdentityRequestAccountPtr>& accounts);
+
+void RecordCrossSiteIframeType(CrossSiteIframeType type);
 
 }  // namespace webid
 

@@ -1587,6 +1587,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.CrossSiteIframeType"
+    enum="FedCmCrossSiteIframeType" expires_after="2026-02-22">
+  <owner>cbiesinger@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records whether the client metadata endpoint response contained a value for
+    `client_is_third_party_to_top_frame_origin`, and if so, what value. Only
+    recorded if the iframe is cross-site. Recorded when we receive the client
+    metadata endpoint response.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.DidShowUI" enum="Boolean"
     expires_after="2026-02-22">
   <owner>npm@chromium.org</owner>

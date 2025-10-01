@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "content/browser/webid/metrics.h"
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/common/features.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -1937,7 +1938,7 @@ TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
 }
 
-// Tests the "matches top frame" boolean.
+// Tests client_is_third_party_to_top_frame_origin: true
 TEST_F(IdpNetworkRequestManagerTest, ClientIsThirdPartyToTopFrameOrigin) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmIframeOrigin);
@@ -1946,6 +1947,51 @@ TEST_F(IdpNetworkRequestManagerTest, ClientIsThirdPartyToTopFrameOrigin) {
       "clientid", R"({"client_is_third_party_to_top_frame_origin": true})",
       "https://toplevel.example");
   EXPECT_TRUE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.CrossSiteIframeType",
+      webid::CrossSiteIframeType::kIframeIsThirdParty, 1);
+}
+
+// Tests client_is_third_party_to_top_frame_origin: false
+TEST_F(IdpNetworkRequestManagerTest, ClientIsSamePartyToTopFrameOrigin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({"client_is_third_party_to_top_frame_origin": false})",
+      "https://toplevel.example");
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.CrossSiteIframeType",
+      webid::CrossSiteIframeType::kIframeIsSameParty, 1);
+}
+
+// Tests client_is_third_party_to_top_frame_origin is not sent
+TEST_F(IdpNetworkRequestManagerTest,
+       ClientIsThirdPartyToTopFrameOriginNotSent) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({})", "https://toplevel.example");
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.CrossSiteIframeType",
+      webid::CrossSiteIframeType::kNoValueReceived, 1);
+}
+
+// Tests that we don't record the histogram for
+// client_is_third_party_to_top_frame_origin if there is no cross-site iframe.
+TEST_F(IdpNetworkRequestManagerTest,
+       ClientIsThirdPartyToTopFrameOriginNoIframe) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmIframeOrigin);
+
+  // We pass no top_level_origin here.
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      "clientid", R"({"client_is_third_party_to_top_frame_origin": true})");
+  EXPECT_FALSE(data.client_is_third_party_to_top_frame_origin);
+  histogram_tester()->ExpectTotalCount("Blink.FedCm.CrossSiteIframeType", 0);
 }
 
 // Tests that we correctly records metrics regarding approved_clients.

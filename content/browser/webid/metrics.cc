@@ -874,5 +874,9 @@ void RecordAccountFieldsType(
   base::UmaHistogramEnumeration("Blink.FedCm.AccountFieldsType", type);
 }
 
+void RecordCrossSiteIframeType(CrossSiteIframeType type) {
+  base::UmaHistogramEnumeration("Blink.FedCm.CrossSiteIframeType", type);
+}
+
 }  // namespace webid
 }  // namespace content
