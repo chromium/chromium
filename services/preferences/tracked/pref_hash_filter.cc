@@ -400,9 +400,15 @@ void PrefHashFilter::DeferredEncryptorRevalidation(
     // Compare the current value from pref service and the value from the copy
     // of the loaded store. If the pref has been modified, we skip the
     // encryption hash check.
-    if (current_value && (!value_at_load || *current_value != *value_at_load)) {
+    if (current_value && value_at_load) {
+      // Both values exist. Check if they are different.
+      if (*current_value != *value_at_load) {
+        continue;
+      }
+    } else if (current_value != value_at_load) {
       continue;
-    }
+    }  // If we fall through eventually, this means both values are valid and
+       // equal.
 
     if (preference->EnforceAndReport(pref_store_contents_at_load,
                                      transaction.get(),
