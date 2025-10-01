@@ -125,9 +125,8 @@ bool IsOriginIsolatedSandboxedFrame(const UrlInfo& url_info) {
 }
 
 // Computes whether to disable v8-optimization for the
-// (browsing_instance_id, process_lock_origin) pair. Caches the result in
-// ChildProcessSecurityPolicyImpl.
-bool CheckAndCacheShouldDisableV8Optimization(
+// (browsing_instance_id, process_lock_origin) pair.
+bool CheckShouldDisableV8Optimization(
     BrowserContext* browser_context,
     const BrowsingInstanceId& browsing_instance_id,
     const url::Origin& process_lock_origin) {
@@ -139,14 +138,8 @@ bool CheckAndCacheShouldDisableV8Optimization(
     return are_v8_optimizations_disabled_result.value();
   }
 
-  bool are_v8_optimizations_disabled =
-      GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
-          browser_context, process_lock_origin.GetURL());
-  ChildProcessSecurityPolicyImpl::GetInstance()
-      ->AddV8OptimizationDisabledStateForOrigin(browsing_instance_id,
-                                                process_lock_origin,
-                                                are_v8_optimizations_disabled);
-  return are_v8_optimizations_disabled;
+  return GetContentClient()->browser()->AreV8OptimizationsDisabledForSite(
+      browser_context, process_lock_origin.GetURL());
 }
 
 }  // namespace
@@ -194,7 +187,7 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
       isolation_context.browser_or_resource_context().ToBrowserContext();
   bool is_jit_disabled = GetContentClient()->browser()->IsJitDisabledForSite(
       browser_context, GURL());
-  bool are_v8_optimizations_disabled = CheckAndCacheShouldDisableV8Optimization(
+  bool are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
       browser_context, isolation_context.browsing_instance_id(), url::Origin());
 
   WebExposedIsolationLevel web_exposed_isolation_level =
@@ -310,7 +303,7 @@ SiteInfo SiteInfo::Create(const IsolationContext& isolation_context,
   is_jitless =
       is_jitless || GetContentClient()->browser()->IsJitDisabledForSite(
                         browser_context, agent_cluster_url_or_default);
-  are_v8_optimizations_disabled = CheckAndCacheShouldDisableV8Optimization(
+  are_v8_optimizations_disabled = CheckShouldDisableV8Optimization(
       browser_context, isolation_context.browsing_instance_id(),
       url::Origin::Create(agent_cluster_url_or_default));
 

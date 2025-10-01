@@ -3287,11 +3287,17 @@ void ChildProcessSecurityPolicyImpl::ClearIsolatedOriginsForTesting() {
   isolated_origins_.clear();
 }
 
-void ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOrigin(
-    const BrowsingInstanceId& browsing_instance_id,
-    const url::Origin& process_lock_origin,
-    bool are_v8_optimizations_disabled) {
+void ChildProcessSecurityPolicyImpl::
+    AddV8OptimizationDisabledStateForOriginIfNotCached(
+        const BrowsingInstanceId& browsing_instance_id,
+        const url::Origin& process_lock_origin,
+        bool are_v8_optimizations_disabled) {
   if (!IsolatedOriginUtil::IsValidIsolatedOrigin(process_lock_origin)) {
+    return;
+  }
+
+  if (LookupAreV8OptimizationsDisabled(browsing_instance_id,
+                                       process_lock_origin) != std::nullopt) {
     return;
   }
 

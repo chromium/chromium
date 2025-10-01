@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/process_selection_deferring_condition.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -646,4 +651,111 @@ IN_PROC_BROWSER_TEST_F(
   content::RenderFrameHost* frame1 = all_web_contents[1]->GetPrimaryMainFrame();
   EXPECT_EQ(frame0->GetProcess(), frame1->GetProcess());
   EXPECT_EQ(frame0->GetSiteInstance(), frame1->GetSiteInstance());
+}
+
+namespace {
+
+// content::ProcessSelectionDeferringCondition subclass which sets
+// `did_select_final_process` bool passed to constructor when
+// ProcessSelectionDeferringCondition::OnWillSelectFinalProcess() is called.
+class DeferringCondition : public content::ProcessSelectionDeferringCondition {
+ public:
+  DeferringCondition(content::NavigationHandle& navigation_handle,
+                     bool* did_select_final_process)
+      : content::ProcessSelectionDeferringCondition(navigation_handle),
+        did_select_final_process_(did_select_final_process) {}
+  ~DeferringCondition() override = default;
+
+  content::ProcessSelectionDeferringCondition::Result OnWillSelectFinalProcess(
+      base::OnceClosure resume) override {
+    *did_select_final_process_ = true;
+    return ProcessSelectionDeferringCondition::Result::kProceed;
+  }
+
+ private:
+  raw_ptr<bool> did_select_final_process_;
+};
+
+// ChromeContentBrowserClient subclass which uses DeferringCondition.
+class DeferProcessSelectionBrowserClient : public ChromeContentBrowserClient {
+ public:
+  DeferProcessSelectionBrowserClient() = default;
+  ~DeferProcessSelectionBrowserClient() override = default;
+
+  std::vector<std::unique_ptr<content::ProcessSelectionDeferringCondition>>
+  CreateProcessSelectionDeferringConditionsForNavigation(
+      content::NavigationHandle& navigation_handle) override {
+    auto condition = std::make_unique<DeferringCondition>(
+        navigation_handle, &did_select_final_process_);
+    std::vector<std::unique_ptr<content::ProcessSelectionDeferringCondition>>
+        conditions;
+    conditions.push_back(std::move(condition));
+    return conditions;
+  }
+
+  bool AreV8OptimizationsDisabledForSite(
+      content::BrowserContext* browser_context,
+      const GURL& site_url) override {
+    return should_disable_v8_optimizations_;
+  }
+
+  bool DidSelectFinalProcess() { return did_select_final_process_; }
+
+  bool should_disable_v8_optimizations_ = false;
+
+ private:
+  bool did_select_final_process_ = false;
+};
+
+}  // anonymous namespace
+
+class JavascriptOptimizerBrowserTest_ProcessSelectionDeferralEnabled
+    : public JavascriptOptimizerBrowserTest {
+ public:
+  JavascriptOptimizerBrowserTest_ProcessSelectionDeferralEnabled() {
+    feature_list_.InitAndEnableFeature(
+        features::kProcessSelectionDeferringConditions);
+  }
+
+  void SetUpOnMainThread() override {
+    browser_client_ = std::make_unique<DeferProcessSelectionBrowserClient>();
+    old_browser_client_ =
+        content::SetBrowserClientForTesting(browser_client_.get());
+    JavascriptOptimizerBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    JavascriptOptimizerBrowserTest::TearDownOnMainThread();
+    content::SetBrowserClientForTesting(old_browser_client_.get());
+    browser_client_.reset();
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<DeferProcessSelectionBrowserClient> browser_client_;
+  raw_ptr<content::ContentBrowserClient> old_browser_client_;
+};
+
+// Test that crbug.com/441727826 is fixed. Test that navigations use the
+// v8-optimizer state at final process selection time and not prior.
+IN_PROC_BROWSER_TEST_F(
+    JavascriptOptimizerBrowserTest_ProcessSelectionDeferralEnabled,
+    ChangeJavascriptOptimizerStatePriorToProcessSelection) {
+  const GURL kTestUrl =
+      embedded_https_test_server().GetURL("a.com", "/simple.html");
+
+  browser_client_->should_disable_v8_optimizations_ = false;
+
+  content::TestNavigationObserver navigation_observer(web_contents(), 1);
+
+  web_contents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(kTestUrl));
+  EXPECT_FALSE(browser_client_->DidSelectFinalProcess());
+
+  browser_client_->should_disable_v8_optimizations_ = true;
+
+  navigation_observer.Wait();
+  EXPECT_TRUE(browser_client_->DidSelectFinalProcess());
+  content::RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
+  EXPECT_TRUE(frame->GetProcess()->AreV8OptimizationsDisabled());
 }

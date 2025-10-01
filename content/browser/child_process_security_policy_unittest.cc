@@ -3303,17 +3303,16 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 }
 
 // Test that
-// ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOrigin()
+// ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOriginIfNotCached()
 // ignores opaque origins.
-TEST_P(ChildProcessSecurityPolicyTest,
-       AddV8OptimizationDisabledStateForOpaqueOrigin) {
+TEST_P(ChildProcessSecurityPolicyTest, AddV8OptimizationStateForOpaqueOrigin) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   BrowsingInstanceId browsing_instance_id =
       SiteInstanceImpl::NextBrowsingInstanceId();
   url::Origin opaque_origin;
 
-  p->AddV8OptimizationDisabledStateForOrigin(
+  p->AddV8OptimizationDisabledStateForOriginIfNotCached(
       browsing_instance_id, opaque_origin,
       /*are_v8_optimizations_disabled=*/false);
   std::optional<bool> are_v8_optimizations_disabled_result =
@@ -3322,17 +3321,17 @@ TEST_P(ChildProcessSecurityPolicyTest,
 }
 
 // Test the behavior of
-// ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOrigin()
+// ChildProcessSecurityPolicyImpl::AddV8OptimizationDisabledStateForOriginIfNotCached()
 // for non-opaque origins.
 TEST_P(ChildProcessSecurityPolicyTest,
-       AddV8OptimizationDisabledStateForNonOpaqueOrigin) {
+       AddV8OptimizationStateForNonOpaqueOrigin) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
   BrowsingInstanceId browsing_instance_id =
       BrowsingInstanceId::FromUnsafeValue(1);
   url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
 
-  p->AddV8OptimizationDisabledStateForOrigin(
+  p->AddV8OptimizationDisabledStateForOriginIfNotCached(
       browsing_instance_id, origin, /*are_v8_optimizations_disabled=*/false);
   EXPECT_EQ(std::optional<bool>(false),
             p->LookupAreV8OptimizationsDisabled(browsing_instance_id, origin));
@@ -3349,6 +3348,26 @@ TEST_P(ChildProcessSecurityPolicyTest,
   EXPECT_FALSE(p->LookupAreV8OptimizationsDisabled(
                     BrowsingInstanceId::FromUnsafeValue(2), origin)
                    .has_value());
+}
+
+TEST_P(ChildProcessSecurityPolicyTest, AddV8OptimizationState_AlreadyCached) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  BrowsingInstanceId browsing_instance_id =
+      BrowsingInstanceId::FromUnsafeValue(1);
+  url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
+
+  p->AddV8OptimizationDisabledStateForOriginIfNotCached(
+      browsing_instance_id, origin, /*are_v8_optimizations_disabled=*/false);
+  EXPECT_EQ(std::optional<bool>(false),
+            p->LookupAreV8OptimizationsDisabled(browsing_instance_id, origin));
+
+  // Check that calling AddV8OptimizationDisabledStateForOriginIfNotCached() is
+  // a no-op if the value is already cached.
+  p->AddV8OptimizationDisabledStateForOriginIfNotCached(
+      browsing_instance_id, origin, /*are_v8_optimizations_disabled=*/true);
+  EXPECT_EQ(std::optional<bool>(false),
+            p->LookupAreV8OptimizationsDisabled(browsing_instance_id, origin));
 }
 
 INSTANTIATE_TEST_SUITE_P(

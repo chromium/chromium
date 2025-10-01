@@ -346,8 +346,8 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       url::Origin* result);
 
   // Stores the v8-optimization state for the passed-in `browsing_instance_id`
-  // and `process_lock_origin`.
-  void AddV8OptimizationDisabledStateForOrigin(
+  // and `process_lock_origin` if the state isn't already cached.
+  void AddV8OptimizationDisabledStateForOriginIfNotCached(
       const BrowsingInstanceId& browsing_instance_id,
       const url::Origin& process_lock_origin,
       bool are_v8_optimizations_disabled);
