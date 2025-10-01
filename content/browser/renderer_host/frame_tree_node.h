@@ -97,6 +97,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
 
   ~FrameTreeNode() override;
 
+  // Remove the corresponding FrameNavigationEntry and its descendants
+  // from the last committed entry if this frame was created by a script.
+  // This should be called when this frame is about to be deleted.
+  // The caller is responsible to call this
+  // method at a time where the last committed entry still has those
+  // FrameNavigationEntries.
+  void MaybeRemoveFromLastCommittedEntry();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 

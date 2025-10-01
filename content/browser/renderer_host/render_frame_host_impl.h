@@ -4461,6 +4461,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // successfully or the renderer was proactively terminated.
   void MaybeNotifyDiscardedFrame();
 
+  // Removes FrameNavigationEntries that will no longer be used from the last
+  // committed NavigationEntry. Must be called when this frame transitions to
+  // kRunningUnloadHandlers or kReadyToBeDeleted, when the frame is detaching.
+  void CleanupLastCommittedNavigationEntry();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts

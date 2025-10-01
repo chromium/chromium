@@ -8112,6 +8112,7 @@ data/navigation_controller/dynamic_iframe.html
 data/navigation_controller/form.html
 data/navigation_controller/hash_anchor_with_iframe.html
 data/navigation_controller/iframe_popup.html
+data/navigation_controller/inject_cross_site_iframe.html
 data/navigation_controller/inject_iframe_srcdoc_with_nested_frame.html
 data/navigation_controller/inject_into_blank_iframe.html
 data/navigation_controller/inject_subframe_into_blank_iframe.html

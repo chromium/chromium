@@ -8027,6 +8027,125 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        "document.getElementById('itext').value"));
 }
 
+// Verify that we correctly load an injected cross-site iframe if we go back and
+// recreate the frame. The frame has an unload handler.
+//
+// This test is similar to
+// NavigationControllerBrowserTest.
+//     FrameNavigationEntry_RecreatedInjectedBlankSubframe.
+// but it add an unload handler to the subframe with a cross-site URL, to
+// exercise the OOPIF path when it gets detached.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    FrameNavigationEntry_RecreatedInjectedSubframeCrossSiteUnloadHandlers) {
+  // The test assumes the previous iframe gets deleted after navigation and
+  // later recreated on history navigations. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+  // 1. Start on a page that injects a nested iframe srcdoc which contains a
+  // nested iframe.
+  GURL main_url(embedded_test_server()->GetURL(
+      "/navigation_controller/inject_cross_site_iframe.html"));
+  GURL inner_url(embedded_test_server()->GetURL(
+      "foo.com", "/navigation_controller/form.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  // Verify that the inner iframe was able to load.
+  ASSERT_EQ(1U, root->child_count());
+  ASSERT_EQ(0U, root->child_at(0)->child_count());
+  EXPECT_EQ(main_url, root->current_url());
+  EXPECT_EQ(inner_url, root->child_at(0)->current_url());
+
+  EXPECT_EQ(1, controller.GetEntryCount());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+
+  // The entry should have a FrameNavigationEntries for the subframe.
+  ASSERT_EQ(1U, entry->root_node()->children.size());
+  scoped_refptr<FrameNavigationEntry> child_frame_entry =
+      entry->root_node()->children[0]->frame_entry.get();
+  EXPECT_EQ(inner_url, entry->root_node()->children[0]->frame_entry->url());
+
+  // Inject unload handlers into the subframe.
+  ASSERT_TRUE(ExecJs(root->child_at(0), "window.onpagehide = ()=>{}"));
+
+  RenderFrameDeletedObserver iframe_deleted(
+      root->child_at(0)->current_frame_host());
+
+  // 2. Navigate the main frame same-site, destroying the subframe.
+  GURL main_url_2(embedded_test_server()->GetURL(
+      "/navigation_controller/simple_page_1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url_2));
+  // The RFH is deleted asynchronously because of the unload handler.
+  iframe_deleted.WaitUntilDeleted();
+  ASSERT_EQ(0U, root->child_count());
+  // The FrameNavigationEntry is removed at this point too.
+  ASSERT_EQ(0U, entry->root_node()->children.size());
+  EXPECT_EQ(main_url_2, root->current_url());
+
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+
+  // 3. Go back, recreating the subframe.
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    controller.GoBack();
+    back_load_observer.Wait();
+  }
+  ASSERT_EQ(1U, root->child_count());
+  ASSERT_EQ(0U, root->child_at(0)->child_count());
+  EXPECT_EQ(main_url, root->current_url());
+  // Verify that the inner iframe went to the correct URL.
+  EXPECT_EQ(inner_url, root->child_at(0)->current_url());
+
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(entry, controller.GetLastCommittedEntry());
+
+  // There is only 1 child frame in the frame tree and only 1 FNE, because when
+  // the child frame is dynamically created or recreated from javascript, it's
+  // FNE will be removed when the frame is removed.
+  ASSERT_EQ(1U, root->child_count());
+
+  // The entry should have a FrameNavigationEntry for the subframe and it should
+  // be a new one.
+  ASSERT_EQ(1U, entry->root_node()->children.size());
+  EXPECT_NE(child_frame_entry,
+            entry->root_node()->children[0]->frame_entry.get());
+  child_frame_entry = entry->root_node()->children[0]->frame_entry.get();
+  EXPECT_EQ(inner_url, child_frame_entry->url());
+  // Inject an unload handler into the subframe again.
+  ASSERT_TRUE(ExecJs(root->child_at(0), "window.onpagehide = ()=>{}"));
+
+  // 4. Navigate the subframe.
+  auto inner_url_2 = main_url_2;
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell()->web_contents(), "frame", inner_url_2));
+  ASSERT_EQ(1U, root->child_count());
+  ASSERT_EQ(0U, root->child_at(0)->child_count());
+  EXPECT_EQ(main_url, root->current_url());
+  EXPECT_EQ(inner_url_2, root->child_at(0)->current_url());
+
+  // It creates a new navigation entry.
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+  EXPECT_NE(entry, controller.GetLastCommittedEntry());
+
+  // There is still 1 child frame in the frame tree and 1 FNE.
+  // The subframe's FNE was not pruned because the subframe was only navigated
+  // cross-site but not actually removed from the FrameTree.
+  ASSERT_EQ(1U, root->child_count());
+  ASSERT_EQ(1U, entry->root_node()->children.size());
+  EXPECT_EQ(child_frame_entry,
+            entry->root_node()->children[0]->frame_entry.get());
+}
+
 // Verify that we can load about:blank in an iframe when going back to a page,
 // if that iframe did not originally have about:blank in it.  See
 // https://crbug.com/657896.

@@ -243,18 +243,6 @@ FrameTreeNode::~FrameTreeNode() {
     CHECK(!render_manager()->speculative_frame_host());
   }
 
-  // If the removed frame was created by a script, then its history entry will
-  // never be reused - we can save some memory by removing the history entry.
-  // See also https://crbug.com/784356.
-  if (is_created_by_script_ && parent_) {
-    NavigationEntryImpl* nav_entry =
-        navigator().controller().GetLastCommittedEntry();
-    if (nav_entry) {
-      nav_entry->RemoveEntryForFrame(this,
-                                     /* only_if_different_position = */ false);
-    }
-  }
-
   frame_tree_->FrameRemoved(this);
 
   DestroyInnerFrameTreeIfExists();
@@ -321,6 +309,20 @@ FrameTreeNode::~FrameTreeNode() {
 
   // Matches the TRACE_EVENT_BEGIN in the constructor.
   TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
+}
+
+void FrameTreeNode::MaybeRemoveFromLastCommittedEntry() {
+  // If the removed frame was created by a script, then its history entry will
+  // never be reused - we can save some memory by removing the history entry.
+  // See also https://crbug.com/784356.
+  if (is_created_by_script_ && parent_) {
+    NavigationEntryImpl* nav_entry =
+        navigator().controller().GetLastCommittedEntry();
+    if (nav_entry) {
+      nav_entry->RemoveEntryForFrame(this,
+                                     /* only_if_different_position = */ false);
+    }
+  }
 }
 
 void FrameTreeNode::AddObserver(Observer* observer) {

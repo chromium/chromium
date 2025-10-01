@@ -12071,6 +12071,10 @@ void RenderFrameHostImpl::StartPendingDeletionOnSubtree(
       node->frame_tree().FrameUnloading(node);
     }
   }
+
+  if (pending_deletion_reason == PendingDeletionReason::kFrameDetach) {
+    CleanupLastCommittedNavigationEntry();
+  }
 }
 
 void RenderFrameHostImpl::PendingDeletionCheckCompleted() {
@@ -19093,6 +19097,13 @@ void RenderFrameHostImpl::MaybeNotifyDiscardedFrame() {
   if (on_discarded_cb_) {
     std::move(on_discarded_cb_).Run();
   }
+}
+
+void RenderFrameHostImpl::CleanupLastCommittedNavigationEntry() {
+  for (auto& child : children_) {
+    child->current_frame_host()->CleanupLastCommittedNavigationEntry();
+  }
+  frame_tree_node_->MaybeRemoveFromLastCommittedEntry();
 }
 
 void RenderFrameHostImpl::SetPrerenderStateChangedCallback(

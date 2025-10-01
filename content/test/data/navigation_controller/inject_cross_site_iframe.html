@@ -1,0 +1,13 @@
+<html>
+<head></head>
+<body>
+  <p>This page injects a cross-site iframe.</p>
+  <div id="myDiv"></div>
+  <script>
+    var iframeHtml =
+        '<iframe id="frame" src="/cross-site/foo.com/navigation_controller/form.html"></iframe>';
+
+    document.getElementById('myDiv').innerHTML = iframeHtml;
+  </script>
+</body>
+</html>
