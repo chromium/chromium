@@ -7111,7 +7111,7 @@
   {
     "name": "notification-scheduler",
     "owners": [ "//chrome/browser/notifications/scheduler/OWNERS" ],
-    "expiry_milestone": 102
+    "expiry_milestone": 154
   },
   {
     "name": "notification-scheduler-debug-options",
