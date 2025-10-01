@@ -219,6 +219,13 @@ bool AutofillAiManager::MaybeUpstreamEntityToWallet(
     return false;
   }
 
+  // Note that the migration prompt uses the regular save prompt strike
+  // database.
+  if (IsSaveBlockedByStrikeDatabase(form.source_url(),
+                                    entity_to_be_upstreamed->first)) {
+    return false;
+  }
+
   auto prompt_result_callback = BindOnce(
       &AutofillAiManager::HandleUpstreamEntityPrompt, GetWeakPtr(),
       form.source_url(),
@@ -327,7 +334,7 @@ void AutofillAiManager::HandleUpstreamEntityPrompt(
   // TODO(crbug.com/441742849): Handle logging.
   if (!result.entity) {
     if (result.did_user_decline) {
-      // TODO(crbug.com/441742849): Handle strike database.
+      AddStrikeForSaveAttempt(form_url, upstream_entity);
     }
     return;
   }
@@ -337,6 +344,7 @@ void AutofillAiManager::HandleUpstreamEntityPrompt(
     return;
   }
 
+  ClearStrikesForSave(form_url, upstream_entity);
   // TODO(crbug.com/441742849): Implement main logic by deleting the local
   // entity and calling the wallet server with the new entity.
 }

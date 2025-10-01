@@ -321,8 +321,10 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
   AutofillAiManagerImportFormTest() = default;
 
   static constexpr char kDefaultUrl[] = "https://example.com";
+  static constexpr char16_t kDefaultVehicleOwner[] = u"Jane Doe";
   static constexpr char16_t kDefaultPassportNumber[] = u"123";
   static constexpr char16_t kDefaultLicensePlate[] = u"XC-12-34";
+  static constexpr char16_t kOtherLicensePlate[] = u"567435";
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreateFormStructure(
       const std::vector<FieldType>& field_types_predictions,
@@ -358,7 +360,7 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
       std::string url = std::string(kDefaultUrl)) {
     std::unique_ptr<FormStructure> form =
         CreateFormStructure({NAME_FULL, VEHICLE_LICENSE_PLATE}, std::move(url));
-    form->field(0)->set_value(u"Jane Doe");
+    form->field(0)->set_value(kDefaultVehicleOwner);
     form->field(1)->set_value(std::move(license_plate));
     return form;
   }
@@ -380,6 +382,10 @@ class AutofillAiManagerImportFormTest : public AutofillAiManagerTest {
     return instance->GetInfo(attribute_type.field_type(), app_locale,
                              /*format_string=*/std::nullopt);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAiWalletVehicleRegistration};
 };
 
 // Tests that save prompts are only shown three times per url and entity type.
@@ -480,6 +486,69 @@ TEST_F(AutofillAiManagerImportFormTest, StrikesForSavePromptsPerAttribute) {
   EXPECT_TRUE(manager().OnFormSubmitted(
       *CreatePassportForm(kOtherPassportNumber, "https://other.com"),
       /*ukm_source_id*/ {}));
+}
+
+// Tests that migration prompts are only shown three times per strike attribute
+// (in this case, passport number).
+TEST_F(AutofillAiManagerImportFormTest,
+       StrikesForMigrationPromptsPerAttribute) {
+  AutofillClient::EntitySaveOrUpdatePromptResult decline = {
+      /*did_user_decline=*/true, std::nullopt};
+  AutofillClient::EntitySaveOrUpdatePromptResult ignore = {
+      /*did_user_decline=*/false, std::nullopt};
+
+  EntityInstance local_vehicle_entity_default_plate =
+      test::GetVehicleEntityInstanceWithRandomGuid(
+          {.name = kDefaultVehicleOwner, .plate = kDefaultLicensePlate});
+  // A different vin number is also needed because it is part of the entity
+  // strike keys.
+  EntityInstance local_vehicle_entity_other_plate_and_vin =
+      test::GetVehicleEntityInstanceWithRandomGuid(
+          {.name = kDefaultVehicleOwner,
+           .plate = kOtherLicensePlate,
+           .number = u"123"});
+  AddOrUpdateEntityInstance(local_vehicle_entity_default_plate);
+  AddOrUpdateEntityInstance(local_vehicle_entity_other_plate_and_vin);
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(ignore));
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .Times(3)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kOtherLicensePlate), _, _))
+        .WillOnce(RunOnceCallback<2>(decline));
+  }
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  // The next attempt is ignored, even though it is a different domain.
+  std::unique_ptr<FormStructure> different_domain =
+      CreateVehicleForm(kDefaultLicensePlate, "https://other.com");
+  EXPECT_FALSE(manager().OnFormSubmitted(*different_domain,
+                                         /*ukm_source_id*/ {}));
+
+  // But submitting a different license plate and vin number leads to a prompt.
+  std::unique_ptr<FormStructure> different_plate_form =
+      CreateVehicleForm(kOtherLicensePlate, "https://other.com");
+  check.Call();
+  EXPECT_TRUE(manager().OnFormSubmitted(*different_plate_form,
+                                        /*ukm_source_id*/ {}));
 }
 
 // Tests that update prompts are only shown three times per entity that is to
@@ -681,6 +750,167 @@ TEST_F(AutofillAiManagerImportFormTest, AcceptingResetsStrikesPerAttribute) {
       manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
   EXPECT_TRUE(
       manager().OnFormSubmitted(*CreatePassportForm(), /*ukm_source_id=*/{}));
+}
+
+// Tests that migration prompts are only shown three times per url and entity
+// type.
+TEST_F(AutofillAiManagerImportFormTest, StrikesForMigrationPromptsPerUrl) {
+  AutofillClient::EntitySaveOrUpdatePromptResult decline = {
+      /*did_user_decline=*/true, std::nullopt};
+  // A different vin number is also needed because it is part of the entity
+  // strike keys. Otherwise the strike logic would stop showing the prompt but
+  // not due to the url, rather the attributes.
+  EntityInstance local_vehicle_entity =
+      test::GetVehicleEntityInstanceWithRandomGuid(
+          {.name = kDefaultVehicleOwner,
+           .plate = kDefaultLicensePlate,
+           .number = u"123"});
+  AddOrUpdateEntityInstance(local_vehicle_entity);
+
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kOtherLicensePlate), _, _))
+        .WillOnce(RunOnceCallbackRepeatedly<2>(decline));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .WillOnce(RunOnceCallback<2>(decline));
+  }
+
+  std::unique_ptr<FormStructure> submitted_form_entity_with_default_plate =
+      CreateVehicleForm();
+  ASSERT_TRUE(manager().OnFormSubmitted(
+      *submitted_form_entity_with_default_plate, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(
+      *submitted_form_entity_with_default_plate, /*ukm_source_id=*/{}));
+  // Note that this leads to a regular save prompt, however it is counted
+  // towards the same strike database.
+  std::unique_ptr<FormStructure> submitted_form_entity_with_other_plate =
+      CreateVehicleForm(kOtherLicensePlate);
+  ASSERT_TRUE(manager().OnFormSubmitted(*submitted_form_entity_with_other_plate,
+                                        /*ukm_source_id=*/{}));
+
+  // The fourth attempt is ignored.
+  EXPECT_FALSE(manager().OnFormSubmitted(
+      *submitted_form_entity_with_default_plate, /*ukm_source_id=*/{}));
+  check.Call();
+
+  // But submitting on a different page leads to a prompt.
+  std::unique_ptr<FormStructure> other_domain_form =
+      CreateVehicleForm(kDefaultLicensePlate, "https://other.com");
+  EXPECT_TRUE(manager().OnFormSubmitted(*other_domain_form,
+                                        /*ukm_source_id=*/{}));
+}
+
+// Tests that accepting a migration prompt for an entity resets the strike
+// counter for that entity type.
+TEST_F(AutofillAiManagerImportFormTest, AcceptingMigrationResetsStrikesPerUrl) {
+  AutofillClient::EntitySaveOrUpdatePromptResult decline{
+      /*did_user_decline=*/true, std::nullopt};
+  EntityInstance local_vehicle_entity_default_plate =
+      test::GetVehicleEntityInstanceWithRandomGuid(
+          {.name = kDefaultVehicleOwner, .plate = kDefaultLicensePlate});
+  EntityInstance local_vehicle_entity_other_plate =
+      test::GetVehicleEntityInstanceWithRandomGuid(
+          {.name = kDefaultVehicleOwner, .plate = kOtherLicensePlate});
+  AddOrUpdateEntityInstance(local_vehicle_entity_default_plate);
+  AddOrUpdateEntityInstance(local_vehicle_entity_other_plate);
+  AutofillClient::EntitySaveOrUpdatePromptResult accept = {
+      /*did_user_decline=*/false, local_vehicle_entity_default_plate};
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    // First, we expect to see two migration attempts for a vehicle.
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+    EXPECT_CALL(check, Call);
+
+    // We accept the next migration prompt for a vehicle form.
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .WillOnce(RunOnceCallback<2>(accept));
+
+    // We now get two more vehicle migration prompts because vehicle strikes
+    // were reset.
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kOtherLicensePlate), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+  }
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  check.Call();
+
+  // This one will be accepted.
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  // Now attempt to show more dialogs.
+  std::unique_ptr<FormStructure> other_plate_form =
+      CreateVehicleForm(kOtherLicensePlate);
+  EXPECT_TRUE(manager().OnFormSubmitted(*other_plate_form,
+                                        /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(*other_plate_form,
+                                        /*ukm_source_id=*/{}));
+}
+
+// Tests that accepting a migration prompt for an entity resets the strike
+// counter for the strike key attributes of that entity.
+TEST_F(AutofillAiManagerImportFormTest,
+       AcceptingMigrationResetsStrikesPerAttribute) {
+  AutofillClient::EntitySaveOrUpdatePromptResult decline = {
+      /*did_user_decline=*/true, std::nullopt};
+  EntityInstance local_vehicle_entity_default_plate =
+      test::GetVehicleEntityInstanceWithRandomGuid(
+          {.name = kDefaultVehicleOwner, .plate = kDefaultLicensePlate});
+  AddOrUpdateEntityInstance(local_vehicle_entity_default_plate);
+  AutofillClient::EntitySaveOrUpdatePromptResult accept = {
+      /*did_user_decline=*/false, local_vehicle_entity_default_plate};
+  {
+    InSequence s;
+    // First, we expect to see two migration attempts for a vehicle.
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+    // We accept the next migration prompt for a vehicle form.
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .WillOnce(RunOnceCallback<2>(accept));
+
+    // We now get more prompts for the same vehicle license plate again.
+    EXPECT_CALL(autofill_client(),
+                ShowEntitySaveOrUpdateBubble(
+                    VehicleWithLicensePlate(kDefaultLicensePlate), _, _))
+        .Times(2)
+        .WillRepeatedly(RunOnceCallbackRepeatedly<2>(decline));
+  }
+
+  std::unique_ptr<FormStructure> form = CreateVehicleForm();
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+
+  // This one will be accepted.
+  ASSERT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
+  EXPECT_TRUE(manager().OnFormSubmitted(*form, /*ukm_source_id=*/{}));
 }
 
 TEST_F(AutofillAiManagerImportFormTest,
