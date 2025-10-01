@@ -84,12 +84,14 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE, DeviceFormFactor.TABLET_OR_DESKTOP})
+// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
 @Features.DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
-    ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION
+    ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION,
+    ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
 })
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherTabletTest {

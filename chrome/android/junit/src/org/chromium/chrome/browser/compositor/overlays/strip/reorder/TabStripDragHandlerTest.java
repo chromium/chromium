@@ -65,6 +65,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
@@ -857,18 +858,21 @@ public class TabStripDragHandlerTest {
 
     /** Test for Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_destination() {
         doTestDropInDestinationDifferentModel(/* isGroupDrag= */ false);
     }
 
     /** Test for Tab Group Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_destination_tabGroup() {
         doTestDropInDestinationDifferentModel(/* isGroupDrag= */ true);
     }
 
     /** Test for Multi-Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario D.2 */
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void test_onDrag_dropInStrip_differentModel_destination_multiTab() {
         doTestDropInDestinationDifferentModel_multiTab();
     }

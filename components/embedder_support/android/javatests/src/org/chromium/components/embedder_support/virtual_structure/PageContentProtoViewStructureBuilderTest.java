@@ -19,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -36,6 +37,8 @@ import org.chromium.components.autofill.TestViewStructure;
 })
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({"AnnotatedPageContentsVirtualStructure"})
+// TODO(crbug.com/439491767): Fix broken tests caused by desktop-like incognito window.
+@DisableFeatures("AndroidOpenIncognitoAsWindow")
 public class PageContentProtoViewStructureBuilderTest {
 
     private static final String TEST_PATH =
