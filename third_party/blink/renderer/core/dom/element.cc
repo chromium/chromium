@@ -9683,6 +9683,14 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     }
   }
 
+  // Since we just styled a new pseudo element, we have to inform its potential
+  // display lock context of this. This might force-unlock the element due to
+  // any number of constraints (no containment, wrong layout type, etc).
+  if (DisplayLockContext* display_lock_context =
+          pseudo_element->GetDisplayLockContext()) {
+    display_lock_context->DidStyleSelf();
+  }
+
   probe::PseudoElementCreated(pseudo_element);
 
   return pseudo_element;
