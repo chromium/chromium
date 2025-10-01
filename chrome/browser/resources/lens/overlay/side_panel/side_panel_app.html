@@ -2,6 +2,8 @@
   :host {
     --cr-searchbox-height: 52px;
     --cr-searchbox-min-width: min(calc(100%), 1100px);
+    --composebox-collapsed-height: 90px;
+    --aim-header-height: 66px;
   }
 
   /* Light mode not on AIM results */
@@ -73,8 +75,8 @@
   }
 
   :host([enable-client-side-aim-header]) .results-pane {
-    inset-block-start: 66px;
-    height: calc(100vh - 66px);
+    inset-block-start: var(--aim-header-height);
+    height: calc(100vh - var(--aim-header-height) - var(--composebox-collapsed-height));
   }
 
   :host([enable-floating-g-for-header]) #ghostLoader {
@@ -231,6 +233,7 @@
     --color-new-tab-page-composebox-scrim-background: var(--search-background-color);
     display: none;
     inset-block-end: 0;
+    min-height: var(--composebox-collapsed-height);
     position: absolute;
     width: 100%;
     z-index: 2;
@@ -243,7 +246,7 @@
       transparent 1%,
       var(--color-new-tab-page-composebox-scrim-background) 52px
     );
-    inset: -66px 0 0;
+    inset: calc(var(--aim-header-height) * -1) 0 0;
     pointer-events: none;
     position: absolute;
     width: 100%;
@@ -278,7 +281,7 @@
 
   #aimHeader {
     inset-inline: 0;
-    height: 66px;
+    height: var(--aim-header-height);
     background-color: var(--search-background-color);
   }
 
