@@ -756,6 +756,7 @@ chromium-metrics-reviews@google.com.
   <int value="62" label="Ambient Mode CrOS"/>
   <int value="63" label="Profile Downloader"/>
   <int value="64" label="Data Sharing Android"/>
+  <int value="65" label="Extensions Identity API"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/identity_manager/oauth_consumer_ids.h:OAuthConsumerId) -->
