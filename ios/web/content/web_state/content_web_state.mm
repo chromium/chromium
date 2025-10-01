@@ -421,8 +421,9 @@ bool ContentWebState::ContentIsHTML() const {
 const std::u16string& ContentWebState::GetTitle() const {
   if (serialized_state_) {
     CRWSessionStorage* session_storage = serialized_state_->session_storage();
-    const NSUInteger index = session_storage.lastCommittedItemIndex;
-    if (index > 0u && index <= session_storage.itemStorages.count) {
+    const NSInteger index = session_storage.lastCommittedItemIndex;
+    if (0 <= index &&
+        static_cast<NSUInteger>(index) < session_storage.itemStorages.count) {
       return session_storage.itemStorages[index].title;
     }
   }
