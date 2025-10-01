@@ -111,6 +111,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   // least `num_expected_relevant_events` relevant events have been observed
   // since the waiter's creation or last Wait().
   //
+  // The `timeout` is ignored if the TaskEnvironment was created with MOCK_TIME
+  // (see `internal::MaybeScopedRunLoopTimeout` for details).
+  //
   // Since the asynchronous-parsing task runner in AutofillManager has
   // relatively low priority, a high timeout may be necessary on slow bots.
   [[nodiscard]] testing::AssertionResult Wait(
@@ -252,7 +255,6 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   DenseSet<Event> relevant_events_;
   std::unique_ptr<State> state_ = std::make_unique<State>();
-  base::TimeDelta timeout_ = base::Seconds(30);
   base::ScopedObservation<AutofillManager, AutofillManager::Observer>
       observation_{this};
   base::Location waiter_location_;
@@ -260,6 +262,12 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
 // Returns a FormStructure that satisfies `pred` if such a form exists at call
 // time or appears within a RunLoop's timeout. Returns nullptr otherwise.
+//
+// The `timeout` is ignored if the TaskEnvironment was created with MOCK_TIME
+// (see `internal::MaybeScopedRunLoopTimeout` for details).
+//
+// Since the asynchronous-parsing task runner in AutofillManager has relatively
+// low priority, a high timeout may be necessary on slow bots.
 const FormStructure* WaitForMatchingForm(
     AutofillManager* manager,
     base::RepeatingCallback<bool(const FormStructure&)> pred,
@@ -325,6 +333,9 @@ class TestAutofillManagerSingleEventWaiter {
 
   // Blocks until the first `event` is fired since the waiters construction.
   //
+  // The `timeout` is ignored if the TaskEnvironment was created with MOCK_TIME
+  // (see `internal::MaybeScopedRunLoopTimeout` for details).
+  //
   // Since the asynchronous-parsing task runner in AutofillManager has
   // relatively low priority, a high timeout may be necessary on slow bots.
   testing::AssertionResult Wait(base::TimeDelta timeout = base::Seconds(30),
@@ -344,6 +355,34 @@ class TestAutofillManagerSingleEventWaiter {
                                               const base::Location&)>
       wait_;
 };
+
+namespace internal {
+
+// Creates a ScopedRunLoopTimeout unless there is a TaskEnvironment with
+// MOCK_TIME.
+//
+// If the TaskEnvironment has MOCK_TIME, it may forward time when it runs out of
+// non-delayed work, and thus unintentionally trigger the timeout.
+// See crbug.com/448144129#comment5 for details.
+class MaybeScopedRunLoopTimeout {
+ public:
+  [[nodiscard]] explicit MaybeScopedRunLoopTimeout(
+      const base::Location& timeout_enabled_from_here,
+      std::optional<base::TimeDelta> timeout,
+      base::RepeatingCallback<std::string()> on_timeout_log);
+
+  MaybeScopedRunLoopTimeout(const MaybeScopedRunLoopTimeout&) = delete;
+
+  MaybeScopedRunLoopTimeout& operator=(const MaybeScopedRunLoopTimeout&) =
+      delete;
+
+  ~MaybeScopedRunLoopTimeout();
+
+ private:
+  std::optional<base::test::ScopedRunLoopTimeout> run_loop_timeout_;
+};
+
+}  // namespace internal
 
 // Observes a single event and quits a base::RunLoop on the first event that
 // matches a given predicate.
@@ -374,7 +413,7 @@ class TestAutofillManagerSingleEventWaiter::Impl
     static const char kTimeoutMessage[] =
         "Timeout of callback from TestAutofillManagerSingleEventWaiter() in ";
     bool timed_out = false;
-    base::test::ScopedRunLoopTimeout run_loop_timeout(
+    internal::MaybeScopedRunLoopTimeout run_loop_timeout(
         FROM_HERE, timeout,
         base::BindRepeating(
             [](bool* timed_out, const base::Location& location) {
