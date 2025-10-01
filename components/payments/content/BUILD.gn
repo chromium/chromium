@@ -203,6 +203,7 @@ static_library("test_support") {
     "mock_web_payments_web_data_service.cc",
     "mock_web_payments_web_data_service.h",
   ]
+  public_deps = [ "//components/payments/content/browser_binding:test_support" ]
   deps = [
     ":utils",
     "//base/test:test_support",
@@ -214,10 +215,6 @@ static_library("test_support") {
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
   ]
-  if (is_android) {
-    public_deps =
-        [ "//components/payments/content/browser_binding:test_support" ]
-  }
 }
 
 group("unit_tests") {
@@ -230,7 +227,7 @@ group("unit_tests") {
     deps +=
         [ "//components/payments/content/browser_binding:android_unittests" ]
   }
-  if (is_mac || is_win || is_linux) {
+  if (is_mac || is_win || is_linux || is_chromeos) {
     deps +=
         [ "//components/payments/content/browser_binding:desktop_unittests" ]
   }

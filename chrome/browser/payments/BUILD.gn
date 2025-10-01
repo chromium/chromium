@@ -58,7 +58,7 @@ source_set("browser_tests") {
 
   if (is_android) {
     sources += [
-      "browser_bound_keys_deleter_browsertest.cc",
+      "browser_bound_key_deleter_browsertest.cc",
       "expandable_payment_handler_browsertest.cc",
     ]
     deps += [

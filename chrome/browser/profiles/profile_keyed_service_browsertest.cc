@@ -238,8 +238,18 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
       CreateProfileAndWaitForAllTasks(ProfileManager::GetSystemProfilePath());
   ASSERT_FALSE(system_profile->IsOffTheRecord());
   ASSERT_TRUE(system_profile->IsSystemProfile());
-  TestKeyedProfileServicesActives(system_profile,
-                                  /*expected_active_services_names=*/{});
+  TestKeyedProfileServicesActives(
+      system_profile,
+      /*expected_active_services_names=*/{
+          // There is no control over the creation based on the Profile types in
+          // components/. These services are created for the System Profile by
+          // default because their `ServiceIsCreatedWithBrowserContext()`
+          // returns true.
+          "BrowserBoundKeyDeleter",
+          // `WebDataService` is required because `BrowserBoundKeyDeleter`
+          // depends on it.
+          "WebDataService",
+      });
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
@@ -250,13 +260,14 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   ASSERT_TRUE(system_profile->IsSystemProfile());
 
   // clang-format off
-  std::set<std::string> exepcted_created_services_names = {
+  std::set<std::string> expected_created_services_names = {
     // in components:
     // There is no control over the creation based on the Profile types in
     // components/. These services are not created for the System Profile by
     // default, however their creation is still possible.
     "AutocompleteControllerEmitter",
     "AutofillInternalsService",
+    "BrowserBoundKeyDeleter",
     "DataControlsRulesService",
     "HasEnrolledInstrumentQuery",
     "LocalPresentationManager",
@@ -288,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   // clang-format on
 
   TestKeyedProfileServicesActives(system_profile,
-                                  exepcted_created_services_names,
+                                  expected_created_services_names,
                                   /*force_create_services=*/true);
 }
 
@@ -605,6 +616,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "BookmarkUndoService",
     "BookmarksAPI",
     "BrailleDisplayPrivateAPI",
+    "BrowserBoundKeyDeleter",
     "BrowsingTopicsService",
     "ChildAccountService",
     "ChromeSigninClient",
