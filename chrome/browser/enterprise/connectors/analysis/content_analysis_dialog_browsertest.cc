@@ -16,7 +16,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"

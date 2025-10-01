@@ -10,9 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/mock_download_item.h"
 

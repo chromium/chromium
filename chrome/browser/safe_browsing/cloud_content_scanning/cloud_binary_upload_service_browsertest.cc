@@ -6,7 +6,6 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
 #include "chrome/browser/enterprise/test/test_constants.h"

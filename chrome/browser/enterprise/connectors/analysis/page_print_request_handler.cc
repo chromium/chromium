@@ -7,12 +7,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 

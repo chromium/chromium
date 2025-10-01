@@ -8,13 +8,14 @@
 #include <variant>
 
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/strings.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"

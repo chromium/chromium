@@ -17,7 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "content/public/browser/browser_thread.h"

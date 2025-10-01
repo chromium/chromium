@@ -1915,7 +1915,6 @@ static_library("browser") {
     "//chrome/browser/devtools",
     "//chrome/browser/download",
     "//chrome/browser/download:status_text_builder_utils",
-    "//chrome/browser/enterprise/connectors/analysis:features",
     "//chrome/browser/enterprise/platform_auth:features",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",
@@ -2075,6 +2074,7 @@ static_library("browser") {
     "//chrome/browser/webdata_services",
     "//chrome/browser/webid",
     "//chrome/browser/webid:impl",
+    "//components/enterprise/connectors/core",
 
     # TODO(crbug.com/369436587): Remove this dependency when
     # c/b/policy/configuration_policy_handler_list_factory.cc gets modularized.

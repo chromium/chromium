@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/grit/generated_resources.h"
