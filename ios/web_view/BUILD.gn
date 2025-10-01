@@ -12,14 +12,6 @@ import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//ios/web_view/features.gni")
 import("//ios/web_view/framework/sources.gni")
 
-group("all_tests") {
-  testonly = true
-  deps = [
-    "//ios/web_view/test:ios_web_view_inttests",
-    "//ios/web_view/test:ios_web_view_unittests",
-  ]
-}
-
 _package_dir = "$root_out_dir/ios_web_view"
 
 action("ios_web_view_generate_license") {

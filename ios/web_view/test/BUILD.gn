@@ -10,6 +10,14 @@ config("unittest_config") {
   defines = [ "CWV_UNIT_TEST" ]
 }
 
+group("all_tests") {
+  testonly = true
+  deps = [
+    ":ios_web_view_inttests",
+    ":ios_web_view_unittests",
+  ]
+}
+
 source_set("inttests") {
   testonly = true
 
