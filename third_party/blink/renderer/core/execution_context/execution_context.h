@@ -91,7 +91,6 @@ class ErrorEvent;
 class EventTarget;
 class FrameOrWorkerScheduler;
 class KURL;
-class LocalDOMWindow;
 class OriginTrialContext;
 class RuntimeFeatureStateOverrideContext;
 class PolicyContainer;
