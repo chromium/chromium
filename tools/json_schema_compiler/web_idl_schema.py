@@ -787,9 +787,18 @@ class Property:
   def process(self) -> (str, dict):
     properties = Type(self.node).Process()
     value = self.node.GetOneOf('Value').GetProperty('VALUE')
+    # Unfortunately, WebIDL doesn't allow string values for consts, so we have
+    # to hack them in using an extended attribute.
+    if properties['type'] == 'string':
+      value = GetExtendedAttributeValue(self.node, 'StringValue')
+      if value is None:
+        raise SchemaCompilerError(
+            'If using a const of type DOMString, you must specify the extended'
+            ' attribute "StringValue" for the value.',
+            self.node,
+        )
     # The IDL Parser always returns values as strings, so cast to their real
     # type.
-    # TODO(crbug.com/445495198): Add support for DOMString const values.
     properties['value'] = self._CastFromType(properties['type'], value)
 
     description_data = ProcessNodeDescription(self.node)

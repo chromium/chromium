@@ -1,0 +1,13 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL schema with a string const that is missing the required
+// "StringValue" extended attribute.
+interface TestWebIdl {
+  const DOMString foo = 0;
+};
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

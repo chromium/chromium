@@ -46,6 +46,7 @@ interface TestWebIdl {
 
   const long CONSTANT_LONG = 39;
   const double CONSTANT_DOUBLE = 3.9;
+  [StringValue="Foo"] const DOMString CONSTANT_STRING = 0;
 
   // Items for testing the processing of IDL comments to schema descriptions:
 

@@ -526,7 +526,12 @@ class WebIdlSchemaTest(unittest.TestCase):
     properties = schema['properties']
     # Properties are an ordered dict, so ordering matches order in the IDL file.
     self.assertEqual(
-        ['CONSTANT_LONG', 'CONSTANT_DOUBLE', 'DESCRIBED_CONSTANT'],
+        [
+            'CONSTANT_LONG',
+            'CONSTANT_DOUBLE',
+            'CONSTANT_STRING',
+            'DESCRIBED_CONSTANT',
+        ],
         list(properties.keys()),
     )
     self.assertEqual({
@@ -537,6 +542,10 @@ class WebIdlSchemaTest(unittest.TestCase):
         'type': 'number',
         'value': 3.9
     }, properties['CONSTANT_DOUBLE'])
+    self.assertEqual({
+        'type': 'string',
+        'value': 'Foo'
+    }, properties['CONSTANT_STRING'])
     self.assertEqual(
         {
             'type': 'integer',
@@ -544,6 +553,21 @@ class WebIdlSchemaTest(unittest.TestCase):
             'description': 'Comment on a constant property with a value.',
         },
         properties['DESCRIBED_CONSTANT'],
+    )
+
+  # Tests that a const DOMString defined on an API Interface which is missing
+  # the StringValue extended attribute will throw an error. It's unfortunate
+  # that we need to hack this in with an extended attribute, but WebIDL does not
+  # support specifying an actual string for the value of a const.
+  def testConstStringMissingExtendedAttribute(self):
+    expected_error_regex = (
+        r'.* Const\(foo\): If using a const of type DOMString, you must specify'
+        r' the extended attribute "StringValue" for the value.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/const_string_missing_extended_attribute.idl',
     )
 
   # Tests that if the nodoc extended attribute is not specified on the API
