@@ -54,7 +54,6 @@ RasterCommandBufferStub::RasterCommandBufferStub(
 RasterCommandBufferStub::~RasterCommandBufferStub() {}
 
 gpu::ContextResult RasterCommandBufferStub::Initialize(
-    CommandBufferStub* share_command_buffer_stub,
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
   TRACE_EVENT0("gpu", "RasterBufferStub::Initialize");
@@ -64,11 +63,6 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
-
-  if (share_command_buffer_stub) {
-    LOG(ERROR) << "Using a share group is not supported with RasterDecoder";
-    return ContextResult::kFatalFailure;
-  }
 
   ContextResult result;
   auto shared_context_state = manager->GetSharedContextState(&result);

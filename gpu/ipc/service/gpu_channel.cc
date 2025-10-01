@@ -996,36 +996,6 @@ void GpuChannel::CreateCommandBuffer(
   }
 
   int32_t stream_id = init_params->stream_id;
-  int32_t share_group_id = init_params->share_group_id;
-  CommandBufferStub* share_group = LookupCommandBuffer(share_group_id);
-
-  if (!share_group && share_group_id != IPC::mojom::kRoutingIdNone) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: invalid share group id";
-    return;
-  }
-
-  if (share_group && stream_id != share_group->stream_id()) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "stream id does not match share group stream id";
-    return;
-  }
-
-  if (share_group && !share_group->decoder_context()) {
-    // This should catch test errors where we did not Initialize the
-    // share_group's CommandBuffer.
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "shared context was not initialized";
-    return;
-  }
-
-  if (share_group && share_group->decoder_context()->WasContextLost()) {
-    // The caller should retry to get a context.
-    LOG(ERROR) << "ContextResult::kTransientFailure: "
-                  "shared context was already lost";
-    responder.set_result(ContextResult::kTransientFailure);
-    return;
-  }
-
   CommandBufferId command_buffer_id =
       CommandBufferIdFromChannelAndRoute(client_id_, route_id);
 
@@ -1063,7 +1033,7 @@ void GpuChannel::CreateCommandBuffer(
   stub->BindEndpoints(std::move(receiver), std::move(client), io_task_runner_);
 
   auto stub_result =
-      stub->Initialize(share_group, *init_params, std::move(shared_state_shm));
+      stub->Initialize(*init_params, std::move(shared_state_shm));
   if (stub_result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "GpuChannel::CreateCommandBuffer(): failed to initialize "
                    "CommandBufferStub";

@@ -353,7 +353,6 @@ class ImageDecodeAcceleratorStubTest
     CommandBufferStub::SetMemoryTrackerFactoryForTesting(
         base::BindRepeating(&CreateMockMemoryTracker));
     auto init_params = mojom::CreateCommandBufferParams::New();
-    init_params->share_group_id = IPC::mojom::kRoutingIdNone;
     init_params->stream_id = 0;
     init_params->stream_priority = SchedulingPriority::kNormal;
     init_params->attribs = mojom::ContextCreationAttribs::NewRaster(

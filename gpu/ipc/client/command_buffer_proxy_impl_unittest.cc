@@ -135,7 +135,7 @@ class CommandBufferProxyImplTest
               return true;
             });
 
-    proxy->Initialize(nullptr, SchedulingPriority::kNormal,
+    proxy->Initialize(SchedulingPriority::kNormal,
                       mojom::ContextCreationAttribs::NewGles(
                           mojom::GLESCreationAttribs::New()),
                       GURL());

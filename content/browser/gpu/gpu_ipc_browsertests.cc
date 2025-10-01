@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   auto impl = std::make_unique<gpu::CommandBufferProxyImpl>(
       GetGpuChannel(), content::kGpuStreamIdDefault,
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  ASSERT_EQ(impl->Initialize(nullptr, content::kGpuStreamPriorityDefault,
+  ASSERT_EQ(impl->Initialize(content::kGpuStreamPriorityDefault,
                              gpu::mojom::ContextCreationAttribs::NewGles(
                                  gpu::mojom::GLESCreationAttribs::New()),
                              GURL()),

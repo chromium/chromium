@@ -68,12 +68,10 @@ CommandBufferProxyImpl::~CommandBufferProxyImpl() {
 }
 
 ContextResult CommandBufferProxyImpl::Initialize(
-    CommandBufferProxyImpl* share_group,
     gpu::SchedulingPriority stream_priority,
     mojom::ContextCreationAttribsPtr attribs,
     const GURL& active_url,
     const std::string_view label) {
-  DCHECK(!share_group || (stream_id_ == share_group->stream_id_));
   TRACE_EVENT0("gpu", "GpuChannelHost::CreateViewCommandBuffer");
 
   // Drop the |channel_| if this method does not succeed and early-outs, to
@@ -81,8 +79,6 @@ ContextResult CommandBufferProxyImpl::Initialize(
   auto channel = std::move(channel_);
 
   auto params = mojom::CreateCommandBufferParams::New();
-  params->share_group_id =
-      share_group ? share_group->route_id_ : IPC::mojom::kRoutingIdNone;
   params->stream_id = stream_id_;
   params->stream_priority = stream_priority;
   params->attribs = std::move(attribs);

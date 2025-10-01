@@ -90,8 +90,7 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   ~CommandBufferProxyImpl() override;
 
   // Connect to a command buffer in the GPU process.
-  ContextResult Initialize(CommandBufferProxyImpl* share_group,
-                           gpu::SchedulingPriority stream_priority,
+  ContextResult Initialize(gpu::SchedulingPriority stream_priority,
                            mojom::ContextCreationAttribsPtr attribs,
                            const GURL& active_url = GURL(),
                            const std::string_view label = "");

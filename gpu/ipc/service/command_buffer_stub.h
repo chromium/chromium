@@ -100,7 +100,6 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // CommandBufferStub current, so the GpuChannel can initialize
   // the gpu::Capabilities.
   virtual gpu::ContextResult Initialize(
-      CommandBufferStub* share_group,
       const mojom::CreateCommandBufferParams& params,
       base::UnsafeSharedMemoryRegion shared_state_shm) = 0;
 

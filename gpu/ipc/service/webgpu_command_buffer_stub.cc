@@ -61,7 +61,6 @@ WebGPUCommandBufferStub::~WebGPUCommandBufferStub() {
 }
 
 gpu::ContextResult WebGPUCommandBufferStub::Initialize(
-    CommandBufferStub* share_command_buffer_stub,
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
 #if BUILDFLAG(IS_FUCHSIA)
@@ -75,11 +74,6 @@ gpu::ContextResult WebGPUCommandBufferStub::Initialize(
 
   GpuChannelManager* manager = channel_->gpu_channel_manager();
   DCHECK(manager);
-
-  if (share_command_buffer_stub) {
-    LOG(ERROR) << "Using a share group is not supported with WebGPUDecoder";
-    return ContextResult::kFatalFailure;
-  }
 
   ContextResult result;
   scoped_refptr<SharedContextState> shared_context_state =

@@ -74,7 +74,6 @@ GLES2CommandBufferStub::GLES2CommandBufferStub(
 GLES2CommandBufferStub::~GLES2CommandBufferStub() = default;
 
 gpu::ContextResult GLES2CommandBufferStub::Initialize(
-    CommandBufferStub* share_command_buffer_stub,
     const mojom::CreateCommandBufferParams& init_params,
     base::UnsafeSharedMemoryRegion shared_state_shm) {
   TRACE_EVENT0("gpu", "GLES2CommandBufferStub::Initialize");
@@ -86,26 +85,16 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   DCHECK(manager);
   memory_tracker_ = CreateMemoryTracker();
 
-  if (share_command_buffer_stub) {
-    context_group_ =
-        share_command_buffer_stub->decoder_context()->GetContextGroup();
-    if (!context_group_) {
-      LOG(ERROR) << "ContextResult::kFatalFailure: attempt to create a GLES2 "
-                    "context sharing with a non-GLES2 context";
-      return gpu::ContextResult::kFatalFailure;
-    }
-  } else {
-    auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
-        manager->gpu_driver_bug_workarounds(), manager->gpu_feature_info());
-    context_group_ = base::MakeRefCounted<gles2::ContextGroup>(
-        manager->gpu_preferences(), CreateMemoryTracker(),
-        manager->shader_translator_cache(),
-        manager->framebuffer_completeness_cache(), feature_info,
-        manager->watchdog() /* progress_reporter */,
-        manager->gpu_feature_info(), manager->discardable_manager(),
-        manager->passthrough_discardable_manager(),
-        manager->shared_image_manager());
-  }
+  auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
+      manager->gpu_driver_bug_workarounds(), manager->gpu_feature_info());
+  context_group_ = base::MakeRefCounted<gles2::ContextGroup>(
+      manager->gpu_preferences(), CreateMemoryTracker(),
+      manager->shader_translator_cache(),
+      manager->framebuffer_completeness_cache(), feature_info,
+      manager->watchdog() /* progress_reporter */, manager->gpu_feature_info(),
+      manager->discardable_manager(),
+      manager->passthrough_discardable_manager(),
+      manager->shared_image_manager());
 
   // If the `fail_if_major_perf_caveat` context creation attribute was true
   // and we are using a software renderer, fail.
@@ -198,11 +187,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
     use_virtualized_gl_context_ = false;
     // When using the passthrough command decoder, only share with other
     // contexts in the explicitly requested share group
-    if (share_command_buffer_stub) {
-      share_group_ = share_command_buffer_stub->share_group();
-    } else {
-      share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
-    }
+    share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
   } else {
     // When using the validating command decoder, always use the global share
     // group

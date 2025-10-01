@@ -440,7 +440,7 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
         gpu_channel_host_, kGpuStreamIdDefault,
         task_environment_.GetMainThreadTaskRunner());
     gpu_command_buffer_proxy_->Initialize(
-        nullptr, kGpuStreamPriorityDefault,
+        kGpuStreamPriorityDefault,
         gpu::mojom::ContextCreationAttribs::NewGles(
             gpu::mojom::GLESCreationAttribs::New()),
         GURL());
