@@ -134,6 +134,9 @@ extern const char kGoogleMyAccountHomeAddressURL[];
 // URL of the Google Account work address page.
 extern const char kGoogleMyAccountWorkAddressURL[];
 
+// URL of the change Google Account name page.
+extern const char kGoogleAccountNameEmailAddressEditURL[];
+
 // URL used in referrer to signal that the navigation originates from Reading
 // List page and thus should not be considered for Most Visited.
 extern const char kReadingListReferrerURL[];

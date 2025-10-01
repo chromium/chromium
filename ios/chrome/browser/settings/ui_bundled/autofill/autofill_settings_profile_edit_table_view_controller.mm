@@ -270,6 +270,13 @@ const CGFloat kSymbolSize = 22;
       [self.applicationHandler closePresentedViewsAndOpenURL:command];
       return;
     }
+
+    if (type == autofill::AutofillProfile::RecordType::kAccountNameEmail) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleAccountNameEmailAddressEditURL)];
+      [self.applicationHandler closePresentedViewsAndOpenURL:command];
+      return;
+    }
   }
   [self.handler didSelectRowAtIndexPath:indexPath];
 }
