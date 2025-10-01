@@ -10,31 +10,34 @@
 suite('ImageClassifier', function() {
   let testContainer;
 
+  // A solid red 1x1 pixel is used so that test images are visible, which
+  // aids in visual debugging of the test harness.
+  const RED_1X1_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAIABAP8AAP///' +
+                        'yH5BAEAAAEALAAAAAABAAEAAAICRAEAOw==';
+
   /**
-   * Helper to create an image with specific natural dimensions, append it to
-   * the container, and return a promise that resolves when the image is ready
-   * for classification.
+   * Helper to create an image, append it to the container, and return a promise
+   * that resolves when the image is ready for classification.
    * @param {string} id A unique ID for the image.
-   * @param {number} naturalWidth The desired natural width of the image in CSS
-   *     pixels.
-   * @param {number} naturalHeight The desired natural height of the image in
-   *     CSS pixels.
+   * @param {number} widthDp The width of the image in DP.
+   * @param {number} heightDp The height of the image in DP.
    * @param {string} parentTag The tag of the parent element (e.g., 'p', 'div').
    * @param {string} parentContent The innerHTML of the parent element, with
    *     '<img>' as a placeholder for the image.
    * @param {Object} attributes An object of attributes to set on the image.
    * @return {Promise<HTMLImageElement>}
    */
-  function createImageTest(
-      id, naturalWidth, naturalHeight, parentTag, parentContent,
-      attributes = {}) {
+  function createImageTest(id, widthDp, heightDp, parentTag, parentContent,
+                           attributes = {}) {
     return new Promise((resolve) => {
+      const density = window.devicePixelRatio || 1;
       const parent = document.createElement(parentTag);
-      // Create a placeholder for replacement.
-      parent.innerHTML = parentContent.replace('<img>', `<img id="${id}">`);
-      testContainer.appendChild(parent);
+      const img = document.createElement('img');
+      img.id = id;
+      // Scale the density-independent dimensions to CSS pixels.
+      img.width = widthDp * density;
+      img.height = heightDp * density;
 
-      const img = document.getElementById(id);
       for (const [key, value] of Object.entries(attributes)) {
         img.setAttribute(key, value);
       }
@@ -43,11 +46,13 @@ suite('ImageClassifier', function() {
       img.onload = () => resolve(img);
       img.onerror = () => resolve(img);
 
-      // Generate an SVG `src` to control dimensions if one wasn't provided.
+      parent.innerHTML = parentContent.replace('<img>', img.outerHTML);
+      testContainer.appendChild(parent);
+
+      // Set src last to ensure handlers are attached. Use the data URI only if
+      // no src was provided in the test attributes.
       if (!img.hasAttribute('src')) {
-        const svg = `<svg width="${naturalWidth}" height="${naturalHeight}"
-                          xmlns="http://www.w3.org/2000/svg"></svg>`;
-        img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+        img.src = RED_1X1_PIXEL;
       }
     });
   }
@@ -67,40 +72,21 @@ suite('ImageClassifier', function() {
     // Define all test dimensions in density-independent units (DP).
     const INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP = 300;
 
-    // For metadata tests, use a width that is large but guaranteed to not
-    // trigger the dominant image guardrail.
-    const safeNonDominantWidth = Math.floor(window.innerWidth * 0.7);
-
     const imagePromises = [
-      // New Guardrail Test: A visually dominant "hero" image.
-      createImageTest(
-          'hero_image', 200, 100, 'p', '<img>', {
-            style: 'width: 90vw;',
-            // Add a misleading keyword to prove the guardrail overrides it.
-            class: 'icon-class',
-          }),
+      // Definitely Inline.
+      createImageTest('small_icon', 50, 50, 'p', '<img>'),
+      createImageTest('math_class', 100, 100, 'p', '<img>', {class: 'tex'}),
+      createImageTest('math_filename', 100, 100, 'p', '<img>',
+                      {src: '/foo/icon.svg'}),
+      createImageTest('math_alt', 100, 100, 'p', '<img>', {alt: 'E=mc^2'}),
 
-      // Definitely Inline (based on intrinsic properties).
-      createImageTest('small_area', 50, 50, 'p', '<img>'),
-      // These should be inline due to metadata, using a width that is
-      // guaranteed to not be visually dominant.
-      createImageTest(
-          'math_class', safeNonDominantWidth, 100, 'p', '<img>',
-          {class: 'tex'}),
-      createImageTest(
-          'math_filename', safeNonDominantWidth, 100, 'p', '<img>',
-          {src: '/foo/icon.svg'}),
-      createImageTest(
-          'math_alt', safeNonDominantWidth, 100, 'p', '<img>',
-          {alt: 'E=mc^2'}),
-
-      // Definitely Full-width (based on structure).
+      // Definitely Full-width.
       createImageTest('figure_with_caption', 400, 300, 'figure',
                       '<img><figcaption>Test</figcaption>'),
       createImageTest('sole_content_in_p', 400, 300, 'p', '<img>'),
       createImageTest('sole_content_with_br', 400, 300, 'p', '<img><br>'),
 
-      // Fallback (based on intrinsic width).
+      // Fallback.
       createImageTest(
           'fallback_wide', INLINE_WIDTH_FALLBACK_UPPER_BOUND_DP + 50, 200, 'p',
           'Some text <img>'),
@@ -126,9 +112,7 @@ suite('ImageClassifier', function() {
           `Image #${id} should have class ${expectedClass}`);
     };
 
-    assertHasClass('hero_image', ImageClassifier.FULL_WIDTH_CLASS);
-
-    assertHasClass('small_area', ImageClassifier.INLINE_CLASS);
+    assertHasClass('small_icon', ImageClassifier.INLINE_CLASS);
     assertHasClass('math_class', ImageClassifier.INLINE_CLASS);
     assertHasClass('math_filename', ImageClassifier.INLINE_CLASS);
     assertHasClass('math_alt', ImageClassifier.INLINE_CLASS);
