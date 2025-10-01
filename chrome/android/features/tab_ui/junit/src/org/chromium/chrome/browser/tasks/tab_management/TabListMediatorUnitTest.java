@@ -94,6 +94,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
@@ -190,7 +191,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -5014,7 +5014,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testGetSpanCount_OnXrDevice() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         // Perform action and validate for compact width.
         assertEquals(
                 TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM,

@@ -79,6 +79,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -154,7 +155,6 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropGlobalState.TrackerToken;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.util.MotionEventUtils;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
@@ -4624,7 +4624,7 @@ public class StripLayoutHelperTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testDrag_sendMoveWindowBroadcast_success() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         // Setup with tabs and select first tab.
         setTabStripDragHandlerMock();
         when(mToolbarContainerView.getContext()).thenReturn(mActivity);
@@ -5533,7 +5533,7 @@ public class StripLayoutHelperTest {
 
     @Test
     public void testTabTearingXrIph() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         initializeTest(false, false, 0, 1);
         mStripLayoutHelper.onSizeChanged(
                 SCREEN_WIDTH, SCREEN_HEIGHT, false, TIMESTAMP, PADDING_LEFT, PADDING_RIGHT, 0f);

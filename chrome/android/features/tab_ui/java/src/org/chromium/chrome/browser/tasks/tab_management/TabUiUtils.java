@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -58,7 +59,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogUtils;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.List;
 
@@ -507,7 +507,7 @@ public class TabUiUtils {
      * @param rootView The view containing the empty state UI.
      */
     public static void applyXrEmptyStateBackplate(View rootView) {
-        if (!XrUtils.isXrDevice()) {
+        if (!DeviceInfo.isXr()) {
             return;
         }
 

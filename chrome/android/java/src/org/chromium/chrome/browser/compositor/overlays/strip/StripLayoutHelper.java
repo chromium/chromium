@@ -48,6 +48,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
@@ -136,7 +137,6 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.ArrayList;
@@ -1757,7 +1757,7 @@ public class StripLayoutHelper
         }
 
         // 5. Trigger IPH for tab tearing on XR if applicable.
-        if (XrUtils.isXrDevice()
+        if (DeviceInfo.isXr()
                 && mStripTabs.length > 1
                 && !onStartup
                 && !closureCancelled
@@ -5487,7 +5487,7 @@ public class StripLayoutHelper
     }
 
     private void sendMoveWindowBroadcast(View view, float startXInView, float startYInView) {
-        if (!XrUtils.isXrDevice()) return;
+        if (!DeviceInfo.isXr()) return;
         if (mWindowAndroid.getActivity().get() == null) return;
 
         // The start position is in the view coordinate system and related to the top left position

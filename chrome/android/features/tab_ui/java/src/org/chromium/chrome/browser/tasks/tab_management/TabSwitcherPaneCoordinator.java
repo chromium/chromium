@@ -32,6 +32,7 @@ import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.Token;
@@ -86,7 +87,6 @@ import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
@@ -420,7 +420,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                 pinnedTabsContainer.addView(pinnedTabStripRecyclerView);
             }
 
-            if (XrUtils.isXrDevice()) {
+            if (DeviceInfo.isXr()) {
                 recyclerView.setVerticalFadingEdgeEnabled(true);
                 recyclerView.setFadingEdgeLength(XR_FADING_EDGE_LENGTH_PX);
             } else {

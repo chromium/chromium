@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -33,7 +34,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.function.Function;
 
@@ -108,7 +108,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                 castCallback(mBackPressStateChangeCallback));
 
         mContainerView = containerView;
-        int layoutId = XrUtils.isXrDevice() ? R.layout.hub_xr_layout : R.layout.hub_layout;
+        int layoutId = DeviceInfo.isXr() ? R.layout.hub_xr_layout : R.layout.hub_layout;
         mMainHubParent = (ViewGroup) LayoutInflater.from(context).inflate(layoutId, null);
         mContainerView.addView(mMainHubParent);
 

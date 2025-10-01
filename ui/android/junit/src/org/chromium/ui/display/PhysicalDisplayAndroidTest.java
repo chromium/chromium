@@ -40,7 +40,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.Arrays;
 
@@ -112,7 +111,7 @@ public class PhysicalDisplayAndroidTest {
     @Before
     public void setup() {
         DeviceInfo.setIsAutomotiveForTesting(false);
-        XrUtils.setXrDeviceForTesting(false);
+        DeviceInfo.setIsXrForTesting(false);
 
         doReturn(TEST_DISPLAY_ID).when(mDisplay).getDisplayId();
         doReturn(TEST_DISPLAY_NAME).when(mDisplay).getName();

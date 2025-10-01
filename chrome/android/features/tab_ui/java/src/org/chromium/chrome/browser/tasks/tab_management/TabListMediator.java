@@ -43,6 +43,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
@@ -132,7 +133,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -1881,7 +1881,7 @@ class TabListMediator implements TabListNotificationHandler {
      */
     @VisibleForTesting
     int getSpanCount(int screenWidthDp) {
-        if (XrUtils.isXrDevice()) {
+        if (DeviceInfo.isXr()) {
             // The layout span count is restricted to medium on XR immersive devices to display
             // larger tab thumbnails, despite the large screen width.
             return TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM;

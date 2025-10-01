@@ -34,7 +34,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -272,7 +271,7 @@ import java.util.function.Consumer;
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(mWindowContext, displayMetrics);
-        } else if (XrUtils.isXrDevice()
+        } else if (DeviceInfo.isXr()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
             mDisplay.getRealMetrics(displayMetrics);
@@ -327,7 +326,7 @@ import java.util.function.Consumer;
                         .hasSwitch(DisplaySwitches.AUTOMOTIVE_WEB_UI_SCALE_UP_ENABLED)) {
             DisplayUtil.scaleUpDisplayMetricsForAutomotive(
                     ContextUtils.getApplicationContext(), displayMetrics);
-        } else if (XrUtils.isXrDevice()
+        } else if (DeviceInfo.isXr()
                 && CommandLine.getInstance()
                         .hasSwitch(DisplaySwitches.XR_WEB_UI_SCALE_UP_ENABLED)) {
             DisplayUtil.scaleUpDisplayMetricsForXr(

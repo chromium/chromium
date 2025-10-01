@@ -36,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
@@ -84,7 +85,6 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -447,7 +447,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testNoShowLayoutCallOnLastTabClosed_Xr() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         initializeLayoutManagerTablet(1, 0, 0, TabModel.INVALID_TAB_INDEX, false);
 
         // Verify the initial layout is BROWSING.
@@ -483,7 +483,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @UiThreadTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testNoShowLayoutOnAllTabsClosed_Xr() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         initializeLayoutManagerTablet(2, 0, 0, TabModel.INVALID_TAB_INDEX, false);
 
         // Verify the initial layout is BROWSING.
@@ -796,7 +796,6 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @After
     public void tearDown() {
         setAccessibilityEnabledForTesting(null);
-        XrUtils.setXrDeviceForTesting(null);
     }
 
     private void launchedChromeAndEnterTabSwitcher() {

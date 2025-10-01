@@ -122,7 +122,7 @@ bool was_launched_on_large_display() {
 }
 
 void set_is_xr_for_testing() {
-  Java_DeviceInfo_setIsXrForTesting(AttachCurrentThread());  // IN-TEST
+  Java_DeviceInfo_setIsXrForTesting(AttachCurrentThread(), true);  // IN-TEST
   get_holder().reset();
 }
 

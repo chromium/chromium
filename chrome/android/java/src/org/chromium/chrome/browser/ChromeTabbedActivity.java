@@ -47,6 +47,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureListener;
@@ -339,7 +340,6 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.edge_to_edge.TabbedSystemBarColorHelper;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionInitializer;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
@@ -4858,7 +4858,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
     }
 
     private void maybeInitializeXrSceneCoreSession() {
-        if (XrUtils.isXrDevice()) {
+        if (DeviceInfo.isXr()) {
             mXrSceneCoreSessionInitializer =
                     new XrSceneCoreSessionInitializerImpl(
                             getLifecycleDispatcher(), mXrSceneCoreSessionManagerSupplier.get());
@@ -4871,7 +4871,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
         XrSceneCoreSessionManager xrSceneCoreSessionManager = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            if (XrUtils.isXrDevice()) {
+            if (DeviceInfo.isXr()) {
                 xrSceneCoreSessionManager = new XrSceneCoreSessionManagerImpl(this);
                 xrSceneCoreSessionManager
                         .getXrSpaceModeObservableSupplier()

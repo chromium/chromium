@@ -8,11 +8,11 @@ import android.view.View;
 
 import androidx.annotation.IdRes;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.util.XrUtils;
 
 /** Feature related utilities for Hub. */
 @NullMarked
@@ -41,7 +41,7 @@ public class HubUtils {
     /** Whether enable the grid tab switcher UI update. */
     public static boolean isGtsUpdateEnabled() {
         // TODO(crbug.com/419822825): Remove explicit check once XR toolbar crash is resolved.
-        if (XrUtils.isXrDevice()) return false;
+        if (DeviceInfo.isXr()) return false;
 
         return ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()
                 || ThemeModuleUtils.isForceEnableDependencies();

@@ -29,6 +29,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -41,7 +42,6 @@ import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -91,7 +91,7 @@ public class HubToolbarCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        XrUtils.setXrDeviceForTesting(mIsXrDevice);
+        DeviceInfo.setIsXrForTesting(mIsXrDevice);
 
         when(mPaneManager.getFocusedPaneSupplier()).thenReturn(mFocusedPaneSupplier);
         when(mPaneManager.getPaneOrderController()).thenReturn(mPaneOrderController);

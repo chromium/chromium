@@ -40,6 +40,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -62,7 +63,6 @@ import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -140,7 +140,7 @@ public class RestoreTabsTest {
     @Test
     @MediumTest
     public void testRestoreTabsPromo_triggerDialogOnXr() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         triggerRestoreTabsPromo();
         String expectedContentDescription =
                 mActivityTestRule
@@ -161,8 +161,6 @@ public class RestoreTabsTest {
 
         pressBack();
         verify(mMockTracker, times(1)).dismissed(eq(RESTORE_TABS_FEATURE));
-
-        XrUtils.setXrDeviceForTesting(false);
     }
 
     private void triggerRestoreTabsPromo() {

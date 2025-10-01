@@ -15,13 +15,13 @@ import androidx.xr.runtime.internal.ActivitySpace;
 import androidx.xr.runtime.internal.Dimensions;
 import androidx.xr.scenecore.impl.JxrPlatformAdapterAxr;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.ChromiumExecutorServiceFactory;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /**
@@ -43,7 +43,7 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
             this::boundsChangeCallback;
 
     public XrSceneCoreSessionManagerImpl(Activity activity) {
-        assert XrUtils.isXrDevice();
+        assert DeviceInfo.isXr();
         mActivity = activity;
         mJxrPlatformAdapter = createJxrPlatformAdapter(mActivity);
         mJxrPlatformAdapter.getActivitySpace().addOnBoundsChangedListener(mBoundsChangedListener);

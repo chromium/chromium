@@ -29,7 +29,6 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.util.XrUtils;
 
 /**
  * Helper functions relevant to working with displays, but have no parallel in the native
@@ -53,7 +52,7 @@ public abstract class DisplayUtil {
 
     /** Returns true if the device requires UI scaling. */
     public static boolean isUiScaled() {
-        return DeviceInfo.isAutomotive() || XrUtils.isXrDevice();
+        return DeviceInfo.isAutomotive() || DeviceInfo.isXr();
     }
 
     /** Change the UI scaling factor on automotive devices for testing. */

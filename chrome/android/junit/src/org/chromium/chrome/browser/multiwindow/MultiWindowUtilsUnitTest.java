@@ -44,6 +44,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -75,7 +76,6 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -1128,7 +1128,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DISABLE_INSTANCE_LIMIT)
     public void testMaxInstances_XrDevice() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         assertEquals(
                 "Instance limit on XR device is incorrect.",

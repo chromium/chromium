@@ -25,6 +25,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -50,7 +51,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.interpolators.Interpolators;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -408,7 +408,7 @@ public class StripDragShadowView extends FrameLayout {
         float density = context.getResources().getDisplayMetrics().density;
 
         // XR uses a separate target width.
-        if (XrUtils.isXrDevice()) {
+        if (DeviceInfo.isXr()) {
             int width = (int) (density * WIDTH_ON_XR_DP);
             int height =
                     TabUtils.deriveGridCardHeight(width, context, mBrowserControlStateProvider);

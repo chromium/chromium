@@ -44,7 +44,7 @@ public final class DeviceInfo {
     private static @Nullable String sGmsVersionCodeForTesting;
     private static @Nullable Boolean sIsAutomotiveForTesting;
     private static boolean sInitialized;
-    private static boolean sIsXrForTesting;
+    private static @Nullable Boolean sIsXrForTesting;
     private static @Nullable Boolean sIsRetailDemoModeForTesting;
     private final IDeviceInfo mIDeviceInfo;
     private @Nullable Boolean mIsRetailDemoMode;
@@ -76,7 +76,7 @@ public final class DeviceInfo {
                         /* isFoldable= */ info.isFoldable,
                         /* isDesktop= */ info.isDesktop,
                         /* vulkanDeqpLevel= */ info.vulkanDeqpLevel,
-                        /* isXr= */ sIsXrForTesting ? true : info.isXr,
+                        /* isXr= */ (sIsXrForTesting != null) ? sIsXrForTesting : info.isXr,
                         /* wasLaunchedOnLargeDisplay= */ info.wasLaunchedOnLargeDisplay);
     }
 
@@ -122,7 +122,7 @@ public final class DeviceInfo {
     }
 
     public static boolean isXr() {
-        return getInstance().mIDeviceInfo.isXr;
+        return (sIsXrForTesting != null) ? sIsXrForTesting : getInstance().mIDeviceInfo.isXr;
     }
 
     public static boolean isRetailDemoMode() {
@@ -151,13 +151,14 @@ public final class DeviceInfo {
     }
 
     @CalledByNativeForTesting
-    public static void setIsXrForTesting() {
-        sIsXrForTesting = true;
+    public static void setIsXrForTesting(boolean value) {
+        sIsXrForTesting = value;
+        ResettersForTesting.register(() -> sIsXrForTesting = null);
     }
 
     @CalledByNativeForTesting
     public static void resetIsXrForTesting() {
-        sIsXrForTesting = false;
+        sIsXrForTesting = null;
     }
 
     public static void setIsRetailDemoModeForTesting(boolean value) {

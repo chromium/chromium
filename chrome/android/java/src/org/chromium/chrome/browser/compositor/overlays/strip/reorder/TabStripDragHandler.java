@@ -27,6 +27,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
@@ -53,7 +54,6 @@ import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.dragdrop.DragDropMetricUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropResult;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -373,7 +373,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private boolean onDragEnter(float xPx) {
         mHoveringInStrip = true;
         boolean isDragSource = isDragSource();
-        if (isDragSource || XrUtils.isXrDevice()) {
+        if (isDragSource || DeviceInfo.isXr()) {
             mHandler.removeCallbacks(mOnDragExitRunnable);
             showDragShadow(false);
         }
@@ -575,7 +575,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     private boolean onDragExit() {
         mHoveringInStrip = false;
         mDragEverLeftStrip = true;
-        if (XrUtils.isXrDevice()) {
+        if (DeviceInfo.isXr()) {
             showDragShadow(true);
         }
         boolean isDragSource = isDragSource();

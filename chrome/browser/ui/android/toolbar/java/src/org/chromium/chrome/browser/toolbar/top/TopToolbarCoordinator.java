@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -61,7 +62,6 @@ import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.Drawing
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -326,7 +326,7 @@ public class TopToolbarCoordinator implements Toolbar {
         // which will become a visible artifact when the web contents background has a big
         // difference with the toolbar background color defined by system color theme. So we still
         // enable the overlay on XR devices. See https://crbug.com/377982076.
-        if (DeviceClassManager.enableFullscreen() || XrUtils.isXrDevice()) {
+        if (DeviceClassManager.enableFullscreen() || DeviceInfo.isXr()) {
             int layoutsToShowOn = LayoutType.BROWSING | LayoutType.TAB_SWITCHER;
             if (!NewTabAnimationUtils.isNewTabAnimationEnabled()) {
                 layoutsToShowOn |= LayoutType.SIMPLE_ANIMATION;

@@ -25,6 +25,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -39,7 +40,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.DialogStyles;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.util.XrUtils;
 
 /** The presenter that shows a {@link ModalDialogView} in an Android dialog. */
 @NullMarked
@@ -153,7 +153,7 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
                     dismissCurrentDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
                 });
 
-        if (XrUtils.isXrDevice() && mModel.get(ModalDialogProperties.DISABLE_SCRIM)) {
+        if (DeviceInfo.isXr() && mModel.get(ModalDialogProperties.DISABLE_SCRIM)) {
             Window window = mDialog.getWindow();
             if (window != null) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);

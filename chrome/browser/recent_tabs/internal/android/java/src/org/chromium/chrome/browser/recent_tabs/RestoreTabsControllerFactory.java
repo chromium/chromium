@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.recent_tabs;
 
 import android.content.Context;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.function.Supplier;
 
@@ -29,7 +29,7 @@ public class RestoreTabsControllerFactory {
             BottomSheetController bottomSheetController,
             @Nullable Supplier<ModalDialogManager> modalDialogManagerSupplier) {
 
-        if (XrUtils.isXrDevice() && modalDialogManagerSupplier != null) {
+        if (DeviceInfo.isXr() && modalDialogManagerSupplier != null) {
             return new RestoreTabsDialogControllerImpl(
                     context, profile, tabCreatorManager, modalDialogManagerSupplier);
         }

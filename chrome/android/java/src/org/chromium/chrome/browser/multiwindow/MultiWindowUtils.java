@@ -72,7 +72,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -214,7 +213,7 @@ public class MultiWindowUtils implements ActivityStateListener {
             return TabWindowManager.MAX_SELECTORS_S;
         }
 
-        if (DeviceInfo.isDesktop() || XrUtils.isXrDevice()) {
+        if (DeviceInfo.isDesktop() || DeviceInfo.isXr()) {
             return TabWindowManager.MAX_SELECTORS;
         }
 

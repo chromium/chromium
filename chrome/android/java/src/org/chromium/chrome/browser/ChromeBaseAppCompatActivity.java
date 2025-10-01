@@ -80,7 +80,6 @@ import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.util.AttrUtils;
-import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -506,7 +505,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     @VisibleForTesting
     static void applyOverridesForXr(Context baseContext, Configuration overrideConfig) {
-        if (XrUtils.isXrDevice()) {
+        if (DeviceInfo.isXr()) {
             DisplayUtil.scaleUpConfigurationForXr(baseContext, overrideConfig);
 
             // Enable web ui scaling for immersive devices.

@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,7 +45,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.XrUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -74,7 +74,7 @@ public class RestoreTabsDialogMediatorUnitTest {
 
     @Before
     public void setUp() {
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         TrackerFactory.setTrackerForTests(mTracker);
         Supplier<ModalDialogManager> modalDialogManagerSupplier = () -> mModalDialogManager;
         when(mContext.getString(R.string.restore_tabs_content_description))
@@ -86,7 +86,6 @@ public class RestoreTabsDialogMediatorUnitTest {
 
     @After
     public void tearDown() {
-        XrUtils.setXrDeviceForTesting(false);
         mMediator.destroy();
         TrackerFactory.setTrackerForTests(null);
         mModel = null;
