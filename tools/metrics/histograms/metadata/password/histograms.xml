@@ -3026,7 +3026,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.PasswordDropdownShown{PasswordDropdownRequestTypeSuffix}.DuplicateCredentialsTypesWhenExists"
-    enum="PasswordDropdownDuplicateCredentialsType" expires_after="2025-10-31">
+    enum="PasswordDropdownDuplicateCredentialsType" expires_after="2026-10-31">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -3044,7 +3044,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="PasswordManager.PasswordDropdownShown{PasswordDropdownRequestTypeSuffix}.HasAnyDuplicateCredentials"
-    enum="Boolean" expires_after="2025-10-31">
+    enum="Boolean" expires_after="2026-10-31">
   <owner>derinel@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
