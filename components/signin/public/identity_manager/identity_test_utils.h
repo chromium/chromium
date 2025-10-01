@@ -393,6 +393,10 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
 account_manager::AccountManagerFacade* GetAccountManagerFacade(
     IdentityManager* identity_manager);
 #endif
+
+// Allows testing some features gated by the official Chrome API keys and OAuth
+// client IDs in builds lacking those keys.
+void SetIgnoreNonOfficialApiKeys();
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_

@@ -41,6 +41,10 @@
 #include "components/signin/public/android/test_support_jni_headers/AccountManagerFacadeUtil_jni.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
+#endif
+
 using signin::constants::kNoHostedDomainFound;
 
 namespace signin {
@@ -724,5 +728,12 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
   return identity_manager->GetAccountManagerFacade();
 }
 #endif
+
+void SetIgnoreNonOfficialApiKeys() {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  MutableProfileOAuth2TokenServiceDelegate::
+      SetIgnoreNonOfficialApiKeysForTesting();
+#endif
+}
 
 }  // namespace signin

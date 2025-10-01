@@ -2106,6 +2106,8 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
        UseIssueTokenToFetchAccessTokensFeature) {
   base::test::ScopedFeatureList scoped_feature_list{
       switches::kUseIssueTokenToFetchAccessTokens};
+  MutableProfileOAuth2TokenServiceDelegate::
+      SetIgnoreNonOfficialApiKeysForTesting();
 
   ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
   // Initialize the delegate without the token binding support.
