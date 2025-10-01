@@ -31,6 +31,12 @@ class GPU_GLES2_EXPORT OzoneImageBackingFactory
 
   ~OzoneImageBackingFactory() override;
 
+  static gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
+      viz::VulkanContextProvider* vulkan_context_provider,
+      const gfx::Size& size,
+      viz::SharedImageFormat format,
+      gfx::BufferUsage usage);
+
   // SharedImageBackingFactory implementation
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
